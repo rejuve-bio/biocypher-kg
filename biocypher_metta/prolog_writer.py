@@ -126,9 +126,9 @@ class PrologWriter:
 
             special_chars = ["(", ")"]
             escape_char = "\\"
-            return "".join(escape_char + c if c in special_chars or c == escape_char else c for c in prop)
+            return "".join(escape_char + c if c in special_chars or c == escape_char else c for c in prop).lower()
 
-        return prop.lower()
+        return prop
 
     def convert_input_labels(self, label, replace_char="_"):
         """
