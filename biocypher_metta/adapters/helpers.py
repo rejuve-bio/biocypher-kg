@@ -6,6 +6,8 @@ from liftover import get_lifter
 import hgvs.dataproviders.uta
 from hgvs.easy import parser
 from hgvs.extras.babelfish import Babelfish
+from oaklib.datamodels.vocabulary import SUBCLASS_OF, HAS_DBXREF, HAS_PART, PART_OF
+
 
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
@@ -173,3 +175,9 @@ def convert_genome_reference(chr, pos, from_build='hg19', to_build='hg38'):
         return int(converted)
     except:
         return None
+    
+def get_predicate(pred):
+    predicate_map = {'subclass_of': SUBCLASS_OF, 'has_part': HAS_PART, 
+                     'part_of': PART_OF, 'has_dbxref': HAS_DBXREF}
+    
+    return predicate_map.get(pred)
