@@ -594,3 +594,54 @@ clo_subtype_of:
   outdir: cell_line_ontology
   nodes: False
   edges: True
+
+cell_ontology:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: 'cl'
+      type: node
+      dry_run: True
+  outdir: cell_ontology
+  nodes: True
+  edges: False
+
+cl_subtype_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: 'cl'
+      label: cl_subtype_of
+      type: edge
+      dry_run: True
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+capable_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: 'cl'
+      label: capable_of
+      type: edge
+      dry_run: True
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+part_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: 'cl'
+      label: part_of
+      type: edge
+      dry_run: True
+  outdir: cell_ontology
+  nodes: False
+  edges: True
