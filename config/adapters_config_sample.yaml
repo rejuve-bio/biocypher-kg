@@ -594,3 +594,16 @@ clo_subtype_of:
   outdir: cell_line_ontology
   nodes: False
   edges: True
+
+fabian_tf_snp:
+  adapter:
+    module: biocypher_metta.adapters.fabian_adapter
+    cls: FabianAdapter
+    args:
+      filepath: ./samples/fabian_sample_data.tsv
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+      dbsnp_pos_map: None # will be provided by import script
+      label: tfbs_snp
+  outdir: fabian
+  nodes: False
+  edges: True
