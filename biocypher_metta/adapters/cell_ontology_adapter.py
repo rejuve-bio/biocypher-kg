@@ -34,14 +34,10 @@ class CellOntologyAdapter(OntologyAdapter):
         return str(uri).startswith(self.UBERON_URI_PREFIX)
 
     def get_nodes(self):
-        if self.type != 'node':
-            return
-
         self.update_graph()
         self.cache_node_properties()
 
         node_count = 0
-
         for node in self.graph.subjects(RDF.type, OWL.Class):
             if not self.is_cl_term(node):
                 continue
@@ -51,9 +47,9 @@ class CellOntologyAdapter(OntologyAdapter):
             description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
             synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
 
-            # Check if the description contains double quotes
+            # Skip nodes with descriptions containing double quotes
             if '"' in description:
-                continue  # Skip this node
+                continue
 
             props = {}
             if self.write_properties:
@@ -68,11 +64,8 @@ class CellOntologyAdapter(OntologyAdapter):
             yield term_id, self.label, props
 
             node_count += 1
-            if self.dry_run and node_count >= 100:
-                return 
-
-        if self.dry_run:
-            print(f"Dry run: Retrieved {node_count} nodes.")
+            if self.dry_run and node_count > 100:
+                break
 
     def get_edges(self):
         if self.type != 'edge':
@@ -93,7 +86,6 @@ class CellOntologyAdapter(OntologyAdapter):
         predicate = predicates[self.label]
 
         edge_count = 0
-
         for subject in self.graph.subjects(RDF.type, OWL.Class):
             if not self.is_cl_term(subject):
                 continue
@@ -103,11 +95,7 @@ class CellOntologyAdapter(OntologyAdapter):
                 if object is None:
                     continue
 
-                if self.label == 'cl_subtype_of' and not self.is_cl_term(object):
-                    continue
-                elif self.label == 'capable_of' and not self.is_go_term(object):
-                    continue
-                elif self.label == 'part_of' and not self.is_uberon_term(object):
+                if not self.is_valid_edge(subject, object, self.label):
                     continue
 
                 from_node_key = self.to_key(subject)
@@ -124,8 +112,16 @@ class CellOntologyAdapter(OntologyAdapter):
 
                 edge_count += 1
                 if self.dry_run and edge_count > 100:
-                    return 
+                    return
 
+    def is_valid_edge(self, from_node, to_node, edge_type):
+        if edge_type == 'cl_subtype_of':
+            return self.is_cl_term(from_node) and self.is_cl_term(to_node)
+        elif edge_type == 'capable_of':
+            return self.is_cl_term(from_node) and self.is_go_term(to_node)
+        elif edge_type == 'part_of':
+            return self.is_cl_term(from_node) and self.is_uberon_term(to_node)
+        return False
 
     def resolve_object(self, object_or_restriction, predicate):
         if isinstance(object_or_restriction, rdflib.term.BNode):
@@ -144,6 +140,4 @@ class CellOntologyAdapter(OntologyAdapter):
         predicate_str = str(predicate)
         if predicate_str == str(self.CAPABLE_OF):
             return 'capable_of'
-        if predicate_str == str(self.PART_OF):
-            return 'part_of'
         return super().predicate_name(predicate)
