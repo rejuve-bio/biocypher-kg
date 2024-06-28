@@ -278,6 +278,17 @@ clo:
     clo_definition: str
     clo_synonyms: str[]
 
+# Cell Ontology
+cl:
+  is_a: ontology term
+  represented_as: node
+  input_label: cl
+  properties:
+    cl_id: str
+    cl_name: str
+    cl_definition: str
+    cl_synonyms: str[]
+
 motif:
   represented_as: node
   is_a: epigenomic feature
@@ -450,6 +461,24 @@ post translational interaction:
 # ---
 # annotation
 
+capable of:
+  is_a: annotation
+  represented_as: edge
+  input_label: capable_of
+  description: >-
+    Represents a functional capability relationship between a CL term and a GO term.
+  source: cl
+  target: go
+
+part_of:
+  is_a: annotation
+  represented_as: edge
+  input_label: part_of
+  description: >-
+    Represents a part-whole relationship between a CL term and an UBERON term.
+  source: cl
+  target: uberon
+
 gene to pathway association:
   description: >-
     An interaction between a gene or gene product and a biological process or pathway.
@@ -506,6 +535,14 @@ clo_subtype_of:
   output_label: subtype_of
   source: clo
   target: clo
+
+cl_subtype_of:
+  is_a: subtype_of
+  represented_as: edge
+  input_label: cl_subtype_of
+  output_label: subtype_of
+  source: cl
+  target: cl
 
 go_subtype_of:
   is_a: subtype_of
