@@ -19,9 +19,9 @@ class PrologWriter:
         self.bcy = BioCypher(schema_config_path=schema_config,
                              biocypher_config_path=biocypher_config)
 
-        self.onotology = self.bcy._get_ontology()
+        self.ontology = self.bcy._get_ontology()
         self.create_edge_types()
-        #self.excluded_properties = ["licence", "version", "source"]
+        #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
 
 
@@ -31,17 +31,17 @@ class PrologWriter:
 
         for k, v in schema.items():
             if v["represented_as"] == "edge": #(: (label $x $y) (-> source_type target_type
-                edge_type = self.convert_input_labels(k)
+                edge_type = self.sanitize_text(k)
 
                 # ## TODO fix this in the scheme config
                 if isinstance(v["input_label"], list):
-                    label = self.convert_input_labels(v["input_label"][0])
-                    source_type = self.convert_input_labels(v["source"][0])
-                    target_type = self.convert_input_labels(v["target"][0])
+                    label = self.sanitize_text(v["input_label"][0])
+                    source_type = self.sanitize_text(v["source"][0])
+                    target_type = self.sanitize_text(v["target"][0])
                 else:
-                    label = self.convert_input_labels(v["input_label"])
-                    source_type = self.convert_input_labels(v["source"])
-                    target_type = self.convert_input_labels(v["target"])
+                    label = self.sanitize_text(v["input_label"])
+                    source_type = self.sanitize_text(v["source"])
+                    target_type = self.sanitize_text(v["target"])
                 self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower()}
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
@@ -84,8 +84,8 @@ class PrologWriter:
         if "." in label:
             label = label.split(".")[1]
         label = label.lower()
-        id = id.lower()
-        def_out = f"{self.convert_input_labels(label)}({id})"
+        id = self.sanitize_text(id.lower())
+        def_out = f"{self.sanitize_text(label)}({id})"
         return self.write_property(def_out, properties)
 
     def write_edge(self, edge):
@@ -98,6 +98,9 @@ class PrologWriter:
         output_label = self.edge_node_types[label]["output_label"]
         if output_label is not None:
             label = output_label.lower()
+        source_id = self.sanitize_text(source_id)
+        target_id = self.sanitize_text(target_id)
+        label = self.sanitize_text(label)
         def_out = f"{label}({source_type}({source_id}), {target_type}({target_id}))"
         return self.write_property(def_out, properties)
 
@@ -109,35 +112,26 @@ class PrologWriter:
             if isinstance(v, list):
                 prop = "["
                 for i, e in enumerate(v):
-                    prop += f'{self.check_property(e)}'
+                    prop += f'{self.sanitize_text(e)}'
                     if i != len(v) - 1: prop += ","
                 prop += "]."
             elif isinstance(v, dict):
                 prop = f"{k}({def_out})."
                 out_str.extend(self.write_property(prop, v))
             else:
-                out_str.append(f'{k}({def_out}, {self.check_property(v)}).')
+                out_str.append(f'{k}({def_out}, {self.sanitize_text(v)}).')
         return out_str
 
-    def check_property(self, prop):
+    def sanitize_text(self, prop):
+        replace_chars = [" ", "-", ":"]
+        omit_chars = ["(", ")", "+", "."]
         if isinstance(prop, str):
-            if " " in prop:
-                prop = prop.replace(" ", "_")
-
-            special_chars = ["(", ")"]
-            escape_char = "\\"
-            return "".join(escape_char + c if c in special_chars or c == escape_char else c for c in prop).lower()
-
+            for c in replace_chars:
+                prop = prop.replace(c, "_")
+            for c in omit_chars:
+                prop = prop.replace(c, "")
+            
         return prop
-
-    def convert_input_labels(self, label, replace_char="_"):
-        """
-        A method that removes spaces in input labels and replaces them with replace_char
-        :param label: Input label of a node or edge
-        :param replace_char: the character to replace spaces with
-        :return:
-        """
-        return label.replace(" ", replace_char)
 
     def get_parent(self, G, node):
         """
