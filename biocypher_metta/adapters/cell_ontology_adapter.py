@@ -15,12 +15,7 @@ class CellOntologyAdapter(OntologyAdapter):
 
     def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run)
-        self.edge_node_types = {
-            'cl_subtype_of': {'source': 'CL', 'target': 'CL'},
-            'capable_of': {'source': 'CL', 'target': 'GO'},
-            'part_of': {'source': 'CL', 'target': 'UBERON'}
-        }
-
+        
     def get_ontology_source(self):
         return 'Cell Ontology', 'http://purl.obolibrary.org/obo/cl.owl'
 
