@@ -132,7 +132,7 @@ class PrologWriter:
             for c in omit_chars:
                 prop = prop.replace(c, "")
             
-        return prop
+        return prop.lower()
 
     def get_parent(self, G, node):
         """
