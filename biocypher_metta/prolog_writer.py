@@ -30,19 +30,20 @@ class PrologWriter:
         self.edge_node_types = {}
 
         for k, v in schema.items():
-            if v["represented_as"] == "edge": #(: (label $x $y) (-> source_type target_type
-                edge_type = self.sanitize_text(k)
-
+            if v["represented_as"] == "edge":
+                source_type = v.get("source", None)
+                target_type = v.get("target", None)
                 # ## TODO fix this in the scheme config
-                if isinstance(v["input_label"], list):
-                    label = self.sanitize_text(v["input_label"][0])
-                    source_type = self.sanitize_text(v["source"][0])
-                    target_type = self.sanitize_text(v["target"][0])
-                else:
-                    label = self.sanitize_text(v["input_label"])
-                    source_type = self.sanitize_text(v["source"])
-                    target_type = self.sanitize_text(v["target"])
-                self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower()}
+                if source_type is not None and target_type is not None:
+                    if isinstance(v["input_label"], list):
+                        label = self.sanitize_text(v["input_label"][0])
+                        source_type = self.sanitize_text(v["source"][0])
+                        target_type = self.sanitize_text(v["target"][0])
+                    else:
+                        label = self.sanitize_text(v["input_label"])
+                        source_type = self.sanitize_text(v["source"])
+                        target_type = self.sanitize_text(v["target"])
+                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower()}
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
