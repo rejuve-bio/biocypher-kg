@@ -13,8 +13,9 @@ class CellOntologyAdapter(OntologyAdapter):
     GO_URI_PREFIX = 'http://purl.obolibrary.org/obo/GO_'
     UBERON_URI_PREFIX = 'http://purl.obolibrary.org/obo/UBERON_'
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False):
-        super().__init__(write_properties, add_provenance, ontology, type, label, dry_run)
+    def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False, add_description=True):
+        super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description)
+       
         
     def get_ontology_source(self):
         return 'Cell Ontology', 'http://purl.obolibrary.org/obo/cl.owl'
@@ -46,6 +47,13 @@ class CellOntologyAdapter(OntologyAdapter):
                 props['term_name'] = term_name
                 props['synonyms'] = synonyms
 
+                if self.add_description:
+                    description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
+                    # Skip nodes with descriptions containing double quotes
+                    if '"' in description:
+                        continue
+                    props['description'] = description
+
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -64,7 +72,7 @@ class CellOntologyAdapter(OntologyAdapter):
         self.cache_edge_properties()
 
         predicates = {
-            'cl_subtype_of': RDFS.subClassOf,
+            'cl_subclass_of': RDFS.subClassOf,
             'cl_capable_of': self.CAPABLE_OF,
             'cl_part_of': self.PART_OF
         }
@@ -104,7 +112,7 @@ class CellOntologyAdapter(OntologyAdapter):
                     return
 
     def is_valid_edge(self, from_node, to_node, edge_type):
-        if edge_type == 'cl_subtype_of':
+        if edge_type == 'cl_subclass_of':
             return self.is_cl_term(from_node) and self.is_cl_term(to_node)
         elif edge_type == 'cl_capable_of':
             return self.is_cl_term(from_node) and self.is_go_term(to_node)

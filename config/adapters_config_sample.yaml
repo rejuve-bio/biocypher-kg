@@ -145,18 +145,19 @@ go_ontology_terms:
       ontology: 'go'
       type: node
       dry_run: True
+      add_description: False
 
   outdir: gene_onotology
   nodes: True
   edges: False
 
-go_subtype_of:
+go_subclass_of:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
     cls: GeneOntologyAdapter
     args:
       ontology: 'go'
-      label: go_subtype_of
+      label: go_subclass_of
       type: edge
       dry_run: True
 
@@ -553,11 +554,12 @@ uberon:
       ontology: 'uberon'
       type: node
       dry_run: True
+      add_description: False
   outdir: uberon
   nodes: True
   edges: False
 
-uberon_subtype_of:
+uberon_subclass_of:
   adapter:
     module: biocypher_metta.adapters.uberon_adapter
     cls: UberonAdapter
@@ -565,7 +567,7 @@ uberon_subtype_of:
       ontology: 'uberon'
       type: edge
       dry_run: True
-      label: uberon_subtype_of
+      label: uberon_subclass_of
   outdir: uberon
   nodes: False
   edges: True
@@ -578,17 +580,18 @@ cell_line_ontology:
       ontology: 'clo'
       type: node
       dry_run: True
+      add_description: False
   outdir: cell_line_ontology
   nodes: True
   edges: False
 
-clo_subtype_of:
+clo_subclass_of:
   adapter:
     module: biocypher_metta.adapters.cell_line_ontology_adapter
     cls: CellLineOntologyAdapter
     args:
       ontology: 'clo'
-      label: clo_subtype_of
+      label: clo_subclass_of
       type: edge
       dry_run: True
   outdir: cell_line_ontology
@@ -603,17 +606,18 @@ cell_ontology:
       ontology: 'cl'
       type: node
       dry_run: True
+      add_description: False
   outdir: cell_ontology
   nodes: True
   edges: False
 
-cl_subtype_of:
+cl_subclass_of:
   adapter:
     module: biocypher_metta.adapters.cell_ontology_adapter
     cls: CellOntologyAdapter
     args:
       ontology: 'cl'
-      label: cl_subtype_of
+      label: cl_subclass_of
       type: edge
       dry_run: True
   outdir: cell_ontology
