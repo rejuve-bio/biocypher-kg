@@ -461,19 +461,21 @@ post translational interaction:
 # ---
 # annotation
 
-capable of:
+cl capable of:
   is_a: annotation
   represented_as: edge
-  input_label: capable_of
+  input_label: cl_capable_of
+  output_label: capable_of
   description: >-
     Represents a functional capability relationship between a CL term and a GO term.
   source: cl
   target: go
 
-part_of:
+cl part of:
   is_a: annotation
   represented_as: edge
-  input_label: part_of
+  input_label: cl_part_of
+  output_label: part_of
   description: >-
     Represents a part-whole relationship between a CL term and an UBERON term.
   source: cl

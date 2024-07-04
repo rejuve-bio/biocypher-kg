@@ -70,13 +70,11 @@ class OntologyAdapter(Adapter):
             term_id = OntologyAdapter.to_key(node)
             # 'uri': str(node),
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
-            description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
             synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
 
             props = {}
             if self.write_properties:
                 props['term_name'] = term_name
-                props['description'] = description
                 props['synonyms'] = synonyms
 
                 if self.add_provenance:
