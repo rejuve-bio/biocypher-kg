@@ -39,17 +39,11 @@ class CellOntologyAdapter(OntologyAdapter):
             
             term_id = self.to_key(node)
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
-            description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
             synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
-
-            # Skip nodes with descriptions containing double quotes
-            if '"' in description:
-                continue
 
             props = {}
             if self.write_properties:
                 props['term_name'] = term_name
-                props['description'] = description
                 props['synonyms'] = synonyms
 
                 if self.add_provenance:
@@ -71,8 +65,8 @@ class CellOntologyAdapter(OntologyAdapter):
 
         predicates = {
             'cl_subtype_of': RDFS.subClassOf,
-            'capable_of': self.CAPABLE_OF,
-            'part_of': self.PART_OF
+            'cl_capable_of': self.CAPABLE_OF,
+            'cl_part_of': self.PART_OF
         }
 
         if self.label not in predicates:
@@ -112,9 +106,9 @@ class CellOntologyAdapter(OntologyAdapter):
     def is_valid_edge(self, from_node, to_node, edge_type):
         if edge_type == 'cl_subtype_of':
             return self.is_cl_term(from_node) and self.is_cl_term(to_node)
-        elif edge_type == 'capable_of':
+        elif edge_type == 'cl_capable_of':
             return self.is_cl_term(from_node) and self.is_go_term(to_node)
-        elif edge_type == 'part_of':
+        elif edge_type == 'cl_part_of':
             return self.is_cl_term(from_node) and self.is_uberon_term(to_node)
         return False
 
