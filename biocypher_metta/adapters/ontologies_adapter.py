@@ -23,7 +23,7 @@ class OntologyAdapter(Adapter):
     PREDICATES = [SUBCLASS, DB_XREF]
     RESTRICTION_PREDICATES = [HAS_PART, PART_OF]
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False, add_description=True):
+    def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False, add_description=False):
         self.type = type
         self.label = label
         self.dry_run = dry_run
