@@ -498,7 +498,7 @@ cl capable of:
   target: go
 
 cl part of:
-  is_a: part_of
+  is_a: part of
   represented_as: edge
   input_label: cl_part_of
   output_label: part_of
@@ -538,7 +538,7 @@ child pathway of:
     target: pathway
 
 uberon subclass of:
-  is_a: subclass_of
+  is_a: subclass of
   represented_as: edge
   input_label: uberon_subclass_of
   output_label: subclass_of
@@ -546,7 +546,7 @@ uberon subclass of:
   target: uberon
 
 clo subclass of:
-  is_a: subclass_of
+  is_a: subclass of
   represented_as: edge
   input_label: clo_subclass_of
   output_label: subclass_of
@@ -554,7 +554,7 @@ clo subclass of:
   target: clo
 
 cl subclass of:
-  is_a: ontology_subclass_of
+  is_a: subclass of
   represented_as: edge
   input_label: cl_subclass_of
   output_label: subclass_of
@@ -562,7 +562,7 @@ cl subclass of:
   target: cl
 
 go subclass of:
-  is_a: subclass_of
+  is_a: subclass of
   represented_as: edge
   input_label: go_subclass_of
   output_label: subclass_of
