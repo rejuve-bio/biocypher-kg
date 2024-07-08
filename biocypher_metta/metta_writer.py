@@ -19,14 +19,14 @@ class MeTTaWriter:
         self.bcy = BioCypher(schema_config_path=schema_config,
                              biocypher_config_path=biocypher_config)
 
-        self.onotology = self.bcy._get_ontology()
+        self.ontology = self.bcy._get_ontology()
         self.create_type_hierarchy()
 
-        #self.excluded_properties = ["licence", "version", "source"]
+        #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
 
     def create_type_hierarchy(self):
-        G = self.onotology._nx_graph
+        G = self.ontology._nx_graph
         file_path = f"{self.output_path}/type_defs.metta"
         with open(file_path, "w") as f:
             for node in G.nodes:

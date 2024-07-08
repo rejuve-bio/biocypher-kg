@@ -460,7 +460,7 @@ dgv_variant:
     module: biocypher_metta.adapters.dgv_variant_adapter
     cls: DGVVariantAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv_GRCh38_hg38_variants.txt.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
 
   outdir: dgv
   nodes: True
@@ -471,7 +471,7 @@ epd_promoter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/Hs_EPDnew.bed.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
 
   outdir: epd
@@ -483,7 +483,7 @@ epd_promoter_regulates_gene:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/Hs_EPDnew.bed.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       type: promoter to gene association
       label: promoter_gene
@@ -498,7 +498,7 @@ dbvar_variant:
     module: biocypher_metta.adapters.dbvar_adapter
     cls: DBVarVariantAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/GRCh38.variant_call.all.vcf.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
 
   outdir: dbvar
   nodes: True
@@ -543,7 +543,7 @@ dbsuper_super_enhancer:
     module: biocypher_metta.adapters.dbsuper_adapter
     cls: DBSuperAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
 
@@ -556,7 +556,7 @@ dbsuper_super_enhancer_regulates_gene:
     module: biocypher_metta.adapters.dbsuper_adapter
     cls: DBSuperAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
@@ -582,7 +582,7 @@ enhancer_atlas_enhancer:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/enhancer.bed.gz
+      enhancer_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/hs.bed.gz
       enhancer_gene_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
   
@@ -706,5 +706,16 @@ cl_part_of:
       type: edge
       dry_run: False
   outdir: cell_ontology
+
+fabian_tf_snp:
+  adapter:
+    module: biocypher_metta.adapters.fabian_adapter
+    cls: FabianAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/fabian/fabian_1719229097_34244_data.tsv
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+      dbsnp_pos_map: None # will be provided by import script
+      label: tfbs_snp
+  outdir: fabian
   nodes: False
   edges: True
