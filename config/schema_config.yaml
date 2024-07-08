@@ -574,7 +574,7 @@ go gene product:
   inherit_properties: true
   represented_as: edge
   input_label: go_gene_product
-  source: gene ontology
+  source: go
   target: protein
   properties:
     qualifier: obj
@@ -788,3 +788,11 @@ transcription factor to snp association:
     score: float
     source: str
     source_url: str
+
+gene in tad region:
+  is_a: related to at instance level
+  description: holds between a tad and a gene that is in the tad region
+  represented_as: edge
+  input_label: in_tad_region
+  source: gene
+  target: tad

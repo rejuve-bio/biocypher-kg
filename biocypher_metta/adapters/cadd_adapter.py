@@ -26,7 +26,7 @@ class CADDAdapter(Adapter):
         self.start = start
         self.end = end
 
-        self.label = "sequence_variant"
+        self.label = "snp"
         self.source = "CADD"
         self.source_url = "https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz"
 

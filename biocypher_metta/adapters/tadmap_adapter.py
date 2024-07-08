@@ -14,7 +14,7 @@ class TADMapAdapter(Adapter):
     """
     INDEX = {'loc_info': 0, 'genes': 1, 'chr': 1, 'start': 2, 'end': 3}
 
-    def __init__(self, filepath, write_properties, add_provenance,
+    def __init__(self, filepath, write_properties, add_provenance, label="tad",
                  chr=None, start=None, end=None):
         """
         :type filepath: str
@@ -35,7 +35,7 @@ class TADMapAdapter(Adapter):
         self.start = start
         self.end = end
 
-        self.label = "tad"
+        self.label = label
 
         super(TADMapAdapter, self).__init__(write_properties, add_provenance)
 
@@ -77,3 +77,31 @@ class TADMapAdapter(Adapter):
                             _props['source_url'] = self.source_url
 
                     yield _id, self.label, _props
+
+    def get_edges(self):
+        with open(self.filepath, 'r') as tad_file:
+            next(tad_file) # skip header
+            for row in tad_file:
+                row = row.strip().split(',')
+                loc_info = row[TADMapAdapter.INDEX['loc_info']].split('|')
+                genes_info = row[TADMapAdapter.INDEX['genes']].split(';')
+                chr = loc_info[TADMapAdapter.INDEX['chr']]
+                start = loc_info[TADMapAdapter.INDEX['start']]
+                end = loc_info[TADMapAdapter.INDEX['end']]
+                genes = []
+                for gene in genes_info:
+                    try:
+                        gene = gene.split('|')
+                        gene = gene[1].split(':')[1]
+                        genes.append(gene)
+                    except IndexError:
+                        continue
+
+                if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                    _id = build_regulatory_region_id(chr, start, end)
+                    _props = {}
+                    for gene in genes:
+                        if self.write_properties and self.add_provenance:
+                            _props['source'] = self.source
+                            _props['source_url'] = self.source_url
+                        yield gene, _id, self.label, _props

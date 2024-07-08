@@ -43,7 +43,9 @@ class PrologWriter:
                         label = self.sanitize_text(v["input_label"])
                         source_type = self.sanitize_text(v["source"])
                         target_type = self.sanitize_text(v["target"])
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower()}
+                    output_label = v.get("output_label", None)
+                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower(),
+                                                           "output_label": output_label.lower() if output_label is not None else None}
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -128,11 +130,18 @@ class PrologWriter:
         omit_chars = ["(", ")", "+", "."]
         if isinstance(prop, str):
             for c in replace_chars:
-                prop = prop.replace(c, "_")
+                prop = prop.replace(c, "_").lower()
             for c in omit_chars:
-                prop = prop.replace(c, "")
-            
-        return prop.lower()
+                prop = prop.replace(c, "").lower()
+            try:
+                float(prop)
+                return prop # It's a numeric string, return as is
+            except ValueError:
+                # Check if the first character is a digit
+                if prop[0].isdigit():
+                    return f"'{prop}'"
+        
+        return prop
 
     def get_parent(self, G, node):
         """
