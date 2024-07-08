@@ -34,7 +34,7 @@ transcribed_to:
       type: transcribed to
       label: transcribed_to
 
-  outdir: gencode
+  outdir: gencode/transcript
   nodes: False
   edges: True
 
@@ -47,7 +47,7 @@ transcribed_from:
       type: transcribed from
       label: transcribed_from
 
-  outdir: gencode
+  outdir: gencode/transcript
   nodes: False
   edges: True
 
@@ -226,6 +226,17 @@ tadmap:
   nodes: True
   edges: False
 
+tadmap_gene:
+  adapter:
+    module: biocypher_metta.adapters.tadmap_adapter
+    cls: TADMapAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tadmap/TADMap_geneset_hs.csv
+      label: in_tad_region
+
+  outdir: tadmap
+  nodes: False
+  edges: True
 
 gtex_eqtl:
   adapter:
