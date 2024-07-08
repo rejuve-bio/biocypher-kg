@@ -278,6 +278,17 @@ clo:
     clo_definition: str
     clo_synonyms: str[]
 
+# Cell Ontology
+cl:
+  is_a: ontology term
+  represented_as: node
+  input_label: cl
+  properties:
+    cl_id: str
+    cl_name: str
+    cl_definition: str
+    cl_synonyms: str[]
+
 motif:
   represented_as: node
   is_a: epigenomic feature
@@ -450,6 +461,52 @@ post translational interaction:
 # ---
 # annotation
 
+has part:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: has_part
+  source: ontology term
+  target: ontology term
+
+part of:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: part_of
+  source: ontology term
+  target: ontology term
+
+subclass of:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: subclass_of
+  source: ontology term
+  target: ontology term
+  properties:
+    rel_type: str
+
+cl capable of:
+  is_a: annotation
+  represented_as: edge
+  input_label: cl_capable_of
+  output_label: capable_of
+  description: >-
+    Represents a functional capability relationship between a CL term and a GO term.
+  source: cl
+  target: go
+
+cl part of:
+  is_a: part of
+  represented_as: edge
+  input_label: cl_part_of
+  output_label: part_of
+  description: >-
+    Represents a part-whole relationship between a CL term and an UBERON term.
+  source: cl
+  target: uberon
+
 gene to pathway association:
   description: >-
     An interaction between a gene or gene product and a biological process or pathway.
@@ -480,38 +537,35 @@ child pathway of:
     source: pathway
     target: pathway
 
-# Subtype relationships
-subtype_of:
-  is_a: annotation
+uberon subclass of:
+  is_a: subclass of
   represented_as: edge
-  input_label: subtype_of
-  source: ontology term
-  target: ontology term
-  description: >-
-    Represents the subtype relationship between two ontology terms,
-    where the source term is a subtype of the target term.
-
-uberon_subtype_of:
-  is_a: subtype_of
-  represented_as: edge
-  input_label: uberon_subtype_of
-  output_label: subtype_of
+  input_label: uberon_subclass_of
+  output_label: subclass_of
   source: uberon
   target: uberon
 
-clo_subtype_of:
-  is_a: subtype_of
+clo subclass of:
+  is_a: subclass of
   represented_as: edge
-  input_label: clo_subtype_of
-  output_label: subtype_of
+  input_label: clo_subclass_of
+  output_label: subclass_of
   source: clo
   target: clo
 
-go_subtype_of:
-  is_a: subtype_of
+cl subclass of:
+  is_a: subclass of
   represented_as: edge
-  input_label: go_subtype_of
-  output_label: subtype_of
+  input_label: cl_subclass_of
+  output_label: subclass_of
+  source: cl
+  target: cl
+
+go subclass of:
+  is_a: subclass of
+  represented_as: edge
+  input_label: go_subclass_of
+  output_label: subclass_of
   source: go
   target: go
 
@@ -548,35 +602,6 @@ go rna:
   output_label: belongs_to
   source: non coding rna
   target: go
-
-ontology has part:
-  is_a: annotation
-  inherit_properties: true
-  represented_as: edge
-  input_label: ontology_has_part
-  output_label: has_part
-  source: ontology term
-  target: ontology term
-
-ontology part of:
-  is_a: annotation
-  inherit_properties: true
-  represented_as: edge
-  input_label: ontology_part_of
-  output_label: part_of
-  source: ontology term
-  target: ontology term
-
-ontology subclass of:
-  is_a: annotation
-  inherit_properties: true
-  represented_as: edge
-  input_label: ontology_subclass_of
-  output_label: subclass_of
-  source: ontology term
-  target: ontology term
-  properties:
-    rel_type: str
 
 # ---
 # regulatory association

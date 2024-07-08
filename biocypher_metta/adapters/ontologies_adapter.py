@@ -23,19 +23,19 @@ class OntologyAdapter(Adapter):
     PREDICATES = [SUBCLASS, DB_XREF]
     RESTRICTION_PREDICATES = [HAS_PART, PART_OF]
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False):
+    def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False, add_description=False):
         self.type = type
         self.label = label
         self.dry_run = dry_run
         self.graph = None
         self.cache = {}
         self.ontology = ontology
+        self.add_description = add_description
 
         # Set source and source_url based on the ontology
         self.source, self.source_url = self.get_ontology_source()
 
         super(OntologyAdapter, self).__init__(write_properties, add_provenance)
-    
     @abstractmethod
     def get_ontology_source(self):
         """
@@ -70,14 +70,16 @@ class OntologyAdapter(Adapter):
             term_id = OntologyAdapter.to_key(node)
             # 'uri': str(node),
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
-            description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
             synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
 
             props = {}
             if self.write_properties:
                 props['term_name'] = term_name
-                props['description'] = description
                 props['synonyms'] = synonyms
+
+                if self.add_description:
+                    description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
+                    props['description'] = description
 
                 if self.add_provenance:
                     props['source'] = self.source
