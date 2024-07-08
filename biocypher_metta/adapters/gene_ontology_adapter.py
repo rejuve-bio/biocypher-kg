@@ -5,8 +5,8 @@ class GeneOntologyAdapter(OntologyAdapter):
         'go': 'http://purl.obolibrary.org/obo/go.owl'
     }
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='go', dry_run=False):        
-        super(GeneOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run)
+    def __init__(self, write_properties, add_provenance, ontology, type, label='go', dry_run=False, add_description=False):        
+        super(GeneOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description)
 
     def get_ontology_source(self):
         """
