@@ -796,3 +796,16 @@ gene in tad region:
   input_label: in_tad_region
   source: gene
   target: tad
+
+activity by contact:
+  description: >-
+    An association between a variant in a regulatory region and a gene it predicted by the ABC model (Fulco et.al 2019)
+  is_a: regulatory association
+  inherit_properties: true
+  represented_as: edge
+  input_label: activity_by_contact
+  source: snp
+  target: gene
+  properties:
+    score: float
+    biological_context: str
