@@ -1,7 +1,7 @@
 import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher._logger import logger
-
+from biocypher_metta.adapters.helpers import to_float
 # Example fabian variant tsv input file:
 # description of each column can be found in the link below:
 # https://www.genecascade.org/fabian/documentation#download-format
@@ -51,7 +51,7 @@ class FabianAdapter(Adapter):
                 props = {}
                 if self.write_properties:
                     props['effect'] = effect
-                    props['score'] = score
+                    props['score'] = to_float(score)
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url

@@ -2,7 +2,7 @@ import gzip
 import os
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
 # Example enhancer atlas input file:
 # enhancer signal - enrichment score calculated as the combination of enrichment scores from individual tracks.
@@ -93,7 +93,7 @@ class EnhancerAtlasAdapter(Adapter):
                         chr, start, end, gene = self.parse_enhancer_gene(line)
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             enhancer_region_id = build_regulatory_region_id(chr, start, end)
-                            score = float(info[1])
+                            score = to_float(info[1])
                             props = {}
                             if self.write_properties:
                                 props['biological_context'] = biological_context
