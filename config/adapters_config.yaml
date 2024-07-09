@@ -265,8 +265,8 @@ hocomoco:
 
 roadmap_chromatin_state:
   adapter:
-    module: biocypher_metta.adapters.roadmap_adapter
-    cls: RoadMapAdapter
+    module: biocypher_metta.adapters.roadmap_state_adapter
+    cls: RoadMapChromatinStateAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/chromatin_state
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
@@ -275,13 +275,13 @@ roadmap_chromatin_state:
       start: 53000000
       end: 56000000
   outdir: roadmap
-  nodes: True
-  edges: False
+  nodes: False
+  edges: True
 
 roadmap_h3_mark:
   adapter:
-    module: biocypher_metta.adapters.roadmap_adapter
-    cls: RoadMapAdapter
+    module: biocypher_metta.adapters.roadmap_h3_marks_adapter
+    cls: RoadMapH3MarkAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/h3_marks
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
@@ -290,23 +290,23 @@ roadmap_h3_mark:
       start: 53000000
       end: 56000000
   outdir: roadmap
-  nodes: True
-  edges: False
+  nodes: False
+  edges: True
 
 roadmap_dhs:
   adapter:
-    module: biocypher_metta.adapters.roadmap_adapter
-    cls: RoadMapAdapter
+    module: biocypher_metta.adapters.roadmap_dhs_adapter
+    cls: RoadMapDHSAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/dhs
+      filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None
       chr: chr16
       start: 53000000
       end: 56000000
   outdir: roadmap
-  nodes: True
-  edges: False
+  nodes: False
+  edges: True
 
 abc:
   adapter:
