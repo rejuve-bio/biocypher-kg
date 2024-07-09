@@ -685,7 +685,7 @@ gtex variant to gene expression association:
   is_a: related to at instance level
   represented_as: edge
   input_label: gtex_variant_gene
-  output_label: correlates_with
+  output_label: eqtl_association
   source: snp
   target: gene
   properties:
