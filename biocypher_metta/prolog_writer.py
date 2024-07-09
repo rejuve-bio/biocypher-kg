@@ -117,22 +117,26 @@ class PrologWriter:
                 for i, e in enumerate(v):
                     prop += f'{self.sanitize_text(e)}'
                     if i != len(v) - 1: prop += ","
-                prop += "]."
+                prop += "]"
+                out_str.append(f'{k}({def_out}, {prop}).')
             elif isinstance(v, dict):
                 prop = f"{k}({def_out})."
                 out_str.extend(self.write_property(prop, v))
             else:
-                out_str.append(f'{k}({def_out}, {self.sanitize_text(v)}).')
+                prop = self.sanitize_text(v)
+                if prop is not None:
+                    out_str.append(f'{k}({def_out}, {prop}).')
         return out_str
 
     def sanitize_text(self, prop):
         replace_chars = [" ", "-", ":"]
         omit_chars = ["(", ")", "+", "."]
-        if isinstance(prop, str):
+        if isinstance(prop, str):        
             for c in replace_chars:
                 prop = prop.replace(c, "_").lower()
             for c in omit_chars:
-                prop = prop.replace(c, "").lower()
+                prop = prop.replace(c, "").lower()         
+            prop = prop.strip("_")
             try:
                 float(prop)
                 return prop # It's a numeric string, return as is
@@ -140,6 +144,8 @@ class PrologWriter:
                 # Check if the first character is a digit
                 if prop[0].isdigit():
                     return f"'{prop}'"
+            if prop == "":
+                return None
         
         return prop
 
