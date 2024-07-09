@@ -51,7 +51,7 @@ class RefSeqClosestGeneAdapter(Adapter):
                             if self.write_properties:
                                 props['chr'] = chr
                                 props['pos'] = pos
-                                props['distance'] = distance
+                                props['distance'] = int(distance)
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
