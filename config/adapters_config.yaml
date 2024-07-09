@@ -714,3 +714,55 @@ fabian_tf_snp:
   outdir: fabian
   nodes: False
   edges: True
+
+experimental_factor_ontology:
+  adapter:
+    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
+    cls: ExperimentalFactorOntologyAdapter
+    args:
+      ontology: 'efo'
+      type: node
+      dry_run: False
+      add_description: False
+  outdir: experimental_factor_ontology
+  nodes: True
+  edges: False
+
+efo_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
+    cls: ExperimentalFactorOntologyAdapter
+    args:
+      ontology: 'efo'
+      label: efo_subclass_of
+      type: edge
+      dry_run: False
+  outdir: experimental_factor_ontology
+  nodes: False
+  edges: True
+
+brenda_tissue_ontology:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: 'bto'
+      type: node
+      dry_run: False
+      add_description: False
+  outdir: brenda_tissue_ontology
+  nodes: True
+  edges: False
+
+bto_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: 'bto'
+      label: bto_subclass_of
+      type: edge
+      dry_run: False
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
