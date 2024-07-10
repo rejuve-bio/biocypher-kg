@@ -37,7 +37,7 @@ class RoadMapDHSAdapter(Adapter):
         self.source_url = "https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz" # {0-9} indicates this dataset is split into 10 parts
         self.label = "in_dnase_I_hotspot"
 
-        super(RoadMapAdapter, self).__init__(write_properties, add_provenance)
+        super(RoadMapDHSAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
         with gzip.open(self.filepath, "rt") as fp:
@@ -56,7 +56,7 @@ class RoadMapDHSAdapter(Adapter):
                             print(f"{tissue} not found in ontology map skipping...")
                             continue
                         
-                        _source = _id,
+                        _source = _id
                         _target = biological_context
 
                         if self.write_properties and self.add_provenance:
