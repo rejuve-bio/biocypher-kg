@@ -246,6 +246,8 @@ regulatory region:
 
 # ---
 # ontologies
+
+# Gene Ontology
 go:
   is_a: ontology term
   represented_as: node
@@ -288,6 +290,28 @@ cl:
     cl_name: str
     cl_definition: str
     cl_synonyms: str[]
+
+# Experimental Factor Ontology
+efo:
+  is_a: ontology term
+  represented_as: node
+  input_label: efo
+  properties:
+    efo_id: str
+    efo_name: str
+    efo_definition: str
+    efo_synonyms: str[]
+
+# BRENDA Tissue Ontology
+bto:
+  is_a: ontology term
+  represented_as: node
+  input_label: bto
+  properties:
+    bto_id: str
+    bto_name: str
+    bto_definition: str
+    bto_synonyms: str[]
 
 motif:
   represented_as: node
@@ -509,6 +533,22 @@ child pathway of:
     input_label: child_pathway_of
     source: pathway
     target: pathway
+
+bto subclass of:
+  is_a: subclass of
+  represented_as: edge
+  input_label: bto_subclass_of
+  output_label: subclass_of
+  source: bto
+  target: bto
+
+efo subclass of:
+  is_a: subclass of
+  represented_as: edge
+  input_label: efo_subclass_of
+  output_label: subclass_of
+  source: efo
+  target: efo
 
 uberon subclass of:
   is_a: subclass of
