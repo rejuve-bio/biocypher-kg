@@ -786,7 +786,6 @@ activity by contact:
 chromatin state:
   is_a: related to at instance level
   represented_as: edge
-  inherit_properties: true
   input_label: chromatin_state
   source: snp
   target: uberon #TODO replace by cell ontology
@@ -798,7 +797,6 @@ dnase I hotspot:
   description: >-
     A region of chromatin that is sensitive to cleavage by the enzyme DNase I
   represented_as: edge
-  inherit_properties: true
   input_label: in_dnase_I_hotspot
   source: snp
   target: uberon #TODO replace by cell ontology
@@ -808,7 +806,6 @@ histone modification:
   description: >-
     A post-translational modification of histone proteins e.g methylation, acetylation, phosphorylation
   represented_as: edge
-  inherit_properties: true
   input_label: histone_modification
   source: snp
   target: uberon #TODO replace by cell ontology
