@@ -39,7 +39,7 @@ class RoadMapH3MarkAdapter(Adapter):
         self.source_url = "https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz" # {0-9} indicates this dataset is split into 10 parts
         self.label = "histone_modification"
 
-        super(RoadMapAdapter, self).__init__(write_properties, add_provenance)
+        super(RoadMapH3MarkAdapter, self).__init__(write_properties, add_provenance)
 
 
     def get_edges(self):
