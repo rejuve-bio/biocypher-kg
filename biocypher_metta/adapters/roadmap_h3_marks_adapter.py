@@ -71,5 +71,5 @@ class RoadMapH3MarkAdapter(Adapter):
                             yield _source, _target, self.label, _props
 
                     except Exception as e:
-                        # print(f"error while parsing row: {row}, error: {e} skipping...")
+                        print(f"error while parsing row: {row}, error: {e} skipping...")
                         continue
