@@ -14,8 +14,8 @@ import gzip
 # rs1000000,RP5-944M2.2,ENSG00000256927,ENSG00000256927.1,-19556,G,A,1,114,127,0.208197,-0.322815,0.0769928,3.8271e-05,4.79365e-05,4.31358e-07,0.00132434,Pancreas.v8.signif_variant_gene_pairs.txt,chr12,126406434,chr12_126890980_G_A_b37,chr12_126406434_G_A_b38
 # rs10000003,HOPX,ENSG00000171476,ENSG00000171476.21,13582,A,G,1,182,215,0.288978,-0.172247,0.0417549,4.79443e-05,7.32855e-05,2.30038e-09,1.36078e-05,Heart_Atrial_Appendage.v8.signif_variant_gene_pairs.txt,chr4,56695481,chr4_57561647_A_G_b37,chr4_56695481_A_G_b38
 
-COL_DICT = {"rsid": 0, "gene_id": 2, "maf": 9, "slope": 10, 
-               "p_val": 12, "tissue": 16, "chr": 17, "pos": 18}
+COL_DICT = {"rsid": 0, "gene_id": 2, "maf": 10, "slope": 11, 
+               "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
 
 class GTExEQTLAdapter(Adapter):
     # 1-based coordinate system
