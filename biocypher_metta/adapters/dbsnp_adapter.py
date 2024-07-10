@@ -58,10 +58,8 @@ class DBSNPAdapter(Adapter):
                         props['ref'] = ref
                         props['alt'] = alt
                         if caf != None:
-                            props['caf_ref'] = caf[0] if caf[0] != '.' else '0'
-                            props['caf_alt'] = caf[1] if caf[1] != '.' else '0'
-                            props['caf_ref'] = to_float(caf[0])
-                            props['caf_alt'] = to_float(caf[1])
+                            props['caf_ref'] = to_float(caf[0] if caf[0] != '.' else '0')
+                            props['caf_alt'] = to_float(caf[1] if caf[1] != '.' else '0')
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
