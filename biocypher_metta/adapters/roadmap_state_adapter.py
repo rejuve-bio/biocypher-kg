@@ -37,7 +37,7 @@ class RoadMapChromatinStateAdapter(Adapter):
         self.source_url = "https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz" # {0-9} indicates this dataset is split into 10 parts
         self.label = "chromatin_state"
 
-        super(RoadMapAdapter, self).__init__(write_properties, add_provenance)
+        super(RoadMapChromatinStateAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
         for file_name in os.listdir(self.filepath):
@@ -57,14 +57,13 @@ class RoadMapChromatinStateAdapter(Adapter):
                                 print(f"{tissue} not found in ontology map skipping...")
                                 continue
                             
-                            _source = _id,
+                            _source = _id
                             _target = biological_context
                             if self.write_properties:
                                 _props["state"] = row[COL_DICT['datatype']]
                                 if self.add_provenance:
                                     _props['source'] = self.source
                                     _props['source_url'] = self.source_url
-                                    
                             yield _source, _target, self.label, _props
 
                     except Exception as e:
