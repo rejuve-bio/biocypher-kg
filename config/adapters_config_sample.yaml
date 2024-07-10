@@ -271,7 +271,7 @@ roadmap_chromatin_state:
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None
 
-  outdir: roadmap
+  outdir: roadmap/chromatin_state
   nodes: False
   edges: True
 
@@ -284,7 +284,7 @@ roadmap_h3_mark:
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None
 
-  outdir: roadmap
+  outdir: roadmap/h3_mark
   nodes: False
   edges: True
 
@@ -297,7 +297,7 @@ roadmap_dhs:
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None
 
-  outdir: roadmap
+  outdir: roadmap/dhs
   nodes: False
   edges: True
 
