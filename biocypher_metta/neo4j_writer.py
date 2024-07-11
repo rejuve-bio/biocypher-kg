@@ -25,36 +25,37 @@ class Neo4jWriter:
         self.excluded_properties = []
 
     def create_edge_types(self):
-            schema = self.bcy._get_ontology_mapping()._extend_schema()
-            self.edge_node_types = {}
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        self.edge_node_types = {}
 
-            for k, v in schema.items():
-                if (
-                    v["represented_as"] == "edge"
-                ):  # (: (label $x $y) (-> source_type target_type
-                    edge_type = self.convert_input_labels(k)
-                    source_type = v.get("source", None)
-                    target_type = v.get("target", None)
+        for k, v in schema.items():
+            if (
+                v["represented_as"] == "edge"
+            ):  # (: (label $x $y) (-> source_type target_type
+                edge_type = self.convert_input_labels(k)
+                source_type = v.get("source", None)
+                target_type = v.get("target", None)
 
-                    if source_type is not None and target_type is not None:
-                        # ## TODO fix this in the scheme config
-                        if isinstance(v["input_label"], list):
-                            label = self.convert_input_labels(v["input_label"][0])
-                            source_type = self.convert_input_labels(source_type[0])
-                            target_type = self.convert_input_labels(target_type[0])
-                        else:
-                            label = self.convert_input_labels(v["input_label"])
-                            source_type = self.convert_input_labels(source_type)
-                            target_type = self.convert_input_labels(target_type)
-                        output_label = v.get("output_label", None)
+                if source_type is not None and target_type is not None:
+                    # ## TODO fix this in the scheme config
+                    if isinstance(v["input_label"], list):
+                        label = self.convert_input_labels(v["input_label"][0])
+                        source_type = self.convert_input_labels(source_type[0])
+                        target_type = self.convert_input_labels(target_type[0])
+                    else:
+                        label = self.convert_input_labels(v["input_label"])
+                        source_type = self.convert_input_labels(source_type)
+                        target_type = self.convert_input_labels(target_type)
+                    output_label = v.get("output_label", None)
 
-                        self.edge_node_types[label.lower()] = {
-                            "source": source_type.lower(),
-                            "target": target_type.lower(),
-                            "output_label": (
-                                output_label.lower() if output_label is not None else None
-                            ),
-                        }
+                    self.edge_node_types[label.lower()] = {
+                        "source": source_type.lower(),
+                        "target": target_type.lower(),
+                        "output_label": (
+                            output_label.lower() if output_label is not None else None
+                        ),
+                    }
+
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
             file_path = f"{self.output_path}/{path_prefix}/nodes.cypher"
@@ -90,7 +91,7 @@ class Neo4jWriter:
                 f.write(query + "\n")
 
         logger.info("Finished writing out edges")
-    
+
     def write_node(self, node):
         id, label, properties = node
         if "." in label:
@@ -98,8 +99,8 @@ class Neo4jWriter:
         label = label.lower()
         id = id.lower()
         properties_str = self._format_properties(properties)
-        return f"CREATE (:{label} {{id: '{id}',{properties_str}}})"
-    
+        return f'CREATE (:{label} {{id: "{id}", {properties_str}}})'
+
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         label = label.lower()
@@ -112,11 +113,13 @@ class Neo4jWriter:
             label = output_label
         properties_str = self._format_properties(properties)
         return (
-            f'MATCH (a:{source_type}), (b:{target_type}) '
+            f"MATCH (a:{source_type}) "
+            f"WITH a "
+            f"MATCH (b:{target_type}) "
             f'WHERE a.id = "{source_id}" AND b.id = "{target_id}" '
-            f'CREATE (a)-[:{label} {{ {properties_str} }}]->(b)'
+            f"CREATE (a)-[:{label} {{ {properties_str} }}]->(b);"
         )
-    
+
     def _format_properties(self, properties):
         """
         Format properties into a Cypher string.
@@ -132,7 +135,7 @@ class Neo4jWriter:
             elif isinstance(v, dict):
                 prop = self._format_properties(v)
             else:
-                prop = f"'{v}'"
+                prop = f'"{v}"'
             out_str.append(f"{k}: {prop}")
         return ", ".join(out_str)
 
@@ -156,4 +159,3 @@ class Neo4jWriter:
 
     def summary(self):
         self.bcy.summary()
-
