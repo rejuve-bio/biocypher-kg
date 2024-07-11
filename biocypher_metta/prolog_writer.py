@@ -137,6 +137,12 @@ class PrologWriter:
             for c in omit_chars:
                 prop = prop.replace(c, "").lower()         
             prop = prop.strip("_")
+            if prop == "":
+                return None
+            prop_list = prop.split(',')
+            prop_list = [p.strip('_') for p in prop_list]
+            prop = ",".join(prop_list)
+        
             try:
                 float(prop)
                 return prop # It's a numeric string, return as is
@@ -144,9 +150,10 @@ class PrologWriter:
                 # Check if the first character is a digit
                 if prop[0].isdigit():
                     return f"'{prop}'"
-            if prop == "":
-                return None
-        
+        elif isinstance(prop, list):
+            for i in range(len(prop)):
+                prop[i] = self.sanitize_text(prop[i])
+            prop.remove(None)
         return prop
 
     def get_parent(self, G, node):
