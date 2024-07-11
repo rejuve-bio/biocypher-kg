@@ -72,6 +72,24 @@ class Neo4jWriter:
                 f.write(query + "\n")
 
         logger.info("Finished writing out nodes")
+
+    def write_edges(self, edges, path_prefix=None, create_dir=True):
+        if path_prefix is not None:
+            file_path = f"{self.output_path}/{path_prefix}/edges.cypher"
+            if create_dir:
+                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
+                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(
+                        parents=True, exist_ok=True
+                    )
+        else:
+            file_path = f"{self.output_path}/edges.cypher"
+
+        with open(file_path, "a") as f:
+            for edge in edges:
+                query = self.write_edge(edge)
+                f.write(query + "\n")
+
+        logger.info("Finished writing out edges")
     
     def write_node(self, node):
         id, label, properties = node
@@ -81,6 +99,23 @@ class Neo4jWriter:
         id = id.lower()
         properties_str = self._format_properties(properties)
         return f"CREATE (:{label} {{id: '{id}',{properties_str}}})"
+    
+    def write_edge(self, edge):
+        source_id, target_id, label, properties = edge
+        label = label.lower()
+        source_id = source_id.lower()
+        target_id = target_id.lower()
+        source_type = self.edge_node_types[label]["source"]
+        target_type = self.edge_node_types[label]["target"]
+        output_label = self.edge_node_types[label]["output_label"]
+        if output_label is not None:
+            label = output_label
+        properties_str = self._format_properties(properties)
+        return (
+            f'MATCH (a:{source_type}), (b:{target_type}) '
+            f'WHERE a.id = "{source_id}" AND b.id = "{target_id}" '
+            f'CREATE (a)-[:{label} {{ {properties_str} }}]->(b)'
+        )
     
     def _format_properties(self, properties):
         """
@@ -93,7 +128,7 @@ class Neo4jWriter:
             if k in self.excluded_properties or v is None or v == "":
                 continue
             if isinstance(v, list):
-                prop = "[" + ", ".join(f"'{e}'" for e in v) + "]"
+                prop = "[" + ", ".join(f'"{e}"' for e in v) + "]"
             elif isinstance(v, dict):
                 prop = self._format_properties(v)
             else:
@@ -116,4 +151,9 @@ class Neo4jWriter:
         """
         return nx.dfs_preorder_nodes(G, node, depth_limit=2)
 
+    def show_ontology_structure(self):
+        self.bcy.show_ontology_structure()
+
+    def summary(self):
+        self.bcy.summary()
 
