@@ -161,7 +161,7 @@ go_subclass_of:
       type: edge
       dry_run: False
 
-  outdir: gene_onotology
+  outdir: gene_ontology
   nodes: False
   edges: True
 

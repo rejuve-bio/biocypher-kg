@@ -139,9 +139,10 @@ class PrologWriter:
             prop = prop.strip("_")
             if prop == "":
                 return None
-            prop_list = prop.split(',')
-            prop_list = [p.strip('_') for p in prop_list]
-            prop = ",".join(prop_list)
+
+            # strips '_' each string separated by comma
+            # 'abc,__fg,___,_x' ===> 'abc,fg,x'
+            prop = ",".join([p.strip('_') for p in prop.split(',') if p.strip('_') != ""])
         
             try:
                 float(prop)
@@ -153,7 +154,7 @@ class PrologWriter:
         elif isinstance(prop, list):
             for i in range(len(prop)):
                 prop[i] = self.sanitize_text(prop[i])
-            prop.remove(None)
+            prop = [p for p in prop if p != None]
         return prop
 
     def get_parent(self, G, node):
