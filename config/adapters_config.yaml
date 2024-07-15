@@ -147,7 +147,7 @@ go_ontology_terms:
       dry_run: False
       add_description: False
 
-  outdir: gene_onotology
+  outdir: gene_ontology
   nodes: True
   edges: False
 
@@ -161,7 +161,7 @@ go_subclass_of:
       type: edge
       dry_run: False
 
-  outdir: gene_onotology
+  outdir: gene_ontology
   nodes: False
   edges: True
 
@@ -561,7 +561,7 @@ dbsuper_super_enhancer_regulates_gene:
   nodes: False
   edges: True
 
-  dbsnp_snps:
+dbsnp_snps:
   adapter:
     module: biocypher_metta.adapters.dbsnp_adapter
     cls: DBSNPAdapter
