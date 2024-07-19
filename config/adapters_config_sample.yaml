@@ -709,3 +709,13 @@ bto_subclass_of:
   outdir: brenda_tissue_ontology
   nodes: False
   edges: True
+
+bgee_gene_expressed_in_anatomical_entity:
+  adapter:
+    module: biocypher_metta.adapters.bgee_adapter
+    cls: BgeeAdapter
+    args:
+      filepath: ./samples/Homo_sapiens_expr_sample.tsv.gz
+  outdir: bgee
+  nodes: False
+  edges: True
