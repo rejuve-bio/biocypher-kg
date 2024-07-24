@@ -11,7 +11,7 @@ from biocypher_metta.adapters.helpers import to_float
 # ENSG00000000003	"TSPAN6"	CL:0000089 ∩ UBERON:0000473	"male germ line stem cell (sensu Vertebrata) in testis"	UBERON:0000104	"life cycle"	male	wild-type	present	gold quality	5.212829496997609E-8	86.11	6.48e3
 
 class BgeeAdapter(Adapter):
-    INDEX = {'gene': 0, 'anatomical_entity': 2, 'expression_score': 11}
+    INDEX = {'gene': 0, 'anatomical_entity': 2, 'expression': 8, 'fdr': 10, 'expression_score': 11}
     def __init__(self, filepath, write_properties, add_provenance):
         self.filepath = filepath
         self.label = 'expressed_in'
@@ -25,12 +25,16 @@ class BgeeAdapter(Adapter):
             next(f) # skip header
             for line in f:
                 data = line.split('\t')
+                if data[BgeeAdapter.INDEX['expression']] != 'present':
+                    continue
                 gene = data[BgeeAdapter.INDEX['gene']]
                 anatomical_entities = data[BgeeAdapter.INDEX['anatomical_entity']].split(' ∩ ')
                 score = data[BgeeAdapter.INDEX['expression_score']]
+                p_value = data[BgeeAdapter.INDEX['fdr']]
                 props = {}
                 if self.write_properties:
-                    props['score'] = to_float(score)
+                    props['score'] = to_float(score) 
+                    props['p_value'] = to_float(p_value)
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
