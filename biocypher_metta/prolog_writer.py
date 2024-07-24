@@ -149,13 +149,13 @@ class PrologWriter:
             for c in omit_chars:
                 prop = prop.replace(c, "").lower()         
             prop = prop.strip("_")
+            # sanitizes each string separated by comma ','
+            if "," in prop:
+                prop = ",".join([self.sanitize_text(p) for p in prop.split(',') if self.sanitize_text(p) not in ["", None]])
+            # removes multiple under scores '_'
+            prop = "_".join([p for p in prop.split('_') if p != ""])
             if prop == "":
                 return None
-
-            # strips '_' each string separated by comma
-            # 'abc,__fg,___,_x' ===> 'abc,fg,x'
-            prop = ",".join([p.strip('_') for p in prop.split(',') if p.strip('_') != ""])
-        
             try:
                 float(prop)
                 return prop # It's a numeric string, return as is
