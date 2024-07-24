@@ -15,26 +15,6 @@ position entity:
     start: int
     end: int
 
-anatomical entity:
-  is_a: biological entity
-  description: >-
-    A subcellular location, cell type or gross anatomical part
-  exact_mappings:
-    - UBERON:0001062
-    - WIKIDATA:Q4936952
-      # UMLS Semantic Group "Anatomy"
-    - UMLSSG:ANAT
-      # UMLS Semantic Type "Anatomical Structure"
-    - STY:T017
-    - FMA:62955  # anatomical entity
-    - CARO:0000000   # anatomical entity
-    - SIO:001262  # anatomical entity
-    - STY:T029  # Body Location or Region
-    - STY:T030  # Body Space or Junction
-  id_prefixes:
-    - UBERON
-    - CL
-    - CLO
 
 coding element:
   represented_as: node
@@ -484,9 +464,10 @@ expressed in:
   represented_as: edge
   input_label: expressed_in
   source: gene
-  target: anatomical entity
+  target: ontology term
   properties:
     score: float
+    p_value: float
 
 # ---
 # annotation
