@@ -458,7 +458,7 @@ post translational interaction:
 
 expressed in:
   description: >-
-      holds between a gene and an anatomical entity in which it is expressed
+      holds between a gene and an ontology term in which it is expressed
   is_a: expression
   inherit_properties: true
   represented_as: edge
