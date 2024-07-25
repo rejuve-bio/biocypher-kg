@@ -2,6 +2,7 @@
 Knowledge graph generation through BioCypher script
 """
 from biocypher_metta.metta_writer import *
+from biocypher_metta.prolog_writer import PrologWriter
 from biocypher._logger import logger
 import typer
 import yaml
@@ -11,12 +12,26 @@ import pickle
 
 app = typer.Typer()
 
+# Function to choose the writer class based on user input
+def get_writer(writer_type: str, output_dir: pathlib.Path):
+    if writer_type == 'metta':
+        return MeTTaWriter(schema_config="config/schema_config.yaml",
+                           biocypher_config="config/biocypher_config.yaml",
+                           output_dir=output_dir)
+    elif writer_type == 'prolog':
+        return PrologWriter(schema_config="config/schema_config.yaml",
+                            biocypher_config="config/biocypher_config.yaml",
+                            output_dir=output_dir)
+    else:
+        raise ValueError(f"Unknown writer type: {writer_type}")
+
 # Run build
 @app.command()
 def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=False, dir_okay=True)],
          adapters_config: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_rsids: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_pos: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
     """
@@ -30,10 +45,10 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
     logger.info("Loading dbsnp pos map")
     dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
 
+    # Choose the writer based on user input or default to 'metta'
+    bc = get_writer(writer_type, output_dir)
 
-    bc = MeTTaWriter(schema_config="config/schema_config.yaml",
-                     biocypher_config="config/biocypher_config.yaml",
-                     output_dir=output_dir)
+    logger.info(f"Using {writer_type} writer")
 
     # bc.show_ontology_structure()
 

@@ -15,6 +15,7 @@ position entity:
     start: int
     end: int
 
+
 coding element:
   represented_as: node
   is_a: position entity
@@ -454,6 +455,19 @@ post translational interaction:
   target: protein
   properties:
     score: float
+
+expressed in:
+  description: >-
+      holds between a gene and an ontology term in which it is expressed
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: expressed_in
+  source: gene
+  target: ontology term
+  properties:
+    score: float
+    p_value: float
 
 # ---
 # annotation
