@@ -104,6 +104,10 @@ class PrologWriter:
         source_id = self.sanitize_text(source_id)
         target_id = self.sanitize_text(target_id)
         label = self.sanitize_text(label)
+        if source_type == "ontology_term":
+            source_type = source_id.split('_')[0]
+        if target_type == "ontology_term":
+            target_type = target_id.split('_')[0]
         def_out = f"{label}({source_type}({source_id}), {target_type}({target_id}))"
         return self.write_property(def_out, properties)
 
@@ -112,7 +116,15 @@ class PrologWriter:
         out_str = [f"{def_out}."]
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
-            if isinstance(v, list):
+            if k == 'biological_context':
+                try:
+                    prop = self.sanitize_text(v)
+                    ontology = prop.split('_')[0]
+                    out_str.append(f'{k}({def_out}, {ontology}({prop})).')
+                except Exception as e:
+                    print(f"An error occurred while processing the biological context '{v}': {e}.")
+                    continue
+            elif isinstance(v, list):
                 prop = "["
                 for i, e in enumerate(v):
                     prop += f'{self.sanitize_text(e)}'
@@ -137,13 +149,13 @@ class PrologWriter:
             for c in omit_chars:
                 prop = prop.replace(c, "").lower()         
             prop = prop.strip("_")
+            # sanitizes each string separated by comma ','
+            if "," in prop:
+                prop = ",".join([self.sanitize_text(p) for p in prop.split(',') if self.sanitize_text(p) not in ["", None]])
+            # removes multiple under scores '_'
+            prop = "_".join([p for p in prop.split('_') if p != ""])
             if prop == "":
                 return None
-
-            # strips '_' each string separated by comma
-            # 'abc,__fg,___,_x' ===> 'abc,fg,x'
-            prop = ",".join([p.strip('_') for p in prop.split(',') if p.strip('_') != ""])
-        
             try:
                 float(prop)
                 return prop # It's a numeric string, return as is
