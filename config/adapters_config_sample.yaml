@@ -709,3 +709,14 @@ bto_subclass_of:
   outdir: brenda_tissue_ontology
   nodes: False
   edges: True
+
+polyphen2:
+  adapter:
+    module: biocypher_metta.adapters.polyphen2_adapter
+    cls: PolyPhen2Adapter
+    args:
+      filepath: ./samples/polyPhen2_sample.bed.gz
+  
+  outdir: polyphen-2
+  nodes: True
+  edges: False
