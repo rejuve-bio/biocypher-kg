@@ -1,7 +1,7 @@
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import check_genomic_location, to_float
+from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
 # Example data
 # Description for each field can be found here: http://genome.ucsc.edu/cgi-bin/hgTables
@@ -14,13 +14,13 @@ from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 class TfbsAdapter(Adapter):
     INDEX = {'chr': 1, 'start': 2, 'end': 3, 'tf': 4, 'score': 5}
     def __init__(self, write_properties, add_provenance, filepath,
-                 hgnc_to_ensembl, chr=None, start=None, end=None):
+                 hgnc_to_ensembl, label, chr=None, start=None, end=None):
         self.filepath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl, 'rb'))
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'gene'
+        self.label = label
 
         self.source = 'ENCODE'
         self.source_url = 'https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz'
@@ -33,21 +33,40 @@ class TfbsAdapter(Adapter):
                 chr = data[TfbsAdapter.INDEX['chr']]
                 start = int(data[TfbsAdapter.INDEX['start']])
                 end = int(data[TfbsAdapter.INDEX['end']])
-                tf = data[TfbsAdapter.INDEX['tf']]
-                tf_ensembl = self.hgnc_to_ensembl_map.get(tf)
-                score = data[TfbsAdapter.INDEX['score']]
+                tfbs_id = build_regulatory_region_id(chr, start, end)
                 props = {}
-                if tf_ensembl == None:
-                    continue
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     if self.write_properties:
                         props['chr'] = chr
                         props['start'] = start
                         props['end'] = end
-                        props['score'] = to_float(score) / 1000 # divide by 1000 to normalize score
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                 
-                yield tf_ensembl, self.label, props
+                yield tfbs_id, self.label, props
+    
+    def get_edges(self):
+        with gzip.open(self.filepath, 'rt') as f:
+            for line in f:
+                data = line.split('\t')
+                chr = data[TfbsAdapter.INDEX['chr']]
+                start = int(data[TfbsAdapter.INDEX['start']])
+                end = int(data[TfbsAdapter.INDEX['end']])
+                tf = data[TfbsAdapter.INDEX['tf']]
+                tf_ensembl = self.hgnc_to_ensembl_map.get(tf)
+                tfbs_id = build_regulatory_region_id(chr, start, end)
+                score = to_float(data[TfbsAdapter.INDEX['score']]) / 1000 # divide by 1000 to normalize score
+                props = {}
+                if tf_ensembl is None:
+                    continue
+
+                if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                    if self.write_properties:
+                        props['score'] = score
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                
+                yield tf_ensembl, tfbs_id, self.label, props
