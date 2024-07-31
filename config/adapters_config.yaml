@@ -776,3 +776,27 @@ bgee_gene_expressed_in_anatomical_entity:
   outdir: bgee
   nodes: False
   edges: True
+
+transcription_factor_binding_site:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+      label: tfbs
+  outdir: tfbs
+  nodes: True
+  edges: False
+
+gene_tfbs_association:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+      label: gene_tfbs
+  outdir: tfbs
+  nodes: False
+  edges: True
