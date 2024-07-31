@@ -720,3 +720,13 @@ polyphen2:
   outdir: polyphen-2
   nodes: True
   edges: False
+
+bgee_gene_expressed_in_anatomical_entity:
+  adapter:
+    module: biocypher_metta.adapters.bgee_adapter
+    cls: BgeeAdapter
+    args:
+      filepath: ./samples/Homo_sapiens_expr_sample.tsv.gz
+  outdir: bgee
+  nodes: False
+  edges: True
