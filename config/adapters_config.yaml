@@ -776,3 +776,14 @@ bgee_gene_expressed_in_anatomical_entity:
   outdir: bgee
   nodes: False
   edges: True
+
+tfbs_clustered:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+  outdir: tfbs
+  nodes: True
+  edges: False
