@@ -4,6 +4,7 @@ import pathlib
 import os
 from biocypher._logger import logger
 import networkx as nx
+import re
 
 class PrologWriter:
 
@@ -141,19 +142,29 @@ class PrologWriter:
         return out_str
 
     def sanitize_text(self, prop):
-        replace_chars = [" ", "-", ":"]
-        omit_chars = ["(", ")", "+", "."]
+        replace_chars = {
+            " ": "_",
+            "-": "_",
+            ":": "_",
+            "/": "_",
+            "–": "_",  # en dash
+            "—": "_",  # em dash
+            "&": "_",
+            ";": ","
+        }
+        
         if isinstance(prop, str):        
-            for c in replace_chars:
-                prop = prop.replace(c, "_").lower()
-            for c in omit_chars:
-                prop = prop.replace(c, "").lower()         
-            prop = prop.strip("_")
+            for char, replacement in replace_chars.items():
+                prop = prop.replace(char, replacement).lower()     
+
             # sanitizes each string separated by comma ','
             if "," in prop:
                 prop = ",".join([self.sanitize_text(p) for p in prop.split(',') if self.sanitize_text(p) not in ["", None]])
-            # removes multiple under scores '_'
-            prop = "_".join([p for p in prop.split('_') if p != ""])
+                return prop if prop != "" else None
+            
+            prop = re.sub(r'[^\w_,]', '', prop) # removes special characters except for underscores "_" and comma ","
+            prop = re.sub(r"_+", "_", prop) # removes multiple adjacent under scores '_'
+            prop.strip("_")
             if prop == "":
                 return None
             try:
