@@ -24,15 +24,15 @@ class TfbsAdapter(Adapter):
 
         self.source = 'ENCODE'
         self.source_url = 'https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz'
-        super().__init__(write_properties, add_provenance)
+        super(TfbsAdapter, self).__init__(write_properties, add_provenance)
     
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as f:
             for line in f:
                 data = line.split('\t')
                 chr = data[TfbsAdapter.INDEX['chr']]
-                start = data[TfbsAdapter.INDEX['start']]
-                end = data[TfbsAdapter.INDEX['end']]
+                start = int(data[TfbsAdapter.INDEX['start']])
+                end = int(data[TfbsAdapter.INDEX['end']])
                 tf = data[TfbsAdapter.INDEX['tf']]
                 tf_ensembl = self.hgnc_to_ensembl_map.get(tf)
                 score = data[TfbsAdapter.INDEX['score']]
@@ -46,8 +46,8 @@ class TfbsAdapter(Adapter):
                         props['start'] = start
                         props['end'] = end
                         props['score'] = to_float(score) / 1000 # divide by 1000 to normalize score
-                    if self.add_provenance:
-                        props['source'] = self.source
-                        props['source_url'] = self.source_url
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
                 
                 yield tf_ensembl, self.label, props
