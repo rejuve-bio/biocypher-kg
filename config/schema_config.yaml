@@ -245,6 +245,14 @@ regulatory region:
     biochemical_activity: str
     biological_context: str
 
+transcription binding site:
+  represented_as: node
+  input_label: tfbs
+  is_a: position entity
+  inherit_properties: true
+  description: >-
+    A region of DNA where a transcription factor binds to regulate gene expression
+
 # ---
 # ontologies
 
@@ -640,7 +648,7 @@ enhancer to gene association:
   inherit_properties: true
   represented_as: edge
   input_label: enhancer_gene
-  output_label: regulates
+  output_label: associated_with
   source: enhancer
   target: gene
   properties:
@@ -654,7 +662,7 @@ promoter to gene association:
   inherit_properties: true
   represented_as: edge
   input_label: promoter_gene
-  output_label: regulates
+  output_label: associated_with
   source: promoter
   target: gene
   properties:
@@ -668,7 +676,7 @@ super enhancer to gene association:
   inherit_properties: true
   represented_as: edge
   input_label: super_enhancer_gene
-  output_label: regulates
+  output_label: associated_with
   source: super enhancer
   target: gene
   properties:
@@ -812,6 +820,20 @@ transcription factor to snp association:
   target: snp
   properties:
     effect: str
+    score: float
+    source: str
+    source_url: str
+
+gene to transcription binding site association:
+  represented_as: edge
+  is_a: related at instance level
+  input_label: gene_tfbs
+  output_label: binds_to
+  description: >-
+    An association between a transcription factor and its binding site
+  source: gene
+  target: tfbs
+  properties:
     score: float
     source: str
     source_url: str
