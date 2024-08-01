@@ -710,6 +710,17 @@ bto_subclass_of:
   nodes: False
   edges: True
 
+polyphen2:
+  adapter:
+    module: biocypher_metta.adapters.polyphen2_adapter
+    cls: PolyPhen2Adapter
+    args:
+      filepath: ./samples/polyPhen2_sample.bed.gz
+  
+  outdir: polyphen-2
+  nodes: True
+  edges: False
+
 bgee_gene_expressed_in_anatomical_entity:
   adapter:
     module: biocypher_metta.adapters.bgee_adapter
@@ -719,6 +730,7 @@ bgee_gene_expressed_in_anatomical_entity:
   outdir: bgee
   nodes: False
   edges: True
+
 
 transcription_factor_binding_site:
   adapter:
