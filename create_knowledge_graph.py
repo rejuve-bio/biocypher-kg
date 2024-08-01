@@ -15,8 +15,8 @@ app = typer.Typer()
 @app.command()
 def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=False, dir_okay=True)],
          adapters_config: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_rsids: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_pos: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
+         dbsnp_rsids:  Annotated[pathlib.Path, typer.Option(exists=False, file_okay=True, dir_okay=False)],
+         dbsnp_pos:  Annotated[pathlib.Path, typer.Option(exists=False, file_okay=True, dir_okay=False)],
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
     """
@@ -26,9 +26,9 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
 
     # Start biocypher
     logger.info("Loading dbsnp rsids map")
-    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
+#    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
     logger.info("Loading dbsnp pos map")
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+#    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
 
 
     bc = MeTTaWriter(schema_config="config/schema_config.yaml",

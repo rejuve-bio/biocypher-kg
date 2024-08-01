@@ -2,7 +2,7 @@ import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import build_regulatory_region_id, check_genomic_location
 # Example EPD bed input file:
 ##CHRM Start  End   Id  Score Strand -  -
 # chr1 959245 959305 NOC2L_1 900 - 959245 959256

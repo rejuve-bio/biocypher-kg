@@ -3,7 +3,7 @@ import gzip
 import pickle
 
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import build_regulatory_region_id, check_genomic_location
 # Example PEREGRINE input files:
 
 # PEREGRINEenhancershg38

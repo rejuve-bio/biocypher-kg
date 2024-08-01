@@ -1,9 +1,6 @@
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_variant_id, to_float, check_genomic_location
-import json
-import os
+from biocypher_metta.adapters.hsa.helpers import build_variant_id, to_float, check_genomic_location
 import csv
-import gzip
 
 # FIELDS = ['chromosome', 'start_position',
 #      'ref_vcf', 'alt_vcf', 'aloft_value', 'aloft_description',

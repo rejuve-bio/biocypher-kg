@@ -1,10 +1,9 @@
-from collections import defaultdict
 import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
 
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, convert_genome_reference
+from biocypher_metta.adapters.hsa.helpers import build_regulatory_region_id, check_genomic_location, convert_genome_reference
 # Example dbSuper tsv input files:
 # chrom	 start	 stop	 se_id	 gene_symbol	 cell_name	 rank
 # chr1	120485363	120615071	SE_00001	NOTCH2	Adipose Nuclei	1

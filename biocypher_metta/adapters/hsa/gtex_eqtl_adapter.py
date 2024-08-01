@@ -2,7 +2,7 @@ import csv
 import os
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import to_float, check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import to_float, check_genomic_location
 from biocypher._logger import logger
 import gzip
 

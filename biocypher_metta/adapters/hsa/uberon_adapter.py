@@ -1,4 +1,4 @@
-from biocypher_metta.adapters.ontologies_adapter import OntologyAdapter
+from biocypher_metta.adapters.hsa.ontologies_adapter import OntologyAdapter
 
 class UberonAdapter(OntologyAdapter):
     ONTOLOGIES = {

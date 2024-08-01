@@ -54,20 +54,41 @@ class ReactomeAdapter(Adapter):
                 if self.label == 'genes_pathways':
                     data = line.strip().split('\t')
                     pathway_id = data[1]
+                    if pathway_id.startswith('R-DME'):      # for dmel data
+                        ensg_id = data[0]
+                        _id = ensg_id + '_' + pathway_id
+                        _source = ensg_id
+                        _target = pathway_id
+                        _props['taxon_id'] = 7227
+                        yield _source, _target, self.label, _props
                     if pathway_id.startswith('R-HSA'):
                         ensg_id = data[0].split('.')[0]
                         _id = ensg_id + '_' + pathway_id
                         _source = ensg_id
                         _target = pathway_id
+                        _props['taxon_id'] = 9606
                         yield _source, _target, self.label, _props
                 else:
                     parent, child = line.strip().split('\t')
-                    if parent.startswith('R-HSA'):
+                    #if parent.startswith('R-HSA'):
+                    if parent.startswith('R-DME'):      # for dmel data
+                        _props['taxon_id'] = 7227
                         if self.label == 'parent_pathway_of':
                             _id = parent + '_' + child
                             _source = parent
                             _target = child
-
+                            yield _source, _target, self.label, _props
+                        elif self.label == 'child_pathway_of':
+                            _id = child + '_' + parent
+                            _source =  child
+                            _target =  parent
+                            yield  _source, _target, self.label, _props
+                    if parent.startswith('R-HSA'):
+                        _props['taxon_id'] = 9606
+                        if self.label == 'parent_pathway_of':
+                            _id = parent + '_' + child
+                            _source = parent
+                            _target = child
                             yield _source, _target, self.label, _props
                         elif self.label == 'child_pathway_of':
                             _id = child + '_' + parent

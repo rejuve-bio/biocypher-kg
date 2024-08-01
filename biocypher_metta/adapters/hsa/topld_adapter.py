@@ -1,9 +1,7 @@
 import csv
 import gzip
-import json
-import os
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_variant_id, to_float, check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import to_float, check_genomic_location
 from biocypher._logger import logger
 
 

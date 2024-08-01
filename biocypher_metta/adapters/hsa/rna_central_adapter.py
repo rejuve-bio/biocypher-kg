@@ -1,8 +1,7 @@
-from collections import defaultdict
 import csv
 import gzip
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import check_genomic_location
 
 # Example RNAcentral bed input file:
 # chr1	10244	10273	URS000035F234_9606	0	-	10244	10273	63,125,151	2	19,5	0,24	.	piRNA	PirBase

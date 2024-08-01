@@ -4,7 +4,7 @@ import gzip
 import os.path
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import check_genomic_location
 # Example roadmap csv input files
 # rsid,dataset,cell,tissue,datatype
 # rs10,erc2-DHS,"E050 Primary hematopoietic stem cells G-CSF-mobili",Blood,"DNase I Hotspot"

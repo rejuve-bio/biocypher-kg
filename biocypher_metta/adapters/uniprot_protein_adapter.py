@@ -14,8 +14,9 @@ from Bio import SwissProt
 class UniprotProteinAdapter(Adapter):
    # ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
 
-    def __init__(self, filepath, write_properties, add_provenance):
-        self.filepath = filepath
+    def __init__(self, dmel_filepath, hsa_filepath, write_properties, add_provenance):
+        self.dmel_filepath = dmel_filepath
+        self.hsa_filepath = hsa_filepath
         self.dataset = 'UniProtKB_protein'
         self.label = 'protein'
         self.source = "Uniprot"
@@ -44,7 +45,7 @@ class UniprotProteinAdapter(Adapter):
         return sorted(list(set(dbxrefs)), key=str.casefold)
 
     def get_nodes(self):
-        with gzip.open(self.filepath, 'rt') as input_file:
+        with gzip.open(self.dmel_filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
             for record in records:
                 dbxrefs = self.get_dbxrefs(record.cross_references)
@@ -59,4 +60,23 @@ class UniprotProteinAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
+                props['taxon_id'] = 9606
+                yield id, self.label, props
+
+        with gzip.open(self.hsa_filepath, 'rt') as input_file:
+            records = SwissProt.parse(input_file)
+            for record in records:
+                dbxrefs = self.get_dbxrefs(record.cross_references)
+                id = record.accessions[0]
+                props = {}
+                if self.write_properties:
+                    props = {
+                        'accessions': record.accessions[1:] if len(record.accessions) > 1 else record.accessions[0],
+                        'protein_name': record.entry_name.split('_')[0],
+                        'synonyms': dbxrefs
+                    }
+                    if self.add_provenance:
+                        props['source'] = self.source
+                        props['source_url'] = self.source_url
+                props['taxon_id'] = 9606
                 yield id, self.label, props
