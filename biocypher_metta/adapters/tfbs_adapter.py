@@ -69,4 +69,4 @@ class TfbsAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                 
-                yield tf_ensembl, tfbs_id, self.label, props
+                    yield tf_ensembl, tfbs_id, self.label, props

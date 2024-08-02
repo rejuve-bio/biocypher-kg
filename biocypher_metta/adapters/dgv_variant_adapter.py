@@ -34,7 +34,7 @@ class DGVVariantAdapter(Adapter):
                 variant_accession = data[DGVVariantAdapter.INDEX['variant_accession']]
                 chr = 'chr' + data[DGVVariantAdapter.INDEX['chr']]
                 start = int(data[DGVVariantAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-indexed genomic coordinate
-                end = int(data[DGVVariantAdapter.INDEX['coord_end']]) + 1
+                end = int(data[DGVVariantAdapter.INDEX['coord_end']])
                 variant_type = data[DGVVariantAdapter.INDEX['type']]
                 pubmedid = data[DGVVariantAdapter.INDEX['pubmedid']]
                 region_id = build_regulatory_region_id(chr, start, end)
