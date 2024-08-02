@@ -45,8 +45,8 @@ class PolyPhen2Adapter(Adapter):
         with gzip.open(self.filepath, 'rt') as f:
             for line in f:
                 data = line.strip().split('\t')
-                chr = data[self.INDEX['chr']]
-                start = int(data[self.INDEX['start']])
+                chr = data[self.INDEX['chr']] 
+                start = int(data[self.INDEX['start']]) + 1 # +1 since it is 0-based genomic coordinate
                 end = int(data[self.INDEX['end']])
                 ref = data[self.INDEX['ref']]
                 
