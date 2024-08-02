@@ -37,7 +37,7 @@ class EPDAdapter(Adapter):
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
-                coord_end = int(line[EPDAdapter.INDEX['coord_end']]) + 1
+                coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 promoter_id = build_regulatory_region_id(chr, coord_start, coord_end)
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
@@ -59,7 +59,7 @@ class EPDAdapter(Adapter):
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
-                coord_end = int(line[EPDAdapter.INDEX['coord_end']]) + 1
+                coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
                 ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_id, None)
                 if ensembl_gene_id is None:
