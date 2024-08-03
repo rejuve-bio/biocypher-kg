@@ -3,7 +3,7 @@ from biocypher_metta.adapters import Adapter
 import pickle
 import csv
 import gzip
-from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 from biocypher._logger import logger
 
 #Example ABC Data
@@ -18,7 +18,7 @@ class ABCAdapter(Adapter):
     """
     Adapter for Activity-By-Contact (ABC) data from Fulco CP et.al 2019
     """
-    def __init__(self, filepath, type, hgnc_to_ensembl_map, tissue_to_ontology_id_map,
+    def __init__(self, filepath, hgnc_to_ensembl_map, tissue_to_ontology_id_map,
                  dbsnp_rsid_map, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         self.file_path = filepath
@@ -28,40 +28,10 @@ class ABCAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
-
-        assert type in ["node", "edge"], f"type parameter should be either node or edge, got {type}"
-
-        if type == "node":
-            self.label = "regulatory_region"
-        else:
-            self.label = "regulatory_region_gene"
+        self.label = "activity_by_contact"
         self.source = "ABC"
         self.source_url = "https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz"
         super(ABCAdapter, self).__init__(write_properties, add_provenance)
-
-    def get_nodes(self):
-        with gzip.open(self.file_path, "rt") as fp:
-            next(fp)
-            reader = csv.reader(fp, delimiter=",")
-            for row in reader:
-                try:
-                    rsid = row[COL_DICT['rsid']]
-                    chr = row[COL_DICT['chromosome']]
-                    pos = self.dbsnp_rsid_map[rsid]["pos"]
-                    if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                        _props = {
-                            'chr': chr,
-                            'start': pos,
-                            'end': pos,
-                            'biochemical_activity': 'DNase I hypersensitive',
-                            'biological_context': self.tissue_to_ontology_id_map[row[COL_DICT['cell_type']]]
-                        }
-                        yield rsid, self.label, _props
-                except KeyError as e:
-                    logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
-                    continue
-
-
 
     def get_edges(self):
         with gzip.open(self.file_path, "rt") as fp:
@@ -77,7 +47,7 @@ class ABCAdapter(Adapter):
                             _source = rsid
                             _target = self.hgnc_to_ensembl_map[(row[COL_DICT['target_gene']]).strip()]
                             props = {
-                                "score": row[COL_DICT['abc_score']],
+                                "score": to_float(row[COL_DICT['abc_score']]),
                                 "biological_context": self.tissue_to_ontology_id_map[row[COL_DICT['cell_type']]]
                             }
 

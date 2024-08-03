@@ -6,18 +6,16 @@ from biocypher_metta.adapters.helpers import to_float, check_genomic_location
 from biocypher._logger import logger
 import gzip
 
-# Example QTEx eQTL input file:
-# variant_id      gene_id tss_distance    ma_samples      ma_count        maf     pval_nominal    slope   slope_se        pval_nominal_threshold  min_pval_nominal        pval_beta
-# chr1_845402_A_G_b38     ENSG00000225972.1       216340  4       4       0.0155039       2.89394e-06     2.04385 0.413032        2.775e-05       2.89394e-06     0.00337661
-# chr1_920569_G_A_b38       ENSG00000225972.1       291507  4       4       0.0155039       1.07258e-05     1.92269 0.415516        2.775e-05       2.89394e-06     0.00337661
-
 # description for column headers can be found here: 
 # https://storage.googleapis.com/adult-gtex/bulk-qtl/v8/single-tissue-cis-qtl/README_eQTL_v8.txt
 
-# Example *.egenes.txt.gz input files
-# gene_id	gene_name	gene_chr	gene_start	gene_end	strand	num_var	beta_shape1	beta_shape2	true_df	pval_true_df	variant_id	tss_distance	chr	variant_pos	ref	alt	num_alt_per_site	rs_id_dbSNP151_GRCh38p7	minor_allele_samples	minor_allele_count	maf	ref_factor	pval_nominal	slope	slope_se	pval_perm	pval_beta	qval	pval_nominal_threshold	log2_aFC	log2_aFC_lower	log2_aFC_upper
-# ENSG00000227232.5	WASH7P	chr1	14410	29553	-	1364	1.02984	294.487	455.958	6.29063e-08	chr1_64764_C_T_b38	35211	chr1	64764	C	T	1	rs769952832	70	71	0.0611015	1	1.01661e-08	0.586346	0.100677	9.999e-05	1.32112e-05	1.01141e-05	0.000505559	0.584194	0.435298	0.744545
-# ENSG00000268903.1	RP11-34P13.15	chr1	135141	135895	-	1863	1.04872	330.017	441.174	0.00088883	chr1_103147_C_T_b38	-32748	chr1	103147	C	T	1	rs866355763	18	18	0.0154905	1	0.000347332	-0.612097	0.169958	0.241904	0.2337	0.0810742	0.000472534	-1.823931	-4.015491	-0.676333
+#Example file
+# rsid,gene_symbol,ensembl_gene_id,ensembl_versioned_gene_id,tss_distance,reference_allele,alternate_allele,num_alternate_alleles_per_site,ma_samples,ma_count,maf,slope,slope_se,pvalue_nominal,pvalue_nominal_threshold,min_pvalue_nominal,pvalue_beta,biosample,chromosome,position,variant_id_b37,variant_id_b38
+# rs1000000,RP5-944M2.2,ENSG00000256927,ENSG00000256927.1,-19556,G,A,1,114,127,0.208197,-0.322815,0.0769928,3.8271e-05,4.79365e-05,4.31358e-07,0.00132434,Pancreas.v8.signif_variant_gene_pairs.txt,chr12,126406434,chr12_126890980_G_A_b37,chr12_126406434_G_A_b38
+# rs10000003,HOPX,ENSG00000171476,ENSG00000171476.21,13582,A,G,1,182,215,0.288978,-0.172247,0.0417549,4.79443e-05,7.32855e-05,2.30038e-09,1.36078e-05,Heart_Atrial_Appendage.v8.signif_variant_gene_pairs.txt,chr4,56695481,chr4_57561647_A_G_b37,chr4_56695481_A_G_b38
+
+COL_DICT = {"rsid": 0, "gene_id": 2, "maf": 10, "slope": 11, 
+               "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
 
 class GTExEQTLAdapter(Adapter):
     # 1-based coordinate system
@@ -38,9 +36,6 @@ class GTExEQTLAdapter(Adapter):
         :param end: end position
         """
         self.filepath = filepath
-
-        assert os.path.isdir(self.filepath), "The path to the directory containing eQTL data is not directory"
-        self.filepath = filepath
         self.gtex_tissue_ontology_map = pickle.load(open(gtex_tissue_ontology_map, 'rb'))
         self.tissue_names = tissue_names
         self.chr = chr
@@ -48,48 +43,40 @@ class GTExEQTLAdapter(Adapter):
         self.end = end
         self.label = 'gtex_variant_gene'
         self.source = 'GTEx'
-        self.source_url = 'https://www.gtexportal.org/home/datasets'
+        # self.source_url = 'https://www.gtexportal.org/home/datasets'
+        self.source_url = 'https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz'
         self.version = 'v8'
 
 
         super(GTExEQTLAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
-        for file_name in os.listdir(self.filepath):
-            if "egenes" in file_name: #skip other files
-                tissue_name = file_name.split(".")[0]
-                logger.info(f"Importing tissue: {tissue_name}")
-                if self.tissue_names is None or tissue_name in self.tissue_names:
-                    with gzip.open(os.path.join(self.filepath, file_name), 'rt') as qtl:
-                        next(qtl) # skip header
-                        qtl_csv = csv.reader(qtl, delimiter='\t')
-                        for row in qtl_csv:
-                            try:
-                                chr, pos, ref_seq, alt_seq, assembly_code = row[11].split('_')
-                                pos = int(pos)
-                                if assembly_code != 'b38':
-                                    print('Unsuported assembly: ' + assembly_code)
-                                    continue
+        with gzip.open(self.filepath, 'rt') as qtl:
+            next(qtl) # skip header
+            qtl_csv = csv.reader(qtl)
+            for row in qtl_csv:
+                try:
+                    chr, pos = row[COL_DICT["chr"]], row[COL_DICT["pos"]]
+                    pos = int(pos)
+                    variant_id = row[COL_DICT["rsid"]]
+                    gene_id = row[COL_DICT["gene_id"]]
+                    if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
+                        _source = variant_id
+                        _target = gene_id
+                        _props = {}
+                        if self.write_properties:
+                            tissue_name = row[COL_DICT["tissue"]].split(".")[0]
+                            _props = {
+                                'maf': to_float(row[COL_DICT["maf"]]),
+                                'slope': to_float(row[COL_DICT["slope"]]),
+                                'p_value': to_float(row[COL_DICT["p_value"]]),
+                                'biological_context': self.gtex_tissue_ontology_map[tissue_name]
+                            }
+                            if self.add_provenance:
+                                _props['source'] = self.source
+                                _props['source_url'] = self.source_url
 
-                                variant_id = row[18]
-                                if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                                    _source = variant_id
-                                    _target = row[0].split('.')[0]
-                                    _props = {}
-                                    if self.write_properties:
-                                        _props = {
-                                            #add re factor
-                                            'maf': to_float(row[21]),
-                                            'slope': to_float(row[24]),
-                                            'p_value': to_float(row[27]),
-                                            'q_value': to_float(row[28]),
-                                            'biological_context': self.gtex_tissue_ontology_map[tissue_name]
-                                        }
-                                        if self.add_provenance:
-                                            _props['source'] = self.source
-                                            _props['source_url'] = self.source_url
-
-                                    yield _source, _target, self.label, _props
-                            except Exception as e:
-                                print(row)
-                                print(e)
+                        yield _source, _target, self.label, _props
+                except Exception as e:
+                    print(row)
+                    print(e)

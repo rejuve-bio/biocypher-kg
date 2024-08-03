@@ -41,18 +41,10 @@ class CADDAdapter(Adapter):
                     rsid = row[0]
                     pos = self.dbsnp_rsid_map[rsid]["pos"]
                     chr = row[1]
-                    ref = row[3]
-                    alt = row[4]
                     _props = {}
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         if self.write_properties:
                             _props = {
-                                'chr': chr,
-                                'start': pos,
-                                'end': pos,
-                                'rsid': rsid,
-                                'ref': ref,
-                                'alt': alt,
                                 'raw_cadd_score': float(row[5]),
                                 'phred_score': float(row[6])
                             }
