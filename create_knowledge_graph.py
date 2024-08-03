@@ -3,6 +3,7 @@ Knowledge graph generation through BioCypher script
 """
 
 from biocypher_metta.metta_writer import *
+from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_writer import *
 from biocypher._logger import logger
 import typer
@@ -14,8 +15,21 @@ import pickle
 app = typer.Typer()
 
 
+# Function to choose the writer class based on user input
 def get_writer(writer_type: str, output_dir: pathlib.Path):
-    if writer_type == "neo4j":
+    if writer_type == "metta":
+        return MeTTaWriter(
+            schema_config="config/schema_config.yaml",
+            biocypher_config="config/biocypher_config.yaml",
+            output_dir=output_dir,
+        )
+    elif writer_type == "prolog":
+        return PrologWriter(
+            schema_config="config/schema_config.yaml",
+            biocypher_config="config/biocypher_config.yaml",
+            output_dir=output_dir,
+        )
+    elif writer_type == "neo4j":
         return Neo4jWriter(
             schema_config="config/schema_config.yaml",
             biocypher_config="config/biocypher_config.yaml",
@@ -40,6 +54,9 @@ def main(
     dbsnp_pos: Annotated[
         pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)
     ],
+    writer_type: str = typer.Option(
+        default="metta", help="Choose writer type: metta, prolog"
+    ),
     write_properties: bool = typer.Option(
         True, help="Write properties to nodes and edges"
     ),
@@ -56,11 +73,10 @@ def main(
     logger.info("Loading dbsnp pos map")
     dbsnp_pos_dict = pickle.load(open(dbsnp_pos, "rb"))
 
-    bc = Neo4jWriter(
-        schema_config="config/schema_config.yaml",
-        biocypher_config="config/biocypher_config.yaml",
-        output_dir=output_dir,
-    )
+    # Choose the writer based on user input or default to 'metta'
+    bc = get_writer(writer_type, output_dir)
+
+    logger.info(f"Using {writer_type} writer")
 
     # bc.show_ontology_structure()
 
