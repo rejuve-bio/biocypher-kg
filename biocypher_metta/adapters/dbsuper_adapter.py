@@ -44,7 +44,7 @@ class DBSuperAdapter(Adapter):
                 se_id = line[DBSuperAdapter.INDEX['se_id']]
                 chr = line[DBSuperAdapter.INDEX['chr']]
                 start_hg19 = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
-                end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']]) + 1
+                end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']])
                 start = convert_genome_reference(chr, start_hg19)
                 end = convert_genome_reference(chr, end_hg19)
                 
@@ -74,7 +74,7 @@ class DBSuperAdapter(Adapter):
                 ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_id, None)
                 chr = line[DBSuperAdapter.INDEX['chr']]
                 start_hg19 = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
-                end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']]) + 1
+                end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']])
                 start = convert_genome_reference(chr, start_hg19)
                 end = convert_genome_reference(chr, end_hg19)
                 cell_name = line[DBSuperAdapter.INDEX['cell_name']]

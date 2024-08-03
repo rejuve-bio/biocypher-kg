@@ -49,10 +49,8 @@ class CellOntologyAdapter(OntologyAdapter):
 
                 if self.add_description:
                     description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
-                    # Skip nodes with descriptions containing double quotes
-                    if '"' in description:
-                        continue
-                    props['description'] = description
+                    # Remove quotation marks from the description
+                    props['description'] = description.replace('"', '')
 
                 if self.add_provenance:
                     props['source'] = self.source

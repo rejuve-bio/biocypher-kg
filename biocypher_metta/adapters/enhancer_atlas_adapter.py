@@ -2,7 +2,7 @@ import gzip
 import os
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
 # Example enhancer atlas input file:
 # enhancer signal - enrichment score calculated as the combination of enrichment scores from individual tracks.
@@ -52,7 +52,7 @@ class EnhancerAtlasAdapter(Adapter):
         enhancer_info = info.split('_')[0]
         chr = enhancer_info.split(':')[0]
         start = int(enhancer_info.split(':')[1].split('-')[0]) + 1 #+1 since it is 0-based genomic coordinate
-        end = int(enhancer_info.split(':')[1].split('-')[1]) + 1
+        end = int(enhancer_info.split(':')[1].split('-')[1])
         gene = info.split('_')[1].split('$')[0]
         return chr, start, end, gene
     
@@ -62,7 +62,7 @@ class EnhancerAtlasAdapter(Adapter):
                 info = line.strip().split('\t')
                 chr = info[EnhancerAtlasAdapter.INDEX['chr']]
                 start = int(info[EnhancerAtlasAdapter.INDEX['coord_start']]) + 1 #+1 since it is 0-based genomic coordinate
-                end = int(info[EnhancerAtlasAdapter.INDEX['coord_end']]) + 1
+                end = int(info[EnhancerAtlasAdapter.INDEX['coord_end']])
                 enhancer_region_id = build_regulatory_region_id(chr, start, end)
                 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
@@ -93,7 +93,7 @@ class EnhancerAtlasAdapter(Adapter):
                         chr, start, end, gene = self.parse_enhancer_gene(line)
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             enhancer_region_id = build_regulatory_region_id(chr, start, end)
-                            score = float(info[1])
+                            score = to_float(info[1])
                             props = {}
                             if self.write_properties:
                                 props['biological_context'] = biological_context

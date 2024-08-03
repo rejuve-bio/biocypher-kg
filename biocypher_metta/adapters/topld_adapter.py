@@ -55,8 +55,8 @@ class TopLDAdapter(Adapter):
                     props = {}
                     if self.write_properties:
                         props = {
-                            'r2': r2_score,
-                            'd_prime': float(row[TopLDAdapter.INDEX['Dprime']]),
+                            'r2': to_float(r2_score),
+                            'd_prime': to_float(row[TopLDAdapter.INDEX['Dprime']]),
                             'ancestry': self.ancestry
                         }
                         if self.add_provenance:

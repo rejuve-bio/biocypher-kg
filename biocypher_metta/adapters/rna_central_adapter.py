@@ -42,7 +42,7 @@ class RNACentralAdapter(Adapter):
                 rna_id = infos[RNACentralAdapter.INDEX['id']].split('_')[0]
                 chr = infos[RNACentralAdapter.INDEX['chr']]
                 start = int(infos[RNACentralAdapter.INDEX['coord_start']].strip())+1 # +1 since it is 0 indexed coordinate
-                end = int(infos[RNACentralAdapter.INDEX['coord_end']].strip())+1
+                end = int(infos[RNACentralAdapter.INDEX['coord_end']].strip())
                 props = {}
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     if self.write_properties:

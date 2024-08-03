@@ -1,6 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 # Exaple dbSNP vcf input file:
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 # 1	10177	rs367896724	A	AC	.	.	RS=367896724;RSPOS=10177;dbSNPBuildID=138;SSR=0;SAO=0;VP=0x050000020005170026000200;GENEINFO=DDX11L1:100287102;WGT=1;VC=DIV;R5;ASP;VLD;G5A;G5;KGPhase3;CAF=0.5747,0.4253;COMMON=1;TOPMED=0.76728147298674821,0.23271852701325178
@@ -58,8 +58,8 @@ class DBSNPAdapter(Adapter):
                         props['ref'] = ref
                         props['alt'] = alt
                         if caf != None:
-                            props['caf_ref'] = caf[0]
-                            props['caf_alt'] = caf[1]
+                            props['caf_ref'] = to_float(caf[0] if caf[0] != '.' else '0')
+                            props['caf_alt'] = to_float(caf[1] if caf[1] != '.' else '0')
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url

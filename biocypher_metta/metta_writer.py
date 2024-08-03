@@ -140,6 +140,10 @@ class MeTTaWriter:
         output_label = self.edge_node_types[label]["output_label"]
         if output_label is not None:
             label = output_label
+        if source_type == "ontology_term":
+            source_type = source_id.replace(':', '_').split('_')[0].lower()
+        if target_type == "ontology_term":
+            target_type = target_id.replace(':', '_').split('_')[0].lower()
         def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
         return self.write_property(def_out, properties)
 
@@ -148,7 +152,15 @@ class MeTTaWriter:
         out_str = [def_out]
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
-            if isinstance(v, list):
+            if k == 'biological_context':
+                try:
+                    ontology_id = self.check_property(v).upper().replace('_', ':')
+                    ontology_name = ontology_id.split(':')[0].lower()
+                    out_str.append(f'({k} {def_out} ({ontology_name} {ontology_id}))')
+                except Exception as e:
+                    print(f"An error occurred while processing the biological context '{v}': {e}.")
+                    continue
+            elif isinstance(v, list):
                 prop = "("
                 for i, e in enumerate(v):
                     prop += f'{self.check_property(e)}'
@@ -165,7 +177,7 @@ class MeTTaWriter:
     def check_property(self, prop):
         if isinstance(prop, str):
             if " " in prop:
-                prop = prop.replace(" ", "_")
+                prop = prop.replace(" ", "_").strip("_")
 
             special_chars = ["(", ")"]
             escape_char = "\\"

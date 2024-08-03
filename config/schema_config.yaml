@@ -15,6 +15,7 @@ position entity:
     start: int
     end: int
 
+
 coding element:
   represented_as: node
   is_a: position entity
@@ -244,8 +245,18 @@ regulatory region:
     biochemical_activity: str
     biological_context: str
 
+transcription binding site:
+  represented_as: node
+  input_label: tfbs
+  is_a: position entity
+  inherit_properties: true
+  description: >-
+    A region of DNA where a transcription factor binds to regulate gene expression
+
 # ---
 # ontologies
+
+# Gene Ontology
 go:
   is_a: ontology term
   represented_as: node
@@ -289,6 +300,28 @@ cl:
     cl_definition: str
     cl_synonyms: str[]
 
+# Experimental Factor Ontology
+efo:
+  is_a: ontology term
+  represented_as: node
+  input_label: efo
+  properties:
+    efo_id: str
+    efo_name: str
+    efo_definition: str
+    efo_synonyms: str[]
+
+# BRENDA Tissue Ontology
+bto:
+  is_a: ontology term
+  represented_as: node
+  input_label: bto
+  properties:
+    bto_id: str
+    bto_name: str
+    bto_definition: str
+    bto_synonyms: str[]
+
 motif:
   represented_as: node
   is_a: epigenomic feature
@@ -315,33 +348,6 @@ tad:
   inherit_properties: true
   properties:
         genes: str[]
-
-chromatin state:
-  represented_as: node
-  is_a: epigenomic feature
-  inherit_properties: true
-  input_label: chromatin_state
-  properties:
-    state: str
-
-dnase hypersensitivity site:
-  represented_as: node
-  is_a: epigenomic feature
-  inherit_properties: true
-  input_label: dnase_hypersensitivity_site
-  description: >-
-    A region of chromatin that is sensitive to cleavage by the enzyme DNase I
-
-histone modification:
-  represented_as: node
-  is_a: epigenomic feature
-  inherit_properties: true
-  input_label: histone_modification
-  description: >
-    A post-translational modification of histone proteins e.g methylation, acetylation, phosphorylation
-  properties:
-    modification: str
-    modification_type: str
 
 # ---
 # Associations
@@ -458,6 +464,19 @@ post translational interaction:
   properties:
     score: float
 
+expressed in:
+  description: >-
+      holds between a gene and an ontology term in which it is expressed
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: expressed_in
+  source: gene
+  target: ontology term
+  properties:
+    score: float
+    p_value: float
+
 # ---
 # annotation
 
@@ -537,6 +556,22 @@ child pathway of:
     source: pathway
     target: pathway
 
+bto subclass of:
+  is_a: subclass of
+  represented_as: edge
+  input_label: bto_subclass_of
+  output_label: subclass_of
+  source: bto
+  target: bto
+
+efo subclass of:
+  is_a: subclass of
+  represented_as: edge
+  input_label: efo_subclass_of
+  output_label: subclass_of
+  source: efo
+  target: efo
+
 uberon subclass of:
   is_a: subclass of
   represented_as: edge
@@ -613,7 +648,7 @@ enhancer to gene association:
   inherit_properties: true
   represented_as: edge
   input_label: enhancer_gene
-  output_label: regulates
+  output_label: associated_with
   source: enhancer
   target: gene
   properties:
@@ -627,7 +662,7 @@ promoter to gene association:
   inherit_properties: true
   represented_as: edge
   input_label: promoter_gene
-  output_label: regulates
+  output_label: associated_with
   source: promoter
   target: gene
   properties:
@@ -641,7 +676,7 @@ super enhancer to gene association:
   inherit_properties: true
   represented_as: edge
   input_label: super_enhancer_gene
-  output_label: regulates
+  output_label: associated_with
   source: super enhancer
   target: gene
   properties:
@@ -685,7 +720,7 @@ gtex variant to gene expression association:
   is_a: related to at instance level
   represented_as: edge
   input_label: gtex_variant_gene
-  output_label: correlates_with
+  output_label: eqtl_association
   source: snp
   target: gene
   properties:
@@ -789,6 +824,20 @@ transcription factor to snp association:
     source: str
     source_url: str
 
+gene to transcription binding site association:
+  represented_as: edge
+  is_a: related at instance level
+  input_label: gene_tfbs
+  output_label: binds_to
+  description: >-
+    An association between a transcription factor and its binding site
+  source: gene
+  target: tfbs
+  properties:
+    score: float
+    source: str
+    source_url: str
+
 gene in tad region:
   is_a: related to at instance level
   description: holds between a tad and a gene that is in the tad region
@@ -796,3 +845,45 @@ gene in tad region:
   input_label: in_tad_region
   source: gene
   target: tad
+
+activity by contact:
+  description: >-
+    An association between a variant in a regulatory region and a gene it predicted by the ABC model (Fulco et.al 2019)
+  is_a: regulatory association
+  inherit_properties: true
+  represented_as: edge
+  input_label: activity_by_contact
+  source: snp
+  target: gene
+  properties:
+    score: float
+    biological_context: str
+
+chromatin state:
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: chromatin_state
+  source: snp
+  target: uberon #TODO replace by cell ontology
+  properties:
+    state: str
+
+dnase I hotspot:
+  is_a: related to at instance level
+  description: >-
+    A region of chromatin that is sensitive to cleavage by the enzyme DNase I
+  represented_as: edge
+  input_label: in_dnase_I_hotspot
+  source: snp
+  target: uberon #TODO replace by cell ontology
+
+histone modification:
+  is_a: related to at instance level
+  description: >-
+    A post-translational modification of histone proteins e.g methylation, acetylation, phosphorylation
+  represented_as: edge
+  input_label: histone_modification
+  source: snp
+  target: uberon #TODO replace by cell ontology
+  properties:
+    modification: str

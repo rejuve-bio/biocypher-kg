@@ -4,6 +4,7 @@ import pathlib
 import os
 from biocypher._logger import logger
 import networkx as nx
+import re
 
 class PrologWriter:
 
@@ -104,6 +105,10 @@ class PrologWriter:
         source_id = self.sanitize_text(source_id)
         target_id = self.sanitize_text(target_id)
         label = self.sanitize_text(label)
+        if source_type == "ontology_term":
+            source_type = source_id.split('_')[0]
+        if target_type == "ontology_term":
+            target_type = target_id.split('_')[0]
         def_out = f"{label}({source_type}({source_id}), {target_type}({target_id}))"
         return self.write_property(def_out, properties)
 
@@ -112,27 +117,56 @@ class PrologWriter:
         out_str = [f"{def_out}."]
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
-            if isinstance(v, list):
+            if k == 'biological_context':
+                try:
+                    prop = self.sanitize_text(v)
+                    ontology = prop.split('_')[0]
+                    out_str.append(f'{k}({def_out}, {ontology}({prop})).')
+                except Exception as e:
+                    print(f"An error occurred while processing the biological context '{v}': {e}.")
+                    continue
+            elif isinstance(v, list):
                 prop = "["
                 for i, e in enumerate(v):
                     prop += f'{self.sanitize_text(e)}'
                     if i != len(v) - 1: prop += ","
-                prop += "]."
+                prop += "]"
+                out_str.append(f'{k}({def_out}, {prop}).')
             elif isinstance(v, dict):
                 prop = f"{k}({def_out})."
                 out_str.extend(self.write_property(prop, v))
             else:
-                out_str.append(f'{k}({def_out}, {self.sanitize_text(v)}).')
+                prop = self.sanitize_text(v)
+                if prop is not None:
+                    out_str.append(f'{k}({def_out}, {prop}).')
         return out_str
 
     def sanitize_text(self, prop):
-        replace_chars = [" ", "-", ":"]
-        omit_chars = ["(", ")", "+", "."]
-        if isinstance(prop, str):
-            for c in replace_chars:
-                prop = prop.replace(c, "_").lower()
-            for c in omit_chars:
-                prop = prop.replace(c, "").lower()
+        replace_chars = {
+            " ": "_",
+            "-": "_",
+            ":": "_",
+            "/": "_",
+            "–": "_",  # en dash
+            "—": "_",  # em dash
+            "&": "_",
+            ";": ","
+        }
+        
+        if isinstance(prop, str):        
+            for char, replacement in replace_chars.items():
+                prop = prop.replace(char, replacement).lower()     
+
+            # sanitizes each string separated by comma ','
+            if "," in prop:
+                prop = ",".join([self.sanitize_text(p) for p in prop.split(',') if self.sanitize_text(p) not in ["", None]])
+                return prop if prop != "" else None
+            
+            prop = re.sub(r'[^\w_,]', '', prop) # removes special characters except for underscores "_" and comma ","
+            prop = re.sub(r"_+", "_", prop) # removes multiple adjacent under scores '_'
+            prop.strip("_")
+            if prop == "":
+                return None
             try:
                 float(prop)
                 return prop # It's a numeric string, return as is
@@ -140,7 +174,10 @@ class PrologWriter:
                 # Check if the first character is a digit
                 if prop[0].isdigit():
                     return f"'{prop}'"
-        
+        elif isinstance(prop, list):
+            for i in range(len(prop)):
+                prop[i] = self.sanitize_text(prop[i])
+            prop = [p for p in prop if p != None]
         return prop
 
     def get_parent(self, G, node):

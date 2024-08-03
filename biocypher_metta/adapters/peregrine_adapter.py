@@ -3,7 +3,7 @@ import gzip
 import pickle
 
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 # Example PEREGRINE input files:
 
 # PEREGRINEenhancershg38
@@ -136,7 +136,7 @@ class PEREGRINEAdapter(Adapter):
                 if self.write_properties:
                     props['biological_context'] = self.tissue_ontology_map[tissue_id][0]
                     if score:
-                        props['score'] = score
+                        props['score'] = to_float(score)
 
                     if self.add_provenance:
                         props['source'] = self.source

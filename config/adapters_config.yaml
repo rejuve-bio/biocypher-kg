@@ -147,7 +147,7 @@ go_ontology_terms:
       dry_run: False
       add_description: False
 
-  outdir: gene_onotology
+  outdir: gene_ontology
   nodes: True
   edges: False
 
@@ -161,7 +161,7 @@ go_subclass_of:
       type: edge
       dry_run: False
 
-  outdir: gene_onotology
+  outdir: gene_ontology
   nodes: False
   edges: True
 
@@ -243,7 +243,7 @@ gtex_eqtl:
     module: biocypher_metta.adapters.gtex_eqtl_adapter
     cls: GTExEQTLAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/gtex/eqtl/GTEx_Analysis_v8_eQTL
+      filepath: /mnt/hdd_2/abdu/biocypher_data/gtex/eqtl/gtex.forgedb.csv.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
 
   outdir: gtex/eqtl
@@ -265,8 +265,8 @@ hocomoco:
 
 roadmap_chromatin_state:
   adapter:
-    module: biocypher_metta.adapters.roadmap_adapter
-    cls: RoadMapAdapter
+    module: biocypher_metta.adapters.roadmap_state_adapter
+    cls: RoadMapChromatinStateAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/chromatin_state
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
@@ -274,14 +274,14 @@ roadmap_chromatin_state:
       chr: chr16
       start: 53000000
       end: 56000000
-  outdir: roadmap
-  nodes: True
-  edges: False
+  outdir: roadmap/chromatin_state
+  nodes: False
+  edges: True
 
 roadmap_h3_mark:
   adapter:
-    module: biocypher_metta.adapters.roadmap_adapter
-    cls: RoadMapAdapter
+    module: biocypher_metta.adapters.roadmap_h3_marks_adapter
+    cls: RoadMapH3MarkAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/h3_marks
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
@@ -289,47 +289,31 @@ roadmap_h3_mark:
       chr: chr16
       start: 53000000
       end: 56000000
-  outdir: roadmap
-  nodes: True
-  edges: False
+  outdir: roadmap/h3_mark
+  nodes: False
+  edges: True
 
 roadmap_dhs:
   adapter:
-    module: biocypher_metta.adapters.roadmap_adapter
-    cls: RoadMapAdapter
+    module: biocypher_metta.adapters.roadmap_dhs_adapter
+    cls: RoadMapDHSAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/dhs
+      filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz
       tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None
       chr: chr16
       start: 53000000
       end: 56000000
-  outdir: roadmap
-  nodes: True
-  edges: False
+  outdir: roadmap/dhs
+  nodes: False
+  edges: True
 
-abc_regulatory_region:
+abc:
   adapter:
     module: biocypher_metta.adapters.abc_adapter
     cls: ABCAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/abc.forgedb.csv.gz
-      type: "node"
-      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-      tissue_to_ontology_id_map: ./aux_files/abc_tissues_to_ontology_map.pkl
-      dbsnp_rsid_map: None # will be provided by import script
-
-  outdir: abc
-  nodes: True
-  edges: False
-
-abc_enhancer_gene_pair:
-  adapter:
-    module: biocypher_metta.adapters.abc_adapter
-    cls: ABCAdapter
-    args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/abc.forgedb.csv.gz
-      type: "edge"
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       tissue_to_ontology_id_map: ./aux_files/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
@@ -577,7 +561,7 @@ dbsuper_super_enhancer_regulates_gene:
   nodes: False
   edges: True
 
-  dbsnp_snps:
+dbsnp_snps:
   adapter:
     module: biocypher_metta.adapters.dbsnp_adapter
     cls: DBSNPAdapter
@@ -728,5 +712,102 @@ fabian_tf_snp:
       dbsnp_pos_map: None # will be provided by import script
       label: tfbs_snp
   outdir: fabian
+  nodes: False
+  edges: True
+
+experimental_factor_ontology:
+  adapter:
+    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
+    cls: ExperimentalFactorOntologyAdapter
+    args:
+      ontology: 'efo'
+      type: node
+      dry_run: False
+      add_description: False
+  outdir: experimental_factor_ontology
+  nodes: True
+  edges: False
+
+efo_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
+    cls: ExperimentalFactorOntologyAdapter
+    args:
+      ontology: 'efo'
+      label: efo_subclass_of
+      type: edge
+      dry_run: False
+  outdir: experimental_factor_ontology
+  nodes: False
+  edges: True
+
+brenda_tissue_ontology:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: 'bto'
+      type: node
+      dry_run: False
+      add_description: False
+  outdir: brenda_tissue_ontology
+  nodes: True
+  edges: False
+
+bto_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: 'bto'
+      label: bto_subclass_of
+      type: edge
+      dry_run: False
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
+
+polyphen2:
+  adapter:
+    module: biocypher_metta.adapters.polyphen2_adapter
+    cls: PolyPhen2Adapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/polyphen2/dbNsfpPolyPhen2.bed.gz
+  
+  outdir: polyphen-2
+  nodes: True
+  edges: False
+
+bgee_gene_expressed_in_anatomical_entity:
+  adapter:
+    module: biocypher_metta.adapters.bgee_adapter
+    cls: BgeeAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+  outdir: bgee
+  nodes: False
+  edges: True
+
+transcription_factor_binding_site:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+      label: tfbs
+  outdir: tfbs
+  nodes: True
+  edges: False
+
+gene_tfbs_association:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+      label: gene_tfbs
+  outdir: tfbs
   nodes: False
   edges: True

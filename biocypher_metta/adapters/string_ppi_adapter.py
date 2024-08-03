@@ -3,6 +3,7 @@ from biocypher_metta.adapters import Adapter
 import pickle
 import csv
 import gzip
+from biocypher_metta.adapters.helpers import to_float
 
 # Imports STRING Protein-Protein interactions
 
@@ -49,7 +50,7 @@ class StringPPIAdapter(Adapter):
                     _props = {}
                     if self.write_properties:
                         _props = {
-                            "score": float(row[2]) / 1000, # divide by 1000 to normalize score
+                            "score": to_float(row[2]) / 1000, # divide by 1000 to normalize score
                         }
                         if self.add_provenance:
                             _props["source"] = self.source
