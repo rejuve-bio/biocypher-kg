@@ -99,7 +99,7 @@ class Neo4jWriter:
         label = label.lower()
         id = id.lower()
         properties_str = self._format_properties(properties)
-        return f'CREATE (:{label} {{id: "{id}", {properties_str}}})'
+        return f'MERGE (:{label} {{id: "{id}", {properties_str}}})'
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
@@ -117,7 +117,7 @@ class Neo4jWriter:
             f"WITH a "
             f"MATCH (b:{target_type}) "
             f'WHERE a.id = "{source_id}" AND b.id = "{target_id}" '
-            f"CREATE (a)-[:{label} {{ {properties_str} }}]->(b);"
+            f"MERGE (a)-[:{label} {{ {properties_str} }}]->(b);"
         )
 
     def _format_properties(self, properties):
