@@ -36,7 +36,7 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
          adapters_config: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_rsids: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_pos: Annotated[pathlib.Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog"),
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
     """
