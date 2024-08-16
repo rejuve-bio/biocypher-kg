@@ -424,6 +424,17 @@ gencode_exon:
   nodes: True
   edges: False
 
+includes:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      label: includes
+  outdir: gencode/exon
+  nodes: False
+
+
 rna_central_non_coding_rna:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
