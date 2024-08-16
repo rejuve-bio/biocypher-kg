@@ -887,3 +887,10 @@ histone modification:
   properties:
     modification: str
 
+transcript_to_exon:
+  is_a: related to at instance
+  description:
+  represented_as: edge
+  input_label: includes
+  source: transcript
+  target: exon
