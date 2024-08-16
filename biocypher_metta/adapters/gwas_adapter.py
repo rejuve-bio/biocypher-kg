@@ -7,19 +7,17 @@ from biocypher._logger import logger
 import gzip
 
 
-index = {
-    "rsid": 21,
-    "in_gene": 17,
-    "upstream_gene": 15,
-    "downstream_gene": 16,
-    "p_value": 27,
-    "chr": 11,
-    "pos": 12,
-}
-
-ALLOWED_LABELS = ["upstream_gene", "downstream_gene", "in_gene"]
-
 class GWASAdapter(Adapter):
+
+    index = {
+        "rsid": 21,
+        "in_gene": 17,
+        "upstream_gene": 15,
+        "downstream_gene": 16,
+        "p_value": 27,
+        "chr": 11,
+        "pos": 12,
+    }
 
     def __init__(
         self,
@@ -47,15 +45,15 @@ class GWASAdapter(Adapter):
             gwas_row = csv.reader(gwas)
             for row in gwas_row:
                 try:
-                    chr, pos = row[index["chr"]], row[index["pos"]]
+                    chr, pos = row[self.index["chr"]], row[self.index["pos"]]
                     if pos is not None:
                         pos = int(pos)
                     else:
                         continue
-                    variant_id = row[index["rsid"]]
-                    if not row[index[self.label]]:
-                        continue 
-                    gene_id = row[index[self.label]]
+                    variant_id = row[self.index["rsid"]]
+                    if not row[self.index[self.label]]:
+                        continue
+                    gene_id = row[self.index[self.label]]
                     if check_genomic_location(
                         self.chr, self.start, self.end, chr, pos, pos
                     ):
@@ -64,7 +62,7 @@ class GWASAdapter(Adapter):
                         _props = {}
                         if self.write_properties:
                             _props = {
-                                "p_value": to_float(row[index["p_value"]]),
+                                "p_value": to_float(row[self.index["p_value"]]),
                             }
                             if self.add_provenance:
                                 _props["source"] = self.source
