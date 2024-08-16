@@ -10,7 +10,6 @@ gencode_gene:
   nodes: True
   edges: False
 
-
 gencode_transcripts:
   adapter:
     module: biocypher_metta.adapters.gencode_adapter
@@ -23,7 +22,6 @@ gencode_transcripts:
   outdir: gencode/transcript
   nodes: True
   edges: False
-
 
 transcribed_to:
   adapter:
@@ -50,7 +48,6 @@ transcribed_from:
   outdir: gencode/transcript
   nodes: False
   edges: True
-
 
 uniprotkb_sprot:
   adapter:
@@ -172,11 +169,9 @@ gaf:
     args:
       filepath: ./samples/goa_human_sample.gaf.gz
 
-
   outdir: gaf
   nodes: False
   edges: True
-
 
 coexpression:
   adapter:
@@ -389,8 +384,7 @@ rna_central_non_coding_rna_belongs_to_go:
 
   outdir: rna_central
   nodes: False
-  edges: True  
-
+  edges: True
 
 dgv_variant:
   adapter:
@@ -402,7 +396,7 @@ dgv_variant:
   outdir: dgv
   nodes: True
   edges: False
-  
+
 epd_promoter:
   adapter:
     module: biocypher_metta.adapters.epd_adapter
@@ -429,7 +423,6 @@ epd_promoter_regulates_gene:
   nodes: False
   edges: True
 
-  
 dbvar_variant:
   adapter:
     module: biocypher_metta.adapters.dbvar_adapter
@@ -455,7 +448,6 @@ peregrine_enhancer:
   outdir: peregrine
   nodes: True
   edges: False
-
 
 peregrine_enhancer_regulates:
   adapter:
@@ -508,7 +500,7 @@ dbsnp_snps:
     cls: DBSNPAdapter
     args:
       filepath: ./samples/dbsnp/dbsnp-sample-00-common_all.vcf.gz
-    
+
   outdir: dbsnp
   nodes: True
   edges: False
@@ -716,7 +708,7 @@ polyphen2:
     cls: PolyPhen2Adapter
     args:
       filepath: ./samples/polyPhen2_sample.bed.gz
-  
+
   outdir: polyphen-2
   nodes: True
   edges: False
@@ -730,7 +722,6 @@ bgee_gene_expressed_in_anatomical_entity:
   outdir: bgee
   nodes: False
   edges: True
-
 
 transcription_factor_binding_site:
   adapter:
@@ -753,5 +744,38 @@ gene_tfbs_association:
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: gene_tfbs
   outdir: tfbs
+  nodes: False
+  edges: True
+
+snp_to_upstream_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: ./samples/gwas-catalog-associations_ontology-annotated-sample.csv.gz
+      label: upstream_gene
+  outdir: gwas/upstream
+  nodes: False
+  edges: True
+
+snp_to_downstream_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: ./samples/gwas-catalog-associations_ontology-annotated-sample.csv.gz
+      label: downstream_gene
+  outdir: gwas/downstream
+  nodes: False
+  edges: True
+
+snp_to_in_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: ./samples/gwas-catalog-associations_ontology-annotated-sample.csv.gz
+      label: in_gene
+  outdir: gwas/ingene
   nodes: False
   edges: True
