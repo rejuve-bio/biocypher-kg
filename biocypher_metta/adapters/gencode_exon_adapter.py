@@ -18,13 +18,13 @@ class GencodeExonAdapter(Adapter):
     ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_name', 'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, filepath=None,
+    def __init__(self, write_properties, label, add_provenance, filepath=None,
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'exon'
+        self.label = label if label else 'exon'
         self.dataset = 'gencode_exon'
         self.source = 'GENCODE'
         self.version = 'v44'
@@ -76,3 +76,34 @@ class GencodeExonAdapter(Adapter):
                         print(
                             f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
+    def get_edges(self):
+        with gzip.open(self.filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+
+                data_line = line.strip().split()
+                if data_line[GencodeExonAdapter.INDEX['type']] != 'exon':
+                    continue
+
+                info = self.parse_info_metadata(data_line[GencodeExonAdapter.INDEX['info']:])
+                transcript_key = info['transcript_id'].split('.')[0]
+                if info['transcript_id'].endswith('_PAR_Y'):
+                    transcript_key = transcript_key + '_PAR_Y'
+                exon_key = info['exon_id'].split('.')[0]
+                if info['exon_id'].endswith('_PAR_Y'):
+                    exon_key = exon_key + '_PAR_Y'
+
+                _props = {}
+                if self.write_properties and self.add_provenance:
+                    _props['source'] = self.source
+                    _props['source_url'] = self.source_url
+
+                try:
+                    _id = transcript_key + '_' + exon_key
+                    _source = transcript_key
+                    _target = exon_key
+                    yield _source, _target, self.label, _props
+                except:
+                    print(
+                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
