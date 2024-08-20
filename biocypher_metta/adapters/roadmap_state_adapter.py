@@ -15,7 +15,7 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 COL_DICT = {'rsid': 0, 'dataset': 1, 'cell': 2, 'tissue': 3, 'datatype': 4}
 
 class RoadMapChromatinStateAdapter(Adapter):
-    def __init__(self, filepath, tissue_to_ontology_id_map, 
+    def __init__(self, filepath, cell_to_ontology_id_map, 
                  dbsnp_rsid_map, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         """
@@ -27,7 +27,7 @@ class RoadMapChromatinStateAdapter(Adapter):
         """
         self.filepath = filepath
         assert os.path.isdir(self.filepath), "The path to the directory containing epigenomic data is not directory"
-        self.tissue_to_ontology_id_map = pickle.load(open(tissue_to_ontology_id_map, 'rb'))
+        self.tissue_to_ontology_id_map = pickle.load(open(cell_to_ontology_id_map, 'rb'))
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
