@@ -424,7 +424,7 @@ gencode_exon:
   nodes: True
   edges: False
 
-includes:
+transcript_includes_exon:
   adapter:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
