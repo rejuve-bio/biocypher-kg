@@ -750,10 +750,13 @@ upstream gene to variant association:
   description: >-
     holds between a sequence variant and a gene that is upstream to the variant
   represented_as: edge
-  input_label: upstream_gene
-  output_label: snp_upstream_gene
+  input_label: snp_upstream_gene
+  output_label: upstream_of
   source: snp
   target: gene
+  properties:
+    distance: int
+    p_value: float
 
 downstream gene to variant association:
   is_a: closest gene to variant association
@@ -761,20 +764,25 @@ downstream gene to variant association:
   description: >-
     holds between a sequence variant and a gene that is downstream to the variant
   represented_as: edge
-  input_label: downstream_gene
-  output_label: snp_downstream_gene
+  input_label: snp_downstream_gene
+  output_label: downstream_of
   source: snp
   target: gene
+  properties:
+    distance: int
+    p_value: float
 
 in gene to variant association:
   is_a: closest gene to variant association
   description: >-
     holds between a sequence variant and a gene that is within the gene body
   represented_as: edge
-  input_label: in_gene
-  output_label: snp_in_gene
+  input_label: snp_in_gene
+  output_label: located_in
   source: snp
   target: gene
+  properties:
+    p_value: float
 
 topld in linkage disequilibrium with:
   is_a: related to at instance level
@@ -886,4 +894,3 @@ histone modification:
   target: uberon #TODO replace by cell ontology
   properties:
     modification: str
-
