@@ -754,6 +754,7 @@ upstream gene to variant association:
     holds between a sequence variant and a gene that is upstream to the variant
   represented_as: edge
   input_label: upstream_gene
+  output_label: snp_upstream_gene
   source: snp
   target: gene
 
@@ -765,6 +766,7 @@ downstream gene to variant association:
       holds between a sequence variant and a gene that is downstream to the variant
   represented_as: edge
   input_label: downstream_gene
+  output_label: snp_downstream_gene
   source: snp
   target: gene
 
@@ -774,6 +776,7 @@ in gene to variant association:
     holds between a sequence variant and a gene that is within the gene body
   represented_as: edge
   input_label: in_gene
+  output_label: snp_in_gene
   source: snp
   target: gene
 
@@ -890,7 +893,8 @@ histone modification:
   
 transcript_to_exon:
   is_a: related to at instance
-  description:
+  description: >-
+    An association between a transcript and its exons
   represented_as: edge
   input_label: includes
   source: transcript
