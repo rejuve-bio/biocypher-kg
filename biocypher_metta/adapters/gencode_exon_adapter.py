@@ -18,13 +18,13 @@ class GencodeExonAdapter(Adapter):
     ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_name', 'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, label, add_provenance, filepath=None,
+    def __init__(self, write_properties, add_provenance, label = 'exon', filepath=None,
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = label if label else 'exon'
+        self.label = label
         self.dataset = 'gencode_exon'
         self.source = 'GENCODE'
         self.version = 'v44'
@@ -49,8 +49,14 @@ class GencodeExonAdapter(Adapter):
                     info = self.parse_info_metadata(
                         split_line[GencodeExonAdapter.INDEX['info']:])
                     gene_id = info['gene_id'].split('.')[0]
+                    if info['gene_id'].endswith('PAR_Y'):
+                        gene_id = gene_id + '_PAR_Y'
                     transcript_id = info['transcript_id'].split('.')[0]
+                    if info['transcript_id'].endswith('_PAR_Y'):
+                        transcript_id = transcript_id + '_PAR_Y'
                     exon_id = info['exon_id'].split('.')[0]
+                    if info['exon_id'].endswith('_PAR_Y'):
+                        exon_id = exon_id + '_PAR_Y'
                     chr = split_line[GencodeExonAdapter.INDEX['chr']]
                     start = int(split_line[GencodeExonAdapter.INDEX['coord_start']])
                     end = int(split_line[GencodeExonAdapter.INDEX['coord_end']])
@@ -100,7 +106,6 @@ class GencodeExonAdapter(Adapter):
                     _props['source_url'] = self.source_url
 
                 try:
-                    _id = transcript_key + '_' + exon_key
                     _source = transcript_key
                     _target = exon_key
                     yield _source, _target, self.label, _props
