@@ -14,12 +14,11 @@ import gzip
 # rs1000000,RP5-944M2.2,ENSG00000256927,ENSG00000256927.1,-19556,G,A,1,114,127,0.208197,-0.322815,0.0769928,3.8271e-05,4.79365e-05,4.31358e-07,0.00132434,Pancreas.v8.signif_variant_gene_pairs.txt,chr12,126406434,chr12_126890980_G_A_b37,chr12_126406434_G_A_b38
 # rs10000003,HOPX,ENSG00000171476,ENSG00000171476.21,13582,A,G,1,182,215,0.288978,-0.172247,0.0417549,4.79443e-05,7.32855e-05,2.30038e-09,1.36078e-05,Heart_Atrial_Appendage.v8.signif_variant_gene_pairs.txt,chr4,56695481,chr4_57561647_A_G_b37,chr4_56695481_A_G_b38
 
-COL_DICT = {"rsid": 0, "gene_id": 2, "maf": 10, "slope": 11, 
-               "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
 
 class GTExExpressionAdapter(Adapter):
-    # 1-based coordinate system
 
+    index = {"rsid": 0, "gene_id": 2, "maf": 10, "slope": 11, 
+                "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
     def __init__(self, filepath, gtex_tissue_ontology_map,
                  write_properties, add_provenance, label,
                  tissue_names=None, chr=None, start=None, end=None):
@@ -56,10 +55,10 @@ class GTExExpressionAdapter(Adapter):
             qtl_csv = csv.reader(qtl)
             for row in qtl_csv:
                 try:
-                    chr, pos = row[COL_DICT["chr"]], row[COL_DICT["pos"]]
+                    chr, pos = row[self.index["chr"]], row[self.index["pos"]]
                     pos = int(pos)
-                    tissue = row[COL_DICT["tissue"]].split(".")[0]
-                    gene_id = row[COL_DICT["gene_id"]]
+                    tissue = row[self.index["tissue"]].split(".")[0]
+                    gene_id = row[self.index["gene_id"]]
                     ontology = self.gtex_tissue_ontology_map[tissue]
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         _source = gene_id
