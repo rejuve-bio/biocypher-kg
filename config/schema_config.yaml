@@ -903,4 +903,7 @@ transcript_to_exon:
   input_label: includes
   source: transcript
   target: exon
+  properties: 
+    source: str
+    source_url: str
 
