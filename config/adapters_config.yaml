@@ -822,3 +822,37 @@ gene_tfbs_association:
   outdir: tfbs
   nodes: False
   edges: True
+
+snp_to_upstream_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/snp_and_gene/gwas-catalog-associations_ontology-annotated.csv.gz
+      label: snp_upstream_gene
+  outdir: gwas/upstream
+  nodes: False
+  edges: True
+
+snp_to_downstream_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/snp_and_gene/gwas-catalog-associations_ontology-annotated.csv.gz
+      label: snp_downstream_gene
+  outdir: gwas/downstream
+  nodes: False
+  edges: True
+
+snp_to_in_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/snp_and_gene/gwas-catalog-associations_ontology-annotated.csv.gz
+      label: snp_in_gene
+  outdir: gwas/ingene
+  nodes: False
+  edges: True
+
