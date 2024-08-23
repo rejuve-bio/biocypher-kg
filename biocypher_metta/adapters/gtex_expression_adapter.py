@@ -21,28 +21,15 @@ class GTExExpressionAdapter(Adapter):
                 "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
     def __init__(self, filepath, gtex_tissue_ontology_map,
                  write_properties, add_provenance, label,
-                 tissue_names=None, chr=None, start=None, end=None):
-        """
-        :type filepath: str
-        :type tissue_names: str
-        :type chr: str
-        :type start: int
-        :type end: int
-        :param filepath: path to the directory containing eQTL data from GTEx
-        :param tissue_names: tissue names to be used as biological context. If None, then all tissues are imported
-        :param chr: chromosome name
-        :param start: start position
-        :param end: end position
-        """
+                 chr=None, start=None, end=None):
+      
         self.filepath = filepath
         self.gtex_tissue_ontology_map = pickle.load(open(gtex_tissue_ontology_map, 'rb'))
-        self.tissue_names = tissue_names
         self.chr = chr
         self.start = start
         self.end = end
         self.label = label
         self.source = 'GTEx'
-        # self.source_url = 'https://www.gtexportal.org/home/datasets'
         self.source_url = 'https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz'
         self.version = 'v8'
 
