@@ -9,12 +9,11 @@ position entity:
   is_a: biological entity
   input_label: position_entity
   description: >-
-      A biological entity that is defined by its position in the genome
+    A biological entity that is defined by its position in the genome
   properties:
     chr: str
     start: int
     end: int
-
 
 coding element:
   represented_as: node
@@ -22,7 +21,7 @@ coding element:
   inherit_properties: true
   input_label: coding_element
   description: >-
-      A region of a gene that codes for a protein or peptide
+    A region of a gene that codes for a protein or peptide
   properties:
     source: str
     source_url: str
@@ -33,7 +32,7 @@ non coding element:
   inherit_properties: true
   input_label: non_coding_element
   description: >-
-      A region of a gene that does not code for a protein or peptide
+    A region of a gene that does not code for a protein or peptide
   properties:
     biological_context: str
     source: str
@@ -45,7 +44,7 @@ genomic variant:
   inherit_properties: true
   input_label: genomic_variant
   description: >-
-      A genomic variant is a change in one or more sequence of a genome
+    A genomic variant is a change in one or more sequence of a genome
   properties:
     source: str
     source_url: str
@@ -56,7 +55,7 @@ epigenomic feature:
   inherit_properties: true
   input_label: epigenomic_feature
   description: >-
-      A region of the genome that is associated with epigenetic modifications
+    A region of the genome that is associated with epigenetic modifications
 
   properties:
     biological_context: str
@@ -68,7 +67,7 @@ epigenomic feature:
   is_a: position entity
   input_label: 3d_genome_structure
   description: >-
-      A region of the genome that is associated with 3D genome structure
+    A region of the genome that is associated with 3D genome structure
   properties:
     source: str
     source_url: str
@@ -103,7 +102,7 @@ gene:
   properties:
     gene_name: str
     gene_type: str
-    synonyms:  str[]
+    synonyms: str[]
 
 protein:
   represented_as: node
@@ -164,16 +163,14 @@ snp:
   description: >-
     A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
 
-
 structural variant:
   represented_as: node
   input_label: structural_variant
   is_a: genomic variant
   inherit_properties: true
   properties:
-      variant_type: str
-      evidence: str
-
+    variant_type: str
+    evidence: str
 
 sequence variant:
   represented_as: node
@@ -267,13 +264,13 @@ go:
     synonyms: str[]
     subontology: str
 
-# Uberon Ontology 
+# Uberon Ontology
 uberon:
   is_a: ontology term
   represented_as: node
   input_label: uberon
   properties:
-    uberon_id: str 
+    uberon_id: str
     uberon_name: str
     uberon_definition: str
     uberon_synonyms: str[]
@@ -328,7 +325,7 @@ motif:
   input_label: motif
   accessible_via:
     name: motifs
-    description: 'TF binding motifs.'
+    description: "TF binding motifs."
     fuzzy_text_search: tf_name
     return: _id, tf_name, source, source_url, pwm, length
   properties:
@@ -347,7 +344,7 @@ tad:
   is_a: 3d genome structure
   inherit_properties: true
   properties:
-        genes: str[]
+    genes: str[]
 
 # ---
 # Associations
@@ -466,7 +463,7 @@ post translational interaction:
 
 expressed in:
   description: >-
-      holds between a gene and an ontology term in which it is expressed
+    holds between a gene and an ontology term in which it is expressed
   is_a: expression
   inherit_properties: true
   represented_as: edge
@@ -537,24 +534,24 @@ gene to pathway association:
   target: pathway
 
 parent pathway of:
-    is_a: annotation
-    inherit_properties: true
-    description: >-
-      holds between two pathways where the domain class is a parent pathway of the range class
-    represented_as: edge
-    input_label: parent_pathway_of
-    source: pathway
-    target: pathway
+  is_a: annotation
+  inherit_properties: true
+  description: >-
+    holds between two pathways where the domain class is a parent pathway of the range class
+  represented_as: edge
+  input_label: parent_pathway_of
+  source: pathway
+  target: pathway
 
 child pathway of:
-    is_a: annotation
-    inherit_properties: true
-    description: >-
-      holds between two pathways where the domain class is a child pathway of the range class
-    represented_as: edge
-    input_label: child_pathway_of
-    source: pathway
-    target: pathway
+  is_a: annotation
+  inherit_properties: true
+  description: >-
+    holds between two pathways where the domain class is a child pathway of the range class
+  represented_as: edge
+  input_label: child_pathway_of
+  source: pathway
+  target: pathway
 
 bto subclass of:
   is_a: subclass of
@@ -657,7 +654,7 @@ enhancer to gene association:
 
 promoter to gene association:
   description: >-
-      An association between a promoter and a gene
+    An association between a promoter and a gene
   is_a: regulatory association
   inherit_properties: true
   represented_as: edge
@@ -666,8 +663,8 @@ promoter to gene association:
   source: promoter
   target: gene
   properties:
-      score: float
-      biological_context: str
+    score: float
+    biological_context: str
 
 super enhancer to gene association:
   description: >-
@@ -714,7 +711,7 @@ regulatory region to gene association:
     biological_context: str
 
 gtex variant to gene expression association:
-  aliases: [ 'eQTL', 'e-QTL']
+  aliases: ["eQTL", "e-QTL"]
   description: >-
     An association between a variant and expression of a gene (i.e. e-QTL)
   is_a: related to at instance level
@@ -753,36 +750,44 @@ upstream gene to variant association:
   description: >-
     holds between a sequence variant and a gene that is upstream to the variant
   represented_as: edge
-  input_label: upstream_gene
-  output_label: snp_upstream_gene
+  input_label: snp_upstream_gene
+  output_label: upstream_of
   source: snp
   target: gene
-
+  properties:
+    distance: int
+    p_value: float
 
 downstream gene to variant association:
   is_a: closest gene to variant association
   inherit_properties: true
   description: >-
-      holds between a sequence variant and a gene that is downstream to the variant
+    holds between a sequence variant and a gene that is downstream to the variant
   represented_as: edge
-  input_label: downstream_gene
-  output_label: snp_downstream_gene
+  input_label: snp_downstream_gene
+  output_label: downstream_of
   source: snp
   target: gene
+  properties:
+    distance: int
+    p_value: float
 
 in gene to variant association:
   is_a: closest gene to variant association
   description: >-
     holds between a sequence variant and a gene that is within the gene body
   represented_as: edge
-  input_label: in_gene
-  output_label: snp_in_gene
+  input_label: snp_in_gene
+  output_label: located_in
   source: snp
   target: gene
+  properties:
+    p_value: float
 
 topld in linkage disequilibrium with:
   is_a: related to at instance level
-  description: holds between two sequence variants, the presence of which are correlated
+  description:
+    holds between two sequence variants, the presence of which are correlated
     in a population
   represented_as: edge
   input_label: in_ld_with
@@ -794,7 +799,6 @@ topld in linkage disequilibrium with:
     d_prime: float
     source: str
     source_url: str
-
 
 lower resolution structure:
   is_a: related to at instance level
@@ -890,7 +894,7 @@ histone modification:
   target: uberon #TODO replace by cell ontology
   properties:
     modification: str
-  
+    
 transcript_to_exon:
   is_a: related to at instance
   description: >-
@@ -899,3 +903,4 @@ transcript_to_exon:
   input_label: includes
   source: transcript
   target: exon
+
