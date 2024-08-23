@@ -894,3 +894,16 @@ histone modification:
   target: uberon #TODO replace by cell ontology
   properties:
     modification: str
+    
+transcript_to_exon:
+  is_a: related to at instance
+  description: >-
+    An association between a transcript and its exons
+  represented_as: edge
+  input_label: includes
+  source: transcript
+  target: exon
+  properties: 
+    source: str
+    source_url: str
+
