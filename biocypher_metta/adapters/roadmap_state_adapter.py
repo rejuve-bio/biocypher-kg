@@ -27,7 +27,7 @@ class RoadMapChromatinStateAdapter(Adapter):
         """
         self.filepath = filepath
         assert os.path.isdir(self.filepath), "The path to the directory containing epigenomic data is not directory"
-        self.tissue_to_ontology_id_map = pickle.load(open(cell_to_ontology_id_map, 'rb'))
+        self.cell_to_ontology_id_map = pickle.load(open(cell_to_ontology_id_map, 'rb'))
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
@@ -49,12 +49,12 @@ class RoadMapChromatinStateAdapter(Adapter):
                         _id = row[0]
                         chr = self.dbsnp_rsid_map[_id]["chr"]
                         pos = self.dbsnp_rsid_map[_id]["pos"]
-                        tissue = row[COL_DICT['tissue']].replace('"', '').replace("'", '')
-                        biological_context = self.tissue_to_ontology_id_map.get(tissue, None) # TODO use cell type
+                        cell_id = row[COL_DICT['cell']].replace('"', '').replace("'", '')
+                        biological_context = self.cell_to_ontology_id_map.get(cell_id, None) # TODO use cell type
                         if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                             _props = {}
                             if biological_context == None:
-                                print(f"{tissue} not found in ontology map skipping...")
+                                print(f"{cell_id} not found in ontology map skipping...")
                                 continue
                             
                             _source = _id

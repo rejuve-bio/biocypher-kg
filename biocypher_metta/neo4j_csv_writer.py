@@ -177,12 +177,23 @@ RETURN batches, total;
         for edge in edges:
             source_id, target_id, label, properties = edge
             label = label.lower()
+            source_type = self.edge_node_types[label]["source"]
+            target_type = self.edge_node_types[label]["target"]
+            if source_type == 'ontology_term':
+                source_type = self.preprocess_id(source_id).split('_')[0]
+            if target_type == 'ontology_term':
+                target_type = self.preprocess_id(target_id).split('_')[0]
+            output_label = self.edge_node_types[label]["output_label"]
+            if output_label is None:
+                output_label = label
             if label not in edge_groups:
                 edge_groups[label] = []
             edge_groups[label].append({
+                'source_type': source_type,
                 'source_id': self.preprocess_id(source_id),
+                'target_type': target_type,
                 'target_id': self.preprocess_id(target_id),
-                'label': label,
+                'label': output_label,
                 **properties
             })
 
@@ -191,9 +202,7 @@ RETURN batches, total;
             # File paths for CSV and Cypher files
             csv_file_path = output_dir / f"edges_{label}.csv"
             cypher_file_path = output_dir / f"edges_{label}.cypher"
-            
-            source_type = self.edge_node_types[label]["source"]
-            target_type = self.edge_node_types[label]["target"]
+
             output_label = self.edge_node_types[label]["output_label"]
             if output_label is not None:
                 label = output_label
@@ -206,10 +215,10 @@ RETURN batches, total;
                 cypher_query = f"""
 CALL apoc.periodic.iterate(
     "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MATCH (source:{source_type} {{id: row.source_id}})
-    MATCH (target:{target_type} {{id: row.target_id}})
+    "MATCH (source:row.source_type {{id: row.source_id}})
+    MATCH (target:row.target_type {{id: row.target_id}})
     MERGE (source)-[r:{label}]->(target)
-    SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label'])",
+    SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
     {{batchSize:1000, parallel:true, concurrency:4}}
 )
 YIELD batches, total
