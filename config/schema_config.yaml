@@ -732,6 +732,16 @@ gtex variant to gene expression association:
     source: str
     source_url: str
 
+gtex gene to ontology expression:
+  description: >-
+    An expression association between a gene and ontology of a gene
+  is_a: expression association
+  represented_as: edge
+  input_label: gtex_gene_ontology_expression
+  output_label: express_in
+  source: gene
+  target: ontology
+  
 closest gene to variant association:
   is_a: related to at instance level
   description: >-
