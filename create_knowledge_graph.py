@@ -3,7 +3,7 @@ Knowledge graph generation through BioCypher script
 """
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
-from biocypher_metta.neo4j_writer import *
+from biocypher_metta.neo4j_csv_writer import *
 from biocypher._logger import logger
 import typer
 import yaml
@@ -24,7 +24,7 @@ def get_writer(writer_type: str, output_dir: pathlib.Path):
                             biocypher_config="config/biocypher_config.yaml",
                             output_dir=output_dir)
     elif writer_type == 'neo4j':
-        return Neo4jWriter(schema_config="config/schema_config.yaml",
+        return Neo4jCSVWriter(schema_config="config/schema_config.yaml",
                             biocypher_config="config/biocypher_config.yaml",
                             output_dir=output_dir)
     else:
