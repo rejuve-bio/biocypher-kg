@@ -88,7 +88,7 @@ class PEREGRINEAdapter(Adapter):
             props = {}
             if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                 if self.write_properties:
-                    props['id'] = enhancer_id
+                    props['enhancer_id'] = enhancer_id
                     props['chr'] = chr
                     props['start'] = start
                     props['end'] = end

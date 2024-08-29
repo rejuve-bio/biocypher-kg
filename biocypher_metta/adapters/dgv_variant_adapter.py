@@ -43,7 +43,7 @@ class DGVVariantAdapter(Adapter):
                 props = {}
 
                 if self.write_properties:
-                    props['id'] = variant_accession
+                    props['variant_accession'] = variant_accession
                     props['chr'] = chr
                     props['start'] = start
                     props['end'] = end
