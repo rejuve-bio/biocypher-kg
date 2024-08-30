@@ -17,7 +17,7 @@ COL_DICT = {'rsid': 0, 'dataset': 1, 'cell': 2, 'tissue': 3, 'datatype': 4}
 
 class RoadMapH3MarkAdapter(Adapter):
 
-    def __init__(self, filepath, tissue_to_ontology_id_map, 
+    def __init__(self, filepath, cell_to_ontology_id_map, 
                  dbsnp_rsid_map, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         """
@@ -29,7 +29,7 @@ class RoadMapH3MarkAdapter(Adapter):
         """
         self.filepath = filepath
         assert os.path.isdir(self.filepath), "The path to the directory containing epigenomic data is not directory"
-        self.tissue_to_ontology_id_map = pickle.load(open(tissue_to_ontology_id_map, 'rb'))
+        self.cell_to_ontology_id_map = pickle.load(open(cell_to_ontology_id_map, 'rb'))
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
@@ -52,14 +52,14 @@ class RoadMapH3MarkAdapter(Adapter):
                         _id = row[0]
                         chr = self.dbsnp_rsid_map[_id]["chr"]
                         pos = self.dbsnp_rsid_map[_id]["pos"]
-                        tissue = row[COL_DICT['tissue']].replace('"', '').replace("'", '')
-                        biological_context = self.tissue_to_ontology_id_map.get(tissue, None)
+                        cell_id = row[COL_DICT['cell']].replace('"', '').replace("'", '')
+                        biological_context = self.cell_to_ontology_id_map.get(cell_id, None)
                         if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                             _source = _id
                             _target = biological_context
                             _props = {}
                             if biological_context == None:
-                                print(f"{tissue} not found in ontology map skipping...")
+                                print(f"{cell_id} not found in ontology map skipping...")
                                 continue
 
                             if self.write_properties:
