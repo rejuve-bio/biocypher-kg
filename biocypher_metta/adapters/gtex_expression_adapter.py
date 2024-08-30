@@ -50,7 +50,9 @@ class GTExExpressionAdapter(Adapter):
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         _source = gene_id
                         _target = ontology
-                        _props = {}
+                        _props = {
+                            'p_value': to_float(row[self.index["p_value"]]),
+                        }
                         if self.write_properties:
                             if self.add_provenance:
                                 _props['source'] = self.source
