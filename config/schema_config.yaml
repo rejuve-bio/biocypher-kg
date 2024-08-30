@@ -894,7 +894,7 @@ histone modification:
   target: uberon #TODO replace by cell ontology
   properties:
     modification: str
-    
+
 transcript_to_exon:
   is_a: related to at instance
   description: >-
