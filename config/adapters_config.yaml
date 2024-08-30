@@ -276,7 +276,7 @@ roadmap_chromatin_state:
     cls: RoadMapChromatinStateAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/chromatin_state
-      tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
+      cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
       chr: chr16
       start: 53000000
@@ -291,7 +291,7 @@ roadmap_h3_mark:
     cls: RoadMapH3MarkAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/h3_marks
-      tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
+      cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
       chr: chr16
       start: 53000000
@@ -306,7 +306,7 @@ roadmap_dhs:
     cls: RoadMapDHSAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz
-      tissue_to_ontology_id_map: ./aux_files/roadmap_tissues_to_ontology_map.pkl
+      cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
       chr: chr16
       start: 53000000
@@ -430,6 +430,17 @@ gencode_exon:
   outdir: gencode/exon
   nodes: True
   edges: False
+
+transcript_includes_exon:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      label: includes
+  outdir: gencode/exon
+  nodes: False
+
 
 rna_central_non_coding_rna:
   adapter:
@@ -815,3 +826,37 @@ gene_tfbs_association:
   outdir: tfbs
   nodes: False
   edges: True
+
+snp_to_upstream_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/snp_and_gene/gwas-catalog-associations_ontology-annotated.csv.gz
+      label: snp_upstream_gene
+  outdir: gwas/upstream
+  nodes: False
+  edges: True
+
+snp_to_downstream_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/snp_and_gene/gwas-catalog-associations_ontology-annotated.csv.gz
+      label: snp_downstream_gene
+  outdir: gwas/downstream
+  nodes: False
+  edges: True
+
+snp_to_in_gene:
+  adapter:
+    module: biocypher_metta.adapters.gwas_adapter
+    cls: GWASAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/snp_and_gene/gwas-catalog-associations_ontology-annotated.csv.gz
+      label: snp_in_gene
+  outdir: gwas/ingene
+  nodes: False
+  edges: True
+
