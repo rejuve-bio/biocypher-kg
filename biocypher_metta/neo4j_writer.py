@@ -130,13 +130,28 @@ class Neo4jWriter:
         for k, v in properties.items():
             if k in self.excluded_properties or v is None or v == "":
                 continue
+            
             if isinstance(v, list):
-                prop = "[" + ", ".join(f'"{e}"' for e in v) + "]"
+                formatted_list = []
+                for e in v:
+                    if isinstance(e, str):
+                        cleaned_str = e.replace('"', '').replace("'", "")
+                        formatted_list.append(f'"{cleaned_str}"')
+                    else:
+                        formatted_list.append(str(e))
+                prop = "[" + ", ".join(formatted_list) + "]"
             elif isinstance(v, dict):
-                prop = self._format_properties(v)
+                prop = "{" + self._format_properties(v) + "}"
+            elif isinstance(v, str):
+                cleaned_str = v.replace('"', '').replace("'", "")
+                prop = f'"{cleaned_str}"'
+            elif isinstance(v, int) or isinstance(v, float):
+                prop = v
             else:
-                prop = f'"{v}"'
+                prop = v
+        
             out_str.append(f"{k}: {prop}")
+        
         return ", ".join(out_str)
 
     def convert_input_labels(self, label, replace_char="_"):

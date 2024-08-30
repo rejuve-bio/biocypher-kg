@@ -249,6 +249,19 @@ gtex_eqtl:
   nodes: False
   edges: True
 
+gtex_expression:
+  adapter:
+    module: biocypher_metta.adapters.gtex_expression_adapter
+    cls: GTExExpressionAdapter
+    args:
+      filepath: ./samples/gtex.forgedb.sample.csv.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      label: expressed_in
+
+  outdir: gtex/expression
+  nodes: False
+  edges: True
+
 hocomoco:
   adapter:
     module: biocypher_metta.adapters.hocomoco_motif_adapter
