@@ -744,6 +744,46 @@ closest gene to variant association:
     source: str
     source_url: str
 
+upstream gene to variant association:
+  is_a: closest gene to variant association
+  inherit_properties: true
+  description: >-
+    holds between a sequence variant and a gene that is upstream to the variant
+  represented_as: edge
+  input_label: snp_upstream_gene
+  output_label: upstream_of
+  source: snp
+  target: gene
+  properties:
+    distance: int
+    p_value: float
+
+downstream gene to variant association:
+  is_a: closest gene to variant association
+  inherit_properties: true
+  description: >-
+    holds between a sequence variant and a gene that is downstream to the variant
+  represented_as: edge
+  input_label: snp_downstream_gene
+  output_label: downstream_of
+  source: snp
+  target: gene
+  properties:
+    distance: int
+    p_value: float
+
+in gene to variant association:
+  is_a: closest gene to variant association
+  description: >-
+    holds between a sequence variant and a gene that is within the gene body
+  represented_as: edge
+  input_label: snp_in_gene
+  output_label: located_in
+  source: snp
+  target: gene
+  properties:
+    p_value: float
+
 topld in linkage disequilibrium with:
   is_a: related to at instance level
   description:
@@ -854,3 +894,16 @@ histone modification:
   target: uberon #TODO replace by cell ontology
   properties:
     modification: str
+
+transcript_to_exon:
+  is_a: related to at instance
+  description: >-
+    An association between a transcript and its exons
+  represented_as: edge
+  input_label: includes
+  source: transcript
+  target: exon
+  properties: 
+    source: str
+    source_url: str
+
