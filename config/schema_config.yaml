@@ -757,35 +757,6 @@ closest gene to variant association:
     source: str
     source_url: str
 
-upstream gene to variant association:
-  is_a: closest gene to variant association
-  inherit_properties: true
-  description: >-
-    holds between a sequence variant and a gene that is upstream to the variant
-  represented_as: edge
-  input_label: upstream_gene
-  source: snp
-  target: gene
-
-downstream gene to variant association:
-  is_a: closest gene to variant association
-  inherit_properties: true
-  description: >-
-    holds between a sequence variant and a gene that is downstream to the variant
-  represented_as: edge
-  input_label: downstream_gene
-  source: snp
-  target: gene
-
-in gene to variant association:
-  is_a: closest gene to variant association
-  description: >-
-    holds between a sequence variant and a gene that is within the gene body
-  represented_as: edge
-  input_label: in_gene
-  source: snp
-  target: gene
-
 topld in linkage disequilibrium with:
   is_a: related to at instance level
   description:
