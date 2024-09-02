@@ -1,40 +1,44 @@
+import yaml
 import subprocess
 import os
-import re
 
-def get_changed_files():
+def get_file_content(commit, filename):
     try:
-        output = subprocess.check_output(['git', 'diff', '--name-only', 'HEAD^', 'HEAD'], text=True)
-        return output.splitlines()
-    except subprocess.CalledProcessError as e:
-        print(f"Error getting changed files: {e}")
-        return []
+        return subprocess.check_output(['git', 'show', f'{commit}:{filename}'], text=True)
+    except subprocess.CalledProcessError:
+        return None
 
-def detect_writer_changes():
-    changed_files = get_changed_files()
+def detect_config_changes():
+    current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+    previous_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD^'], text=True).strip()
     
-    writer_pattern = re.compile(r'biocypher_metta/(metta|neo4j_csv|prolog)_writer\.py')
-    changed_writers = set()
-
-    for file in changed_files:
-        match = writer_pattern.search(file)
-        if match:
-            changed_writers.add(match.group(1))
-
-    all_writers = "metta,neo4j_csv,prolog"
+    filename = 'config/adapters_config_sample.yaml'
     
-    output_file = os.path.join(os.environ.get('GITHUB_WORKSPACE', ''), '.github/changed_writers.txt')
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    current_content = get_file_content(current_commit, filename)
+    previous_content = get_file_content(previous_commit, filename)
+    
+    if current_content is None or previous_content is None:
+        print(f"Error: Couldn't retrieve content for {filename}")
+        return
+    
+    current_config = yaml.safe_load(current_content)
+    previous_config = yaml.safe_load(previous_content)
+    
+    changed_items = []
+    
+    for key in current_config:
+        if key not in previous_config or current_config[key] != previous_config[key]:
+            changed_items.append(key)
+    
+    for key in previous_config:
+        if key not in current_config:
+            changed_items.append(key)
+    
+    output_file = os.path.join(os.environ['GITHUB_WORKSPACE'], '.github/changed_config_items.txt')
     with open(output_file, 'w') as f:
-        f.write(','.join(changed_writers))
-
-    print(f"Changed writers: {', '.join(changed_writers)}")
-    print(f"All writers: {all_writers}")
-
-    # Set GitHub Actions output
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-        f.write(f"writers={','.join(changed_writers)}\n")
-        f.write(f"all_writers={all_writers}\n")
+        f.write(','.join(changed_items))
+    
+    print(f"Changed config items: {', '.join(changed_items)}")
 
 if __name__ == "__main__":
-    detect_writer_changes()
+    detect_config_changes()
