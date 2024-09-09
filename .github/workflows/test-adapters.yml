@@ -44,7 +44,7 @@ jobs:
           echo "$CHANGED_FILES"
           ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
           WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog)(?=_writer\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
-          ALL_WRITERS="metta,neo4j_csv,prolog"
+          ALL_WRITERS="metta,neo4j,prolog"
           echo "adapters=$ADAPTERS" >> $GITHUB_OUTPUT
           echo "writers=$WRITERS" >> $GITHUB_OUTPUT
           echo "all_writers=$ALL_WRITERS" >> $GITHUB_OUTPUT
@@ -117,6 +117,18 @@ jobs:
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-poetry-
+      - name: Cache ontology datasets
+        uses: actions/cache@v3
+        with:
+          path: caches
+          key: ${{ runner.os }}-ontology-${{ hashFiles('caches/**/*.owl') }}
+          restore-keys: |
+            ${{ runner.os }}-ontology-
+      - name: List cache contents
+        run: |
+          echo "Cache contents before task execution:"
+          du -sh caches
+          find caches -type f -exec du -h {} +
       - name: Install dependencies
         run: |
           pip install poetry
@@ -155,3 +167,23 @@ jobs:
           else
             echo "No relevant changes detected for this writer. Skipping."
           fi
+      - name: Update ontology cache
+        if: always()
+        run: |
+          if [ -d "caches" ]; then
+            echo "Updating ontology cache"
+            find caches -name "*.owl" | xargs md5sum > caches_md5.txt
+          else
+            echo "No caches directory found"
+          fi
+      - name: Upload updated cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: caches
+          key: ${{ runner.os }}-ontology-${{ hashFiles('caches_md5.txt') }}
+      - name: List updated cache contents
+        run: |
+          echo "Cache contents after task execution:"
+          du -sh caches
+          find caches -type f -exec du -h {} +
