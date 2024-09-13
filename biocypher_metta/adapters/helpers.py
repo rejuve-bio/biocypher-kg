@@ -38,6 +38,10 @@ def build_regulatory_region_id(chr, pos_start, pos_end, assembly='GRCh38'):
     # return '{}_{}_{}_{}_{}'.format(class_name, chr, pos_start, pos_end, assembly)
     return '{}_{}_{}_{}'.format(chr, pos_start, pos_end, assembly)
 
+@assembly_check
+def build_chr_chain_id(chr, pos_start, pos_end, resolution, assembly='GRCh38'):
+    # return '{}_{}_{}_{}_{}'.format(class_name, chr, pos_start, pos_end, resolution, assembly)
+    return '{}_{}_{}_{}_{}'.format(chr, pos_start, pos_end, resolution, assembly)
 
 @assembly_check
 def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
