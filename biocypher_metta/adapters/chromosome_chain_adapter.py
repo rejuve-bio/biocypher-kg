@@ -2,6 +2,10 @@ import math
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_chr_chain_id
 
+# Example chromosome size input file
+# chr1	248956422
+# chr2	242193529
+# chr3	198295559
 
 class ChromosomeChainAdapter(Adapter):
     ALLOWED_LABELS = ['chromosome_chain',
