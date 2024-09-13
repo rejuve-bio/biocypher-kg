@@ -825,3 +825,56 @@ snp_to_in_gene:
   outdir: gwas/ingene
   nodes: False
   edges: True
+
+chromosome_chains:
+  adapter:
+    module: biocypher_metta.adapters.chromosome_chain_adapter
+    cls: ChromosomeChainAdapter
+    args:
+      file_path: ./samples/hg38.chrom.sizes
+      dry_run: True
+      resolutions: 
+        - 50000
+        - 10000
+        - 5000
+        - 1000
+        - 200
+  outdir: chromosome_chain
+  nodes: True
+  edges: False
+
+next_chromosome_chain:
+  adapter:
+    module: biocypher_metta.adapters.chromosome_chain_adapter
+    cls: ChromosomeChainAdapter
+    args:
+      file_path: ./samples/hg38.chrom.sizes
+      label: next_chain
+      dry_run: True
+      resolutions:
+        - 50000
+        - 10000
+        - 5000
+        - 1000
+        - 200
+  outdir: chromosome_chain
+  nodes: False
+  edges: True
+
+lower_resolution_chromosome_chain:
+  adapter:
+    module: biocypher_metta.adapters.chromosome_chain_adapter
+    cls: ChromosomeChainAdapter
+    args:
+      file_path: ./samples/hg38.chrom.sizes
+      label: lower_resolution
+      dry_run: True
+      resolutions:
+        - 50000
+        - 10000
+        - 5000
+        - 1000
+        - 200
+  outdir: chromosome_chain
+  nodes: False
+  edges: True

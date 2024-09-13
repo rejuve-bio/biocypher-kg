@@ -93,8 +93,6 @@ chromosome chain:
   inherit_properties: true
   input_label: chromosome_chain
   properties:
-    chain_id: str
-    next_start: int
     resolution: int
 
 # coding elements
@@ -806,6 +804,15 @@ lower resolution structure:
     holds between two chromosome chains where one is a lower resolution version of the other
   represented_as: edge
   input_label: lower_resolution
+  source: chromosome_chain
+  target: chromosome_chain
+
+next chain:
+  is_a: related to at instance level
+  description: >-
+    holds between two chromosome chains of same resolution where one is a next chain of the other
+  represented_as: edge
+  input_label: next_chain
   source: chromosome_chain
   target: chromosome_chain
 
