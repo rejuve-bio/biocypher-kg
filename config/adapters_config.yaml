@@ -874,3 +874,52 @@ snp_to_in_gene:
   nodes: False
   edges: True
 
+chromosome_chains:
+  adapter:
+    module: biocypher_metta.adapters.chromosome_chain_adapter
+    cls: ChromosomeChainAdapter
+    args:
+      file_path: /mnt/hdd_2/abdu/biocypher_data/chromosome_sizes/hg38.chrom.sizes
+      resolutions: 
+        - 50000
+        - 10000
+        - 5000
+        - 1000
+        - 200
+  outdir: chromosome_chain
+  nodes: True
+  edges: False
+
+next_chromosome_chain:
+  adapter:
+    module: biocypher_metta.adapters.chromosome_chain_adapter
+    cls: ChromosomeChainAdapter
+    args:
+      file_path: /mnt/hdd_2/abdu/biocypher_data/chromosome_sizes/hg38.chrom.sizes
+      label: next_chain
+      resolutions:
+        - 50000
+        - 10000
+        - 5000
+        - 1000
+        - 200
+  outdir: chromosome_chain
+  nodes: False
+  edges: True
+
+lower_resolution_chromosome_chain:
+  adapter:
+    module: biocypher_metta.adapters.chromosome_chain_adapter
+    cls: ChromosomeChainAdapter
+    args:
+      file_path: /mnt/hdd_2/abdu/biocypher_data/chromosome_sizes/hg38.chrom.sizes
+      label: lower_resolution
+      resolutions:
+        - 50000
+        - 10000
+        - 5000
+        - 1000
+        - 200
+  outdir: chromosome_chain
+  nodes: False
+  edges: True
