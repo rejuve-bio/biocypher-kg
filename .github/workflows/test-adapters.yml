@@ -117,6 +117,13 @@ jobs:
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-poetry-
+      - name: Cache ontology datasets
+        uses: actions/cache@v3
+        with:
+          path: ontology_cache
+          key: ${{ runner.os }}-ontology-${{ hashFiles('ontology_cache/**/*.owl', 'ontology_cache/**/*_meta.json') }}
+          restore-keys: |
+            ${{ runner.os }}-ontology-
       
       - name: Install dependencies
         run: |
@@ -156,4 +163,18 @@ jobs:
           else
             echo "No relevant changes detected for this writer. Skipping."
           fi
-      
+      - name: Update ontology cache
+        if: always()
+        run: |
+          if [ -d "ontology_cache" ]; then
+            echo "Updating ontology cache"
+            find ontology_cache -type f \( -name "*.owl" -o -name "*_meta.json" \) -exec md5sum {} \; > ontology_cache_md5.txt
+          else
+            echo "No ontology_cache directory found"
+          fi
+      - name: Upload updated cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: ontology_cache
+          key: ${{ runner.os }}-ontology-${{ hashFiles('ontology_cache_md5.txt') }}

@@ -13,8 +13,8 @@ class CellOntologyAdapter(OntologyAdapter):
     GO_URI_PREFIX = 'http://purl.obolibrary.org/obo/GO_'
     UBERON_URI_PREFIX = 'http://purl.obolibrary.org/obo/UBERON_'
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False, add_description=False):
-        super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description)
+    def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False, add_description=False, cache_dir=None):
+        super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
        
         
     def get_ontology_source(self):
