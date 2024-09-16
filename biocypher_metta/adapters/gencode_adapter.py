@@ -1,6 +1,7 @@
 from biocypher_metta.adapters import Adapter
 import gzip
 
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
@@ -14,11 +15,13 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 
 
-class GencodeAdapter(Adapter):
+class GencodeAdapter(Adapter, ChromosomeChainMixin):
     ALLOWED_TYPES = ['transcript',
-                     'transcribed to', 'transcribed from']
+                     'transcribed to', 'transcribed from',
+                     'transcript located on chain']
     ALLOWED_LABELS = ['transcript',
-                      'transcribed_to', 'transcribed_from']
+                      'transcribed_to', 'transcribed_from',
+                      'transcript_located_on_chain']
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_name',
                     'transcript_id', 'transcript_type', 'transcript_name']
 
@@ -26,7 +29,8 @@ class GencodeAdapter(Adapter):
 
     def __init__(self, write_properties, add_provenance, filepath=None, 
                  type='gene', label='gencode_gene', 
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         if label not in GencodeAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid labelS. Allowed values: ' +
                              ','.join(GencodeAdapter.ALLOWED_LABELS))
@@ -38,6 +42,7 @@ class GencodeAdapter(Adapter):
         self.end = end
         self.label = label
         self.dataset = label
+        self.resolutions = resolutions
 
         self.source = 'GENCODE'
         self.version = 'v44'
@@ -112,7 +117,11 @@ class GencodeAdapter(Adapter):
                 gene_key = info['gene_id'].split('.')[0]
                 if info['gene_id'].endswith('_PAR_Y'):
                     gene_key = gene_key + '_PAR_Y'
-               
+
+                data = data_line[:GencodeAdapter.INDEX['info']]
+                chr = data[GencodeAdapter.INDEX['chr']]
+                start = int(data[GencodeAdapter.INDEX['coord_start']])
+                end = int(data[GencodeAdapter.INDEX['coord_end']])
                 _props = {}
                 if self.write_properties and self.add_provenance:
                     _props['source'] = self.source
@@ -129,6 +138,8 @@ class GencodeAdapter(Adapter):
                         _source = transcript_key
                         _target = gene_key
                         yield _source, _target, self.label, _props
+                    elif self.type == 'transcript located on chain':
+                        yield from self.get_located_on_chain_edges(transcript_key, chr, start, end)
                 except:
                     print(
                         f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')

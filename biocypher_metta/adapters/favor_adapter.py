@@ -1,4 +1,5 @@
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import build_variant_id, to_float, check_genomic_location
 import json
 import os
@@ -53,19 +54,21 @@ FIELDS = {'chromosome': 3, 'start_position': 4, 'ref_vcf': 9, 'alt_vcf': 10, 'al
           'polyphen_val': 99, 'cadd_rawscore': 161, 'cadd_phred': 162, 'refseq_category': 174, 'tg_afr': 179,
           'tg_all': 180, 'tg_amr': 181, 'tg_eas': 182, 'tg_eur': 183, 'tg_sas': 184}
 
-class FavorAdapter(Adapter):
+class FavorAdapter(Adapter, ChromosomeChainMixin):
     # Originally 1-based coordinate system
     # Converted to 0-based
 
     WRITE_THRESHOLD = 1000000
 
-    def __init__(self, write_properties, add_provenance, 
-                 filepath=None, chr=None, start=None, end=None):
+    def __init__(self, write_properties, add_provenance, label="sequence_variant",
+                 filepath=None, chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = "sequence_variant"
+        self.label = label
+        self.resolutions = resolutions
         self.source = "FAVOR"
         self.source_url = "http://favor.genohub.org/"
 
@@ -130,3 +133,20 @@ class FavorAdapter(Adapter):
 
                     yield id, self.label, props
 
+    def get_edges(self):
+        with open(self.filepath, 'r') as f:
+            next(f)
+            reader = csv.reader(f, delimiter=',')
+
+            for row in reader:
+
+                chr = "chr" + row[FIELDS["chromosome"]]
+                pos = int(row[FIELDS["start_position"]])
+
+                if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
+                    id = build_variant_id(
+                        chr, pos,
+                        row[FIELDS["ref_vcf"]],
+                        row[FIELDS["alt_vcf"]])
+
+                    yield from self.get_located_on_chain_edges(id, chr, pos, pos)       

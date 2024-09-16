@@ -3,6 +3,7 @@ import gzip
 import pickle
 
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 # Example PEREGRINE input files:
 
@@ -26,7 +27,7 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # EH37E0436909	ENCODE
 # EH37E0436910	ENCODE
 
-class PEREGRINEAdapter(Adapter):
+class PEREGRINEAdapter(Adapter, ChromosomeChainMixin):
     ALLOWED_TYPES = ['enhancer', 'enhancer to gene association']
     ALLOWED_LABELS = ['enhancer', 'enhancer_gene']
     ALLOWED_KEYS = []
@@ -36,7 +37,8 @@ class PEREGRINEAdapter(Adapter):
                  source_file, hgnc_ensembl_map, 
                  tissue_ontology_map, write_properties, add_provenance, 
                  type='enhancer', label='enhancer', delimiter='\t',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         
         self.enhancers_file = enhancers_file
         self.enhancer_gene_link = enhancer_gene_link
@@ -49,6 +51,7 @@ class PEREGRINEAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
+        self.resolutions = resolutions
 
         self.source = 'PEREGRINE'
         self.version = ''
@@ -111,7 +114,12 @@ class PEREGRINEAdapter(Adapter):
                 end = int(line[self.INDEX['end']])
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     region_id = build_regulatory_region_id(chr, start, end)
-                    enhancer_id_map[id] = region_id
+                    enhancer_id_map[id] = {
+                    'region_id': region_id,
+                    'chr': chr,
+                    'start': start,
+                    'end': end,
+                }
         
         with gzip.open(self.enhancer_gene_link, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
@@ -120,7 +128,10 @@ class PEREGRINEAdapter(Adapter):
                 id = line[self.INDEX['enhancer']]
                 if id not in enhancer_id_map:
                     continue
-                enhancer_region_id = enhancer_id_map[id]
+                enhancer_region_id = enhancer_id_map[id]['region_id']
+                chr = enhancer_id_map[id]['chr']
+                start = enhancer_id_map[id]['start']
+                end = enhancer_id_map[id]['end']
                 gene_hgnc_id = self.handle_gene(line[self.INDEX['gene']])
                 if gene_hgnc_id not in self.hgnc_ensembl_map:
                     continue
@@ -131,16 +142,19 @@ class PEREGRINEAdapter(Adapter):
                     score = line[self.INDEX['score']]
                 if tissue_id not in self.tissue_ontology_map:
                     continue
-
-                props = {}
-                if self.write_properties:
-                    props['biological_context'] = self.tissue_ontology_map[tissue_id][0]
-                    if score:
-                        props['score'] = to_float(score)
-
-                    if self.add_provenance:
-                        props['source'] = self.source
-                        props['source_url'] = self.source_url
                 
-                yield enhancer_region_id, gene, self.label, props
-            
+                if self.label == 'enhancer_gene':
+                    props = {}
+                    if self.write_properties:
+                        props['biological_context'] = self.tissue_ontology_map[tissue_id][0]
+                        if score:
+                            props['score'] = to_float(score)
+
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                    
+                    yield enhancer_region_id, gene, self.label, props
+                
+                elif self.label == 'enhancer_located_on_chain':
+                    yield from self.get_located_on_chain_edges(enhancer_region_id, chr, start, end)

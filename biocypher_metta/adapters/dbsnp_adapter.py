@@ -1,5 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 # Exaple dbSNP vcf input file:
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
@@ -7,16 +8,18 @@ from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 # 1	10352	rs555500075	T	TA	.	.	RS=555500075;RSPOS=10352;dbSNPBuildID=142;SSR=0;SAO=0;VP=0x050000020005170026000200;GENEINFO=DDX11L1:100287102;WGT=1;VC=DIV;R5;ASP;VLD;G5A;G5;KGPhase3;CAF=0.5625,0.4375;COMMON=1;TOPMED=0.86356396534148827,0.13643603465851172
 # 1	10616	rs376342519	CCGCCGTTGCAAAGGCGCGCCG	C	.	.	RS=376342519;RSPOS=10617;dbSNPBuildID=142;SSR=0;SAO=0;VP=0x050000020005040026000200;GENEINFO=DDX11L1:100287102;WGT=1;VC=DIV;R5;ASP;VLD;KGPhase3;CAF=0.006989,0.993;COMMON=1
 
-class DBSNPAdapter(Adapter):
+class DBSNPAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr': 0, 'pos': 1, 'id': 2, 'ref': 3, 'alt': 4, 'info': 7}
     def __init__(self, filepath, write_properties, add_provenance,
-                 chr=None, start=None, end=None):
+                 label='snp', chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'snp'
-
+        self.label = label
+        self.resolutions = resolutions
+        
         self.source = 'dbSNP'
         self.version = '2.0'
         self.source_url = 'https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/'
@@ -65,3 +68,15 @@ class DBSNPAdapter(Adapter):
                             props['source_url'] = self.source_url
                     
                     yield rsid, self.label, props
+    
+    def get_edges(self):
+        with gzip.open(self.filepath, 'rt') as f:
+            for line in f:
+                if line.startswith('#'):
+                    continue
+                data = line.strip().split('\t')
+                rsid = data[DBSNPAdapter.INDEX['id']]
+                chr = data[DBSNPAdapter.INDEX['chr']]
+                pos = int(data[DBSNPAdapter.INDEX['pos']])
+                if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
+                    yield from self.get_located_on_chain_edges(rsid, chr, pos, pos)

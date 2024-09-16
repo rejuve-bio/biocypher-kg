@@ -2,6 +2,7 @@ from collections import defaultdict
 import csv
 import gzip
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location
 
 # Example RNAcentral bed input file:
@@ -14,12 +15,13 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # URS0000000006_1317357	GO:0005840	Rfam:RF02541
 # URS0000000008_381046	GO:0030533	Rfam:RF00005
 
-class RNACentralAdapter(Adapter):
+class RNACentralAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'id': 3, 'rna_type': 13}
 
     def __init__(self, filepath, rfam_filepath, write_properties, add_provenance, 
                  type = 'non coding rna', label = 'non_coding_rna',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.rfam_filepath = rfam_filepath
         self.chr = chr
@@ -29,6 +31,7 @@ class RNACentralAdapter(Adapter):
         self.label = label
         self.write_properties = write_properties
         self.add_provenance = add_provenance
+        self.resolutions = resolutions
 
         self.source = 'RNAcentral'
         self.version = '24'
@@ -58,17 +61,29 @@ class RNACentralAdapter(Adapter):
                     yield rna_id, self.label, props
 
     def get_edges(self):
-        with gzip.open(self.rfam_filepath, 'rt') as input:
-            reader = csv.reader(input, delimiter='\t')
-            for line in reader:
-                rna_id, go_term, rfam = line
-                if not rna_id.endswith('_9606'):
-                    continue
-                rna_id = rna_id.split('_')[0]
-                props = {}
-                
-                if self.write_properties:
-                    if self.add_provenance:
-                        props['source'] = self.source
-                        props['source_url'] = self.source_url
-                yield rna_id, go_term, self.label, props
+        if self.label == 'go_rna':
+            with gzip.open(self.rfam_filepath, 'rt') as input:
+                reader = csv.reader(input, delimiter='\t')
+                for line in reader:
+                    rna_id, go_term, rfam = line
+                    if not rna_id.endswith('_9606'):
+                        continue
+                    rna_id = rna_id.split('_')[0]
+                    props = {}
+                    
+                    if self.write_properties:
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                    yield rna_id, go_term, self.label, props
+        elif self.label == 'non_coding_rna_located_on_chain':
+            with gzip.open(self.filepath, 'rt') as input:
+                for line in input:
+                    infos = line.split('\t')
+                    rna_id = infos[RNACentralAdapter.INDEX['id']].split('_')[0]
+                    chr = infos[RNACentralAdapter.INDEX['chr']]
+                    start = int(infos[RNACentralAdapter.INDEX['coord_start']].strip())+1 # +1 since it is 0 indexed coordinate
+                    end = int(infos[RNACentralAdapter.INDEX['coord_end']].strip())
+                    
+                    if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                        yield from self.get_located_on_chain_edges(rna_id, chr, start, end)

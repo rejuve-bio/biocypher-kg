@@ -1,5 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
@@ -13,19 +14,21 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 
 
-class GencodeGeneAdapter(Adapter):
+class GencodeGeneAdapter(Adapter, ChromosomeChainMixin):
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_name',
                     'transcript_id', 'transcript_type', 'transcript_name', 'hgnc_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, filepath=None, 
-                 gene_alias_file_path=None, chr=None, start=None, end=None):
+    def __init__(self, write_properties, add_provenance, label='gene', filepath=None, 
+                 gene_alias_file_path=None, chr=None, start=None, end=None, 
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
 
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'gene'
+        self.label = label
+        self.resolutions = resolutions
         self.dataset = 'gencode_gene'
         self.gene_alias_file_path = gene_alias_file_path
         self.source = 'GENCODE'
@@ -125,3 +128,25 @@ class GencodeGeneAdapter(Adapter):
                     except:
                         print(
                             f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+    
+    def get_edges(self):
+        with gzip.open(self.filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+                split_line = line.strip().split()
+                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
+                    info = self.parse_info_metadata(
+                        split_line[GencodeGeneAdapter.INDEX['info']:])
+                    gene_id = info['gene_id']
+                    id = gene_id.split('.')[0]
+                    
+                    if gene_id.endswith('_PAR_Y'):
+                        id = id + '_PAR_Y'
+
+                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
+                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
+                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+                    
+                    if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                        yield from self.get_located_on_chain_edges(id, chr, start, end)

@@ -824,6 +824,8 @@ located on chain:
   input_label: located_on_chain
   source: position_entity
   target: chromosome_chain
+  properties:
+    resolution: int
 
 transcription factor to snp association:
   is_a: related to at instance level
@@ -914,3 +916,158 @@ transcript_to_exon:
     source: str
     source_url: str
 
+
+gene located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a gene and a chromosome chain
+  represented_as: edge
+  input_label: gene_located_on_chain
+  output_label: located_on_chain
+  source: gene
+  target: chromosome_chain
+
+
+transcript located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a transcript and a chromosome chain
+  represented_as: edge
+  input_label: transcript_located_on_chain
+  output_label: located_on_chain
+  source: transcript
+  target: chromosome_chain
+
+protein located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a protein and a chromosome chain
+  represented_as: edge
+  input_label: protein_located_on_chain
+  output_label: located_on_chain
+  source: protein
+  target: chromosome_chain
+
+exon located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between an exon and a chromosome chain
+  represented_as: edge
+  input_label: exon_located_on_chain
+  output_label: located_on_chain
+  source: exon
+  target: chromosome_chain
+
+snp located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a snp and a chromosome chain
+  represented_as: edge
+  input_label: snp_located_on_chain
+  output_label: located_on_chain
+  source: snp
+  target: chromosome_chain
+
+structural variant located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a structural variant and a chromosome chain
+  represented_as: edge
+  input_label: structural_variant_located_on_chain
+  output_label: located_on_chain
+  source: structural_variant
+  target: chromosome_chain
+
+sequence variant located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a sequence variant and a chromosome chain
+  represented_as: edge
+  input_label: sequence_variant_located_on_chain
+  output_label: located_on_chain
+  source: sequence_variant
+  target: chromosome_chain
+
+enhancer located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between enhancer and a chromosome chain
+  represented_as: edge
+  input_label: enhancer_located_on_chain
+  output_label: located_on_chain
+  source: enhancer
+  target: chromosome_chain
+
+super enhancer located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a super enhancer and a chromosome chain
+  represented_as: edge
+  input_label: super_enhancer_located_on_chain
+  output_label: located_on_chain
+  source: super_enhancer
+  target: chromosome_chain
+
+promoter located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a promoter and a chromosome chain
+  represented_as: edge
+  input_label: promoter_located_on_chain
+  output_label: located_on_chain
+  source: promoter
+  target: chromosome_chain
+
+non coding rna located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a non coding rna and a chromosome chain
+  represented_as: edge
+  input_label: non_coding_rna_located_on_chain
+  output_label: located_on_chain
+  source: non_coding_rna
+  target: chromosome_chain
+
+regulatory region located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a regulatory region and a chromosome chain
+  represented_as: edge
+  input_label: regulatory_region_located_on_chain
+  output_label: located_on_chain
+  source: regulatory_region
+  target: chromosome_chain
+
+tfbs located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a tfbs and a chromosome chain
+  represented_as: edge
+  input_label: tfbs_located_on_chain
+  output_label: located_on_chain
+  source: tfbs
+  target: chromosome_chain
+
+tad located on chain:
+  is_a: located on chain
+  inherit_properties: true
+  description: >-
+    holds between a tad and a chromosome chain
+  represented_as: edge
+  input_label: tad_located_on_chain
+  output_label: located_on_chain
+  source: tad
+  target: chromosome_chain
