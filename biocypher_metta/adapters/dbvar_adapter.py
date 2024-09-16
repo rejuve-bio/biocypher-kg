@@ -1,5 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location
 # Example dbVar input file:
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
@@ -7,19 +8,21 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # 1	10001	nssv14768	T	<DUP>	.	.	DBVARID=nssv14768;SVTYPE=DUP;IMPRECISE;END=88143;CIPOS=0,0;CIEND=0,0;SVLEN=78143;EXPERIMENT=1;SAMPLE=NA12155;REGIONID=nsv7879
 # 1	10001	nssv14781	T	<DUP>	.	.	DBVARID=nssv14781;SVTYPE=DUP;IMPRECISE;END=82189;CIPOS=0,0;CIEND=0,0;SVLEN=72189;EXPERIMENT=1;SAMPLE=NA18860;REGIONID=nsv7879
 
-class DBVarVariantAdapter(Adapter):
+class DBVarVariantAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr': 0, 'coord_start': 1, 'id': 2, 'type': 4, 'info': 7}
     VARIANT_TYPES = {'<CNV>': 'copy number variation', '<DEL>': 'deletion', '<DUP>': 'duplication', '<INS>': 'insertion', '<INV>': 'inversion'}
 
     def __init__(self, filepath, write_properties, add_provenance, 
                  label='structural_variant', delimiter='\t',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.delimiter = delimiter
         self.label = label
         self.chr = chr
         self.start = start
         self.end = end
+        self.resolutions = resolutions
 
         self.source = 'dbVar'
         self.version = ''
@@ -62,3 +65,25 @@ class DBVarVariantAdapter(Adapter):
 
 
                     yield variant_id, self.label, props
+    
+    def get_edges(self):
+        with gzip.open(self.filepath, 'rt') as f:
+            for line in f:
+                if line.startswith('#'):
+                    continue
+                data = line.strip().split(self.delimiter)
+                variant_id = data[DBVarVariantAdapter.INDEX['id']]
+                variant_type_key = data[DBVarVariantAdapter.INDEX['type']]
+                if variant_type_key not in DBVarVariantAdapter.VARIANT_TYPES:
+                    continue
+                chr = 'chr' + data[DBVarVariantAdapter.INDEX['chr']]
+                start = int(data[DBVarVariantAdapter.INDEX['coord_start']])
+                info = data[DBVarVariantAdapter.INDEX['info']].split(';')
+                end = start
+                for i in range(len(info)):
+                    if info[i].startswith('END='):
+                        end = int(info[i].split('=')[1])
+                        break
+                
+                if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                    yield from self.get_located_on_chain_edges(variant_id, chr, start, end)

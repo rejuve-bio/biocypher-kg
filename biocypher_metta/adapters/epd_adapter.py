@@ -2,6 +2,7 @@ import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 # Example EPD bed input file:
 ##CHRM Start  End   Id  Score Strand -  -
@@ -10,12 +11,13 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr1 966432 966492 PLEKHN1_1 900 + 966481 966492
 # chr1 976670 976730 PERM1_1 900 - 976670 976681
 
-class EPDAdapter(Adapter):
+class EPDAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr' : 0, 'coord_start' : 1, 'coord_end' : 2, 'gene_id' : 3}
 
     def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, 
                  type='promoter', label='promoter', delimiter=' ',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.type = type
@@ -24,6 +26,7 @@ class EPDAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
+        self.resolutions = resolutions
 
         self.source = 'EPD'
         self.version = '006'
@@ -67,10 +70,14 @@ class EPDAdapter(Adapter):
                 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
                     promoter_id = build_regulatory_region_id(chr, coord_start, coord_end)
-                    props = {}
-                    if self.write_properties:
-                        if self.add_provenance:
-                            props['source'] = self.source
-                            props['source_url'] = self.source_url
+                    if self.label == "promoter_gene":
+                        props = {}
+                        if self.write_properties:
+                            if self.add_provenance:
+                                props['source'] = self.source
+                                props['source_url'] = self.source_url
 
-                    yield promoter_id, ensembl_gene_id, self.label, props
+                        yield promoter_id, ensembl_gene_id, self.label, props
+                    
+                    elif self.label == "promoter_located_on_chain":
+                        self.get_located_on_chain_edges(promoter_id, chr, coord_start, coord_end)

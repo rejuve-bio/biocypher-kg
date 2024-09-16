@@ -1,6 +1,7 @@
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
 # Example data
@@ -11,16 +12,18 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # 585	chr1	10049	10148	TCF12	156	1	167	156
 
 
-class TfbsAdapter(Adapter):
+class TfbsAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr': 1, 'start': 2, 'end': 3, 'tf': 4, 'score': 5}
     def __init__(self, write_properties, add_provenance, filepath,
-                 hgnc_to_ensembl, label, chr=None, start=None, end=None):
+                 hgnc_to_ensembl, label, chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl, 'rb'))
         self.chr = chr
         self.start = start
         self.end = end
         self.label = label
+        self.resolutions = resolutions
 
         self.source = 'ENCODE'
         self.source_url = 'https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz'
@@ -63,10 +66,13 @@ class TfbsAdapter(Adapter):
                     continue
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                    if self.write_properties:
-                        props['score'] = score
-                        if self.add_provenance:
-                            props['source'] = self.source
-                            props['source_url'] = self.source_url
-                
-                    yield tf_ensembl, tfbs_id, self.label, props
+                    if self.label == 'gene_tfbs':
+                        if self.write_properties:
+                            props['score'] = score
+                            if self.add_provenance:
+                                props['source'] = self.source
+                                props['source_url'] = self.source_url
+                    
+                        yield tf_ensembl, tfbs_id, self.label, props
+                    elif self.label == 'tfbs_located_on_chain':
+                        yield from self.get_located_on_chain_edges(tfbs_id, chr, start, end)

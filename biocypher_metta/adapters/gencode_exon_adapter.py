@@ -1,5 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location
 
 # Example genocde vcf input file:
@@ -14,17 +15,19 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 
 
-class GencodeExonAdapter(Adapter):
+class GencodeExonAdapter(Adapter, ChromosomeChainMixin):
     ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_name', 'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
     def __init__(self, write_properties, add_provenance, label = 'exon', filepath=None,
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
         self.label = label
+        self.resolutions = resolutions
         self.dataset = 'gencode_exon'
         self.source = 'GENCODE'
         self.version = 'v44'
@@ -100,15 +103,22 @@ class GencodeExonAdapter(Adapter):
                 if info['exon_id'].endswith('_PAR_Y'):
                     exon_key = exon_key + '_PAR_Y'
 
-                _props = {}
-                if self.write_properties and self.add_provenance:
-                    _props['source'] = self.source
-                    _props['source_url'] = self.source_url
-
+                chr = data_line[GencodeExonAdapter.INDEX['chr']]
+                start = int(data_line[GencodeExonAdapter.INDEX['coord_start']])
+                end = int(data_line[GencodeExonAdapter.INDEX['coord_end']])
                 try:
-                    _source = transcript_key
-                    _target = exon_key
-                    yield _source, _target, self.label, _props
+                    if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                        if self.label == 'includes':
+                            _props = {}
+                            if self.write_properties and self.add_provenance:
+                                _props['source'] = self.source
+                                _props['source_url'] = self.source_url
+
+                            _source = transcript_key
+                            _target = exon_key
+                            yield _source, _target, self.label, _props
+                        elif self.label == 'exon_located_on_chain':
+                            yield from self.get_located_on_chain_edges(exon_key, chr, start, end)
                 except:
                     print(
                         f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
