@@ -43,9 +43,6 @@ class ChromosomeChainAdapter(Adapter):
                         start_loc = i * resolution
                         end_loc = (i + 1) * resolution - 1
 
-                        if i == total_chains - 1:
-                            end_loc = size
-
                         chain_id = build_chr_chain_id(chr, start_loc, end_loc, resolution)
                         props = {}
                         if self.write_properties:
@@ -75,8 +72,6 @@ class ChromosomeChainAdapter(Adapter):
                             break
                         start_loc = i * resolution
                         end_loc = (i + 1) * resolution - 1
-                        if i == total_chains - 1:
-                            end_loc = size
                         curr_chain_id = build_chr_chain_id(chr, start_loc, end_loc, resolution)
                         
                         if self.label == "next_chain":
@@ -100,7 +95,7 @@ class ChromosomeChainAdapter(Adapter):
                             # Calculate the start location of the parent chain at the previous (lower) resolution.
                             # This ensures that the current chain falls within its parent chain.
                             parent_start_loc = math.floor(float(start_loc) / float(prev_resolution)) * prev_resolution
-                            partent_end_loc = min(size, parent_start_loc + prev_resolution -1)
+                            partent_end_loc = parent_start_loc + prev_resolution -1
                             parent_chain_id = build_chr_chain_id(chr, parent_start_loc, partent_end_loc, prev_resolution)
 
                             props = {}

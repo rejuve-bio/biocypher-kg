@@ -65,6 +65,7 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
         except yaml.YAMLError as e:
             logger.error(f"Error while trying to load adapter config")
             logger.error(e)
+            pass
 
     for c in adapters_dict:
         logger.info(f"Running adapter: {c}")
