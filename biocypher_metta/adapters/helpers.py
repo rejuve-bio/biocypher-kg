@@ -1,6 +1,7 @@
 from inspect import getfullargspec
 import hashlib
 from math import log10, floor, isinf
+import math
 from liftover import get_lifter
 
 import hgvs.dataproviders.uta
@@ -177,3 +178,20 @@ def convert_genome_reference(chr, pos, from_build='hg19', to_build='hg38'):
         return int(converted)
     except:
         return None
+    
+def find_chr_chain_start_loc(pos, resolution):
+    # Finds start location for a given pos for a given resolution
+    temp = math.floor(float(int(pos)) / float(int(resolution))) * float(int(resolution))
+    return int(temp)
+
+def find_all_start_locs(start_loc, end_loc, resolution):
+    # Finds all start locations of chr chain for a given range and resolution
+    start_loc = int(start_loc)
+    end_loc = int(end_loc)
+    assert start_loc <= end_loc, "start location needs to be less than equal to end location"
+    if start_loc == end_loc:
+        return [find_chr_chain_start_loc(start_loc, resolution)]
+    start_pos = find_chr_chain_start_loc(start_loc, resolution)
+    end_pos = find_chr_chain_start_loc(end_loc - 1, resolution) # assuming end location is non-inclusive
+    all_start_locs = [i for i in range(start_pos, end_pos + int(resolution), int(resolution))]
+    return all_start_locs
