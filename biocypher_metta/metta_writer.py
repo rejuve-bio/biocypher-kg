@@ -1,4 +1,5 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
+from collections import Counter
 from biocypher import BioCypher
 import pathlib
 import os
@@ -96,8 +97,12 @@ class MeTTaWriter:
                     pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
         else:
             file_path = f"{self.output_path}/nodes.metta"
+        node_freq = Counter()
         with open(file_path, "a") as f:
             for node in nodes:
+                id, label, properties = node
+                node_freq[label] += 1
+                    
                 out_str = self.write_node(node)
                 for s in out_str:
                     f.write(s + "\n")
@@ -105,6 +110,7 @@ class MeTTaWriter:
             f.write("\n")
 
         logger.info("Finished writing out nodes")
+        return node_freq
 
 
 
@@ -116,14 +122,17 @@ class MeTTaWriter:
                     pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
         else:
             file_path = f"{self.output_path}/edges.metta"
-
+        edges_freq = Counter()
         with open(file_path, "a") as f:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                edges_freq[label] += 1
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
 
             f.write("\n")
+        return edges_freq
 
     def write_node(self, node):
         id, label, properties = node

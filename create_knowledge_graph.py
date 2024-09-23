@@ -66,6 +66,9 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
             logger.error(f"Error while trying to load adapter config")
             logger.error(e)
 
+    nodes_info = Counter()
+    edges_info = Counter()
+    
     for c in adapters_dict:
         logger.info(f"Running adapter: {c}")
         adapter_config = adapters_dict[c]["adapter"]
@@ -85,11 +88,21 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
 
         if write_nodes:
             nodes = adapter.get_nodes()
-            bc.write_nodes(nodes, path_prefix=outdir)
+            freq = bc.write_nodes(nodes, path_prefix=outdir)
+            for node_label in freq:
+                nodes_info[node_label] += freq[node_label]
 
         if write_edges:
             edges = adapter.get_edges()
-            bc.write_edges(edges, path_prefix=outdir)
+            freq = bc.write_edges(edges, path_prefix=outdir)
+            for edge_label in freq:
+                edges_info[edge_label] += freq[edge_label]
+    
+    graph_info = {}
+    graph_info['nodes'] = nodes_info
+    graph_info['edges'] = edges_info
+    
+    print(json.dumps(graph_info, indent=2))
 
 
     logger.info("Done")
