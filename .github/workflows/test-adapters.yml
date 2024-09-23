@@ -1,0 +1,159 @@
+name: Test Adapters and Writers
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'biocypher_metta/adapters/**'
+      - 'biocypher_metta/*.py'
+      - 'config/adapters_config_sample.yaml'
+      - 'create_knowledge_graph.py'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'biocypher_metta/adapters/**'
+      - 'biocypher_metta/*.py'
+      - 'config/adapters_config_sample.yaml'
+      - 'create_knowledge_graph.py'
+
+jobs:
+  determine_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed_adapters: ${{ steps.get-changes.outputs.adapters }}
+      changed_writers: ${{ steps.get-changes.outputs.writers }}
+      all_writers: ${{ steps.get-changes.outputs.all_writers }}
+      changes_detected: ${{ steps.get-changes.outputs.changes_detected }}
+      config_changed: ${{ steps.get-changes.outputs.config_changed }}
+      changed_config_items: ${{ steps.get-changes.outputs.changed_config_items }}
+      main_script_changed: ${{ steps.get-changes.outputs.main_script_changed }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install PyYAML
+        run: pip install PyYAML
+      - id: get-changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+          WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog)(?=_writer\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+          ALL_WRITERS="metta,neo4j,prolog"
+          echo "adapters=$ADAPTERS" >> $GITHUB_OUTPUT
+          echo "writers=$WRITERS" >> $GITHUB_OUTPUT
+          echo "all_writers=$ALL_WRITERS" >> $GITHUB_OUTPUT
+          MAIN_SCRIPT_CHANGED=false
+          if echo "$CHANGED_FILES" | grep -q "create_knowledge_graph.py"; then
+            MAIN_SCRIPT_CHANGED=true
+          fi
+          echo "main_script_changed=$MAIN_SCRIPT_CHANGED" >> $GITHUB_OUTPUT
+          CONFIG_CHANGED=false
+          CHANGED_CONFIG_ITEMS=""
+          if echo "$CHANGED_FILES" | grep -q "config/adapters_config_sample.yaml"; then
+            CONFIG_CHANGED=true
+            echo "Changes detected in sample config"
+            python .github/scripts/detect_config_changes.py
+            CHANGED_CONFIG_ITEMS=$(cat .github/changed_config_items.txt)
+          fi
+          echo "config_changed=$CONFIG_CHANGED" >> $GITHUB_OUTPUT
+          echo "changed_config_items=$CHANGED_CONFIG_ITEMS" >> $GITHUB_OUTPUT
+          CHANGES_DETECTED=false
+          if [ -n "$ADAPTERS" ] || [ -n "$WRITERS" ] || [ -n "$CHANGED_CONFIG_ITEMS" ] || [ "$MAIN_SCRIPT_CHANGED" = true ]; then
+            CHANGES_DETECTED=true
+            echo "Changes detected"
+          else
+            echo "No changes detected"
+          fi
+          echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT
+  prepare_config:
+    needs: determine_changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install PyYAML
+        run: pip install PyYAML
+      - name: Prepare config
+        run: |
+          if [ -n "${{ needs.determine_changes.outputs.changed_adapters }}" ] || [ "${{ needs.determine_changes.outputs.config_changed }}" == "true" ]; then
+            echo "Preparing test config for changed adapters or config"
+            python .github/scripts/prepare_config.py "${{ needs.determine_changes.outputs.changed_adapters }}" "${{ needs.determine_changes.outputs.config_changed }}" "${{ needs.determine_changes.outputs.changed_config_items }}"
+          else
+            echo "No adapter changes detected. Using sample config."
+            cp config/adapters_config_sample.yaml config/test_config.yaml
+          fi
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-config
+          path: config/test_config.yaml
+
+  run_tasks:
+    needs: [determine_changes, prepare_config]
+    if: needs.determine_changes.outputs.changes_detected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        writer-type: [metta, neo4j, prolog]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+      
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-config
+          path: config
+      - name: Run tasks
+        run: |
+          CHANGED_WRITERS="${{ needs.determine_changes.outputs.changed_writers }}"
+          CHANGED_ADAPTERS="${{ needs.determine_changes.outputs.changed_adapters }}"
+          ALL_WRITERS="${{ needs.determine_changes.outputs.all_writers }}"
+          CURRENT_WRITER="${{ matrix.writer-type }}"
+          CONFIG_CHANGED="${{ needs.determine_changes.outputs.config_changed }}"
+          MAIN_SCRIPT_CHANGED="${{ needs.determine_changes.outputs.main_script_changed }}"
+          echo "Changed writers: $CHANGED_WRITERS"
+          echo "Changed adapters: $CHANGED_ADAPTERS"
+          echo "All writers: $ALL_WRITERS"
+          echo "Current writer: $CURRENT_WRITER"
+          echo "Config changed: $CONFIG_CHANGED"
+          echo "Main script changed: $MAIN_SCRIPT_CHANGED"
+          if [ "$MAIN_SCRIPT_CHANGED" == "true" ]; then
+            echo "Running with full sample config due to main script change"
+            poetry run python create_knowledge_graph.py --output-dir output --adapters-config config/adapters_config_sample.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+          elif [ -n "$CHANGED_WRITERS" ]; then
+            if [[ $CHANGED_WRITERS == *"$CURRENT_WRITER"* ]] || [ "$CHANGED_WRITERS" == "$ALL_WRITERS" ]; then
+              echo "Running all adapters with changed writer: $CURRENT_WRITER"
+              poetry run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+            else
+              echo "Skipping unchanged writer: $CURRENT_WRITER"
+            fi
+          elif [ -n "$CHANGED_ADAPTERS" ] || [ "$CONFIG_CHANGED" == "true" ]; then
+            echo "Running changed adapters or config with writer: $CURRENT_WRITER"
+            poetry run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+          else
+            echo "No relevant changes detected for this writer. Skipping."
+          fi
+      

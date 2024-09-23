@@ -10,6 +10,6 @@ class CellLineOntologyAdapter(OntologyAdapter):
     
     def get_ontology_source(self):
         """
-        Returns the source and source URL for UBERON ontology.
+        Returns the source and source URL for Cell Line Ontology.
         """
         return 'Cell Line Ontology', 'http://purl.obolibrary.org/obo/clo.owl'
