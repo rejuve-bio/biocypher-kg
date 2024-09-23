@@ -125,10 +125,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ontology-
       
+      - name: Create output directory
+        run: mkdir -p output
+      
       - name: Install dependencies
         run: |
           pip install poetry
           poetry install
+      
       - uses: actions/download-artifact@v3
         with:
           name: test-config
@@ -172,7 +176,7 @@ jobs:
           else
             echo "No ontology_cache directory found"
           fi
-          
+
       - name: Upload updated cache
         if: always()
         uses: actions/cache/save@v3
