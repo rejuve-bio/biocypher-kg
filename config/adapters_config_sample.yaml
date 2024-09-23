@@ -146,7 +146,7 @@ go_ontology_terms:
       type: node
       dry_run: True
       add_description: False
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
 
   outdir: gene_onotology
   nodes: True
@@ -161,7 +161,7 @@ go_subclass_of:
       label: go_subclass_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
 
   outdir: gene_onotology
   nodes: False
@@ -573,7 +573,7 @@ uberon:
       type: node
       dry_run: True
       add_description: False
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: uberon
   nodes: True
   edges: False
@@ -587,7 +587,7 @@ uberon_subclass_of:
       type: edge
       dry_run: True
       label: uberon_subclass_of
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: uberon
   nodes: False
   edges: True
@@ -601,7 +601,7 @@ cell_line_ontology:
       type: node
       dry_run: True
       add_description: False
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: cell_line_ontology
   nodes: True
   edges: False
@@ -615,7 +615,7 @@ clo_subclass_of:
       label: clo_subclass_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: cell_line_ontology
   nodes: False
   edges: True
@@ -629,7 +629,7 @@ cell_ontology:
       type: node
       dry_run: True
       add_description: False
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: cell_ontology
   nodes: True
   edges: False
@@ -643,7 +643,7 @@ cl_subclass_of:
       label: cl_subclass_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: cell_ontology
   nodes: False
   edges: True
@@ -657,7 +657,7 @@ cl_capable_of:
       label: cl_capable_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: cell_ontology
   nodes: False
   edges: True
@@ -671,7 +671,7 @@ cl_part_of:
       label: cl_part_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: cell_ontology
   nodes: False
   edges: True
@@ -698,7 +698,7 @@ experimental_factor_ontology:
       type: node
       dry_run: True
       add_description: False
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: experimental_factor_ontology
   nodes: True
   edges: False
@@ -712,7 +712,7 @@ efo_subclass_of:
       label: efo_subclass_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: experimental_factor_ontology
   nodes: False
   edges: True
@@ -726,7 +726,7 @@ brenda_tissue_ontology:
       type: node
       dry_run: True
       add_description: False
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: brenda_tissue_ontology
   nodes: True
   edges: False
@@ -740,7 +740,7 @@ bto_subclass_of:
       label: bto_subclass_of
       type: edge
       dry_run: True
-      cache_dir: ./ontology_cache
+      cache_dir: ./ontology_dataset_cache
   outdir: brenda_tissue_ontology
   nodes: False
   edges: True
