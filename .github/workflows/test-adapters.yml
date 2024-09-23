@@ -120,8 +120,8 @@ jobs:
       - name: Cache ontology datasets
         uses: actions/cache@v3
         with:
-          path: ontology_cache
-          key: ${{ runner.os }}-ontology-${{ hashFiles('ontology_cache/**/*.owl', 'ontology_cache/**/*_meta.json') }}
+          path: ontology_dataset_cache
+          key: ${{ runner.os }}-ontology-${{ hashFiles('ontology_dataset_cache/**/*.owl', 'ontology_dataset_cache/**/*_meta.json') }}
           restore-keys: |
             ${{ runner.os }}-ontology-
       
@@ -170,16 +170,16 @@ jobs:
       - name: Update ontology cache
         if: always()
         run: |
-          if [ -d "ontology_cache" ]; then
+          if [ -d "ontology_dataset_cache" ]; then
             echo "Updating ontology cache"
-            find ontology_cache -type f \( -name "*.owl" -o -name "*_meta.json" \) -exec md5sum {} \; > ontology_cache_md5.txt
+            find ontology_dataset_cache -type f \( -name "*.owl" -o -name "*_meta.json" \) -exec md5sum {} \; > ontology_dataset_cache_md5.txt
           else
-            echo "No ontology_cache directory found"
+            echo "No ontology_dataset_cache directory found"
           fi
 
       - name: Upload updated cache
         if: always()
         uses: actions/cache/save@v3
         with:
-          path: ontology_cache
-          key: ${{ runner.os }}-ontology-${{ hashFiles('ontology_cache_md5.txt') }}
+          path: ontology_dataset_cache
+          key: ${{ runner.os }}-ontology-${{ hashFiles('ontology_dataset_cache_md5.txt') }}
