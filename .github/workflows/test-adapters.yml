@@ -172,6 +172,7 @@ jobs:
           else
             echo "No ontology_cache directory found"
           fi
+          
       - name: Upload updated cache
         if: always()
         uses: actions/cache/save@v3
