@@ -54,7 +54,7 @@ class DBSuperAdapter(Adapter):
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     props = {}
                     if self.write_properties:
-                        props['id'] = se_id
+                        props['se_id'] = se_id
                         props['chr'] = chr
                         props['start'] = start
                         props['end'] = end
