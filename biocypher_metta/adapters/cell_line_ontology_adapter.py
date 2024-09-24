@@ -5,8 +5,8 @@ class CellLineOntologyAdapter(OntologyAdapter):
         'clo': 'http://purl.obolibrary.org/obo/clo.owl'
     }
     
-    def __init__(self, write_properties, add_provenance, ontology, type, label='clo', dry_run=False, add_description=False):
-        super(CellLineOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description)
+    def __init__(self, write_properties, add_provenance, ontology, type, label='clo', dry_run=False, add_description=False, cache_dir=None):
+        super(CellLineOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
     
     def get_ontology_source(self):
         """

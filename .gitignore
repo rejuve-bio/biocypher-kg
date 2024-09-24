@@ -168,3 +168,4 @@ metta_out_*/
 pypath_log/
 biocypher-log/
 
+ontology_cache/

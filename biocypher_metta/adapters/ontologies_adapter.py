@@ -1,7 +1,16 @@
+import hashlib
+import json
 import rdflib
+import requests
+import os
+import re
+import tempfile
+from datetime import datetime as dt, timedelta
+from rdflib import Graph, URIRef
 from owlready2 import *
 from abc import ABC, abstractmethod
 from biocypher_metta.adapters import Adapter
+from xml.etree import ElementTree as ET
 
 class OntologyAdapter(Adapter):
     HAS_PART = rdflib.term.URIRef('http://purl.obolibrary.org/obo/BFO_0000051')
@@ -23,7 +32,11 @@ class OntologyAdapter(Adapter):
     PREDICATES = [SUBCLASS, DB_XREF]
     RESTRICTION_PREDICATES = [HAS_PART, PART_OF]
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False, add_description=False):
+    def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False, add_description=False, cache_dir=None, cache_expiration_days=30):
+        self.cache_dir = cache_dir
+        self.cache_expiration_days = cache_expiration_days
+        if self.cache_dir and not os.path.exists(self.cache_dir):
+            os.makedirs(self.cache_dir)
         self.type = type
         self.label = label
         self.dry_run = dry_run
@@ -47,10 +60,206 @@ class OntologyAdapter(Adapter):
     def update_graph(self):
         if self.ontology not in self.ONTOLOGIES:
             raise ValueError(f"Ontology '{self.ontology}' is not defined in this adapter.")
+
+        ontology_url = self.ONTOLOGIES[self.ontology]
+        use_cached = False
+        cached_path = None
+        meta = None
+
+        if self.cache_dir:
+            cached_path = os.path.join(self.cache_dir, f"{self.ontology}.owl")
+            meta_path = os.path.join(self.cache_dir, f"{self.ontology}_meta.json")
+
+            if os.path.exists(cached_path) and os.path.exists(meta_path):
+                with open(meta_path, 'r') as f:
+                    meta = json.load(f)
         
-        onto = get_ontology(self.ONTOLOGIES[self.ontology]).load()
+                cached_date = dt.fromisoformat(meta['date'])
+                cache_expired = dt.now() - cached_date > timedelta(days=self.cache_expiration_days)
+        
+                remote_version = self._get_remote_version()
+                current_version = meta.get('version')
+
+                print(f"Cache status: Expired: {cache_expired}, Remote version: {remote_version}, Current version: {current_version}")
+
+                if remote_version is None or current_version is None or current_version == "unknown":
+                    if not cache_expired:
+                        use_cached = True
+                        print("Using cached data as version information is incomplete and cache is not expired")
+                    else:
+                        print("Cache has expired and version information is incomplete. Updating data.")
+                elif remote_version == current_version and not cache_expired:
+                    use_cached = True
+                else:
+                    print(f"Not using cache: Expired: {cache_expired}, New version available: {remote_version != current_version}")
+
+        if use_cached:
+            print(f"Using cached ontology from {cached_path}")
+            onto = get_ontology(cached_path).load()
+            self.version = meta.get('version', 'unknown')
+        else:
+            print(f"Downloading ontology from {ontology_url}")
+            onto = get_ontology(ontology_url).load()
+
+        # Explicitly initialize the graph, whether cached or fresh
         self.graph = default_world.as_rdflib_graph()
+    
+        if not use_cached:
+            # Extract version information
+            self._extract_version_info()
+
+            if self.cache_dir:
+                print(f"Caching ontology to {cached_path}")
+                onto.save(cached_path)
+
+                # Calculate and store metadata
+                meta = {
+                    'date': dt.now().isoformat(),
+                    'url': ontology_url,
+                    'hash': self._calculate_file_hash(cached_path),
+                    'version': self.version
+                }
+                with open(meta_path, 'w') as f:
+                    json.dump(meta, f)
+
         self.clear_cache()
+    
+        # Verify that the graph is initialized
+        if self.graph is None:
+            raise ValueError("Failed to initialize graph from ontology")
+
+        print(f"Graph initialized with {len(self.graph)} triples")
+
+    def _calculate_file_hash(self, file_path):
+        """Calculate MD5 hash of a file."""
+        hash_md5 = hashlib.md5()
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+
+    def _extract_version_info(self):
+        if not self.graph:
+            print("Warning: Graph is not initialized. Unable to extract version information.")
+            self.version = "unknown"
+            return
+
+        try:
+            # First, try to get the version from the RDF graph
+            version_iri = self.graph.value(predicate=URIRef("http://www.w3.org/2002/07/owl#versionIRI"))
+            if version_iri:
+                match = re.search(r'/(\d{4}-\d{2}-\d{2})/', str(version_iri))
+                if match:
+                    self.version = match.group(1)
+                else:
+                    self.version = str(version_iri).split('/')[-2]
+            else:
+                # If not found in the graph, try parsing the XML directly
+                ontology_url = self.ONTOLOGIES[self.ontology]
+                response = requests.get(ontology_url)
+                response.raise_for_status()
+                
+                # Parse the XML content
+                root = ET.fromstring(response.content)
+                
+                # Find the owl:versionIRI element
+                namespaces = {'owl': 'http://www.w3.org/2002/07/owl#', 'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+                version_iri_elem = root.find(".//owl:versionIRI", namespaces)
+                
+                if version_iri_elem is not None:
+                    version_iri = version_iri_elem.get('{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource')
+                    match = re.search(r'/(\d{4}-\d{2}-\d{2})/', version_iri)
+                    if match:
+                        self.version = match.group(1)
+                    else:
+                        version_match = re.search(r'/releases/v?([\d.]+)/', version_iri)
+                        if version_match:
+                            self.version = version_match.group(1)  # Store version without 'v' prefix
+                        else:
+                            self.version = version_iri.split('/')[-2]
+                else:
+                    self.version = "unknown"
+        except Exception as e:
+            print(f"Error extracting version information: {e}")
+            self.version = "unknown"
+
+        # Ensure the version is stored without the 'v' prefix
+        self.version = self.version.lstrip('v')
+        print(f"Ontology version: {self.version}")
+
+    def _is_new_version_available(self, meta):
+        """Check if a new version is available based on the remote version."""
+        remote_version = self._get_remote_version()
+        current_version = meta.get('version')
+    
+        print(f"Checking versions - Remote: {remote_version}, Current: {current_version}")
+    
+        if remote_version is None or current_version is None or current_version == "unknown":
+            print("Version information is incomplete. Checking cache expiration.")
+            cached_date = dt.fromisoformat(meta['date'])
+            if dt.now() - cached_date > timedelta(days=self.cache_expiration_days):
+                print("Cache has expired. Updating data.")
+                return True
+            else:
+                print("Using cached data as version information is incomplete and cache is not expired")
+                return False
+    
+        # Remove 'v' prefix if present for consistent comparison
+        remote_version = remote_version.lstrip('v')
+        current_version = current_version.lstrip('v')
+    
+        return remote_version != current_version
+
+    def _get_remote_version(self):
+        """Retrieve the version of the remote ontology."""
+        ontology_url = self.ONTOLOGIES[self.ontology]
+
+        try:
+            # Make a GET request to fetch the ontology file
+            response = requests.get(ontology_url)
+            response.raise_for_status()
+
+            # Parse the XML content
+            root = ET.fromstring(response.content)
+
+            # Find the version IRI tag in the ontology
+            version_iri = root.find(".//{http://www.w3.org/2002/07/owl#}versionIRI")
+            if version_iri is not None:
+                version_url = version_iri.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource")
+            
+                # Extract the version date from the IRI
+                version_match = re.search(r'/releases/(\d{4}-\d{2}-\d{2})/', version_url)
+                if version_match:
+                    return version_match.group(1)
+                
+                # Handle the version format with or without 'v' prefix
+                version_match = re.search(r'/releases/v?([\d.]+)/', version_url)
+                if version_match:
+                    return version_match.group(1)  # Return version without 'v' prefix
+
+            print("No version IRI found or unrecognized format.")
+            return None
+
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP error occurred: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        return None
+
+    def check_for_updates(self):
+        """Check if there's a new version available or if the cache has expired."""
+        if not self.cache_dir:
+            return True  # Always update if there's no cache
+
+        meta_path = os.path.join(self.cache_dir, f"{self.ontology}_meta.json")
+        if not os.path.exists(meta_path):
+            return True  # Update if no metadata exists
+
+        with open(meta_path, 'r') as f:
+            meta = json.load(f)
+
+        return self._is_new_version_available(meta)
 
     def get_nodes(self):
         self.update_graph()

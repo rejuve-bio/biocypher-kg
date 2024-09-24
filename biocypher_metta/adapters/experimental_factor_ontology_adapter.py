@@ -5,8 +5,8 @@ class ExperimentalFactorOntologyAdapter(OntologyAdapter):
         'efo': 'http://www.ebi.ac.uk/efo/efo.owl'
     }
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='efo', dry_run=False, add_description=False):
-        super(ExperimentalFactorOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description)
+    def __init__(self, write_properties, add_provenance, ontology, type, label='efo', dry_run=False, add_description=False, cache_dir=None):
+        super(ExperimentalFactorOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
 
     def get_ontology_source(self):
         """
