@@ -241,3 +241,4 @@ RETURN batches, total;
 
     def summary(self):
         self.bcy.summary()
+
