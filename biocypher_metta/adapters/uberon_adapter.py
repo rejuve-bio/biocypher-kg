@@ -14,3 +14,5 @@ class UberonAdapter(OntologyAdapter):
         """
         
         return 'UBERON', 'http://purl.obolibrary.org/obo/uberon.owl'
+
+        
