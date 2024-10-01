@@ -28,6 +28,9 @@ class OntologyAdapter(Adapter):
     EXACT_SYNONYM = rdflib.term.URIRef('http://www.geneontology.org/formats/oboInOwl#hasExactSynonym')
     RELATED_SYNONYM = rdflib.term.URIRef('http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym')
     DESCRIPTION = rdflib.term.URIRef('http://purl.obolibrary.org/obo/IAO_0000115')
+    DEPRECATED = rdflib.term.URIRef('http://www.w3.org/2002/07/owl#deprecated')
+    ALTERNATIVE_ID = rdflib.term.URIRef('http://www.geneontology.org/formats/oboInOwl#hasAlternativeId')
+
 
     PREDICATES = [SUBCLASS, DB_XREF]
     RESTRICTION_PREDICATES = [HAS_PART, PART_OF]
@@ -260,6 +263,15 @@ class OntologyAdapter(Adapter):
             meta = json.load(f)
 
         return self._is_new_version_available(meta)
+    
+    def is_deprecated(self, node):
+        node_key = OntologyAdapter.to_key(node)
+        deprecated_values = self.cache.get(node_key, {}).get('deprecated', [])
+        return any(value for value in deprecated_values if value.lower() == 'true')
+    
+    def get_alternative_ids(self, node):
+        node_key = OntologyAdapter.to_key(node)
+        return self.cache.get(node_key, {}).get('alternative_ids', [])
 
     def get_nodes(self):
         self.update_graph()
@@ -274,17 +286,25 @@ class OntologyAdapter(Adapter):
             # avoiding blank nodes and other arbitrary node types
             if not isinstance(node, rdflib.term.URIRef):
                 continue
+
+            if self.is_deprecated(node):
+                print(f"Skipping deprecated node: {OntologyAdapter.to_key(node)}")
+                continue
             
             # term_id = str(node).split('/')[-1]
             term_id = OntologyAdapter.to_key(node)
             # 'uri': str(node),
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
             synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
+            alternative_ids = self.get_alternative_ids(node)
 
             props = {}
             if self.write_properties:
                 props['term_name'] = term_name
-                props['synonyms'] = synonyms
+                if synonyms:
+                    props['synonyms'] = synonyms
+                if alternative_ids:
+                    props['alternative_ids'] = alternative_ids
 
                 if self.add_description:
                     description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
@@ -318,6 +338,10 @@ class OntologyAdapter(Adapter):
 
                     predicate = restriction_predicate
                     to_node = restriction_node
+
+                if self.is_deprecated(from_node) or self.is_deprecated(to_node):
+                    print(f"Skipping edge with deprecated node: {OntologyAdapter.to_key(from_node)} -> {OntologyAdapter.to_key(to_node)}")
+                    continue
 
                 if self.type == 'edge':
                     from_node_key = OntologyAdapter.to_key(from_node)
@@ -444,6 +468,9 @@ class OntologyAdapter(Adapter):
         self.cache_predicate(predicate=OntologyAdapter.TYPE, collection='node_types')
         self.cache_predicate(predicate=OntologyAdapter.ON_PROPERTY, collection='on_property')
         self.cache_predicate(predicate=OntologyAdapter.SOME_VALUES_FROM, collection='some_values_from')
+        self.cache_predicate(predicate=OntologyAdapter.DEPRECATED, collection='deprecated')
+        self.cache_predicate(predicate=OntologyAdapter.ALTERNATIVE_ID, collection='alternative_ids')
+
 
     def cache_predicate(self, predicate, collection=None):
         triples = list(self.graph.subject_objects(predicate=predicate, unique=True))

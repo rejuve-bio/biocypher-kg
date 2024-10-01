@@ -16,7 +16,6 @@ class CellOntologyAdapter(OntologyAdapter):
     def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False, add_description=False, cache_dir=None):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
        
-        
     def get_ontology_source(self):
         return 'Cell Ontology', 'http://purl.obolibrary.org/obo/cl.owl'
 
@@ -38,14 +37,22 @@ class CellOntologyAdapter(OntologyAdapter):
             if not self.is_cl_term(node):
                 continue
             
+            if self.is_deprecated(node):
+                print(f"Skipping deprecated node: {self.to_key(node)}")
+                continue
+
             term_id = self.to_key(node)
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
             synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
+            alternative_ids = self.get_alternative_ids(node)
 
             props = {}
             if self.write_properties:
                 props['term_name'] = term_name
-                props['synonyms'] = synonyms
+                if synonyms:
+                    props['synonyms'] = synonyms
+                if alternative_ids:
+                    props['alternative_ids'] = alternative_ids
 
                 if self.add_description:
                     description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
@@ -85,9 +92,17 @@ class CellOntologyAdapter(OntologyAdapter):
             if not self.is_cl_term(subject):
                 continue
 
+            if self.is_deprecated(subject):
+                print(f"Skipping edge with deprecated subject: {self.to_key(subject)}")
+                continue
+
             for _, object_or_restriction in self.graph.predicate_objects(subject, predicate):
                 object = self.resolve_object(object_or_restriction, predicate)
                 if object is None:
+                    continue
+
+                if self.is_deprecated(object):
+                    print(f"Skipping edge with deprecated object: {self.to_key(object)}")
                     continue
 
                 if not self.is_valid_edge(subject, object, self.label):
