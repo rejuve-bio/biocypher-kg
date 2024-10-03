@@ -1,6 +1,7 @@
 from inspect import getfullargspec
 import hashlib
 from math import log10, floor, isinf
+import math
 from liftover import get_lifter
 
 import hgvs.dataproviders.uta
@@ -38,6 +39,10 @@ def build_regulatory_region_id(chr, pos_start, pos_end, assembly='GRCh38'):
     # return '{}_{}_{}_{}_{}'.format(class_name, chr, pos_start, pos_end, assembly)
     return '{}_{}_{}_{}'.format(chr, pos_start, pos_end, assembly)
 
+@assembly_check
+def build_chr_chain_id(chr, pos_start, pos_end, resolution, assembly='GRCh38'):
+    # return '{}_{}_{}_{}_{}'.format(class_name, chr, pos_start, pos_end, resolution, assembly)
+    return '{}_{}_{}_{}_{}'.format(chr, pos_start, pos_end, resolution, assembly)
 
 @assembly_check
 def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
@@ -173,3 +178,20 @@ def convert_genome_reference(chr, pos, from_build='hg19', to_build='hg38'):
         return int(converted)
     except:
         return None
+    
+def find_chr_chain_start_loc(pos, resolution):
+    # Finds start location for a given pos for a given resolution
+    temp = math.floor(float(int(pos)) / float(int(resolution))) * float(int(resolution))
+    return int(temp)
+
+def find_all_start_locs(start_loc, end_loc, resolution):
+    # Finds all start locations of chr chain for a given range and resolution
+    start_loc = int(start_loc)
+    end_loc = int(end_loc)
+    assert start_loc <= end_loc, "start location needs to be less than equal to end location"
+    if start_loc == end_loc:
+        return [find_chr_chain_start_loc(start_loc, resolution)]
+    start_pos = find_chr_chain_start_loc(start_loc, resolution)
+    end_pos = find_chr_chain_start_loc(end_loc - 1, resolution) # assuming end location is non-inclusive
+    all_start_locs = [i for i in range(start_pos, end_pos + int(resolution), int(resolution))]
+    return all_start_locs

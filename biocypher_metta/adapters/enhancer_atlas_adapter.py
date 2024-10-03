@@ -2,6 +2,7 @@ import gzip
 import os
 import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
 # Example enhancer atlas input file:
@@ -26,13 +27,14 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr1:874840-876520_ENSG00000237330$RNF223$chr1$1009687$-	1.065467
 
 
-class EnhancerAtlasAdapter(Adapter):
+class EnhancerAtlasAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'snp': 7}
 
     def __init__(self, enhancer_filepath, enhancer_gene_filepath, tissue_to_ontology_filepath, 
                  write_properties, add_provenance, 
                  type='enhancer', input_label='enhancer',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.enhancer_filepath = enhancer_filepath
         self.enhancer_gene_filepath = enhancer_gene_filepath
         self.tissue_to_ontology_filepath = tissue_to_ontology_filepath
@@ -41,6 +43,7 @@ class EnhancerAtlasAdapter(Adapter):
         self.end = end
         self.label = input_label
         self.type = type
+        self.resolutions = resolutions
 
         self.source = 'Enancer Atlas'
         self.version = '2.0'
@@ -93,13 +96,17 @@ class EnhancerAtlasAdapter(Adapter):
                         chr, start, end, gene = self.parse_enhancer_gene(line)
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             enhancer_region_id = build_regulatory_region_id(chr, start, end)
-                            score = to_float(info[1])
-                            props = {}
-                            if self.write_properties:
-                                props['biological_context'] = biological_context
-                                props['score'] = score
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
+                            if self.label == "enhancer_gene":
+                                score = to_float(info[1])
+                                props = {}
+                                if self.write_properties:
+                                    props['biological_context'] = biological_context
+                                    props['score'] = score
+                                    if self.add_provenance:
+                                        props['source'] = self.source
+                                        props['source_url'] = self.source_url
 
-                            yield enhancer_region_id, gene, self.label, props
+                                yield enhancer_region_id, gene, self.label, props
+                            
+                            elif self.label == "enhancer_located_on_chain":
+                                yield from self.get_located_on_chain_edges(enhancer_region_id, chr, start, end)

@@ -4,6 +4,7 @@ import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
 
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, convert_genome_reference
 # Example dbSuper tsv input files:
 # chrom	 start	 stop	 se_id	 gene_symbol	 cell_name	 rank
@@ -12,13 +13,14 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr1	145206326	145293008	SE_00003	NOTCH2NL	Adipose Nuclei	3
 # chr5	158117077	158371526	SE_00004	EBF1	Adipose Nuclei	4
 
-class DBSuperAdapter(Adapter):
+class DBSuperAdapter(Adapter, ChromosomeChainMixin):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'se_id': 3, 'gene_id': 4, 'cell_name': 5}
 
     def __init__(self, filepath, hgnc_to_ensembl_map, dbsuper_tissues_map,
                  write_properties, add_provenance, 
                  type='super enhancer', label='super_enhancer', delimiter='\t',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None,
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.filePath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.dbsuper_tissues_map = pickle.load(open(dbsuper_tissues_map, 'rb'))
@@ -28,6 +30,7 @@ class DBSuperAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
+        self.resolutions = resolutions
 
         self.source = 'dbSuper'
         self.version = ''
@@ -84,11 +87,18 @@ class DBSuperAdapter(Adapter):
                     continue
                 se_region_id = build_regulatory_region_id(chr, start, end)
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                    props = {}
-                    if self.write_properties:
-                        props['biological_context'] = biological_id
-                        if self.add_provenance:
-                            props['source'] = self.source
-                            props['source_url'] = self.source_url
+                    if self.label == "super_enhancer_gene":
+                        props = {}
+                        if self.write_properties:
+                            props['biological_context'] = biological_id
+                            if self.add_provenance:
+                                props['source'] = self.source
+                                props['source_url'] = self.source_url
 
-                    yield se_region_id, ensembl_gene_id, self.label, props
+                        yield se_region_id, ensembl_gene_id, self.label, props
+                        
+                    elif self.label == "super_enhancer_located_on_chain":
+                        try:
+                            yield from self.get_located_on_chain_edges(se_region_id, chr, start, end)
+                        except Exception as e:
+                            print(f"Error while parsing this line {line}. start hg38: {start} end hg38: {end}. {e}")

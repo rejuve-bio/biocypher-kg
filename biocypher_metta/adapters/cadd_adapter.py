@@ -2,6 +2,7 @@
 from biocypher_metta.adapters import Adapter
 import csv
 import gzip
+from biocypher_metta.adapters.chromosome_chain_mixin import ChromosomeChainMixin
 from biocypher_metta.adapters.helpers import check_genomic_location, build_regulatory_region_id
 from biocypher._logger import logger
 
@@ -13,20 +14,22 @@ from biocypher._logger import logger
 # rs1000000,chr12,126890980,G,A,0.042237,3.295
 # rs1000000,chr12,126890980,G,C,-0.017686,2.365
 
-class CADDAdapter(Adapter):
+class CADDAdapter(Adapter, ChromosomeChainMixin):
     """
     Adapter for CADD data
     """
     def __init__(self, filepath, dbsnp_rsid_map,
-                 write_properties, add_provenance,  
-                 chr=None, start=None, end=None):
+                 write_properties, add_provenance, label="snp", 
+                 chr=None, start=None, end=None, 
+                 resolutions=[50000, 10000, 5000, 1000, 200]):
         self.file_path = filepath
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
         self.end = end
+        self.resolutions = resolutions
 
-        self.label = "snp"
+        self.label = label
         self.source = "CADD"
         self.source_url = "https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz"
 
@@ -57,4 +60,18 @@ class CADDAdapter(Adapter):
                     continue
 
     def get_edges(self):
-        pass
+        with gzip.open(self.file_path, "rt") as fp:
+            next(fp)
+            reader = csv.reader(fp, delimiter=",")
+            for row in reader:
+                try:
+                    rsid = row[0]
+                    pos = self.dbsnp_rsid_map[rsid]["pos"]
+                    chr = row[1]
+                    
+                    if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
+                        yield from self.get_located_on_chain_edges(rsid, chr, pos, pos)
+                
+                except KeyError as e:
+                    logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
+                    continue
