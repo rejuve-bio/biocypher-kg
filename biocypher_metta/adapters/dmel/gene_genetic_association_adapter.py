@@ -49,6 +49,8 @@ class GeneGeneticAssociationAdapter(Adapter):
         #Starting_gene(s)_symbol	Starting_gene(s)_FBgn	Interacting_gene(s)_symbol	Interacting_gene(s)_FBgn	Interaction_type	Publication_FBrf
         rows = gene_genetic_table.get_rows()
         for row in rows:
+            if "Starting_gene(s)_FBgn" in row[1]:     # to skip header (columns' names)
+                continue
             props = {}
             #source_ids = row[1].split('|')
             source = [id for id in row[1].split('|')]

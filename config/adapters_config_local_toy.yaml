@@ -45,6 +45,49 @@ dmel_genotype_phenotype:
   edges: False
 
 
+
+gaf:
+  adapter:
+    module: biocypher_metta.adapters.hsa.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_association.fb.gz
+      gaf_type: 'dmel'
+      label: go_gene
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+
+go_ontology_terms:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: "go"
+      type: node
+      dry_run: False
+
+  outdir: gene_ontology
+  nodes: True
+  edges: False
+
+go_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      label: go_subclass_of
+      type: edge
+      dry_run: True
+
+  outdir: gene_ontology
+  nodes: False
+  edges: True
+
+
 orthology_adapter:
     adapter:
         module: biocypher_metta.adapters.orthology_adapter
@@ -107,8 +150,10 @@ gencode_gene:
     args:
       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/gencode/Drosophila_melanogaster.BDGP6.46.59.gtf.gz
       dmel_gene_alias_file_path: ./aux_files/Drosophila_melanogaster.gene_info.gz
+      dmel_summaries_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/best_gene_summary_fb_2024_03.tsv.gz
       hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/gencode/gencode.annotation.gtf.gz
       hsa_gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
+      hsa_summaries_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/
 
   outdir: gencode/gene
   nodes: True
@@ -142,6 +187,7 @@ gencode_exon:
   nodes: True
   edges: False
 
+
 transcribed_to:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
@@ -167,6 +213,56 @@ transcribed_from:
       label: transcribed_from
 
   outdir: gencode
+  nodes: False
+  edges: True
+
+
+RNASeq_library:
+  adapter:
+    module: biocypher_metta.adapters.RNASeq_library_adapter
+    cls: RnaseqLibraryAdapter
+    args:
+      dmel_data_filepaths: [
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/high-throughput_gene_expression_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_rpkm_report_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_transcript_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/afca/afca_afca_annotation_group_by_mean.tsv.gz
+      ]
+      hsa_filepaths: [
+
+      ]
+      #type: scRNASeq library
+      #label: scrnaseq_library
+
+  outdir: rnaseq
+  nodes: True
+  edges: False
+
+
+expression_value:
+  adapter:
+    module: biocypher_metta.adapters.expression_value_adapter
+    cls: ExpressionValueAdapter
+    args:
+      dmel_data_filepaths: [
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/high-throughput_gene_expression_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_rpkm_report_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_transcript_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/afca/afca_afca_annotation_group_by_mean.tsv.gz,
+      ]
+      #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
+      #type: expression value
+      #label: expression_value
+
+  outdir: rnaseq
   nodes: False
   edges: True
 

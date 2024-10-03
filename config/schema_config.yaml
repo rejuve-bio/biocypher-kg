@@ -22,6 +22,9 @@ position entity:
     chr: str
     start: int
     end: int
+    source: str
+    source_url: str
+
 
 
 
@@ -33,9 +36,9 @@ coding element:
   input_label: coding_element
   description: >-
       A region of a gene that codes for a protein or peptide
-  properties:
-    source: str
-    source_url: str
+  # properties:
+  #   source: str
+  #   source_url: str
 
 
 
@@ -49,28 +52,73 @@ non coding element:
       A region of a gene that does not code for a protein or peptide
   properties:
     biological_context: str
+    # source: str
+    # source_url: str
+
+
+# Fly:
+# The unique ID for a library (or cluster) at Flybase is its FBlc#
+# This schema could be used to represent a RNA-seq library, cluster or sample. Flybase uses FBlc# ids for:
+#
+#                         cluster               single cell
+#                         cluster_analysis      single cell
+#                         sample                high-throughput expression data
+#                         dataset               high-throughput expression data
+#                         RNASource library     RNA-seq RPKM
+#                         parent library
+#
+# Flybase has assigned FBlc# ids to Fly Cell Atlas 2 tissues (libraries):
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#RNA-Seq_RPKM_values_matrix_.28gene_rpkm_matrix_fb_.2A.tsv.gz.29
+#
+# Fly Cell Atlas 2 data:
+#
+# Aging Fly Cell Atlas data:
+#
+# Flybase  data:
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#High-Throughput_Gene_Expression_.28high-throughput_gene_expression_fb_.2A.tsv.gz.29
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Single_Cell_RNA-Seq_Gene_Expression_.28scRNA-Seq_gene_expression_fb_.2A.tsv.gz.29
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#RNA-Seq_RPKM_values_.28gene_rpkm_report_fb_.2A.tsv.gz.29
+rnaseq library:
+  is_a: entity
+  represented_as: node
+  inherit_properties: false
+  input_label: rnaseq_library
+  description: >-
+      A library/cluster/sample that is a set of genes and their expression values.
+  properties:
+    name: str
+    experiment_info: str[]
+    tissue_info: str[]
+    cell_type_id: str                   # cell type ontology id: str should be replaced by an ontology type  @todo
+    anatomy_entity_id: [uberon, cl]
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
     source: str
     source_url: str
 
 
 expression value:
   is_a: entity
-  represented_as: node
+  represented_as: edge
   inherit_properties: false
   input_label: expression_value
+  source: [transcript, gene]
+  target: rnaseq library
   description: >-
-      A single value for a numeric estimation of a gene expression as measured by a given methodology.
+    A set of values for numeric estimation of single gene/transcript expression as measured by a given methodology (represented by the library).
   properties:
-    value: float[]
-    value_description: str[]    # Acronym or term to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD",
-                                # "AFFYMETRIX CALL", "AFFYMETRIX VALUE", etc
-                                # This property is mandatory: value_description[i] refers to value[i] for all i.
-    gene_id: str
-#    library_id: str                # not sure about this here
-#    experiment_description: str    # not sure about this here
+    value_and_description: list[tuple]]   # this list of tuples is to keep semantics in the DAS context.
+                                          # it is (value, description), (value, description),...
+                                          # where value is a gene (or transcript) expression value and description is
+                                          # an acronym or a term or a text to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD", etc.
+
     taxon_id: int                        # 7227 for dmel / 9606 for hsa
     source: str
     source_url: str
+
+    #float[]
+    #value_description: str[]
+                                # This property is mandatory: value_description[i] refers to value[i] for all i.
+
 
 
 # 1.4)
@@ -81,9 +129,9 @@ genomic variant:
   input_label: genomic_variant
   description: >-
       A genomic variant is a change in one or more sequence of a genome
-  properties:
-    source: str
-    source_url: str
+  # properties:
+  #   source: str
+  #   source_url: str
 
 
 # 1.5)
@@ -96,8 +144,8 @@ epigenomic port:
       A region of the genome that is associated with epigenetic modifications
   properties:
     biological_context: str
-    source: str
-    source_url: str
+    # source: str
+    # source_url: str
 ## should also include cell type in hierarchy between epigenetic feature and tissue
 
 
@@ -109,9 +157,9 @@ epigenomic port:
   input_label: 3d_genome_structure
   description: >-
       A region of the genome that is associated with 3D genome structure
-  properties:
-    source: str
-    source_url: str
+  # properties:
+  #   source: str
+  #   source_url: str
 
 
 # 1.7)
@@ -120,7 +168,7 @@ ontology term:
   is_a: ontology class
   input_label: ontology term
   properties:
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+    taxon_id: int    # 7227 for dmel / 9606 for hsa    (To be inherited by all types to identify the organism/species that the type refers to)
     source: str
     source_url: str
 
@@ -138,6 +186,7 @@ chromosome chain:
     chain_id: str
     next_start: int
     resolution: int
+    taxon_id: int    # 7227 for dmel / 9606 for hsa (To be inherited by all types to identify the organism/species that the type refers to)
 
 
 
@@ -163,6 +212,14 @@ chromosome chain:
 #
 # or:  https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/ 
 #
+
+# FB summaries come from:
+  # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Best_gene_summaries_.28best_gene_summary.2A.tsv.29
+
+# Human summaries come from NCBI:
+  #
+#
+#
 # Adapter: gencode_gene_adapter
 #
 # 2.2)
@@ -175,9 +232,11 @@ gene:
   properties:
     gene_name: str        # In FB this is the gene symbol (eg “Clk”) whereas the gene name is “Clock”.
     gene_type: str
+    sequence: str         # nucleotide sequence
     synonyms:  str[]
-
-
+    summary: str          # best available summary of information about a gene
+    summary_source: str
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
 
 
 # Human: 
@@ -188,7 +247,8 @@ gene:
 # Fly:
 # https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz 
 # FB gene symbols are suffixed with "_DROME"
-# Flybase:  
+#
+# Flybase (this is an alternative and it was not transformed to MeTTa):
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#FBgn_.3C.3D.3E_DB_Accession_IDs_.28fbgn_NAseq_Uniprot_.2A.tsv.29 
 # https://ftp.flybase.org/releases/current/precomputed_files/collaborators/ 
 #
@@ -197,14 +257,14 @@ protein:
   represented_as: node
   preferred_id: uniprot                
   input_label: protein
-  is_a: coding element                # it should not be a “coding element” neither a “non coding element” considering their descriptions here  
+  is_a: coding element                # it should not be a “coding element” neither a “non coding element” considering their descriptions
   inherit_properties: true
   properties:
     accessions: str[]
     protein_name: str
     synonyms: str[]
-    source: str
-    source_url: str
+    # source: str
+    # source_url: str
 
 
 
@@ -239,9 +299,10 @@ transcript:
   is_a: coding element
   inherit_properties: true
   properties:
-    gene_name: str
+    #gene_name: str
+    gene: gene                #  to link to gene
     transcript_name: str
-    transcript_id: str
+    #transcript_id: str
     transcript_type: str
   description: >-
     An RNA synthesized on a DNA or RNA template by an RNA polymerase.
@@ -252,7 +313,6 @@ transcript:
     - dcid:RNATranscript
   in_subset:
     - model_organism_database
-
 
 
 
@@ -287,11 +347,10 @@ exon:
   is_a: coding element
   inherit_properties: true
   properties:
-    gene_id: str
-    transcript_id: str
+    gene: gene
+    transcript: transcript
     exon_number: int
-    exon_id: str
-
+    #exon_id: str
 
 
 
@@ -311,8 +370,6 @@ snp:
     caf_alt: str
   description: >-
     A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
-
-
 
 
 
@@ -361,12 +418,11 @@ allele:
   is_a: genomic variant
   inherit_properties: true
   properties:
-      gene_id: str
+      gene: gene
       allele_symbol: str
       taxon_id: int                        # 7227 for dmel / 9606 for hsa
   description: >-
       Different versions of the same variant (in a specific  locus) are called alleles[1, 2]. Most commonly used referring to genes.
-
 
 
 
@@ -486,9 +542,8 @@ expression:
   input_label: expression
   description: >-
     An association between a gene and its expression constituents
-
-  _source: gene
-  _target: transcript, exon, protein
+  source: gene
+  target: [transcript, exon, protein]
   properties:
     source: str
     source_url: str
@@ -523,9 +578,6 @@ regulatory association:
     source: str
     source_url: str
 
-
-# ---
-# expression
 
 
 # 7.4)
@@ -871,7 +923,8 @@ gene to pathway association:
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
-  source: gene
+  source: [gene, protein, transcript]
+  #source: gene
   target: pathway
 
 
@@ -900,27 +953,48 @@ child pathway of:
 
 
 
-
-# 7.13)
-go subtype of:
+subclass of:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
-  input_label: subtype_of
+  input_label: subclass_of
+  source: ontology term
+  target: ontology term
+  properties:
+    rel_type: str
+
+
+# 7.13)
+go subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: go_subclass_of
+  output_label: subclass_of
   source: go
   target: go
 
 
+go subclass of:
+  is_a: annotation
+  inherit_properties: ffalse
+  represented_as: edge
+  input_label: go_subclass_of
+  #output_label: subclass_of
+  source: go
+  target: go
 
 
 # 7.14)
+# saulo
+# Used in the GAFAdapter for human data
 go gene product:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
   input_label: go_gene_product
-  source: gene ontology
-  target: protein
+  source: protein
+  target: go
   properties:
     qualifier: obj
     db_reference: obj
@@ -930,6 +1004,8 @@ go gene product:
 
 
 # 7.15)
+# saulo
+# Used in the GAFAdapter  for dmel data
 go gene:
   is_a: annotation
   inherit_properties: true
@@ -1214,70 +1290,68 @@ located on chain:
 
 
 
-# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_group_data_.28gene_group_data_fb_.2A.tsv.29 
-# d1) <-- This numbering points the order of implementation that is recorded somehow in the Trello websystem.
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_f_data_.28gene_group_data_fb_.2A.tsv.29
+# id is FBgg# for Flybase data
 gene group:
   represented_as: node
-  preferred_id: group_id
   input_label: gene_group
   is_a: biological entity
-  #inherit_properties: true
   properties:
-    taxon_id: int               # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
-    genes_ids: str[]            # FBgn# list to link the group
+    genes: gene[]            # FBgn# list to link the group
     group_symbol: str
     group_name: str
-    parent_group_id: str[]        # FBgg#
-    parent_group_symbol: str[]
-    HGNC_family_ID: str        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29 
+    parent_groups: gene group[]        # FBgg#
+    parent_groups_symbols: str[]
+    HGNC_family_ID: str        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29
+    taxon_id: int               # 7227 for dmel / 9606 for hsa
 
 
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Pathway_group_data_.28pathway_group_data_fb_.2A.tsv.29
-# d2) Almost equal to the gene group.
+# id is FBgg# for Flybase data
 pathway gene group:
   represented_as: node
-  preferred_id: group_id
   input_label: pathway_gene_group
   is_a: biological entity
-  #inherit_properties: true
   properties:
     taxon_id: int               # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
-    genes_ids: str[]            # FBgn# list to link the group
+    genes: gene[]               # FBgn# list to link the group
     group_symbol: str
     group_name: str
-    parent_group_id: str[]        # FBgg#
-    parent_group_symbol: str[]
+    parent_groups: pathway gene group[]        # FBgg#
+    parent_groups_symbols: str[]
     HGNC_family_ID: str        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29
 
 
 # FB data: https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_disease_model_data_.28disease_model_annotations_fb_.2A.tsv.gz.29
-# d3)
 disease model:
   represented_as: node
   input_label: disease_model
   is_a: biological entity
-  #inherit_properties: true
   properties:
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
-    gene_id: str        
+    gene: gene        
     do_qualifier: str
-    do_term_id: str                        # only this should be enough because of DiseaseOntology
+    do_term_id: str                       # only this should be enough because of DiseaseOntology
     do_term_name: str
-    allele_id: str
+    allele: allele
     ortholog_hgnc_id: str
-    ortholog_hgnc_symbol: str            # this should be linked to in the Gene data type
+    ortholog_hgnc_symbol: str             # this should be linked to in the Gene data type
     evidence_code: str                    # evidence code and interacting alleles are in the same field (column) in the tsv file
-    interacting_alleles: str[]                  # but they occur both very infrequently
+    interacting_alleles: allele[]            # but they occur both very infrequently
     ev_code_interact_alleles: str
     reference_FBrf_id: str
 
 
-# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29 
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29
+
+# For Flybase data this should be a link between a set (list) of allele ids representing the genotype and a set(list)
+# of phenotypes ids. Of course, we could create a link from Gene to Phenotype (like Monarch) because of the natural
+# relationship between a gene and its alleles.
 genotype phenotype:
   represented_as: node
   input_label: genotype_phenotype
   is_a: biological entity
-  #inherit_properties: true
+
   properties:
     genotype_FBids: str
     genotype_symbols: str       # string composed of one or more allele symbol(s)
@@ -1292,15 +1366,14 @@ genotype phenotype:
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29
 #phenotype:
 #  represented_as: node
-#  preferred_id: str
 #  input_label: phenotype
 #  is_a: annotation
 #  inherit_properties: true
 #  properties:
 #    name: str
-#    qualifier_ids: str[]                # zero or more FBcv# and/or FBdv# to add information to the phenotype
+#    qualifier_ids: str[]               # zero or more FBcv# and/or FBdv# to add information to the phenotype
 #    qualifier_names: str[]
-#    reference: str                # FBrf#
+#    reference: str                     # FBrf#
 
 
 
@@ -1346,6 +1419,7 @@ allele genetic interaction:
   #source: allele
   #target: annotation                        # FB Controlled Vocabulary-based text
   properties:
+  
     allele_id: str
     interaction_text: str                    # FB Controlled Vocabulary-based text
     source: str
@@ -1371,4 +1445,3 @@ allele genetic interaction:
 
 
 # https://www.enzyme-database.org/downloads.php 	ExplorEnz - The Enzyme Database 
-

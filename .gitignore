@@ -165,3 +165,4 @@ metta_out_*/
 pypath_log/
 biocypher-log/
 
+aux_files/.~lock.*

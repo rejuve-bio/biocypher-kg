@@ -64,6 +64,8 @@ class AlleleGeneticInteractionAdapter(Adapter):
         rows = fb_gg_table.get_rows()
         id = -1
         for row in rows:
+            if "allele_FBal" in row[1]:     # to skip header (columns' names)
+                continue
             id += 1
             props = {}
             props['allele_id'] = row[1]

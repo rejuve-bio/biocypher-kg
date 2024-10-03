@@ -36,8 +36,6 @@ class OntologyAdapter(Adapter):
         self.source, self.source_url = self.get_ontology_source()
 
         super(OntologyAdapter, self).__init__(write_properties, add_provenance)
-
-        
     @abstractmethod
     def get_ontology_source(self):
         """

@@ -9,6 +9,7 @@ from biocypher._logger import logger
 import networkx as nx
 
 class MeTTaWriter:
+
     def __init__(self, schema_config, biocypher_config,
                  output_dir):
         self.schema_config = schema_config
@@ -20,7 +21,6 @@ class MeTTaWriter:
 
         self.edge_node_types = {}
         self.aux_edge_node_types = {}
-
         self.bcy = BioCypher(schema_config_path=schema_config,
                              biocypher_config_path=biocypher_config)
 
@@ -68,14 +68,14 @@ class MeTTaWriter:
                 target_type = v.get("target", None)
                 if source_type is not None and target_type is not None:
                     # ## TODO fix this in the schema config
-                    if isinstance(v["input_label"], list):      # I think this is never taken...
-                        label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
+                    # if isinstance(v["input_label"], list):      # I think this is never taken...
+                    #     label = self.convert_input_labels(v["input_label"][0])
+                    #     source_type = self.convert_input_labels(source_type[0])
+                    #     target_type = self.convert_input_labels(target_type[0])
+                    # else:
+                    label = self.convert_input_labels(v["input_label"])
+                    source_type = self.convert_input_labels(source_type)
+                    target_type = self.convert_input_labels(target_type)
 
                     output_label = v.get("output_label", None)
 
@@ -83,7 +83,6 @@ class MeTTaWriter:
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
                         self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
                                                                "output_label": output_label.lower() if output_label is not None else None}
-                    # these elifs should be refactored to a function body
                     elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas
                         for i in range(len(source_type)):
                             source_type[i] = source_type[i].lower()
@@ -94,13 +93,12 @@ class MeTTaWriter:
                                                                "target": target_type.lower(),
                                                                "output_label": output_label.lower() if output_label is not None else None}
                         self.edge_node_types[label.lower()]["source"] = []                        
-                        # self.aux_edge_node_types[label.lower()]["source"] = []  
-                        self.aux_edge_node_types[label.lower()]["source"] = source_type
+                        self.aux_edge_node_types[label.lower()]["source"] = []
                         for t in source_type:
                             self.edge_node_types[label.lower()]["source"].append(t)
-                            # self.aux_edge_node_types[label.lower()]["source"].append(t)
-                        # print(f'Source type: {self.edge_node_types[label.lower()]["source"]} for {label.lower()}')
-                        # print(self.edge_node_types[label.lower()])
+                            self.aux_edge_node_types[label.lower()]["source"].append(t)
+                        print(f'Source type: {self.edge_node_types[label.lower()]["source"]} for {label.lower()}')
+                        print(self.edge_node_types[label.lower()])
                     elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
                         for i in range(len(target_type)):
                             target_type[i] = target_type[i].lower()
@@ -111,41 +109,24 @@ class MeTTaWriter:
                         self.aux_edge_node_types[label.lower()] = {"source": source_type.lower(), 
                                                                # "target": target_type,
                                                                 "output_label": output_label.lower() if output_label is not None else None}
-                        # self.aux_edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()]["target"] = target_type
+                        self.aux_edge_node_types[label.lower()]["target"] = []
                         for t in target_type:
                             self.edge_node_types[label.lower()]["target"].append(t)
-                            # self.aux_edge_node_types[label.lower()]["target"].append(t)
-                        # print(f'Target type: {self.edge_node_types[label.lower()]["target"]} for {label.lower()}')
-                        # print(self.edge_node_types[label.lower()])
-                    elif isinstance(source_type, list) and isinstance(target_type, list):   # non existing schema
-                        for i in range(len(source_type)):
-                            source_type[i] = source_type[i].lower()
-                        self.edge_node_types[label.lower()] = {#"source": source_type,
-                                                               "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.aux_edge_node_types[label.lower()]  = {#"source": source_type,
-                                                               "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.edge_node_types[label.lower()]["source"] = []                        
-                        # self.aux_edge_node_types[label.lower()]["source"] = []  
-                        self.aux_edge_node_types[label.lower()]["source"] = source_type
-                        for t in source_type:
-                            self.edge_node_types[label.lower()]["source"].append(t)
-                        for i in range(len(target_type)):
-                            target_type[i] = target_type[i].lower()
-                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
-                                                                "output_label": output_label.lower() if output_label is not None else None}                        
-                        self.edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
-                                                                "output_label": output_label.lower() if output_label is not None else None}
-                        # self.aux_edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()]["target"] = target_type
-                        for t in target_type:
-                            self.edge_node_types[label.lower()]["target"].append(t)
+                            self.aux_edge_node_types[label.lower()]["target"].append(t)
 
+                        # for a_target_type in target_type:
+                        #     self.edge_node_types[label.lower()] = 
+                            # self.edge_node_types[label.lower()].append(
+                            #     {"source": source_type.lower(), "target": a_target_type.lower(),
+                            #      "output_label": output_label.lower() if output_label is not None else None})
+                        print(f'Target type: {self.edge_node_types[label.lower()]["target"]} for {label.lower()}')
+                        print(self.edge_node_types[label.lower()])
+                    elif isinstance(source_type, list) and isinstance(target_type, list):   # non existing schema
+                        self.edge_node_types[label.lower()] = []
+                        for a_source_type in source_type:
+                            for a_target_type in target_type:
+                                self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":a_target_type.lower(),
+                                                                             "output_label": output_label.lower() if output_label is not None else None} )
             elif v["represented_as"] == "node":
                 label = v["input_label"]
                 if not isinstance(label, list):
@@ -206,13 +187,12 @@ class MeTTaWriter:
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         label = label.lower()
-        
         # added by saulo to handle list of types in the schema of edge's source
         if isinstance(source_id, tuple):
             source_type = source_id[0]
-            # print(f'Coming source type: {source_type}. Allowed source types: {self.edge_node_types[label]["source"]} for type {label}')
-            # print(f'Coming source type: {source_type}. Allowed source types: {self.aux_edge_node_types[label]["source"]} for type {label}')
-            # print(self.edge_node_types[label.lower()])
+            print(f'Coming source type: {source_type}. Allowed source types: {self.edge_node_types[label]["source"]} for type {label}')
+            print(f'Coming source type: {source_type}. Allowed source types: {self.aux_edge_node_types[label]["source"]} for type {label}')
+            print(self.edge_node_types[label.lower()])
             #####################################################################################################################################
             # This test should be this (commented) way, but...
 
@@ -231,9 +211,9 @@ class MeTTaWriter:
         # added by saulo to handle list of types in the schema of edge's target
         if isinstance(target_id, tuple):
             target_type = target_id[0]
-            # print(f'Coming target type: {target_type}. Allowed target types: {self.edge_node_types[label]["target"]} for type {label}')
-            # print(f'Coming source type: {source_type}. Allowed source types: {self.aux_edge_node_types[label]["target"]} for type {label}')
-            # print(self.edge_node_types[label.lower()])
+            print(f'Coming target type: {target_type}. Allowed target types: {self.edge_node_types[label]["target"]} for type {label}')
+            print(f'Coming source type: {source_type}. Allowed source types: {self.aux_edge_node_types[label]["target"]} for type {label}')
+            print(self.edge_node_types[label.lower()])
             #####################################################################################################################################
             # This test should be this (commented) way, but...
 

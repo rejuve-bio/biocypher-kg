@@ -84,14 +84,15 @@ class GencodeAdapter(Adapter):
                         if self.type == 'transcript':
                             if self.write_properties:
                                 props = {
-                                    'transcript_id': info['transcript_id'],
+                                    'gene': gene_key,
+                                    #'transcript_id': info['transcript_id'],
                                     'transcript_name': info['transcript_name'],
                                     #'transcript_type': info['transcript_type'],  # 'transcript_biotype'  key for dmel data
                                     'transcript_type': info['transcript_biotype'],
                                     'chr': chr,
                                     'start': start,
                                     'end': end,
-                                    'gene_name': info['gene_name'],
+                                    #'gene_name': info['gene_name'],
                                     'taxon_id': 7227
                                 }
                                 if self.add_provenance:
@@ -130,13 +131,14 @@ class GencodeAdapter(Adapter):
                         if self.type == 'transcript':
                             if self.write_properties:
                                 props = {
-                                    'transcript_id': info['transcript_id'],
+                                    #'transcript_id': info['transcript_id'],
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': info['transcript_type'],
                                     'chr': chr,
                                     'start': start,
                                     'end': end,
-                                    'gene_name': info['gene_name'],
+                                    #'gene_name': info['gene_name'],
+                                    'gene': gene_key,
                                     'taxon_id': 9606
                                 }
                                 if self.add_provenance:

@@ -54,6 +54,8 @@ class GenotypePhenotypeAdapter(Adapter):
         #genotype_symbols	genotype_FBids	phenotype_name	phenotype_id	qualifier_names	qualifier_ids	reference
         rows = fb_gg_table.get_rows()
         for row in rows:
+            if "genotype_FBids" in row[1]:     # to skip header (columns' names)
+                continue
             props = {}
             props['genotype_symbols'] = row[0].replace(' ', '@')
             genotype_FBids = row[1].replace(' ', '@')

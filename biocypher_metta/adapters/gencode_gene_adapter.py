@@ -1,8 +1,11 @@
+
 import gzip
+import traceback
+import sys
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.hsa.helpers import check_genomic_location
 from biocypher._logger import logger
-
+from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
@@ -21,18 +24,23 @@ from biocypher._logger import logger
 # 3R	FlyBase	exon	17758709	17758978	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; exon_number "1"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding"; exon_id "FBtr0344474-E1";
 # 3R	FlyBase	exon	17757024	17757709	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; exon_number "2"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding"; exon_id "FBtr0344474-E2";
 
+# dmelSummaries: table
+#FBgn_ID	Gene_Symbol	Summary_Source	Summary
+
 class GencodeGeneAdapter(Adapter):
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_biotype', 'gene_name',  # 'gene_biotype'  key for dmel data
                     'transcript_id', 'transcript_type', 'transcript_name', 'transcript_biotype', 'hgnc_id']  # 'transcript_biotype'  key for dmel data
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, hsa_filepath=None, hsa_gene_alias_file_path=None,
-                 dmel_filepath=None, dmel_gene_alias_file_path=None, chr=None, start=None, end=None):
+    def __init__(self, write_properties, add_provenance, hsa_filepath=None, hsa_gene_alias_file_path=None, hsa_summaries_filepath=None,
+                 dmel_filepath=None, dmel_gene_alias_file_path=None, dmel_summaries_filepath=None, chr=None, start=None, end=None):
 
         self.hsa_filepath = hsa_filepath
         self.hsa_gene_alias_file_path = hsa_gene_alias_file_path
+        self.hsa_summaries_filepath = hsa_summaries_filepath
         self.dmel_filepath = dmel_filepath
         self.dmel_gene_alias_file_path = dmel_gene_alias_file_path
+        self.dmel_summaries_data = self.to_dmel_summaries_dict( FlybasePrecomputedTable(dmel_summaries_filepath) )
         self.chr = chr
         self.start = start
         self.end = end
@@ -44,6 +52,129 @@ class GencodeGeneAdapter(Adapter):
         self.source_url = 'https://www.gencodegenes.org/human/'
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
+
+
+    def get_nodes(self):
+        dmel_alias_dict = self.dmel_get_gene_alias(self.dmel_gene_alias_file_path)
+        hsa_alias_dict = self.hsa_get_gene_alias(self.hsa_gene_alias_file_path)
+        #self.get_organism_nodes(self.dmel_data_filepath, dmel_alias_dict, 'gene_biotype')
+        with gzip.open(self.dmel_filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+                #print(line)
+                split_line = line.strip().split()
+                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
+                    info = self.parse_info_metadata(split_line[GencodeGeneAdapter.INDEX['info']:])
+                    gene_id = info['gene_id']
+                    #id = gene_id.split('.')[0]
+                    alias = dmel_alias_dict.get(gene_id)
+                    if not alias:                           # check this for dmel
+                        hgnc_id = info.get('hgnc_id')
+                        if hgnc_id:
+                            alias = dmel_alias_dict.get(hgnc_id)
+
+                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
+                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
+                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+                    props = {}
+                    try:
+                        # saulo
+                        #if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                        #if check_genomic_location(None, self.start, self.end, chr, start, end):
+                        if self.write_properties:
+                            props = {
+                                'gene_type': info['gene_biotype'],
+                                'chr': chr,
+                                'start': start,
+                                'end': end,
+                                'gene_name': info['gene_name'],
+                                'synonyms': alias,
+                                'taxon_id': 7227
+                            }
+                            try:
+                                props['summary_source'] = self.dmel_summaries_data.get(gene_id)[0]
+                            except:
+                                logger.info(
+                                    f'gencode_gene_adapter.py::GencodeGeneAdapter::get_nodes-DMEL: No summary-source for {gene_id}\n'
+                                )
+                            try:
+                                props['summary'] = self.dmel_summaries_data.get(gene_id)[1]
+                            except:
+                                logger.info(
+                                    f'gencode_gene_adapter.py::GencodeGeneAdapter::get_nodes-DMEL: No summary for {gene_id}\n'
+                                )
+                            if self.add_provenance:
+                                props['source'] = self.source
+                                props['source_url'] = self.source_url
+                        yield gene_id, self.label, props
+                    except Exception as e:
+                        exc_type, exc_value, exc_traceback = sys.exc_info()
+                        line_number = exc_traceback.tb_lineno
+                        print(f"Line::::::::::::::::::--->>> {line_number}: {str(e)}")
+                        logger.info(
+                            f'gencode_gene_adapter.py::GencodeGeneAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}:\n'
+                            f'Exception: {e}\n'
+                            f'Missing data:\n {line}'
+                            f"Line::::::::::::::::::--->>> {line_number}: {str(e)}"
+                        )
+                        traceback.print_exc()
+                            #f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+
+        # self.get_organism_nodes(self.hsa_filepath, hsa_alias_dict, 'gene_type')
+        with gzip.open(self.hsa_filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+                # print(line)
+                split_line = line.strip().split()
+                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
+                    info = self.parse_info_metadata(
+                        split_line[GencodeGeneAdapter.INDEX['info']:])
+                    gene_id = info['gene_id']
+                    id = gene_id.split('.')[0]
+                    alias = hsa_alias_dict.get(id)
+                    if not alias:  # check this for dmel
+                        hgnc_id = info.get('hgnc_id')
+                        if hgnc_id:
+                            alias = hsa_alias_dict.get(hgnc_id)
+                    if gene_id.endswith('_PAR_Y'):
+                        id = id + '_PAR_Y'
+
+                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
+                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
+                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+                    props = {}
+                    try:
+                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                            if self.write_properties:
+                                props = {
+                                    'gene_type': info['gene_type'],
+                                    'chr': chr,
+                                    'start': start,
+                                    'end': end,
+                                    'gene_name': info['gene_name'],
+                                    'synonyms': alias,
+                                    'taxon_id': 9606
+                                }
+                                if self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+
+                            yield id, self.label, props
+                    except:
+                        logger.info(
+                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+
+
+    def to_dmel_summaries_dict(self, fb_summaries_table):
+        table_dict = {}
+        # dmelSummaries: table
+        # FBgn_ID	Gene_Symbol	Summary_Source	Summary
+        for row in fb_summaries_table.get_rows():
+            table_dict[row[0]] = [row[2], row[3]]
+        return table_dict
+
 
     def parse_info_metadata(self, info):
         parsed_info = {}
@@ -130,100 +261,6 @@ class GencodeGeneAdapter(Adapter):
 
         return alias_dict
 
-    def get_nodes(self):
-        dmel_alias_dict = self.dmel_get_gene_alias(self.dmel_gene_alias_file_path)
-        hsa_alias_dict = self.hsa_get_gene_alias(self.hsa_gene_alias_file_path)
-        #self.get_organism_nodes(self.dmel_data_filepath, dmel_alias_dict, 'gene_biotype')
-        with gzip.open(self.dmel_filepath, 'rt') as input:
-            for line in input:
-                if line.startswith('#'):
-                    continue
-                #print(line)
-                split_line = line.strip().split()
-                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
-                    info = self.parse_info_metadata(split_line[GencodeGeneAdapter.INDEX['info']:])
-                    gene_id = info['gene_id']
-                    #id = gene_id.split('.')[0]
-                    alias = dmel_alias_dict.get(gene_id)
-                    if not alias:                           # check this for dmel
-                        hgnc_id = info.get('hgnc_id')
-                        if hgnc_id:
-                            alias = dmel_alias_dict.get(hgnc_id)
-
-                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
-                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
-                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
-                    props = {}
-                    try:
-                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                            if self.write_properties:
-                                props = {
-                                    'gene_type': info['gene_biotype'],
-                                    'chr': chr,
-                                    'start': start,
-                                    'end': end,
-                                    'gene_name': info['gene_name'],
-                                    'synonyms': alias,
-                                    'taxon_id': 7227
-                                }
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
-
-                            yield gene_id, self.label, props
-                    except Exception as e:
-                        logger.info(
-                            f'gencode_gene_adapter.py::GencodeGeneAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}:\n'
-                            f'Exception: {e}\n'
-                            f'Missing data:\n {line}'
-                        )
-                            #f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-
-        # self.get_organism_nodes(self.hsa_filepath, hsa_alias_dict, 'gene_type')
-        with gzip.open(self.hsa_filepath, 'rt') as input:
-            for line in input:
-                if line.startswith('#'):
-                    continue
-                # print(line)
-                split_line = line.strip().split()
-                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
-                    info = self.parse_info_metadata(
-                        split_line[GencodeGeneAdapter.INDEX['info']:])
-                    gene_id = info['gene_id']
-                    id = gene_id.split('.')[0]
-                    alias = hsa_alias_dict.get(id)
-                    if not alias:  # check this for dmel
-                        hgnc_id = info.get('hgnc_id')
-                        if hgnc_id:
-                            alias = hsa_alias_dict.get(hgnc_id)
-                    if gene_id.endswith('_PAR_Y'):
-                        id = id + '_PAR_Y'
-
-                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
-                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
-                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
-                    props = {}
-                    try:
-                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                            if self.write_properties:
-                                props = {
-                                    # 'gene_id': gene_id, # TODO should this be included?
-                                    'gene_type': info['gene_type'],
-                                    'chr': chr,
-                                    'start': start,
-                                    'end': end,
-                                    'gene_name': info['gene_name'],
-                                    'synonyms': alias,
-                                    'taxon_id': 9606
-                                }
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
-
-                            yield id, self.label, props
-                    except:
-                        logger.info(
-                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
     def get_organism_nodes(self, filepath, alias_dict, gene_type_string):
         '''

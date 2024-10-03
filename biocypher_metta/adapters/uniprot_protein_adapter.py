@@ -57,6 +57,7 @@ class UniprotProteinAdapter(Adapter):
                         'protein_name': record.entry_name.split('_')[0],
                         'synonyms': dbxrefs
                     }
+
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
