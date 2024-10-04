@@ -29,6 +29,42 @@ def get_writer(writer_type: str, output_dir: pathlib.Path):
                             output_dir=output_dir)
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
+    
+def preprocess_schema():
+    def convert_input_labels(label, replace_char="_"):
+        return label.replace(" ", replace_char)
+    
+    bcy = BioCypher(
+            schema_config_path="config/schema_config.yaml", biocypher_config_path="config/biocypher_config.yaml"
+        )
+    schema = bcy._get_ontology_mapping()._extend_schema()
+    edge_node_types = {}
+
+    for k, v in schema.items():
+        if v["represented_as"] == "edge":
+            source_type = v.get("source", None)
+            target_type = v.get("target", None)
+
+            if source_type is not None and target_type is not None:
+                if isinstance(v["input_label"], list):
+                    label = convert_input_labels(v["input_label"][0])
+                    source_type = convert_input_labels(source_type[0])
+                    target_type = convert_input_labels(target_type[0])
+                else:
+                    label = convert_input_labels(v["input_label"])
+                    source_type = convert_input_labels(source_type)
+                    target_type = convert_input_labels(target_type)
+                output_label = v.get("output_label", None)
+
+                edge_node_types[label.lower()] = {
+                    "source": source_type.lower(),
+                    "target": target_type.lower(),
+                    "output_label": (
+                        output_label.lower() if output_label is not None else None
+                    ),
+                }
+    
+    return edge_node_types
 
 # Run build
 @app.command()
@@ -56,6 +92,7 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
     logger.info(f"Using {writer_type} writer")
 
     # bc.show_ontology_structure()
+    schema_dict = preprocess_schema()
 
     # Run adapters
 
@@ -98,9 +135,34 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
             for edge_label in freq:
                 edges_info[edge_label] += freq[edge_label]
     
-    graph_info = {}
-    graph_info['nodes'] = nodes_info
-    graph_info['edges'] = edges_info
+    graph_info = {'node_count': 0, 
+                  'edge_count': 0,
+                  'top_entities': [],
+                  'top_connections': [],
+                  'frequent_relationships': []}
+    
+    for node, count in nodes_info.items():
+        graph_info['node_count'] += count
+        graph_info['top_entities'].append({'name': node, 'count': count})
+        
+    predicate_count = Counter()
+    relations_frequency = Counter()
+    
+    for edge, count in edges_info.items():
+        graph_info['edge_count'] += count
+        label = schema_dict[edge]['output_label'] or edge
+        source = schema_dict[edge]['source']
+        target = schema_dict[edge]['target']
+        predicate_count[label] += count
+        relations_frequency[f'{source}|{target}'] += count
+    
+    for predicate, count in predicate_count.items():
+        graph_info['top_connections'].append({'name': predicate, 'count': count})
+    
+    for rel, count in relations_frequency.items():
+        s, t = rel.split('|')
+        graph_info['frequent_relationships'].append({'entities':[s, t], 'count': count})
+    
     
     print(json.dumps(graph_info, indent=2))
 
