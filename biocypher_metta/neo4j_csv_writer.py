@@ -1,3 +1,4 @@
+from collections import Counter, defaultdict
 import json
 import pathlib
 import os
@@ -123,11 +124,16 @@ class Neo4jCSVWriter:
 
         # Prepare node data for CSV
         node_groups = {}
+        node_freq = Counter()
+        node_props = defaultdict(set)
         for node in nodes:
             id, label, properties = node
             if "." in label:
                 label = label.split(".")[1]
             label = label.lower()
+            node_freq[label] += 1
+            node_props[label] = node_props[label].union(properties.keys())
+                 
             if label not in node_groups:
                 node_groups[label] = []
             id = self.preprocess_id(id)
@@ -159,6 +165,7 @@ RETURN batches, total;
             # logger.info(f"Finished writing out node import queries for: {output_dir}, node type: {label}")
 
         logger.info(f"Finished writing out all node import queries for: {output_dir}")
+        return node_freq, node_props
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         # Determine the output directory based on the given parameters
@@ -174,9 +181,11 @@ RETURN batches, total;
 
         # Group edges by their label
         edge_groups = {}
+        edges_freq = Counter()
         for edge in edges:
             source_id, target_id, label, properties = edge
             label = label.lower()
+            edges_freq[label] += 1
             source_type = self.edge_node_types[label]["source"]
             target_type = self.edge_node_types[label]["target"]
             if source_type == 'ontology_term':
@@ -229,6 +238,7 @@ RETURN batches, total;
             logger.info(f"Finished writing out edge import queries for: edge type: {label}")
 
         logger.info(f"Finished writing out all edge import queries for: {output_dir}")
+        return edges_freq
 
     def convert_input_labels(self, label, replace_char="_"):
         return label.replace(" ", replace_char)
