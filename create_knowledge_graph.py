@@ -165,23 +165,27 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
         dataset_name = getattr(adapter, 'source', None)
         version = getattr(adapter, 'version', None)
         source_url = getattr(adapter, 'source_url', None)
-
-        if dataset_name not in datasets_dict:
-            datasets_dict[dataset_name] = {
-                "name": dataset_name,
-                "version": version,
-                "url": source_url,
-                "nodes": set(),
-                "edges": set(),
-                "imported_on": str(date.today())
-            }
+        
+        if dataset_name is None:
+            logger.warning(f"Dataset name is None for adapter: {c}. Ensure 'source' is defined in the adapter constructor.")
+        else:
+            if dataset_name not in datasets_dict:
+                datasets_dict[dataset_name] = {
+                    "name": dataset_name,
+                    "version": version,
+                    "url": source_url,
+                    "nodes": set(),
+                    "edges": set(),
+                    "imported_on": str(date.today())
+                }
 
         if write_nodes:
             nodes = adapter.get_nodes()
             freq, props = bc.write_nodes(nodes, path_prefix=outdir)
             for node_label in freq:
                 nodes_count[node_label] += freq[node_label]
-                datasets_dict[dataset_name]['nodes'].add(node_label)
+                if dataset_name is not None:
+                    datasets_dict[dataset_name]['nodes'].add(node_label)
             for node_label in props:
                 nodes_props[node_label] = nodes_props[node_label].union(props[node_label])
 
@@ -191,7 +195,8 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
             for edge_label in freq:
                 edges_count[edge_label] += freq[edge_label]
                 label = schema_dict[edge_label]['output_label'] or edge_label
-                datasets_dict[dataset_name]['edges'].add(label)
+                if dataset_name is not None:
+                    datasets_dict[dataset_name]['edges'].add(label)
 
     # Gather graph info
     graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir)
