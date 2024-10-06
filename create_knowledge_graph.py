@@ -9,7 +9,7 @@ from biocypher_metta.neo4j_csv_writer import *
 from biocypher._logger import logger
 import typer
 import yaml
-import importlib  # for reflection
+import importlib  #for reflection
 from typing_extensions import Annotated
 import pickle
 import json
@@ -150,7 +150,7 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
         adapter_cls = getattr(adapter_module, adapter_config["cls"])
         ctr_args = adapter_config["args"]
 
-        if "dbsnp_rsid_map" in ctr_args:
+        if "dbsnp_rsid_map" in ctr_args: #this for dbs that use grch37 assembly and to map grch37 to grch38
             ctr_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
         if "dbsnp_pos_map" in ctr_args:
             ctr_args["dbsnp_pos_map"] = dbsnp_pos_dict
