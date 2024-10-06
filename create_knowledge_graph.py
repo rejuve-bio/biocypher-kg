@@ -1,6 +1,7 @@
 """
 Knowledge graph generation through BioCypher script
 """
+from datetime import date
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
@@ -116,6 +117,9 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
                   'top_connections': [],
                   'frequent_relationships': []}
     
+    datasets_dict = {}
+    datasets = []
+    
     for c in adapters_dict:
         logger.info(f"Running adapter: {c}")
         adapter_config = adapters_dict[c]["adapter"]
@@ -133,11 +137,22 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
         write_edges = adapters_dict[c]["edges"]
         outdir = adapters_dict[c]["outdir"]
 
+        dataset_name = getattr(adapter, 'source', None)
+        version = getattr(adapter, 'version', None)
+        source_url = getattr(adapter, 'source_url', None)
+        if dataset_name not in datasets_dict:
+            datasets_dict[dataset_name] = {"name": dataset_name,
+                                           "version": version, 
+                                           "url": source_url, 
+                                           "nodes": set(),
+                                           "edges": set(),
+                                           "imported_on": str(date.today())}
         if write_nodes:
             nodes = adapter.get_nodes()
             freq, props = bc.write_nodes(nodes, path_prefix=outdir)
             for node_label in freq:
                 nodes_count[node_label] += freq[node_label]
+                datasets_dict[dataset_name]['nodes'].add(node_label)
             for node_label in props:
                 nodes_props[node_label] = nodes_props[node_label].union(props[node_label])
 
@@ -146,6 +161,8 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
             freq = bc.write_edges(edges, path_prefix=outdir)
             for edge_label in freq:
                 edges_count[edge_label] += freq[edge_label]
+                label = schema_dict[edge_label]['output_label'] or edge_label
+                datasets_dict[dataset_name]['edges'].add(label)
     
     
     for node, count in nodes_count.items():
@@ -178,6 +195,14 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
         schema_json['edges'].append({'data': {'source': source, 'target': target, 'possible_connections': list(pos_connections)}})
     
     graph_info['schema'] = schema_json
+    
+    for dataset in datasets_dict:
+        datasets_dict[dataset]["nodes"] = list(datasets_dict[dataset]["nodes"])
+        datasets_dict[dataset]["edges"] = list(datasets_dict[dataset]["edges"])
+        datasets.append(datasets_dict[dataset])
+    graph_info["dataset_count"] = len(datasets)
+    graph_info["datasets"] = datasets
+    
     graph_info_json = json.dumps(graph_info, indent=2)
     file_path = f"{output_dir}/graph_info.json"
     with open(file_path, "w") as f:
