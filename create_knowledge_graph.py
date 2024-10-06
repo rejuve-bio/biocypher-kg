@@ -103,8 +103,18 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
             logger.error(f"Error while trying to load adapter config")
             logger.error(e)
 
-    nodes_info = Counter()
-    edges_info = Counter()
+    nodes_count = Counter()
+    nodes_props = defaultdict(set)
+    edges_count = Counter()
+    predicate_count = Counter()
+    relations_frequency = Counter()
+    possible_connections = defaultdict(set)
+    schema_json = {'nodes': [], 'edges': []}
+    graph_info = {'node_count': 0, 
+                  'edge_count': 0,
+                  'top_entities': [],
+                  'top_connections': [],
+                  'frequent_relationships': []}
     
     for c in adapters_dict:
         logger.info(f"Running adapter: {c}")
@@ -125,36 +135,32 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
 
         if write_nodes:
             nodes = adapter.get_nodes()
-            freq = bc.write_nodes(nodes, path_prefix=outdir)
+            freq, props = bc.write_nodes(nodes, path_prefix=outdir)
             for node_label in freq:
-                nodes_info[node_label] += freq[node_label]
+                nodes_count[node_label] += freq[node_label]
+            for node_label in props:
+                nodes_props[node_label] = nodes_props[node_label].union(props[node_label])
 
         if write_edges:
             edges = adapter.get_edges()
             freq = bc.write_edges(edges, path_prefix=outdir)
             for edge_label in freq:
-                edges_info[edge_label] += freq[edge_label]
+                edges_count[edge_label] += freq[edge_label]
     
-    graph_info = {'node_count': 0, 
-                  'edge_count': 0,
-                  'top_entities': [],
-                  'top_connections': [],
-                  'frequent_relationships': []}
     
-    for node, count in nodes_info.items():
+    for node, count in nodes_count.items():
         graph_info['node_count'] += count
         graph_info['top_entities'].append({'name': node, 'count': count})
         
-    predicate_count = Counter()
-    relations_frequency = Counter()
     
-    for edge, count in edges_info.items():
+    for edge, count in edges_count.items():
         graph_info['edge_count'] += count
         label = schema_dict[edge]['output_label'] or edge
         source = schema_dict[edge]['source']
         target = schema_dict[edge]['target']
         predicate_count[label] += count
         relations_frequency[f'{source}|{target}'] += count
+        possible_connections[f'{source}|{target}'].add(label)
     
     for predicate, count in predicate_count.items():
         graph_info['top_connections'].append({'name': predicate, 'count': count})
@@ -164,7 +170,18 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
         graph_info['frequent_relationships'].append({'entities':[s, t], 'count': count})
     
     
-    print(json.dumps(graph_info, indent=2))
+    for node, props in nodes_props.items():
+        schema_json['nodes'].append({'data': {'name': node, 'properties': list(props)}})
+    
+    for conn, pos_connections in possible_connections.items():
+        source, target = conn.split('|')
+        schema_json['edges'].append({'data': {'source': source, 'target': target, 'possible_connections': list(pos_connections)}})
+    
+    graph_info['schema'] = schema_json
+    graph_info_json = json.dumps(graph_info, indent=2)
+    file_path = f"{output_dir}/graph_info.json"
+    with open(file_path, "w") as f:
+        f.write(graph_info_json)
 
 
     logger.info("Done")
