@@ -1,3 +1,4 @@
+from collections import Counter, defaultdict
 import pathlib
 import os
 from biocypher import BioCypher
@@ -67,12 +68,19 @@ class Neo4jWriter:
         else:
             file_path = f"{self.output_path}/nodes.cypher"
 
+        node_freq = Counter()
+        node_props = defaultdict(set)
         with open(file_path, "a") as f:
             for node in nodes:
+                id, label, properties = node
+                node_freq[label] += 1
+                node_props[label] = node_props[label].union(properties.keys())
+                    
                 query = self.write_node(node)
                 f.write(query + "\n")
 
         logger.info("Finished writing out nodes")
+        return node_freq, node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:

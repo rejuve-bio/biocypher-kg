@@ -1,5 +1,5 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
-from collections import Counter
+from collections import Counter, defaultdict
 from biocypher import BioCypher
 import pathlib
 import os
@@ -98,10 +98,12 @@ class MeTTaWriter:
         else:
             file_path = f"{self.output_path}/nodes.metta"
         node_freq = Counter()
+        node_props = defaultdict(set)
         with open(file_path, "a") as f:
             for node in nodes:
                 id, label, properties = node
                 node_freq[label] += 1
+                node_props[label] = node_props[label].union(properties.keys())
                     
                 out_str = self.write_node(node)
                 for s in out_str:
@@ -110,7 +112,7 @@ class MeTTaWriter:
             f.write("\n")
 
         logger.info("Finished writing out nodes")
-        return node_freq
+        return node_freq, node_props
 
 
 

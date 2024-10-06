@@ -1,4 +1,5 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
+from collections import Counter, defaultdict
 from biocypher import BioCypher
 import pathlib
 import os
@@ -56,8 +57,15 @@ class PrologWriter:
                     pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
         else:
             file_path = f"{self.output_path}/nodes.pl"
+        
+        node_freq = Counter()
+        node_props = defaultdict(set)
         with open(file_path, "a") as f:
             for node in nodes:
+                id, label, properties = node
+                node_freq[label] += 1
+                node_props[label] = node_props[label].union(properties.keys())
+                  
                 out_str = self.write_node(node)
                 for s in out_str:
                     f.write(s + "\n")
@@ -65,6 +73,7 @@ class PrologWriter:
             f.write("\n")
 
         logger.info("Finished writing out nodes")
+        return node_freq, node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -75,13 +84,17 @@ class PrologWriter:
         else:
             file_path = f"{self.output_path}/edges.pl"
 
+        edges_freq = Counter()
         with open(file_path, "a") as f:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                edges_freq[label] += 1
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
 
             f.write("\n")
+        return edges_freq
 
     def write_node(self, node):
         id, label, properties = node
