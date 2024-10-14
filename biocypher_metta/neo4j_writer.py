@@ -1,7 +1,5 @@
-from collections import Counter, defaultdict
 import pathlib
 import os
-from biocypher import BioCypher
 from biocypher._logger import logger
 import networkx as nx
 

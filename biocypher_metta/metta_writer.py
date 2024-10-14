@@ -1,6 +1,4 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
-from collections import Counter, defaultdict
-from biocypher import BioCypher
 import pathlib
 import os
 from biocypher._logger import logger

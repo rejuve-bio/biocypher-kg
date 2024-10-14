@@ -1,13 +1,9 @@
 from collections import Counter, defaultdict
 import json
-import pathlib
-import os
 import csv
-from biocypher import BioCypher
 from biocypher._logger import logger
 import networkx as nx
 import rdflib
-from io import StringIO
 
 from biocypher_metta import BaseWriter
 
