@@ -6,21 +6,13 @@ import os
 from biocypher._logger import logger
 import networkx as nx
 
-class MeTTaWriter:
+from biocypher_metta import BaseWriter
+
+class MeTTaWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config,
                  output_dir):
-        self.schema_config = schema_config
-        self.biocypher_config = biocypher_config
-        self.output_path = pathlib.Path(output_dir)
-
-        if not os.path.exists(output_dir):
-            self.output_path.mkdir()
-
-        self.bcy = BioCypher(schema_config_path=schema_config,
-                             biocypher_config_path=biocypher_config)
-
-        self.ontology = self.bcy._get_ontology()
+        super().__init__(schema_config, biocypher_config, output_dir)
         self.create_type_hierarchy()
 
         #self.excluded_properties = ["license", "version", "source"]
@@ -97,14 +89,10 @@ class MeTTaWriter:
                     pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
         else:
             file_path = f"{self.output_path}/nodes.metta"
-        node_freq = Counter()
-        node_props = defaultdict(set)
+        
         with open(file_path, "a") as f:
             for node in nodes:
-                id, label, properties = node
-                node_freq[label] += 1
-                node_props[label] = node_props[label].union(properties.keys())
-                    
+                self.extract_node_info(node) # Count nodes and extract node properties
                 out_str = self.write_node(node)
                 for s in out_str:
                     f.write(s + "\n")
@@ -112,7 +100,7 @@ class MeTTaWriter:
             f.write("\n")
 
         logger.info("Finished writing out nodes")
-        return node_freq, node_props
+        return self.node_freq, self.node_props
 
 
 
@@ -124,17 +112,16 @@ class MeTTaWriter:
                     pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
         else:
             file_path = f"{self.output_path}/edges.metta"
-        edges_freq = Counter()
+
         with open(file_path, "a") as f:
             for edge in edges:
-                source_id, target_id, label, properties = edge
-                edges_freq[label] += 1
+                self.extract_edge_info(edge) # Count edges
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
 
             f.write("\n")
-        return edges_freq
+        return self.edge_freq
 
     def write_node(self, node):
         id, label, properties = node

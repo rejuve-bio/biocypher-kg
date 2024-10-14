@@ -5,22 +5,14 @@ from biocypher import BioCypher
 from biocypher._logger import logger
 import networkx as nx
 
+from biocypher_metta import BaseWriter
 
-class Neo4jWriter:
+
+class Neo4jWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config, output_dir):
-        self.schema_config = schema_config
-        self.biocypher_config = biocypher_config
-        self.output_path = pathlib.Path(output_dir)
+        super().__init__(schema_config, biocypher_config, output_dir)
 
-        if not os.path.exists(output_dir):
-            self.output_path.mkdir()
-
-        self.bcy = BioCypher(
-            schema_config_path=schema_config, biocypher_config_path=biocypher_config
-        )
-
-        self.onotology = self.bcy._get_ontology()
         self.create_edge_types()
 
         self.excluded_properties = []
@@ -68,19 +60,15 @@ class Neo4jWriter:
         else:
             file_path = f"{self.output_path}/nodes.cypher"
 
-        node_freq = Counter()
-        node_props = defaultdict(set)
         with open(file_path, "a") as f:
             for node in nodes:
-                id, label, properties = node
-                node_freq[label] += 1
-                node_props[label] = node_props[label].union(properties.keys())
+                self.extract_node_info(node)
                     
                 query = self.write_node(node)
                 f.write(query + "\n")
 
         logger.info("Finished writing out nodes")
-        return node_freq, node_props
+        return self.node_freq, self.node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -95,11 +83,13 @@ class Neo4jWriter:
 
         with open(file_path, "a") as f:
             for edge in edges:
+                self.extract_edge_info(edge)
                 query = self.write_edge(edge)
                 f.write(query + "\n")
 
         logger.info("Finished writing out edges")
-
+        return self.edge_freq
+    
     def write_node(self, node):
         id, label, properties = node
         if "." in label:

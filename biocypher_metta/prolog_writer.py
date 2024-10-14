@@ -7,21 +7,13 @@ from biocypher._logger import logger
 import networkx as nx
 import re
 
-class PrologWriter:
+from biocypher_metta import BaseWriter
+
+class PrologWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config,
                  output_dir):
-        self.schema_config = schema_config
-        self.biocypher_config = biocypher_config
-        self.output_path = pathlib.Path(output_dir)
-
-        if not os.path.exists(output_dir):
-            self.output_path.mkdir()
-
-        self.bcy = BioCypher(schema_config_path=schema_config,
-                             biocypher_config_path=biocypher_config)
-
-        self.ontology = self.bcy._get_ontology()
+        super().__init__(schema_config, biocypher_config, output_dir)
         self.create_edge_types()
         #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
@@ -58,13 +50,9 @@ class PrologWriter:
         else:
             file_path = f"{self.output_path}/nodes.pl"
         
-        node_freq = Counter()
-        node_props = defaultdict(set)
         with open(file_path, "a") as f:
             for node in nodes:
-                id, label, properties = node
-                node_freq[label] += 1
-                node_props[label] = node_props[label].union(properties.keys())
+                self.extract_node_info(node)
                   
                 out_str = self.write_node(node)
                 for s in out_str:
@@ -73,7 +61,7 @@ class PrologWriter:
             f.write("\n")
 
         logger.info("Finished writing out nodes")
-        return node_freq, node_props
+        return self.node_freq, self.node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -84,17 +72,15 @@ class PrologWriter:
         else:
             file_path = f"{self.output_path}/edges.pl"
 
-        edges_freq = Counter()
         with open(file_path, "a") as f:
             for edge in edges:
-                source_id, target_id, label, properties = edge
-                edges_freq[label] += 1
+                self.extract_edge_info(edge)
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
 
             f.write("\n")
-        return edges_freq
+        return self.edge_freq
 
     def write_node(self, node):
         id, label, properties = node
