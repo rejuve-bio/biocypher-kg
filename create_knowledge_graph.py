@@ -3,6 +3,8 @@ Knowledge graph generation through BioCypher script
 """
 from datetime import date
 from pathlib import Path
+
+from biocypher import BioCypher
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
