@@ -49,15 +49,15 @@ class GWASAdapter(Adapter):
         super(GWASAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
-        with gzip.open(self.filepath, "rt") as gwas:
+        with open(self.filepath, "rt") as gwas:
             next(gwas)  # skip header
-            gwas_row = csv.reader(gwas)
+            gwas_row = csv.reader(gwas, delimiter='\t')
             for row in gwas_row:
                 try:
                     chr, pos = row[self.index["chr"]], row[self.index["pos"]]
-                    if pos is not None:
+                    try:
                         pos = int(pos)
-                    else:
+                    except:
                         continue
                     variant_id = row[self.index["rsid"]]
                     if not row[self.index[self.label]]:
