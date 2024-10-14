@@ -8,25 +8,15 @@ from biocypher._logger import logger
 import networkx as nx
 import rdflib
 from io import StringIO
-import multiprocessing as mp
-from functools import lru_cache
 
-class Neo4jCSVWriter:
+from biocypher_metta import BaseWriter
+
+class Neo4jCSVWriter(BaseWriter):
     def __init__(self, schema_config, biocypher_config, output_dir):
-        self.schema_config = schema_config
-        self.biocypher_config = biocypher_config
-        self.output_path = pathlib.Path(output_dir)
+        super().__init__(schema_config, biocypher_config, output_dir)
         self.csv_delimiter = '|'
         self.array_delimiter = ';'
 
-        if not os.path.exists(output_dir):
-            self.output_path.mkdir(parents=True, exist_ok=True)
-
-        self.bcy = BioCypher(
-            schema_config_path=schema_config, biocypher_config_path=biocypher_config
-        )
-
-        self.ontology = self.bcy._get_ontology()
         self.create_edge_types()
 
         self.excluded_properties = []
@@ -79,6 +69,10 @@ class Neo4jCSVWriter:
         
         return value
     
+    def convert_input_labels(self, label):
+        """Convert input labels to a standard format."""
+        return label.lower().replace(" ", "_")
+
     def preprocess_id(self, prev_id):
         replace_map = str.maketrans({' ': '_', ':':'_'})
         id = prev_id.lower().strip().translate(replace_map)
@@ -90,6 +84,7 @@ class Neo4jCSVWriter:
             for row in chunk:
                 processed_row = [preprocess_value(row.get(header, '')) for header in headers]
                 writer.writerow(processed_row)
+            csvfile.flush()
 
     def write_to_csv(self, data, file_path, chunk_size=1000):
         headers = list(data[0].keys())
@@ -98,17 +93,12 @@ class Neo4jCSVWriter:
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=self.csv_delimiter)
             writer.writerow(headers)
+            csvfile.flush()  # Ensure headers are written to disk
         
         # Process and write data in chunks
-        num_processes = mp.cpu_count()
-        pool = mp.Pool(processes=num_processes)
-        
         for i in range(0, len(data), chunk_size):
             chunk = data[i:i+chunk_size]
-            pool.apply_async(self.write_chunk, (chunk, headers, file_path, self.csv_delimiter, self.preprocess_value))
-        
-        pool.close()
-        pool.join()
+            self.write_chunk(chunk, headers, file_path, self.csv_delimiter, self.preprocess_value)
 
     def write_nodes(self, nodes, path_prefix=None, adapter_name=None):
         # Determine the output directory based on the given parameters
@@ -162,7 +152,6 @@ YIELD batches, total
 RETURN batches, total;
                 """
                 f.write(cypher_query)
-            # logger.info(f"Finished writing out node import queries for: {output_dir}, node type: {label}")
 
         logger.info(f"Finished writing out all node import queries for: {output_dir}")
         return node_freq, node_props
@@ -228,27 +217,12 @@ CALL apoc.periodic.iterate(
     MATCH (target:row.target_type {{id: row.target_id}})
     MERGE (source)-[r:{label}]->(target)
     SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
-    {{batchSize:1000, parallel:true, concurrency:4}}
+    {{batchSize:1000}}
 )
 YIELD batches, total
 RETURN batches, total;
                 """
                 f.write(cypher_query)
 
-            logger.info(f"Finished writing out edge import queries for: edge type: {label}")
-
         logger.info(f"Finished writing out all edge import queries for: {output_dir}")
         return edges_freq
-
-    def convert_input_labels(self, label, replace_char="_"):
-        return label.replace(" ", replace_char)
-
-    def get_parent(self, G, node):
-        return nx.dfs_preorder_nodes(G, node, depth_limit=2)
-
-    def show_ontology_structure(self):
-        self.bcy.show_ontology_structure()
-
-    def summary(self):
-        self.bcy.summary()
-
