@@ -104,46 +104,14 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
 
     return graph_info
 
-# Run build
-@app.command()
-def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)],
-         adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j"),
-         write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
-         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
-    """
-    Main function. Call individual adapters to download and process data. Build
-    via BioCypher from node and edge data.
-    """
-
-    # Start biocypher
-    logger.info("Loading dbsnp rsids map")
-    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
-    logger.info("Loading dbsnp pos map")
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
-
-    # Choose the writer based on user input or default to 'metta'
-    bc = get_writer(writer_type, output_dir)
-    logger.info(f"Using {writer_type} writer")
-
-    schema_dict = preprocess_schema()
-
-    # Run adapters
-    with open(adapters_config, "r") as fp:
-        try:
-            adapters_dict = yaml.safe_load(fp)
-        except yaml.YAMLError as e:
-            logger.error("Error while trying to load adapter config")
-            logger.error(e)
-
+def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, write_properties, add_provenance, schema_dict):
     nodes_count = Counter()
     nodes_props = defaultdict(set)
     edges_count = Counter()
     datasets_dict = {}
 
     for c in adapters_dict:
+        writer.clear_counts() # Reset counter for this adapter
         logger.info(f"Running adapter: {c}")
         adapter_config = adapters_dict[c]["adapter"]
         adapter_module = importlib.import_module(adapter_config["module"])
@@ -181,7 +149,7 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
 
         if write_nodes:
             nodes = adapter.get_nodes()
-            freq, props = bc.write_nodes(nodes, path_prefix=outdir)
+            freq, props = writer.write_nodes(nodes, path_prefix=outdir)
             for node_label in freq:
                 nodes_count[node_label] += freq[node_label]
                 if dataset_name is not None:
@@ -191,12 +159,52 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
 
         if write_edges:
             edges = adapter.get_edges()
-            freq = bc.write_edges(edges, path_prefix=outdir)
+            freq = writer.write_edges(edges, path_prefix=outdir)
             for edge_label in freq:
                 edges_count[edge_label] += freq[edge_label]
                 label = schema_dict[edge_label]['output_label'] or edge_label
                 if dataset_name is not None:
                     datasets_dict[dataset_name]['edges'].add(label)
+
+    return nodes_count, nodes_props, edges_count, datasets_dict
+
+# Run build
+@app.command()
+def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)],
+         adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
+         dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
+         dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j"),
+         write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
+         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
+    """
+    Main function. Call individual adapters to download and process data. Build
+    via BioCypher from node and edge data.
+    """
+
+    # Start biocypher
+    logger.info("Loading dbsnp rsids map")
+    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
+    logger.info("Loading dbsnp pos map")
+    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+
+    # Choose the writer based on user input or default to 'metta'
+    bc = get_writer(writer_type, output_dir)
+    logger.info(f"Using {writer_type} writer")
+
+    schema_dict = preprocess_schema()
+
+    with open(adapters_config, "r") as fp:
+        try:
+            adapters_dict = yaml.safe_load(fp)
+        except yaml.YAMLError as e:
+            logger.error("Error while trying to load adapter config")
+            logger.error(e)
+
+    # Run adapters
+    nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+        adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
+    )
 
     # Gather graph info
     graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir)
