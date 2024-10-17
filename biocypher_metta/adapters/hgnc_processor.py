@@ -13,16 +13,17 @@ class HGNCSymbolProcessor:
         self.current_symbols: Dict[str, str] = {}
         self.symbol_aliases: Dict[str, str] = {}
         self.ensembl_to_symbol: Dict[str, str] = {}
-        self.update_interval = timedelta(days=7)  # Update weekly
+        self.update_interval = timedelta(hours=48)  # Update every 48 hours
         self.last_update_check = None
         self.last_check_result = None
+        self.hgnc_url = "https://www.genenames.org/cgi-bin/download/custom?col=gd_app_sym&col=gd_prev_sym&col=gd_aliases&col=gd_pub_ensembl_id&status=Approved&hgnc_dbtag=on&order_by=gd_app_sym_sort&format=text&submit=submit"  # Defined URL
 
     def check_update_needed(self) -> bool:
         """Check if we need to update the data based on the last update time"""
         current_time = datetime.now()
         
-        # Check if we have a cached result from the last 30 minutes
-        if self.last_update_check and (current_time - self.last_update_check) < timedelta(minutes=30):
+        # Check if we have a cached result from the last 48 hours
+        if self.last_update_check and (current_time - self.last_update_check) < timedelta(hours=48):
             return self.last_check_result
 
         self.last_update_check = current_time
@@ -68,10 +69,9 @@ class HGNCSymbolProcessor:
             return
 
         print("HGNC data: Updating...")
-        url = "https://www.genenames.org/cgi-bin/download/custom?col=gd_app_sym&col=gd_prev_sym&col=gd_aliases&col=gd_pub_ensembl_id&status=Approved&hgnc_dbtag=on&order_by=gd_app_sym_sort&format=text&submit=submit"
         
         try:
-            response = requests.get(url, timeout=30)
+            response = requests.get(self.hgnc_url, timeout=30)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             print(f"HGNC data: Error occurred while fetching data: {e}")
