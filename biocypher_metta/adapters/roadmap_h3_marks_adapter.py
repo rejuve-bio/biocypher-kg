@@ -52,14 +52,14 @@ class RoadMapH3MarkAdapter(Adapter):
                         _id = row[0]
                         chr = self.dbsnp_rsid_map[_id]["chr"]
                         pos = self.dbsnp_rsid_map[_id]["pos"]
-                        cell_id = row[COL_DICT['cell']].replace('"', '').replace("'", '')
-                        biological_context = self.cell_to_ontology_id_map.get(cell_id, None)
+                        cell_id = row[COL_DICT['cell']].split()[0]
+                        biological_context = self.cell_to_ontology_id_map.get(cell_id, [None])[-1]
                         if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                             _source = _id
                             _target = biological_context
                             _props = {}
                             if biological_context == None:
-                                print(f"{cell_id} not found in ontology map skipping...")
+                                print(f"{row[COL_DICT['cell']]} not found in ontology map skipping...")
                                 continue
 
                             if self.write_properties:
