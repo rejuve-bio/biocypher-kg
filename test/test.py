@@ -4,6 +4,9 @@ import pytest
 import yaml
 import importlib
 import logging
+import os
+import sys
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,7 +21,6 @@ def parse_schema(bcy):
     for k, v in schema.items():
         if v["represented_as"] == "edge": 
             edge_type = convert_input_labels(k)
-            #Check if there are source and target fields
             source_type = v.get("source", None)
             target_type = v.get("target", None)
             if source_type is not None and target_type is not None:
@@ -47,17 +49,29 @@ def parse_schema(bcy):
 
 @pytest.fixture(scope="session")
 def setup_class(request):
-    # Load schema config
-    bcy = BioCypher(schema_config_path='config/schema_config.yaml', biocypher_config_path='config/biocypher_config.yaml')
-    node_labels, edges_schema = parse_schema(bcy) 
+    try:
+        bcy = BioCypher(
+            schema_config_path='config/schema_config.yaml',
+            biocypher_config_path='config/biocypher_config.yaml'
+        )
+        node_labels, edges_schema = parse_schema(bcy) 
+    except FileNotFoundError as e:
+        pytest.fail(f"Configuration file not found: {e}")
+    except yaml.YAMLError as e:
+        pytest.fail(f"Error parsing YAML file: {e}")
+    except Exception as e:
+        pytest.fail(f"Error initializing BioCypher: {e}")
    
     # Load adapters config
     adapters_config_path = request.config.getoption("--adapters-config")
     dbsnp_rsids = request.config.getoption("--dbsnp-rsids")
     dbsnp_pos = request.config.getoption("--dbsnp-pos")
-    logging.info("Loading dbsnp rsids map")
-    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
-    logging.info("Loading dbsnp pos map")
+    if dbsnp_rsids:
+        logging.info("Loading dbsnp rsids map")
+        dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
+    else:
+        logging.warning("--dbsnp-rsids not provided, skipping dbsnp rsids map loading")
+        dbsnp_rsids_dict = None
     dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
    
     # Load adapters config
@@ -79,19 +93,19 @@ class TestBiocypherKG:
         """
         node_labels, edges_schema, adapters_config, dbsnp_rsids_dict, dbsnp_pos_dict = setup_class
         for adapter_name, config in adapters_config.items():
-            if config['nodes']:
+            if config["nodes"]:
                 adapter_module = importlib.import_module(config['adapter']['module'])
                 adapter_class = getattr(adapter_module, config['adapter']['cls'])
-                
+                    
                 # Add write_properties and add_provenance to the arguments
                 adapter_args = config['adapter']['args'].copy()
                 if "dbsnp_rsid_map" in adapter_args: #this for dbs that use grch37 assembly and to map grch37 to grch38
-                    adapter_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
+                        adapter_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
                 if "dbsnp_pos_map" in adapter_args:
                     adapter_args["dbsnp_pos_map"] = dbsnp_pos_dict
                 adapter_args['write_properties'] = True
                 adapter_args['add_provenance'] = True
-                
+                    
                 adapter = adapter_class(**adapter_args)
                 
                 # Get a sample node from the adapter
@@ -119,10 +133,11 @@ class TestBiocypherKG:
         node_labels, edges_schema, adapters_config, dbsnp_rsids_dict, dbsnp_pos_dict = setup_class
         for adapter_name, config in adapters_config.items():
             if config['edges']:
+
                 adapter_module = importlib.import_module(config['adapter']['module'])
                 adapter_class = getattr(adapter_module, config['adapter']['cls'])
-                
-                # Add write_properties and add_provenance to the arguments
+                    
+                    # Add write_properties and add_provenance to the arguments
                 adapter_args = config['adapter']['args'].copy()
                 if "dbsnp_rsid_map" in adapter_args: #this for dbs that use grch37 assembly and to map grch37 to grch38
                     adapter_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
