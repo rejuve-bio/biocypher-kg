@@ -3,6 +3,17 @@ import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location
 from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
 
+# Example genocde vcf input file:
+# ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
+# ##provider: GENCODE
+# ##contact: gencode-help@ebi.ac.uk
+# ##format: gtf
+# ##date: 2022-07-20
+# chr1    HAVANA  gene    11869   14409   .       +       .       gene_id "ENSG00000290825.1"; gene_type "lncRNA"; gene_name "DDX11L2"; level 2; tag "overlaps_pseudogene";
+# chr1    HAVANA  transcript      11869   14409   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
+# chr1    HAVANA  exon    11869   12227   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 1; exon_id "ENSE00002234944.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
+# chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
+
 class GencodeAdapter(Adapter):
     ALLOWED_TYPES = ['transcript', 'transcribed to', 'transcribed from']
     ALLOWED_LABELS = ['transcript', 'transcribed_to', 'transcribed_from']
