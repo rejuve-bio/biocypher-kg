@@ -273,11 +273,3 @@ downloads:
         dest: fabian/
         local_name: human_grch38.tar.gz
         method: http
-
-  brenda_tissue_ontology:
-    name: BRENDA Tissue Ontology
-    files:
-      - url: http://purl.obolibrary.org/obo/bto.owl
-        dest: brenda_tissue_ontology/
-        local_name: bto.owl
-        method: http
