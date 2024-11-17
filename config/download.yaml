@@ -174,7 +174,7 @@ downloads:
   roadmap_state:
     name: Roadmap Epigenomics State
     files:
-      - url_pattern: "https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/state_calls/E{sample}_25_imputed12marks_mnemonics.bed.gz"
+      - url_pattern: "https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/E{sample}_25_imputed12marks_mnemonics.bed.gz"
         dest: roadmap/state/
         method: http
         params:
@@ -253,7 +253,7 @@ downloads:
   gwas:
     name: GWAS Catalog
     files:
-      - url: https://www.ebi.ac.uk/gwas/api/search/downloads/alternative
+      - url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
         dest: gwas/
         local_name: gwas-catalog-associations_ontology-annotated.tsv
         method: http

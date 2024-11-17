@@ -99,7 +99,7 @@ polyphen2:
   url: http://genetics.bwh.harvard.edu/pph2/data/polyphen-2.2.2-whess-2011_12.tab.gz
 gwas:
   name: GWAS Catalog
-  url: https://www.ebi.ac.uk/gwas/api/search/downloads/alternative
+  url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
 enhancer_atlas:
   name: EnhancerAtlas
   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed
