@@ -202,11 +202,155 @@ def download_favor(output_dir, config, chr=None):
             filename = f"{c}.tar.gz"
             p = save_dir.joinpath(filename)
             download(url, p)
+def download_abc(output_dir, config):
+    """Download Activity-By-Contact (ABC) data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/abc")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_refseq_closest_gene(output_dir, config):
+    """Download RefSeq Closest Gene data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/refseq")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_roadmap_dhs(output_dir, config):
+    """Download RoadMap DHS data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/roadmap/dhs")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_roadmap_state(output_dir, config):
+    """Download Roadmap Epigenomics State data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/roadmap/state")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    for i in range(1, 130):
+        if i == 60 or i == 64:  # E060 & E064 are missing
+            continue
+        if i < 100:
+            file_name = f"E0{i:02d}_25_imputed12marks_statecalls.bed.gz"
+        else:
+            file_name = f"E{i}_25_imputed12marks_statecalls.bed.gz"
+        file_url = f"{url}/{file_name}"
+        p = save_dir.joinpath(file_name)
+        download(file_url, p)
+
+def download_roadmap_h3marks(output_dir, config):
+    """Download Roadmap Epigenomics H3 Marks data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/roadmap/h3marks")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    for i in range(1, 130):
+        if i == 60 or i == 64:  # E060 & E064 are missing
+            continue
+        if i < 100:
+            file_name = f"E0{i:02d}_12_marks_imputed.bed.gz"
+        else:
+            file_name = f"E{i}_12_marks_imputed.bed.gz"
+        file_url = f"{url}/{file_name}"
+        p = save_dir.joinpath(file_name)
+        download(file_url, p)
+
+def download_tfbs(output_dir, config):
+    """Download TFBS Clusters data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/tfbs")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_bgee(output_dir, config):
+    """Download Bgee Expression data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/bgee")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_rna_central(output_dir, config):
+    """Download RNA Central data"""
+    print(f"Downloading from {config['name']} .....")
+    urls = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/rna_central")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    
+    for data_type, url in urls.items():
+        filename = url.split("/")[-1]
+        p = save_dir.joinpath(filename)
+        download(url, p)
+
+def download_enhancer_atlas(output_dir, config):
+    """Download EnhancerAtlas data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/enhancer_atlas")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+def download_dbsuper(output_dir, config):
+    """Download DBSuper super enhancer data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/dbsuper")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_dbsnp(output_dir, config):
+    """Download dbSNP data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/dbsnp")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_gwas(output_dir, config):
+    """Download GWAS Catalog data"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/gwas")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = "gwas-catalog-associations_ontology-annotated.tsv"
+    p = save_dir.joinpath(filename)
+    download(url, p)
+
+def download_brenda_tissue_ontology(output_dir, config):
+    """Download Brenda Tissue Ontology"""
+    print(f"Downloading from {config['name']} .....")
+    url = config["url"]
+    save_dir = pathlib.Path(f"{output_dir}/brenda_tissue_ontology")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+    download(url, p)
 
 
 @app.command()
 def download_data(output_dir: Annotated[pathlib.Path, typer.Option(exists=False, file_okay=False, dir_okay=True)],
-                  chr: str = None):
+                 chr: str = None):
     """
     Download all the source data for biocypher-metta import
     """
@@ -214,6 +358,8 @@ def download_data(output_dir: Annotated[pathlib.Path, typer.Option(exists=False,
         try:
             config = yaml.safe_load(f)
             pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
+            
+            # Existing downloads
             download_gencode(output_dir, config["gencode"])
             download_uniprot(output_dir, config["uniprot"])
             download_reactome(output_dir, config["reactome"])
@@ -221,12 +367,28 @@ def download_data(output_dir: Annotated[pathlib.Path, typer.Option(exists=False,
             download_coxpressdb(output_dir, config["coxpressdb"])
             download_tflink(output_dir, config["tflink"])
             download_string(output_dir, config["string"])
-            download_tadmap(output_dir, config["tadmap"]) #FIXME: download tadmap data
+            download_tadmap(output_dir, config["tadmap"])
             download_roadmap(output_dir, config["roadmap"])
             download_gtex_eQTL(output_dir, config["gtex_eqtl"])
             download_topld(output_dir, config["topld"], chr)
             download_hocomoco(output_dir, config["hocomoco"])
             download_favor(output_dir, config["favor"], chr)
+            
+            # New downloads
+            download_abc(output_dir, config["abc"])
+            download_refseq_closest_gene(output_dir, config["refseq_closest_gene"])
+            download_roadmap_dhs(output_dir, config["roadmap_dhs"])
+            download_roadmap_state(output_dir, config["roadmap_state"])
+            download_roadmap_h3marks(output_dir, config["roadmap_h3marks"])
+            download_tfbs(output_dir, config["tfbs"])
+            download_bgee(output_dir, config["bgee"])
+            download_rna_central(output_dir, config["rna_central"])
+            download_enhancer_atlas(output_dir, config["enhancer_atlas"])
+            download_dbsuper(output_dir, config["dbsuper"])
+            download_dbsnp(output_dir, config["dbsnp"])
+            download_gwas(output_dir, config["gwas"])
+            download_brenda_tissue_ontology(output_dir, config["brenda_tissue_ontology"])
+            
         except yaml.YAMLError as exc:
             print(f"Error parsing config file: {exc}")
 

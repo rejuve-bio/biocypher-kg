@@ -1,0 +1,275 @@
+downloads:
+  gencode:
+    name: GENCODE v44
+    files:
+      - url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+        dest: gencode/
+        local_name: gencode.annotation.gtf.gz
+        method: http
+
+  uniprot:
+    name: UniProtKB/Swiss-Prot
+    files:
+      - url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+        dest: uniprot/
+        local_name: uniprot_sprot_human.dat.gz
+        method: http
+
+  reactome:
+    name: Reactome
+    files:
+      - url: https://reactome.org/download/current/ReactomePathways.txt
+        dest: reactome/
+        local_name: ReactomePathways.txt
+        method: http
+      - url: https://reactome.org/download/current/ReactomePathwaysRelation.txt
+        dest: reactome/
+        local_name: ReactomePathwaysRelation.txt
+        method: http
+      - url: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+        dest: reactome/
+        local_name: Ensembl2Reactome_All_Levels.txt
+        method: http
+      - url: https://reactome.org/download/current/ReactionPMIDS.txt
+        dest: reactome/
+        local_name: ReactionPMIDS.txt
+        method: http
+
+  gaf:
+    name: GO Annotation File
+    files:
+      - url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+        dest: gaf/
+        local_name: goa_human.gaf.gz
+        method: http
+
+  coxpressdb:
+    name: Coxpress DB
+    files:
+      - url: https://zenodo.org/record/6861444/files/Hsa-u.v22-05.G16651-S245698.combat_pca.subagging.z.d.zip
+        dest: coxpressdb/
+        local_name: coxpressdb.zip
+        method: http
+
+  tflink:
+    name: TFLink
+    files:
+      - url: https://cdn.netbiol.org/tflink/download_files/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
+        dest: tflink/
+        local_name: tflink_homo_sapiens_interactions.tsv.gz
+        method: http
+
+  string:
+    name: STRING PPI
+    files:
+      - url: https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
+        dest: string/
+        local_name: string_human_ppi.txt.gz
+        method: http
+
+  tadmap:
+    name: TADMap
+    files:
+      - url: https://cb.csail.mit.edu/cb/tadmap/TADMap_geneset_hs.csv
+        dest: tadmap/
+        local_name: TADMap_geneset_hs.csv
+        method: http
+
+  gtex_eqtl:
+    name: GTEx eQTL
+    files:
+      - url: gs://adult-gtex/bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
+        dest: gtex/
+        local_name: GTEx_Analysis_v8_eQTL.tar
+        method: gcp
+
+  topld:
+    name: TopLD
+    files:
+      - url: http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_xx_no_filter_0.2_1000000_LD.csv.gz
+        dest: topld/AFR/
+        local_name: AFR_LD.csv.gz
+        method: http
+      - url: http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_xx_no_filter_0.2_1000000_LD.csv.gz
+        dest: topld/EAS/
+        local_name: EAS_LD.csv.gz
+        method: http
+      - url: http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_xx_no_filter_0.2_1000000_LD.csv.gz
+        dest: topld/EUR/
+        local_name: EUR_LD.csv.gz
+        method: http
+      - url: http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_xx_no_filter_0.2_1000000_LD.csv.gz
+        dest: topld/SAS/
+        local_name: SAS_LD.csv.gz
+        method: http
+
+  hocomoco:
+    name: HOCOMOCOv11
+    files:
+      - url: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+        dest: hocomoco/
+        local_name: HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+        method: http
+      - url: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
+        dest: hocomoco/
+        local_name: HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
+        method: http
+
+  favor:
+    name: FAVOR
+    files:
+      - url: https://dataverse.harvard.edu/api/access/datafile/6388551
+        dest: favor/
+        local_name: favor_chr16.csv
+        method: http
+
+  cadd:
+    name: CADD
+    files:
+      - url: https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+        dest: cadd/
+        local_name: cadd.forgedb.csv.gz
+        method: http
+
+  refseq:
+    name: RefSeq Closest Gene
+    files:
+      - url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
+        dest: refseq/
+        local_name: closest_gene.forgedb.csv.gz
+        method: http
+
+  tfbs:
+    name: UCSC TFBS Clusters
+    files:
+      - url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+        dest: tfbs/
+        local_name: encRegTfbsClustered.txt.gz
+        method: http
+
+  dbsuper:
+    name: dbSUPER
+    files:
+      - url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz
+        dest: dbsuper/
+        local_name: dbSUPER_v1_GRCh38.bed.gz
+        method: http
+
+  abc:
+    name: Activity-By-Contact
+    files:
+      - url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
+        dest: abc/
+        local_name: abc.forgedb.csv.gz
+        method: http
+
+  roadmap_dhs:
+    name: RoadMap DHS
+    files:
+      - url: https://forgedb.cancer.gov/api/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz
+        dest: roadmap/dhs/
+        local_name: forge2.erc2-DHS.forgedb.csv.gz
+        method: http
+
+  roadmap_state:
+    name: Roadmap Epigenomics State
+    files:
+      - url_pattern: "https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/E{sample}_25_imputed12marks_mnemonics.bed.gz"
+        dest: roadmap/state/
+        method: http
+        params:
+          sample:
+            range: [1, 129]
+            exclude: [60, 64]
+
+  roadmap_h3marks:
+    name: Roadmap Epigenomics H3 Marks
+    files:
+      - url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/marks
+        dest: roadmap/h3marks/
+        local_name: marks.bed.gz
+        method: http
+
+  bgee:
+    name: Bgee Expression Data
+    files:
+      - url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
+        dest: bgee/
+        local_name: Homo_sapiens_expr_simple_development.tsv.gz
+        method: http
+
+  rna_central:
+    name: RNA Central
+    files:
+      - url: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/human.GRCh38.bed.gz
+        dest: rna_central/
+        local_name: human.GRCh38.bed.gz
+        method: http
+      - url: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+        dest: rna_central/
+        local_name: rfam_annotations.tsv.gz
+        method: http
+
+  dgv:
+    name: Database of Genomic Variants
+    files:
+      - url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2020-02-25.txt
+        dest: dgv/
+        local_name: GRCh38_hg38_variants_2020-02-25.txt
+        method: http
+
+  epd:
+    name: Eukaryotic Promoter Database
+    files:
+      - url: https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
+        dest: epd/
+        local_name: Hs_EPDnew.bed.gz
+        method: http
+
+  dbvar:
+    name: NCBI dbVar
+    files:
+      - url: https://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh38/vcf/GRCh38.variant_call.all.vcf.gz
+        dest: dbvar/
+        local_name: GRCh38.variant_call.all.vcf.gz
+        method: http
+
+  dbsnp:
+    name: dbSNP
+    files:
+      - url: https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
+        dest: dbsnp/
+        local_name: 00-All.vcf.gz
+        method: http
+
+  polyphen2:
+    name: PolyPhen-2
+    files:
+      - url: http://genetics.bwh.harvard.edu/pph2/data/polyphen-2.2.2-whess-2011_12.tab.gz
+        dest: polyphen2/
+        local_name: polyphen-2.2.2-whess-2011_12.tab.gz
+        method: http
+
+  gwas:
+    name: GWAS Catalog
+    files:
+      - url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
+        dest: gwas/
+        local_name: gwas-catalog-associations_ontology-annotated.tsv
+        method: http
+
+  enhancer_atlas:
+    name: EnhancerAtlas
+    files:
+      - url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed
+        dest: enhancer_atlas/
+        local_name: 9606_all_tissues.bed
+        method: http
+
+  fabian:
+    name: Fabian
+    files:
+      - url: https://fabian.bioinf.mpi-inf.mpg.de/downloads/human_grch38.tar.gz
+        dest: fabian/
+        local_name: human_grch38.tar.gz
+        method: http
