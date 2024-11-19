@@ -271,8 +271,6 @@ go:
   represented_as: node
   input_label: go
   inherit_properties: true
-  properties:
-    subontology: str
 
 # Uberon Ontology
 uberon:
@@ -326,6 +324,27 @@ motif:
     pwm_G: float[]
     pwm_T: float[]
     length: str
+
+# subontologies
+
+# GO subontologies
+biological process:
+  is_a: go
+  represented_as: node
+  input_label: biological_process
+  inherit_properties: true
+
+molecular function:
+  is_a: go
+  represented_as: node
+  input_label: molecular_function
+  inherit_properties: true
+
+cellular component:
+  is_a: go
+  represented_as: node
+  input_label: cellular_component
+  inherit_properties: true
 
 # ---
 # 3D genome structures
@@ -599,6 +618,35 @@ go subclass of:
   output_label: subclass_of
   source: go
   target: go
+
+# Subclass relationships within GO subontology
+
+biological process subclass:
+  is_a: go subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: biological_process_subclass_of
+  output_label: subclass_of
+  source: biological_process
+  target: biological_process
+
+molecular function subclass:
+  is_a: go subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: molecular_function_subclass_of
+  output_label: subclass_of
+  source: molecular_function
+  target: molecular_function
+
+cellular component subclass:
+  is_a: go subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_subclass_of
+  output_label: subclass_of
+  source: cellular_component
+  target: cellular_component
 
 go gene product:
   is_a: annotation
