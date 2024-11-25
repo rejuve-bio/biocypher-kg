@@ -1,7 +1,7 @@
 from biocypher_metta.adapters import Adapter
 import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location
-from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor  
+from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
 
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
@@ -18,9 +18,34 @@ class GencodeAdapter(Adapter):
     ALLOWED_TYPES = ['transcript', 'transcribed to', 'transcribed from']
     ALLOWED_LABELS = ['transcript', 'transcribed_to', 'transcribed_from']
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_name',
-                    'transcript_id', 'transcript_type', 'transcript_name']
+                    'transcript_id', 'transcript_type', 'transcript_name', 'tag']
 
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
+
+    # Only transcripts that code for proteins
+    CODING_TYPES = {
+        'protein_coding', 
+        'nonsense_mediated_decay',  
+        'non_stop_decay',                   
+        'IG_C_gene', 
+        'IG_D_gene',  
+        'IG_J_gene',  
+        'IG_V_gene',  
+        'TR_C_gene',  
+        'TR_D_gene',  
+        'TR_J_gene', 
+        'TR_V_gene'   
+    }
+
+    # Tags indicating high-quality reviewed transcripts
+    REVIEWED_TAGS = {
+        # MANE (Matched Annotation from NCBI and EBI) - gold standard
+        'MANE_Select',
+        # CCDS - consensus protein-coding regions
+        'CCDS',               
+        # Ensembl canonical - one transcript per gene chosen as canonical
+        'Ensembl_canonical'
+    }
 
     def __init__(self, write_properties, add_provenance, filepath=None, 
                  type='gene', label='gencode_gene', 
@@ -41,7 +66,6 @@ class GencodeAdapter(Adapter):
         self.version = 'v44'
         self.source_url = 'https://www.gencodegenes.org/human/'
 
-        # Initialize HGNC processor
         self.hgnc_processor = HGNCSymbolProcessor()
         self.hgnc_processor.update_hgnc_data()
 
@@ -49,10 +73,37 @@ class GencodeAdapter(Adapter):
 
     def parse_info_metadata(self, info):
         parsed_info = {}
-        for key, value in zip(info, info[1:]):
-            if key in GencodeAdapter.ALLOWED_KEYS:
-                parsed_info[key] = value.replace('"', '').replace(';', '')
+        tags = []
+        
+        info_str = ' '.join(info)
+        items = info_str.split(';')
+        
+        for item in items:
+            item = item.strip()
+            if not item:
+                continue
+                
+            if 'tag' in item:
+                tag_match = item.split('"')
+                if len(tag_match) > 1:
+                    tags.append(tag_match[1])
+            else:
+                for key in GencodeAdapter.ALLOWED_KEYS:
+                    if key in item:
+                        value = item.split('"')[1] if '"' in item else item
+                        parsed_info[key] = value.strip()
+        
+        parsed_info['tags'] = tags
         return parsed_info
+
+    def should_keep_transcript(self, transcript_type, tags):
+        """Determine if a transcript should be kept based on type and tags."""
+        # Keep all non-coding transcripts
+        if transcript_type not in self.CODING_TYPES:
+            return True
+        
+        # For coding transcripts, keep those with tags in REVIEWED_TAGS or any appris_principal tags
+        return any(tag in self.REVIEWED_TAGS or tag.startswith('appris_principal') for tag in tags)
 
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as input:
@@ -66,7 +117,11 @@ class GencodeAdapter(Adapter):
 
                 data = data_line[:GencodeAdapter.INDEX['info']]
                 info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
-            
+                
+                # Skip if we don't want to keep this transcript
+                if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
+                    continue
+
                 result = self.hgnc_processor.process_identifier(info['gene_name'])
             
                 transcript_key = info['transcript_id'].split('.')[0]
@@ -101,7 +156,6 @@ class GencodeAdapter(Adapter):
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
                         
-                            # Print message about unknown or replaced gene symbols
                             if result['status'] == 'unknown':
                                 print(f"Unknown gene symbol: {result['original']}")
                             elif result['status'] == 'updated':
@@ -126,6 +180,11 @@ class GencodeAdapter(Adapter):
                     continue
 
                 info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
+                
+                # Skip if we don't want to keep this transcript
+                if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
+                    continue
+
                 transcript_key = info['transcript_id'].split('.')[0]
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
@@ -146,7 +205,7 @@ class GencodeAdapter(Adapter):
                         yield _source, _target, self.label, _props
                     elif self.type == 'transcribed from':
                         _id = transcript_key + '_' + gene_key
-                        _source = transcript_key
+                        _source = transcript_key 
                         _target = gene_key
                         yield _source, _target, self.label, _props
                 except Exception as e:
