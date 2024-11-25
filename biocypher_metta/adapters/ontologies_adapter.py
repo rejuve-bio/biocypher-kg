@@ -96,26 +96,26 @@ class OntologyAdapter(Adapter):
                 else:
                     print(f"Not using cache: Expired: {cache_expired}, New version available: {remote_version != current_version}")
 
+        # Create a new World instance for this ontology
+        self.world = World()
+        
         if use_cached:
             print(f"Using cached ontology from {cached_path}")
-            onto = get_ontology(cached_path).load()
+            onto = self.world.get_ontology(cached_path).load()
             self.version = meta.get('version', 'unknown')
         else:
             print(f"Downloading ontology from {ontology_url}")
-            onto = get_ontology(ontology_url).load()
+            onto = self.world.get_ontology(ontology_url).load()
 
-        # Explicitly initialize the graph, whether cached or fresh
-        self.graph = default_world.as_rdflib_graph()
+        self.graph = self.world.as_rdflib_graph()
     
         if not use_cached:
-            # Extract version information
             self._extract_version_info()
 
             if self.cache_dir:
                 print(f"Caching ontology to {cached_path}")
                 onto.save(cached_path)
 
-                # Calculate and store metadata
                 meta = {
                     'date': dt.now().isoformat(),
                     'url': ontology_url,
@@ -127,11 +127,16 @@ class OntologyAdapter(Adapter):
 
         self.clear_cache()
     
-        # Verify that the graph is initialized
         if self.graph is None:
             raise ValueError("Failed to initialize graph from ontology")
 
-        print(f"Graph initialized with {len(self.graph)} triples")
+        print(f"Graph initialized with {len(self.graph)} triples for {self.ontology}")
+
+    def __del__(self):
+        # Clean up the world instance when the adapter is destroyed
+        if self.world is not None:
+            self.world.close()
+            self.world = None
 
     def _calculate_file_hash(self, file_path):
         """Calculate MD5 hash of a file."""
@@ -272,30 +277,62 @@ class OntologyAdapter(Adapter):
     def get_alternative_ids(self, node):
         node_key = OntologyAdapter.to_key(node)
         return self.cache.get(node_key, {}).get('alternative_ids', [])
+    
+    def _process_node_key(self, node):
+        """
+        Process a node to determine if it should be included and generate its key.
+        Returns None if the node should be skipped.
+        """
+        if self.is_blank(node):
+            return None
+        
+        node_types = self.get_all_property_values_from_node(node, 'node_types')
+    
+        if any(str(t) == str(OntologyAdapter.RESTRICTION) for t in node_types):
+            return None
+        
+        node_str = str(node)
+    
+        if node_str.replace('/', '').replace('#', '').strip().isdigit():
+            return None
+        
+        return self.to_key(node)
 
     def get_nodes(self):
         self.update_graph()
         self.cache_node_properties()
 
         nodes = self.graph.all_nodes()
+        processed_nodes = set()  
 
-        i = 0  # dry run is set to true just output the first 1000 nodes
+        i = 0  # dry run counter
         for node in nodes:
             if i > 100 and self.dry_run:
                 break
-            # avoiding blank nodes and other arbitrary node types
+
+            # Skip if not a URIRef (avoiding blank nodes and literals)
             if not isinstance(node, rdflib.term.URIRef):
                 continue
-
-            if self.is_deprecated(node):
-                print(f"Skipping deprecated node: {OntologyAdapter.to_key(node)}")
+        
+            # Skip restriction blocks - they're not actual terms
+            if self.is_a_restriction_block(node):
                 continue
-            
-            # term_id = str(node).split('/')[-1]
-            term_id = OntologyAdapter.to_key(node)
-            # 'uri': str(node),
+
+            # Get the node's key
+            node_key = self._process_node_key(node)
+        
+            # Skip if we've already processed this node or if it's invalid
+            if node_key is None or node_key in processed_nodes:
+                continue
+        
+            # Skip deprecated nodes
+            if self.is_deprecated(node):
+                print(f"Skipping deprecated node: {node_key}")
+                continue
+
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
-            synonyms = self.get_all_property_values_from_node(node, 'related_synonyms') + self.get_all_property_values_from_node(node, 'exact_synonyms')
+            synonyms = (self.get_all_property_values_from_node(node, 'related_synonyms') + 
+                self.get_all_property_values_from_node(node, 'exact_synonyms'))
             alternative_ids = self.get_alternative_ids(node)
 
             props = {}
@@ -308,13 +345,17 @@ class OntologyAdapter(Adapter):
 
                 if self.add_description:
                     description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
-                    props['description'] = description
+                    if description:  
+                        props['description'] = description
 
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
+
+            processed_nodes.add(node_key)
+    
             i += 1
-            yield term_id, self.label, props
+            yield node_key, self.label, props
 
     def get_edges(self):
         self.update_graph()
@@ -331,13 +372,19 @@ class OntologyAdapter(Adapter):
                 if self.is_blank(from_node):
                     continue
 
+                # Handle restriction blocks
                 if self.is_blank(to_node) and self.is_a_restriction_block(to_node):
                     restriction_predicate, restriction_node = self.read_restriction_block(to_node)
-                    if restriction_predicate is None or restriction_node is None:
+                    # Skip if we couldn't get a valid restriction
+                    if restriction_predicate is None or restriction_node is None or self.is_blank(restriction_node):
                         continue
 
                     predicate = restriction_predicate
                     to_node = restriction_node
+
+                # Skip edges where either node is blank at this point
+                if self.is_blank(from_node) or self.is_blank(to_node):
+                    continue
 
                 if self.is_deprecated(from_node) or self.is_deprecated(to_node):
                     print(f"Skipping edge with deprecated node: {OntologyAdapter.to_key(from_node)} -> {OntologyAdapter.to_key(to_node)}")
@@ -398,6 +445,9 @@ class OntologyAdapter(Adapter):
 
     @classmethod
     def to_key(cls, node_uri):
+        """
+        Modified to_key method that handles URIs more carefully
+        """
         key = str(node_uri).split('/')[-1]
         key = key.replace('#', '.').replace('?', '_')
         key = key.replace('&', '.').replace('=', '_')
@@ -405,8 +455,13 @@ class OntologyAdapter(Adapter):
         key = key.replace('_', ':')
         key = key.replace(' ', '')
 
-        if key.replace('.', '').isnumeric():
-            key = '{}_{}'.format('number', key)
+        # Only convert to number_XX format if it's a valid ontology identifier
+        if key.replace('.', '').isnumeric() and len(key) > 0:
+            if any(c.isalpha() for c in str(node_uri)):
+                return key  # Return original key if URI contains letters
+            if len(key) > 10:  # Probably not a valid ontology ID
+                return None
+            key = f'number_{key}'
 
         return key
     
@@ -427,23 +482,23 @@ class OntologyAdapter(Adapter):
 
     def read_restriction_block(self, node):
         restricted_property = self.get_all_property_values_from_node(node, 'on_property')
-        
-        # assuming a restriction block will always contain only one `owl:onProperty` triple
-        if restricted_property and restricted_property[0] not in OntologyAdapter.RESTRICTION_PREDICATES:
+    
+        # Check if we have a valid property
+        if not restricted_property or restricted_property[0] not in OntologyAdapter.RESTRICTION_PREDICATES:
             return None, None
 
         restriction_predicate = str(restricted_property[0])
-        
-        # returning the pair (owl:onProperty value, owl:someValuesFrom or owl:allValuesFrom value)
-        # assuming a owl:Restriction block in a rdf:subClassOf will contain only one `owl:someValuesFrom` or `owl:allValuesFrom` triple
+    
+        # Get the actual target node from someValuesFrom or allValuesFrom
         some_values_from = self.get_all_property_values_from_node(node, 'some_values_from')
-        if some_values_from:
+        if some_values_from and not self.is_blank(some_values_from[0]):
             return (restriction_predicate, some_values_from[0])
 
         all_values_from = self.get_all_property_values_from_node(node, 'all_values_from')
-        if all_values_from:
+        if all_values_from and not self.is_blank(all_values_from[0]):
             return (restriction_predicate, all_values_from[0])
 
+        # If we reach here, we don't have a valid target node
         return (None, None)
     
     def is_blank(self, node):
@@ -451,7 +506,6 @@ class OntologyAdapter(Adapter):
         BLANK_NODE = rdflib.term.BNode
         return isinstance(node, BLANK_NODE)
     
-    # it's faster to load all subject/objects beforehand
     def clear_cache(self):
         self.cache = {}
 
