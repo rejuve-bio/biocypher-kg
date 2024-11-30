@@ -83,21 +83,25 @@ class Neo4jCSVWriter(BaseWriter):
             csvfile.flush()
 
     def write_to_csv(self, data, file_path, chunk_size=1000):
-        headers = list(data[0].keys())
-        
-        # Write headers
+        headers = set()
+        for entry in data:
+            headers.update(entry.keys())
+    
+        headers = sorted(list(headers))  
+        if 'id' in headers:
+            headers.remove('id')
+            headers = ['id'] + headers 
+    
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=self.csv_delimiter)
             writer.writerow(headers)
-            csvfile.flush()  # Ensure headers are written to disk
-        
-        # Process and write data in chunks
+            csvfile.flush() 
+    
         for i in range(0, len(data), chunk_size):
             chunk = data[i:i+chunk_size]
             self.write_chunk(chunk, headers, file_path, self.csv_delimiter, self.preprocess_value)
 
     def write_nodes(self, nodes, path_prefix=None, adapter_name=None):
-        # Determine the output directory based on the given parameters
         if path_prefix:
             output_dir = self.output_path / path_prefix
         elif adapter_name:
@@ -105,10 +109,8 @@ class Neo4jCSVWriter(BaseWriter):
         else:
             output_dir = self.output_path
 
-        # Ensure the output directory exists
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Prepare node data for CSV
         node_groups = {}
         node_freq = Counter()
         node_props = defaultdict(set)
@@ -131,7 +133,6 @@ class Neo4jCSVWriter(BaseWriter):
             cypher_file_path = output_dir / f"nodes_{label}.cypher"
             self.write_to_csv(node_data, csv_file_path)
 
-            # Generate Cypher query for loading nodes
             absolute_path = csv_file_path.resolve().as_posix()
             additional_label = ":ontology_term" if label in self.ontologies else ""
             with open(cypher_file_path, 'w') as f:
@@ -153,7 +154,6 @@ RETURN batches, total;
         return node_freq, node_props
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
-        # Determine the output directory based on the given parameters
         if path_prefix:
             output_dir = self.output_path / path_prefix
         elif adapter_name:
@@ -161,28 +161,27 @@ RETURN batches, total;
         else:
             output_dir = self.output_path
 
-        # Ensure the output directory exists
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Group edges by their label
-        edge_groups = {}
+        edge_groups = defaultdict(list)
         edges_freq = Counter()
+
         for edge in edges:
             source_id, target_id, label, properties = edge
             label = label.lower()
             edges_freq[label] += 1
+
             source_type = self.edge_node_types[label]["source"]
             target_type = self.edge_node_types[label]["target"]
-            if source_type == 'ontology_term':
+            if source_type == "ontology_term":
                 source_type = self.preprocess_id(source_id).split('_')[0]
-            if target_type == 'ontology_term':
+            if target_type == "ontology_term":
                 target_type = self.preprocess_id(target_id).split('_')[0]
-            output_label = self.edge_node_types[label]["output_label"]
-            if output_label is None:
-                output_label = label
-            if label not in edge_groups:
-                edge_groups[label] = []
-            edge_groups[label].append({
+
+            output_label = self.edge_node_types[label]["output_label"] or label
+
+            key = (label, source_type, target_type)
+            edge_groups[key].append({
                 'source_type': source_type,
                 'source_id': self.preprocess_id(source_id),
                 'target_type': target_type,
@@ -191,33 +190,27 @@ RETURN batches, total;
                 **properties
             })
 
-        # Process each edge type separately
-        for label, edge_data in edge_groups.items():
-            # File paths for CSV and Cypher files
-            csv_file_path = output_dir / f"edges_{label}.csv"
-            cypher_file_path = output_dir / f"edges_{label}.cypher"
+        for (label, source_type, target_type), edge_data in edge_groups.items():
+            file_suffix = f"{label}_{source_type}_{target_type}".lower()
+            csv_file_path = output_dir / f"edges_{file_suffix}.csv"
+            cypher_file_path = output_dir / f"edges_{file_suffix}.cypher"
 
-            output_label = self.edge_node_types[label]["output_label"]
-            if output_label is not None:
-                label = output_label
-            # Write edge data to CSV
             self.write_to_csv(edge_data, csv_file_path)
 
-            # Generate Cypher query to load edges from the CSV file using the absolute path
             absolute_path = csv_file_path.resolve().as_posix()
             with open(cypher_file_path, 'w') as f:
                 cypher_query = f"""
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MATCH (source:row.source_type {{id: row.source_id}})
-    MATCH (target:row.target_type {{id: row.target_id}})
-    MERGE (source)-[r:{label}]->(target)
-    SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
-    {{batchSize:1000}}
-)
-YIELD batches, total
-RETURN batches, total;
-                """
+    CALL apoc.periodic.iterate(
+        "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+        "MATCH (source:{source_type} {{id: row.source_id}})
+        MATCH (target:{target_type} {{id: row.target_id}})
+        MERGE (source)-[r:{label}]->(target)
+        SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
+        {{batchSize:1000}}
+    )
+    YIELD batches, total
+    RETURN batches, total;
+            """
                 f.write(cypher_query)
 
         logger.info(f"Finished writing out all edge import queries for: {output_dir}")

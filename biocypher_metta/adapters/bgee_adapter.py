@@ -1,6 +1,7 @@
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import to_float
+from collections import defaultdict
 
 # Exaple bgee tsv input file:
 # Gene ID	"Gene name"	Anatomical entity ID	"Anatomical entity name"	Developmental stage ID	"Developmental stage name"	Sex	Strain	Expression	Call quality	FDR	Expression score	Expression rank
@@ -21,23 +22,40 @@ class BgeeAdapter(Adapter):
         super(BgeeAdapter, self).__init__(write_properties, add_provenance)
     
     def get_edges(self):
-        with gzip.open(self.filepath, 'rt') as f:
-            next(f) # skip header
-            for line in f:
-                data = line.split('\t')
-                if data[BgeeAdapter.INDEX['expression']] != 'present':
-                    continue
-                gene = data[BgeeAdapter.INDEX['gene']]
-                anatomical_entities = data[BgeeAdapter.INDEX['anatomical_entity']].split(' ∩ ')
-                score = data[BgeeAdapter.INDEX['expression_score']]
-                p_value = data[BgeeAdapter.INDEX['fdr']]
-                props = {}
-                if self.write_properties:
-                    props['score'] = to_float(score) 
-                    props['p_value'] = to_float(p_value)
+        edge_dict = defaultdict(lambda: {"score": float("-inf"), "props": {}})
+        try:
+            with gzip.open(self.filepath, 'rt') as f:
+                next(f)  # skip header
+                for line in f:
+                    data = line.strip().split('\t')
+                    if data[BgeeAdapter.INDEX['expression']] != 'present':
+                        continue
+
+                    source_id = data[BgeeAdapter.INDEX['gene']]
+                    target_id = data[BgeeAdapter.INDEX['anatomical_entity']].split(' ∩ ')[0]
+                    score = float(data[BgeeAdapter.INDEX['expression_score']])
+
+                    # Add properties, including the score
+                    props = {
+                        "score": score,
+                        "p_value": float(data[BgeeAdapter.INDEX['fdr']])
+                    }
+
                     if self.add_provenance:
-                        props['source'] = self.source
-                        props['source_url'] = self.source_url
-                for anatomical_entity in anatomical_entities:
-                    yield gene, anatomical_entity, self.label, props
+                        props.update({
+                            "source": self.source,
+                            "source_url": self.source_url,
+                        })
+
+                    # Update edge if new score is higher
+                    edge_key = (source_id, target_id)
+                    if score > edge_dict[edge_key]["score"]:
+                        edge_dict[edge_key] = {"score": score, "props": props}
+
+            # Yield deduplicated edges
+            for (source_id, target_id), edge_data in edge_dict.items():
+                yield source_id, target_id, self.label, edge_data["props"]
+
+        except OSError as e:
+            raise RuntimeError(f"Error opening the file: {e}")
 
