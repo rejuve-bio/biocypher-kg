@@ -1,3 +1,4 @@
+
 import hashlib
 import json
 import rdflib
@@ -547,5 +548,3 @@ class OntologyAdapter(Adapter):
     def get_all_property_values_from_node(self, node, collection):
         node_key = OntologyAdapter.to_key(node)
         return self.cache.get(node_key, {}).get(collection, [])
-
-

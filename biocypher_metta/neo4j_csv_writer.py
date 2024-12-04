@@ -83,14 +83,23 @@ class Neo4jCSVWriter(BaseWriter):
             csvfile.flush()
 
     def write_to_csv(self, data, file_path, chunk_size=1000):
-        headers = list(data[0].keys())
-        
+        # Get all possible headers from all data entries
+        headers = set()
+        for entry in data:
+            headers.update(entry.keys())
+    
+        # Convert to list and ensure 'id' is first
+        headers = sorted(list(headers))  
+        if 'id' in headers:
+            headers.remove('id')
+            headers = ['id'] + headers 
+    
         # Write headers
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=self.csv_delimiter)
             writer.writerow(headers)
-            csvfile.flush()  # Ensure headers are written to disk
-        
+            csvfile.flush() 
+    
         # Process and write data in chunks
         for i in range(0, len(data), chunk_size):
             chunk = data[i:i+chunk_size]
