@@ -68,7 +68,7 @@ class GAFAdapter(Adapter):
         # Subontology mapping
         self.subontology = None
         self.subontology_mapping = None
-        
+
         # Determine subontology based on label
         if label == 'molecular_function_gene_product':
             self.subontology = 'molecular_function'
@@ -81,6 +81,9 @@ class GAFAdapter(Adapter):
         if os.path.exists(mapping_file):
             with open(mapping_file, 'rb') as f:
                 self.subontology_mapping = pickle.load(f)
+
+        # Initialize a set to track seen edges for redundancy removal
+        self.seen_edges = set()
 
         super(GAFAdapter, self).__init__(write_properties, add_provenance)
 
@@ -142,10 +145,16 @@ class GAFAdapter(Adapter):
                         'qualifier': qualifier,
                         'db_reference': annotation['DB:Reference'],
                         'evidence': annotation['Evidence'],
-                        'negated': str(negated).lower()  # Add the negated property
+                        'negated': str(negated).lower()  
                     }
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
+
+                # Check for redundancy: Skip if the edge is already seen
+                edge = (source, target, self.label)
+                if edge in self.seen_edges:
+                    continue  
+                self.seen_edges.add(edge)  
 
                 yield source, target, self.label, props
