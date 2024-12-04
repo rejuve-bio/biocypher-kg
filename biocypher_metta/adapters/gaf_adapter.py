@@ -2,6 +2,7 @@ import os
 import gzip
 import json
 import hashlib
+import pickle
 
 from Bio.UniProt.GOA import gafiterator
 
@@ -51,7 +52,8 @@ class GAFAdapter(Adapter):
         'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv'
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human'):
+    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human', 
+                 label=None, mapping_file='aux_files/go_subontology_mapping.pkl'):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
                              ', '.join(GAFAdapter.SOURCES.keys()))
@@ -59,9 +61,26 @@ class GAFAdapter(Adapter):
         self.filepath = filepath
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
-        self.label = "go_gene_product"
+        self.label = label
         self.source = "GO"
         self.source_url = GAFAdapter.SOURCES[gaf_type]
+
+        # Subontology mapping
+        self.subontology = None
+        self.subontology_mapping = None
+        
+        # Determine subontology based on label
+        if label == 'molecular_function_gene_product':
+            self.subontology = 'molecular_function'
+        elif label == 'cellular_component_gene_product':
+            self.subontology = 'cellular_component'
+        elif label == 'biological_process_gene_product':
+            self.subontology = 'biological_process'
+
+        # Load subontology mapping
+        if os.path.exists(mapping_file):
+            with open(mapping_file, 'rb') as f:
+                self.subontology_mapping = pickle.load(f)
 
         super(GAFAdapter, self).__init__(write_properties, add_provenance)
 
@@ -73,32 +92,60 @@ class GAFAdapter(Adapter):
                 self.rnacentral_mapping[mapping[0] +
                                         '_' + mapping[3]] = mapping[2]
 
-    def get_edges(self):
+    def parse_qualifier(self, qualifier):
+        """Parse the qualifier to detect negation and return the negated status."""
+        negated = False
+        if "NOT" in qualifier:
+            negated = True
+        return negated
 
+    def get_edges(self):
         if self.type == 'rna':
             self.load_rnacentral_mapping()
 
         with gzip.open(self.filepath, 'rt') as input_file:
             for annotation in gafiterator(input_file):
-                source = annotation['GO_ID']
-                target = annotation['DB_Object_ID']
+                source = annotation['DB_Object_ID']
+                target = annotation['GO_ID']
 
+                # Skip if subontology doesn't match
+                if self.subontology and self.subontology_mapping:
+                    go_subontology = self.subontology_mapping.get(target)
+                    if go_subontology != self.subontology:
+                        continue
+
+                # RNA-specific mapping
                 if self.type == 'rna':
-                    transcript_id = self.rnacentral_mapping.get(
-                        annotation['DB_Object_ID'])
+                    transcript_id = self.rnacentral_mapping.get(annotation['DB_Object_ID'])
                     if transcript_id is None:
                         continue
-                    target = transcript_id
+                    source = transcript_id
+
+                # Cellular component filtering using qualifier
+                qualifier = annotation['Qualifier']
+                if self.label.startswith('cellular_component_gene_product'):
+                    if 'part_of' in qualifier:
+                        if 'part_of' not in self.label:
+                            continue
+                    elif 'located_in' in qualifier:
+                        if 'located_in' not in self.label:
+                            continue
+                    else:
+                        continue
+
+                # Determine negation from qualifier
+                negated = self.parse_qualifier(qualifier)
+
                 props = {}
                 if self.write_properties:
                     props = {
-                        'qualifier': annotation['Qualifier'],
+                        'qualifier': qualifier,
                         'db_reference': annotation['DB:Reference'],
-                        'evidence': annotation['Evidence']
+                        'evidence': annotation['Evidence'],
+                        'negated': str(negated).lower()  # Add the negated property
                     }
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
                 yield source, target, self.label, props
-
