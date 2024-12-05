@@ -648,13 +648,14 @@ cellular component subclass:
   source: cellular_component
   target: cellular_component
 
-go gene product:
+go gene:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
-  input_label: go_gene_product
-  source: go
-  target: protein
+  input_label: go_gene
+  output_label: belongs_to
+  source: gene
+  target: go
   properties:
     qualifier: obj
     db_reference: obj
