@@ -29,6 +29,21 @@ python create_knowledge_graph.py \
     [--add_provenance {true,false}]
 ```
 
+### Knowledge Graph Creation
+The `create_knowledge_graph.py` script supports multiple configuration options:
+
+**Arguments:**
+- `--output_dir`: Directory to save generated knowledge graph files (required)
+- `--adapters_config`: Path to YAML file with adapter configurations (required)
+- `--dbsnp_rsids`: Path to pickle file with dbSNP RSID mappings (required)
+- `--dbsnp_pos`: Path to pickle file with dbSNP position mappings (required)
+- `--writer_type`: Choose output format (optional)
+  - `metta`: MeTTa format (default)
+  - `prolog`: Prolog format
+  - `neo4j`: Neo4j CSV format
+- `--write_properties`: Include node and edge properties (optional, default: true)
+- `--add_provenance`: Add provenance information (optional, default: true)
+
 ## 🛠 Usage
 
 ### Structure
@@ -117,21 +132,6 @@ When you run the script, you'll be prompted to enter your Neo4j database passwor
 - It supports processing multiple directories containing Cypher files.
 - The loader creates constraints and loads data in a single session.
 - Logging is provided to help you track the loading process.
-
-### Knowledge Graph Creation
-The `create_knowledge_graph.py` script supports multiple configuration options:
-
-**Arguments:**
-- `--output_dir`: Directory to save generated knowledge graph files (required)
-- `--adapters_config`: Path to YAML file with adapter configurations (required)
-- `--dbsnp_rsids`: Path to pickle file with dbSNP RSID mappings (required)
-- `--dbsnp_pos`: Path to pickle file with dbSNP position mappings (required)
-- `--writer_type`: Choose output format (optional)
-  - `metta`: MeTTa format (default)
-  - `prolog`: Prolog format
-  - `neo4j`: Neo4j CSV format
-- `--write_properties`: Include node and edge properties (optional, default: true)
-- `--add_provenance`: Add provenance information (optional, default: true)
 
 ## ⬇ Downloading data
 The `downloader` directory contains code for downloading data from various sources.
