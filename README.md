@@ -91,13 +91,13 @@ The project template is structured as follows:
 │
 │ # Downloading data
 ├── downloader/
- ├── __init__.py
- ├── download_data.py
- ├── download_manager.py
- ├── protocols/
-  ├── __init__.py
-  ├── base.py
-  └── http.py
+    ├── __init__.py
+    ├── download_data.py
+    ├── download_manager.py
+    ├── protocols/
+        ├── __init__.py
+        ├── base.py
+        └── http.py
 ```
 
 The main components of the BioCypher pipeline are the
@@ -110,7 +110,7 @@ The project supports multiple output formats for the knowledge graph:
 
 1. **MeTTa Writer (`metta_writer.py`)**: Generates knowledge graph data in the MeTTa format.
 2. **Prolog Writer (`prolog_writer.py`)**: Generates knowledge graph data in the Prolog format.
-3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files for loading the knowledge graph into a Neo4j database. The generated CSV files include nodes and edges, along with a Cypher query to load the data into the Neo4j database.
+3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
 
 ### Neo4j Loader
 To load the generated knowledge graph into a Neo4j database, use the `neo4j_loader.py` script:
