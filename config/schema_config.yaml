@@ -666,12 +666,11 @@ go gene product:
   inherit_properties: true
   represented_as: edge
   input_label: go_gene_product
-  source: protein
-  target: go
   properties:
     qualifier: obj
     db_reference: obj
     evidence: str
+    negated: bool
 
 biological process gene product:
   is_a: go gene product
