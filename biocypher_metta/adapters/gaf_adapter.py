@@ -145,6 +145,7 @@ class GAFAdapter(Adapter):
                         'qualifier': qualifier,
                         'db_reference': annotation['DB:Reference'],
                         'evidence': annotation['Evidence'],
+                        # Add a 'negated' property to explicitly indicate if the relationship is negated
                         'negated': str(negated).lower()  
                     }
                     if self.add_provenance:
