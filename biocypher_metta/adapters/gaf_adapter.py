@@ -65,7 +65,6 @@ class GAFAdapter(Adapter):
         self.source = "GO"
         self.source_url = GAFAdapter.SOURCES[gaf_type]
 
-        # Subontology mapping
         self.subontology = None
         self.subontology_mapping = None
 
@@ -77,12 +76,10 @@ class GAFAdapter(Adapter):
         elif label == 'biological_process_gene_product':
             self.subontology = 'biological_process'
 
-        # Load subontology mapping
         if os.path.exists(mapping_file):
             with open(mapping_file, 'rb') as f:
                 self.subontology_mapping = pickle.load(f)
 
-        # Initialize a set to track seen edges for redundancy removal
         self.seen_edges = set()
 
         super(GAFAdapter, self).__init__(write_properties, add_provenance)
@@ -108,6 +105,10 @@ class GAFAdapter(Adapter):
 
         with gzip.open(self.filepath, 'rt') as input_file:
             for annotation in gafiterator(input_file):
+                # Skip if qualifier contains 'NOT'
+                if "NOT" in annotation['Qualifier']:
+                    continue
+
                 source = annotation['DB_Object_ID']
                 target = annotation['GO_ID']
 
@@ -117,7 +118,6 @@ class GAFAdapter(Adapter):
                     if go_subontology != self.subontology:
                         continue
 
-                # RNA-specific mapping
                 if self.type == 'rna':
                     transcript_id = self.rnacentral_mapping.get(annotation['DB_Object_ID'])
                     if transcript_id is None:
@@ -136,17 +136,12 @@ class GAFAdapter(Adapter):
                     else:
                         continue
 
-                # Determine negation from qualifier
-                negated = self.parse_qualifier(qualifier)
-
                 props = {}
                 if self.write_properties:
                     props = {
                         'qualifier': qualifier,
                         'db_reference': annotation['DB:Reference'],
-                        'evidence': annotation['Evidence'],
-                        # Add a 'negated' property to explicitly indicate if the relationship is negated
-                        'negated': str(negated).lower()  
+                        'evidence': annotation['Evidence']
                     }
                     if self.add_provenance:
                         props['source'] = self.source
