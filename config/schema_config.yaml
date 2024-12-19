@@ -522,7 +522,7 @@ cl capable of:
   description: >-
     Represents a functional capability relationship between a CL term and a GO term.
   source: cl
-  target: go
+  target: biological process
 
 cl part of:
   is_a: part of

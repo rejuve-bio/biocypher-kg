@@ -17,6 +17,9 @@ class CellOntologyAdapter(OntologyAdapter):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
        
     def get_ontology_source(self):
+        """
+        Returns the source and source URL for Cell Ontology.
+        """
         return 'Cell Ontology', 'http://purl.obolibrary.org/obo/cl.owl'
 
     def is_cl_term(self, uri):
@@ -93,23 +96,35 @@ class CellOntologyAdapter(OntologyAdapter):
                 continue
 
             if self.is_deprecated(subject):
-                print(f"Skipping edge with deprecated subject: {self.to_key(subject)}")
                 continue
 
-            for _, object_or_restriction in self.graph.predicate_objects(subject, predicate):
-                object = self.resolve_object(object_or_restriction, predicate)
-                if object is None:
+            objects_to_process = []
+
+            # For part_of and capable_of edges, we ONLY want to process restrictions
+            if self.label in ['cl_part_of', 'cl_capable_of']:
+                for _, subclass_restriction in self.graph.predicate_objects(subject, RDFS.subClassOf):
+                    if isinstance(subclass_restriction, rdflib.term.BNode):
+                        resolved = self.resolve_object(subclass_restriction, predicate)
+                        if resolved:
+                            objects_to_process.append(resolved)
+                        
+                equiv_class = self.graph.value(subject=subject, predicate=OWL.equivalentClass)
+                if equiv_class:
+                    resolved = self.resolve_object(equiv_class, predicate)
+                    if resolved:
+                        objects_to_process.append(resolved)
+            else:
+                objects_to_process.extend(self.graph.objects(subject, predicate))
+
+            for object_or_restriction in set(objects_to_process):
+                if object_or_restriction is None or self.is_deprecated(object_or_restriction):
                     continue
 
-                if self.is_deprecated(object):
-                    print(f"Skipping edge with deprecated object: {self.to_key(object)}")
-                    continue
-
-                if not self.is_valid_edge(subject, object, self.label):
+                if not self.is_valid_edge_with_predicate(subject, object_or_restriction, predicate, self.label):
                     continue
 
                 from_node_key = self.to_key(subject)
-                to_node_key = self.to_key(object)
+                to_node_key = self.to_key(object_or_restriction)
 
                 props = {}
                 if self.write_properties:
@@ -124,26 +139,41 @@ class CellOntologyAdapter(OntologyAdapter):
                 if self.dry_run and edge_count > 100:
                     return
 
-    def is_valid_edge(self, from_node, to_node, edge_type):
-        if edge_type == 'cl_subclass_of':
+    def is_valid_edge_with_predicate(self, from_node, to_node, predicate, edge_type):
+        if predicate == RDFS.subClassOf:
             return self.is_cl_term(from_node) and self.is_cl_term(to_node)
-        elif edge_type == 'cl_capable_of':
-            return self.is_cl_term(from_node) and self.is_go_term(to_node)
-        elif edge_type == 'cl_part_of':
-            return self.is_cl_term(from_node) and self.is_uberon_term(to_node)
+    
+        elif predicate == self.CAPABLE_OF:
+            return (self.is_cl_term(from_node) and 
+                    self.is_go_term(to_node))
+    
+        elif predicate == self.PART_OF:
+            return (self.is_cl_term(from_node) and 
+                    self.is_uberon_term(to_node))
+
+    
         return False
 
     def resolve_object(self, object_or_restriction, predicate):
-        if isinstance(object_or_restriction, rdflib.term.BNode):
-            restriction_type = self.graph.value(subject=object_or_restriction, predicate=RDF.type)
-            if restriction_type == OWL.Restriction:
-                on_property = self.graph.value(subject=object_or_restriction, predicate=OWL.onProperty)
-                some_values_from = self.graph.value(subject=object_or_restriction, predicate=OWL.someValuesFrom)
-
-                if on_property == predicate and some_values_from:
-                    return some_values_from
-        else:
+        if not isinstance(object_or_restriction, rdflib.term.BNode):
             return object_or_restriction
+
+        restriction_type = self.graph.value(subject=object_or_restriction, predicate=RDF.type)
+    
+        if restriction_type == OWL.Restriction:
+            on_property = self.graph.value(subject=object_or_restriction, predicate=OWL.onProperty)
+            some_values_from = self.graph.value(subject=object_or_restriction, predicate=OWL.someValuesFrom)
+
+            if on_property == predicate and some_values_from:
+                return some_values_from
+
+        intersection_list = self.graph.value(subject=object_or_restriction, predicate=OWL.intersectionOf)
+        if intersection_list:
+            for item in self.graph.items(intersection_list):
+                resolved = self.resolve_object(item, predicate)
+                if resolved and resolved != item:
+                    return resolved
+
         return None
 
     def predicate_name(self, predicate):
