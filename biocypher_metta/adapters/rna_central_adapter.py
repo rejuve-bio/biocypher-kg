@@ -20,7 +20,7 @@ class RNACentralAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'id': 3, 'rna_type': 13}
 
     def __init__(self, filepath, rfam_filepath, write_properties, add_provenance,
-                 type='non coding rna', label=None, 
+                 type=None, label=None, 
                  chr=None, start=None, end=None, 
                  mapping_file='aux_files/go_subontology_mapping.pkl'):
         self.filepath = filepath

@@ -566,6 +566,8 @@ rna_central_non_coding_rna:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
       rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
+      label: non_coding_rna
+      type: non_coding_rna
 
   outdir: rna_central
   nodes: True

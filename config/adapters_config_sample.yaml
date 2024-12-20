@@ -497,6 +497,8 @@ rna_central_non_coding_rna:
     args:
       filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
       rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      label: non_coding_rna
+      type: non_coding_rna
 
   outdir: rna_central
   nodes: True
