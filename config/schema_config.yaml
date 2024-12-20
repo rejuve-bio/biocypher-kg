@@ -670,7 +670,6 @@ go gene product:
     qualifier: obj
     db_reference: obj
     evidence: str
-    negated: bool
 
 biological process gene product:
   is_a: go gene product
@@ -716,14 +715,32 @@ cellular component gene product located in:
   source: protein
   target: cellular component
 
-go rna:
+biological process rna:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
-  input_label: go_rna
-  output_label: belongs_to
+  input_label: biological_process_rna
+  output_label: participates_in
   source: non coding rna
-  target: go
+  target: biological process
+
+molecular function rna:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: molecular_function_rna
+  output_label: enables
+  source: non coding rna
+  target: molecular function
+
+cellular component rna:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_rna
+  output_label: located_in
+  source: non coding rna
+  target: cellular component
 
 # ---
 # regulatory association
