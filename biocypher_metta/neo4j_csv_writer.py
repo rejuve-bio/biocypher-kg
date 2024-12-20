@@ -216,5 +216,3 @@ RETURN batches, total;
         logger.info(f"Finished writing out all edge import queries for: {output_dir}")
         return edges_freq
     
-
-    
