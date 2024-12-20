@@ -271,8 +271,6 @@ go:
   represented_as: node
   input_label: go
   inherit_properties: true
-  properties:
-    subontology: str
 
 # Uberon Ontology
 uberon:
@@ -326,6 +324,27 @@ motif:
     pwm_G: float[]
     pwm_T: float[]
     length: str
+
+# subontologies
+
+# GO subontologies
+biological process:
+  is_a: go
+  represented_as: node
+  input_label: biological_process
+  inherit_properties: true
+
+molecular function:
+  is_a: go
+  represented_as: node
+  input_label: molecular_function
+  inherit_properties: true
+
+cellular component:
+  is_a: go
+  represented_as: node
+  input_label: cellular_component
+  inherit_properties: true
 
 # ---
 # 3D genome structures
@@ -503,7 +522,7 @@ cl capable of:
   description: >-
     Represents a functional capability relationship between a CL term and a GO term.
   source: cl
-  target: go
+  target: biological process
 
 cl part of:
   is_a: part of
@@ -600,17 +619,34 @@ go subclass of:
   source: go
   target: go
 
-go gene product:
-  is_a: annotation
+# Subclass relationships within GO subontology
+
+biological process subclass:
+  is_a: go subclass of
   inherit_properties: true
   represented_as: edge
-  input_label: go_gene_product
-  source: go
-  target: protein
-  properties:
-    qualifier: obj
-    db_reference: obj
-    evidence: str
+  input_label: biological_process_subclass_of
+  output_label: subclass_of
+  source: biological_process
+  target: biological_process
+
+molecular function subclass:
+  is_a: go subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: molecular_function_subclass_of
+  output_label: subclass_of
+  source: molecular_function
+  target: molecular_function
+
+cellular component subclass:
+  is_a: go subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_subclass_of
+  output_label: subclass_of
+  source: cellular_component
+  target: cellular_component
 
 go gene:
   is_a: annotation
@@ -625,14 +661,86 @@ go gene:
     db_reference: obj
     evidence: str
 
-go rna:
+go gene product:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
-  input_label: go_rna
-  output_label: belongs_to
+  input_label: go_gene_product
+  properties:
+    qualifier: obj
+    db_reference: obj
+    evidence: str
+
+biological process gene product:
+  is_a: go gene product
+  inherit_properties: true
+  represented_as: edge
+  input_label: biological_process_gene_product
+  output_label: involved_in
+  source: protein
+  target: biological process
+
+molucular function gene product:
+  is_a: go gene product
+  inherit_properties: true
+  represented_as: edge
+  input_label: molecular_function_gene_product
+  output_label: enables
+  source: protein
+  target: molecular function
+
+cellular component gene product:
+  is_a: go gene product
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_gene_product
+  source: protein
+  target: cellular component
+
+cellular component gene product part of:
+  is_a: cellular component gene product
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_gene_product_part_of
+  output_label: part_of
+  source: protein
+  target: cellular component
+
+cellular component gene product located in:
+  is_a: cellular component gene product
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_gene_product_located_in
+  output_label: located_in
+  source: protein
+  target: cellular component
+
+biological process rna:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: biological_process_rna
+  output_label: participates_in
   source: non coding rna
-  target: go
+  target: biological process
+
+molecular function rna:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: molecular_function_rna
+  output_label: enables
+  source: non coding rna
+  target: molecular function
+
+cellular component rna:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_rna
+  output_label: located_in
+  source: non coding rna
+  target: cellular component
 
 # ---
 # regulatory association
@@ -906,4 +1014,3 @@ transcript_to_exon:
   properties: 
     source: str
     source_url: str
-

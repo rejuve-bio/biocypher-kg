@@ -137,43 +137,142 @@ child_pathway_of:
   nodes: False
   edges: True
 
-go_ontology_terms:
+go_biological_process:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
     cls: GeneOntologyAdapter
     args:
       ontology: 'go'
       type: node
+      label: biological_process
       dry_run: True
       add_description: False
       cache_dir: ./ontology_dataset_cache
 
-  outdir: gene_onotology
+  outdir: gene_ontology/biological_process
   nodes: True
   edges: False
 
-go_subclass_of:
+go_biological_process_subclass_of:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
     cls: GeneOntologyAdapter
     args:
       ontology: 'go'
-      label: go_subclass_of
       type: edge
+      label: biological_process_subclass_of
       dry_run: True
       cache_dir: ./ontology_dataset_cache
 
-  outdir: gene_onotology
+  outdir: gene_ontology/biological_process
   nodes: False
   edges: True
 
-gaf:
+go_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: molecular_function
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+
+  outdir: gene_ontology/molecular_function
+  nodes: True
+  edges: False
+
+go_molecular_function_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: molecular_function_subclass_of
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+
+  outdir: gene_ontology/molecular_function
+  nodes: False
+  edges: True
+
+go_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: cellular_component
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+
+  outdir: gene_ontology/cellular_component
+  nodes: True
+  edges: False
+
+go_cellular_component_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: cellular_component_subclass_of
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+
+  outdir: gene_ontology/cellular_component
+  nodes: False
+  edges: True
+
+gaf_biological_process_gene_product:
   adapter:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
       filepath: ./samples/goa_human_sample.gaf.gz
+      label: biological_process_gene_product
 
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_molecular_function_gene_product:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: molecular_function_gene_product
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_product_part_of:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: cellular_component_gene_product_part_of
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_product_located_in:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: cellular_component_gene_product_located_in
 
   outdir: gaf
   nodes: False
@@ -398,25 +497,54 @@ rna_central_non_coding_rna:
     args:
       filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
       rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      label: non_coding_rna
+      type: non_coding_rna
 
   outdir: rna_central
   nodes: True
   edges: False
 
-rna_central_non_coding_rna_belongs_to_go:
+rna_central_non_coding_rna_biological_process:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
       filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
       rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
-      type: go rna
-      label: go_rna
+      type: biological process rna
+      label: biological_process_rna
 
   outdir: rna_central
   nodes: False
   edges: True  
 
+rna_central_non_coding_rna_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      type: molecular function rna
+      label: molecular_function_rna
+
+  outdir: rna_central
+  nodes: False
+  edges: True  
+
+rna_central_non_coding_rna_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      type: cellular component rna
+      label: cellular_component_rna
+
+  outdir: rna_central
+  nodes: False
+  edges: True   
 
 dgv_variant:
   adapter:
