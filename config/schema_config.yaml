@@ -307,6 +307,13 @@ bto:
   input_label: bto
   inherit_properties: true
 
+# Human Phenotype Ontology
+hpo:
+  is_a: ontology term
+  represented_as: node
+  input_label: hpo
+  inherit_properties: true
+
 motif:
   represented_as: node
   is_a: epigenomic feature
@@ -618,6 +625,15 @@ go subclass of:
   output_label: subclass_of
   source: go
   target: go
+
+hpo subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: hpo_subclass_of
+  output_label: subclass_of
+  source: hpo
+  target: hpo
 
 # Subclass relationships within GO subontology
 

@@ -943,6 +943,34 @@ bto_subclass_of:
   nodes: False
   edges: True
 
+human_phenotype_ontology:
+  adapter:
+    module: biocypher_metta.adapters.human_phenotype_ontology_adapter
+    cls: HumanPhenotypeOntologyAdapter
+    args:
+      ontology: 'hpo'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: human_phenotype_ontology
+  nodes: True
+  edges: False
+
+hpo_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.human_phenotype_ontology_adapter
+    cls: HumanPhenotypeOntologyAdapter
+    args:
+      ontology: 'hpo'
+      label: hpo_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: human_phenotype_ontology
+  nodes: False
+  edges: True
+
 polyphen2:
   adapter:
     module: biocypher_metta.adapters.polyphen2_adapter
