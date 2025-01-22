@@ -176,59 +176,60 @@ class Neo4jCSVWriter(BaseWriter):
         self._edge_headers.clear()
         edge_freq = defaultdict(int)
         output_dir = self.get_output_path(path_prefix, adapter_name)
-        
+    
         try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 label = label.lower()
                 edge_freq[label] += 1
-                
+            
                 edge_info = self.edge_node_types[label]
                 source_type = edge_info["source"]
                 target_type = edge_info["target"]
-                
+            
                 if source_type == "ontology_term":
                     source_type = self.preprocess_id(source_id).split('_')[0]
                 if target_type == "ontology_term":
                     target_type = self.preprocess_id(target_id).split('_')[0]
-                
-                output_label = edge_info.get("output_label")
-                edge_label = output_label if output_label else label
-                
+            
+                edge_label = edge_info.get("output_label", label)
+            
                 edge_data = {
                     'source_id': self.preprocess_id(source_id),
                     'target_id': self.preprocess_id(target_id),
                     'source_type': source_type,
                     'target_type': target_type,
-                    'label': edge_label,
+                    'label': edge_label,  
                     **properties
                 }
-                
+            
                 writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
                 self.temp_buffer[writer_key].append(edge_data)
-                
+            
                 if len(self.temp_buffer[writer_key]) >= self.batch_size:
                     self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
-            
+        
             for key in list(self.temp_buffer.keys()):
                 self._write_buffer_to_temp(key, self.temp_buffer[key])
-            
+        
             for key in self._edge_headers.keys():
-                label, source_type, target_type = key
-                file_suffix = f"{label}_{source_type}_{target_type}".lower()
+                input_label, source_type, target_type = key
+                edge_label = self.edge_node_types[input_label].get("output_label", input_label)
+            
+                file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"edges_{file_suffix}.csv"
                 cypher_file_path = output_dir / f"edges_{file_suffix}.cypher"
-                
+            
                 if csv_file_path.exists():
                     csv_file_path.unlink()
                 if cypher_file_path.exists():
                     cypher_file_path.unlink()
-                
+            
                 with open(csv_file_path, 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=sorted(self._edge_headers[key]), 
-                                         delimiter=self.csv_delimiter, extrasaction='ignore')
+                                     delimiter=self.csv_delimiter, extrasaction='ignore')
                     writer.writeheader()
-                    
+                
                     if key in self._temp_files and self._temp_files[key].exists():
                         with open(self._temp_files[key], 'r') as temp_f:
                             chunk = []
@@ -238,57 +239,56 @@ class Neo4jCSVWriter(BaseWriter):
                                     for data in chunk:
                                         writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
                                     chunk.clear()
-                            
+                        
                             for data in chunk:
                                 writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
-                
-                self.write_edge_cypher(label, source_type, target_type, csv_file_path, cypher_file_path)
+            
+                self.write_edge_cypher(edge_label, source_type, target_type, csv_file_path, cypher_file_path)
                 if key in self._temp_files and self._temp_files[key].exists():
                     self._temp_files[key].unlink()
-                
+            
         finally:
             self.temp_buffer.clear()
             for temp_file in self._temp_files.values():
                 if isinstance(temp_file, Path) and temp_file.exists():
                     temp_file.unlink()
             self._temp_files.clear()
-                
+            
         return edge_freq
 
     def write_node_cypher(self, label, csv_path, cypher_path):
-        additional_label = ":ontology_term" if label in self.ontologies else ""
         absolute_path = csv_path.resolve().as_posix()
-        
+    
         cypher_query = f"""
-CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
 
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MERGE (n:{label}{additional_label} {{id: row.id}})
-    SET n += apoc.map.removeKeys(row, ['id'])",
-    {{batchSize:1000, parallel:true, concurrency:4}}
-)
-YIELD batches, total
-RETURN batches, total;
-"""
+    CALL apoc.periodic.iterate(
+        "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+        "MERGE (n:{label} {{id: row.id}})
+        SET n += apoc.map.removeKeys(row, ['id'])",
+        {{batchSize:1000, parallel:true, concurrency:4}}
+    )
+    YIELD batches, total
+    RETURN batches, total;
+    """
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
-    def write_edge_cypher(self, label, source_type, target_type, csv_path, cypher_path):
+    def write_edge_cypher(self, edge_label, source_type, target_type, csv_path, cypher_path):
         absolute_path = csv_path.resolve().as_posix()
-        
+    
         cypher_query = f"""
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MATCH (source:{source_type} {{id: row.source_id}})
-    MATCH (target:{target_type} {{id: row.target_id}})
-    MERGE (source)-[r:{label}]->(target)
-    SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
-    {{batchSize:1000}}
-)
-YIELD batches, total
-RETURN batches, total;
-"""
+    CALL apoc.periodic.iterate(
+        "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+        "MATCH (source:{source_type} {{id: row.source_id}})
+        MATCH (target:{target_type} {{id: row.target_id}})
+        MERGE (source)-[r:{edge_label}]->(target)
+        SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
+        {{batchSize:1000}}
+    )
+    YIELD batches, total
+    RETURN batches, total;
+    """
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
