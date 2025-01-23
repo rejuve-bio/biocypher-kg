@@ -1,0 +1,53 @@
+id|chr|end|gene_name|gene_type|label|source|source_url|start|synonyms
+ensg00000101349|chr20|9839076|PAK5|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|9537370|"[""protein kinase PAK5"", ""HGNC:15916"", ""p21CDKN1A-activated kinase 7"", ""PAK7"", ""p21-activated kinase 7"", ""serine/threonine-protein kinase PAK 7"", ""serine/threonine-protein kinase PAK7"", ""p21 (RAC1) activated kinase 5"", ""p21(CDKN1A)-activated kinase 7"", ""PAK-7"", ""p21-activated kinase 5"", ""serine/threonine-protein kinase PAK 5"", ""p21 (RAC1) activated kinase 7"", ""PAK5"", ""p21 protein (Cdc42/Rac)-activated kinase 7"", ""PAK-5""]"
+ensg00000286740|chr20|9571257|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|9562941|
+ensg00000232738|chr20|9577689|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|9575608|
+ensg00000286470|chr20|9873900|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|9835556|
+ensg00000243961|chr20|10007116|PARAL1|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|9986088|"[""PPARgamma-activator RBM14-associated lncRNA"", ""PARAL1"", ""PPARG activating RBM14 associated lncRNA 1"", ""HGNC:53772""]"
+ensg00000132623|chr20|10058303|ANKEF1|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|9986126|"[""ankyrin repeat and EF-hand domain-containing protein 1"", ""ankyrin repeat and EF-hand domain containing 1"", ""ankyrin repeat domain-containing protein 5"", ""ANKEF1"", ""ANKRD5"", ""HGNC:15803""]"
+ensg00000227906|chr20|10368831|SNAP25-AS1|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10006381|"[""SNAP25 antisense RNA 1"", ""SNAP25-AS1"", ""HGNC:44312"", ""SNAP25 antisense RNA 1 (non-protein coding)""]"
+ensg00000276525|chr20|10026168|unknown|misc_RNA|gene|GENCODE|https://www.gencodegenes.org/human/|10025917|
+ensg00000132639|chr20|10308258|SNAP25|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|10172395|"[""dJ1068F16.2"", ""synaptosome associated protein 25"", ""resistance to inhibitors of cholinesterase 4 homolog"", ""RIC4"", ""synaptosomal-associated protein, 25kDa"", ""synaptosome associated protein 25kDa"", ""SNAP-25"", ""RIC-4"", ""SNAP25"", ""SNAP"", ""CMS18"", ""SEC9"", ""synaptosomal-associated protein 25"", ""bA416N4.2"", ""SUP"", ""HGNC:11132""]"
+ensg00000230506|chr20|10200824|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10172522|
+ensg00000232448|chr20|10186740|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10172701|
+ensg00000289505|chr20|10309905|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10308422|
+ensg00000286936|chr20|10318753|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10317889|
+ensg00000237005|chr20|10334698|HIGD1AP15|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|10334419|"[""HIGD1AP15"", ""HGNC:43010"", ""HIG1 hypoxia inducible domain family member 1A pseudogene 15""]"
+ensg00000214835|chr20|10349628|RPL23AP6|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|10349157|"[""RPL23AP6"", ""ribosomal protein L23a pseudogene 6"", ""RPL23A_36_1683"", ""HGNC:16555"", ""dJ1068F16.1""]"
+ensg00000230750|chr20|10387806|SDAD1P2|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|10385779|"[""SDAD1P2"", ""HGNC:31404"", ""SDA1 domain containing 1 pseudogene 2""]"
+ensg00000125863|chr20|10434222|MKKS|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|10401009|"[""HGNC:7108"", ""alternative protein MKKS"", ""BBS6"", ""KMS"", ""molecular chaperone MKKS"", ""Bardet-Biedl syndrome 6 protein"", ""MKKS centrosomal shuttling protein"", ""MKKS"", ""McKusick-Kaufman/Bardet-Biedl syndromes putative chaperonin"", ""HMCS"", ""MKS""]"
+ensg00000285508|chr20|10431922|MKKS|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|10413520|"[""LOC128706666"", ""uncharacterized LOC128706666""]"
+ensg00000285723|chr20|10420737|MKKS|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|10420546|"[""uncharacterized LOC128706665"", ""LOC128706665""]"
+ensg00000149346|chr20|10636829|SLX4IP|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|10435305|"[""SLX4IP"", ""bA204H22.1"", ""C20orf94"", ""SLX4 interacting protein"", ""protein SLX4IP"", ""dJ1099D15.3"", ""HGNC:16225"", ""bA254M13.1""]"
+ensg00000235036|chr20|10614229|DNAJC9P1|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|10612861|
+ensg00000101384|chr20|10673999|JAG1|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|10637684|"[""protein jagged-1"", ""HGNC:6188"", ""jagged canonical Notch ligand 1"", ""CD339"", ""AWS"", ""JAGL1"", ""DCHE"", ""CMT2HH"", ""HJ1"", ""AHD"", ""JAG1"", ""AGS"", ""AGS1""]"
+ensg00000273745|chr20|10649695|MIR6870|miRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10649636|"[""hsa-mir-6870"", ""microRNA 6870"", ""MIR6870"", ""HGNC:50184"", ""microRNA mir-6870""]"
+ensg00000270792|chr20|10994924|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10672695|
+ensg00000224961|chr20|10754033|LINC01752|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10696949|"[""HGNC:52540"", ""LINC01752"", ""long intergenic non-protein coding RNA 1752""]"
+ensg00000234900|chr20|10765286|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10753278|
+ensg00000232900|chr20|10909279|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10875333|"[""LOC101929413""]"
+ensg00000217809|chr20|10889088|FAT1P1|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|10888582|"[""FAT tumor suppressor homolog 1 pseudogene 1"", ""HGNC:16582"", ""FAT1P1"", ""dJ697P8.1"", ""FAT atypical cadherin 1 pseudogene 1"", ""FAT tumor suppressor homolog pseudogene 1""]"
+ensg00000125899|chr20|11029455|LINC02871|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|10996293|"[""long intergenic non-protein coding RNA 2871"", ""HGNC:16180"", ""C20orf187"", ""LINC02871""]"
+ensg00000270777|chr20|11001763|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11001304|
+ensg00000230990|chr20|11301525|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11234170|
+ensg00000235544|chr20|11345855|RPS11P1|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|11345383|"[""RPS11P1"", ""ribosomal protein S11 pseudogene 1"", ""dJ1060K6.1"", ""HGNC:16553"", ""RPS11_3_1684""]"
+ensg00000282478|chr20|11541647|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11536406|
+ensg00000287754|chr20|11581335|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11566484|
+ensg00000271397|chr20|11609048|LIN28AP3|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|11608436|
+ensg00000237256|chr20|11621477|PGAM3P|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|11621051|"[""HGNC:16557"", ""phosphoglycerate mutase 3, pseudogene"", ""dJ1128N12.1"", ""PGAM3P""]"
+ensg00000261411|chr20|11687323|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11685144|
+ensg00000228422|chr20|11878429|LINC00687|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11800463|"[""dJ1012F16.1"", ""long intergenic non-protein coding RNA 687"", ""HGNC:16194"", ""C20orf61"", ""LINC00687""]"
+ensg00000222281|chr20|11819091|RN7SKP111|misc_RNA|gene|GENCODE|https://www.gencodegenes.org/human/|11818821|"[""RN7SKP111"", ""RNA, 7SK small nuclear pseudogene 111"", ""HGNC:45835"", ""RN7SK pseudogene 111""]"
+ensg00000271298|chr20|11838574|ANAPC13P1|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|11838355|
+ensg00000132640|chr20|11926609|BTBD3|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|11890723|"[""BTB/POZ domain-containing protein 3"", ""BTB (POZ) domain containing 3"", ""BTBD3"", ""HGNC:15854"", ""dJ742J24.1"", ""BTB domain containing 3""]"
+ensg00000236526|chr20|11918677|BTBD3-AS1|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|11909404|"[""HGNC:40728"", ""BTBD3-AS1"", ""BTBD3 antisense RNA 1""]"
+ensg00000235292|chr20|12318221|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|12243308|
+ensg00000230437|chr20|12316485|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|12305613|
+ensg00000235698|chr20|12381255|PA2G4P2|processed_pseudogene|gene|GENCODE|https://www.gencodegenes.org/human/|12380056|"[""proliferation-associated 2G4, 38kDa pseudogene"", ""bA102J14.2"", ""PA2G4P2"", ""PA2G4L5"", ""HGNC:16531"", ""proliferation-associated 2G4 pseudogene 2""]"
+ensg00000233048|chr20|12952519|LINC01722|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|12865202|"[""HGNC:52510"", ""LINC01722"", ""long intergenic non-protein coding RNA 1722""]"
+ensg00000269931|chr20|12937097|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|12934877|
+ensg00000286087|chr20|12940902|unknown|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|12936262|
+ensg00000234265|chr20|13008417|LINC01723|lncRNA|gene|GENCODE|https://www.gencodegenes.org/human/|12950288|"[""long intergenic non-protein coding RNA 1723"", ""HGNC:52511"", ""LINC01723""]"
+ensg00000172296|chr20|13169103|SPTLC3|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|13008972|"[""serine palmitoyltransferase, long chain base subunit 2-like (aminotransferase 2)"", ""dJ718P11.1"", ""HGNC:16253"", ""LCB3"", ""LCB 3"", ""SPTLC2L"", ""dJ718P11"", ""C20orf38"", ""serine palmitoyltransferase 3"", ""serine-palmitoyl-CoA transferase 3"", ""LCB2B"", ""serine palmitoyltransferase long chain base subunit 3"", ""SPT3"", ""long chain base biosynthesis protein 2b"", ""SPTLC3"", ""long chain base biosynthesis protein 3"", ""hLCB2b"", ""SPT 3""]"
+ensg00000197976|chrX|1602520|AKAP17A|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|1591604|"[""SFRS17A"", ""DXYS155E"", ""HGNC:18783"", ""A-kinase anchor protein 17A"", ""B-lymphocyte surface antigen"", ""CXYorf3"", ""CCDC133"", ""protein kinase A-anchoring protein 17A"", ""splicing factor, arginine/serine-rich 17A"", ""A-kinase anchoring protein 17A"", ""A kinase (PRKA) anchor protein 17A"", ""AKAP17A"", ""PRKA17A"", ""XE7Y"", ""pseudoautosomal gene XE7"", ""721P"", ""XE7"", ""AKAP-17A""]"
+ensg00000197976_par_y|chrY|1602520|AKAP17A|protein_coding|gene|GENCODE|https://www.gencodegenes.org/human/|1591604|"[""SFRS17A"", ""DXYS155E"", ""HGNC:18783"", ""A-kinase anchor protein 17A"", ""B-lymphocyte surface antigen"", ""CXYorf3"", ""CCDC133"", ""protein kinase A-anchoring protein 17A"", ""splicing factor, arginine/serine-rich 17A"", ""A-kinase anchoring protein 17A"", ""A kinase (PRKA) anchor protein 17A"", ""AKAP17A"", ""PRKA17A"", ""XE7Y"", ""pseudoautosomal gene XE7"", ""721P"", ""XE7"", ""AKAP-17A""]"

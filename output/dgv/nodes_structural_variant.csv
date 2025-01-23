@@ -1,0 +1,12 @@
+id|chr|end|evidence|label|source|source_url|start|variant_accession|variant_type
+chr1_10002_22118_grch38|chr1|22118|pubmed:23825009|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10002|dgv1n82|duplication
+chr1_10002_127330_grch38|chr1|127330|pubmed:18304495|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10002|nsv7879|gain+loss
+chr1_10002_2368561_grch38|chr1|2368561|pubmed:15286789|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10002|nsv482937|loss
+chr1_10152_10389_grch38|chr1|10389|pubmed:25597990|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10152|esv3648995|complex
+chr1_10192_10281_grch38|chr1|10281|pubmed:24416366|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10192|nsv958854|deletion
+chr1_10378_177376_grch38|chr1|177376|pubmed:18775914|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10378|nsv428112|gain
+chr1_10500_177368_grch38|chr1|177368|pubmed:19812545|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10500|esv27265|gain+loss
+chr1_10502_78200_grch38|chr1|78200|pubmed:30661756|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|10502|nsv3319479|duplication
+chr1_11100_47000_grch38|chr1|47000|pubmed:26484159|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|11100|nsv1147468|duplication
+chr1_11101_29200_grch38|chr1|29200|pubmed:24896259|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|11101|dgv1n106|duplication
+chr1_11190_36787_grch38|chr1|36787|pubmed:20981092|structural_variant|dgv|http://dgv.tcag.ca/dgv/app/downloads|11190|dgv1e59|duplication

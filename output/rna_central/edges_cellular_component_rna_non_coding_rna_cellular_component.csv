@@ -1,0 +1,4 @@
+label|rfam|source|source_id|source_type|source_url|target_id|target_type
+located_in|Rfam:RF00026|RNAcentral|urs00000019bc|non_coding_rna|https://rnacentral.org/downloads|go_0005688|cellular_component
+located_in|Rfam:RF00026|RNAcentral|urs00000019bc|non_coding_rna|https://rnacentral.org/downloads|go_0046540|cellular_component
+located_in|Rfam:RF00027|RNAcentral|urs0000001a7a|non_coding_rna|https://rnacentral.org/downloads|go_0016442|cellular_component

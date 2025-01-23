@@ -1,0 +1,15 @@
+label|p_value|score|source|source_id|source_type|source_url|target_id|target_type
+expressed_in|0.00221961024320294|89.08|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000015|cl
+expressed_in|0.00167287722066534|99.96|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000019|cl
+expressed_in|0.005262469333648452|83.3|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000083|cl
+expressed_in|5.212829496997609e-08|86.11|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000089|cl
+expressed_in|0.029202377076003|46.45|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000094|cl
+expressed_in|0.00639609278054321|77.61|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000115|cl
+expressed_in|0.008699349485476793|41.88|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000576|cl
+expressed_in|1e-14|95.47|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000670|cl
+expressed_in|0.0173245001297088|58.21|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000738|cl
+expressed_in|0.010199237327800379|42.5|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0000842|cl
+expressed_in|0.01|79.75|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0002079|cl
+expressed_in|1e-14|90.12|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0002255|cl
+expressed_in|0.00167287722066534|99.45|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0002328|cl
+expressed_in|0.00167287722066534|93.36|bgee|ensg00000000003|gene|https://www.bgee.org/download/gene-expression-calls?id=9606|cl_0002336|cl

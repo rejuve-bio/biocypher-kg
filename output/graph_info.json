@@ -1,0 +1,1439 @@
+{
+  "node_count": 361742,
+  "edge_count": 217676,
+  "dataset_count": 35,
+  "data_size": "0.07 GB",
+  "top_entities": [
+    {
+      "name": "gene",
+      "count": 52
+    },
+    {
+      "name": "transcript",
+      "count": 175
+    },
+    {
+      "name": "protein",
+      "count": 14
+    },
+    {
+      "name": "pathway",
+      "count": 2629
+    },
+    {
+      "name": "biological_process",
+      "count": 100
+    },
+    {
+      "name": "molecular_function",
+      "count": 100
+    },
+    {
+      "name": "cellular_component",
+      "count": 100
+    },
+    {
+      "name": "tad",
+      "count": 29
+    },
+    {
+      "name": "motif",
+      "count": 5
+    },
+    {
+      "name": "exon",
+      "count": 870
+    },
+    {
+      "name": "non_coding_rna",
+      "count": 10
+    },
+    {
+      "name": "structural_variant",
+      "count": 183
+    },
+    {
+      "name": "promoter",
+      "count": 29598
+    },
+    {
+      "name": "enhancer",
+      "count": 98368
+    },
+    {
+      "name": "super_enhancer",
+      "count": 69070
+    },
+    {
+      "name": "snp",
+      "count": 158833
+    },
+    {
+      "name": "uberon",
+      "count": 101
+    },
+    {
+      "name": "clo",
+      "count": 101
+    },
+    {
+      "name": "cl",
+      "count": 101
+    },
+    {
+      "name": "efo",
+      "count": 101
+    },
+    {
+      "name": "bto",
+      "count": 101
+    },
+    {
+      "name": "hpo",
+      "count": 101
+    },
+    {
+      "name": "tfbs",
+      "count": 1000
+    }
+  ],
+  "top_connections": [
+    {
+      "name": "transcribed_to",
+      "count": 175
+    },
+    {
+      "name": "transcribed_from",
+      "count": 175
+    },
+    {
+      "name": "translates_to",
+      "count": 45
+    },
+    {
+      "name": "translation_of",
+      "count": 45
+    },
+    {
+      "name": "genes_pathways",
+      "count": 35
+    },
+    {
+      "name": "parent_pathway_of",
+      "count": 2647
+    },
+    {
+      "name": "child_pathway_of",
+      "count": 2647
+    },
+    {
+      "name": "subclass_of",
+      "count": 906
+    },
+    {
+      "name": "involved_in",
+      "count": 1155
+    },
+    {
+      "name": "enables",
+      "count": 655
+    },
+    {
+      "name": "part_of",
+      "count": 360
+    },
+    {
+      "name": "located_in",
+      "count": 1129
+    },
+    {
+      "name": "coexpressed_with",
+      "count": 32108
+    },
+    {
+      "name": "regulates",
+      "count": 48
+    },
+    {
+      "name": "interacts_with",
+      "count": 48
+    },
+    {
+      "name": "in_tad_region",
+      "count": 287
+    },
+    {
+      "name": "eqtl_association",
+      "count": 49
+    },
+    {
+      "name": "expressed_in",
+      "count": 100
+    },
+    {
+      "name": "includes",
+      "count": 580
+    },
+    {
+      "name": "participates_in",
+      "count": 4
+    },
+    {
+      "name": "associated_with",
+      "count": 173045
+    },
+    {
+      "name": "capable_of",
+      "count": 101
+    },
+    {
+      "name": "binds_to",
+      "count": 992
+    },
+    {
+      "name": "upstream_of",
+      "count": 170
+    },
+    {
+      "name": "downstream_of",
+      "count": 170
+    }
+  ],
+  "frequent_relationships": [
+    {
+      "entities": [
+        "gene",
+        "transcript"
+      ],
+      "count": 175
+    },
+    {
+      "entities": [
+        "transcript",
+        "gene"
+      ],
+      "count": 175
+    },
+    {
+      "entities": [
+        "transcript",
+        "protein"
+      ],
+      "count": 45
+    },
+    {
+      "entities": [
+        "protein",
+        "transcript"
+      ],
+      "count": 45
+    },
+    {
+      "entities": [
+        "gene",
+        "pathway"
+      ],
+      "count": 35
+    },
+    {
+      "entities": [
+        "pathway",
+        "pathway"
+      ],
+      "count": 5294
+    },
+    {
+      "entities": [
+        "biological_process",
+        "biological_process"
+      ],
+      "count": 100
+    },
+    {
+      "entities": [
+        "molecular_function",
+        "molecular_function"
+      ],
+      "count": 100
+    },
+    {
+      "entities": [
+        "cellular_component",
+        "cellular_component"
+      ],
+      "count": 100
+    },
+    {
+      "entities": [
+        "protein",
+        "biological_process"
+      ],
+      "count": 1155
+    },
+    {
+      "entities": [
+        "protein",
+        "molecular_function"
+      ],
+      "count": 653
+    },
+    {
+      "entities": [
+        "protein",
+        "cellular_component"
+      ],
+      "count": 1064
+    },
+    {
+      "entities": [
+        "gene",
+        "gene"
+      ],
+      "count": 32156
+    },
+    {
+      "entities": [
+        "protein",
+        "protein"
+      ],
+      "count": 48
+    },
+    {
+      "entities": [
+        "gene",
+        "tad"
+      ],
+      "count": 287
+    },
+    {
+      "entities": [
+        "snp",
+        "gene"
+      ],
+      "count": 710
+    },
+    {
+      "entities": [
+        "gene",
+        "ontology_term"
+      ],
+      "count": 100
+    },
+    {
+      "entities": [
+        "transcript",
+        "exon"
+      ],
+      "count": 580
+    },
+    {
+      "entities": [
+        "non_coding_rna",
+        "biological_process"
+      ],
+      "count": 4
+    },
+    {
+      "entities": [
+        "non_coding_rna",
+        "molecular_function"
+      ],
+      "count": 2
+    },
+    {
+      "entities": [
+        "non_coding_rna",
+        "cellular_component"
+      ],
+      "count": 3
+    },
+    {
+      "entities": [
+        "promoter",
+        "gene"
+      ],
+      "count": 28133
+    },
+    {
+      "entities": [
+        "enhancer",
+        "gene"
+      ],
+      "count": 82629
+    },
+    {
+      "entities": [
+        "super_enhancer",
+        "gene"
+      ],
+      "count": 62283
+    },
+    {
+      "entities": [
+        "uberon",
+        "uberon"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "clo",
+        "clo"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "cl",
+        "cl"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "cl",
+        "biological_process"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "cl",
+        "uberon"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "efo",
+        "efo"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "bto",
+        "bto"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "hpo",
+        "hpo"
+      ],
+      "count": 101
+    },
+    {
+      "entities": [
+        "gene",
+        "tfbs"
+      ],
+      "count": 992
+    }
+  ],
+  "schema": {
+    "nodes": [
+      {
+        "data": {
+          "name": "gene",
+          "properties": [
+            "end",
+            "synonyms",
+            "start",
+            "chr",
+            "source",
+            "source_url",
+            "gene_name",
+            "gene_type"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "transcript",
+          "properties": [
+            "transcript_name",
+            "transcript_type",
+            "chr",
+            "start",
+            "source",
+            "transcript_id",
+            "source_url",
+            "gene_name",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "protein",
+          "properties": [
+            "protein_name",
+            "synonyms",
+            "source_url",
+            "source",
+            "accessions"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "pathway",
+          "properties": [
+            "source_url",
+            "pathway_name",
+            "source"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "biological_process",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "molecular_function",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "cellular_component",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "tad",
+          "properties": [
+            "genes",
+            "start",
+            "chr",
+            "source",
+            "source_url",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "motif",
+          "properties": [
+            "pwm_A",
+            "length",
+            "source",
+            "pwm_T",
+            "tf_name",
+            "pwm_C",
+            "source_url",
+            "pwm_G"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "exon",
+          "properties": [
+            "start",
+            "chr",
+            "source",
+            "gene_id",
+            "exon_id",
+            "transcript_id",
+            "exon_number",
+            "source_url",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "non_coding_rna",
+          "properties": [
+            "start",
+            "chr",
+            "source",
+            "source_url",
+            "end",
+            "rna_type"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "structural_variant",
+          "properties": [
+            "variant_accession",
+            "start",
+            "chr",
+            "evidence",
+            "source",
+            "variant_type",
+            "source_url",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "promoter",
+          "properties": [
+            "start",
+            "chr",
+            "source",
+            "source_url",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "enhancer",
+          "properties": [
+            "start",
+            "chr",
+            "source",
+            "enhancer_id",
+            "source_url",
+            "end",
+            "data_source"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "super_enhancer",
+          "properties": [
+            "se_id",
+            "start",
+            "chr",
+            "source",
+            "source_url",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "snp",
+          "properties": [
+            "caf_alt",
+            "start",
+            "chr",
+            "alt",
+            "source",
+            "ref",
+            "polyphen2_humdiv_prediction",
+            "polyphen2_humdiv_score",
+            "caf_ref",
+            "polyphen2_humvar_score",
+            "polyphen2_humvar_prediction",
+            "source_url",
+            "end"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "uberon",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "clo",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "cl",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "source",
+            "term_name"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "efo",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "bto",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "source",
+            "term_name"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "hpo",
+          "properties": [
+            "synonyms",
+            "source_url",
+            "term_name",
+            "source",
+            "alternative_ids"
+          ]
+        }
+      },
+      {
+        "data": {
+          "name": "tfbs",
+          "properties": [
+            "start",
+            "chr",
+            "source",
+            "source_url",
+            "end"
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "source": "gene",
+          "target": "transcript",
+          "possible_connections": [
+            "transcribed_to"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "transcript",
+          "target": "gene",
+          "possible_connections": [
+            "transcribed_from"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "transcript",
+          "target": "protein",
+          "possible_connections": [
+            "translates_to"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "protein",
+          "target": "transcript",
+          "possible_connections": [
+            "translation_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "gene",
+          "target": "pathway",
+          "possible_connections": [
+            "genes_pathways"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "pathway",
+          "target": "pathway",
+          "possible_connections": [
+            "parent_pathway_of",
+            "child_pathway_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "biological_process",
+          "target": "biological_process",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "molecular_function",
+          "target": "molecular_function",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "cellular_component",
+          "target": "cellular_component",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "protein",
+          "target": "biological_process",
+          "possible_connections": [
+            "involved_in"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "protein",
+          "target": "molecular_function",
+          "possible_connections": [
+            "enables"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "protein",
+          "target": "cellular_component",
+          "possible_connections": [
+            "located_in",
+            "part_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "gene",
+          "target": "gene",
+          "possible_connections": [
+            "coexpressed_with",
+            "regulates"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "protein",
+          "target": "protein",
+          "possible_connections": [
+            "interacts_with"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "gene",
+          "target": "tad",
+          "possible_connections": [
+            "in_tad_region"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "snp",
+          "target": "gene",
+          "possible_connections": [
+            "eqtl_association",
+            "located_in",
+            "downstream_of",
+            "upstream_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "gene",
+          "target": "ontology_term",
+          "possible_connections": [
+            "expressed_in"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "transcript",
+          "target": "exon",
+          "possible_connections": [
+            "includes"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "non_coding_rna",
+          "target": "biological_process",
+          "possible_connections": [
+            "participates_in"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "non_coding_rna",
+          "target": "molecular_function",
+          "possible_connections": [
+            "enables"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "non_coding_rna",
+          "target": "cellular_component",
+          "possible_connections": [
+            "located_in"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "promoter",
+          "target": "gene",
+          "possible_connections": [
+            "associated_with"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "enhancer",
+          "target": "gene",
+          "possible_connections": [
+            "associated_with"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "super_enhancer",
+          "target": "gene",
+          "possible_connections": [
+            "associated_with"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "uberon",
+          "target": "uberon",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "clo",
+          "target": "clo",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "cl",
+          "target": "cl",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "cl",
+          "target": "biological_process",
+          "possible_connections": [
+            "capable_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "cl",
+          "target": "uberon",
+          "possible_connections": [
+            "part_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "efo",
+          "target": "efo",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "bto",
+          "target": "bto",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "hpo",
+          "target": "hpo",
+          "possible_connections": [
+            "subclass_of"
+          ]
+        }
+      },
+      {
+        "data": {
+          "source": "gene",
+          "target": "tfbs",
+          "possible_connections": [
+            "binds_to"
+          ]
+        }
+      }
+    ]
+  },
+  "datasets": [
+    {
+      "name": "GENCODE",
+      "version": "v44",
+      "url": "https://www.gencodegenes.org/human/",
+      "nodes": [
+        "transcript",
+        "exon",
+        "gene"
+      ],
+      "edges": [
+        "includes",
+        "transcribed_from",
+        "transcribed_to"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Uniprot",
+      "version": null,
+      "url": "https://www.uniprot.org/",
+      "nodes": [
+        "protein"
+      ],
+      "edges": [
+        "translates_to",
+        "translation_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "REACTOME",
+      "version": null,
+      "url": "https://reactome.org",
+      "nodes": [
+        "pathway"
+      ],
+      "edges": [
+        "genes_pathways",
+        "parent_pathway_of",
+        "child_pathway_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Gene Ontology",
+      "version": null,
+      "url": "http://purl.obolibrary.org/obo/go.owl",
+      "nodes": [
+        "biological_process",
+        "cellular_component",
+        "molecular_function"
+      ],
+      "edges": [
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "GO",
+      "version": null,
+      "url": "http://geneontology.org/gene-associations/goa_human.gaf.gz",
+      "nodes": [],
+      "edges": [
+        "enables",
+        "located_in",
+        "part_of",
+        "involved_in"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "CoXPresdb",
+      "version": "v8",
+      "url": "https://coxpresdb.jp/",
+      "nodes": [],
+      "edges": [
+        "coexpressed_with"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "TFLink",
+      "version": null,
+      "url": "tflink.net",
+      "nodes": [],
+      "edges": [
+        "regulates"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "STRING",
+      "version": "v12.0",
+      "url": "https://string-db.org/",
+      "nodes": [],
+      "edges": [
+        "interacts_with"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "TADMap",
+      "version": null,
+      "url": "https://cb.csail.mit.edu/cb/tadmap/",
+      "nodes": [
+        "tad"
+      ],
+      "edges": [
+        "in_tad_region"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "GTEx",
+      "version": "v8",
+      "url": "https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz",
+      "nodes": [],
+      "edges": [
+        "eqtl_association",
+        "expressed_in"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "HOCOMOCOv11",
+      "version": null,
+      "url": "hocomoco11.autosome.org/motif/",
+      "nodes": [
+        "motif"
+      ],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Roadmap Epigenomics Project",
+      "version": null,
+      "url": "https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz",
+      "nodes": [],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "ABC",
+      "version": null,
+      "url": "https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz",
+      "nodes": [],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "CADD",
+      "version": null,
+      "url": "https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz",
+      "nodes": [],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "RefSeq Closest Gene",
+      "version": null,
+      "url": "https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz",
+      "nodes": [],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "TopLD",
+      "version": null,
+      "url": "http://topld.genetics.unc.edu/",
+      "nodes": [],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "RNAcentral",
+      "version": "24",
+      "url": "https://rnacentral.org/downloads",
+      "nodes": [
+        "non_coding_rna"
+      ],
+      "edges": [
+        "enables",
+        "located_in",
+        "participates_in"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "dgv",
+      "version": "",
+      "url": "http://dgv.tcag.ca/dgv/app/downloads",
+      "nodes": [
+        "structural_variant"
+      ],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "EPD",
+      "version": "006",
+      "url": "https://epd.expasy.org/ftp/epdnew/H_sapiens/",
+      "nodes": [
+        "promoter"
+      ],
+      "edges": [
+        "associated_with"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "dbVar",
+      "version": "",
+      "url": "https://www.ncbi.nlm.nih.gov/dbvar/content/ftp_manifest/",
+      "nodes": [
+        "structural_variant"
+      ],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "PEREGRINE",
+      "version": "",
+      "url": "https://www.peregrineproj.org/",
+      "nodes": [
+        "enhancer"
+      ],
+      "edges": [
+        "associated_with"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "dbSuper",
+      "version": "",
+      "url": "https://asntech.org/dbsuper/download.php",
+      "nodes": [
+        "super_enhancer"
+      ],
+      "edges": [
+        "associated_with"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "dbSNP",
+      "version": "2.0",
+      "url": "https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/",
+      "nodes": [
+        "snp"
+      ],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Enancer Atlas",
+      "version": "2.0",
+      "url": "http://enhanceratlas.org/downloadv2.php",
+      "nodes": [
+        "enhancer"
+      ],
+      "edges": [
+        "associated_with"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "UBERON",
+      "version": null,
+      "url": "http://purl.obolibrary.org/obo/uberon.owl",
+      "nodes": [
+        "uberon"
+      ],
+      "edges": [
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Cell Line Ontology",
+      "version": null,
+      "url": "http://purl.obolibrary.org/obo/clo.owl",
+      "nodes": [
+        "clo"
+      ],
+      "edges": [
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Cell Ontology",
+      "version": null,
+      "url": "http://purl.obolibrary.org/obo/cl.owl",
+      "nodes": [
+        "cl"
+      ],
+      "edges": [
+        "capable_of",
+        "part_of",
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Fabian",
+      "version": "",
+      "url": "https://www.genecascade.org/fabian/",
+      "nodes": [],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Experimental Factor Ontology",
+      "version": null,
+      "url": "http://www.ebi.ac.uk/efo/efo.owl",
+      "nodes": [
+        "efo"
+      ],
+      "edges": [
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "BRENDA Tissue Ontology",
+      "version": null,
+      "url": "http://purl.obolibrary.org/obo/bto.owl",
+      "nodes": [
+        "bto"
+      ],
+      "edges": [
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "Human Phenotype Ontology",
+      "version": null,
+      "url": "http://purl.obolibrary.org/obo/hp.owl",
+      "nodes": [
+        "hpo"
+      ],
+      "edges": [
+        "subclass_of"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "PolyPhen-2",
+      "version": "",
+      "url": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/dbNsfp/dbNsfpPolyPhen2.bb",
+      "nodes": [
+        "snp"
+      ],
+      "edges": [],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "bgee",
+      "version": null,
+      "url": "https://www.bgee.org/download/gene-expression-calls?id=9606",
+      "nodes": [],
+      "edges": [
+        "expressed_in"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "ENCODE",
+      "version": null,
+      "url": "https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz",
+      "nodes": [
+        "tfbs"
+      ],
+      "edges": [
+        "binds_to"
+      ],
+      "imported_on": "2025-01-17"
+    },
+    {
+      "name": "GWAS",
+      "version": null,
+      "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv",
+      "nodes": [],
+      "edges": [
+        "located_in",
+        "downstream_of",
+        "upstream_of"
+      ],
+      "imported_on": "2025-01-17"
+    }
+  ]
+}

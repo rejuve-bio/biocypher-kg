@@ -289,17 +289,6 @@ coexpression:
   edges: True
 
 
-coexpression:
-  adapter:
-    module: biocypher_metta.adapters.coxpresdb_adapter
-    cls: CoxpresdbAdapter
-    args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/coxpressdb
-      ensemble_to_entrez_path: ./aux_files/entrez_to_ensembl.pkl
-
-  outdir: coxpressdb
-  nodes: False
-  edges: True
 
 tflink:
   adapter:
