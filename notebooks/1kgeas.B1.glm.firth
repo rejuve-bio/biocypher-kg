@@ -1,19 +1,15 @@
-#### Steps:
-1. Ensure the file is tracked by Git LFS in `.gitattributes`:
-   ```plaintext
-   ```
-   notebooks/1kgeas.B1.glm.firth filter=lfs diff=lfs merge=lfs -text
+'''1. Ensure the file is tracked by Git LFS in .gitattributes:'''
+
+notebooks/1kgeas.B1.glm.firth filter=lfs diff=lfs merge=lfs -text
 
 
-2. Use a shallow clone to reduce the amount of data downloaded:
-   ```bash
-   ```
-   git clone --depth 1 <repository-url>
+'''2. Use a shallow clone to reduce the amount of data downloaded:'''
 
-3. Pre-fetch Git LFS files after cloning:
-   ```bash
-   ```
-    git lfs install --skip-smudge
-    git clone <repository-url>
-    cd <repository>
-    git lfs pull
+git clone --depth 1 <repository-url>
+
+'''3. Pre-fetch Git LFS files after cloning:'''
+
+git lfs install --skip-smudge
+git clone <repository-url>
+cd <repository>
+git lfs pull
