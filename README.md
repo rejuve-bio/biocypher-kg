@@ -17,7 +17,7 @@ poetry install
 ```
 
 3. You are ready to go!
-```{bash}
+<!-- ```{bash}
 poetry shell
 python create_knowledge_graph.py \
     --output_dir <output_directory> \
@@ -27,7 +27,9 @@ python create_knowledge_graph.py \
     [--writer_type {metta,prolog,neo4j}] \
     [--write_properties {true,false}] \
     [--add_provenance {true,false}]
-```
+``` -->
+poetry shell
+python create_knowledge_graph.py --output-dir output --adapters-config config/adapters_config_sample.yaml --dbsnp-rsids data/dbsnp_rsids_map.pickle --dbsnp-pos data/dbsnp_pos_map.pickle --writer-type neo4j --write-properties --add-provenance
 
 ### Knowledge Graph Creation
 The `create_knowledge_graph.py` script supports multiple configuration options:

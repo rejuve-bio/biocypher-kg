@@ -1,0 +1,102 @@
+id|alternative_ids|label|source|source_url|synonyms|term_name
+clo_0027071||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND00382 cell
+clo_0015094||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM17135 cell
+clo_0035286||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AG06084 cell
+clo_0002970||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||F19 cell
+example_of_usage||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||
+clo_0034147||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AG08463 cell
+clo_0014940||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA03132 cell
+clo_0050927||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||RCB1889 cell
+clo_0008712||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||R2LBLN cell
+clo_0011004||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AU10152 cell
+clo_0016709||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM03255 cell
+clo_0004337||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ICR MEF cell
+clo_0027511||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM15181 cell
+clo_0015996||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM03910 cell
+clo_0019858||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND14902 cell
+c0460005||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||
+clo_0000153||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||immortal pro-B cell line cell
+chebi_38101||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl|"[""heterocyclic organonitrogen compounds"", ""organonitrogen heterocyclic compounds""]"|organonitrogen heterocyclic compound
+clo_0025951||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM00489 cell
+clo_0000752||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||immortal human pronephros-derived fibroblast cell line cell
+clo_0037249||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||BCL-2 1863 cell
+clo_0015137||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND09235 cell
+clo_0006406||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IGF144/80 cell
+clo_0005468||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IGF052/77 cell
+clo_0007379||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||LP-1 cell
+ro_0002488||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl|"[""begins_to_exist_during""]"|existence starts during
+clo_0027976||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND00921 cell
+clo_0002318||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||CCD-33Lu cell
+clo_0033704||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AG08170 cell
+clo_0010829||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA05180 cell
+clo_0029605||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA03973 cell
+clo_0031547||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM01605 cell
+clo_0004414||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IGF002/83 cell
+clo_0015279||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA02757 cell
+clo_0001310||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||35.1 cell
+clo_0031443||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM01506 cell
+clo_0036661||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND10311 cell
+doid_2234||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||partial epilepsy
+clo_0025503||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM00232 cell
+clo_0005680||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IGF064/88 cell
+clo_0017116||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM17650 cell
+clo_0019150||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND14640 cell
+clo_0025108||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM18593 cell
+clo_0018284||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND11657 cell
+clo_0031602||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM14537 cell
+ncbitaxon_33154||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl|"[""Fungi/Metazoa group"", ""opisthokonts""]"|Opisthokonta
+clo_0020693||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||PR00604 cell
+clo_0017795||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND07171 cell
+clo_0026901||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM19714 cell
+clo_0015489||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND02137 cell
+clo_0024379||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA06330 cell
+clo_0036183||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA00535 cell
+clo_0003227||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||FH 91 cell
+uberon_0001800||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||
+clo_0001105||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||15-79-2 cell
+go_0007018||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||microtubule-based movement
+clo_0009028||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||SJMRF cell
+clo_0028225||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM15613 cell
+uberon_0005426||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl|"[""immature lens"", ""lens mass"", ""presumptive lens""]"|lens vesicle
+clo_0011889||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||HQ00531 cell
+doid_14729||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||mucopolysaccharidosis type IIIB
+clo_0012240||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND09305 cell
+clo_0033450||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AG07882 cell
+clo_0006834||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IMG-678 cell
+clo_0022624||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM12792 cell
+clo_0051211||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||HEV0469 cell
+clo_0012107||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA04931 cell
+clo_0016464||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM17860 cell
+clo_0011769||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AG16944 cell
+clo_0006903||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IMG-915 cell
+clo_0050011||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||RCB0202 cell
+clo_0012974||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA05613 cell
+clo_0018604||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND11294 cell
+clo_0036154||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA00619 cell
+clo_0027054||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND00365 cell
+doid_1061||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||renal minoaciduria
+pato_0001739||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||radiation quality
+clo_0050182||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||RCB2904 cell
+clo_0016663||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND01680 cell
+clo_0019763||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM12329 cell
+doid_0050687||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||cell type cancer
+clo_0032514||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM02077 cell
+doid_1442||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||Alpers syndrome
+clo_0016872||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM07457 cell
+clo_0028960||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA03870 cell
+clo_0036752||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND10422 cell
+iao_0000310||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||document
+clo_0004663||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||IGF014/87 cell
+clo_0008870||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||RPMI 6666 cell
+clo_0009216||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||SW48 cell
+clo_0007651||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||MDTC RP 19 cell
+clo_0018000||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND06949 cell
+clo_0000006||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ATCC
+clo_0027933||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM20173 cell
+go_0048518|"[""GO:0043119""]"|clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl|"[""positive regulation of physiological process"", ""up regulation of biological process"", ""up-regulation of biological process"", ""upregulation of biological process""]"|positive regulation of biological process
+clo_0028652||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||ND06023 cell
+clo_0025583||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM04950 cell
+clo_0011749||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||AG20369 cell
+clo_0010393||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA01972 cell
+clo_0015302||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||DA02720 cell
+clo_0015690||clo|Cell Line Ontology|http://purl.obolibrary.org/obo/clo.owl||GM18067 cell

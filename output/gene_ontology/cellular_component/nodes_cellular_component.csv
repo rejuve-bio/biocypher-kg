@@ -1,0 +1,101 @@
+id|alternative_ids|label|source|source_url|synonyms|term_name
+go_0071153||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||G-protein alpha(o)-synembrin complex
+go_0097255||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||R2TP complex
+go_1990907||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""beta-catenin/T-cell factor complex"", ""beta-catenin/lymphoid enhancer binding factor complex""]"|beta-catenin-TCF complex
+go_1990005||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||granular vesicle
+go_0005633||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""ascus lipid particle""]"|ascus lipid droplet
+go_0160130||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mRNA cap methyltransferase RNMT:RAMAC complex
+go_0036157||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""outer dynein arm complex""]"|outer dynein arm
+go_0062136||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""LDL receptor complex"", ""LDLR complex"", ""low-density lipoprotein particle receptor complex""]"|low-density lipoprotein receptor complex
+go_0098584||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||host cell synaptic vesicle
+go_0098540||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""internal side of trans-Golgi network transport vesicle membrane""]"|lumenal side of trans-Golgi network transport vesicle membrane
+go_0035796||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""ATP-binding cassette (ABC) transporter complex, ECF-type"", ""energy coupling factor (ECF)-type ABC transporter"", ""energy-coupling factor transporter""]"|ATP-binding cassette (ABC) transporter complex, transmembrane substrate-binding subunit-containing
+go_0009288||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""flagellin-based flagellum""]"|bacterial-type flagellum
+go_0120135||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""distal part of axoneme""]"|distal portion of axoneme
+go_0031256||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||leading edge membrane
+go_0034704||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||calcium channel complex
+go_0045323||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""IL-1 receptor complex""]"|interleukin-1 receptor complex
+go_0120327||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||telopode
+go_0030315||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""triad"", ""transverse tubule""]"|T-tubule
+go_0009360||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""DNA polymerase III holoenzyme complex""]"|DNA polymerase III complex
+go_0072492||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||host cell mitochondrial intermembrane space
+go_0097511||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||dendritic cell dendrite
+go_0097362||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||MCM8-MCM9 complex
+go_1902674||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""cilial basal body of right posteriolateral cilium"", ""cilial basal body of right posteriolateral flagellum"", ""cilial basal body of right posterolateral cilium"", ""cilial basal body of right posterolateral flagellum"", ""ciliary basal body of right posteriolateral cilium"", ""ciliary basal body of right posteriolateral flagellum"", ""ciliary basal body of right posterolateral cilium"", ""ciliary basal body of right posterolateral flagellum"", ""cilium basal body of right posteriolateral cilium"", ""cilium basal body of right posteriolateral flagellum"", ""cilium basal body of right posterolateral cilium"", ""cilium basal body of right posterolateral flagellum"", ""microtubule basal body of right posteriolateral cilium"", ""microtubule basal body of right posteriolateral flagellum"", ""microtubule basal body of right posterolateral cilium"", ""microtubule basal body of right posterolateral flagellum"", ""right posteriolateral flagellum ciliary basal body""]"|right posteriolateral basal body
+go_0098577||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""inactivated sex chromosome""]"|inactive sex chromosome
+go_0043665||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||host peribacteroid fluid
+go_0062167||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""C1q"", ""Complement 1q""]"|complement component C1q complex
+go_0036062||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""periactive zone"", ""pre-synaptic periactive zone""]"|presynaptic periactive zone
+go_0085026||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""TVM network"", ""TVN""]"|tubovesicular membrane network
+go_0005937||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mating projection
+go_0005828||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""pole-to-kinetochore microtubule""]"|kinetochore microtubule
+go_0002141||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||stereocilia ankle link
+go_1990879||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||CST complex
+go_0070319||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Golgi to plasma membrane constitutive secretory pathway transport vesicle"", ""Golgi-plasma membrane transport vesicle""]"|Golgi to plasma membrane transport vesicle
+go_0035579||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""secondary granule membrane""]"|specific granule membrane
+go_0005581||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||collagen trimer
+go_0016471||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""vacuolar hydrogen-translocating V-type ATPase complex""]"|vacuolar proton-transporting V-type ATPase complex
+go_0016460||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""conventional myosin""]"|myosin II complex
+go_0030892|"[""GO:0034990""]"|cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nuclear mitotic cohesin complex""]"|mitotic cohesin complex
+go_0016606||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""LANDs""]"|LYSP100-associated nuclear domain
+go_0005582||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||collagen type XV trimer
+go_1905540||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""IL-7 receptor complex"", ""IL-7-receptor complex"", ""IL7 receptor complex"", ""IL7-receptor complex""]"|interleukin-7 receptor complex
+go_1990378||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""USF complex""]"|upstream stimulatory factor complex
+go_1905348||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||endonuclease complex
+go_0098551||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""internal leaflet of late endosome membrane"", ""internal side of late endosome membrane""]"|lumenal side of late endosome membrane
+go_0071685||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||NADH dehydrogenase complex (plastoquinone)
+go_0000325||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""vacuole, cell cycle-independent morphology""]"|plant-type vacuole
+go_1902912||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||pyruvate kinase complex
+go_0001527||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""fibrillin"", ""extended fibrils""]"|microfibril
+go_1990934||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""NLB"", ""compact nucleolus""]"|nucleolus-like body
+go_0098845||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||postsynaptic endosome
+go_0070939||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Dsl1p complex"", ""NZR complex""]"|Dsl1/NZR complex
+go_1903269||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||ornithine carbamoyltransferase inhibitor complex
+go_0031248||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||protein acetyltransferase complex
+go_0070116||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Paulinella-type chromatophore thylakoid""]"|organellar chromatophore thylakoid
+go_0044201||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||host cell nuclear inner membrane
+go_0044317||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""rod cell spherule"", ""rod photoreceptor spherule""]"|rod spherule
+go_0031931||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""TOR complex 1"", ""TORC 1 complex"", ""TORC1"", ""nutrient sensitive complex"", ""rapamycin and nutrient-sensitive TOR complex""]"|TORC1 complex
+go_0031908||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||glyoxysomal lumen
+go_0120340||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||radial spoke base 1
+go_0044393||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||microspike
+go_0106234||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||outer membrane protein complex
+go_0098061||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""internal head protein""]"|viral capsid, internal space
+go_0140602||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""NuRs""]"|nucleolar peripheral inclusion body
+go_0046858||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||chlorosome
+go_0005882||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""intermediate filament associated protein"", ""type I intermediate filament associated protein"", ""type II intermediate filament associated protein""]"|intermediate filament
+go_0071075||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||CUGBP1-eIF2 complex
+go_0042627||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||chylomicron
+go_0097658||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Asi complex
+go_0034592||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||synaptic vesicle lumen
+go_0030690||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Noc1p-Noc2p complex
+go_1990341||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||thrombospondin complex
+go_0071100||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alphaV-beta8 integrin-MMP14-TGFbeta-1 complex
+go_0120120||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""kinetoplastid flagellar hook complex""]"|bilobe structure
+go_0120107||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||bacterial-type flagellum rotor complex
+go_0033573||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""high affinity iron permease complex""]"|high-affinity iron permease complex
+go_0098595||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||perivitelline space
+go_0005895||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""IL-5 receptor complex""]"|interleukin-5 receptor complex
+go_0097613||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""episome"", ""epitheca""]"|dinoflagellate epicone
+go_0036436||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Isw1a complex
+go_0019035||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""pre-integration complex""]"|viral integration complex
+go_0005722||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||beta-heterochromatin
+go_0016938||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||kinesin I complex
+go_0035230||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""membrane nanotube""]"|cytoneme
+go_1990040||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""sub-surface cisternae""]"|sub-surface cisterna
+go_0019867||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||outer membrane
+go_0042824||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""PLC"", ""peptide-loading complex""]"|MHC class I peptide loading complex
+go_0071095||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alpha3-beta1 integrin-thrombospondin complex
+go_0043202||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||lysosomal lumen
+go_0097456||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""terminal loop of Schwann cell""]"|terminal loop
+go_0070824||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Snf2/HDAC containing repressor complex"", ""Snf2/Hdac repressive complex""]"|SHREC complex
+go_0070522||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Rad1-Rad10 complex"", ""XPF-ERCC1 complex""]"|ERCC4-ERCC1 complex
+go_0070693||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||P-TEFb-cap methyltransferase complex
+go_0044305||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||calyx of Held
+go_0015627||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Sec-dependent secretion system-associated complex"", ""general secretion pathway-associated complex"", ""MTB"", ""T2SS-associated complexes"", ""main terminal branch""]"|type II protein secretion system complex
+go_0005796||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Golgi apparatus lumen""]"|Golgi lumen
+go_0009547||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||plastid ribosome
+go_0070701||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""mucous"", ""mucous layer"", ""mucus""]"|mucus layer
+go_0005890||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""sodium/potassium-exchanging ATPase complex""]"|sodium:potassium-exchanging ATPase complex
+go_0060388||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""fertilization membrane""]"|vitelline envelope
+go_0070437||cellular_component|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Grb2-Shc complex

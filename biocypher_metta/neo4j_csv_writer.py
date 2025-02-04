@@ -1,8 +1,9 @@
-from collections import Counter, defaultdict
 import json
 import csv
+import gc
+from collections import Counter, defaultdict
+from pathlib import Path
 from biocypher._logger import logger
-import networkx as nx
 import rdflib
 
 from biocypher_metta import BaseWriter
@@ -12,157 +13,88 @@ class Neo4jCSVWriter(BaseWriter):
         super().__init__(schema_config, biocypher_config, output_dir)
         self.csv_delimiter = '|'
         self.array_delimiter = ';'
-
-        self.create_edge_types()
-
-        self.excluded_properties = []
-        self.translation_table = str.maketrans({self.csv_delimiter: '', 
-                                                self.array_delimiter: ' ', 
-                                                "'": "",
-                                                '"': ""})
-        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon'])
+        self.translation_table = str.maketrans({'|': '', ';': ' ', "'": "", '"': ""})
+        self.ontologies = {'go', 'bto', 'efo', 'cl', 'clo', 'uberon'}
+        self.edge_node_types = self.create_edge_types()
 
     def create_edge_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
-        self.edge_node_types = {}
-
+        edge_types = {}
         for k, v in schema.items():
             if v["represented_as"] == "edge":
-                edge_type = self.convert_input_labels(k)
-                source_type = v.get("source", None)
-                target_type = v.get("target", None)
+                label = self.convert_input_labels(k).lower()
+                source_type = self.convert_input_labels(v.get("source", '')).lower()
+                target_type = self.convert_input_labels(v.get("target", '')).lower()
+                output_label = v.get("output_label", '').lower() if v.get("output_label") else None
+                edge_types[label] = {
+                    "source": source_type,
+                    "target": target_type,
+                    "output_label": output_label,
+                }
+        return edge_types
 
-                if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
-                        label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
-                    output_label = v.get("output_label", None)
-
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
-                        "output_label": (
-                            output_label.lower() if output_label is not None else None
-                        ),
-                    }
-    
     def preprocess_value(self, value):
-        value_type = type(value)
-        
-        if value_type is list:
+        if isinstance(value, list):
             return json.dumps([self.preprocess_value(item) for item in value])
-        
-        if value_type is rdflib.term.Literal:
+        if isinstance(value, (rdflib.term.Literal, str)):
             return str(value).translate(self.translation_table)
-        
-        if value_type is str:
-            return value.translate(self.translation_table)
-        
         return value
-    
-    def convert_input_labels(self, label):
-        """Convert input labels to a standard format."""
-        return label.lower().replace(" ", "_")
 
     def preprocess_id(self, prev_id):
-        replace_map = str.maketrans({' ': '_', ':':'_'})
-        id = prev_id.lower().strip().translate(replace_map)
-        return id
-    
-    def write_chunk(self, chunk, headers, file_path, csv_delimiter, preprocess_value):
-        with open(file_path, 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=csv_delimiter)
-            for row in chunk:
-                processed_row = [preprocess_value(row.get(header, '')) for header in headers]
-                writer.writerow(processed_row)
-            csvfile.flush()
+        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
 
-    def write_to_csv(self, data, file_path, chunk_size=1000):
-        headers = set()
-        for entry in data:
-            headers.update(entry.keys())
-    
-        headers = sorted(list(headers))  
-        if 'id' in headers:
-            headers.remove('id')
-            headers = ['id'] + headers 
-    
+    def write_chunk(self, chunk, headers, file_path):
+        with open(file_path, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=self.csv_delimiter)
+            writer.writerows([self.preprocess_value(row.get(header, '')) for header in headers] for row in chunk)
+
+    def write_to_csv(self, data_generator, file_path, headers, chunk_size=1000):
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=self.csv_delimiter)
             writer.writerow(headers)
-            csvfile.flush() 
-    
-        for i in range(0, len(data), chunk_size):
-            chunk = data[i:i+chunk_size]
-            self.write_chunk(chunk, headers, file_path, self.csv_delimiter, self.preprocess_value)
+
+        for chunk in self.chunk_generator(data_generator, chunk_size):
+            self.write_chunk(chunk, headers, file_path)
+            gc.collect()
+
+    @staticmethod
+    def chunk_generator(data, chunk_size):
+        chunk = []
+        for item in data:
+            chunk.append(item)
+            if len(chunk) == chunk_size:
+                yield chunk
+                chunk = []
+        if chunk:
+            yield chunk
 
     def write_nodes(self, nodes, path_prefix=None, adapter_name=None):
-        if path_prefix:
-            output_dir = self.output_path / path_prefix
-        elif adapter_name:
-            output_dir = self.output_path / adapter_name
-        else:
-            output_dir = self.output_path
-
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        node_groups = {}
+        output_dir = self.get_output_dir(path_prefix, adapter_name)
+        node_groups = defaultdict(list)
         node_freq = Counter()
         node_props = defaultdict(set)
-        for node in nodes:
-            id, label, properties = node
-            if "." in label:
-                label = label.split(".")[1]
-            label = label.lower()
-            node_freq[label] += 1
-            node_props[label] = node_props[label].union(properties.keys())
-                 
-            if label not in node_groups:
-                node_groups[label] = []
-            id = self.preprocess_id(id)
-            node_groups[label].append({'id': id, 'label': label, **properties})
 
-        # Write node data to CSV and generate Cypher queries
+        for node in nodes:
+            node_id, label, properties = node
+            label = label.split(".")[-1].lower()
+            node_id = self.preprocess_id(node_id)
+            node_freq[label] += 1
+            node_props[label].update(properties.keys())
+            node_groups[label].append({'id': node_id, 'label': label, **properties})
+
         for label, node_data in node_groups.items():
             csv_file_path = output_dir / f"nodes_{label}.csv"
             cypher_file_path = output_dir / f"nodes_{label}.cypher"
-            self.write_to_csv(node_data, csv_file_path)
+            headers = ['id'] + sorted(set().union(*(d.keys() for d in node_data)) - {'id'})
 
-            absolute_path = csv_file_path.resolve().as_posix()
-            additional_label = ":ontology_term" if label in self.ontologies else ""
-            with open(cypher_file_path, 'w') as f:
-                cypher_query = f"""
-CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
+            self.write_to_csv(iter(node_data), csv_file_path, headers)
+            self.generate_cypher_query(label, csv_file_path, cypher_file_path, edge=False)
 
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MERGE (n:{label}{additional_label} {{id: row.id}})
-    SET n += apoc.map.removeKeys(row, ['id'])",
-    {{batchSize:1000, parallel:true, concurrency:4}}
-)
-YIELD batches, total
-RETURN batches, total;
-                """
-                f.write(cypher_query)
-
-        logger.info(f"Finished writing out all node import queries for: {output_dir}")
+        logger.info(f"Finished writing nodes to: {output_dir}")
         return node_freq, node_props
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
-        if path_prefix:
-            output_dir = self.output_path / path_prefix
-        elif adapter_name:
-            output_dir = self.output_path / adapter_name
-        else:
-            output_dir = self.output_path
-
-        output_dir.mkdir(parents=True, exist_ok=True)
-
+        output_dir = self.get_output_dir(path_prefix, adapter_name)
         edge_groups = defaultdict(list)
         edges_freq = Counter()
 
@@ -170,18 +102,11 @@ RETURN batches, total;
             source_id, target_id, label, properties = edge
             label = label.lower()
             edges_freq[label] += 1
-
             source_type = self.edge_node_types[label]["source"]
             target_type = self.edge_node_types[label]["target"]
-            if source_type == "ontology_term":
-                source_type = self.preprocess_id(source_id).split('_')[0]
-            if target_type == "ontology_term":
-                target_type = self.preprocess_id(target_id).split('_')[0]
-
             output_label = self.edge_node_types[label]["output_label"] or label
 
-            key = (label, source_type, target_type)
-            edge_groups[key].append({
+            edge_groups[(label, source_type, target_type)].append({
                 'source_type': source_type,
                 'source_id': self.preprocess_id(source_id),
                 'target_type': target_type,
@@ -194,25 +119,45 @@ RETURN batches, total;
             file_suffix = f"{label}_{source_type}_{target_type}".lower()
             csv_file_path = output_dir / f"edges_{file_suffix}.csv"
             cypher_file_path = output_dir / f"edges_{file_suffix}.cypher"
+            headers = sorted(set().union(*(d.keys() for d in edge_data)))
+            self.write_to_csv(iter(edge_data), csv_file_path, headers)
+            self.generate_cypher_query(label, csv_file_path, cypher_file_path, edge=True)
 
-            self.write_to_csv(edge_data, csv_file_path)
-
-            absolute_path = csv_file_path.resolve().as_posix()
-            with open(cypher_file_path, 'w') as f:
-                cypher_query = f"""
-    CALL apoc.periodic.iterate(
-        "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-        "MATCH (source:{source_type} {{id: row.source_id}})
-        MATCH (target:{target_type} {{id: row.target_id}})
-        MERGE (source)-[r:{label}]->(target)
-        SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
-        {{batchSize:1000}}
-    )
-    YIELD batches, total
-    RETURN batches, total;
-            """
-                f.write(cypher_query)
-
-        logger.info(f"Finished writing out all edge import queries for: {output_dir}")
+        logger.info(f"Finished writing edges to: {output_dir}")
         return edges_freq
-    
+
+    def generate_cypher_query(self, label, csv_file_path, cypher_file_path, edge=False):
+        absolute_path = csv_file_path.resolve().as_posix()
+        with open(cypher_file_path, 'w') as f:
+            if edge:
+                cypher_query = f"""
+CALL apoc.periodic.iterate(
+    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "MATCH (source:{self.edge_node_types[label]['source']} {{id: row.source_id}})
+     MATCH (target:{self.edge_node_types[label]['target']} {{id: row.target_id}})
+     MERGE (source)-[r:{label}]->(target)
+     SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
+    {{batchSize:1000}}
+)
+YIELD batches, total
+RETURN batches, total;
+                """
+            else:
+                cypher_query = f"""
+CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
+
+CALL apoc.periodic.iterate(
+    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "MERGE (n:{label} {{id: row.id}})
+     SET n += apoc.map.removeKeys(row, ['id'])",
+    {{batchSize:1000, parallel:true, concurrency:4}}
+)
+YIELD batches, total
+RETURN batches, total;
+                """
+            f.write(cypher_query)
+
+    def get_output_dir(self, path_prefix, adapter_name):
+        output_dir = self.output_path / (path_prefix or adapter_name or '')
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir

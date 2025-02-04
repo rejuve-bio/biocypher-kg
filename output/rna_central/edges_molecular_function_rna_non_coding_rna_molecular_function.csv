@@ -1,0 +1,3 @@
+label|rfam|source|source_id|source_type|source_url|target_id|target_type
+enables|Rfam:RF00005|RNAcentral|urs0000001346|non_coding_rna|https://rnacentral.org/downloads|go_0030533|molecular_function
+enables|Rfam:RF00026|RNAcentral|urs00000019bc|non_coding_rna|https://rnacentral.org/downloads|go_0030621|molecular_function

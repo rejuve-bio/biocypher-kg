@@ -1,0 +1,102 @@
+id|alternative_ids|label|source|source_url|synonyms|term_name
+pr_p16070||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""CD44"", ""LHR"", ""MDU2"", ""MDU3"", ""MIC4"", ""CDw44 (human)"", ""ECMR-III (human)"", ""GP90 lymphocyte homing/adhesion receptor (human)"", ""HUTCH-I (human)"", ""PGP-1 (human)"", ""epican (human)"", ""extracellular matrix receptor III (human)"", ""hCD44"", ""heparan sulfate proteoglycan (human)"", ""hermes antigen (human)"", ""hyaluronate receptor (human)"", ""phagocytic glycoprotein 1 (human)"", ""phagocytic glycoprotein I (human)""]"|CD44 antigen (human)
+chebi_16761|"[""CHEBI:13222"", ""CHEBI:22244"", ""CHEBI:2342"", ""CHEBI:40553""]"|uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""5-adenylphosphoric acid"", ""ADENOSINE-5-DIPHOSPHATE"", ""Adenosine 5-diphosphate"", ""H3adp"", ""ADP"", ""adenosine 5-(trihydrogen diphosphate)""]"|ADP
+uberon_0006631||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""heart right atrial appendage"", ""right atrial appendage"", ""right atrium appendage"", ""right auricular appendage"", ""auricula dextra"", ""right auricle"", ""right auricula"", ""right auriculur appendix""]"|right atrium auricular region
+uberon_0001859||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""external semicircular duct""]"|lateral semicircular duct
+ncbitaxon_37572||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""butterflies"", ""butterflies""]"|Papilionoidea
+uberon_2001525||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||hypobranchial 2 cartilage
+uberon_8480035||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||cervical transformation zone epithelium
+uberon_3000523||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||pterygoid process of palatoquadrate
+ro_0002488||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||existence starts during
+go_0021532||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||neural tube patterning
+go_0022008||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""neural cell differentiation"", ""nervous system cell generation""]"|neurogenesis
+uberon_0005426||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""immature lens"", ""lens mass"", ""presumptive lens""]"|lens vesicle
+uberon_0011946||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||subluminal layer of epithelium
+uberon_2000508||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""pelvic actinost"", ""pelvic radial""]"|pelvic fin radial bone
+uberon_3010166||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||fringe on postaxial edge of toe V
+uberon_4200129||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||synarcual region
+uberon_0009611||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||midbrain neural plate
+uberon_0026246||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""sacral spinal cord white matter""]"|sacral spinal cord white matter
+go_1900126||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""down regulation of hyaluronan anabolism"", ""down regulation of hyaluronan biosynthesis"", ""down regulation of hyaluronan biosynthetic process"", ""down regulation of hyaluronan formation"", ""down regulation of hyaluronan synthesis"", ""down-regulation of hyaluronan anabolism"", ""down-regulation of hyaluronan biosynthesis"", ""down-regulation of hyaluronan biosynthetic process"", ""down-regulation of hyaluronan formation"", ""down-regulation of hyaluronan synthesis"", ""downregulation of hyaluronan anabolism"", ""downregulation of hyaluronan biosynthesis"", ""downregulation of hyaluronan biosynthetic process"", ""downregulation of hyaluronan formation"", ""downregulation of hyaluronan synthesis"", ""inhibition of hyaluronan anabolism"", ""inhibition of hyaluronan biosynthesis"", ""inhibition of hyaluronan formation"", ""inhibition of hyaluronan synthesis"", ""negative regulation of hyaluronan anabolism"", ""negative regulation of hyaluronan biosynthesis"", ""negative regulation of hyaluronan formation"", ""negative regulation of hyaluronan synthesis""]"|negative regulation of hyaluronan biosynthetic process
+uberon_4200032||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||clavicle blade
+uberon_0009739||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||border of sublaminar layers S3 and S4
+go_0048518|"[""GO:0043119""]"|uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""positive regulation of physiological process"", ""up regulation of biological process"", ""up-regulation of biological process"", ""upregulation of biological process""]"|positive regulation of biological process
+uberon_0020550||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||auricular blood vessel
+go_0008354||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""primordial germ cell migration"", ""germ-cell migration""]"|germ cell migration
+uberon_0010910||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||opisthotic
+uberon_0001430||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""carpal 1"", ""greater multangular"", ""greater multiangular"", ""hand distal carpal bone 1"", ""manus distal carpal bone 1"", ""distal carpal 1"", ""greater multangular bone"", ""os trapezium"", ""trapezial bone"", ""trapezium"", ""trapezium bone""]"|distal carpal bone 1
+go_0055075||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||potassium ion homeostasis
+uberon_0006872||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||handplate apical ectodermal ridge
+uberon_0001840||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""canalis semicircularis"", ""ductus semicirculares"", ""scc"", ""semicircular ducts"", ""semicircular canals""]"|semicircular canal
+go_0033993||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||response to lipid
+cl_0000239||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||brush border epithelial cell
+uberon_2005020||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""CtA""]"|central artery
+cl_0008034||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||mural cell
+uberon_3010163||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||metacarpal fold
+go_0140820||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||cytosol to Golgi apparatus transport
+go_0060483||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||lobar bronchus mesenchyme development
+uberon_0034866||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""CA2Uso""]"|stratum oriens of uncal CA2
+go_0051622||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""down regulation of norepinephrine uptake"", ""down-regulation of norepinephrine uptake"", ""downregulation of norepinephrine uptake"", ""negative regulation of levarterenol uptake"", ""negative regulation of noradrenaline uptake"", ""negative regulation of norepinephrine import""]"|negative regulation of norepinephrine uptake
+go_0030219||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""megakaryocyte cell differentiation""]"|megakaryocyte differentiation
+core.added_for_hca||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||
+uberon_0016853||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""interdigital sinus""]"|interdigital gland
+uberon_0002740||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""gyrus cinguli posterior"", ""gyrus limbicus posterior"", ""posterior cingulate""]"|posterior cingulate gyrus
+uberon_4200209||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||postaxial process of the ulnare
+uberon_0010311||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""scleral sesamoid"", ""scleral sesamoid element"", ""sesamoideum esclerae""]"|scleral sesamoid bone
+uberon_0006280||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""polar trophoblast""]"|polar trophectoderm
+uberon_0012482||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""cloaca submucosa"", ""cloacal submucosa""]"|submucosa of cloaca
+go_1903295||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""down regulation of glutamate secretion, neurotransmission"", ""down-regulation of glutamate secretion, neurotransmission"", ""downregulation of glutamate secretion, neurotransmission""]"|negative regulation of glutamate secretion, neurotransmission
+go_0048541||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""GALT development"", ""gut-associated lymphoid tissue development""]"|Peyers patch development
+uberon_0007712||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""fourth thoracic dorsal root ganglion""]"|fourth thoracic spinal ganglion
+go_0099642||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||retrograde axonal protein transport
+cl_0002169||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||basal cell of olfactory epithelium
+uberon_0002304||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""dentate gyrus cell layer"", ""dentate gyrus layer""]"|layer of dentate gyrus
+uberon_0011769||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""cartilage process"", ""cartilaginous process""]"|cartilaginous projection
+go_0008504|"[""GO:0015201""]"|uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||monoamine transmembrane transporter activity
+go_0009952||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""anterior/posterior pattern formation""]"|anterior/posterior pattern specification
+go_0010719||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||negative regulation of epithelial to mesenchymal transition
+cl_0000385||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||prohemocyte (sensu Nematoda and Protostomia)
+go_0061062||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||regulation of nematode larval development
+go_0061231||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||mesonephric glomerulus vasculature development
+bfo_0000019||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||quality
+go_0070121||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""KV development""]"|Kupffers vesicle development
+uberon_0009719||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""siphon""]"|tunicate siphon
+uberon_8490043||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""ADA tooth I"", ""FDI tooth 64"", ""left upper first primary molar tooth""]"|left upper first primary molar tooth
+go_0021658||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||rhombomere 3 morphogenesis
+uberon_0007351||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""nucleus isthmoopticus""]"|nucleus isthmo-opticus
+go_1903728||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""lutein cell differentiation""]"|luteal cell differentiation
+cl_2000008||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||microvascular endothelial cell
+pr_000018381||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""CD48/ClvPrd""]"|CD48 molecule proteolytic cleavage product
+go_0035261||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||external genitalia morphogenesis
+uberon_0017692||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""basis cranii interna""]"|internal surface of cranial base
+go_0031256||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||leading edge membrane
+uberon_2000735||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""haemal postzygapophysis"", ""hemal postygopophysis"", ""hemal postzygapophyses""]"|hemal postzygapophysis
+chebi_15379|"[""CHEBI:10745"", ""CHEBI:13416"", ""CHEBI:23833"", ""CHEBI:25366"", ""CHEBI:30491"", ""CHEBI:44742"", ""CHEBI:7860""]"|uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""Disauerstoff"", ""E 948"", ""E-948"", ""E948"", ""O2"", ""OXYGEN MOLECULE"", ""Oxygen"", ""[OO]"", ""dioxygene"", ""molecular oxygen"", ""dioxygen""]"|dioxygen
+go_0030720||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""oocyte localization during germarium-derived egg chamber formation"", ""oocyte localization during oogenesis"", ""establishment and maintenance of oocyte localization in egg chamber"", ""establishment and maintenance of oocyte position during oogenesis"", ""oocyte localisation involved in germarium-derived egg chamber formation"", ""oogenesis, establishment and maintenance of oocyte localization"", ""oogenesis, oocyte localization""]"|oocyte localization involved in germarium-derived egg chamber formation
+uberon_0001214||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""pancreatic vein""]"|pancreatic tributary of splenic vein
+uberon_0013141||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""microcirculatory bed""]"|capillary bed
+uberon_8410061||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""smooth muscle longitudinal layer of colon""]"|colon smooth muscle longitudinal layer
+uberon_0011698||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||midgut loop
+go_0070857||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""regulation of bile acid anabolism"", ""regulation of bile acid biosynthesis"", ""regulation of bile acid formation"", ""regulation of bile acid synthesis""]"|regulation of bile acid biosynthetic process
+urn_swrl_var.y||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||
+pato_0001397||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||cellular potency
+uberon_0005001||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""common hepatic duct mucosa"", ""common hepatic duct mucosa of organ"", ""common hepatic duct mucous membrane"", ""common hepatic duct organ mucosa"", ""common hepatic ductal mucosa"", ""hepatic duct mucosa"", ""hepatic duct mucosa of organ"", ""hepatic duct mucous membrane"", ""hepatic duct organ mucosa"", ""mucosa of hepatic duct"", ""mucosa of organ of common hepatic duct"", ""mucosa of organ of hepatic duct"", ""mucous membrane of common hepatic duct"", ""mucous membrane of hepatic duct"", ""organ mucosa of common hepatic duct"", ""organ mucosa of hepatic duct""]"|mucosa of common hepatic duct
+go_0006998||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""nuclear envelope organization and biogenesis"", ""nuclear envelope organisation""]"|nuclear envelope organization
+uberon_0035772||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||aortic plexus
+go_1903046||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||meiotic cell cycle process
+go_0021702||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||cerebellar Purkinje cell differentiation
+ncbitaxon_7878||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""Choanichthyes"", ""Dipneusti"", ""Dipnoi"", ""Osteichthyes"", ""lungfishes"", ""dipnoans"", ""fish"", ""fishes"", ""lungfishes""]"|Dipnomorpha
+uberon_3000922||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||prehallux skeleton
+go_0046365||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""monosaccharide breakdown"", ""monosaccharide catabolism"", ""monosaccharide degradation""]"|monosaccharide catabolic process
+589||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||
+uberon_0004798||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""apparatus respiratorius basal lamina"", ""apparatus respiratorius basal lamina of connective tissue"", ""basal lamina of apparatus respiratorius"", ""basal lamina of connective tissue of apparatus respiratorius"", ""basal lamina of connective tissue of respiratory system"", ""basal lamina of respiratory system"", ""respiratory system basal lamina of connective tissue""]"|respiratory system basal lamina
+uberon_0010579||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""fore limb digit 5 phalanx pre-cartilage condensation"", ""manual digit V phalanx pre-cartilage condensation""]"|manual digit 5 phalanx pre-cartilage condensation
+uberon_3000180||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||foramen acusticum anterius
+uberon_8490032||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""ADA tooth 10"", ""FDI tooth 22"", ""left upper lateral secondary incisor tooth""]"|left upper lateral secondary incisor tooth
+go_0072183||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||negative regulation of nephron tubule epithelial cell differentiation
+uberon_0027513||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""posterior superior frontal sulcus""]"|posterior superior frontal sulcus
+uberon_0007232||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""2-cell stage"", ""two-cell stage""]"|2 cell stage
+mellybelly||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||
+uberon_0022277||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""right colic flexure"", ""flexura coli heaptica"", ""hepatic flexure"", ""hepatic flexure of colon"", ""right colic flexure""]"|hepatic flexure of colon
+go_0097511||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl||dendritic cell dendrite
+go_1905954||uberon|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""positive regulation of lipid localisation"", ""up regulation of lipid localisation"", ""up regulation of lipid localization"", ""up-regulation of lipid localisation"", ""up-regulation of lipid localization"", ""upregulation of lipid localisation"", ""upregulation of lipid localization""]"|positive regulation of lipid localization

@@ -1,0 +1,5 @@
+label|rfam|source|source_id|source_type|source_url|target_id|target_type
+participates_in|Rfam:RF00951|RNAcentral|urs000000192a|non_coding_rna|https://rnacentral.org/downloads|go_0035195|biological_process
+participates_in|Rfam:RF00026|RNAcentral|urs00000019bc|non_coding_rna|https://rnacentral.org/downloads|go_0000244|biological_process
+participates_in|Rfam:RF00026|RNAcentral|urs00000019bc|non_coding_rna|https://rnacentral.org/downloads|go_0000353|biological_process
+participates_in|Rfam:RF00027|RNAcentral|urs0000001a7a|non_coding_rna|https://rnacentral.org/downloads|go_0035195|biological_process
