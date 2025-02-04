@@ -275,6 +275,18 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
+# coexpression:
+#   adapter:
+#     module: biocypher_metta.adapters.coxpresdb_adapter
+#     cls: CoxpresdbAdapter
+#     args:
+#       filepath: ./samples/coxpressdb
+#       ensemble_to_entrez_path: ./aux_files/entrez_to_ensembl.pkl
+
+#   outdir: coxpressdb
+#   nodes: False
+#   edges: True
+
 
 coexpression:
   adapter:
