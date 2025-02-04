@@ -281,14 +281,12 @@ coexpression:
     module: biocypher_metta.adapters.coxpresdb_adapter
     cls: CoxpresdbAdapter
     args:
-      filepath: ./samples/coxpressdb
+      filepath: /mnt/hdd_2/abdu/biocypher_data/coxpressdb
       ensemble_to_entrez_path: ./aux_files/entrez_to_ensembl.pkl
 
   outdir: coxpressdb
   nodes: False
   edges: True
-
-
 
 tflink:
   adapter:
@@ -561,42 +559,43 @@ rna_central_non_coding_rna:
   outdir: rna_central
   nodes: True
   edges: False
-
+##link 1
 rna_central_non_coding_rna_biological_process:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
 
   outdir: rna_central
   nodes: False
   edges: True  
-
+##link2
 rna_central_non_coding_rna_molecular_function:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
+
       type: molecular function rna
       label: molecular_function_rna
 
   outdir: rna_central
   nodes: False
   edges: True  
-
+##link3
 rna_central_non_coding_rna_cellular_component:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
 
@@ -870,7 +869,7 @@ fabian_tf_snp:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/fabian/fabian_1719229097_34244_data.tsv
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
-      dbsnp_pos_map: None # will be provided by import script
+      dbsnp_pos_map: None 
       label: tfbs_snp
   outdir: fabian
   nodes: False
