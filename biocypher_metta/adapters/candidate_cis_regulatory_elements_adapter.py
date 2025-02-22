@@ -5,7 +5,7 @@ class EncodecCREAdapter(Adapter):
     def __init__(self, filepath, write_properties=True, add_provenance=True, label='regulatory_element'):
         self.filepath = filepath
         self.label = label
-        self.source = "ENCODEcCRE"
+        self.source = "ENCODE cCRE"
         self.source_url = "https://screen.wenglab.org/downloads"
 
         super(EncodecCREAdapter, self).__init__(write_properties, add_provenance)
