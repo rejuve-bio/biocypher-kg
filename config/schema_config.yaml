@@ -193,6 +193,21 @@ sequence variant:
     raw_cadd_score: float
     phred_score: float
 
+polyphen2 variant:
+  represented_as: node
+  is_a: genomic variant
+  inherit_properties: true
+  input_label: polyphen2_variant
+  description: >-
+    A variant with PolyPhen-2 predictions for the impact of amino acid substitutions on protein structure and function
+  properties:
+    ref: str
+    alt: str
+    polyphen2_humdiv_score: float
+    polyphen2_humdiv_prediction: str
+    polyphen2_humvar_score: float
+    polyphen2_humvar_prediction: str
+
 # ---
 # non-coding elements
 enhancer:

@@ -1,0 +1,12 @@
+name: Fabian
+description: TF binding site disruption by variants
+website: https://www.genecascade.org/fabian/
+relationships:
+  tfbs_snp:
+    url: https://www.genecascade.org/fabian/
+    description: Impact of variants on TF binding sites
+    source: gene
+    target: snp
+    properties:
+      effect: str
+      score: float

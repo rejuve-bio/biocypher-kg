@@ -1,0 +1,12 @@
+name: Bgee
+description: Gene expression across species
+website: https://www.bgee.org/
+relationships:
+  expressed_in:
+    url: https://www.bgee.org/download/gene-expression-calls?id=9606
+    description: Expression of genes in different tissues/conditions
+    source: gene
+    target: ontology_term
+    properties:
+      score: float
+      p_value: float

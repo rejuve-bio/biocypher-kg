@@ -1,0 +1,24 @@
+name: UniProt
+description: Universal Protein Resource
+website: https://www.uniprot.org/
+nodes:
+  protein:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: A protein product
+    properties:
+      accessions: str[]
+      protein_name: str
+      synonyms: str[]
+
+relationships:
+  translates_to:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: Relationship between a transcript and its protein product
+    source: transcript
+    target: protein
+  
+  translation_of:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: Relationship between a protein and its transcript
+    source: protein
+    target: transcript

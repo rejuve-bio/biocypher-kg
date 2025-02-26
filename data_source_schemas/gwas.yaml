@@ -1,0 +1,12 @@
+name: GWAS
+description: GWAS Catalog
+website: https://www.ebi.ac.uk/gwas/
+relationships:
+  snp_upstream_gene:
+    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
+    description: Upstream gene associations with variants
+    source: snp
+    target: gene
+    properties:
+      distance: int
+      p_value: float

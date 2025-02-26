@@ -1,0 +1,29 @@
+name: Reactome
+description: A curated database of biological pathways
+website: https://reactome.org/
+nodes:
+  pathway:
+    url: https://reactome.org
+    description: A biological process or pathway
+    properties:
+      pathway_name: str
+      evidence: str
+
+relationships:
+  genes_pathways:
+    url: https://reactome.org
+    description: An interaction between a gene and a biological process or pathway
+    source: gene
+    target: pathway
+  
+  parent_pathway_of:
+    url: https://reactome.org
+    description: Hierarchical relationship between pathways
+    source: pathway
+    target: pathway
+  
+  child_pathway_of:
+    url: https://reactome.org
+    description: Hierarchical relationship between pathways
+    source: pathway
+    target: pathway
