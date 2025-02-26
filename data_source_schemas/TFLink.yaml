@@ -1,0 +1,14 @@
+name: TFLink
+description: Transcription Factor Links
+website: http://tflink.net/
+relationships:
+  tf_gene:
+    url: http://tflink.net/
+    description: Transcription factor to target gene relationships
+    source: gene
+    target: gene
+    properties:
+      evidence: str[]
+      detection_method: str
+      databases: str[]
+      evidence_type: str

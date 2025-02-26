@@ -1,0 +1,151 @@
+name: OBO Foundry
+description: Open Biological and Biomedical Ontologies
+website: http://obofoundry.org/
+nodes:
+  biological_process:
+    url: http://purl.obolibrary.org/obo/go.owl
+    description: A biological process term from GO
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  molecular_function:
+    url: http://purl.obolibrary.org/obo/go.owl
+    description: A molecular function term from GO
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  cellular_component:
+    url: http://purl.obolibrary.org/obo/go.owl
+    description: A cellular component term from GO
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  cl:
+    url: http://purl.obolibrary.org/obo/cl.owl
+    description: A cell type term from Cell Ontology
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  clo:
+    url: http://purl.obolibrary.org/obo/clo.owl
+    description: A cell line term from Cell Line Ontology
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  uberon:
+    url: http://purl.obolibrary.org/obo/uberon.owl
+    description: An anatomical term from Uberon
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  bto:
+    url: http://purl.obolibrary.org/obo/bto.owl
+    description: A tissue term from BRENDA Tissue Ontology
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  efo:
+    url: http://purl.obolibrary.org/obo/efo.owl
+    description: A term from Experimental Factor Ontology
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+  
+  hpo:
+    url: http://purl.obolibrary.org/obo/hp.owl
+    description: A term from Human Phenotype Ontology
+    properties:
+      id: str
+      term_name: str
+      description: str
+      synonyms: str[]
+
+relationships:
+  biological_process_subclass_of:
+    url: http://purl.obolibrary.org/obo/go.owl
+    description: Hierarchical relationship between biological processes
+    source: biological_process
+    target: biological_process
+  
+  molecular_function_subclass_of:
+    url: http://purl.obolibrary.org/obo/go.owl
+    description: Hierarchical relationship between molecular functions
+    source: molecular_function
+    target: molecular_function
+  
+  cellular_component_subclass_of:
+    url: http://purl.obolibrary.org/obo/go.owl
+    description: Hierarchical relationship between cellular components
+    source: cellular_component
+    target: cellular_component
+  
+  cl_subclass_of:
+    url: http://purl.obolibrary.org/obo/cl.owl
+    description: Hierarchical relationship between cell types
+    source: cl
+    target: cl
+  
+  clo_subclass_of:
+    url: http://purl.obolibrary.org/obo/clo.owl
+    description: Hierarchical relationship between cell lines
+    source: clo
+    target: clo
+  
+  efo_subclass_of:
+    url: http://purl.obolibrary.org/obo/efo.owl
+    description: Hierarchical relationship between experimental factors
+    source: efo
+    target: efo
+  
+  bto_subclass_of:
+    url: http://purl.obolibrary.org/obo/bto.owl
+    description: Hierarchical relationship between tissue types
+    source: bto
+    target: bto
+  
+  hpo_subclass_of:
+    url: http://purl.obolibrary.org/obo/hp.owl
+    description: Hierarchical relationship between phenotypes
+    source: hpo
+    target: hpo
+  
+  uberon_subclass_of:
+    url: http://purl.obolibrary.org/obo/uberon.owl
+    description: Hierarchical relationship between anatomical structures
+    source: uberon
+    target: uberon
+  
+  cl_capable_of:
+    url: http://purl.obolibrary.org/obo/cl.owl
+    description: Capability relationship between cell type and process
+    source: cl
+    target: biological_process
+  
+  cl_part_of:
+    url: http://purl.obolibrary.org/obo/cl.owl
+    description: Part-whole relationship between cell type and anatomy
+    source: cl
+    target: uberon
