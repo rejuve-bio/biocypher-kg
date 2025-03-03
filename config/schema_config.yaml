@@ -280,13 +280,6 @@ transcription binding site:
 # ---
 # ontologies
 
-# Gene Ontology
-go:
-  is_a: ontology term
-  represented_as: node
-  input_label: go
-  inherit_properties: true
-
 # Uberon Ontology
 uberon:
   is_a: ontology term
@@ -351,19 +344,19 @@ motif:
 
 # GO subontologies
 biological process:
-  is_a: go
+  is_a: ontology term
   represented_as: node
   input_label: biological_process
   inherit_properties: true
 
 molecular function:
-  is_a: go
+  is_a: ontology term
   represented_as: node
   input_label: molecular_function
   inherit_properties: true
 
 cellular component:
-  is_a: go
+  is_a: ontology term
   represented_as: node
   input_label: cellular_component
   inherit_properties: true
@@ -542,7 +535,7 @@ cl capable of:
   input_label: cl_capable_of
   output_label: capable_of
   description: >-
-    Represents a functional capability relationship between a CL term and a GO term.
+    Represents the capability of a cell type (CL term) to carry out or be involved in a specific biological process.
   source: cl
   target: biological process
 
@@ -632,15 +625,6 @@ cl subclass of:
   source: cl
   target: cl
 
-go subclass of:
-  is_a: subclass of
-  inherit_properties: true
-  represented_as: edge
-  input_label: go_subclass_of
-  output_label: subclass_of
-  source: go
-  target: go
-
 hpo subclass of:
   is_a: subclass of
   inherit_properties: true
@@ -653,7 +637,7 @@ hpo subclass of:
 # Subclass relationships within GO subontology
 
 biological process subclass:
-  is_a: go subclass of
+  is_a: subclass of
   inherit_properties: true
   represented_as: edge
   input_label: biological_process_subclass_of
@@ -662,7 +646,7 @@ biological process subclass:
   target: biological_process
 
 molecular function subclass:
-  is_a: go subclass of
+  is_a: subclass of
   inherit_properties: true
   represented_as: edge
   input_label: molecular_function_subclass_of
@@ -671,26 +655,13 @@ molecular function subclass:
   target: molecular_function
 
 cellular component subclass:
-  is_a: go subclass of
+  is_a: subclass of
   inherit_properties: true
   represented_as: edge
   input_label: cellular_component_subclass_of
   output_label: subclass_of
   source: cellular_component
   target: cellular_component
-
-go gene:
-  is_a: annotation
-  inherit_properties: true
-  represented_as: edge
-  input_label: go_gene
-  output_label: belongs_to
-  source: gene
-  target: go
-  properties:
-    qualifier: obj
-    db_reference: obj
-    evidence: str
 
 go gene product:
   is_a: annotation
