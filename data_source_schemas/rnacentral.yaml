@@ -1,0 +1,32 @@
+name: RNAcentral
+description: Database of non-coding RNA sequences
+website: https://rnacentral.org/
+nodes:
+  non_coding_rna:
+    url: https://rnacentral.org/downloads
+    description: A RNA molecule that is not translated into a protein
+    properties:
+      rna_type: str
+      chr: str
+      start: int
+      end: int
+      biological_context: str
+
+relationships:
+  biological_process_rna:
+    url: https://rnacentral.org/downloads
+    description: Association between non-coding RNA and biological process
+    source: non_coding_rna
+    target: biological_process
+  
+  molecular_function_rna:
+    url: https://rnacentral.org/downloads
+    description: Association between non-coding RNA and molecular function
+    source: non_coding_rna
+    target: molecular_function
+  
+  cellular_component_rna:
+    url: https://rnacentral.org/downloads
+    description: Association between non-coding RNA and cellular location
+    source: non_coding_rna
+    target: cellular_component

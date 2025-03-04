@@ -1,0 +1,21 @@
+name: EPD
+description: Eukaryotic Promoter Database
+website: https://epd.expasy.org/
+nodes:
+  promoter:
+    url: https://epd.expasy.org/ftp/epdnew/H_sapiens/
+    description: A region of DNA that initiates transcription of a gene
+    properties:
+      chr: str
+      start: int
+      end: int
+
+relationships:
+  promoter_gene:
+    url: https://epd.expasy.org/ftp/epdnew/H_sapiens/
+    description: An association between a promoter and a gene
+    source: promoter
+    target: gene
+    properties:
+      score: float
+      biological_context: str

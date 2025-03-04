@@ -1,0 +1,51 @@
+name: GENCODE
+description: Encyclopedia of genes and gene variants
+website: https://www.gencodegenes.org/
+nodes:
+  gene:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: A region of genomic sequence with a specific function
+    properties:
+      gene_name: str
+      gene_type: str
+      chr: str
+      start: int
+      end: int
+      synonyms: str[]
+  
+  transcript:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: An RNA synthesized on a DNA or RNA template
+    properties:
+      gene_name: str
+      transcript_name: str
+      transcript_id: str
+      transcript_type: str
+      chr: str
+      start: int
+      end: int
+  
+  exon:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: A part of a gene that contains coding sequences
+    properties:
+      gene_id: str
+      transcript_id: str
+      exon_number: int
+      exon_id: str
+      chr: str
+      start: int
+      end: int
+
+relationships:
+  transcribed_to:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: Relationship between a gene and its transcript
+    source: gene
+    target: transcript
+  
+  transcribed_from:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: Relationship between a transcript and its gene
+    source: transcript
+    target: gene

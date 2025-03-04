@@ -1,0 +1,11 @@
+name: STRING
+description: Protein-Protein Interaction Networks
+website: https://string-db.org/
+relationships:
+  interacts_with:
+    url: https://string-db.org/
+    description: Protein-protein interactions
+    source: protein
+    target: protein
+    properties:
+      score: float

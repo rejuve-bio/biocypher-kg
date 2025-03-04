@@ -1,0 +1,12 @@
+name: ABC
+description: Activity-by-contact model predictions
+website: https://forgedb.cancer.gov/
+relationships:
+  activity_by_contact:
+    url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
+    description: Prediction of enhancer-gene links using the ABC model
+    source: snp
+    target: gene
+    properties:
+      score: float
+      biological_context: str

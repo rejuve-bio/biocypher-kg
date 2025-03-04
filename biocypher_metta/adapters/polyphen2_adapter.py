@@ -18,7 +18,7 @@ class PolyPhen2Adapter(Adapter):
         'alt_t': 20, 'score_t_hdiv': 21, 'pred_t_hdiv': 22, 'score_t_hvar': 23, 'pred_t_hvar': 24
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, label='snp',
+    def __init__(self, filepath, write_properties, add_provenance, label='polyphen2_variant',
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr

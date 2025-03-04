@@ -1,0 +1,11 @@
+name: CoXPresdb
+description: Comprehensive gene coexpression database
+website: https://coxpresdb.jp/
+relationships:
+  coexpressed_with:
+    url: https://coxpresdb.jp/
+    description: Gene coexpression relationships
+    source: gene
+    target: gene
+    properties:
+      score: float

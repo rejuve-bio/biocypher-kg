@@ -1,0 +1,56 @@
+name: ENCODE
+description: Encyclopedia of DNA Elements
+website: https://www.encodeproject.org/
+nodes:
+  enhancer:
+    url: https://screen.wenglab.org/downloads
+    description: A region of DNA that can enhance the transcription of genes
+    properties:
+      chr: str
+      start: int
+      end: int
+      accession_d: str
+      accession_e: str
+  
+  promoter:
+    url: https://screen.wenglab.org/downloads
+    description: A region of DNA that initiates transcription of a gene
+    properties:
+      chr: str
+      start: int
+      end: int
+      accession_d: str
+      accession_e: str
+  
+  tfbs:
+    url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+    description: A region of DNA where a transcription factor binds to regulate gene expression
+    properties:
+      chr: str
+      start: int
+      end: int
+
+relationships:
+  gene_tfbs:
+    url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+    description: An association between a transcription factor and its binding site
+    source: gene
+    target: tfbs
+    properties:
+      score: float
+  
+  enhancer_gene:
+    url: https://screen.wenglab.org/downloads
+    description: An association between an enhancer and a gene using cCRE data
+    source: enhancer
+    target: gene
+    properties:
+      bp_overlap: float
+  
+  promoter_gene:
+    url: https://screen.wenglab.org/downloads
+    description: An association between a promoter and a gene using cCRE data
+    source: promoter
+    target: gene
+    properties:
+      bp_overlap: float

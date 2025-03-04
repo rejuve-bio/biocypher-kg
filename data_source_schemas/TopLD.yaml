@@ -1,0 +1,13 @@
+name: TopLD
+description: Linkage Disequilibrium Information
+website: http://topld.genetics.unc.edu/
+relationships:
+  in_ld_with:
+    url: http://topld.genetics.unc.edu/
+    description: Linkage disequilibrium between variants
+    source: snp
+    target: snp
+    properties:
+      ancestry: str
+      r2: float
+      d_prime: float

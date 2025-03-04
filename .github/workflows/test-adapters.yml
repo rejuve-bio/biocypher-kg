@@ -107,7 +107,7 @@ jobs:
             echo "No adapter changes detected. Using sample config."
             cp config/adapters_config_sample.yaml config/test_config.yaml
           fi
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: test-config
           path: config/test_config.yaml
@@ -149,7 +149,7 @@ jobs:
           pip install poetry
           poetry install
       
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: test-config
           path: config

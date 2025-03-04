@@ -1,0 +1,19 @@
+name: TADMap
+description: Topologically Associating Domain mapping
+website: https://cb.csail.mit.edu/cb/tadmap/
+nodes:
+  tad:
+    url: https://cb.csail.mit.edu/cb/tadmap/
+    description: A region of the genome showing high internal interaction frequency
+    properties:
+      genes: str[]
+      chr: str
+      start: int
+      end: int
+
+relationships:
+  in_tad_region:
+    url: https://cb.csail.mit.edu/cb/tadmap/
+    description: Association between a gene and its containing TAD
+    source: gene
+    target: tad
