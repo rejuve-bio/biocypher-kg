@@ -17,7 +17,7 @@ position entity:
 
 coding element:
   represented_as: node
-  is_a: position entity
+  is_a: biological entity
   inherit_properties: true
   input_label: coding_element
   description: >-
@@ -102,7 +102,7 @@ gene:
   represented_as: node
   preferred_id: ensemble
   input_label: gene
-  is_a: coding element
+  is_a: [coding element, position entity]
   inherit_properties: true
   properties:
     gene_name: str
@@ -146,7 +146,7 @@ exon:
   represented_as: node
   preferred_id: ensemble
   input_label: exon
-  is_a: coding element
+  is_a: [coding element, position entity]
   inherit_properties: true
   properties:
     gene_id: str
