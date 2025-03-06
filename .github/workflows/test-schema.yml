@@ -1,0 +1,41 @@
+name: Test Adapters Against Schema
+
+on:
+  push:
+    branches: "main"
+
+  pull_request:
+    branches: "main"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10.12"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache Poetry packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Run tests
+        run: |
+          poetry run pytest test/test.py --adapters-config=./config/adapters_config_sample.yaml --dbsnp-rsids=./aux_files/sample_dbsnp_rsids.pkl --dbsnp-pos=./aux_files/sample_dbsnp_pos.pkl -v -s

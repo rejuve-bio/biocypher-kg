@@ -1,6 +1,7 @@
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor  
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
 # ##provider: GENCODE
@@ -31,6 +32,9 @@ class GencodeGeneAdapter(Adapter):
         self.source = 'GENCODE'
         self.version = 'v44'
         self.source_url = 'https://www.gencodegenes.org/human/'
+        
+        self.hgnc_processor = HGNCSymbolProcessor()
+        self.hgnc_processor.update_hgnc_data()
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
 
@@ -100,10 +104,12 @@ class GencodeGeneAdapter(Adapter):
                             alias = alias_dict.get(hgnc_id)
                     if gene_id.endswith('_PAR_Y'):
                         id = id + '_PAR_Y'
-
                     chr = split_line[GencodeGeneAdapter.INDEX['chr']]
                     start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
                     end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+                    
+                    result = self.hgnc_processor.process_identifier(info['gene_name'])
+                    
                     props = {}
                     try:
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
@@ -114,12 +120,22 @@ class GencodeGeneAdapter(Adapter):
                                     'chr': chr,
                                     'start': start,
                                     'end': end,
-                                    'gene_name': info['gene_name'],
+                                    'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
                                     'synonyms': alias
                                 }
+                                if result['status'] == 'updated':
+                                    props['old_gene_name'] = result['original']
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
+
+                            # Print message about unknown or replaced gene symbols
+                            if result['status'] == 'unknown':
+                                print(f"Unknown gene symbol: {result['original']}")
+                            elif result['status'] == 'updated':
+                                print(f"Replaced gene symbol: {result['original']} -> {result['current']}")
+                            elif result['status'] == 'ensembl_with_symbol' and result['original'] != result['current']:
+                                print(f"Ensembl symbol replaced: {result['original']} -> {result['current']}")
 
                             yield id, self.label, props
                     except:
