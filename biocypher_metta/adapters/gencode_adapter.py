@@ -144,9 +144,6 @@ class GencodeAdapter(Adapter):
                                     'transcript_id': info['transcript_id'],
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': info['transcript_type'],
-                                    'chr': chr,
-                                    'start': start,
-                                    'end': end,
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
                                 }
                                 if result['status'] == 'updated':
