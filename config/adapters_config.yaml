@@ -1048,3 +1048,47 @@ snp_to_in_gene:
   outdir: gwas/ingene
   nodes: False
   edges: True
+
+promoter_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-PLS-gene.bed.gz
+      label: promoter
+  outdir: ccre/promoter_ccre
+  nodes: True
+  edges: False
+
+promoter_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-PLS-gene.bed.gz
+      label: promoter_gene
+  outdir: ccre/promoter_ccre
+  nodes: False
+  edges: True
+
+enhancer_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-ELS-gene.bed.gz
+      label: enhancer
+  outdir: ccre/enhancer_ccre
+  nodes: True
+  edges: False
+
+enhancer_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-ELS-gene.bed.gz
+      label: enhancer_gene
+  outdir: ccre/enhancer_ccre
+  nodes: False
+  edges: True

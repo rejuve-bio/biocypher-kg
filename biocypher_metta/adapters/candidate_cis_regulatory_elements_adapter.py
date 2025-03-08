@@ -1,14 +1,56 @@
 import gzip
+import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
 
 class EncodecCREAdapter(Adapter):
-    def __init__(self, filepath, write_properties=True, add_provenance=True, label='regulatory_element'):
+    def __init__(self, filepath, write_properties, add_provenance, label, hgnc_pickle_path='hgnc_gene_data/hgnc_data.pkl'):
         self.filepath = filepath
         self.label = label
         self.source = "ENCODE cCRE"
         self.source_url = "https://screen.wenglab.org/downloads"
+        self.hgnc_pickle_path = hgnc_pickle_path
+
+        self.hgnc_processor = HGNCSymbolProcessor()
+        self.hgnc_processor.update_hgnc_data()
+        
+        try:
+            with open(self.hgnc_pickle_path, 'rb') as f:
+                data = pickle.load(f)
+            
+            self.current_symbols = data['current_symbols']
+            self.symbol_aliases = data['symbol_aliases']
+            self.ensembl_to_symbol = data['ensembl_to_symbol']
+            
+            self.symbol_to_ensembl = {}
+            for ensembl_id, symbol in self.ensembl_to_symbol.items():
+                if ensembl_id.startswith('ENSG') and '.' not in ensembl_id:
+                    self.symbol_to_ensembl[symbol] = ensembl_id
+            
+            print(f"HGNC data loaded from {self.hgnc_pickle_path}")
+        except Exception as e:
+            print(f"Error loading HGNC data: {e}")
+            print("Proceeding without HGNC data")
+            self.current_symbols = {}
+            self.symbol_aliases = {}
+            self.ensembl_to_symbol = {}
+            self.symbol_to_ensembl = {}
 
         super(EncodecCREAdapter, self).__init__(write_properties, add_provenance)
+
+    def _get_ensembl_id(self, gene_symbol):
+        """Convert gene symbol to Ensembl ID using HGNC data"""
+        if gene_symbol.startswith('ENSG'):
+            return gene_symbol.split('.')[0]
+        
+        if gene_symbol in self.current_symbols:
+            current_symbol = gene_symbol
+        elif gene_symbol in self.symbol_aliases:
+            current_symbol = self.symbol_aliases[gene_symbol]
+        else:
+            return gene_symbol
+        
+        return self.symbol_to_ensembl.get(current_symbol, current_symbol)
 
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as file:
@@ -55,6 +97,8 @@ class EncodecCREAdapter(Adapter):
                     nearest_gene = fields[6]
                     distance = int(fields[7])
 
+                    gene_id = self._get_ensembl_id(nearest_gene)
+
                     props = {
                         'distance': distance
                     }
@@ -64,4 +108,6 @@ class EncodecCREAdapter(Adapter):
                         props['source_url'] = self.source_url
 
                     element_id = f"{chrom}_{start}_{end}"
-                    yield element_id, nearest_gene, self.label, props
+                    yield element_id, gene_id, self.label, props
+    
+    
