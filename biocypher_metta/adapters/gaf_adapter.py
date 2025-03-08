@@ -62,7 +62,7 @@ class GAFAdapter(Adapter):
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
         self.label = label
-        self.source = "GO"
+        self.source = "GOA"
         self.source_url = GAFAdapter.SOURCES[gaf_type]
 
         self.subontology = None
