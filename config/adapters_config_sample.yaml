@@ -1004,46 +1004,24 @@ promoter_ccre_associates_with_gene:
   nodes: False
   edges: True
 
-proximal_enhancer_ccre:
+enhancer_ccre:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
     cls: EncodecCREAdapter
     args:
-      filepath: ./samples/cCRE/cCRE-pELS-gene.bed.gz
+      filepath: ./samples/cCRE/cCRE-ELS-gene.bed.gz
       label: enhancer
   outdir: ccre/enhancer_ccre
   nodes: True
   edges: False
 
-proximal_enhancer_ccre_associates_with_gene:
+enhancer_ccre_associates_with_gene:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
     cls: EncodecCREAdapter
     args:
-      filepath: ./samples/cCRE/cCRE-pELS-gene.bed.gz
-      label: promoter_gene
-  outdir: ccre/enhancer_ccre
-  nodes: False
-  edges: True
-
-distal_enhancer_ccre:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
-    cls: EncodecCREAdapter
-    args:
-      filepath: ./samples/cCRE/cCRE-dELS-gene.bed.gz
-      label: promoter
-  outdir: ccre/enhancer_ccre
-  nodes: True
-  edges: False
-
-distal_enhancer_ccre_associates_with_gene:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
-    cls: EncodecCREAdapter
-    args:
-      filepath: ./samples/cCRE/cCRE-dELS-gene.bed.gz
-      label: promoter_gene
+      filepath: ./samples/cCRE/cCRE-ELS-gene.bed.gz
+      label: enhancer_gene
   outdir: ccre/enhancer_ccre
   nodes: False
   edges: True
