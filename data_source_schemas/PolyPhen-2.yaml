@@ -15,5 +15,3 @@ nodes:
       polyphen2_humdiv_prediction: str
       polyphen2_humvar_score: float
       polyphen2_humvar_prediction: str
-      source: str
-      source_url: str

@@ -49,3 +49,9 @@ relationships:
     description: Relationship between a transcript and its gene
     source: transcript
     target: gene
+
+  transcript_to_exon:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: An association between a transcript and its exons
+    source: transcript
+    target: exon
