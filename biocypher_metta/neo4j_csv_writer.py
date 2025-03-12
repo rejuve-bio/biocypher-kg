@@ -192,14 +192,15 @@ class Neo4jCSVWriter(BaseWriter):
                 if target_type == "ontology_term":
                     target_type = self.preprocess_id(target_id).split('_')[0]
             
-                edge_label = edge_info.get("output_label", label)
+                # Use input label if output_label is None or empty
+                edge_label = edge_info.get("output_label") or label
             
                 edge_data = {
                     'source_id': self.preprocess_id(source_id),
                     'target_id': self.preprocess_id(target_id),
                     'source_type': source_type,
                     'target_type': target_type,
-                    'label': edge_label,  
+                    'label': edge_label,
                     **properties
                 }
             
@@ -214,7 +215,8 @@ class Neo4jCSVWriter(BaseWriter):
         
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
-                edge_label = self.edge_node_types[input_label].get("output_label", input_label)
+                # Use input label if output_label is None or empty
+                edge_label = self.edge_node_types[input_label].get("output_label") or input_label
             
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"edges_{file_suffix}.csv"
