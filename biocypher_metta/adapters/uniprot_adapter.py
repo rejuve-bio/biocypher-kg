@@ -1,19 +1,22 @@
 import gzip
+import re
 from Bio import SeqIO
 from biocypher_metta.adapters import Adapter
-import re
 
 class UniprotAdapter(Adapter):
     ALLOWED_TYPES = ['translates to', 'translation of']
     ALLOWED_LABELS = ['translates_to', 'translation_of']
+    
+    ISOFORM_PATTERN = re.compile(r'\[([\w\-]+)\]')
 
-    def __init__(self, filepath, type, label, write_properties, add_provenance):
-        if type not in UniprotAdapter.ALLOWED_TYPES:
+    def __init__(self, filepath, type, label, write_properties=True, add_provenance=True):
+        if type not in self.ALLOWED_TYPES:
             raise ValueError('Invalid type. Allowed values: ' + 
-                           ', '.join(UniprotAdapter.ALLOWED_TYPES))
-        if label not in UniprotAdapter.ALLOWED_LABELS:
+                           ', '.join(self.ALLOWED_TYPES))
+        if label not in self.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' + 
-                           ', '.join(UniprotAdapter.ALLOWED_LABELS))
+                           ', '.join(self.ALLOWED_LABELS))
+            
         self.filepath = filepath
         self.dataset = label
         self.type = type
@@ -25,7 +28,7 @@ class UniprotAdapter(Adapter):
     def parse_ensembl_reference(self, line):
         try:
             # Extract isoform ID from square brackets if present
-            isoform_match = re.search(r'\[([\w\-]+)\]', line)
+            isoform_match = self.ISOFORM_PATTERN.search(line)
             isoform_id = isoform_match.group(1) if isoform_match else None
 
             parts = line.split(';')
@@ -40,13 +43,20 @@ class UniprotAdapter(Adapter):
             return None, None
 
     def get_edges(self):
+        current_protein_id = None
+        accession = None
+        
         with gzip.open(self.filepath, 'rt') as input_file:
             for line in input_file:
+                line = line.strip()
+                
                 if line.startswith('ID '):
                     current_protein_id = line.split()[1]
                     accession = None
                 elif line.startswith('AC '):
-                    accession = line.split()[1].rstrip(';')
+                    accessions = line[5:].split()
+                    if accessions and accessions[0]:
+                        accession = accessions[0].rstrip(';')
                 elif line.startswith('DR   Ensembl;') and accession:
                     if self.type == 'translates to':
                         try:
