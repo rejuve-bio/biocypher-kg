@@ -275,20 +275,6 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
-
-coexpression:
-  adapter:
-    module: biocypher_metta.adapters.coxpresdb_adapter
-    cls: CoxpresdbAdapter
-    args:
-      filepath: ./samples/coxpressdb
-      ensemble_to_entrez_path: ./aux_files/entrez_to_ensembl.pkl
-
-  outdir: coxpressdb
-  nodes: False
-  edges: True
-
-
 coexpression:
   adapter:
     module: biocypher_metta.adapters.coxpresdb_adapter
@@ -578,8 +564,8 @@ rna_central_non_coding_rna_biological_process:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
 
@@ -592,8 +578,8 @@ rna_central_non_coding_rna_molecular_function:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
 
@@ -606,8 +592,8 @@ rna_central_non_coding_rna_cellular_component:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
 
@@ -1046,5 +1032,49 @@ snp_to_in_gene:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gwas/gwas-catalog-associations_ontology-annotated.tsv
       label: snp_in_gene
   outdir: gwas/ingene
+  nodes: False
+  edges: True
+
+promoter_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-PLS-gene.bed.gz
+      label: promoter
+  outdir: ccre/promoter_ccre
+  nodes: True
+  edges: False
+
+promoter_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-PLS-gene.bed.gz
+      label: promoter_gene
+  outdir: ccre/promoter_ccre
+  nodes: False
+  edges: True
+
+enhancer_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-ELS-gene.bed.gz
+      label: enhancer
+  outdir: ccre/enhancer_ccre
+  nodes: True
+  edges: False
+
+enhancer_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    cls: EncodecCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-ELS-gene.bed.gz
+      label: enhancer_gene
+  outdir: ccre/enhancer_ccre
   nodes: False
   edges: True

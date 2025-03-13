@@ -47,12 +47,12 @@ class Neo4jCSVWriter(BaseWriter):
                         label = self.convert_input_labels(v["input_label"])
                         source_type = self.convert_input_labels(source_type)
                         target_type = self.convert_input_labels(target_type)
-                    output_label = v.get("output_label", None)
+                    output_label = v.get("output_label", label)
 
                     self.edge_node_types[label.lower()] = {
                         "source": source_type.lower(),
                         "target": target_type.lower(),
-                        "output_label": output_label.lower() if output_label else None
+                        "output_label": output_label.lower()
                     }
 
     def preprocess_value(self, value):
