@@ -2,9 +2,10 @@ name: PolyPhen2
 description: Prediction of functional effects of human nsSNPs
 website: http://genetics.bwh.harvard.edu/pph2/
 nodes:
-  polyphen_variant:
+  polyphen2 variant:
     url: https://hgdownload.soe.ucsc.edu/gbdb/hg38/dbNsfp/dbNsfpPolyPhen2.bb
-    description: A variant with PolyPhen-2 predictions for the impact of amino acid substitutions
+    description: A variant with PolyPhen-2 predictions for the impact of amino acid substitutions on protein structure and function
+    input_label: polyphen2_variant
     properties:
       ref: str
       alt: str

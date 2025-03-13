@@ -2,9 +2,10 @@ name: STRING
 description: Protein-Protein Interaction Networks
 website: https://string-db.org/
 relationships:
-  interacts_with:
+  post translational interaction:
     url: https://string-db.org/
     description: Protein-protein interactions
+    input_label: interacts_with
     source: protein
     target: protein
     properties:

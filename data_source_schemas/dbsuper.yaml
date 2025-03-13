@@ -2,9 +2,10 @@ name: dbSuper
 description: A database of super-enhancers
 website: https://asntech.org/dbsuper/
 nodes:
-  super_enhancer:
+  super enhancer:
     url: https://asntech.org/dbsuper/download.php
     description: A cluster of enhancers that regulate cell identity genes
+    input_label: super_enhancer
     properties:
       se_id: str
       chr: str
@@ -12,9 +13,11 @@ nodes:
       end: int
 
 relationships:
-  super_enhancer_gene:
+  super enhancer gene:
     url: https://asntech.org/dbsuper/download.php
     description: An association between a super enhancer and a gene
+    input_label: super_enhancer_gene
+    output_label: associated_with
     source: super_enhancer
     target: gene
     properties:
