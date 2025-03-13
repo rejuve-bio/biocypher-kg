@@ -5,25 +5,29 @@ nodes:
   pathway:
     url: https://reactome.org
     description: A biological process or pathway
+    input_label: pathway
     properties:
       pathway_name: str
       evidence: str
 
 relationships:
-  genes_pathways:
+  gene to pathway association:
     url: https://reactome.org
-    description: An interaction between a gene and a biological process or pathway
+    description: An interaction between a gene or gene product and a biological process or pathway.
+    input_label: genes_pathways
     source: gene
     target: pathway
   
-  parent_pathway_of:
+  parent pathway of:
     url: https://reactome.org
-    description: Hierarchical relationship between pathways
+    description: holds between two pathways where the domain class is a parent pathway of the range class
+    input_label: parent_pathway_of
     source: pathway
     target: pathway
   
-  child_pathway_of:
+  child pathway of:
     url: https://reactome.org
-    description: Hierarchical relationship between pathways
+    description: holds between two pathways where the domain class is a child pathway of the range class
+    input_label: child_pathway_of
     source: pathway
     target: pathway

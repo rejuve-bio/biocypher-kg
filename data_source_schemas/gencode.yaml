@@ -5,6 +5,7 @@ nodes:
   gene:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
     description: A region of genomic sequence with a specific function
+    input_label: gene
     properties:
       gene_name: str
       gene_type: str
@@ -16,6 +17,7 @@ nodes:
   transcript:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
     description: An RNA synthesized on a DNA or RNA template
+    input_label: transcript
     properties:
       gene_name: str
       transcript_name: str
@@ -28,6 +30,7 @@ nodes:
   exon:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
     description: A part of a gene that contains coding sequences
+    input_label: exon
     properties:
       gene_id: str
       transcript_id: str
@@ -38,20 +41,23 @@ nodes:
       end: int
 
 relationships:
-  transcribed_to:
+  transcribed from:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
-    description: Relationship between a gene and its transcript
-    source: gene
-    target: transcript
-  
-  transcribed_from:
-    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
-    description: Relationship between a transcript and its gene
+    description: x is transcribed from y if and only if x is synthesized from template y
+    input_label: transcribed_from
     source: transcript
     target: gene
 
-  transcript_to_exon:
+  transcribed to:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description: inverse of transcribed from
+    input_label: transcribed_to
+    source: gene
+    target: transcript
+
+  transcript to exon:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
     description: An association between a transcript and its exons
+    input_label: includes
     source: transcript
     target: exon

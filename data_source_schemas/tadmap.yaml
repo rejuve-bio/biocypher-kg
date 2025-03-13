@@ -5,6 +5,7 @@ nodes:
   tad:
     url: https://cb.csail.mit.edu/cb/tadmap/
     description: A region of the genome showing high internal interaction frequency
+    input_label: tad
     properties:
       genes: str[]
       chr: str
@@ -12,8 +13,9 @@ nodes:
       end: int
 
 relationships:
-  in_tad_region:
+  gene in tad region:
     url: https://cb.csail.mit.edu/cb/tadmap/
-    description: Association between a gene and its containing TAD
+    description: holds between a tad and a gene that is in the tad region
+    input_label: in_tad_region
     source: gene
     target: tad

@@ -5,6 +5,7 @@ nodes:
   enhancer:
     url: https://screen.wenglab.org/downloads
     description: A region of DNA that can enhance the transcription of genes
+    input_label: enhancer
     properties:
       chr: str
       start: int
@@ -15,6 +16,7 @@ nodes:
   promoter:
     url: https://screen.wenglab.org/downloads
     description: A region of DNA that initiates transcription of a gene
+    input_label: promoter
     properties:
       chr: str
       start: int
@@ -22,34 +24,41 @@ nodes:
       accession_d: str
       accession_e: str
   
-  tfbs:
+  transcription binding site:
     url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
     description: A region of DNA where a transcription factor binds to regulate gene expression
+    input_label: tfbs
     properties:
       chr: str
       start: int
       end: int
 
 relationships:
-  gene_tfbs:
+  gene to transcription binding site association:
     url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
     description: An association between a transcription factor and its binding site
+    input_label: gene_tfbs
+    output_label: binds_to
     source: gene
     target: tfbs
     properties:
       score: float
   
-  enhancer_gene:
+  enhancer to gene association:
     url: https://screen.wenglab.org/downloads
-    description: An association between an enhancer and a gene using cCRE data
+    description: An association between an enhancer and a gene
+    input_label: enhancer_gene
+    output_label: associated_with
     source: enhancer
     target: gene
     properties:
       bp_overlap: float
   
-  promoter_gene:
+  promoter to gene association:
     url: https://screen.wenglab.org/downloads
-    description: An association between a promoter and a gene using cCRE data
+    description: An association between a promoter and a gene
+    input_label: promoter_gene
+    output_label: associated_with
     source: promoter
     target: gene
     properties:

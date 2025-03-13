@@ -2,9 +2,11 @@ name: GTEx
 description: Genotype-Tissue Expression project
 website: https://gtexportal.org/
 relationships:
-  gtex_variant_gene:
+  gtex variant to gene expression association:
     url: https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz
-    description: eQTL associations between variants and gene expression
+    description: An association between a variant and expression of a gene (i.e. e-QTL)
+    input_label: gtex_variant_gene
+    output_label: eqtl_association
     source: snp
     target: gene
     properties:

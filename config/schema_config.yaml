@@ -1005,7 +1005,7 @@ histone modification:
   properties:
     modification: str
 
-transcript_to_exon:
+transcript to exon:
   is_a: related to at instance
   description: >-
     An association between a transcript and its exons
