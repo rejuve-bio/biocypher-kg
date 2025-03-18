@@ -681,7 +681,7 @@ biological process gene product:
   source: protein
   target: biological process
 
-molucular function gene product:
+molecular function gene product:
   is_a: go gene product
   inherit_properties: true
   represented_as: edge
