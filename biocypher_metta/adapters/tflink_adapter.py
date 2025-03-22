@@ -14,6 +14,7 @@ import gzip
 
 class TFLinkAdapter(Adapter):
     INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
+    
     def __init__(self, filepath, entrez_to_ensemble_map,
                  write_properties, add_provenance):
         """

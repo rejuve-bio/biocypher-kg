@@ -17,8 +17,12 @@ class Neo4jCSVWriter(BaseWriter):
             self.array_delimiter: ' ', 
             "'": "",
             '"': ""
-        })
-        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon'])
+        })     
+        # saulo   
+        # self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon'])
+        # saulo
+        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon', 'so', 'do', 'mi', 'fbbt', 'fbdv', 'fbcv'])
+        
         self.create_edge_types()
         self._node_writers = {}
         self._edge_writers = {}
@@ -34,7 +38,7 @@ class Neo4jCSVWriter(BaseWriter):
 
         for k, v in schema.items():
             if v["represented_as"] == "edge":
-                edge_type = self.convert_input_labels(k)
+                edge_type = self.convert_input_labels(k)        # saulo: must remove this: no used
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
 
@@ -49,16 +53,57 @@ class Neo4jCSVWriter(BaseWriter):
                         target_type = self.convert_input_labels(target_type)
                     output_label = v.get("output_label", label)
 
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
-                        "output_label": output_label.lower()
-                    }
+                    # saulo
+                    # self.edge_node_types[label.lower()] = {
+                    #     "source": source_type.lower(),
+                    #     "target": target_type.lower(),
+                    #     "output_label": output_label.lower()
+                    # }
+                    # saulo
+
+                    # to  handle lists in source and/or target types (2024/09/17) <-- first time I changed this! :()  :D
+                    # the first case is the "general case" commented above
+                    if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
+                        print(f"key: => {k}")# \n{v}")
+                        if '.' not in k:                            
+                            self.edge_node_types[label.lower()] = {
+                                "source": source_type.lower(), 
+                                "target":target_type.lower(),
+                                "output_label": (
+                                    output_label.lower() if output_label is not None else None
+                                ),
+                            }
+                    elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
+                        for i in range(len(source_type)):
+                            source_type[i] = source_type[i].lower()                        
+                        # print(f"key: => {k} \n{v}")
+                        self.edge_node_types[label.lower()] = {
+                            "target": target_type.lower(),
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                            )
+                        }                        
+                        self.edge_node_types[label.lower()]["source"] = []                        
+                        for t in source_type:
+                            self.edge_node_types[label.lower()]["source"].append(t)
+                    elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                        for i in range(len(target_type)):
+                            target_type[i] = target_type[i].lower()                        
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                                )
+                        } 
+                        self.edge_node_types[label.lower()]["target"] = []
+                        for t in target_type:
+                            self.edge_node_types[label.lower()]["target"].append(t)
+
 
     def preprocess_value(self, value):
         value_type = type(value)
         if value_type is list:
-            return json.dumps([self.preprocess_value(item) for item in value])
+            return json.dumps([self.preprocess_value(item) for item in value]).replace('\\"', '"')
         if value_type is rdflib.term.Literal:
             return str(value).translate(self.translation_table)
         if value_type is str:
@@ -66,10 +111,17 @@ class Neo4jCSVWriter(BaseWriter):
         return value
 
     def convert_input_labels(self, label):
+        # saulo  2024/09/17
+        if isinstance(label, list):
+            labels = []
+            for aLabel in label:
+                labels.append(aLabel.replace(" ", "_"))
+            return labels
         return label.lower().replace(" ", "_")
+    
 
     def preprocess_id(self, prev_id):
-        replace_map = str.maketrans({' ': '_', ':':'_'})
+        replace_map = str.maketrans({' ': '_', ':': '_'})
         return prev_id.lower().strip().translate(replace_map)
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
@@ -184,9 +236,29 @@ class Neo4jCSVWriter(BaseWriter):
                 edge_freq[label] += 1
             
                 edge_info = self.edge_node_types[label]
-                source_type = edge_info["source"]
-                target_type = edge_info["target"]
-            
+                # saulo                
+                # source_type = edge_info["source"]
+                # target_type = edge_info["target"]
+                # saulo
+                # added by saulo to handle lists of types in the schema of edge's source ids(2024/09/17)
+                if isinstance(source_id, tuple):
+                    source_type = source_id[0]
+                    if source_type not in edge_info["source"]:
+                        raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
+                    source_id = source_id[1]
+                else:
+                    source_type = edge_info["source"] # 'general case' commented above
+
+                # added by saulo to handle lists of types in the schema of edge's target ids (2024/09/17)
+                if isinstance(target_id, tuple):
+                    target_type = target_id[0]
+                    if target_type not in edge_info["target"]:
+                        raise TypeError(f"Type {target_type} must be one of {edge_info['target']}")
+                    target_id = target_id[1]
+                else:
+                    target_type = edge_info["target"] # 'general case' commented above
+
+
                 if source_type == "ontology_term":
                     source_type = self.preprocess_id(source_id).split('_')[0]
                 if target_type == "ontology_term":
@@ -201,7 +273,7 @@ class Neo4jCSVWriter(BaseWriter):
                     'source_type': source_type,
                     'target_type': target_type,
                     'label': edge_label,
-                    **properties
+                    **properties            # saulo: DANGER!!! If properties contains a key equal to any of the five above keys, the above key entry will be overwritten.
                 }
             
                 writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
@@ -216,7 +288,7 @@ class Neo4jCSVWriter(BaseWriter):
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
                 # Use input label if output_label is None or empty
-                edge_label = self.edge_node_types[input_label].get("output_label") or input_label
+                edge_label = self.edge_node_types[input_label].get("output_label") or input_label 
             
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"edges_{file_suffix}.csv"

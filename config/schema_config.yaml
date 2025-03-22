@@ -44,18 +44,17 @@ genomic variant:
   input_label: genomic_variant
   description: >-
     A genomic variant is a change in one or more sequence of a genome
-  properties:
-    source: str
-    source_url: str
+  # properties:       # ALREADY INHERITED FROM position entity
+  #   source: str
+  #   source_url: str
 
 epigenomic feature:
   represented_as: node
-  is_a: position entity
+  is_a: position entity     # 'epi' means 'out of'; the epigenomic feature should not have/be a position entity
   inherit_properties: true
   input_label: epigenomic_feature
   description: >-
     A region of the genome that is associated with epigenetic modifications
-
   properties:
     biological_context: str
     source: str
@@ -475,6 +474,22 @@ gene to gene coexpression association:
   properties:
     score: float
 
+
+
+
+
+
+################################################ dmel-hsa start ###################################################
+
+
+
+
+
+# These files list         protein1_id        protein2_id        combined_score
+# dmel: https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz 
+# hsa:  https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz 
+# todo
+# merge data from STRING and FB physical interaction
 post translational interaction:
   is_a: expression
   inherit_properties: true
@@ -483,8 +498,138 @@ post translational interaction:
   source: protein
   target: protein
   properties:
-    score: float
+    score: float    # STRING DB score    
+                                             # FLYBASE DATA:   THE FOLLOWING PROPERTIES...
+    source_gene: gene
+    target_gene: gene       
+    detection_method: mi    # Molecular Interaction Ontology
+    pubmed_ids: str[]
+    source_taxon_id: int
+    target_taxon_id: int
+    interaction_type: mi    # Molecular Interaction Ontology
+    interaction_comments: str
+    source_comments: str
+    target_comments: str    
 
+# Fly:
+# The unique ID for a library (or cluster) at Flybase is its FBlc#
+# This schema could be used to represent a RNA-seq library, cluster or sample. Flybase uses FBlc# ids for:
+#
+#                         cluster               single cell
+#                         cluster_analysis      single cell
+#                         sample                high-throughput expression data
+#                         dataset               high-throughput expression data
+#                         RNASource library     RNA-seq RPKM
+#                         parent library
+#
+# Flybase has assigned FBlc# ids to Fly Cell Atlas 2 tissues (libraries):
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#RNA-Seq_RPKM_values_matrix_.28gene_rpkm_matrix_fb_.2A.tsv.gz.29
+#
+# Fly Cell Atlas 2 data:
+#
+# Aging Fly Cell Atlas data:
+#
+# Flybase  data:
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#High-Throughput_Gene_Expression_.28high-throughput_gene_expression_fb_.2A.tsv.gz.29
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Single_Cell_RNA-Seq_Gene_Expression_.28scRNA-Seq_gene_expression_fb_.2A.tsv.gz.29
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#RNA-Seq_RPKM_values_.28gene_rpkm_report_fb_.2A.tsv.gz.29
+
+rnaseq library:
+  is_a: entity
+  represented_as: node
+  inherit_properties: false
+  input_label: rnaseq_library
+  description: >-
+      A library/cluster/sample that is a set of genes and their expression values.
+  properties:
+    name: str
+    experiment_info: str[]
+    tissue_info: str[]
+    cell_type_id: FBbt                   # cell type ontology id: str should be replaced by an ontology type  @todo
+    anatomy_entity_id: [fbbt, uberon, cl]
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+    source: str
+    source_url: str
+
+
+expression value:
+  is_a: entity
+  represented_as: edge
+  inherit_properties: false
+  input_label: expression_value
+  source: [transcript, gene]
+  target: rnaseq library
+  description: >-
+    A set of values for numeric estimation of single gene/transcript expression as measured by a given methodology (represented by a library).
+  properties:
+    value_and_description: list[tuple]]   # this list of tuples is to keep semantics in the DAS context.
+                                          # it is (value, description), (value, description),...
+                                          # where value is a gene (or transcript) expression value and description is
+                                          # an acronym or a term or a text to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD", etc.
+
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+    source: str
+    source_url: str
+
+
+# Molecular interactions ontology (MI)
+mi:
+  is_a: ontology term
+  represented_as: node
+  input_label: mi
+  inherit_properties: true
+
+# Sequence ontology (SO)
+so:
+  is_a: ontology term
+  represented_as: node
+  input_label: so
+  inherit_properties: true
+
+# https://purl.obolibrary.org/obo/doid.owl
+# disease ontology
+do:
+  is_a: ontology term
+  inherit_properties: true
+  represented_as: node
+  input_label: do
+
+mi subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: mi_subclass_of
+  output_label: subclass_of
+  source: mi
+  target: mi
+
+so subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: so_subclass_of
+  output_label: subclass_of
+  source: so
+  target: so
+
+do subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: do_subclass_of
+  output_label: subclass_of
+  source: do
+  target: do
+
+
+
+
+################################################ dmel-hsa finish ###################################################
+
+
+
+
+# For Fly this is used only to establish the relation. No value is held in the properties. 
 expressed in:
   description: >-
     holds between a gene and an ontology term in which it is expressed
@@ -493,10 +638,11 @@ expressed in:
   represented_as: edge
   input_label: expressed_in
   source: gene
-  target: ontology term
+  target: ontology term           # Holds instances of Fbbt, FBdv, FBcv or GO
   properties:
     score: float
     p_value: float
+
 
 # ---
 # annotation
@@ -681,7 +827,7 @@ biological process gene product:
   source: protein
   target: biological process
 
-molucular function gene product:
+molecular function gene product:
   is_a: go gene product
   inherit_properties: true
   represented_as: edge
@@ -788,6 +934,7 @@ super enhancer to gene association:
     score: float
     biological_context: str
 
+# This holds data from TFLink to fly: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv 
 transcription factor to gene association:
   description: >-
     An regulatory association between a transcription factor and its target gene
@@ -1015,3 +1162,495 @@ transcript to exon:
   properties: 
     source: str
     source_url: str
+
+
+
+################################################ dmel start ###################################################
+
+
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Genes_Sequence_Ontology_.28SO.29_data_.28dmel_gene_sequence_ontology_annotations_fb_.2A.tsv.gz.29
+# Used in the sequence_ontology_adapter.py  for dmel data
+gene to so:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: so_classified_as
+  output_label: classified_as
+  source: gene
+  target: so
+  properties:
+    taxon_id: str   # 7227 for dmel / 9606 for hsa
+
+
+go gene:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: go_gene
+  properties:
+    qualifier: obj
+    db_reference: obj
+    evidence: str
+
+# GAF adapter
+# Data:
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_Association_File_-_GAF_.28gene_association.fb.gz.29
+biological process gene:
+  is_a: go gene
+  inherit_properties: true
+  represented_as: edge
+  input_label: biological_process_gene
+  output_label: involved_in
+  source: gene
+  target: biological process
+
+
+molecular function gene:
+  is_a: go gene
+  inherit_properties: true
+  represented_as: edge
+  input_label: molecular_function_gene
+  output_label: enables
+  source: gene
+  target: molecular function
+
+cellular component gene:
+  is_a: go gene
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_gene
+  output_label: located_in
+  source: gene
+  target: cellular component
+
+cellular component gene part of:
+  is_a: cellular component gene
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_gene_part_of
+  output_label: part_of
+  source: gene
+  target: cellular component
+
+cellular component gene located in:
+  is_a: cellular component gene
+  inherit_properties: true
+  represented_as: edge
+  input_label: cellular_component_gene_located_in
+  output_label: located_in
+  source: gene
+  target: cellular component
+
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_f_data_.28gene_group_data_fb_.2A.tsv.29
+# id is FBgg# for Flybase data
+gene group:
+  represented_as: node
+  input_label: gene_group
+  is_a: biological entity
+  properties:
+    genes: gene[]            # FBgn# list to link the group
+    group_symbol: str
+    group_name: str
+    parent_groups: gene group[]        # FBgg#
+    HGNC_family_ID: str[]        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29
+    taxon_id: int               # 7227 for dmel / 9606 for hsa
+
+
+gene to group association:
+  description: >-
+    An association between a gene and a group of genes: genes are grouped into gene groups based on shared characteristics, such as sequence, biological function, or participation in a biological process
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: grouped_into
+  source: gene
+  target: gene group
+  properties:
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Signaling_pathway_group_data_.28signaling_pathway_group_data_fb_.2A.tsv.29
+# id is FBgg# for Flybase data
+signaling pathway gene group:
+  represented_as: node
+  input_label: signaling_pathway_gene_group
+  is_a: biological entity
+  properties:
+    taxon_id: int               # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+    genes: gene[]               # FBgn# list to link the group
+    group_symbol: str
+    group_name: str
+    parent_groups: pathway gene group[]        # FBgg#
+    HGNC_family_ID: str[]        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29
+
+
+gene to signaling pathway group association:
+  description: >-
+    An association between a gene and a group of genes: genes are grouped into gene groups based on shared characteristics, such as sequence, biological function, or participation in a biological process
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: signaling_pathway_grouped_into
+  source: gene
+  target: signaling pathway gene group
+  properties:
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Metabolic_pathway_group_data_.28metabolic_pathway_group_data_fb_.2A.tsv.29
+# id is FBgg# for Flybase data
+metabolic pathway gene group:
+  represented_as: node
+  input_label: metabolic_pathway_gene_group
+  is_a: biological entity
+  properties:
+    taxon_id: int               # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+    genes: gene[]               # FBgn# list to link the group
+    group_symbol: str
+    group_name: str
+    parent_groups: metabolic pathway gene group[]        # FBgg#
+    HGNC_family_ID: str[]        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29
+
+
+gene to metabolic pathway group association:
+  description: >-
+    An association between a gene and a group of genes: genes are grouped into gene groups based on shared characteristics, such as sequence, biological function, or participation in a biological process
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: metabolic_pathway_grouped_into
+  source: gene
+  target: metabolic pathway gene group
+  properties:
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+
+
+
+# Fly:
+# FB https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Alleles_.3C.3D.3E_Genes_.28fbal_to_fbgn_fb_.2A.tsv.29 
+allele:
+  represented_as: node
+  input_label: allele
+  is_a: genomic variant
+  inherit_properties: true
+  properties:
+      #gene: gene
+      allele_symbol: str
+      taxon_id: int                        # 7227 for dmel / 9606 for hsa
+  description: >-
+      Different versions of the same variant (in a specific  locus) are called alleles[1, 2]. Most commonly used referring to genes.
+
+
+# FB https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Alleles_.3C.3D.3E_Genes_.28fbal_to_fbgn_fb_.2A.tsv.29 
+# Used in the allele_adapter.py  for dmel data
+allele to gene association:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: variant_of
+  source: allele
+  target: gene
+  properties:
+    taxon_id: str   # 7227 for dmel
+
+
+# FB data: https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_disease_model_data_.28disease_model_annotations_fb_.2A.tsv.gz.29
+dmel disease model:
+  represented_as: node
+  input_label: dmel_disease_model
+  is_a: biological entity
+  properties:
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
+    gene: gene        
+    do_qualifier: str
+    do_term_id: do                       # only this should be enough because of DiseaseOntology
+    do_term_name: str
+    allele: allele                        # a gene variant <---> need to normatize this
+    ortholog_hgnc_id: str
+    ortholog_hgnc_symbol: str             # this should be linked to in the Gene data type
+    evidence_code: str                    # evidence code and interacting alleles are in the same field (column) in the tsv file
+    interacting_alleles: allele[]         # but they occur *together* very infrequently
+    ev_code_interact_alleles: str
+    reference_FBrf_id: str
+
+
+modelled to human disease:
+  represented_as: edge
+  input_label: modelled_to_human_disease
+  is_a: annotation
+  source: gene
+  target: dmel disease model
+  properties:
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
+
+
+modelled to do term:
+  represented_as: edge
+  input_label: modelled_to_do_term
+  is_a: annotation
+  source: gene
+  target: do
+  properties:
+    disease_model_id: dmel disease model
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
+
+
+
+# The following 5 schemata's data source  is
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29
+
+# From the site above:
+# For cases where the genotype contains more than one component, then the components are separated as follows (columns 1 and 2):
+#  * Homozygous or transheterozygous combinations of classical/insertional alleles at a single locus are separated by a '/'.
+#  * Hemizygous combinations affecting a single locus (classical/insertional allele over a deficiency for that locus) are separated by a '/'.
+#  * Heterozygosity for a classical/insertional allele or aberration is represented by '/+'.
+#  * In all other cases, other genotype components (e.g. drivers, transgenic alleles) are separated by a space.
+#
+# genotype and phenotype ids were created to keep original data semantics. They are 'genotype_0', 'phenotype_0', 'genotype_1', 'phenotype_1',...
+# It is needed because multiple phenotypes can exist for the same genotype.
+genotype:
+  represented_as: node
+  input_label: genotype
+  is_a: biological entity
+  properties:
+    genotype_ids: str           # string composed of one or more allele id(s) (FBal#)
+    genotype_symbols: str       # string composed of one or more allele symbol(s)
+    reference: str              # FBrf# literature ref id
+    taxon_id: int               # 7227 for dmel / 9606 for hsa
+
+
+phenotype:
+  represented_as: node
+  input_label: phenotype
+  is_a: biological entity
+  properties:
+    phenotype_ontology_id: ontology term    # an ontology term ID that chracterizes the phenotype
+    taxon_id: int                           # 7227 for dmel / 9606 for hsa 
+
+
+phenotype to genotype:
+  represented_as: edge
+  input_label: genetically_informed_by
+  is_a: annotation
+  source: phenotype
+  target: genotype
+  properties:
+    miniref: str
+    fb_ref: str                     # FBrf#
+    pmid_ref: str
+    pmcid_ref: str
+    doi: str
+    taxon_id: int                   # 7227 for dmel / 9606 for hsa 
+
+
+# A phenotype could be characterized by more than one ontology term
+phenotype to ontology:
+  represented_as: edge
+  input_label: characterized_by
+  is_a: annotation
+  source: phenotype
+  target: ontology term       # zero or more FBcv#, FBbt# and/or FBdv to add information to the phenotype.
+  properties:
+    taxon_id: int             # 7227 for dmel / 9606 for hsa 
+
+
+# Links an allele (and its gene: an allele is a 'variant_of' a gene) to phenotypes.
+allele to phenotype:
+  represented_as: edge
+  input_label: involved_in
+  is_a: annotation
+  source: allele
+  target: phenotype
+  properties:
+    miniref: str
+    fb_ref: str                     # FBrf#
+    pmid_ref: str
+    pmcid_ref: str
+    doi: str
+    taxon_id: int                   # 7227 for dmel / 9606 for hsa 
+
+
+# Schema for RNA-protein and protein-protein interactions.
+# Biocypher doesn't accept source AND targets as lists of types in the same schema
+# # ptp stands for "protein or transcript to protein"
+ptp physically interacts with:
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: ptp_physically_interacts_with
+  source: [protein, transcript]
+  target: protein
+  properties:
+    source_gene: gene       
+    target_gene: gene       
+    detection_method: mi    # Molecular Interaction Ontology
+    pubmed_ids: str[]
+    source_taxon_id: int
+    target_taxon_id: int
+    interaction_type: mi    # Molecular Interaction Ontology
+    interaction_comments: str
+    source_comments: str
+    target_comments: str    
+
+
+# Schema for protein-RNA and RNA-RNA dmel physical interaction:
+# ptt stands for "protein or transcript to transcript"
+ptt physically interacts with:
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: ptt_physically_interacts_with
+  source: [protein, transcript]
+  target: transcript   
+  properties:
+    source_gene: gene       
+    target_gene: gene       
+    detection_method: mi    # Molecular Interaction Ontology
+    pubmed_ids: str[]
+    source_taxon_id: int
+    target_taxon_id: int
+    interaction_type: mi    # Molecular Interaction Ontology
+    interaction_comments: str
+    source_comments: str
+    target_comments: str    
+
+# Dmel to hsa data:
+
+  #                   *** THE TABLE ONLY REPORTS HOMOLOGY WITH DIOPT SCORE GREATER THAN 2 ***
+  #                   https://fgr.hms.harvard.edu/diopt-documentation
+
+# From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_Orthologs_.28dmel_human_orthologs_disease_fb_.2A.tsv.gz.29
+# FB table columns:
+# Dmel_gene_ID	Dmel_gene_symbol	Human_gene_HGNC_ID	Human_gene_OMIM_ID	Human_gene_symbol	DIOPT_score	OMIM_Phenotype_IDs	OMIM_Phenotype_IDs[name]
+orthology association:
+  description: >-
+    Non-directional association between two genes indicating that there is an orthology relation among them:  “Historical homology that involves genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)"
+  is_a: related to at instance level
+  #inherit_properties: true
+  represented_as: edge
+  input_label: orthologs_genes
+  source: gene
+  target: gene
+  properties:
+    DIOPT_score: int
+    hsa_hgnc_id: str
+    hsa_omim_id: str
+    hsa_omim_phenotype_ids: str
+    hsa_omim_phenotype_ids_names: str
+    source_organism: str
+    target_organism: str
+    #taxon_id: int                        # 7227 for dmel / 9606 for hsa
+
+
+# Human:
+#
+# Fly:
+#
+# From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Drosophila_Paralogs_.28dmel_paralogs_fb_.2A.tsv.gz.29
+
+  #                   *** THE TABLE ONLY REPORTS HOMOLOGY WITH DIOPT SCORE GREATER THAN 2 ***
+  #                   https://fgr.hms.harvard.edu/diopt-documentation
+
+# FB table columns:
+## FBgn_ID	GeneSymbol	Arm/Scaffold	Location	Strand	Paralog_FBgn_ID	Paralog_GeneSymbol	Paralog_Arm/Scaffold	Paralog_Location	Paralog_Strand	DIOPT_score
+paralogy association:
+  description: >-
+  Non-directional association between two genes indicating that there is an paralogy relation among them:  “Historical homology that involves genes that diverged after a duplication event (http://purl.obolibrary.org/obo/RO_HOM0000011)"
+  is_a: related to at instance level
+  #inherit_properties: true
+  represented_as: edge
+  input_label: paralogs_genes
+  source: gene
+  target: gene
+  properties:
+    source_symbol: str
+    target_symbol: str
+    DIOPT_score: int
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Genetic_interaction_table_.28gene_genetic_interactions_.2A.tsv.29
+gene genetic association:
+  description: >-
+    An association between a gene and another gene, i.e., a gene-level genetic interactions in FlyBase. This data is computed from the allele-level genetic interaction data captured by FlyBase curators.
+  is_a: regulatory association
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_genetic_association
+  source: gene
+  target: gene
+  properties:
+    reference: str              # FBrf#
+    type: str                # suppresses (“suppressible”) / enhances (“enhanceable”)
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+
+
+
+
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Genetic_interactions_.28allele_genetic_interactions_.2A.tsv.29
+
+# The adapter class extracts any allele symbol occuring in an "interaction_description" property's text and creates
+# an edge from the "source allele" given by this node and the allele corresponding to  any allele symbol in the interaction text.
+allele to allele genetic interaction: 
+  represented_as: edge
+  input_label: allele_to_allele_genetic_interaction
+  is_a: annotation
+  source: allele
+  target: allele
+  properties:
+    interaction_description: str   # FB data record.
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
+
+# Flybase development ontology (FBdv#)
+FBdv:
+  is_a: ontology term
+  represented_as: node
+  input_label: FBdv
+  inherit_properties: true
+
+# Flybase gross anatomy ontology (FBbt#)
+FBbt:
+  is_a: ontology term
+  represented_as: node
+  input_label: FBbt
+  inherit_properties: true
+
+# Flybase Controlled Vocabulary ontology (FBcv#)
+FBcv:
+  is_a: ontology term
+  represented_as: node
+  input_label: FBcv
+  inherit_properties: true
+
+FBdv subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: FBdv_subclass_of
+  output_label: subclass_of
+  source: FBdv
+  target: FBdv
+
+FBbt subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: FBbt_subclass_of
+  output_label: subclass_of
+  source: FBbt
+  target: FBbt
+
+FBcv subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: FBcv_subclass_of
+  output_label: subclass_of
+  source: FBcv
+  target: FBcv
+
+
+
+
+
+################################################ dmel finish ###################################################
