@@ -219,41 +219,27 @@ class OntologyAdapter(Adapter):
         return remote_version != current_version
 
     def _get_remote_version(self):
-        """Retrieve the version of the remote ontology."""
         ontology_url = self.ONTOLOGIES[self.ontology]
 
         try:
-            # Make a GET request to fetch the ontology file
-            response = requests.get(ontology_url)
+            headers = {'Range': 'bytes=0-2048'}
+            response = requests.get(ontology_url, headers=headers)
             response.raise_for_status()
-
-            # Parse the XML content
-            root = ET.fromstring(response.content)
-
-            # Find the version IRI tag in the ontology
-            version_iri = root.find(".//{http://www.w3.org/2002/07/owl#}versionIRI")
-            if version_iri is not None:
-                version_url = version_iri.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource")
+        
+            date_match = re.search(r'versionIRI.*?releases/(\d{4}-\d{2}-\d{2})/', response.text)
+            if date_match:
+                return date_match.group(1)
             
-                # Extract the version date from the IRI
-                version_match = re.search(r'/releases/(\d{4}-\d{2}-\d{2})/', version_url)
-                if version_match:
-                    return version_match.group(1)
-                
-                # Handle the version format with or without 'v' prefix
-                version_match = re.search(r'/releases/v?([\d.]+)/', version_url)
-                if version_match:
-                    return version_match.group(1)  # Return version without 'v' prefix
-
-            print("No version IRI found or unrecognized format.")
+            version_match = re.search(r'versionIRI.*?releases/v?([\d.]+)/', response.text)
+            if version_match:
+                return version_match.group(1)
+            
+            print("No version information found in header")
             return None
-
-        except requests.exceptions.HTTPError as e:
-            print(f"HTTP error occurred: {e}")
+        
         except Exception as e:
-            print(f"An error occurred: {e}")
-
-        return None
+            print(f"An error occurred when checking version: {e}")
+            return None
 
     def check_for_updates(self):
         """Check if there's a new version available or if the cache has expired."""
@@ -528,14 +514,17 @@ class OntologyAdapter(Adapter):
 
     def cache_predicate(self, predicate, collection=None):
         triples = list(self.graph.subject_objects(predicate=predicate, unique=True))
-        for triple in triples:
-            s, o = triple
+        for s, o in triples:
             s_key = OntologyAdapter.to_key(s)
 
             if s_key not in self.cache:
                 self.cache[s_key] = {}
 
             if not collection:
+                if isinstance(o, rdflib.Literal) and o.language:
+                    if not re.match(r"^[a-zA-Z\-]+$", o.language):  
+                        print(f"Skipping invalid language tag for node {s_key}: {o.language}")
+                        continue
                 self.cache[s_key][predicate] = o
                 continue
 
@@ -543,6 +532,7 @@ class OntologyAdapter(Adapter):
                 self.cache[s_key][collection] = []
 
             self.cache[s_key][collection].append(o)
+
 
     def get_all_property_values_from_node(self, node, collection):
         node_key = OntologyAdapter.to_key(node)
