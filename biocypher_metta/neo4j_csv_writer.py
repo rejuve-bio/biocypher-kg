@@ -38,7 +38,7 @@ class Neo4jCSVWriter(BaseWriter):
 
         for k, v in schema.items():
             if v["represented_as"] == "edge":
-                edge_type = self.convert_input_labels(k)        # saulo: must remove this: no used
+                edge_type = self.convert_input_labels(k)        # saulo: must remove this: not used
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
 
@@ -233,7 +233,7 @@ class Neo4jCSVWriter(BaseWriter):
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 label = label.lower()
-                edge_freq[label] += 1
+                # edge_freq[label] += 1
             
                 edge_info = self.edge_node_types[label]
                 # saulo                
@@ -264,6 +264,9 @@ class Neo4jCSVWriter(BaseWriter):
                 if target_type == "ontology_term":
                     target_type = self.preprocess_id(target_id).split('_')[0]
             
+                # saulo
+                edge_freq[f"{label}|{source_type}|{target_type}"] += 1
+                          
                 # Use input label if output_label is None or empty
                 edge_label = edge_info.get("output_label") or label
             

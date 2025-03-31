@@ -37,7 +37,13 @@ def get_writer(writer_type: str, output_dir: Path):
         raise ValueError(f"Unknown writer type: {writer_type}")
 
 def preprocess_schema():
-    def convert_input_labels(label, replace_char="_"):
+    def convert_input_labels(label, replace_char="_"):   
+        # saulo 
+        if isinstance(label, list):
+            labels = []
+            for aLabel in label:
+                labels.append(aLabel.replace(" ", "_"))
+            return labels     
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
@@ -57,11 +63,51 @@ def preprocess_schema():
                 target_type = convert_input_labels(target_type)
                 output_label = v.get("output_label", None)
 
-                edge_node_types[label.lower()] = {
-                    "source": source_type.lower(),
-                    "target": target_type.lower(),
-                    "output_label": output_label.lower() if output_label else None,
-                }
+                # saulo
+                # edge_node_types[label.lower()] = {
+                #     "source": source_type.lower(),
+                #     "target": target_type.lower(),
+                #     "output_label": output_label.lower() if output_label else None,
+                # }
+
+                # saulo
+                # to  handle lists in source and/or target types
+                # the first case is the "general case" commented above
+                if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
+                    print(f"key: => {k}")# \n{v}")
+                    if '.' not in k:                            
+                        edge_node_types[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "target":target_type.lower(),
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                            ),
+                        }
+                elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
+                    for i in range(len(source_type)):
+                        source_type[i] = source_type[i].lower()                        
+                    # print(f"key: => {k} \n{v}")
+                    edge_node_types[label.lower()] = {
+                        "target": target_type.lower(),
+                        "output_label": (
+                            output_label.lower() if output_label is not None else None
+                        )
+                    }                        
+                    edge_node_types[label.lower()]["source"] = []                        
+                    for t in source_type:
+                        edge_node_types[label.lower()]["source"].append(t)
+                elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                    for i in range(len(target_type)):
+                        target_type[i] = target_type[i].lower()                        
+                    edge_node_types[label.lower()] = {
+                        "source": source_type.lower(), 
+                        "output_label": (
+                            output_label.lower() if output_label is not None else None
+                            )
+                    } 
+                    edge_node_types[label.lower()]["target"] = []
+                    for t in target_type:
+                        edge_node_types[label.lower()]["target"].append(t)
 
     return edge_node_types
 
@@ -82,11 +128,15 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     relations_frequency = Counter()
     possible_connections = defaultdict(set)
 
-    for edge, count in edges_count.items():
+    # saulo
+    for full_label, count in edges_count.items():
+        # saulo
+        edge, source, target = full_label.split('|')
         label = schema_dict[edge]['output_label'] or edge
         predicate_count[label] += count
-        source = schema_dict[edge]['source']
-        target = schema_dict[edge]['target']
+        # saulo
+        # source = schema_dict[edge]['source']
+        # target = schema_dict[edge]['target']
         relations_frequency[f'{source}|{target}'] += count
         possible_connections[f'{source}|{target}'].add(label)
 
@@ -105,6 +155,7 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     graph_info['data_size'] = f"{total_size_gb:.2f} GB"
 
     return graph_info
+
 
 def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, write_properties, add_provenance, schema_dict):
     nodes_count = Counter()
@@ -162,8 +213,10 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
         if write_edges:
             edges = adapter.get_edges()
             freq = writer.write_edges(edges, path_prefix=outdir)
-            for edge_label in freq:
-                edges_count[edge_label] += freq[edge_label]
+            # for edge_label in freq:
+            for edge_full_label in freq:
+                edge_label = edge_full_label.split('|')[0]
+                edges_count[edge_full_label] += freq[edge_full_label]
                 label = schema_dict[edge_label.lower()]['output_label'] or edge_label
                 if dataset_name is not None:
                     datasets_dict[dataset_name]['edges'].add(label)
