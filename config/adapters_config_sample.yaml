@@ -924,13 +924,12 @@ bgee_gene_expressed_in_anatomical_entity:
   nodes: False
   edges: True
 
-
 transcription_factor_binding_site:
   adapter:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: ./samples/sampleEncRegTfbsClustered.txt.gz
+      filepath: ./samples/sampleEncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: tfbs
   outdir: tfbs
@@ -942,7 +941,7 @@ gene_tfbs_association:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: ./samples/sampleEncRegTfbsClustered.txt.gz
+      filepath: ./samples/sampleEncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: gene_tfbs
   outdir: tfbs
