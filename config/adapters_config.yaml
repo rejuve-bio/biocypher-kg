@@ -983,7 +983,7 @@ transcription_factor_binding_site:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/EncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: tfbs
   outdir: tfbs
@@ -995,7 +995,7 @@ gene_tfbs_association:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/encRegTfbsClustered.txt.gz
+      filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/EncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: gene_tfbs
   outdir: tfbs
