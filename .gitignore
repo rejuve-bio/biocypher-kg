@@ -169,3 +169,6 @@ pypath_log/
 biocypher-log/
 
 ontology_dataset_cache/
+
+output/
+output_cli/
