@@ -37,13 +37,9 @@ def get_writer(writer_type: str, output_dir: Path):
         raise ValueError(f"Unknown writer type: {writer_type}")
 
 def preprocess_schema():
-    def convert_input_labels(label, replace_char="_"):   
-        # saulo 
+    def convert_input_labels(label, replace_char="_"):
         if isinstance(label, list):
-            labels = []
-            for aLabel in label:
-                labels.append(aLabel.replace(" ", "_"))
-            return labels     
+            return [item.replace(" ", replace_char) for item in label]
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
@@ -58,56 +54,28 @@ def preprocess_schema():
             target_type = v.get("target", None)
 
             if source_type is not None and target_type is not None:
-                label = convert_input_labels(v["input_label"])
-                source_type = convert_input_labels(source_type)
-                target_type = convert_input_labels(target_type)
+                if isinstance(v["input_label"], list):
+                    label = convert_input_labels(v["input_label"][0])
+                else:
+                    label = convert_input_labels(v["input_label"])
+                
+                if isinstance(source_type, list):
+                    processed_source = [s.lower() for s in convert_input_labels(source_type)]
+                else:
+                    processed_source = convert_input_labels(source_type).lower()
+                
+                if isinstance(target_type, list):
+                    processed_target = [t.lower() for t in convert_input_labels(target_type)]
+                else:
+                    processed_target = convert_input_labels(target_type).lower()
+                
                 output_label = v.get("output_label", None)
 
-                # saulo
-                # edge_node_types[label.lower()] = {
-                #     "source": source_type.lower(),
-                #     "target": target_type.lower(),
-                #     "output_label": output_label.lower() if output_label else None,
-                # }
-
-                # saulo
-                # to  handle lists in source and/or target types
-                # the first case is the "general case" commented above
-                if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
-                    print(f"key: => {k}")# \n{v}")
-                    if '.' not in k:                            
-                        edge_node_types[label.lower()] = {
-                            "source": source_type.lower(), 
-                            "target":target_type.lower(),
-                            "output_label": (
-                                output_label.lower() if output_label is not None else None
-                            ),
-                        }
-                elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
-                    for i in range(len(source_type)):
-                        source_type[i] = source_type[i].lower()                        
-                    # print(f"key: => {k} \n{v}")
-                    edge_node_types[label.lower()] = {
-                        "target": target_type.lower(),
-                        "output_label": (
-                            output_label.lower() if output_label is not None else None
-                        )
-                    }                        
-                    edge_node_types[label.lower()]["source"] = []                        
-                    for t in source_type:
-                        edge_node_types[label.lower()]["source"].append(t)
-                elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
-                    for i in range(len(target_type)):
-                        target_type[i] = target_type[i].lower()                        
-                    edge_node_types[label.lower()] = {
-                        "source": source_type.lower(), 
-                        "output_label": (
-                            output_label.lower() if output_label is not None else None
-                            )
-                    } 
-                    edge_node_types[label.lower()]["target"] = []
-                    for t in target_type:
-                        edge_node_types[label.lower()]["target"].append(t)
+                edge_node_types[label.lower()] = {
+                    "source": processed_source,
+                    "target": processed_target,
+                    "output_label": output_label.lower() if output_label else None,
+                }
 
     return edge_node_types
 
@@ -128,17 +96,40 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     relations_frequency = Counter()
     possible_connections = defaultdict(set)
 
-    # saulo
-    for full_label, count in edges_count.items():
-        # saulo
-        edge, source, target = full_label.split('|')
-        label = schema_dict[edge]['output_label'] or edge
-        predicate_count[label] += count
-        # saulo
-        # source = schema_dict[edge]['source']
-        # target = schema_dict[edge]['target']
-        relations_frequency[f'{source}|{target}'] += count
-        possible_connections[f'{source}|{target}'].add(label)
+    for edge_key, count in edges_count.items():
+        # Split the composite key: "label|source_type|target_type"
+        parts = edge_key.split('|')
+        if len(parts) == 3:
+            edge_type, source_type, target_type = parts
+        else:
+            # Handle old format or unexpected formats
+            edge_type = edge_key
+            if edge_type.lower() in schema_dict:
+                source_type = schema_dict[edge_type.lower()]['source']
+                target_type = schema_dict[edge_type.lower()]['target']
+            else:
+                # Skip if we can't determine source/target
+                continue
+        
+        if edge_type.lower() in schema_dict:
+            # Get the output label from schema
+            label = schema_dict[edge_type.lower()]['output_label'] or edge_type
+            predicate_count[label] += count
+            
+            # Handle source/target which might be lists
+            if isinstance(source_type, list):
+                print(f"source types: {source_type}")
+                for src in source_type:
+                    relations_frequency[f'{src}|{target_type}'] += count
+                    possible_connections[f'{src}|{target_type}'].add(label)
+            elif isinstance(target_type, list):
+                print(f"target types: {target_type}")
+                for tgt in target_type:
+                    relations_frequency[f'{source_type}|{tgt}'] += count
+                    possible_connections[f'{source_type}|{tgt}'].add(label)
+            else:
+                relations_frequency[f'{source_type}|{target_type}'] += count
+                possible_connections[f'{source_type}|{target_type}'].add(label)
 
     graph_info['top_connections'] = [{'name': predicate, 'count': count} for predicate, count in predicate_count.items()]
     graph_info['frequent_relationships'] = [{'entities': rel.split('|'), 'count': count} for rel, count in relations_frequency.items()]
@@ -155,7 +146,6 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     graph_info['data_size'] = f"{total_size_gb:.2f} GB"
 
     return graph_info
-
 
 def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, write_properties, add_provenance, schema_dict):
     nodes_count = Counter()
@@ -213,13 +203,19 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
         if write_edges:
             edges = adapter.get_edges()
             freq = writer.write_edges(edges, path_prefix=outdir)
-            # for edge_label in freq:
-            for edge_full_label in freq:
-                edge_label = edge_full_label.split('|')[0]
-                edges_count[edge_full_label] += freq[edge_full_label]
-                label = schema_dict[edge_label.lower()]['output_label'] or edge_label
+            for edge_label_key in freq:
+                edges_count[edge_label_key] += freq[edge_label_key]
+            
+                parts = edge_label_key.split('|')
+                edge_type = parts[0]  
+            
+                if edge_type.lower() in schema_dict:
+                    output_label = schema_dict[edge_type.lower()]['output_label'] or edge_type
+                else:
+                    output_label = edge_type  
+                
                 if dataset_name is not None:
-                    datasets_dict[dataset_name]['edges'].add(label)
+                    datasets_dict[dataset_name]['edges'].add(output_label)
 
     return nodes_count, nodes_props, edges_count, datasets_dict
 
