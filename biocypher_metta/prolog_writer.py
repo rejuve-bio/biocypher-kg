@@ -27,7 +27,7 @@ class PrologWriter(BaseWriter):
                 target_type = v.get("target", None)
                 # ## TODO fix this in the scheme config
                 if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
+                    if isinstance(v["input_label"], list):              # this doesn't exist in our schemas
                         label = self.sanitize_text(v["input_label"][0])
                         source_type = self.sanitize_text(v["source"][0])
                         target_type = self.sanitize_text(v["target"][0])
@@ -36,8 +36,49 @@ class PrologWriter(BaseWriter):
                         source_type = self.sanitize_text(v["source"])
                         target_type = self.sanitize_text(v["target"])
                     output_label = v.get("output_label", None)
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower(),
-                                                           "output_label": output_label.lower() if output_label is not None else None}
+                    
+                    # saulo
+                    # self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower(),
+                    #                                        "output_label": output_label.lower() if output_label is not None else None}
+
+                    # saulo
+                    # to  handle lists in source and/or target types
+                    # the first case is the "general case" commented above
+                    # print(f"key: => {k} \n{v}")
+                    if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
+                        if '.' not in k:                            
+                            self.edge_node_types[label.lower()] = {
+                                "source": source_type.lower(), 
+                                "target":target_type.lower(),
+                                "output_label": (
+                                    output_label.lower() if output_label is not None else None
+                                ),
+                            }
+                    elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
+                        for i in range(len(source_type)):
+                            source_type[i] = source_type[i].lower()                        
+                        self.edge_node_types[label.lower()] = {
+                            "target": target_type.lower(),
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                            )
+                        }                        
+                        self.edge_node_types[label.lower()]["source"] = []                        
+                        for t in source_type:
+                            self.edge_node_types[label.lower()]["source"].append(t)
+                    elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                        for i in range(len(target_type)):
+                            target_type[i] = target_type[i].lower()                        
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                                )
+                        } 
+                        self.edge_node_types[label.lower()]["target"] = []
+                        for t in target_type:
+                            self.edge_node_types[label.lower()]["target"].append(t)
+
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -76,7 +117,6 @@ class PrologWriter(BaseWriter):
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
-
             f.write("\n")
         return self.edge_freq
 
@@ -92,13 +132,37 @@ class PrologWriter(BaseWriter):
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         label = label.lower()
-        source_id = source_id.lower()
-        target_id = target_id.lower()
-        source_type = self.edge_node_types[label]["source"]
-        target_type = self.edge_node_types[label]["target"]
+        # saulo
+        # source_id = source_id.lower()
+        # target_id = target_id.lower()
+        # source_type = self.edge_node_types[label]["source"]
+        # target_type = self.edge_node_types[label]["target"]
+        # output_label = self.edge_node_types[label]["output_label"]
+        # if output_label is not None:
+        #     label = output_label.lower()
+
+        if isinstance(source_id, tuple):
+            source_type = source_id[0]
+            if source_type not in self.edge_node_types[label]["source"]:
+                raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]['source']}")
+            source_id = source_id[1]
+        else:
+            source_type = self.edge_node_types[label]["source"] # 'general case' commented above
+
+        # added by saulo to handle lists of types in the schema of edge's target ids
+        if isinstance(target_id, tuple):
+            target_type = target_id[0]
+            if target_type not in self.edge_node_types[label]["target"]:
+                raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]['target']}")
+            target_id = target_id[1]
+        else:
+            target_type = self.edge_node_types[label]["target"] # 'general case' commented above
+
+        # saulo moved this to here:
         output_label = self.edge_node_types[label]["output_label"]
         if output_label is not None:
             label = output_label.lower()
+
         source_id = self.sanitize_text(source_id)
         target_id = self.sanitize_text(target_id)
         label = self.sanitize_text(label)
