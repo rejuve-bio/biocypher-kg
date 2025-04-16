@@ -55,7 +55,7 @@ class TfbsAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
             
-            yield tfbs_id, self.label, props
+                yield tfbs_id, self.label, props
     
     def get_edges(self):
         for data in self._read_csv_gz():
