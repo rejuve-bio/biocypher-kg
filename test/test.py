@@ -11,6 +11,12 @@ import sys
 logging.basicConfig(level=logging.INFO)
 
 def convert_input_labels(label, replace_char="_"):
+    # saulo
+    if isinstance(label, list):
+        labels = []
+        for aLabel in label:
+            labels.append(aLabel.replace(" ", "_"))
+        return labels
     return label.replace(" ", replace_char)
 
 def parse_schema(bcy):
@@ -34,8 +40,46 @@ def parse_schema(bcy):
                     target_type = convert_input_labels(target_type)
 
                 output_label = v.get("output_label", None)
-                edges_schema[label.lower()] = {"source": source_type.lower(), "target":
-                    target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+                # saulo
+                # edges_schema[label.lower()] = {"source": source_type.lower(), "target":
+                #     target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+                    # saulo
+                    # to  handle lists in source and/or target types
+                    # the first case is the "general case" commented above
+                    # print(f"key: => {k} \n{v}")
+                if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
+                    if '.' not in k:                            
+                        edges_schema[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "target":target_type.lower(),
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                            ),
+                        }
+                elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
+                    for i in range(len(source_type)):
+                        source_type[i] = source_type[i].lower()                        
+                    edges_schema[label.lower()] = {
+                        "target": target_type.lower(),
+                        "output_label": (
+                            output_label.lower() if output_label is not None else None
+                        )
+                    }                        
+                    edges_schema[label.lower()]["source"] = []                        
+                    for t in source_type:
+                        edges_schema[label.lower()]["source"].append(t)
+                elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                    for i in range(len(target_type)):
+                        target_type[i] = target_type[i].lower()                        
+                    edges_schema[label.lower()] = {
+                        "source": source_type.lower(), 
+                        "output_label": (
+                            output_label.lower() if output_label is not None else None
+                            )
+                    } 
+                    edges_schema[label.lower()]["target"] = []
+                    for t in target_type:
+                        edges_schema[label.lower()]["target"].append(t)
 
         elif v["represented_as"] == "node":
             label = v["input_label"]

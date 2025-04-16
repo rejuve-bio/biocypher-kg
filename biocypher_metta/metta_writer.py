@@ -16,6 +16,7 @@ class MeTTaWriter(BaseWriter):
         #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
 
+
     def create_type_hierarchy(self):
         G = self.ontology._nx_graph
         file_path = f"{self.output_path}/type_defs.metta"
@@ -62,10 +63,56 @@ class MeTTaWriter(BaseWriter):
                         target_type = self.convert_input_labels(target_type)
 
                     output_label = v.get("output_label", None)
-                    out_str = edge_data_constructor(edge_type, source_type, target_type, label)
-                    file.write(out_str + "\n")
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":
-                        target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+                    # saulo
+                    # out_str = edge_data_constructor(edge_type, source_type, target_type, label)
+                    # file.write(out_str + "\n")
+                    # self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":
+                    #     target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+
+                    # to  handle lists in source and/or target types (2024/09/17) <-- first time I changed this! :()  :D
+                    # the first case is the "general case" commented above
+                    if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
+                        print(f"key: => {k}")# \n{v}")
+                        if '.' not in k:                            
+                            self.edge_node_types[label.lower()] = {
+                                "source": source_type.lower(), 
+                                "target":target_type.lower(),
+                                "output_label": (
+                                    output_label.lower() if output_label is not None else None
+                                ),
+                            }
+                            out_str = edge_data_constructor(edge_type, source_type, target_type, label)
+                            file.write(out_str + "\n")
+                    elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
+                        for i in range(len(source_type)):
+                            source_type[i] = source_type[i].lower()                        
+                        print(f"list-str:::key: => {k}")# \n{v}")
+                        self.edge_node_types[label.lower()] = {
+                            "target": target_type.lower(),
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                            )
+                        }                        
+                        self.edge_node_types[label.lower()]["source"] = []                        
+                        for t in source_type:
+                            self.edge_node_types[label.lower()]["source"].append(t)
+                            out_str = edge_data_constructor(edge_type, t, target_type, label)
+                            file.write(out_str + "\n")
+                    elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                        print(f"str-list:::key: => {k}")# \n{v}")
+                        for i in range(len(target_type)):
+                            target_type[i] = target_type[i].lower()                        
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "output_label": (
+                                output_label.lower() if output_label is not None else None
+                                )
+                        } 
+                        self.edge_node_types[label.lower()]["target"] = []
+                        for t in target_type:
+                            self.edge_node_types[label.lower()]["target"].append(t)
+                            out_str = edge_data_constructor(edge_type, source_type, t, label)
+                            file.write(out_str + "\n")
 
             elif v["represented_as"] == "node":
                 label = v["input_label"]
@@ -117,9 +164,9 @@ class MeTTaWriter(BaseWriter):
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
-
             f.write("\n")
         return self.edge_freq
+
 
     def write_node(self, node):
         id, label, properties = node
@@ -128,19 +175,48 @@ class MeTTaWriter(BaseWriter):
         def_out = f"({self.convert_input_labels(label)} {id})"
         return self.write_property(def_out, properties)
 
+
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         label = label.lower()
-        source_type = self.edge_node_types[label]["source"]
-        target_type = self.edge_node_types[label]["target"]
+        # added by saulo to handle list of types in the schema of edge's source
+        if isinstance(source_id, tuple):
+            source_type = source_id[0]
+            if source_type not in self.edge_node_types[label]["source"]:
+                raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]['source']}")
+            source_id = source_id[1]
+        else:
+            source_type = self.edge_node_types[label]["source"]
+        # added by saulo to handle list of types in the schema of edge's target
+        if isinstance(target_id, tuple):
+            target_type = target_id[0]
+            if target_type not in self.edge_node_types[label]["target"]:
+                raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]['target']}")
+            target_id = target_id[1]
+        else:
+            target_type = self.edge_node_types[label]["target"]
+
+        # source_type = self.edge_node_types[label]["source"]
+        # target_type = self.edge_node_types[label]["target"]
+        
         output_label = self.edge_node_types[label]["output_label"]
         if output_label is not None:
             label = output_label
+        # added by saulo to handle lists of values with (probably) different types
+        if isinstance(source_type, list):
+            def_out = ""
+            for a_source_type in source_type:
+                def_out += f"({label} ({a_source_type} {source_id}) ({target_type} {target_id}))" + "\n"            
+            def_out = def_out.rstrip('\n')            
+        else:
+            def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
+
         if source_type == "ontology_term":
             source_type = source_id.replace(':', '_').split('_')[0].lower()
         if target_type == "ontology_term":
             target_type = target_id.replace(':', '_').split('_')[0].lower()
         def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
+
         return self.write_property(def_out, properties)
 
 
@@ -188,6 +264,11 @@ class MeTTaWriter(BaseWriter):
         :param replace_char: the character to replace spaces with
         :return:
         """
+        if isinstance(label, list):
+            labels = []
+            for aLabel in label:
+                labels.append(aLabel.replace(" ", "_"))
+            return labels        
         return label.replace(" ", replace_char)
 
     def get_parent(self, G, node):
