@@ -86,7 +86,7 @@ class MeTTaWriter(BaseWriter):
                     elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas, physically interacts with...
                         for i in range(len(source_type)):
                             source_type[i] = source_type[i].lower()                        
-                        print(f"list-str:::key: => {k}")# \n{v}")
+                        # print(f"list-str:::key: => {k}")# \n{v}")
                         self.edge_node_types[label.lower()] = {
                             "target": target_type.lower(),
                             "output_label": (

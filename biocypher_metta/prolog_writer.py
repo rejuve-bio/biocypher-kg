@@ -147,7 +147,7 @@ class PrologWriter(BaseWriter):
                 raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]['source']}")
             source_id = source_id[1]
         else:
-            source_type = self.edge_node_types[label]["source"] # 'general case' commented above
+            source_type =  self.edge_node_types[label]["source"] # 'general case' commented above
 
         # added by saulo to handle lists of types in the schema of edge's target ids
         if isinstance(target_id, tuple):
