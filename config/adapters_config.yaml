@@ -860,16 +860,15 @@ cl_part_of:
   nodes: False
   edges: True
 
-fabian_tf_snp:
+motif_diff_tf_snp:
   adapter:
-    module: biocypher_metta.adapters.fabian_adapter
-    cls: FabianAdapter
+    module: biocypher_metta.adapters.motif_diff_adapter
+    cls: MotifDiffAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/fabian/fabian_1719229097_34244_data.tsv
+      filepath: /mnt/hdd_2/abdu/biocypher_data/motif_diff/motif_diff_mono_probNorm_average.diff
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
-      dbsnp_pos_map: None # will be provided by import script
-      label: tfbs_snp
-  outdir: fabian
+      label: tf_snp
+  outdir: MotifDiff
   nodes: False
   edges: True
 
