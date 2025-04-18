@@ -1,3 +1,14 @@
+FBgn0000008	R-DME-1280218	https://reactome.org/PathwayBrowser/#/R-DME-1280218	Adaptive Immune System	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-983168	https://reactome.org/PathwayBrowser/#/R-DME-983168	Antigen processing: Ubiquitination & Proteasome degradation	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-983169	https://reactome.org/PathwayBrowser/#/R-DME-983169	Class I MHC mediated antigen processing & presentation	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-1280218	https://reactome.org/PathwayBrowser/#/R-DME-1280218	Adaptive Immune System	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-983168	https://reactome.org/PathwayBrowser/#/R-DME-983168	Antigen processing: Ubiquitination & Proteasome degradation	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-983169	https://reactome.org/PathwayBrowser/#/R-DME-983169	Class I MHC mediated antigen processing & presentation	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-112311	https://reactome.org/PathwayBrowser/#/R-DME-112311	Neurotransmitter clearance	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-112315	https://reactome.org/PathwayBrowser/#/R-DME-112315	Transmission across Chemical Synapses	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-112316	https://reactome.org/PathwayBrowser/#/R-DME-112316	Neuronal System	IEA	Drosophila melanogaster
 NSDART00000193986	R-DRE-199991	https://reactome.org/PathwayBrowser/#/R-DRE-199991	Membrane Trafficking	IEA	Danio rerio
 ENSDART00000193986	R-DRE-5653656	https://reactome.org/PathwayBrowser/#/R-DRE-5653656	Vesicle-mediated transport	IEA	Danio rerio
 ENSG00000000419	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens

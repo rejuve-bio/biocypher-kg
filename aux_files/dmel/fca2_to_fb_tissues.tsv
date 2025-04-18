@@ -1,0 +1,44 @@
+Tissue stage and sex	_gene file tissue	_transcriptGene file tissue	FB_tissue
+Adult Female	Brain / CNS	Brain	Brain
+Adult Female	Crop	Crop	Crop
+Adult Female	Carcass	Carcass	Carcass
+Adult Female	Eye	Eye	Eye
+Adult Female	Fat body	Fat body	FatBody
+Adult Female	Head	Head	Head
+Adult Female	Hindgut	Hindgut	Hindgut
+Adult Female	Midgut	Midgut	Midgut
+Adult Female	Ovary	Ovary	Ovary
+Adult Female	Rectal pad	Rectal pad	RectalPad
+Adult Female	Salivary gland	Salivary gland	SalivaryGland
+Adult Female	Thoracicoabdominal ganglion	Thoracicoabdominal ganglion	ThoracicoAbdominalGanglion
+Adult Female	Malpighian Tubules	Malpighian Tubules	MalpighianTubule
+Adult Female	Mated Spermatheca	Mated Spermatheca	Mated Spermathecum
+Adult Female	Virgin Spermatheca	Virgin Spermatheca	Virgin Spermathecum
+Adult Female	Whole body	Whole body	Whole
+Adult Female	Heart	Heart	Heart
+Larval	Brain / CNS	CNS	CNS
+Larval	Fat body	Fat body	FatBody
+Larval	Hindgut	Hindgut	Hindgut
+Larval	Malpighian Tubules	Malpighian Tubules	MalpighianTubule
+Larval	Midgut	Midgut	Midgut
+Larval	Salivary gland	Salivary gland	SalivaryGland
+Larval	Trachea	Trachea	Trachea
+Larval	Carcass	Carcass	Carcass
+Larval	Whole body	Whole body	Whole
+Larval	Garland cells	Garland cells	Garland Organ
+Adult Male	Brain / CNS	Brain	Brain
+Adult Male	Crop	Crop	Crop
+Adult Male	Carcass	Carcass	Carcass
+Adult Male	Eye	Eye	Eye
+Adult Male	Fat body	Fat body	FatBody
+Adult Male	Head	Head	Head
+Adult Male	Hindgut	Hindgut	Hindgut
+Adult Male	Midgut	Midgut	Midgut
+Adult Male	Rectal pad	Rectal pad	RectalPad
+Adult Male	Salivary gland	Salivary gland	SalivaryGland
+Adult Male	Thoracicoabdominal ganglion	Thoracicoabdominal ganglion	ThoracicoAbdominalGanglion
+Adult Male	Malpighian Tubules	Malpighian Tubules	MalpighianTubule
+Adult Male	Testis	Testis	Testis
+Adult Male	Accessory glands	Accessory glands	AccessoryGland
+Adult Male	Whole body	Whole body	Whole
+Adult Male	Heart	Heart	Heart

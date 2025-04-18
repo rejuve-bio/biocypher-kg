@@ -14,7 +14,7 @@ relationships:
       db_reference: obj
       evidence: str
 
-  molucular function gene product:
+  molecular function gene product:
     url: http://geneontology.org/gene-associations/goa_human.gaf.gz
     description: Association between proteins and molecular functions
     input_label: molecular_function_gene_product
