@@ -1,4 +1,7 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
+# Changed by Saulo A. P. Pinto <saulo@singularitynet.io> 
+# to work for other organisms: simply added taxon_id property/argument.
+
 from biocypher_metta.adapters import Adapter
 import pickle
 import csv
@@ -6,7 +9,7 @@ import gzip
 from biocypher_metta.adapters.helpers import to_float
 
 # Imports STRING Protein-Protein interactions
-
+# hsa:
 # protein1 protein2 combined_score
 # 9606.ENSP00000000233 9606.ENSP00000356607 173
 # 9606.ENSP00000000233 9606.ENSP00000427567 154
@@ -16,9 +19,20 @@ from biocypher_metta.adapters.helpers import to_float
 # 9606.ENSP00000000233 9606.ENSP00000325266 180
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
+# dmel
+# protein1 protein2 combined_score
+#
+# 7227.FBpp0070001 7227.FBpp0082651 375
+# 7227.FBpp0070001 7227.FBpp0078514 379
+# 7227.FBpp0070001 7227.FBpp0083155 384
+# 7227.FBpp0070001 7227.FBpp0304379 242
+# 7227.FBpp0070001 7227.FBpp0076311 173
+# 7227.FBpp0070001 7227.FBpp0074378 228
+
+
 class StringPPIAdapter(Adapter):
     def __init__(self, filepath, ensembl_to_uniprot_map,
-                 write_properties, add_provenance):
+                 write_properties, add_provenance, taxon_id = 9606):
         """
         Constructs StringPPI adapter that returns edges between proteins
         :param filepath: Path to the TSV file downloaded from String
@@ -28,7 +42,7 @@ class StringPPIAdapter(Adapter):
 
         with open(ensembl_to_uniprot_map, "rb") as f:
             self.ensembl2uniprot = pickle.load(f)
-
+        self.taxon_id = taxon_id
         self.label = "interacts_with"
         self.source = "STRING"
         self.source_url = "https://string-db.org/"
@@ -55,5 +69,6 @@ class StringPPIAdapter(Adapter):
                         if self.add_provenance:
                             _props["source"] = self.source
                             _props["source_url"] = self.source_url
+                    _props['taxon id'] = self.taxon_id
 
                     yield _source, _target, self.label, _props

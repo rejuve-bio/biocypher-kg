@@ -215,6 +215,21 @@ go_cellular_component:
   nodes: True
   edges: False
 
+
+
+tflink:     
+    adapter:
+        module: biocypher_metta.adapters.tflink_adapter
+        cls: TFLinkAdapter
+        args:
+          filepath: ./samples/tflink_homo_sapiens_interactions.tsv.gz
+          entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
+          
+    outdir: tflink
+    nodes: False
+    edges: True
+
+
 go_cellular_component_subclass_of:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
@@ -877,7 +892,7 @@ bto_subclass_of:
 
 human_phenotype_ontology:
   adapter:
-    module: biocypher_metta.adapters.human_phenotype_ontology_adapter
+    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
     args:
       ontology: 'hpo'
@@ -891,7 +906,7 @@ human_phenotype_ontology:
 
 hpo_subclass_of:
   adapter:
-    module: biocypher_metta.adapters.human_phenotype_ontology_adapter
+    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
     args:
       ontology: 'hpo'

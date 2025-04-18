@@ -117,8 +117,10 @@ protein:
     accessions: str[]
     protein_name: str
     synonyms: str[]
+    dbxrefs: str[]    
     source: str
     source_url: str
+    taxon_id: int       # 7227 for fly; 9606 for human
 
 transcript:
   represented_as: node

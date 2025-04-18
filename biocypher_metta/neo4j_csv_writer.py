@@ -6,7 +6,7 @@ import networkx as nx
 import rdflib
 from pathlib import Path
 from biocypher_metta import BaseWriter
-
+ 
 class Neo4jCSVWriter(BaseWriter):
     def __init__(self, schema_config, biocypher_config, output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
@@ -59,8 +59,8 @@ class Neo4jCSVWriter(BaseWriter):
                     #     "target": target_type.lower(),
                     #     "output_label": output_label.lower()
                     # }
-                    # saulo
 
+                    # saulo
                     # to  handle lists in source and/or target types (2024/09/17) <-- first time I changed this! :()  :D
                     # the first case is the "general case" commented above
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings

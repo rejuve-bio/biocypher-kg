@@ -49,10 +49,12 @@ class GAFAdapter(Adapter):
         'human': 'http://geneontology.org/gene-associations/goa_human.gaf.gz',
         'human_isoform': 'http://geneontology.org/gene-associations/goa_human_isoform.gaf.gz',
         'rna': 'http://geneontology.org/gene-associations/goa_human_rna.gaf.gz',
-        'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv'
+        'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
+        # saulo: dmel GAF file for GO annotations:
+        'Flybase': 'https://ftp.flybase.net/releases/current/precomputed_files/go/gene_association.fb.gz'
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human', 
+    def __init__(self, filepath, write_properties, add_provenance, gaf_source = 'GOA', gaf_type='human', 
                  label=None, mapping_file='aux_files/go_subontology_mapping.pkl'):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
@@ -62,7 +64,7 @@ class GAFAdapter(Adapter):
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
         self.label = label
-        self.source = "GOA"
+        self.source = gaf_source
         self.source_url = GAFAdapter.SOURCES[gaf_type]
 
         self.subontology = None
@@ -142,7 +144,8 @@ class GAFAdapter(Adapter):
                     props = {
                         'qualifier': qualifier,
                         'db_reference': annotation['DB:Reference'],
-                        'evidence': annotation['Evidence']
+                        'evidence': annotation['Evidence'],
+                        'taxon': annotation['Taxon_ID'][0].split(':')[-1], 
                     }
                     if self.add_provenance:
                         props['source'] = self.source
