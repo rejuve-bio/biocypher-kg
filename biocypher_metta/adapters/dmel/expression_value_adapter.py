@@ -65,8 +65,13 @@ from biocypher._logger import logger
 import gc
 
 class ExpressionValueAdapter(Adapter):
-    def __init__(self, write_properties, add_provenance, filepaths):
-        self.filepaths = filepaths
+    def __init__(self, write_properties, add_provenance, data_filepaths, aux_filepaths):
+        self.data_filepaths = data_filepaths
+        '''
+        self.aux_filepaths[0] is used to build the gene symbol to FBgn dictionary in the build_gene_symbol_to_fbgn_dict()
+        for the AFCA data.
+        '''
+        self.aux_filepaths = aux_filepaths
         self.label = 'expression_value'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
@@ -75,7 +80,7 @@ class ExpressionValueAdapter(Adapter):
 
 
     def get_edges(self):
-        for dmel_data_filepath in self.filepaths:
+        for dmel_data_filepath in self.data_filepaths:
             expression_table = FlybasePrecomputedTable(dmel_data_filepath)
             self.version = expression_table.extract_date_string(dmel_data_filepath)
             if "scRNA-Seq_gene_expression_fb" in dmel_data_filepath:                
@@ -173,7 +178,7 @@ class ExpressionValueAdapter(Adapter):
             elif "fca2" in dmel_data_filepath:
                 self.source = 'FlyCellAtlas2'
                 self.source_url = 'https://flyatlas.gla.ac.uk/FlyAtlas2/index.html?page=help'
-                fca2_tissues_file_path = 'aux_files/fca2_to_fb_tissues.tsv'                    
+                fca2_tissues_file_path = 'aux_files/dmel/fca2_to_fb_tissues.tsv'                    
                 if "transcript" in dmel_data_filepath:
                     _, tissue_library_dict = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
                 else:
@@ -358,10 +363,10 @@ class ExpressionValueAdapter(Adapter):
                 genes that have not been localized to the reference genome assembly for a given (Drosophila) species.
 
         '''
-        symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_06.tsv.gz"
+        # symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_06.tsv.gz"
         #symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_06.tsv.gz"
 
-        symbols_to_fbgn_table = FlybasePrecomputedTable(symbols_to_fbgn_file)
+        symbols_to_fbgn_table = FlybasePrecomputedTable(self.aux_filepaths[0])
         symbols_to_fbgn_dict = {}
         for row in symbols_to_fbgn_table.get_rows():
             if row[3] not in symbols_to_fbgn_dict:

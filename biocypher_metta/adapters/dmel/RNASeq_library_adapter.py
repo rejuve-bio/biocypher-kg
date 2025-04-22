@@ -153,7 +153,7 @@ class RnaseqLibraryAdapter(Adapter):
             # The fca2 file contents were generated in the "scripts/get_flyatlas2_gene_data.py" script by method
             # convert_gene_files()
             elif "fca2" in dmel_data_filepath:
-                fca2_tissues_file_path = 'aux_files/fca2_to_fb_tissues.tsv'                    
+                fca2_tissues_file_path = 'aux_files/dmel/fca2_to_fb_tissues.tsv'                    
                 if "transcript" in dmel_data_filepath:      # transcript data files use "Brain" but the others use "Brain / CNS"
                     _, tissue_library_dict = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
                 else:

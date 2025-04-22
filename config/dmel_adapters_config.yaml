@@ -454,6 +454,9 @@ expression_value:
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/afca/afca_afca_annotation_group_by_mean.tsv.gz,
       ]      
+      aux_filepaths: [
+                        /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_06.tsv.gz,
+      ]      
   outdir: rnaseq
   nodes: False
   edges: True
