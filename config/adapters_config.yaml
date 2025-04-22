@@ -931,7 +931,7 @@ bto_subclass_of:
 
 human_phenotype_ontology:
   adapter:
-    module: biocypher_metta.adapters.human_phenotype_ontology_adapter
+    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
     args:
       ontology: 'hpo'
@@ -945,7 +945,7 @@ human_phenotype_ontology:
 
 hpo_subclass_of:
   adapter:
-    module: biocypher_metta.adapters.human_phenotype_ontology_adapter
+    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
     args:
       ontology: 'hpo'

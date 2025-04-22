@@ -14,8 +14,9 @@ import gzip
 
 class TFLinkAdapter(Adapter):
     INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
+    
     def __init__(self, filepath, entrez_to_ensemble_map,
-                 write_properties, add_provenance):
+                 write_properties, add_provenance, taxon_id = 9606):
         """
         Constructs TFLink adapter that returns edges between TFs and their target gene
         :param filepath: Path to the TSV file downloaded from tflink
@@ -30,6 +31,7 @@ class TFLinkAdapter(Adapter):
         self.label = "tf_gene"
         self.source = "TFLink"
         self.source_url = "tflink.net"
+        self.taxon_id = taxon_id
 
         super(TFLinkAdapter, self).__init__(write_properties, add_provenance)
 
@@ -58,7 +60,8 @@ class TFLinkAdapter(Adapter):
                             "evidence": pubmed_ids,
                             "databases": sources,
                             "evidence_type": evidence_type,
-                            "detection_method": row[TFLinkAdapter.INDEX['Detection.method']]
+                            "detection_method": row[TFLinkAdapter.INDEX['Detection.method']],
+                            "taxon_id": self.taxon_id,
                         }
                         if self.add_provenance:
                             _props['source'] = self.source
