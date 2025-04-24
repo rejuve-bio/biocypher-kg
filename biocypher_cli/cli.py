@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-User-friendly BioCypher KG Generator with advanced CLI features
+User-friendly BioCypher_KG CLI_Tool with support for Human and Drosophila melanogaster
 """
 import subprocess
 import sys
+import yaml
+import logging
 from pathlib import Path
-from typing import List, Dict, Optional
-from rich.console import Console 
-from rich.progress import ( 
+from typing import List, Dict, Optional, Union
+from rich.console import Console
+from rich.progress import (
     Progress,
     SpinnerColumn,
     TextColumn,
@@ -15,17 +17,24 @@ from rich.progress import (
     TaskProgressColumn,
     TimeRemainingColumn,
 )
-from rich.panel import Panel 
+from rich.panel import Panel
 from rich.style import Style
 from rich.table import Table
 from questionary import select, confirm, checkbox, text
 import questionary
 from questionary import Validator, ValidationError
+import time
+import platform
+import shutil
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 console = Console()
 
 # Get project root
-PROJECT_ROOT = Path(__file__).parent.parent    
+PROJECT_ROOT = Path(__file__).parent.parent
 
 class PathValidator(Validator):
     def validate(self, document):
@@ -41,35 +50,90 @@ class PathValidator(Validator):
                 cursor_position=len(document.text),
             )
 
-def find_config_files() -> Dict[str, str]:
+def find_config_files(organism: str = None) -> Dict[str, str]:
     """Find available config files with friendly names"""
     config_dir = PROJECT_ROOT / "config"
-    return {
-        "Sample Adapters Config": str(config_dir / "adapters_config_sample.yaml"),
-        "Adapter Config": str(config_dir / "adapters_config.yml"),
+    files = {
+        # Human configs
+        "Human - Sample Adapters": str(config_dir / "adapters_config_sample.yaml"),
+        "Human - Full Adapters": str(config_dir / "adapters_config.yml"),
+        # Fly configs
+        "Fly - Sample Adapters": str(config_dir / "dmel_adapters_config_sample.yaml"),
+        "Fly - Full Adapters": str(config_dir / "dmel_adapters_config.yml"),
+        # Common configs
         "Biocypher Config": str(config_dir / "biocypher_config.yml"),
         "Docker Config": str(config_dir / "biocypher_docker_config.yml"),
         "Data Source Config": str(config_dir / "data_source_config.yml"),
         "Download Config": str(config_dir / "download.yml"),
     }
+    
+    if organism == "human":
+        return {k: v for k, v in files.items() if k.startswith("Human") or "Config" in k}
+    elif organism == "fly":
+        return {k: v for k, v in files.items() if k.startswith("Fly") or "Config" in k}
+    return files
 
-def find_aux_files() -> Dict[str, str]:
+def find_aux_files(organism: str = None) -> Dict[str, str]:
     """Find available auxiliary files with friendly names"""
     aux_dir = PROJECT_ROOT / "aux_files"
-    return {
-        "Tissues Ontology Map": str(aux_dir / "abc_tissues_to_ontology_map.pkl"),
-        "Gene Mapping": str(aux_dir / "gene_mapping.pkl"),
-        "Variant Data": str(aux_dir / "variant_data.pkl"),
+    files = {
+        # Human files
+        "Human - Tissues Ontology Map": str(aux_dir / "abc_tissues_to_ontology_map.pkl"),
+        "Human - Gene Mapping": str(aux_dir / "gene_mapping.pkl"),
+        "Human - Variant Data": str(aux_dir / "variant_data.pkl"),
+        # Fly files
+        "Fly - dbSNP rsIDs": str(aux_dir / "sample_dbsnp_rsids.pkl"),
+        "Fly - dbSNP Positions": str(aux_dir / "sample_dbsnp_pos.pkl"),
     }
+    
+    if organism == "human":
+        return {k: v for k, v in files.items() if k.startswith("Human")}
+    elif organism == "fly":
+        return {k: v for k, v in files.items() if k.startswith("Fly")}
+    return files
 
-def build_default_command() -> List[str]:
-    """Your proven command with parallel paths"""
+def get_available_adapters(config_path: str) -> List[str]:
+    """Get list of available adapters from config file"""
+    try:
+        with open(config_path) as f:
+            config = yaml.safe_load(f)
+            if not config:
+                logger.warning(f"Config file {config_path} is empty")
+                return []
+            
+            adapters = []
+            for key, value in config.items():
+                if isinstance(value, dict):
+                    if 'adapter' in value or 'module' in value:
+                        adapters.append(key)
+                else:
+                    adapters.append(key)
+            
+            return sorted(adapters)
+    except Exception as e:
+        logger.error(f"Error loading adapters from {config_path}: {e}")
+        return []
+
+def build_default_human_command() -> List[str]:
+    """Default command for human data"""
     return [
         "python3", str(PROJECT_ROOT / "create_knowledge_graph.py"),
-        "--output-dir", str(PROJECT_ROOT / "output_cli"),
+        "--output-dir", str(PROJECT_ROOT / "output_human"),
         "--adapters-config", str(PROJECT_ROOT / "config/adapters_config_sample.yaml"),
         "--dbsnp-rsids", str(PROJECT_ROOT / "aux_files/abc_tissues_to_ontology_map.pkl"),
         "--dbsnp-pos", str(PROJECT_ROOT / "aux_files/abc_tissues_to_ontology_map.pkl"),
+        "--writer-type", "neo4j",
+        "--no-add-provenance"
+    ]
+
+def build_default_fly_command() -> List[str]:
+    """Default command for Drosophila melanogaster"""
+    return [
+        "python3", str(PROJECT_ROOT / "create_knowledge_graph.py"),
+        "--output-dir", str(PROJECT_ROOT / "output_fly"),
+        "--adapters-config", str(PROJECT_ROOT / "config/dmel_adapters_config_sample.yaml"),
+        "--dbsnp-rsids", str(PROJECT_ROOT / "aux_files/sample_dbsnp_rsids.pkl"),
+        "--dbsnp-pos", str(PROJECT_ROOT / "aux_files/sample_dbsnp_pos.pkl"),
         "--writer-type", "neo4j",
         "--no-add-provenance"
     ]
@@ -80,7 +144,7 @@ def get_file_selection(
     allow_multiple: bool = False,
     allow_custom: bool = True,
     back_option: bool = True
-) -> Optional[str]:
+) -> Optional[Union[str, List[str]]]:
     """Generic selector supporting custom paths, multiple choices, and back navigation"""
     choices = list(options.keys())
     
@@ -124,13 +188,15 @@ def get_file_selection(
         if result:
             return result if allow_multiple else result[0]
 
-def display_config_summary(config: Dict[str, str]) -> None:
+def display_config_summary(config: Dict[str, Union[str, List[str]]]) -> None:
     """Display a summary of the configuration"""
     table = Table(title="\nConfiguration Summary", show_header=True, header_style="bold magenta")
     table.add_column("Option", style="cyan")
     table.add_column("Value", style="green")
     
     for key, value in config.items():
+        if isinstance(value, list):
+            value = ", ".join(value)
         table.add_row(key, str(value))
     
     console.print(Panel.fit(table, style="blue"))
@@ -159,19 +225,16 @@ def run_generation(cmd: List[str], show_logs: bool) -> None:
                 universal_newlines=True
             )
             
-            # Simulate progress
             for i in range(10):
                 progress.update(task, advance=10)
                 for line in process.stdout:
-                    if "progress" in line.lower():  # progress detection
-                        # Extract percentage from line 
+                    if "progress" in line.lower():
                         pass
                     console.print(line, end='')
                 time.sleep(0.5)
             
             process.wait()
         else:
-            # Simulate progress for silent mode
             for i in range(10):
                 progress.update(task, advance=10)
                 time.sleep(0.5)
@@ -188,7 +251,7 @@ def run_generation(cmd: List[str], show_logs: bool) -> None:
         if process.returncode == 0:
             console.print(Panel.fit(
                 "[bold green]✔ Knowledge Graph generation completed successfully![/]",
-                subtitle="Thank you for using BioCypher",
+                subtitle="Thank you for using BioCypher!",
                 style="green"
             ))
         else:
@@ -199,18 +262,19 @@ def run_generation(cmd: List[str], show_logs: bool) -> None:
             if not show_logs and confirm("Show error details?", default=False).unsafe_ask():
                 console.print(f"\n[red]Error output:[/]\n{process.stderr}")
 
-def configuration_workflow() -> Optional[Dict[str, str]]:
-    """Interactive configuration workflow with back navigation"""
-    config_files = find_config_files()
-    aux_files = find_aux_files()
+def configuration_workflow(organism: str) -> Optional[Dict[str, Union[str, List[str]]]]:
+    """Interactive configuration workflow with organism-specific defaults"""
+    config_files = find_config_files(organism)
+    aux_files = find_aux_files(organism)
     
     selections = {}
     
     # Output directory
+    default_output = str(PROJECT_ROOT / f"output_{'human' if organism == 'human' else 'fly'}")
     while True:
         selections["--output-dir"] = text(
             "Enter output directory:",
-            default=str(PROJECT_ROOT / "output_cli"),
+            default=default_output,
             validate=PathValidator
         ).unsafe_ask()
         
@@ -226,9 +290,21 @@ def configuration_workflow() -> Optional[Dict[str, str]]:
             allow_custom=True
         )
         if result is None:
-            continue  # User chose to go back
+            continue
         selections["--adapters-config"] = result
         break
+    
+    # Get available adapters
+    adapters = get_available_adapters(selections["--adapters-config"])
+    if adapters:
+        selected_adapters = checkbox(
+            "Select adapters to include:",
+            choices=adapters,
+            instruction="(Space to select, Enter to confirm)"
+        ).unsafe_ask()
+        
+        if selected_adapters:
+            selections["--include-adapters"] = selected_adapters
     
     # dbSNP rsIDs file
     while True:
@@ -269,11 +345,16 @@ def configuration_workflow() -> Optional[Dict[str, str]]:
     
     return selections
 
-def build_command_from_selections(selections: Dict[str, str]) -> List[str]:
+def build_command_from_selections(selections: Dict[str, Union[str, List[str]]]) -> List[str]:
     """Build the command list from user selections"""
     cmd = ["python3", str(PROJECT_ROOT / "create_knowledge_graph.py")]
     cmd.extend(["--output-dir", selections["--output-dir"]])
     cmd.extend(["--adapters-config", selections["--adapters-config"]])
+    
+    if "--include-adapters" in selections:
+        for adapter in selections["--include-adapters"]:
+            cmd.extend(["--include-adapters", adapter])
+    
     cmd.extend(["--dbsnp-rsids", selections["--dbsnp-rsids"]])
     cmd.extend(["--dbsnp-pos", selections["--dbsnp-pos"]])
     cmd.extend(["--writer-type", selections["--writer-type"]])
@@ -289,7 +370,7 @@ def main_menu() -> None:
     """Main menu with enhanced options"""
     console.print(Panel.fit(
         "[bold green]🔬 BioCypher Knowledge Graph Generator[/]",
-        subtitle="Advanced CLI Interface",
+        subtitle="Supporting Human and Drosophila melanogaster",
         style="green"
     ))
     
@@ -331,44 +412,74 @@ def main_menu() -> None:
             sys.exit(0)
 
 def generate_kg_workflow() -> None:
-    """Complete KG generation workflow"""
-    # Configuration selection
-    use_default = confirm(
-        "Use default configuration?",
-        default=True,
-        auto_enter=False
+    """Complete KG generation workflow with organism selection"""
+    # select organism
+    organism = select(
+        "Select organism to generate KG for:",
+        choices=[
+            {"name": "🧬 Human", "value": "human"},
+            {"name": "🪰 Drosophila melanogaster (Fly)", "value": "fly"},
+            "🔙 Back"
+        ],
+        qmark=">",
+        pointer="→"
     ).unsafe_ask()
     
-    if use_default:
-        cmd = build_default_command()
-        console.print(Panel.fit(
-            "[bold]Using default configuration[/]\n"
-            "This will use sample files and default output location.",
-            style="blue"
-        ))
-    else:
-        selections = configuration_workflow()
-        if not selections:  # User backed out
+    if organism == "🔙 Back":
+        return
+    
+    #select configuration type
+    config_type = select(
+        f"Select configuration type for {organism}:",
+        choices=[
+            "⚡ Default Configuration",
+            "🛠️ Custom Configuration",
+            "🔙 Back"
+        ],
+        qmark=">",
+        pointer="→"
+    ).unsafe_ask()
+    
+    if config_type == "🔙 Back":
+        return
+    
+    if config_type == "⚡ Default Configuration":
+        if organism == "human":
+            cmd = build_default_human_command()
+            console.print(Panel.fit(
+                "[bold]Using default human configuration[/]\n"
+                "Output will be saved to 'output_human' directory",
+                style="blue"
+            ))
+        else:
+            cmd = build_default_fly_command()
+            console.print(Panel.fit(
+                "[bold]Using default fly configuration[/]\n"
+                "Output will be saved to 'output_fly' directory",
+                style="blue"
+            ))
+    else:  # Custom Configuration
+        selections = configuration_workflow(organism)
+        if not selections:
             return
         
         display_config_summary(selections)
         cmd = build_command_from_selections(selections)
     
-    # Execution phase
+    # Execution options
     console.print(Panel.fit(
-        "[bold]Configuration complete. Ready to generate.[/]",
+        "[bold]Ready to generate knowledge graph[/]",
         style="blue"
     ))
     
     show_logs = confirm(
         "Show detailed logs during generation?",
-        default=False,
-        auto_enter=False
+        default=False
     ).unsafe_ask()
     
     if confirm("Start knowledge graph generation?", default=True).unsafe_ask():
         run_generation(cmd, show_logs)
-
+        
 def config_options_workflow() -> None:
     """Configuration options submenu"""
     while True:
@@ -415,11 +526,9 @@ def view_system_status() -> None:
         table.add_row(str(d), status)
     
     # Check Python version
-    import platform
     table.add_row("Python Version", platform.python_version())
     
     # Check disk space
-    import shutil
     total, used, free = shutil.disk_usage("/")
     table.add_row("Disk Space", f"Total: {total // (2**30)}GB, Free: {free // (2**30)}GB")
     
@@ -431,19 +540,21 @@ def show_help() -> None:
     [bold]BioCypher Knowledge Graph Generator Help[/]
     
     [underline]Main Features:[/]
-    - 🚀 Generate knowledge graphs from biological data
-    - ⚙️ Flexible configuration options
-    - 📊 Real-time progress tracking
+    - 🚀 Generate knowledge graphs for Human or Drosophila melanogaster
+    - ⚡ Quick start with default configurations
+    - 🛠️ Full customization options for advanced users
+    
+    [underline]Workflow:[/]
+    1. Select organism (Human or Fly)
+    2. Choose default or custom configuration
+    3. For custom: Configure each parameter
+    4. Review configuration summary
+    5. Execute generation
     
     [underline]Navigation:[/]
     - Use arrow keys to move between options
     - Press Enter to confirm selections
     - Most screens support going back with the '🔙 Back' option
-    
-    [underline]Configuration:[/]
-    - You can use default configurations or customize all parameters
-    - Configuration files are located in the 'config' directory
-    - Auxiliary files are in the 'aux_files' directory
     
     [underline]Troubleshooting:[/]
     - Ensure all required directories exist
@@ -453,8 +564,6 @@ def show_help() -> None:
     console.print(Panel.fit(help_text, title="Help & Documentation"))
 
 if __name__ == "__main__":
-    import time  # For progress simulation
-    
     try:
         main_menu()
     except KeyboardInterrupt:
