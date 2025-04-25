@@ -16,7 +16,7 @@ from typing_extensions import Annotated
 import pickle
 import json
 from collections import Counter, defaultdict
-
+from typing import Union, List, Optional
 app = typer.Typer()
 
 # Function to choose the writer class based on user input
@@ -178,7 +178,12 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
          dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
-         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
+         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
+          include_adapters: Optional[List[str]] = typer.Option(
+              None,
+              help="Specific adapters to include (space-separated, default: all)",
+              case_sensitive=False,
+          )):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
@@ -203,6 +208,20 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
             logger.error("Error while trying to load adapter config")
             logger.error(e)
 
+    # Filter adapters if specific ones are requested
+    if include_adapters:
+         original_count = len(adapters_dict)
+         include_lower = [a.lower() for a in include_adapters]
+         adapters_dict = {
+             k: v for k, v in adapters_dict.items()
+             if k.lower() in include_lower
+         }
+         if not adapters_dict:
+             available = "\n".join(f" - {a}" for a in adapters_dict.keys())
+             logger.error(f"No matching adapters found. Available adapters:\n{available}")
+             raise typer.Exit(1)
+             
+         logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
     # Run adapters
     nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
         adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
