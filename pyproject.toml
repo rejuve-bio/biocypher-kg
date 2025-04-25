@@ -24,6 +24,8 @@ google-cloud-storage = "^2.14.0" #Needed to download GTex data from Google Cloud
 liftover = "^1.2.2"
 pytest-cov = "^5.0.0"
 setuptools = "*"
+rich = "^14.0.0"
+questionary = "^2.1.0"
 
 
 [build-system]
