@@ -5,7 +5,7 @@ from biocypher._logger import logger
 from biocypher_metta.adapters.helpers import to_float
 
 class MotifDiffAdapter(Adapter):
-    def __init__(self, filepath, hgnc_to_ensembl, label, write_properties, add_provenance, threshold=1e-5):
+    def __init__(self, filepath, hgnc_to_ensembl, label, write_properties, add_provenance, threshold=1e-3):
         self.filepath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl, 'rb'))
         self.label = label
