@@ -217,12 +217,15 @@ enhancer:
   properties:
     data_source: str
     enhancer_id: str
+    accession: str
 
 promoter:
   represented_as: node
   input_label: promoter
   is_a: non coding element
   inherit_properties: true
+  properties:
+    accession: str
 
 super enhancer:
   represented_as: node
@@ -813,6 +816,7 @@ enhancer to gene association:
   properties:
     score: float
     biological_context: str
+    distance: int
 
 promoter to gene association:
   description: >-
@@ -827,6 +831,7 @@ promoter to gene association:
   properties:
     score: float
     biological_context: str
+    distance: int
 
 super enhancer to gene association:
   description: >-

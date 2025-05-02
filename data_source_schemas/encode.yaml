@@ -10,8 +10,7 @@ nodes:
       chr: str
       start: int
       end: int
-      accession_d: str
-      accession_e: str
+      accession: str
   
   promoter:
     url: https://screen.wenglab.org/downloads
@@ -21,8 +20,7 @@ nodes:
       chr: str
       start: int
       end: int
-      accession_d: str
-      accession_e: str
+      accession: str
   
   transcription binding site:
     url: https://genome.ucsc.edu/cgi-bin/hgTables
@@ -62,4 +60,4 @@ relationships:
     source: promoter
     target: gene
     properties:
-      bp_overlap: float
+      distance: int
