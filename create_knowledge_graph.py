@@ -8,6 +8,7 @@ from biocypher import BioCypher
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
+from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher._logger import logger
 import typer
 import yaml
@@ -33,6 +34,14 @@ def get_writer(writer_type: str, output_dir: Path):
         return Neo4jCSVWriter(schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
+    elif writer_type == 'parquet':
+        return ParquetWriter(
+            schema_config="config/schema_config.yaml",
+            biocypher_config="config/biocypher_config.yaml",
+            output_dir=output_dir,
+            buffer_size=10000,
+            overwrite=True
+        )
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
 
@@ -164,7 +173,7 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
             freq = writer.write_edges(edges, path_prefix=outdir)
             for edge_label in freq:
                 edges_count[edge_label] += freq[edge_label]
-                label = schema_dict[edge_label]['output_label'] or edge_label
+                label = schema_dict[edge_label.lower()]['output_label'] or edge_label
                 if dataset_name is not None:
                     datasets_dict[dataset_name]['edges'].add(label)
 
@@ -176,10 +185,12 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
          adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j"),
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
-          include_adapters: Optional[List[str]] = typer.Option(
+         buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
+         overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
+         include_adapters: Optional[List[str]] = typer.Option(
               None,
               help="Specific adapters to include (space-separated, default: all)",
               case_sensitive=False,
@@ -198,6 +209,10 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
     # Choose the writer based on user input or default to 'metta'
     bc = get_writer(writer_type, output_dir)
     logger.info(f"Using {writer_type} writer")
+
+    if writer_type == 'parquet':
+        bc.buffer_size = buffer_size
+        bc.overwrite = overwrite
 
     schema_dict = preprocess_schema()
 
@@ -226,6 +241,9 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
     nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
         adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
     )
+
+    if hasattr(bc, 'finalize'):
+        bc.finalize()
 
     # Gather graph info
     graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir)
