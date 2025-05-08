@@ -1,453 +1,340 @@
-# Author: Abdu Mohammed <abdu.kebede@singularitynet.io>
-import pathlib
+import json
 import os
-from typing import Dict, List, Optional, Any, Union
-from biocypher._logger import logger
+from pathlib import Path
+from typing import Dict, List, Optional, Any, Tuple, Set
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import numpy as np
-from datetime import datetime
+from collections import defaultdict
+from biocypher._logger import logger
 from biocypher_metta import BaseWriter
+
 
 class ParquetWriter(BaseWriter):
     """
-    A BioCypher writer that outputs nodes and edges as Parquet files.
-    Provides efficient columnar storage with robust type handling.
+    A BioCypher writer that outputs nodes and edges to Parquet files.
+     
     """
-    
+
     def __init__(
         self,
-        schema_config: dict,
-        biocypher_config: dict,
+        schema_config: str,
+        biocypher_config: str,
         output_dir: str,
         buffer_size: int = 10000,
         overwrite: bool = False,
         excluded_properties: Optional[List[str]] = None,
     ):
         """
-        Initialize the Parquet writer with enhanced type handling.
+        Initialize the Parquet writer.
         
         Args:
             schema_config: BioCypher schema configuration
             biocypher_config: BioCypher main configuration
             output_dir: Directory to write Parquet files to
-            buffer_size: Number of entities to buffer before writing to disk
-            overwrite: Whether to overwrite existing files
-            excluded_properties: List of property keys to exclude from output
         """
         super().__init__(schema_config, biocypher_config, output_dir)
-        
-        self.buffer_size = buffer_size
+
+        # Configure serialization settings
+        self.batch_size = buffer_size
         self.overwrite = overwrite
         self.excluded_properties = excluded_properties or []
-        
-        # Initialize data structures
-        self.node_buffers: Dict[str, List[dict]] = {}
-        self.edge_buffers: Dict[str, List[dict]] = {}
-        self.node_schemas: Dict[str, pa.Schema] = {}
-        self.edge_schemas: Dict[str, pa.Schema] = {}
-        
-        # Prepare output directories
-        self.node_dir = os.path.join(self.output_path, "nodes")
-        self.edge_dir = os.path.join(self.output_path, "edges")
-        pathlib.Path(self.node_dir).mkdir(parents=True, exist_ok=True)
-        pathlib.Path(self.edge_dir).mkdir(parents=True, exist_ok=True)
-        
-        logger.info(f"Initialized Parquet writer with output directory: {output_dir}")
+        self.translation_table = str.maketrans({
+            "'": "",
+            '"': ""
+        })
 
-    def write_nodes(self, nodes: List[tuple], path_prefix: Optional[str] = None, create_dir: bool = True) -> tuple:
+        # Create edge type mapping  
+        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon'])
+        self.create_edge_types()
+
+        # Initialize data structures for batched writing
+        self._node_headers = defaultdict(set)
+        self._edge_headers = defaultdict(set)
+        self._temp_files = {}
+        self.temp_buffer = defaultdict(list)
+
+    def create_edge_types(self):
         """
-        Write nodes to Parquet files with robust error handling.
-        
-        Args:
-            nodes: List of node tuples (id, label, properties)
-            path_prefix: Optional subdirectory for output
-            create_dir: Whether to create the subdirectory if needed
-            
-        Returns:
-            Tuple of (node frequency dict, node properties dict)
+        Map edge types to their source and target node types based on the schema.
         """
-        output_dir = self.node_dir
-        if path_prefix:
-            output_dir = os.path.join(self.node_dir, path_prefix)
-            if create_dir:
-                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
-        
-        for node in nodes:
-            try:
-                self.extract_node_info(node)
-                node_id, label, properties = node
-                label = self._normalize_label(label)
-                
-                # Initialize buffer and schema if needed
-                if label not in self.node_buffers:
-                    self._initialize_node_type(label, properties, output_dir)
-                
-                # Process properties 
-                processed_props = self._process_properties(properties)
-                
-                # Add to buffer
-                self.node_buffers[label].append({
-                    "id": node_id,
-                    **processed_props
-                })
-                
-                # Write if buffer full
-                if len(self.node_buffers[label]) >= self.buffer_size:
-                    self._flush_nodes(label)
-                    
-            except Exception as e:
-                logger.error(f"Error processing node {node_id}: {str(e)}")
-                continue
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        self.edge_node_types = {}
 
-        return self.node_freq, self.node_props
+        for k, v in schema.items():
+            if v["represented_as"] == "edge":
+                edge_type = self.convert_input_labels(k)
+                source_type = v.get("source", None)
+                target_type = v.get("target", None)
 
-    def write_edges(self, edges: List[tuple], path_prefix: Optional[str] = None, create_dir: bool = True) -> dict:
-        """
-        Write edges to Parquet files with robust error handling.
-        
-        Args:
-            edges: List of edge tuples (source_id, target_id, label, properties)
-            path_prefix: Optional subdirectory for output
-            create_dir: Whether to create the subdirectory if needed
-            
-        Returns:
-            Edge frequency dictionary
-        """
-        output_dir = self.edge_dir
-        if path_prefix:
-            output_dir = os.path.join(self.edge_dir, path_prefix)
-            if create_dir:
-                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
-        
-        for edge in edges:
-            try:
-                self.extract_edge_info(edge)
-                src_id, tgt_id, label, properties = edge
-                label = self._normalize_label(label)
-                
-                # Initialize buffer and schema if needed
-                if label not in self.edge_buffers:
-                    self._initialize_edge_type(label, properties, output_dir)
-                
-                # Process properties with enhanced type handling
-                processed_props = self._process_properties(properties)
-                
-                # Add to buffer
-                self.edge_buffers[label].append({
-                    "source_id": src_id,
-                    "target_id": tgt_id,
-                    **processed_props
-                })
-                
-                # Write if buffer full
-                if len(self.edge_buffers[label]) >= self.buffer_size:
-                    self._flush_edges(label)
-                    
-            except Exception as e:
-                logger.error(f"Error processing edge {src_id}-{tgt_id}: {str(e)}")
-                continue
-
-        return self.edge_freq
-
-    def _initialize_node_type(self, label: str, properties: dict, output_dir: str):
-        """Initialize schema and buffer for a node type with safe defaults."""
-        try:
-            schema = pa.schema([
-                pa.field("id", pa.string()),
-                *self._create_schema_fields(properties)
-            ])
-            self.node_schemas[label] = schema
-            self.node_buffers[label] = []
-            
-            # Create empty file with schema if overwrite is True
-            if self.overwrite:
-                path = os.path.join(output_dir, f"{label}.parquet")
-                empty_table = pa.Table.from_pandas(
-                    pd.DataFrame({k: [] for k in schema.names}),
-                    schema=schema
-                )
-                pq.write_table(empty_table, path)
-                logger.debug(f"Created empty Parquet file for node type: {label}")
-                
-        except Exception as e:
-            logger.error(f"Error initializing node type {label}: {str(e)}")
-            raise
-
-    def _initialize_edge_type(self, label: str, properties: dict, output_dir: str):
-        """Initialize schema and buffer for an edge type with safe defaults."""
-        try:
-            schema = pa.schema([
-                pa.field("source_id", pa.string()),
-                pa.field("target_id", pa.string()),
-                *self._create_schema_fields(properties)
-            ])
-            self.edge_schemas[label] = schema
-            self.edge_buffers[label] = []
-            
-            # Create empty file with schema if overwrite is True
-            if self.overwrite:
-                path = os.path.join(output_dir, f"{label}.parquet")
-                empty_table = pa.Table.from_pandas(
-                    pd.DataFrame({k: [] for k in schema.names}),
-                    schema=schema
-                )
-                pq.write_table(empty_table, path)
-                logger.debug(f"Created empty Parquet file for edge type: {label}")
-                
-        except Exception as e:
-            logger.error(f"Error initializing edge type {label}: {str(e)}")
-            raise
-
-    def _create_schema_fields(self, properties: dict) -> List[pa.Field]:
-        """
-        Convert properties to PyArrow schema fields with robust type inference.
-        Handles empty lists and None values safely.
-        """
-        fields = []
-        for k, v in properties.items():
-            if k in self.excluded_properties:
-                continue
-            
-            field_name = str(k)
-            
-            try:
-                if v is None:
-                    # Default to string for None values
-                    fields.append(pa.field(field_name, pa.string(), nullable=True))
-                    continue
-                    
-                if isinstance(v, list):
-                    # Handle list types with empty list fallback
-                    if not v:  # Empty list
-                        fields.append(pa.field(field_name, pa.list_(pa.string()), nullable=True))
+                if source_type is not None and target_type is not None:
+                    if isinstance(v["input_label"], list):
+                        label = self.convert_input_labels(v["input_label"][0])
+                        source_type = self.convert_input_labels(source_type[0])
+                        target_type = self.convert_input_labels(target_type[0])
                     else:
-                        # Try to infer type from first element
-                        try:
-                            elem_type = self._infer_arrow_type(v[0])
-                            fields.append(pa.field(field_name, pa.list_(elem_type), nullable=True))
-                        except:
-                            fields.append(pa.field(field_name, pa.list_(pa.string()), nullable=True))
-                elif isinstance(v, dict):
-                    # Handle nested structures
-                    try:
-                        nested_fields = self._create_schema_fields(v)
-                        fields.append(pa.field(field_name, pa.struct(nested_fields), nullable=True))
-                    except:
-                        fields.append(pa.field(field_name, pa.string()), nullable=True)
-                else:
-                    # Handle scalar types
-                    try:
-                        fields.append(pa.field(field_name, self._infer_arrow_type(v), nullable=True))
-                    except:
-                        fields.append(pa.field(field_name, pa.string()), nullable=True)
-                        
-            except Exception as e:
-                logger.warning(f"Could not infer type for property {k}, defaulting to string: {str(e)}")
-                fields.append(pa.field(field_name, pa.string()), nullable=True)
-        
-        return fields
+                        label = self.convert_input_labels(v["input_label"])
+                        source_type = self.convert_input_labels(source_type)
+                        target_type = self.convert_input_labels(target_type)
+                    output_label = v.get("output_label", None)
 
-    def _infer_arrow_type(self, value: Any) -> pa.DataType:
-        """Infer the appropriate Arrow data type for a given value with fallbacks."""
-        try:
-            if isinstance(value, bool):
-                return pa.bool_()
-            elif isinstance(value, int):
-                return pa.int64()
-            elif isinstance(value, float):
-                return pa.float64()
-            elif isinstance(value, str):
-                return pa.string()
-            elif isinstance(value, datetime):
-                return pa.timestamp('us')
-            elif isinstance(value, (np.integer, np.floating, np.bool_)):
-                return pa.from_numpy_dtype(type(value))
-            elif hasattr(value, 'isoformat'):  # Handle date-like objects
-                return pa.timestamp('us')
-            else:
-                return pa.string()
-        except:
-            return pa.string()
+                    self.edge_node_types[label.lower()] = {
+                        "source": source_type.lower(),
+                        "target": target_type.lower(),
+                        "output_label": output_label.lower() if output_label else None
+                    }
 
-    def _process_properties(self, properties: dict) -> dict:
+    def preprocess_value(self, value):
         """
-        Convert properties to Parquet-compatible formats with robust handling.
-        Returns a new dictionary with processed values.
+        Preprocess values for Parquet compatibility.
         """
-        processed = {}
-        if not properties:
-            return processed
-            
-        for k, v in properties.items():
-            if k in self.excluded_properties:
-                continue
-                
-            try:
-                processed[k] = self._convert_value(v)
-            except Exception as e:
-                logger.warning(f"Could not convert property {k}, skipping: {str(e)}")
-                continue
-        
-        return processed
+        value_type = type(value)
+        if value_type is list:
+            return [self.preprocess_value(item) for item in value]
+        if value_type is str:
+            return value.translate(self.translation_table)
+        return value
 
-    def _convert_value(self, value: Any) -> Any:
+    def convert_input_labels(self, label):
         """
-        Recursively convert values to Parquet-compatible formats with fallbacks.
+        Convert input labels to a uniform format.
         """
-        if value is None:
-            return None
-            
-        try:
-            if isinstance(value, list):
-                if not value:  # Empty list
-                    return []
-                return [self._convert_value(v) for v in value]
-            elif isinstance(value, dict):
-                return {str(k): self._convert_value(v) for k, v in value.items()}
-            elif isinstance(value, (int, float, str, bool)):
-                return value
-            elif isinstance(value, datetime):
-                return value
-            elif hasattr(value, 'isoformat'):  # Handle date-like objects
-                return value.isoformat()
-            else:
-                return str(value)
-        except:
-            return str(value)
+        return label.lower().replace(" ", "_")
 
-    def _flush_nodes(self, label: str):
-        """Write buffered nodes to Parquet file with error handling."""
-        if not self.node_buffers.get(label):
-            return
+    def preprocess_id(self, prev_id):
+        """
+        Preprocess IDs for consistent referencing.
+        """
+        replace_map = str.maketrans({' ': '_', ':':'_'})
+        return prev_id.lower().strip().translate(replace_map)
+
+    def _write_buffer_to_temp(self, label_or_key, buffer):
+        """
+        Write buffer data to temporary file for batch processing.
+        """
+        if buffer and label_or_key in self._temp_files:
+            with open(self._temp_files[label_or_key], 'a') as f:
+                for entry in buffer:
+                    json.dump(entry, f)
+                    f.write('\n')
+            buffer.clear()
+
+    def _init_node_writer(self, label, properties, path_prefix=None, adapter_name=None):
+        """
+        Initialize node writer for a specific label.
+        """
+        output_dir = self.get_output_path(path_prefix, adapter_name)
+        # Filter out excluded properties
+        filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
+        self._node_headers[label].update(filtered_props.keys())
+        self._node_headers[label].add('id')
+
+        if label not in self._temp_files:
+            temp_file_path = output_dir / f"temp_nodes_{label}.jsonl"
+            if temp_file_path.exists():
+                temp_file_path.unlink()
+            self._temp_files[label] = temp_file_path
+        return label
+
+    def _init_edge_writer(self, label, source_type, target_type, properties, path_prefix=None, adapter_name=None):
+        """
+        Initialize edge writer for a specific label and source/target combination.
+        """
+        output_dir = self.get_output_path(path_prefix, adapter_name)
+        key = (label, source_type, target_type)
+        # Filter out excluded properties
+        filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
+        self._edge_headers[key].update(filtered_props.keys())
+        self._edge_headers[key].update({'source_id', 'target_id', 'label', 'source_type', 'target_type'})
+
+        if key not in self._temp_files:
+            temp_file_path = output_dir / f"temp_edges_{label}_{source_type}_{target_type}.jsonl"
+            if temp_file_path.exists():
+                temp_file_path.unlink()
+            self._temp_files[key] = temp_file_path
+        return key
+
+    def write_nodes(self, nodes, path_prefix=None, adapter_name=None):
+        """
+        Write nodes to Parquet files
+        """
+        self.temp_buffer.clear()
+        self._temp_files.clear()
+        self._node_headers.clear()
+        node_freq = defaultdict(int)
+        output_dir = self.get_output_path(path_prefix, adapter_name)
 
         try:
-            df = pd.DataFrame(self.node_buffers[label])
-            
-            # Ensure all schema fields are present in DataFrame
-            for field in self.node_schemas[label]:
-                if field.name not in df.columns:
-                    df[field.name] = None
-                    
-            table = pa.Table.from_pandas(
-                df,
-                schema=self.node_schemas[label],
-                preserve_index=False
-            )
-            
-            path = os.path.join(self.node_dir, f"{label}.parquet")
-            self._write_parquet(table, path)
-            
-            logger.debug(f"Flushed {len(df)} nodes of type {label} to Parquet")
-            self.node_buffers[label] = []
-        except Exception as e:
-            logger.error(f"Error flushing nodes of type {label}: {str(e)}")
-            raise
+            # First pass: collect data and schema information
+            for node in nodes:
+                id, label, properties = node
+                if "." in label:
+                    label = label.split(".")[1]
+                label = label.lower()
+                node_freq[label] += 1
 
-    def _flush_edges(self, label: str):
-        """Write buffered edges to Parquet file with error handling."""
-        if not self.edge_buffers.get(label):
-            return
+                writer_key = self._init_node_writer(label, properties, path_prefix, adapter_name)
+                # Filter out excluded properties
+                filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
+                node_data = {'id': self.preprocess_id(id), **filtered_props}
+                self.temp_buffer[label].append(node_data)
+
+                if len(self.temp_buffer[label]) >= self.batch_size:
+                    self._write_buffer_to_temp(label, self.temp_buffer[label])
+
+            # Flush remaining buffers
+            for label in list(self.temp_buffer.keys()):
+                self._write_buffer_to_temp(label, self.temp_buffer[label])
+
+            # Second pass: convert to Parquet
+            for label in self._node_headers.keys():
+                parquet_file_path = output_dir / f"nodes_{label}.parquet"
+
+                if parquet_file_path.exists():
+                    parquet_file_path.unlink()
+
+                data_rows = []
+                if label in self._temp_files and self._temp_files[label].exists():
+                    with open(self._temp_files[label], 'r') as temp_f:
+                        for line in temp_f:
+                            data = json.loads(line)
+                            data_rows.append({k: self.preprocess_value(v) for k, v in data.items()})
+
+                if data_rows:
+                    df = pd.DataFrame(data_rows)
+                    # Ensure all columns from headers exist
+                    for col in self._node_headers[label]:
+                        if col not in df.columns:
+                            df[col] = None
+
+                    # Convert to PyArrow Table and write to Parquet
+                    table = pa.Table.from_pandas(df)
+                    pq.write_table(table, parquet_file_path, compression='snappy')
+
+                if label in self._temp_files and self._temp_files[label].exists():
+                    self._temp_files[label].unlink()
+
+        finally:
+            self.temp_buffer.clear()
+            for temp_file in self._temp_files.values():
+                if isinstance(temp_file, Path) and temp_file.exists():
+                    temp_file.unlink()
+            self._temp_files.clear()
+
+        return node_freq, self._node_headers
+
+    def write_edges(self, edges, path_prefix=None, adapter_name=None):
+        """
+        Write edges to Parquet files
+        """
+        self.temp_buffer.clear()
+        self._temp_files.clear()
+        self._edge_headers.clear()
+        edge_freq = defaultdict(int)
+        output_dir = self.get_output_path(path_prefix, adapter_name)
 
         try:
-            df = pd.DataFrame(self.edge_buffers[label])
-            
-            # Ensure all schema fields are present in DataFrame
-            for field in self.edge_schemas[label]:
-                if field.name not in df.columns:
-                    df[field.name] = None
-                    
-            table = pa.Table.from_pandas(
-                df,
-                schema=self.edge_schemas[label],
-                preserve_index=False
-            )
-            
-            path = os.path.join(self.edge_dir, f"{label}.parquet")
-            self._write_parquet(table, path)
-            
-            logger.debug(f"Flushed {len(df)} edges of type {label} to Parquet")
-            self.edge_buffers[label] = []
-        except Exception as e:
-            logger.error(f"Error flushing edges of type {label}: {str(e)}")
-            raise
+            # First pass: collect data and schema information
+            for edge in edges:
+                source_id, target_id, label, properties = edge
+                label = label.lower()
+                edge_freq[label] += 1
 
-    def _write_parquet(self, table: pa.Table, path: str):
-        """
-        Write PyArrow table to Parquet with append/overwrite logic.
-        Handles partitioning if needed.
-        """
-        write_options = {
-            'compression': 'snappy',
-            'version': '2.6',
-            'data_page_size': 1024 * 1024,  # 1MB
-            'coerce_timestamps': 'us',
-            'allow_truncated_timestamps': True
-        }
-        
-        try:
-            if self.overwrite or not os.path.exists(path):
-                pq.write_table(table, path, **write_options)
-            else:
-                # Read existing data
-                existing = pq.read_table(path)
-                # Combine with new data
-                combined = pa.concat_tables([existing, table])
-                # Write back
-                pq.write_table(combined, path, **write_options)
-        except Exception as e:
-            logger.error(f"Error writing to Parquet file {path}: {str(e)}")
-            raise
+                # Get edge type information
+                if label in self.edge_node_types:
+                    edge_info = self.edge_node_types[label]
+                    source_type = edge_info["source"]
+                    target_type = edge_info["target"]
 
-    def _normalize_label(self, label: str) -> str:
+                    if source_type == "ontology_term":
+                        source_type = self.preprocess_id(source_id).split('_')[0]
+                    if target_type == "ontology_term":
+                        target_type = self.preprocess_id(target_id).split('_')[0]
+
+                    edge_label = edge_info.get("output_label", label)
+
+                    # Filter out excluded properties
+                    filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
+                    edge_data = {
+                        'source_id': self.preprocess_id(source_id),
+                        'target_id': self.preprocess_id(target_id),
+                        'source_type': source_type,
+                        'target_type': target_type,
+                        'label': edge_label,  
+                        **filtered_props
+                    }
+
+                    writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
+                    self.temp_buffer[writer_key].append(edge_data)
+
+                    if len(self.temp_buffer[writer_key]) >= self.batch_size:
+                        self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
+
+            # Flush remaining buffers
+            for key in list(self.temp_buffer.keys()):
+                self._write_buffer_to_temp(key, self.temp_buffer[key])
+
+            # Second pass: convert to Parquet
+            for key in self._edge_headers.keys():
+                input_label, source_type, target_type = key
+
+                file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
+                parquet_file_path = output_dir / f"edges_{file_suffix}.parquet"
+
+                if parquet_file_path.exists():
+                    parquet_file_path.unlink()
+
+                data_rows = []
+                if key in self._temp_files and self._temp_files[key].exists():
+                    with open(self._temp_files[key], 'r') as temp_f:
+                        for line in temp_f:
+                            data = json.loads(line)
+                            data_rows.append({k: self.preprocess_value(v) for k, v in data.items()})
+
+                if data_rows:
+                    df = pd.DataFrame(data_rows)
+                    # Ensure all columns from headers exist
+                    for col in self._edge_headers[key]:
+                        if col not in df.columns:
+                            df[col] = None
+
+                    # Convert to PyArrow Table and write to Parquet
+                    table = pa.Table.from_pandas(df)
+                    pq.write_table(table, parquet_file_path, compression='snappy')
+
+                if key in self._temp_files and self._temp_files[key].exists():
+                    self._temp_files[key].unlink()
+
+        finally:
+            self.temp_buffer.clear()
+            for temp_file in self._temp_files.values():
+                if isinstance(temp_file, Path) and temp_file.exists():
+                    temp_file.unlink()
+            self._temp_files.clear()
+
+        return edge_freq
+
+    def get_output_path(self, prefix=None, adapter_name=None):
         """
-        Normalize labels for filesystem safety.
-        Replaces problematic characters with underscores.
+        Get the output path for files, creating directories as needed.
         """
-        if not label:
-            return "unknown"
-            
-        if "." in label:
-            label = label.split(".")[1]
-        return (
-            label.replace(" ", "_")
-                .replace(":", "_")
-                .replace("/", "_")
-                .replace("\\", "_")
-                .replace("*", "_")
-                .replace("?", "_")
-                .replace('"', "_")
-                .replace("<", "_")
-                .replace(">", "_")
-                .replace("|", "_")
-                .lower()
-        )
+        if prefix:
+            output_dir = self.output_path / prefix
+        elif adapter_name:
+            output_dir = self.output_path / adapter_name
+        else:
+            output_dir = self.output_path
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
 
     def finalize(self):
         """
-        Flush all remaining buffers to disk.
-        Should be called after all data has been processed.
+        Ensure all data is flushed when the writer is finalized.
         """
-        logger.info("Finalizing Parquet writer - flushing all remaining data")
-        
-        try:
-            for label in list(self.node_buffers.keys()):
-                if self.node_buffers[label]:
-                    self._flush_nodes(label)
-                    
-            for label in list(self.edge_buffers.keys()):
-                if self.edge_buffers[label]:
-                    self._flush_edges(label)
-                    
-            logger.info("Parquet writing completed successfully")
-        except Exception as e:
-            logger.error(f"Error during finalization: {str(e)}")
-            raise
+        for temp_file in self._temp_files.values():
+            if isinstance(temp_file, Path) and temp_file.exists():
+                temp_file.unlink()
+        self._temp_files.clear()
 
-    def __del__(self):
-        """Destructor to ensure all data is flushed."""
-        try:
-            self.finalize()
-        except:
-            pass
+        logger.info("ParquetWriter finalized - all data written and temp files cleaned up")
