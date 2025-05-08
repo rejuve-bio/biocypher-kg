@@ -26,6 +26,7 @@ pytest-cov = "^5.0.0"
 setuptools = "*"
 rich = "^14.0.0"
 questionary = "^2.1.0"
+pyarrow = "^20.0.0"
 
 
 [build-system]
