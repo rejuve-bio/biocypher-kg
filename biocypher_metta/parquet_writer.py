@@ -81,7 +81,7 @@ class ParquetWriter(BaseWriter):
                     self.edge_node_types[label.lower()] = {
                         "source": source_type.lower(),
                         "target": target_type.lower(),
-                        "output_label": output_label.lower() if output_label else None
+                        "output_label": output_label.lower() if output_label else label
                     }
 
     def preprocess_value(self, value):
