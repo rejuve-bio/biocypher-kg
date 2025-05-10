@@ -72,7 +72,7 @@ class AlleleGeneticInteractionAdapter(Adapter):
     #         props['reference'] = row[3]
     #         props['taxon_id'] = 7227
     #         yield f'{self.label}_{id}', self.label, props
-    #     print('Finished allele interaction: \t\t\t\t\t\t\t\t\t\tget_nodes()')
+    #     print('Finished allele interaction: \t\t\t\t\t\t\t\t\t\tget_nodes()')dmel_data_filepath
 
 
     def get_edges(self):

@@ -12,7 +12,7 @@ position entity:
     A biological entity that is defined by its position in the genome
   properties:
     chr: str
-    start: int
+    start: int      # Gencode starts from 1; Flybase starts from 0.
     end: int
 
 coding element:
@@ -704,7 +704,7 @@ gene to pathway association:
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
-  source: gene
+  source: [gene, protein, transcript]
   target: pathway
 
 parent pathway of:

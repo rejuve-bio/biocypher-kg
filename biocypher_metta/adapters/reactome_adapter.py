@@ -65,14 +65,12 @@ class ReactomeAdapter(Adapter):
                 base_props['source_url'] = self.source_url
             for line in input:
                 data = line.strip().split('\t')
-
                 if self.label == 'genes_pathways':
                     entity_id, pathway_id = data[0], data[1]
-
-                    prefix = pathway_id[:5]  # Extract prefix (e.g., R-DME, R-HSA)
+                    prefix = pathway_id[:5]  # Extract prefix (e.g., R-DME, R-HSA)                    
                     if prefix in organism_taxon_map:
                         taxon_id = organism_taxon_map[prefix]
-                        if self.taxon_id == None:
+                        if self.taxon_id == None:           # insert data for all organisms
                             source_type = self._get_entity_type(entity_id)                        
                             props = base_props.copy()
                             props['taxon_id'] = taxon_id
@@ -80,24 +78,38 @@ class ReactomeAdapter(Adapter):
                                 entity_id = entity_id.split('.')[0]
                             source = (source_type, entity_id)
                             target = pathway_id
-
                             yield source, target, self.label, props
 
+                        elif self.taxon_id == 7227:
+                            if prefix == 'R-DME':
+                                source_type = self._get_entity_type(entity_id)                        
+                                props = base_props.copy()
+                                props['taxon_id'] = taxon_id
+                                source = (source_type, entity_id)
+                                target = pathway_id
+                                # print(f'Inserted: {source} | {target} | {self.label}:\n{props}')
+                                yield source, target, self.label, props
 
+                        elif self.taxon_id == 9606:
+                            if prefix == 'R-HSA':
+                                source_type = self._get_entity_type(entity_id)                        
+                                props = base_props.copy()
+                                props['taxon_id'] = taxon_id                                
+                                entity_id = entity_id.split('.')[0]
+                                source = (source_type, entity_id)
+                                target = pathway_id
+                                yield source, target, self.label, props                            
                 else:
                     parent, child = data[0], data[1]
-
                     prefix = parent[:5]  # Extract prefix from parent id
                     if prefix in organism_taxon_map:
                         taxon_id = organism_taxon_map[prefix]
                         props = base_props.copy()
                         props['taxon_id'] = taxon_id
-
                         if self.label == 'parent_pathway_of':
                             source, target = parent, child
                         elif self.label == 'child_pathway_of':
                             source, target = child, parent
-
                         yield source, target, self.label, props
 
     
@@ -110,33 +122,3 @@ class ReactomeAdapter(Adapter):
         else:
             return "transcript"
 
-    # def get_edges(self):
-    #     with open(self.filepath) as input:
-    #         _props = {}
-    #         if self.write_properties and self.add_provenance:
-    #             _props['source'] = self.source
-    #             _props['source_url'] = self.source_url
-    #         for line in input:
-    #             if self.label == 'genes_pathways':
-    #                 data = line.strip().split('\t')
-    #                 pathway_id = data[1]
-    #                 if pathway_id.startswith('R-HSA'):
-    #                     ensg_id = data[0].split('.')[0]
-    #                     _id = ensg_id + '_' + pathway_id
-    #                     _source = ensg_id
-    #                     _target = pathway_id
-    #                     yield _source, _target, self.label, _props
-    #             else:
-    #                 parent, child = line.strip().split('\t')
-    #                 if parent.startswith('R-HSA'):
-    #                     if self.label == 'parent_pathway_of':
-    #                         _id = parent + '_' + child
-    #                         _source = parent
-    #                         _target = child
-
-    #                         yield _source, _target, self.label, _props
-    #                     elif self.label == 'child_pathway_of':
-    #                         _id = child + '_' + parent
-    #                         _source =  child
-    #                         _target =  parent
-    #                         yield  _source, _target, self.label, _props

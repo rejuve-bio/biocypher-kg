@@ -119,18 +119,6 @@ class GenotypePhenotypeAdapter(Adapter):
         #genotype_symbols	genotype_FBids	phenotype_name	phenotype_id	qualifier_names	qualifier_ids	reference
         rows = fb_gp_table.get_rows()
 
-        # Biolink genotype class:
-        # https://biolink.github.io/biolink-model/Genotype/
-#         genotype:
-#   represented_as: node
-#   input_label: genotype
-#   is_a: biological entity
-#   properties:
-#     genotype_ids: str           # string composed of one or more allele id(s) (FBal#)
-#     genotype_symbols: str       # string composed of one or more allele symbol(s)
-#     reference: str              # FBrf# literature ref id
-#     taxon_id: int               # 7227 for dmel / 9606 for hsa
-
         if self.label == 'genotype':
             id = -1
             for row in rows:
@@ -235,8 +223,9 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source'] = self.source
                     props['source_url'] = self.source_url
 
-                phenotype_ontology_id = row[3].replace(':', '_').lower()   # onto: fbbt or fbcv     
+                phenotype_ontology_id = row[3].replace(':', '_').lower()   # onto: fbbt or fbcv or  fbdv    
                 yield f'phenotype_{id}', phenotype_ontology_id, self.label, props    
+                
                 if row[5] != '':
                     props['qualifier_term_ids'] = [ name.replace(':', '_').lower() for name in row[5].split('|') ]
                     terms_ids = [ t_id.replace(':', '_').lower() for t_id in row[5].split('|') ]

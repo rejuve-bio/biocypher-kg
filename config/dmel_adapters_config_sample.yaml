@@ -88,6 +88,7 @@ uniprotkb_sprot_translates_to:
       filepath: ./samples/dmel/uniprot_sprot_invertebrates_DMEL.dat.gz
       type: translates to
       label: translates_to
+      taxon_id: 7227
   outdir: uniprot
   nodes: False
   edges: True
@@ -100,6 +101,7 @@ uniprotkb_sprot_translates_of:
       filepath: ./samples/dmel/uniprot_sprot_invertebrates_DMEL.dat.gz
       type: translation of
       label: translation_of
+      taxon_id: 7227
   outdir: uniprot
   nodes: False
   edges: True
@@ -111,6 +113,7 @@ pathway:
     args:
       filepath: ./samples/reactome/ReactomePathways.txt
       pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
+      taxon_id: 7227
   outdir: reactome
   nodes: True
   edges: False
