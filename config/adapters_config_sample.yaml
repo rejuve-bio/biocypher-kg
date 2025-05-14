@@ -96,7 +96,7 @@ pathway:
     args:
       filepath: ./samples/reactome/ReactomePathways.txt
       pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
-
+      taxon_id: 9606
   outdir: reactome
   nodes: True
   edges: False
@@ -107,8 +107,9 @@ genes_pathways:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
-
+      taxon_id: 9606
   outdir: reactome
   nodes: False
   edges: True
@@ -119,8 +120,9 @@ parent_pathway_of:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
       label: parent_pathway_of
-
+      taxon_id: 9606
   outdir: reactome
   nodes: False
   edges: True
@@ -131,8 +133,9 @@ child_pathway_of:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
       label: child_pathway_of
-
+      taxon_id: 9606
   outdir: reactome
   nodes: False
   edges: True
@@ -214,21 +217,6 @@ go_cellular_component:
   outdir: gene_ontology/cellular_component
   nodes: True
   edges: False
-
-
-
-tflink:     
-    adapter:
-        module: biocypher_metta.adapters.tflink_adapter
-        cls: TFLinkAdapter
-        args:
-          filepath: ./samples/tflink_homo_sapiens_interactions.tsv.gz
-          entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
-          
-    outdir: tflink
-    nodes: False
-    edges: True
-
 
 go_cellular_component_subclass_of:
   adapter:

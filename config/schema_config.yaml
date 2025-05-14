@@ -704,6 +704,7 @@ gene to pathway association:
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
+  output_label: involved_in
   source: [gene, protein, transcript]
   target: pathway
 

@@ -1,5 +1,6 @@
-import gzip
-from Bio import SeqIO
+
+import psycopg2
+import pickle
 from biocypher_metta.adapters import Adapter
 
 # Data file for genes_pathways: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
@@ -32,7 +33,7 @@ class ReactomeAdapter(Adapter):
     ALLOWED_LABELS = ['genes_pathways',
                       'parent_pathway_of', 'child_pathway_of']
 
-    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id = None):
+    def __init__(self, filepath, label, write_properties, add_provenance, ensembl_to_uniprot_map, taxon_id = None):
         """
             If taxon_id == None then all pathways in the get_edges::organism_taxon_map will be 
             translated to be fed into atom space.
@@ -44,6 +45,9 @@ class ReactomeAdapter(Adapter):
         self.filepath = filepath
         self.dataset = label
         self.label = label
+        with open(ensembl_to_uniprot_map, "rb") as f:
+            self.ensembl2uniprot = pickle.load(f)
+        self.fbpp_to_uniprot = {}
         self.taxon_id = taxon_id
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
@@ -57,6 +61,8 @@ class ReactomeAdapter(Adapter):
             'R-HSA': 9606,  # Homo sapiens (hsa)
             # Add more organisms here as needed
         }
+        if self.taxon_id == 7227:
+            connection = self.connect_to_flybase()
 
         with open(self.filepath) as input:
             base_props = {}
@@ -75,7 +81,9 @@ class ReactomeAdapter(Adapter):
                             props = base_props.copy()
                             props['taxon_id'] = taxon_id
                             if prefix == 'R-HSA':
-                                entity_id = entity_id.split('.')[0]
+                                entity_id = entity_id.split('.')[0]                            
+                            if entity_id.startswith('ENSP'):
+                                entity_id = self.ensembl2uniprot[entity_id]
                             source = (source_type, entity_id)
                             target = pathway_id
                             yield source, target, self.label, props
@@ -85,6 +93,16 @@ class ReactomeAdapter(Adapter):
                                 source_type = self._get_entity_type(entity_id)                        
                                 props = base_props.copy()
                                 props['taxon_id'] = taxon_id
+                                if entity_id.startswith('FBpp'):
+                                    uniprot_id = self.ensembl2uniprot.get(entity_id)
+                                    if uniprot_id == None:
+                                        print(f'{entity_id}  not in ensemble to uniprot dict.')
+                                        uniprot_id = self.get_uniprot_id(connection, entity_id)
+                                        if uniprot_id == None:
+                                            print(f'No Uniprot ID for protein {entity_id}. Reactome {pathway_id} will not be linked to it...')
+                                            continue
+                                    # print(f'{entity_id}  <---> {uniprot_id}')
+                                    entity_id = uniprot_id
                                 source = (source_type, entity_id)
                                 target = pathway_id
                                 # print(f'Inserted: {source} | {target} | {self.label}:\n{props}')
@@ -122,3 +140,71 @@ class ReactomeAdapter(Adapter):
         else:
             return "transcript"
 
+
+    def connect_to_flybase(self):
+        """Establishes the connection to the Flybase database."""
+        try:
+            conn = psycopg2.connect(
+                host="chado.flybase.org",
+                database="flybase",
+                user="flybase",
+                password="flybase"  # Replace with your password
+            )
+            print("Connection established successfully!")
+            return conn
+        except Exception as e:
+            print(f"Error connecting to Flybase: {e}")
+            return None
+
+
+    def get_uniprot_id(self, conn, polypeptide_id):
+        """Retrieves the UniProt ID for a polypeptide from Flybase based on the uniquename.
+        The result is stored in the fbpp_to_uniprot dictionary to avoid repeated queries."""
+        # Verifica se o UniProt ID já foi obtido para este polypeptide_id
+        if polypeptide_id in self.fbpp_to_uniprot:
+            # print(f"UniProt ID for {polypeptide_id} already cached.")
+            return self.fbpp_to_uniprot[polypeptide_id]
+        
+        try:
+            # Primeiro, obtemos o feature_id (pp_id) associado ao uniquename
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT feature_id as pp_id 
+                FROM feature 
+                WHERE is_obsolete = false 
+                AND is_analysis = false 
+                AND uniquename = %s;
+            """, (polypeptide_id,))
+            pp_id = cursor.fetchone()
+            
+            if pp_id is None:
+                print(f"No polypeptide ID found for uniquename: {polypeptide_id}")
+                return None
+            
+            pp_id = pp_id[0]
+
+            # Agora, usamos o pp_id para obter o UniProt ID
+            cursor.execute("""
+                SELECT DISTINCT accession
+                FROM feature_dbxref fdbx
+                JOIN dbxref dbx ON (dbx.dbxref_id = fdbx.dbxref_id)
+                JOIN db ON (db.db_id = dbx.db_id)
+                WHERE fdbx.is_current = true
+                AND db.name IN ('UniProt/Swiss-Prot', 'UniProt/TrEMBL') 
+                AND fdbx.feature_id = %s;
+            """, (pp_id,))
+            
+            uniprot_ids = cursor.fetchall()
+
+            if uniprot_ids:
+                # Armazena o UniProt ID no dicionário e retorna o primeiro encontrado
+                self.fbpp_to_uniprot[polypeptide_id] = uniprot_ids[0][0]
+                return uniprot_ids[0][0]
+            else:
+                # print(f"No UniProt ID found for feature_id: {pp_id}")
+                return None
+        except Exception as e:
+            print(f"Error executing query: {e}")
+            return None
+        finally:
+            cursor.close()

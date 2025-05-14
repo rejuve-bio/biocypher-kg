@@ -41,7 +41,8 @@ class ReactomePathwayAdapter(Adapter):
         with open(self.filepath) as input:
             for line in input:
                 id, name, species = line.strip().split('\t')                
-                if self.taxon_id == None:           #  TO NOT CHANGE HUMAN ADAPTER CONFIGURATION FILE FOR NOW
+                # if self.taxon_id == None:           # this could be used to load pathway for all available species
+                if self.taxon_id == 9606:
                     if species == 'Homo sapiens':
                         props = {}
                         if self.write_properties:
@@ -62,8 +63,7 @@ class ReactomePathwayAdapter(Adapter):
                     if species == 'Drosophila melanogaster':
                         props = {}
                         if self.write_properties:
-                            props['pathway_name'] = name
-                        
+                            props['pathway_name'] = name                        
                             pubmed_id = self.pubmed_map.get(id, None)
                             if pubmed_id is not None:
                                 pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"

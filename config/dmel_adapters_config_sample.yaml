@@ -119,13 +119,14 @@ pathway:
   edges: False
 
 
-# for all organisms
+# for all organisms ommit taxon_id
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      ensembl_to_uniprot_map: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: genes_pathways
       taxon_id: 7227
   outdir: reactome
@@ -138,7 +139,9 @@ parent_pathway_of:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      ensembl_to_uniprot_map: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: parent_pathway_of
+      taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
@@ -149,7 +152,9 @@ child_pathway_of:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      ensembl_to_uniprot_map: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: child_pathway_of
+      taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
@@ -640,27 +645,6 @@ expression_value:
   edges: True
 
 
-parent_pathway_of:
-  adapter:
-    module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomeAdapter
-    args:
-      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
-      label: parent_pathway_of
-  outdir: reactome
-  nodes: False
-  edges: True
-
-child_pathway_of:
-  adapter:
-    module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomeAdapter
-    args:
-      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
-      label: child_pathway_of
-  outdir: reactome
-  nodes: False
-  edges: True
 
 sequence_ontology:
   adapter:
