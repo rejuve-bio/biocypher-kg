@@ -1024,3 +1024,26 @@ enhancer_ccre_associates_with_gene:
   outdir: ccre/enhancer_ccre
   nodes: False
   edges: True
+
+encode_re2g:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: ./samples/ENCODE_rE2G_K562.bed.gz
+
+  outdir: encode_re2g
+  nodes: True
+  edges: False
+
+encode_re2g_gene_associates:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: ./samples/ENCODE_rE2G_K562.bed.gz
+      label: enhancer_gene
+
+  outdir: encode_re2g
+  nodes: False
+  edges: True
