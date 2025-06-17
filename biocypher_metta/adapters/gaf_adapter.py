@@ -53,7 +53,7 @@ class GAFAdapter(Adapter):
     }
 
     def __init__(self, filepath, write_properties, add_provenance, gaf_type='human', 
-                 label=None, mapping_file='aux_files/go_subontology_mapping.pkl'):
+                 label=None, mapping_file='aux_files/go_subontology_mapping.pkl', hgnc_to_ensembl_map=None):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
                              ', '.join(GAFAdapter.SOURCES.keys()))
@@ -62,6 +62,7 @@ class GAFAdapter(Adapter):
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
         self.label = label
+        self.hgnc_to_ensembl_map = None if hgnc_to_ensembl_map == None else pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.source = "GOA"
         self.source_url = GAFAdapter.SOURCES[gaf_type]
 
@@ -69,11 +70,11 @@ class GAFAdapter(Adapter):
         self.subontology_mapping = None
 
         # Determine subontology based on label
-        if label == 'molecular_function_gene_product':
+        if label in 'molecular_function_gene_product':
             self.subontology = 'molecular_function'
-        elif label == 'cellular_component_gene_product':
+        elif label in 'cellular_component_gene_product':
             self.subontology = 'cellular_component'
-        elif label == 'biological_process_gene_product':
+        elif label in 'biological_process_gene_product':
             self.subontology = 'biological_process'
 
         if os.path.exists(mapping_file):
@@ -108,8 +109,8 @@ class GAFAdapter(Adapter):
                 # Skip if qualifier contains 'NOT'
                 if "NOT" in annotation['Qualifier']:
                     continue
-
                 source = annotation['DB_Object_ID']
+                gene_symbol = annotation['DB_Object_Symbol']
                 target = annotation['GO_ID']
 
                 # Skip if subontology doesn't match
@@ -126,7 +127,7 @@ class GAFAdapter(Adapter):
 
                 # Cellular component filtering using qualifier
                 qualifier = annotation['Qualifier']
-                if self.label.startswith('cellular_component_gene_product'):
+                if self.label in 'cellular_component_gene_product':
                     if 'part_of' in qualifier:
                         if 'part_of' not in self.label:
                             continue
@@ -135,7 +136,20 @@ class GAFAdapter(Adapter):
                             continue
                     else:
                         continue
-
+                
+                # use gene instead of protein
+                if self.hgnc_to_ensembl_map != None:
+                    ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_symbol, None)
+                    if ensembl_gene_id == None:
+                        continue
+                    source = ensembl_gene_id
+                
+                # Check for redundancy: Skip if the edge is already seen
+                edge = (source, target, self.label)
+                if edge in self.seen_edges:
+                    continue  
+                self.seen_edges.add(edge)  
+                
                 props = {}
                 if self.write_properties:
                     props = {
@@ -146,11 +160,5 @@ class GAFAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-
-                # Check for redundancy: Skip if the edge is already seen
-                edge = (source, target, self.label)
-                if edge in self.seen_edges:
-                    continue  
-                self.seen_edges.add(edge)  
 
                 yield source, target, self.label, props
