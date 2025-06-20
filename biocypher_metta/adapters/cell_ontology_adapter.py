@@ -9,27 +9,35 @@ class CellOntologyAdapter(OntologyAdapter):
 
     CAPABLE_OF = rdflib.term.URIRef('http://purl.obolibrary.org/obo/RO_0002215')
     PART_OF = rdflib.term.URIRef('http://purl.obolibrary.org/obo/BFO_0000050')
-    CL_URI_PREFIX = 'http://purl.obolibrary.org/obo/CL_'
-    GO_URI_PREFIX = 'http://purl.obolibrary.org/obo/GO_'
-    UBERON_URI_PREFIX = 'http://purl.obolibrary.org/obo/UBERON_'
 
     def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False, add_description=False, cache_dir=None):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
        
     def get_ontology_source(self):
-        """
-        Returns the source and source URL for Cell Ontology.
-        """
         return 'Cell Ontology', 'http://purl.obolibrary.org/obo/cl.owl'
-
-    def is_cl_term(self, uri):
-        return str(uri).startswith(self.CL_URI_PREFIX)
-
-    def is_go_term(self, uri):
-        return str(uri).startswith(self.GO_URI_PREFIX)
-
-    def is_uberon_term(self, uri):
-        return str(uri).startswith(self.UBERON_URI_PREFIX)
+    
+    def get_uri_prefixes(self):
+        """Define URI prefixes for Cell Ontology."""
+        return {
+            'primary': 'http://purl.obolibrary.org/obo/CL_',
+            'go': 'http://purl.obolibrary.org/obo/GO_',
+            'uberon': 'http://purl.obolibrary.org/obo/UBERON_'
+        }
+    
+    def should_include_edge(self, from_node, to_node, predicate=None, edge_type=None):
+        if predicate == RDFS.subClassOf:
+            return (self.is_term_of_type(from_node, 'primary') and 
+                    self.is_term_of_type(to_node, 'primary'))
+    
+        elif predicate == self.CAPABLE_OF:
+            return (self.is_term_of_type(from_node, 'primary') and 
+                    self.is_term_of_type(to_node, 'go'))
+    
+        elif predicate == self.PART_OF:
+            return (self.is_term_of_type(from_node, 'primary') and 
+                    self.is_term_of_type(to_node, 'uberon'))
+        
+        return super().should_include_edge(from_node, to_node, predicate, edge_type)
 
     def get_nodes(self):
         self.update_graph()
@@ -37,7 +45,7 @@ class CellOntologyAdapter(OntologyAdapter):
 
         node_count = 0
         for node in self.graph.subjects(RDF.type, OWL.Class):
-            if not self.is_cl_term(node):
+            if not self.should_include_node(node):
                 continue
             
             if self.is_deprecated(node):
@@ -59,7 +67,6 @@ class CellOntologyAdapter(OntologyAdapter):
 
                 if self.add_description:
                     description = ' '.join(self.get_all_property_values_from_node(node, 'descriptions'))
-                    # Remove quotation marks from the description
                     props['description'] = description.replace('"', '')
 
                 if self.add_provenance:
@@ -92,7 +99,7 @@ class CellOntologyAdapter(OntologyAdapter):
 
         edge_count = 0
         for subject in self.graph.subjects(RDF.type, OWL.Class):
-            if not self.is_cl_term(subject):
+            if not self.should_include_node(subject):
                 continue
 
             if self.is_deprecated(subject):
@@ -100,7 +107,6 @@ class CellOntologyAdapter(OntologyAdapter):
 
             objects_to_process = []
 
-            # For part_of and capable_of edges, we ONLY want to process restrictions
             if self.label in ['cl_part_of', 'cl_capable_of']:
                 for _, subclass_restriction in self.graph.predicate_objects(subject, RDFS.subClassOf):
                     if isinstance(subclass_restriction, rdflib.term.BNode):
@@ -120,7 +126,7 @@ class CellOntologyAdapter(OntologyAdapter):
                 if object_or_restriction is None or self.is_deprecated(object_or_restriction):
                     continue
 
-                if not self.is_valid_edge_with_predicate(subject, object_or_restriction, predicate, self.label):
+                if not self.should_include_edge(subject, object_or_restriction, predicate, self.label):
                     continue
 
                 from_node_key = self.to_key(subject)
@@ -138,21 +144,6 @@ class CellOntologyAdapter(OntologyAdapter):
                 edge_count += 1
                 if self.dry_run and edge_count > 100:
                     return
-
-    def is_valid_edge_with_predicate(self, from_node, to_node, predicate, edge_type):
-        if predicate == RDFS.subClassOf:
-            return self.is_cl_term(from_node) and self.is_cl_term(to_node)
-    
-        elif predicate == self.CAPABLE_OF:
-            return (self.is_cl_term(from_node) and 
-                    self.is_go_term(to_node))
-    
-        elif predicate == self.PART_OF:
-            return (self.is_cl_term(from_node) and 
-                    self.is_uberon_term(to_node))
-
-    
-        return False
 
     def resolve_object(self, object_or_restriction, predicate):
         if not isinstance(object_or_restriction, rdflib.term.BNode):
