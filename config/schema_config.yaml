@@ -161,7 +161,6 @@ gene:
   input_label: gene
   description: A region that includes all sequence elements necessary to encode a functional transcript
   kgx_properties:
-    name: gene_name
     category: "biolink:Gene"
   properties:
     id:
@@ -300,7 +299,6 @@ snp:
   input_label: snp
   inherit_properties: true
   kgx_properties:
-    name: id
     category: "biolink:Snv"
   properties:
     ref: 
@@ -325,7 +323,6 @@ structural_variant:
   input_label: structural_variant
   inherit_properties: true
   kgx_properties:
-    name: variant_accession
     category: "biolink:SequenceVariant"
   properties:
     variant_accession: 
@@ -346,7 +343,6 @@ sequence_variant:
   input_label: sequence_variant
   inherit_properties: true
   kgx_properties:
-    name: rsid
     category: "biolink:SequenceVariant"
   description: A change in the nucleotide sequence of a genome compared to a reference sequence.
   properties:
@@ -374,7 +370,6 @@ polyphen2_variant:
   input_label: polyphen2_variant
   inherit_properties: true
   kgx_properties:
-    name: id
     category: "biolink:SequenceVariant"
   description: A variant with PolyPhen-2 predictions for the impact of amino acid substitutions on protein structure and function
   properties:
@@ -407,7 +402,6 @@ enhancer:
   input_label: enhancer
   inherit_properties: true
   kgx_properties:
-    name: enhancer_id
     category: "biolink:RegulatoryRegion"
   properties:
     data_source: 
@@ -425,7 +419,6 @@ promoter:
   input_label: promoter
   inherit_properties: true
   kgx_properties:
-    name: id
     category: "biolink:RegulatoryRegion"
 
 super_enhancer:
@@ -436,7 +429,6 @@ super_enhancer:
   input_label: super_enhancer
   inherit_properties: true
   kgx_properties:
-    name: se_id
     category: "biolink:RegulatoryRegion"
   properties:
     se_id: 
@@ -451,7 +443,6 @@ non_coding_rna:
   input_label: non_coding_rna
   inherit_properties: true
   kgx_properties:
-    name: id
     category: "biolink:NoncodingRNAProduct"
   properties:
     rna_type: 
@@ -471,7 +462,6 @@ pathway:
   represented_as: node
   input_label: pathway
   kgx_properties:
-    name: pathway_name
     category: "biolink:Pathway"
   properties:
     pathway_name: 
@@ -495,7 +485,6 @@ regulatory_region:
   input_label: regulatory_region
   inherit_properties: true
   kgx_properties:
-    name: id
     category: "biolink:RegulatoryRegion"
   description: A region of the genome that is involved in gene regulation.
   properties:
@@ -517,11 +506,9 @@ tfbs:
   input_label: tfbs
   inherit_properties: true
   kgx_properties:
-    name: id
     category: "biolink:RegulatoryRegion"
   description: A region of DNA where a transcription factor binds to regulate gene expression
   accessible_via:
-    name: motifs
     description: "TF binding motifs."
     fuzzy_text_search: tf_name
     return: _id, tf_name, source, source_url, pwm, length
@@ -557,7 +544,6 @@ uberon:
   input_label: uberon
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:AnatomicalEntity"
 
 # Cell line Ontology
@@ -569,7 +555,6 @@ clo:
   input_label: clo
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:CellLine"
 
 # Cell Ontology
@@ -581,7 +566,6 @@ cl:
   input_label: cl
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:Cell"
 
 # Experimental Factor Ontology
@@ -593,7 +577,6 @@ efo:
   input_label: efo
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:OntologyClass"
 
 # BRENDA Tissue Ontology
@@ -605,7 +588,6 @@ bto:
   input_label: bto
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:AnatomicalEntity"
 
 # Human Phenotype Ontology
@@ -617,7 +599,6 @@ hpo:
   input_label: hpo
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:PhenotypicFeature"
 
 # Subontologies
@@ -631,7 +612,6 @@ biological_process:
   input_label: biological_process
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:BiologicalProcess"
 
 molecular_function:
@@ -642,7 +622,6 @@ molecular_function:
   input_label: molecular_function
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:MolecularActivity"
 
 cellular_component:
@@ -653,7 +632,6 @@ cellular_component:
   input_label: cellular_component
   inherit_properties: true
   kgx_properties:
-    name: term_name
     category: "biolink:CellularComponent"
 
 # ---
@@ -1197,6 +1175,27 @@ biological_process_gene_product:
     object_category: "biolink:BiologicalProcess"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+biological_process_gene:
+  is_a: go_gene_product
+  #mixins: [biolink:]
+  biolink_predicate: "biolink:involved_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: biological_process_gene
+  output_label: involved_in
+  source: gene
+  target: biological_process
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:BiologicalProcess"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: An association between a gene and a biological process, where the gene is involved in the process.
+  properties:
+    qualifier: obj
+    db_reference: obj
+    evidence: str
 
 molecular_function_gene_product:
   is_a: go_gene_product
