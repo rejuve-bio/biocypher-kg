@@ -41,6 +41,8 @@ class ReactomePathwayAdapter(Adapter):
             for line in input:
                 id, name, species = line.strip().split('\t')
                 if species == 'Homo sapiens':
+                    # Add Reactome prefix to pathway ID
+                    pathway_id = f"REACT:{id}"
                     props = {}
                     if self.write_properties:
                         props['pathway_name'] = name
@@ -54,4 +56,4 @@ class ReactomePathwayAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
 
-                    yield id, self.label, props
+                    yield pathway_id, self.label, props
