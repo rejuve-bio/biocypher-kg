@@ -123,8 +123,8 @@ class GencodeAdapter(Adapter):
                     continue
 
                 result = self.hgnc_processor.process_identifier(info['gene_name'])
-            
-                transcript_key = info['transcript_id'].split('.')[0]
+                #CURIE Format ID
+                transcript_key = f"ENSEMBL:{info['transcript_id'].split('.')[0]}"
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
                 gene_key = info['gene_id'].split('.')[0]
@@ -181,8 +181,8 @@ class GencodeAdapter(Adapter):
                 # Skip if we don't want to keep this transcript
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
                     continue
-
-                transcript_key = info['transcript_id'].split('.')[0]
+                #CURIE Format ID
+                transcript_key = f"ENSEMBL:{info['transcript_id'].split('.')[0]}"
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
                 gene_key = info['gene_id'].split('.')[0]
