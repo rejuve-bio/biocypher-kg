@@ -63,7 +63,7 @@ class TADMapAdapter(Adapter):
                         continue
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                    _id = build_regulatory_region_id(chr, start, end)
+                    _id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                     _props = {}
                     if self.write_properties:
                         _props = {
