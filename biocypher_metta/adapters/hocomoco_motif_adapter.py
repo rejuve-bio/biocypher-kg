@@ -62,7 +62,8 @@ class HoCoMoCoMotifAdapter(Adapter):
                 length = len(pwm["pmw_A"])
 
                 tf_name = self.model_tf_map.get(model_name)
-                _id = self.hgnc_to_ensembl_map.get(tf_name)
+                #CURIE ID Format
+                _id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(tf_name)}"
                 if _id is None:
                     continue
 
