@@ -100,6 +100,7 @@ class GAFAdapter(Adapter):
             negated = True
         return negated
 
+
     def get_edges(self):
         if self.type == 'rna':
             self.load_rnacentral_mapping()

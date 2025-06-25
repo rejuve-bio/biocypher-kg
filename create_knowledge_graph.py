@@ -47,6 +47,8 @@ def get_writer(writer_type: str, output_dir: Path):
 
 def preprocess_schema():
     def convert_input_labels(label, replace_char="_"):
+        if isinstance(label, list):
+            return [item.replace(" ", replace_char) for item in label]
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
@@ -61,14 +63,26 @@ def preprocess_schema():
             target_type = v.get("target", None)
 
             if source_type is not None and target_type is not None:
-                label = convert_input_labels(v["input_label"])
-                source_type = convert_input_labels(source_type)
-                target_type = convert_input_labels(target_type)
+                if isinstance(v["input_label"], list):
+                    label = convert_input_labels(v["input_label"][0])
+                else:
+                    label = convert_input_labels(v["input_label"])
+                
+                if isinstance(source_type, list):
+                    processed_source = [s.lower() for s in convert_input_labels(source_type)]
+                else:
+                    processed_source = convert_input_labels(source_type).lower()
+                
+                if isinstance(target_type, list):
+                    processed_target = [t.lower() for t in convert_input_labels(target_type)]
+                else:
+                    processed_target = convert_input_labels(target_type).lower()
+                
                 output_label = v.get("output_label", None)
 
                 edge_node_types[label.lower()] = {
-                    "source": source_type.lower(),
-                    "target": target_type.lower(),
+                    "source": processed_source,
+                    "target": processed_target,
                     "output_label": output_label.lower() if output_label else None,
                 }
 
@@ -91,13 +105,40 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     relations_frequency = Counter()
     possible_connections = defaultdict(set)
 
-    for edge, count in edges_count.items():
-        label = schema_dict[edge]['output_label'] or edge
-        predicate_count[label] += count
-        source = schema_dict[edge]['source']
-        target = schema_dict[edge]['target']
-        relations_frequency[f'{source}|{target}'] += count
-        possible_connections[f'{source}|{target}'].add(label)
+    for edge_key, count in edges_count.items():
+        # Split the composite key: "label|source_type|target_type"
+        parts = edge_key.split('|')
+        if len(parts) == 3:
+            edge_type, source_type, target_type = parts
+        else:
+            # Handle old format or unexpected formats
+            edge_type = edge_key
+            if edge_type.lower() in schema_dict:
+                source_type = schema_dict[edge_type.lower()]['source']
+                target_type = schema_dict[edge_type.lower()]['target']
+            else:
+                # Skip if we can't determine source/target
+                continue
+        
+        if edge_type.lower() in schema_dict:
+            # Get the output label from schema
+            label = schema_dict[edge_type.lower()]['output_label'] or edge_type
+            predicate_count[label] += count
+            
+            # Handle source/target which might be lists
+            if isinstance(source_type, list):
+                print(f"source types: {source_type}")
+                for src in source_type:
+                    relations_frequency[f'{src}|{target_type}'] += count
+                    possible_connections[f'{src}|{target_type}'].add(label)
+            elif isinstance(target_type, list):
+                print(f"target types: {target_type}")
+                for tgt in target_type:
+                    relations_frequency[f'{source_type}|{tgt}'] += count
+                    possible_connections[f'{source_type}|{tgt}'].add(label)
+            else:
+                relations_frequency[f'{source_type}|{target_type}'] += count
+                possible_connections[f'{source_type}|{target_type}'].add(label)
 
     graph_info['top_connections'] = [{'name': predicate, 'count': count} for predicate, count in predicate_count.items()]
     graph_info['frequent_relationships'] = [{'entities': rel.split('|'), 'count': count} for rel, count in relations_frequency.items()]
@@ -171,11 +212,19 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
         if write_edges:
             edges = adapter.get_edges()
             freq = writer.write_edges(edges, path_prefix=outdir)
-            for edge_label in freq:
-                edges_count[edge_label] += freq[edge_label]
-                label = schema_dict[edge_label.lower()]['output_label'] or edge_label
+            for edge_label_key in freq:
+                edges_count[edge_label_key] += freq[edge_label_key]
+            
+                parts = edge_label_key.split('|')
+                edge_type = parts[0]  
+            
+                if edge_type.lower() in schema_dict:
+                    output_label = schema_dict[edge_type.lower()]['output_label'] or edge_type
+                else:
+                    output_label = edge_type  
+                
                 if dataset_name is not None:
-                    datasets_dict[dataset_name]['edges'].add(label)
+                    datasets_dict[dataset_name]['edges'].add(output_label)
 
     return nodes_count, nodes_props, edges_count, datasets_dict
 
