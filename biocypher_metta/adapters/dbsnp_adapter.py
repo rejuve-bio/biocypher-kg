@@ -41,7 +41,8 @@ class DBSNPAdapter(Adapter):
                 if line.startswith('#'):
                     continue
                 data = line.strip().split('\t')
-                rsid = data[DBSNPAdapter.INDEX['id']]
+                #CURIE format for dbSNP ID
+                rsid = f"DBSNP:{data[DBSNPAdapter.INDEX['id']]}"
                 chr = data[DBSNPAdapter.INDEX['chr']]
                 pos = int(data[DBSNPAdapter.INDEX['pos']])
                 ref = data[DBSNPAdapter.INDEX['ref']]
