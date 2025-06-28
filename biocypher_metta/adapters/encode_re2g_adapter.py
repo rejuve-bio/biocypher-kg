@@ -27,7 +27,9 @@ class ENCODERe2GAdapter(Adapter):
                 chr = fields[0]
                 start = int(fields[1])
                 end = int(fields[2])
-                region_id = build_regulatory_region_id(chr, start, end)
+                # CURIE format, SO:0000165 a sequence ontology term for enhancer
+                # KGX-compliant (SO: prefix + genomic coords)
+                region_id = f"SO:0000165_{build_regulatory_region_id(chr, start, end)}"
                 
                 if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     continue
@@ -54,9 +56,11 @@ class ENCODERe2GAdapter(Adapter):
                 chr = fields[0]
                 start = int(fields[1])
                 end = int(fields[2])
-                gene_id = fields[6]  
+                #CURIE ID for gene, ENSEMBL prefix
+                gene_id = f"ENSEMBL:{fields[6] }"
                 score = float(fields[-1])
-                region_id = build_regulatory_region_id(chr, start, end)
+                # KGX-compliant CURIE ID format (SO: prefix + genomic coords)
+                region_id = f"SO:0000165_{build_regulatory_region_id(chr, start, end)}"
                 
                 if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     continue
