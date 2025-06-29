@@ -207,7 +207,7 @@ protein:
 transcript:
   represented_as: node
   input_label: transcript
-  is_a: coding element
+  is_a: [coding element, position entity]
   mixins: [biolink:Transcript]
   biolink_category: "biolink:Transcript"
   inherit_properties: true
@@ -382,7 +382,7 @@ promoter:
   kgx_properties:
     category: "biolink:RegulatoryRegion"
 
-super enhancer:
+super_enhancer:
   represented_as: node
   input_label: super_enhancer
   is_a: non coding element
@@ -396,7 +396,7 @@ super enhancer:
       type: str
       biolink: id
 
-non coding rna:
+non_coding_rna:
   represented_as: node
   input_label: non_coding_rna
   is_a: non coding element
@@ -404,7 +404,7 @@ non coding rna:
   biolink_category: "biolink:RNAProduct"
   inherit_properties: true
   kgx_properties:
-    category: "biolink:RNAProduct"
+    category: "biolink:RnaProduct"
   properties:
     rna_type: 
       type: str
@@ -487,6 +487,7 @@ uberon:
 # Cell line Ontology
 clo:
   is_a: ontology term
+  biolink_category: "biolink:CellLine"
   mixins: [biolink:CellLine]
   represented_as: node
   input_label: clo
@@ -497,6 +498,7 @@ clo:
 # Cell Ontology
 cl:
   is_a: ontology term
+  biolink_category: "biolink:Cell"
   mixins: [biolink:Cell]
   represented_as: node
   input_label: cl
@@ -508,12 +510,12 @@ cl:
 efo:
   is_a: ontology term
   mixins: [biolink:OntologyClass]
-  biolink_category: "biolink:OntologyClass"
+  #biolink_category: "biolink:OntologyClass"
   represented_as: node
   input_label: efo
   inherit_properties: true
   kgx_properties:
-    category: "biolink:OntologyClass"
+    category: "biolink:NamedThing"
 
 # BRENDA Tissue Ontology
 bto:
@@ -549,6 +551,8 @@ motif:
     description: "TF binding motifs."
     fuzzy_text_search: tf_name
     return: _id, tf_name, source, source_url, pwm, length
+  kgx_properties:
+    category: "biolink:TranscriptionFactorBindingSite"
   properties:
     tf_name: 
       type: str
@@ -884,7 +888,7 @@ cl capable of:
   represented_as: edge
   input_label: cl_capable_of
   output_label: capable_of
-  gx_properties:
+  kgx_properties:
     subject_category: "biolink:Cell"
     object_category: "biolink:BiologicalProcess"
     knowledge_level: "knowledge_assertion"
@@ -969,7 +973,7 @@ bto subclass of:
   output_label: subclass_of
   source: bto
   target: bto
-  gx_properties:
+  kgx_properties:
     subject_category: "biolink:AnatomicalEntity"
     object_category: "biolink:AnatomicalEntity"
     knowledge_level: "knowledge_assertion"
