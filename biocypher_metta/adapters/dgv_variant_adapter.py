@@ -37,7 +37,8 @@ class DGVVariantAdapter(Adapter):
                 end = int(data[DGVVariantAdapter.INDEX['coord_end']])
                 variant_type = data[DGVVariantAdapter.INDEX['type']]
                 pubmedid = data[DGVVariantAdapter.INDEX['pubmedid']]
-                region_id =f"dbVar:{build_regulatory_region_id(chr, start, end)}"
+                #Using SO:0001059 as the CURIE prefix for structural variants since dbVar lacks a standard ID format
+                region_id =f"SO:0001059_{build_regulatory_region_id(chr, start, end)}"
                 if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     continue
                 props = {}
