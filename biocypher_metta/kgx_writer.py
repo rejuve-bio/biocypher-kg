@@ -27,8 +27,10 @@ class KGXWriter(BaseWriter):
         self.edge_schema_properties = defaultdict(set)
         self.edge_node_types = {}
         self.edge_configs = {}  # Store full edge configs
+        self.node_configs = {}   # Store full node configs
         self._initialize_schema_validation()
         self.create_edge_types()
+        self.create_node_types()
 
     def create_edge_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -58,6 +60,22 @@ class KGXWriter(BaseWriter):
                     }
                     self.edge_configs[label.lower()] = v  # Store full config
 
+    def create_node_types(self):
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        
+        for k, v in schema.items():
+            if v.get("represented_as") == "node":
+                if isinstance(v["input_label"], list):
+                    label = self._normalize_label(v["input_label"][0])
+                else:
+                    label = self._normalize_label(v["input_label"])
+                output_label = v.get("output_label", label)
+                
+                self.node_configs[label.lower()] = {
+                    "output_label": output_label.lower(),
+                    "config": v
+                }
+
     def _initialize_schema_validation(self):
         """Initialize schema validation structures from the schema configuration"""
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -80,7 +98,7 @@ class KGXWriter(BaseWriter):
                     self._process_edge_schema(normalized_label, config)
 
     def _process_node_schema(self, label, config):
-        """Extract valid properties from node schema including KGX properties"""
+        """Extract valid properties from node schema including inherited properties"""
         # Required node properties
         self.node_schema_properties[label].update(['id'])
         
@@ -96,7 +114,10 @@ class KGXWriter(BaseWriter):
         kgx_props = config.get('kgx_properties', {})
         if kgx_props:
             self.node_schema_properties[label].update(kgx_props.keys())
-
+        
+        # Handle inherited properties if inherit_properties is True
+        if config.get('inherit_properties', False):
+            self._add_inherited_properties(label, config)
     def _process_edge_schema(self, label, config):
         """Extract valid properties from edge schema including KGX properties"""
         # Required edge properties
@@ -120,6 +141,36 @@ class KGXWriter(BaseWriter):
         kgx_props = config.get('kgx_properties', {})
         if kgx_props:
             self.edge_schema_properties[label].update(kgx_props.keys())
+
+    def _add_inherited_properties(self, label, config):
+        """Recursively add properties from parent classes"""
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        
+        # Get parent classes from is_a
+        parent_classes = config.get('is_a', [])
+        if not isinstance(parent_classes, list):
+            parent_classes = [parent_classes]
+        
+        for parent in parent_classes:
+            # Find parent config in schema
+            parent_config = None
+            for k, v in schema.items():
+                if v.get('input_label') == parent or k == parent:
+                    parent_config = v
+                    break
+            
+            if parent_config:
+                # Add parent's properties
+                if 'properties' in parent_config:
+                    props = parent_config['properties']
+                    if isinstance(props, list):
+                        self.node_schema_properties[label].update(props)
+                    elif isinstance(props, dict):
+                        self.node_schema_properties[label].update(props.keys())
+                
+                # Recursively inherit from parent's parents
+                if parent_config.get('inherit_properties', False):
+                    self._add_inherited_properties(label, parent_config)
 
     def _normalize_label(self, label):
         if not label:
@@ -215,21 +266,26 @@ class KGXWriter(BaseWriter):
         try:
             for node in nodes:
                 node_id, label, properties = node
-                label = label.lower()
-                node_freq[label] += 1
+                normalized_label = self._normalize_label(label)
+                node_freq[normalized_label] += 1
                 
-                # Get full node config from schema
-                node_config = self.bcy._get_ontology_mapping()._extend_schema().get(label, {})
-                kgx_props = node_config.get('kgx_properties', {})
+                # Get node info from schema
+                node_info = self.node_configs.get(normalized_label, {})
+                node_config = node_info.get("config", {})
+                output_label = node_info.get("output_label", normalized_label)
                 
                 # Validate properties against schema
-                validated_props = self._validate_node_properties(label, properties)
+                validated_props = self._validate_node_properties(normalized_label, properties)
                 
                 # Create base node data with required properties
                 node_data = {
                     'id': self.preprocess_id(node_id),
+                    'label': output_label,
                     **validated_props
                 }
+                
+                # Get KGX properties from schema
+                kgx_props = node_config.get('kgx_properties', {})
                 
                 # Merge in all KGX properties from schema
                 for kgx_key, kgx_value in kgx_props.items():
@@ -238,13 +294,13 @@ class KGXWriter(BaseWriter):
                 
                 # Ensure category is set (from kgx_properties or fallback to label)
                 if 'category' not in node_data:
-                    node_data['category'] = label
+                    node_data['category'] = output_label
                 
-                writer_key = self._init_node_writer(label, node_data, path_prefix, adapter_name)
-                self.temp_buffer[label].append(node_data)
+                writer_key = self._init_node_writer(output_label, node_data, path_prefix, adapter_name)
+                self.temp_buffer[output_label].append(node_data)
                 
-                if len(self.temp_buffer[label]) >= self.batch_size:
-                    self._write_buffer_to_temp(label, self.temp_buffer[label])
+                if len(self.temp_buffer[output_label]) >= self.batch_size:
+                    self._write_buffer_to_temp(output_label, self.temp_buffer[output_label])
             
             for label in list(self.temp_buffer.keys()):
                 self._write_buffer_to_temp(label, self.temp_buffer[label])
@@ -295,25 +351,23 @@ class KGXWriter(BaseWriter):
         try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
-                label = label.lower()
-                edge_freq[label] += 1
+                normalized_label = self._normalize_label(label)
+                edge_freq[normalized_label] += 1
             
                 # Get edge info from schema
-                edge_info = self.edge_node_types.get(label, {})
-                edge_config = self.edge_configs.get(label, {})  # Get full config
+                edge_info = self.edge_node_types.get(normalized_label, {})
+                edge_config = self.edge_configs.get(normalized_label, {})  # Get full config
                 source_type = edge_info.get("source", "")
                 target_type = edge_info.get("target", "")
-                edge_label = edge_info.get("output_label", label)
+                edge_label = edge_info.get("output_label", normalized_label)
                 
-                # Get full edge config from schema
+               
                 kgx_props = edge_config.get('kgx_properties', {})
                 
-                # Validate properties against schema
-                validated_props = self._validate_edge_properties(label, properties)
-                
-                # Create edge ID if not provided
-                edge_id = properties.get('id', f"{source_id}_{label}_{target_id}")
-                
+                validated_props = self._validate_edge_properties(normalized_label, properties)
+                            
+                edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
+    
                 # Create base edge data with required properties
                 edge_data = {
                     'id': self.preprocess_id(edge_id),
@@ -326,7 +380,7 @@ class KGXWriter(BaseWriter):
                 }
                 
                 # Add predicate if defined in schema
-                if 'predicate' in self.edge_schema_properties.get(label, set()):
+                if 'predicate' in self.edge_schema_properties.get(normalized_label, set()):
                     edge_data['predicate'] = edge_config.get('biolink_predicate')
                 
                 # Merge in all KGX properties from schema
@@ -334,7 +388,7 @@ class KGXWriter(BaseWriter):
                     if kgx_key not in edge_data:  # Don't overwrite existing properties
                         edge_data[kgx_key] = kgx_value
                 
-                writer_key = self._init_edge_writer(label, source_type, target_type, edge_data, path_prefix, adapter_name)
+                writer_key = self._init_edge_writer(edge_label, source_type, target_type, edge_data, path_prefix, adapter_name)
                 self.temp_buffer[writer_key].append(edge_data)
             
                 if len(self.temp_buffer[writer_key]) >= self.batch_size:
