@@ -79,10 +79,9 @@ class EncodecCREAdapter(Adapter):
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
-                    # CURIE format id, promotor doesn't have specific CURIE ID Format 
-                    # KGX-compliant (SO: prefix + genomic coords for cCRE elements)
-                    # SO:0000167 (Sequence Ontology term for "promoter"))
-                    element_id = f"SO:0000167_{chrom}_{start}_{end}"
+                    #SO:0000167 (Sequence Ontology term for "promoter"))
+                    #SO:000165 for Enhancer
+                    element_id = f"SO:{chrom}_{start}_{end}"
                     yield element_id, self.label, props
     
     def get_edges(self):
@@ -109,7 +108,7 @@ class EncodecCREAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
-                    element_id = f"SO:0000167_{chrom}_{start}_{end}"
+                    element_id = f"SO:{chrom}_{start}_{end}"
                     yield element_id, gene_id, self.label, props
     
     
