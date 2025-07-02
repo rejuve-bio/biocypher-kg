@@ -33,7 +33,8 @@ class DBVarVariantAdapter(Adapter):
                 if line.startswith('#'):
                     continue
                 data = line.strip().split(self.delimiter)
-                variant_id = data[DBVarVariantAdapter.INDEX['id']]
+                #Using SO:0001059 as the CURIE prefix for structural variants since dbVar lacks a standard ID format
+                variant_id = f"SO:0001059_{data[DBVarVariantAdapter.INDEX['id']]}"
                 variant_type_key = data[DBVarVariantAdapter.INDEX['type']]
                 if variant_type_key not in DBVarVariantAdapter.VARIANT_TYPES:
                     continue

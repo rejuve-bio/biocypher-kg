@@ -8,6 +8,8 @@ from biocypher import BioCypher
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
+from biocypher_metta.kgx_writer import *
+from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher._logger import logger
 import typer
 import yaml
@@ -16,7 +18,7 @@ from typing_extensions import Annotated
 import pickle
 import json
 from collections import Counter, defaultdict
-
+from typing import Union, List, Optional
 app = typer.Typer()
 
 # Function to choose the writer class based on user input
@@ -33,6 +35,19 @@ def get_writer(writer_type: str, output_dir: Path):
         return Neo4jCSVWriter(schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
+    elif writer_type == 'parquet':
+        return ParquetWriter(
+            schema_config="config/schema_config.yaml",
+            biocypher_config="config/biocypher_config.yaml",
+            output_dir=output_dir,
+            buffer_size=10000,
+            overwrite=True
+        )
+    elif writer_type == 'KGX':
+        return KGXWriter(
+            schema_config="config/schema_config.yaml",
+                               biocypher_config="config/biocypher_config.yaml",
+                               output_dir=output_dir)
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
 
@@ -41,27 +56,46 @@ def preprocess_schema():
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
-        schema_config_path="config/schema_config.yaml", biocypher_config_path="config/biocypher_config.yaml"
+        schema_config_path="config/schema_config.yaml", 
+        biocypher_config_path="config/biocypher_config.yaml"
     )
     schema = bcy._get_ontology_mapping()._extend_schema()
     edge_node_types = {}
 
     for k, v in schema.items():
-        if v["represented_as"] == "edge":
-            source_type = v.get("source", None)
-            target_type = v.get("target", None)
+        # Skip abstract types and non-edge types
+        if v.get('abstract', False) or v.get('represented_as') != 'edge':
+            continue
+            
+        source_type = v.get("source", None)
+        target_type = v.get("target", None)
 
-            if source_type is not None and target_type is not None:
-                label = convert_input_labels(v["input_label"])
+        if source_type is not None and target_type is not None:
+            # Handle both single labels and lists of labels
+            input_label = v["input_label"]
+            if isinstance(input_label, list):
+                label = convert_input_labels(input_label[0])
+                if isinstance(source_type, list):
+                    source_type = convert_input_labels(source_type[0])
+                if isinstance(target_type, list):
+                    target_type = convert_input_labels(target_type[0])
+            else:
+                label = convert_input_labels(input_label)
                 source_type = convert_input_labels(source_type)
                 target_type = convert_input_labels(target_type)
-                output_label = v.get("output_label", None)
+            
+            output_label = v.get("output_label")
+            if output_label:
+                if isinstance(output_label, list):
+                    output_label = convert_input_labels(output_label[0])
+                else:
+                    output_label = convert_input_labels(output_label)
 
-                edge_node_types[label.lower()] = {
-                    "source": source_type.lower(),
-                    "target": target_type.lower(),
-                    "output_label": output_label.lower() if output_label else None,
-                }
+            edge_node_types[label.lower()] = {
+                "source": source_type.lower(),
+                "target": target_type.lower(),
+                "output_label": output_label.lower() if output_label else None,
+            }
 
     return edge_node_types
 
@@ -176,9 +210,16 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
          adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j"),
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet,KGX"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
-         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges")):
+         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
+         buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
+         overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
+         include_adapters: Optional[List[str]] = typer.Option(
+              None,
+              help="Specific adapters to include (space-separated, default: all)",
+              case_sensitive=False,
+          )):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
@@ -194,6 +235,10 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
     bc = get_writer(writer_type, output_dir)
     logger.info(f"Using {writer_type} writer")
 
+    if writer_type == 'parquet':
+        bc.buffer_size = buffer_size
+        bc.overwrite = overwrite
+
     schema_dict = preprocess_schema()
 
     with open(adapters_config, "r") as fp:
@@ -203,10 +248,27 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
             logger.error("Error while trying to load adapter config")
             logger.error(e)
 
+    # Filter adapters if specific ones are requested
+    if include_adapters:
+         original_count = len(adapters_dict)
+         include_lower = [a.lower() for a in include_adapters]
+         adapters_dict = {
+             k: v for k, v in adapters_dict.items()
+             if k.lower() in include_lower
+         }
+         if not adapters_dict:
+             available = "\n".join(f" - {a}" for a in adapters_dict.keys())
+             logger.error(f"No matching adapters found. Available adapters:\n{available}")
+             raise typer.Exit(1)
+             
+         logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
     # Run adapters
     nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
         adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
     )
+
+    if hasattr(bc, 'finalize'):
+        bc.finalize()
 
     # Gather graph info
     graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir)

@@ -51,6 +51,8 @@ class OntologyAdapter(Adapter):
         # Set source and source_url based on the ontology
         self.source, self.source_url = self.get_ontology_source()
 
+        self.uri_prefixes = self.get_uri_prefixes()
+
         super(OntologyAdapter, self).__init__(write_properties, add_provenance)
     @abstractmethod
     def get_ontology_source(self):
@@ -59,6 +61,28 @@ class OntologyAdapter(Adapter):
         This method should be overridden in child classes for specific ontologies.
         """
         pass
+
+    def get_uri_prefixes(self):
+        """
+        Returns a dictionary of URI prefixes for filtering terms.
+        Should be overridden by subclasses to define their specific prefixes.
+        """
+        return {}
+    
+    def is_term_of_type(self, uri, prefix_type='primary'):
+        if not self.uri_prefixes or prefix_type not in self.uri_prefixes:
+            return True  # If no prefixes defined, accept all terms
+        
+        return str(uri).startswith(self.uri_prefixes[prefix_type])
+    
+    def should_include_node(self, node):
+        
+        return self.is_term_of_type(node, 'primary')
+    
+    def should_include_edge(self, from_node, to_node, predicate=None, edge_type=None):
+
+        return (self.should_include_node(from_node) and 
+                self.should_include_node(to_node))
 
     def update_graph(self):
         if self.ontology not in self.ONTOLOGIES:
@@ -266,8 +290,7 @@ class OntologyAdapter(Adapter):
     
     def _process_node_key(self, node):
         """
-        Process a node to determine if it should be included and generate its key.
-        Returns None if the node should be skipped.
+        Modified to use the generalized filtering method.
         """
         if self.is_blank(node):
             return None
@@ -280,6 +303,10 @@ class OntologyAdapter(Adapter):
         node_str = str(node)
     
         if node_str.replace('/', '').replace('#', '').strip().isdigit():
+            return None
+        
+        # Use the generalized filtering method
+        if not self.should_include_node(node):
             return None
         
         return self.to_key(node)
@@ -349,29 +376,31 @@ class OntologyAdapter(Adapter):
 
         for predicate in OntologyAdapter.PREDICATES:
             edges = list(self.graph.subject_objects(predicate=predicate, unique=True))
-            i = 0  # dry run is set to true just output the first 100 relationships
+            i = 0  # dry run counter
             for edge in edges:
                 if i > 100 and self.dry_run:
                     break
+                
                 from_node, to_node = edge
 
-                if self.is_blank(from_node):
+                # Skip if either node is blank
+                if self.is_blank(from_node) or self.is_blank(to_node):
                     continue
 
                 # Handle restriction blocks
                 if self.is_blank(to_node) and self.is_a_restriction_block(to_node):
                     restriction_predicate, restriction_node = self.read_restriction_block(to_node)
-                    # Skip if we couldn't get a valid restriction
                     if restriction_predicate is None or restriction_node is None or self.is_blank(restriction_node):
                         continue
 
                     predicate = restriction_predicate
                     to_node = restriction_node
 
-                # Skip edges where either node is blank at this point
-                if self.is_blank(from_node) or self.is_blank(to_node):
+                # Apply edge filtering
+                if not self.should_include_edge(from_node, to_node, predicate):
                     continue
 
+                # Skip deprecated nodes
                 if self.is_deprecated(from_node) or self.is_deprecated(to_node):
                     print(f"Skipping edge with deprecated node: {OntologyAdapter.to_key(from_node)} -> {OntologyAdapter.to_key(to_node)}")
                     continue

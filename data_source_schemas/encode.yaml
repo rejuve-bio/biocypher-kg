@@ -25,7 +25,7 @@ nodes:
       accession_e: str
   
   transcription binding site:
-    url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+    url: https://genome.ucsc.edu/cgi-bin/hgTables
     description: A region of DNA where a transcription factor binds to regulate gene expression
     input_label: tfbs
     properties:
@@ -35,7 +35,7 @@ nodes:
 
 relationships:
   gene to transcription binding site association:
-    url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+    url: https://genome.ucsc.edu/cgi-bin/hgTables
     description: An association between a transcription factor and its binding site
     input_label: gene_tfbs
     output_label: binds_to

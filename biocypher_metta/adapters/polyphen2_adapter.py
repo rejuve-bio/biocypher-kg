@@ -75,8 +75,8 @@ class PolyPhen2Adapter(Adapter):
                         score_hvar = to_float(score_hvar)
                     except ValueError:
                         continue
-
-                    node_id = build_variant_id(chr, start, ref, alt)
+                    # CURIE ID Format: Use SO:0001583 for 'missense_variant' (PolyPhen-2 Variant analyzes these but has no dedicated prefix)
+                    node_id = f"SO:0001583_{build_variant_id(chr, start, ref, alt)}"
                     
                     # Skip if we've already processed this SNP
                     if node_id in processed_snps:

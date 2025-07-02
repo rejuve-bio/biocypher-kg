@@ -45,8 +45,8 @@ class StringPPIAdapter(Adapter):
                 if protein1 in self.ensembl2uniprot and protein2 in self.ensembl2uniprot:
                     protein1_uniprot = self.ensembl2uniprot[protein1]
                     protein2_uniprot = self.ensembl2uniprot[protein2]
-                    _source = protein1_uniprot
-                    _target = protein2_uniprot
+                    _source = f"UniProtKB:{protein1_uniprot}"
+                    _target = f"UniProtKB:{protein2_uniprot}"
                     _props = {}
                     if self.write_properties:
                         _props = {

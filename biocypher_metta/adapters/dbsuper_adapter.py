@@ -50,7 +50,9 @@ class DBSuperAdapter(Adapter):
                 
                 if start == None or end == None:
                     continue
-                se_region_id = build_regulatory_region_id(chr, start, end)
+                #CURIE ID For super enhancer region
+                #"SO" provides standardized terms for genomic features, including regulatory regions  
+                se_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     props = {}
                     if self.write_properties:
@@ -71,7 +73,9 @@ class DBSuperAdapter(Adapter):
             next(reader)
             for line in reader:
                 gene_id = line[DBSuperAdapter.INDEX['gene_id']]
-                ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_id, None)
+                #CURIE ID For gene
+                # Example: ENSEMBL:ENSG00000123456
+                ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
                 chr = line[DBSuperAdapter.INDEX['chr']]
                 start_hg19 = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
                 end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']])
@@ -82,7 +86,7 @@ class DBSuperAdapter(Adapter):
                 
                 if None in [ensembl_gene_id, start, end]:
                     continue
-                se_region_id = build_regulatory_region_id(chr, start, end)
+                se_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     props = {}
                     if self.write_properties:

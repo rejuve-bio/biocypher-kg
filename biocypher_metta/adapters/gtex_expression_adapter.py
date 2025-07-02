@@ -48,8 +48,9 @@ class GTExExpressionAdapter(Adapter):
                     gene_id = row[self.index["gene_id"]]
                     ontology = self.gtex_tissue_ontology_map[tissue]
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                        _source = gene_id
-                        _target = ontology
+                        #CURIE ID Format
+                        _source = f"ENSEMBL:{gene_id}"
+                        _target = f"UBERON:{ontology}"
                         _props = {
                             'p_value': to_float(row[self.index["p_value"]]),
                         }

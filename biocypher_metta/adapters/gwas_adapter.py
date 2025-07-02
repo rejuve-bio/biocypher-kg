@@ -66,8 +66,9 @@ class GWASAdapter(Adapter):
                     if check_genomic_location(
                         self.chr, self.start, self.end, chr, pos, pos
                     ):
-                        _source = variant_id
-                        _target = gene_id
+                        #CURIE ID Format for source and target ID
+                        _source = f"DBSNP:{variant_id}"
+                        _target = f"ENSEMBL:{gene_id}"
                         _props = {}
                         if self.write_properties:
                             _props = {

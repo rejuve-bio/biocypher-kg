@@ -123,11 +123,11 @@ class GencodeAdapter(Adapter):
                     continue
 
                 result = self.hgnc_processor.process_identifier(info['gene_name'])
-            
-                transcript_key = info['transcript_id'].split('.')[0]
+                #CURIE ID Formatting
+                transcript_key = f"ENSEMBL:{info['transcript_id'].split('.')[0]}"
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
-                gene_key = info['gene_id'].split('.')[0]
+                gene_key = f"ENSEMBL:{info['gene_id'].split('.')[0]}"
                 if info['gene_id'].endswith('_PAR_Y'):
                     gene_key = gene_key + '_PAR_Y'
                 
@@ -141,7 +141,7 @@ class GencodeAdapter(Adapter):
                         if self.type == 'transcript':
                             if self.write_properties:
                                 props = {
-                                    'transcript_id': info['transcript_id'],
+                                    'transcript_id': f":ENSEMBL:{info['transcript_id']}",
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': info['transcript_type'],
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
@@ -197,13 +197,13 @@ class GencodeAdapter(Adapter):
                 try:
                     if self.type == 'transcribed to':
                         _id = gene_key + '_' + transcript_key
-                        _source = gene_key
-                        _target = transcript_key
+                        _source = f"ENSEMBL:{gene_key}"
+                        _target = f"ENSEMBL:{transcript_key}"
                         yield _source, _target, self.label, _props
                     elif self.type == 'transcribed from':
                         _id = transcript_key + '_' + gene_key
-                        _source = transcript_key 
-                        _target = gene_key
+                        _source = f"ENSEMBL:{transcript_key }"
+                        _target = f"ENSEMBL:{gene_key}"
                         yield _source, _target, self.label, _props
                 except Exception as e:
                     print(
