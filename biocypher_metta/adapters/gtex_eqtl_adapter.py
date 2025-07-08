@@ -61,7 +61,7 @@ class GTExEQTLAdapter(Adapter):
                     variant_id = row[COL_DICT["rsid"]]
                     gene_id = row[COL_DICT["gene_id"]]
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                        _source = f"NCBIGene:{variant_id}"
+                        _source = f"DBSNP:{variant_id}"
                         _target = f"ENSEMBL:{gene_id}"
                         _props = {}
                         if self.write_properties:
