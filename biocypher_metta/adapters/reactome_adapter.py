@@ -57,8 +57,8 @@ class ReactomeAdapter(Adapter):
                     if pathway_id.startswith('R-HSA'):
                         ensg_id = data[0].split('.')[0]
                         _id = ensg_id + '_' + pathway_id
-                        _source = f"ENSEMBLE:ensg_id"
-                        _target = f"REACT:pathway_id"
+                        _source = f"ENSEMBL:{ensg_id}"
+                        _target = f"REACT:{pathway_id}"
                         yield _source, _target, self.label, _props
                 else:
                     parent, child = line.strip().split('\t')
