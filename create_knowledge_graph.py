@@ -10,6 +10,7 @@ from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
 from biocypher_metta.kgx_writer import *
 from biocypher_metta.parquet_writer import ParquetWriter
+from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
 import typer
 import yaml
@@ -19,6 +20,8 @@ import pickle
 import json
 from collections import Counter, defaultdict
 from typing import Union, List, Optional
+
+
 app = typer.Typer()
 
 # Function to choose the writer class based on user input
@@ -43,16 +46,27 @@ def get_writer(writer_type: str, output_dir: Path):
             buffer_size=10000,
             overwrite=True
         )
+
     elif writer_type == 'KGX':
         return KGXWriter(
             schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
+
+    elif writer_type == 'networkx':
+        return NetworkXWriter(
+            schema_config="config/schema_config.yaml",
+            biocypher_config="config/biocypher_config.yaml",
+            output_dir=output_dir
+        )
+
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
 
 def preprocess_schema():
     def convert_input_labels(label, replace_char="_"):
+        if isinstance(label, list):
+            return [item.replace(" ", replace_char) for item in label]
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
@@ -69,6 +83,7 @@ def preprocess_schema():
             
         source_type = v.get("source", None)
         target_type = v.get("target", None)
+
 
         if source_type is not None and target_type is not None:
             # Handle both single labels and lists of labels
@@ -97,6 +112,32 @@ def preprocess_schema():
                 "output_label": output_label.lower() if output_label else None,
             }
 
+            if source_type is not None and target_type is not None:
+                if isinstance(v["input_label"], list):
+                    label = convert_input_labels(v["input_label"][0])
+                else:
+                    label = convert_input_labels(v["input_label"])
+                
+                # Handle source_type which can be a string or list
+                if isinstance(source_type, list):
+                    processed_source = [s.lower() for s in convert_input_labels(source_type)]
+                else:
+                    processed_source = convert_input_labels(source_type).lower()
+                
+                if isinstance(target_type, list):
+                    processed_target = [t.lower() for t in convert_input_labels(target_type)]
+                else:
+                    processed_target = convert_input_labels(target_type).lower()
+                
+                output_label = v.get("output_label", None)
+
+                edge_node_types[label.lower()] = {
+                    "source": processed_source,
+                    "target": processed_target,
+                    "output_label": output_label.lower() if output_label else None,
+                }
+
+
     return edge_node_types
 
 def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir):
@@ -116,13 +157,33 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     relations_frequency = Counter()
     possible_connections = defaultdict(set)
 
-    for edge, count in edges_count.items():
-        label = schema_dict[edge]['output_label'] or edge
-        predicate_count[label] += count
-        source = schema_dict[edge]['source']
-        target = schema_dict[edge]['target']
-        relations_frequency[f'{source}|{target}'] += count
-        possible_connections[f'{source}|{target}'].add(label)
+    for edge_key, count in edges_count.items():
+        parts = edge_key.split('|')
+        if len(parts) == 3:
+            edge_type, source_type, target_type = parts
+        else:
+            edge_type = edge_key
+            if edge_type.lower() in schema_dict:
+                source_type = schema_dict[edge_type.lower()]['source']
+                target_type = schema_dict[edge_type.lower()]['target']
+            else:
+                continue
+        
+        if edge_type.lower() in schema_dict:
+            label = schema_dict[edge_type.lower()]['output_label'] or edge_type
+            predicate_count[label] += count
+            
+            if isinstance(source_type, list):
+                for src in source_type:
+                    relations_frequency[f'{src}|{target_type}'] += count
+                    possible_connections[f'{src}|{target_type}'].add(label)
+            elif isinstance(target_type, list):
+                for tgt in target_type:
+                    relations_frequency[f'{source_type}|{tgt}'] += count
+                    possible_connections[f'{source_type}|{tgt}'].add(label)
+            else:
+                relations_frequency[f'{source_type}|{target_type}'] += count
+                possible_connections[f'{source_type}|{target_type}'].add(label)
 
     graph_info['top_connections'] = [{'name': predicate, 'count': count} for predicate, count in predicate_count.items()]
     graph_info['frequent_relationships'] = [{'entities': rel.split('|'), 'count': count} for rel, count in relations_frequency.items()]
@@ -196,21 +257,29 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
         if write_edges:
             edges = adapter.get_edges()
             freq = writer.write_edges(edges, path_prefix=outdir)
-            for edge_label in freq:
-                edges_count[edge_label] += freq[edge_label]
-                label = schema_dict[edge_label.lower()]['output_label'] or edge_label
+            for edge_label_key in freq:
+                edges_count[edge_label_key] += freq[edge_label_key]
+                
+                parts = edge_label_key.split('|')
+                edge_type = parts[0]
+                
+                if edge_type.lower() in schema_dict:
+                    output_label = schema_dict[edge_type.lower()]['output_label'] or edge_type
+                else:
+                    output_label = edge_type
+                
                 if dataset_name is not None:
-                    datasets_dict[dataset_name]['edges'].add(label)
+                    datasets_dict[dataset_name]['edges'].add(output_label)
 
     return nodes_count, nodes_props, edges_count, datasets_dict
 
 # Run build
 @app.command()
-def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)],
+def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)], 
          adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet,KGX"),
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx,KGX"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
          buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
@@ -267,6 +336,11 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
         adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
     )
 
+    # For NetworkX writer, save the graph after processing all adapters
+    if writer_type == 'networkx':
+        bc.write_graph()
+        logger.info("NetworkX graph saved successfully")
+
     if hasattr(bc, 'finalize'):
         bc.finalize()
 
@@ -287,6 +361,8 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
         f.write(graph_info_json)
 
     logger.info("Done")
+    logger.info(f"Total nodes processed: {sum(nodes_count.values())}")
+    logger.info(f"Total edges processed: {sum(edges_count.values())}")
 
 if __name__ == "__main__":
     app()
