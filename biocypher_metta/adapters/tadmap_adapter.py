@@ -63,7 +63,7 @@ class TADMapAdapter(Adapter):
                         continue
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                    _id = build_regulatory_region_id(chr, start, end)
+                    _id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                     _props = {}
                     if self.write_properties:
                         _props = {
@@ -92,13 +92,13 @@ class TADMapAdapter(Adapter):
                 for gene in genes_info:
                     try:
                         gene = gene.split('|')
-                        gene = gene[1].split(':')[1]
+                        gene = f"ENSEMBL:{gene[1].split(':')[1].upper()}"  # Add prefix + uppercase
                         genes.append(gene)
                     except IndexError:
                         continue
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                    _id = build_regulatory_region_id(chr, start, end)
+                    _id = f"SO:{build_regulatory_region_id(chr, start, end)}"  # Use SO: prefix
                     _props = {}
                     for gene in genes:
                         if self.write_properties and self.add_provenance:

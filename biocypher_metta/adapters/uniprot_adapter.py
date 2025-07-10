@@ -9,7 +9,6 @@ from biocypher_metta.adapters import Adapter
 
 
 class UniprotAdapter(Adapter):
-
     ALLOWED_TYPES = ['translates to', 'translation of']
     ALLOWED_LABELS = ['translates_to', 'translation_of']
 
@@ -39,10 +38,11 @@ class UniprotAdapter(Adapter):
                     for item in dbxrefs:
                         if item.startswith('Ensembl') and 'ENST' in item:
                             try:
-                                ensg_id = item.split(':')[-1].split('.')[0]
-                                _id = record.id + '_' + ensg_id
+                                ensg_id = "ENSEMBL:" + item.split(':')[-1].split('.')[0]  # Added ENSEMBL prefix
+                                uniprot_id = "UniProtKB:" + record.id.upper()  # Added UniProtKB prefix
+                                _id = uniprot_id + '_' + ensg_id
                                 _source = ensg_id
-                                _target = record.id
+                                _target = uniprot_id
                                 _props = {}
                                 if self.write_properties and self.add_provenance:
                                     _props['source'] = self.source
@@ -58,15 +58,16 @@ class UniprotAdapter(Adapter):
                     for item in dbxrefs:
                         if item.startswith('Ensembl') and 'ENST' in item:
                             try:
-                                ensg_id = item.split(':')[-1].split('.')[0]
-                                _id = ensg_id + '_' + record.id
+                                ensg_id = "ENSEMBL:" + item.split(':')[-1].split('.')[0]  # Added ENSEMBL prefix
+                                uniprot_id = "UniProtKB:" + record.id.upper()  # Added UniProtKB prefix
+                                _id = ensg_id + '_' + uniprot_id
                                 _target = ensg_id
-                                _source = record.id
+                                _source = uniprot_id
                                 _props = {}
                                 if self.write_properties and self.add_provenance:
                                     _props['source'] = self.source
                                     _props['source_url'] = self.source_url
-                                yield  _source, _target, self.label, _props
+                                yield _source, _target, self.label, _props
 
                             except:
                                 print(

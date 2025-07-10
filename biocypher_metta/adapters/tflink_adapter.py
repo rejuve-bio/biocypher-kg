@@ -42,8 +42,8 @@ class TFLinkAdapter(Adapter):
                 if tf_entrez_id in self.entrez2ensemble and target_entrez_id in self.entrez2ensemble:
                     tf_ensemble_id = self.entrez2ensemble[tf_entrez_id]
                     target_ensemble_id = self.entrez2ensemble[target_entrez_id]
-                    _source = tf_ensemble_id
-                    _target = target_ensemble_id
+                    _source = f"ENSEMBL:{tf_ensemble_id}"
+                    _target = f"ENSEMBL:{target_ensemble_id}"
                     pubmed_ids_str = row[TFLinkAdapter.INDEX['PubmedID']]
                     pubmed_ids = [f"pubmed:{i}" for i in pubmed_ids_str.split(";")]
                     sources = row[TFLinkAdapter.INDEX['Source.database']].split(";")

@@ -109,9 +109,11 @@ class GAFAdapter(Adapter):
                 # Skip if qualifier contains 'NOT'
                 if "NOT" in annotation['Qualifier']:
                     continue
-                source = annotation['DB_Object_ID']
+                
+                # Get raw IDs
+                source_raw = annotation['DB_Object_ID']
                 gene_symbol = annotation['DB_Object_Symbol']
-                target = annotation['GO_ID']
+                target = annotation['GO_ID']  # Already in CURIE format
 
                 # Skip if subontology doesn't match
                 if self.subontology and self.subontology_mapping:
@@ -119,11 +121,15 @@ class GAFAdapter(Adapter):
                     if go_subontology != self.subontology:
                         continue
 
+                # Handle source ID based on type
                 if self.type == 'rna':
-                    transcript_id = self.rnacentral_mapping.get(annotation['DB_Object_ID'])
+                    transcript_id = self.rnacentral_mapping.get(source_raw)
                     if transcript_id is None:
                         continue
-                    source = transcript_id
+                    source = f"RNACENTRAL:{source_raw}"  # CURIE format for RNAcentral
+                else:
+                    # Default to UniProt for protein annotations
+                    source = f"UniProt:{source_raw}"
 
                 # Cellular component filtering using qualifier
                 qualifier = annotation['Qualifier']
@@ -142,9 +148,9 @@ class GAFAdapter(Adapter):
                     ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_symbol, None)
                     if ensembl_gene_id == None:
                         continue
-                    source = ensembl_gene_id
+                    source = f"ENSEMBL:{ensembl_gene_id}"  # CURIE format for Ensembl
                 
-                # Check for redundancy: Skip if the edge is already seen
+                # Check for redundancy
                 edge = (source, target, self.label)
                 if edge in self.seen_edges:
                     continue  

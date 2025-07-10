@@ -96,14 +96,23 @@ class GencodeGeneAdapter(Adapter):
                     info = self.parse_info_metadata(
                         split_line[GencodeGeneAdapter.INDEX['info']:])
                     gene_id = info['gene_id']
-                    id = gene_id.split('.')[0]
-                    alias = alias_dict.get(id)
+                    raw_id = gene_id.split('.')[0]
+                    
+                    # Determine CURIE prefix
+                    if raw_id.startswith('ENSG'):
+                        id_prefix = 'ENSEMBL'
+                        id = f"{id_prefix}:{raw_id}"
+                        if gene_id.endswith('_PAR_Y'):
+                            id = f"{id_prefix}:{raw_id}_PAR_Y"
+                    else:
+                        continue  # Skip if not ENSEMBL ID
+                    
+                    alias = alias_dict.get(raw_id)
                     if not alias:
                         hgnc_id = info.get('hgnc_id')
                         if hgnc_id:
-                            alias = alias_dict.get(hgnc_id)
-                    if gene_id.endswith('_PAR_Y'):
-                        id = id + '_PAR_Y'
+                            alias = alias_dict.get(hgnc_id.replace('HGNC:', ''))
+                    
                     chr = split_line[GencodeGeneAdapter.INDEX['chr']]
                     start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
                     end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
@@ -115,7 +124,6 @@ class GencodeGeneAdapter(Adapter):
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             if self.write_properties:
                                 props = {
-                                    # 'gene_id': gene_id, # TODO should this be included?
                                     'gene_type': info['gene_type'],
                                     'chr': chr,
                                     'start': start,
@@ -138,6 +146,6 @@ class GencodeGeneAdapter(Adapter):
                                 print(f"Ensembl symbol replaced: {result['original']} -> {result['current']}")
 
                             yield id, self.label, props
-                    except:
+                    except Exception as e:
                         print(
-                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                            f'Failed to process line: {line}\nError: {str(e)}')

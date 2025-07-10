@@ -8,6 +8,7 @@ from biocypher import BioCypher
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
+from biocypher_metta.kgx_writer import *
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
@@ -45,12 +46,20 @@ def get_writer(writer_type: str, output_dir: Path):
             buffer_size=10000,
             overwrite=True
         )
+
+    elif writer_type == 'KGX':
+        return KGXWriter(
+            schema_config="config/schema_config.yaml",
+                               biocypher_config="config/biocypher_config.yaml",
+                               output_dir=output_dir)
+
     elif writer_type == 'networkx':
         return NetworkXWriter(
             schema_config="config/schema_config.yaml",
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir
         )
+
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
 
@@ -61,15 +70,47 @@ def preprocess_schema():
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
-        schema_config_path="config/schema_config.yaml", biocypher_config_path="config/biocypher_config.yaml"
+        schema_config_path="config/schema_config.yaml", 
+        biocypher_config_path="config/biocypher_config.yaml"
     )
     schema = bcy._get_ontology_mapping()._extend_schema()
     edge_node_types = {}
 
     for k, v in schema.items():
-        if v["represented_as"] == "edge":
-            source_type = v.get("source", None)
-            target_type = v.get("target", None)
+        # Skip abstract types and non-edge types
+        if v.get('abstract', False) or v.get('represented_as') != 'edge':
+            continue
+            
+        source_type = v.get("source", None)
+        target_type = v.get("target", None)
+
+
+        if source_type is not None and target_type is not None:
+            # Handle both single labels and lists of labels
+            input_label = v["input_label"]
+            if isinstance(input_label, list):
+                label = convert_input_labels(input_label[0])
+                if isinstance(source_type, list):
+                    source_type = convert_input_labels(source_type[0])
+                if isinstance(target_type, list):
+                    target_type = convert_input_labels(target_type[0])
+            else:
+                label = convert_input_labels(input_label)
+                source_type = convert_input_labels(source_type)
+                target_type = convert_input_labels(target_type)
+            
+            output_label = v.get("output_label")
+            if output_label:
+                if isinstance(output_label, list):
+                    output_label = convert_input_labels(output_label[0])
+                else:
+                    output_label = convert_input_labels(output_label)
+
+            edge_node_types[label.lower()] = {
+                "source": source_type.lower(),
+                "target": target_type.lower(),
+                "output_label": output_label.lower() if output_label else None,
+            }
 
             if source_type is not None and target_type is not None:
                 if isinstance(v["input_label"], list):
@@ -95,6 +136,7 @@ def preprocess_schema():
                     "target": processed_target,
                     "output_label": output_label.lower() if output_label else None,
                 }
+
 
     return edge_node_types
 
@@ -233,11 +275,11 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 
 # Run build
 @app.command()
-def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)],
+def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)], 
          adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
          dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx"),
+         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx,KGX"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
          buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),

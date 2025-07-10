@@ -79,8 +79,9 @@ class EncodecCREAdapter(Adapter):
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
-
-                    element_id = f"{chrom}_{start}_{end}"
+                    #SO:0000167 (Sequence Ontology term for "promoter"))
+                    #SO:000165 for Enhancer
+                    element_id = f"SO:{chrom}_{start}_{end}"
                     yield element_id, self.label, props
     
     def get_edges(self):
@@ -97,7 +98,7 @@ class EncodecCREAdapter(Adapter):
                     nearest_gene = fields[6]
                     distance = int(fields[7])
 
-                    gene_id = self._get_ensembl_id(nearest_gene)
+                    gene_id = f"ENSEMBL:{self._get_ensembl_id(nearest_gene)}"
 
                     props = {
                         'distance': distance
@@ -107,7 +108,7 @@ class EncodecCREAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
-                    element_id = f"{chrom}_{start}_{end}"
+                    element_id = f"SO:{chrom}_{start}_{end}"
                     yield element_id, gene_id, self.label, props
     
     
