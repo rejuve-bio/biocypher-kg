@@ -27,7 +27,6 @@ class MeTTaWriter(BaseWriter):
                 ancestor = self.convert_input_labels(ancestor)
                 if ancestor == node:
                     f.write(f"(: {node.upper()} Type)\n")
-
                 else:
                     f.write(f"(<: {node.upper()} {ancestor.upper()})\n")
 
@@ -52,6 +51,7 @@ class MeTTaWriter(BaseWriter):
                 target_type = v.get("target", None)
                 if source_type is not None and target_type is not None:
                     # ## TODO fix this in the scheme config
+                    
                     if isinstance(v["input_label"], list):
                         label = self.convert_input_labels(v["input_label"][0])
                         source_type = self.convert_input_labels(source_type[0])
@@ -78,6 +78,17 @@ class MeTTaWriter(BaseWriter):
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
 
+    def preprocess_id(self, prev_id):
+        """Ensure ID remains in CURIE format while cleaning special characters"""
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            # Standardize prefix to uppercase
+            prefix = prefix.upper()
+            # Clean local ID (remove duplicate prefix if present)
+            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
+            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
+            return f"{prefix}:{clean_local}"
+        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -123,6 +134,7 @@ class MeTTaWriter(BaseWriter):
 
     def write_node(self, node):
         id, label, properties = node
+        id = self.preprocess_id(id)  # Added ID preprocessing
         if "." in label:
             label = label.split(".")[1]
         def_out = f"({self.convert_input_labels(label)} {id})"
@@ -130,6 +142,8 @@ class MeTTaWriter(BaseWriter):
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
+        source_id = self.preprocess_id(source_id)  # Added ID preprocessing
+        target_id = self.preprocess_id(target_id)  # Added ID preprocessing
         label = label.lower()
         source_type = self.edge_node_types[label]["source"]
         target_type = self.edge_node_types[label]["target"]
