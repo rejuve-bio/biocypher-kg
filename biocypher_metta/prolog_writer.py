@@ -39,6 +39,17 @@ class PrologWriter(BaseWriter):
                     self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower(),
                                                            "output_label": output_label.lower() if output_label is not None else None}
 
+    def preprocess_id(self, prev_id):
+        """Ensure ID remains in CURIE format while cleaning special characters"""
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            prefix = prefix.upper()
+            # Clean local ID (remove duplicate prefix if present)
+            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
+            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
+            return f"{prefix}:{clean_local}"
+        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
             file_path = f"{self.output_path}/{path_prefix}/nodes.pl"
@@ -51,7 +62,6 @@ class PrologWriter(BaseWriter):
         with open(file_path, "a") as f:
             for node in nodes:
                 self.extract_node_info(node)
-                  
                 out_str = self.write_node(node)
                 for s in out_str:
                     f.write(s + "\n")
@@ -82,6 +92,7 @@ class PrologWriter(BaseWriter):
 
     def write_node(self, node):
         id, label, properties = node
+        id = self.preprocess_id(id)  # Added ID preprocessing
         if "." in label:
             label = label.split(".")[1]
         label = label.lower()
@@ -91,6 +102,8 @@ class PrologWriter(BaseWriter):
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
+        source_id = self.preprocess_id(source_id)  # Added ID preprocessing
+        target_id = self.preprocess_id(target_id)  # Added ID preprocessing
         label = label.lower()
         source_id = source_id.lower()
         target_id = target_id.lower()
