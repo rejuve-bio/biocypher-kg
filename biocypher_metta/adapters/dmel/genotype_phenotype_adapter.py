@@ -99,7 +99,7 @@ from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedT
 from biocypher_metta.adapters import Adapter
 #from biocypher._logger import logger
 import re
-
+import pickle
 
 class GenotypePhenotypeAdapter(Adapter):
 
@@ -149,7 +149,6 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source'] = self.source
                     props['source_url'] = self.source_url
                 yield f'phenotype_{id}', self.label, props
-
 
     
     def get_edges(self):
@@ -205,6 +204,9 @@ class GenotypePhenotypeAdapter(Adapter):
                 yield f'phenotype_{id}', f'genotype_{id}', self.label, props    
 
         elif self.label == 'characterized_by':                          # phenotype to ontology schema
+            go_mapping_file = './aux_files/go_subontology_mapping.pkl'
+            with open(go_mapping_file, 'rb') as f:
+                go_subontology_mapping = pickle.load(f)
             id = -1
             for row in rows:
                 id += 1
@@ -223,12 +225,22 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source'] = self.source
                     props['source_url'] = self.source_url
 
-                phenotype_ontology_id = row[3].replace(':', '_').lower()   # onto: fbbt or fbcv or  fbdv    
+                phenotype_ontology_id = row[3]   # onto: fbbt or fbcv or  fbdv  or go...
+
+                # if go's subontology is 'cellular_component', 'characterized_by' edge label seems 
+                # to be not the best name
+                # if phenotype_ontology_id.startswith('go'):
+                #     sub_onto_go = go_subontology_mapping[phenotype_ontology_id]
+                    # if phenotype_ontology_id == 'go_0016028':
+                    #     print(f'genotype_phenotype::characterized_by edge:\nOntology different from FB ontos: {phenotype_ontology_id}')
+                    #     print('Yielding it for neo4j_csv_writer')
                 yield f'phenotype_{id}', phenotype_ontology_id, self.label, props    
                 
                 if row[5] != '':
-                    props['qualifier_term_ids'] = [ name.replace(':', '_').lower() for name in row[5].split('|') ]
-                    terms_ids = [ t_id.replace(':', '_').lower() for t_id in row[5].split('|') ]
+                    # props['qualifier_term_ids'] = [ name.replace(':', '_').lower() for name in row[5].split('|') ]
+                    props['qualifier_term_ids'] = [ name for name in row[5].split('|') ]
+                    # terms_ids = [ t_id.replace(':', '_').lower() for t_id in row[5].split('|') ]
+                    terms_ids = [ t_id for t_id in row[5].split('|') ]
                     for term_id in terms_ids:
                         yield f'phenotype_{id}', term_id, self.label, props    
                     #     props['qualifier_term_ids'].append( (term_id.split('_')[0], term_id) )

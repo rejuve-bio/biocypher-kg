@@ -51,7 +51,7 @@ class GAFAdapter(Adapter):
         'rna': 'http://geneontology.org/gene-associations/goa_human_rna.gaf.gz',
         'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
         # saulo: dmel GAF file for GO annotations:
-        'Flybase': 'https://ftp.flybase.net/releases/current/precomputed_files/go/gene_association.fb.gz'
+        'flybase': 'https://ftp.flybase.net/releases/current/precomputed_files/go/gene_association.fb.gz'
     }
 
     def __init__(self, filepath, write_properties, add_provenance, gaf_source = 'GOA', gaf_type='human', 
@@ -126,7 +126,7 @@ class GAFAdapter(Adapter):
                     if transcript_id is None:
                         continue
                     source = transcript_id
-
+    
                 # Cellular component filtering using qualifier
                 qualifier = annotation['Qualifier']
                 if self.label.startswith('cellular_component_gene_product'):

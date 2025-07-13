@@ -240,7 +240,8 @@ gaf_biological_process_gene_product:
     args:
       filepath: ./samples/goa_human_sample.gaf.gz
       label: biological_process_gene_product
-
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
   outdir: gaf
   nodes: False
   edges: True
@@ -252,7 +253,8 @@ gaf_molecular_function_gene_product:
     args:
       filepath: ./samples/goa_human_sample.gaf.gz
       label: molecular_function_gene_product
-
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
   outdir: gaf
   nodes: False
   edges: True
@@ -264,7 +266,8 @@ gaf_cellular_component_gene_product_part_of:
     args:
       filepath: ./samples/goa_human_sample.gaf.gz
       label: cellular_component_gene_product_part_of
-
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
   outdir: gaf
   nodes: False
   edges: True
@@ -276,7 +279,8 @@ gaf_cellular_component_gene_product_located_in:
     args:
       filepath: ./samples/goa_human_sample.gaf.gz
       label: cellular_component_gene_product_located_in
-
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
   outdir: gaf
   nodes: False
   edges: True

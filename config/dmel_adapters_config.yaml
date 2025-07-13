@@ -4,7 +4,8 @@ gaf_biological_process_gene_product:
     cls: GAFAdapter
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_association.fb.gz
-      gaf_source: 'Flybase'
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
       label: biological_process_gene
   outdir: gaf
   nodes: False
@@ -16,7 +17,8 @@ gaf_molecular_function_gene_product:
     cls: GAFAdapter
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_association.fb.gz
-      gaf_source: 'Flybase'
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
       label: molecular_function_gene
   outdir: gaf
   nodes: False
@@ -28,7 +30,8 @@ gaf_cellular_component_gene_product:
     cls: GAFAdapter
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_association.fb.gz
-      gaf_source: 'Flybase'
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
       label: cellular_component_gene
   outdir: gaf
   nodes: False

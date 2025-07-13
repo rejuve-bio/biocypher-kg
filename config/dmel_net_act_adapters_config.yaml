@@ -4,10 +4,9 @@ gaf_biological_process_gene:
     cls: GAFAdapter
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_association.fb.gz
-      gaf_type: 'fly'
-      gaf_source: 'Flybase'
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
       label: biological_process_gene
-
   outdir: gaf
   nodes: False
   edges: True
@@ -18,10 +17,9 @@ gaf_molecular_function_gene:
     cls: GAFAdapter
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_association.fb.gz
-      gaf_type: 'fly'
-      gaf_source: 'Flybase'
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
       label: molecular_function_gene
-
   outdir: gaf
   nodes: False
   edges: True
@@ -32,8 +30,8 @@ gaf_cellular_component_gene:
     cls: GAFAdapter
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_association.fb.gz
-      gaf_type: 'fly'
-      gaf_source: 'Flybase'
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
       label: cellular_component_gene
 
   outdir: gaf
@@ -47,9 +45,8 @@ gaf_cellular_component_gene_part_of:
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_association.fb.gz
       label: cellular_component_gene_part_of
-      gaf_type: 'fly'
-      gaf_source: 'Flybase'
-
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
   outdir: gaf
   nodes: False
   edges: True
@@ -61,7 +58,8 @@ gaf_cellular_component_gene_product_located_in:
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_association.fb.gz
       label: cellular_component_gene_located_in
-
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
   outdir: gaf
   nodes: False
   edges: True

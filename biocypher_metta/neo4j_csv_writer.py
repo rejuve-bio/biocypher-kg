@@ -1,3 +1,5 @@
+import sys
+import pickle
 from collections import Counter, defaultdict
 import json
 import csv
@@ -21,7 +23,7 @@ class Neo4jCSVWriter(BaseWriter):
         # saulo   
         # self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon'])
         # saulo
-        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon', 'so', 'do', 'mi', 'fbbt', 'fbdv', 'fbcv'])
+        # self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon', 'so', 'do', 'mi', 'fbbt', 'fbdv', 'fbcv'])
         
         self.create_edge_types()
         self._node_writers = {}
@@ -124,6 +126,12 @@ class Neo4jCSVWriter(BaseWriter):
         replace_map = str.maketrans({' ': '_', ':': '_'})
         return prev_id.lower().strip().translate(replace_map)
 
+    def go_subontology(self, go_id):
+        go_mapping_file = './aux_files/go_subontology_mapping.pkl'
+        with open(go_mapping_file, 'rb') as f:
+            go_subontology_mapping = pickle.load(f)
+        return go_subontology_mapping[go_id]
+
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
             with open(self._temp_files[label_or_key], 'a') as f:
@@ -222,6 +230,7 @@ class Neo4jCSVWriter(BaseWriter):
                 
         return node_freq, self._node_headers
 
+
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
         self._temp_files.clear()
@@ -234,7 +243,11 @@ class Neo4jCSVWriter(BaseWriter):
                 source_id, target_id, label, properties = edge
                 label = label.lower()
                 # edge_freq[label] += 1
-            
+
+                # saulo
+                if target_id == 'go_0016028':
+                    print(f'edge: {source_id} {target_id} {label} {properties}')
+                    # sys.exit(9)
                 edge_info = self.edge_node_types[label]
                 # saulo                
                 # source_type = edge_info["source"]
@@ -258,11 +271,27 @@ class Neo4jCSVWriter(BaseWriter):
                 else:
                     target_type = edge_info["target"] # 'general case' commented above
 
+                # saulo
+                # print(f'source_type: {source_type} / target_type: {target_type}\nedge: {source_id} {target_id} {label}')
+                # if target_id.startswith('GO:'): # == 'go_0016028':
+                #     print(f'source_type: {source_type} / target_type: {target_type}\nedge: {source_id} {target_id} {label} {properties}')
+                #     # sys.exit(9)
 
+                # saulo
+                # To get  the right type for the source and target nodes if one is a GO subontology (biological process, 
+                # cellular component, molecular function)
                 if source_type == "ontology_term":
-                    source_type = self.preprocess_id(source_id).split('_')[0]
+                    if source_id.startswith('GO:'):         # GO subontologies
+                        source_type = self.go_subontology(source_id)
+                    else:
+                        source_type = self.preprocess_id(source_id).split('_')[0]
+                    source_id = self.preprocess_id(source_id)
                 if target_type == "ontology_term":
-                    target_type = self.preprocess_id(target_id).split('_')[0]
+                    if target_id.startswith('GO:'):         # GO subontologies
+                        target_type = self.go_subontology(target_id)
+                    else:
+                        target_type = self.preprocess_id(target_id).split('_')[0]
+                    target_id = self.preprocess_id(target_id)
             
                 # saulo
                 edge_freq[f"{label}|{source_type}|{target_type}"] += 1
@@ -278,7 +307,10 @@ class Neo4jCSVWriter(BaseWriter):
                     'label': edge_label,
                     **properties            # saulo: DANGER!!! If properties contains a key equal to any of the five above keys, the above key entry will be overwritten.
                 }
-            
+                # if target_id == 'go_0016028':
+                #     print(f'edge_data: {edge_data}')
+                #     sys.exit(9)
+                
                 writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
                 self.temp_buffer[writer_key].append(edge_data)
             
