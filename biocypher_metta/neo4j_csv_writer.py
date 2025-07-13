@@ -66,7 +66,7 @@ class Neo4jCSVWriter(BaseWriter):
                     # to  handle lists in source and/or target types (2024/09/17) <-- first time I changed this! :()  :D
                     # the first case is the "general case" commented above
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
-                        print(f"key: => {k}")# \n{v}")
+                        # print(f"key: => {k}")# \n{v}")
                         if '.' not in k:                            
                             self.edge_node_types[label.lower()] = {
                                 "source": source_type.lower(), 
@@ -244,10 +244,6 @@ class Neo4jCSVWriter(BaseWriter):
                 label = label.lower()
                 # edge_freq[label] += 1
 
-                # saulo
-                if target_id == 'go_0016028':
-                    print(f'edge: {source_id} {target_id} {label} {properties}')
-                    # sys.exit(9)
                 edge_info = self.edge_node_types[label]
                 # saulo                
                 # source_type = edge_info["source"]
@@ -270,12 +266,6 @@ class Neo4jCSVWriter(BaseWriter):
                     target_id = target_id[1]
                 else:
                     target_type = edge_info["target"] # 'general case' commented above
-
-                # saulo
-                # print(f'source_type: {source_type} / target_type: {target_type}\nedge: {source_id} {target_id} {label}')
-                # if target_id.startswith('GO:'): # == 'go_0016028':
-                #     print(f'source_type: {source_type} / target_type: {target_type}\nedge: {source_id} {target_id} {label} {properties}')
-                #     # sys.exit(9)
 
                 # saulo
                 # To get  the right type for the source and target nodes if one is a GO subontology (biological process, 
@@ -307,9 +297,6 @@ class Neo4jCSVWriter(BaseWriter):
                     'label': edge_label,
                     **properties            # saulo: DANGER!!! If properties contains a key equal to any of the five above keys, the above key entry will be overwritten.
                 }
-                # if target_id == 'go_0016028':
-                #     print(f'edge_data: {edge_data}')
-                #     sys.exit(9)
                 
                 writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
                 self.temp_buffer[writer_key].append(edge_data)
