@@ -119,6 +119,7 @@ pathway_to_biological_process:
     cls: ReactomePathwayGOAdapter
     args:
       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+      label: pathway_to_biological_process
       write_properties: true
       add_provenance: true
       subontology: biological_process
@@ -127,33 +128,35 @@ pathway_to_biological_process:
   nodes: false
   edges: true
 
-pathway_to_molecular_function:
-  adapter:
-    module: biocypher_metta.adapters.reactome_pathway_go_adapter  
-    cls: ReactomePathwayGOAdapter
-    args:
-      filepath: ./samples/reactome/Pathways2GoTerms_human.txt
-      write_properties: true
-      add_provenance: true
-      subontology: molecular_function
-      mapping_file: aux_files/go_subontology_mapping.pkl
-  outdir: reactome/molecular_function
-  nodes: false
-  edges: true
+# pathway_to_molecular_function:
+#   adapter:
+#     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
+#     cls: ReactomePathwayGOAdapter
+#     args:
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       write_properties: true
+#       add_provenance: true
+#       subontology: molecular_function
+#       mapping_file: aux_files/go_subontology_mapping.pkl
+#       label: pathway_to_molecular_function
+#   outdir: reactome/molecular_function
+#   nodes: false
+#   edges: true
 
-pathway_to_cellular_component:
-  adapter:
-    module: biocypher_metta.adapters.reactome_pathway_go_adapter
-    cls: ReactomePathwayGOAdapter
-    args:
-      filepath: ./samples/reactome/Pathways2GoTerms_human.txt
-      write_properties: true
-      add_provenance: true
-      subontology: cellular_component  
-      mapping_file: aux_files/go_subontology_mapping.pkl
-  outdir: reactome/cellular_component
-  nodes: false
-  edges: true
+# pathway_to_cellular_component:
+#   adapter:
+#     module: biocypher_metta.adapters.reactome_pathway_go_adapter
+#     cls: ReactomePathwayGOAdapter
+#     args:
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       write_properties: true
+#       add_provenance: true
+#       subontology: cellular_component  
+#       mapping_file: aux_files/go_subontology_mapping.pkl
+#       label: pathway_to_cellular_component
+#   outdir: reactome/cellular_component
+#   nodes: false
+#   edges: true
 
 parent_pathway_of:
   adapter:
