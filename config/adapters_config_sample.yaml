@@ -119,7 +119,6 @@ pathway_to_biological_process:
     cls: ReactomePathwayGOAdapter
     args:
       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
-      label: pathway_to_biological_process
       write_properties: true
       add_provenance: true
       subontology: biological_process
