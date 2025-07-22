@@ -134,6 +134,48 @@ child_pathway_of:
   nodes: False
   edges: True
 
+pathway_to_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.reactome_pathway_go_adapter
+    cls: ReactomePathwayGOAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Pathways2GoTerms_human.txt
+      write_properties: true
+      add_provenance: true
+      subontology: biological_process
+      mapping_file: aux_files/go_subontology_mapping.pkl
+  outdir: reactome/biological_process
+  nodes: false
+  edges: true
+
+# pathway_to_molecular_function:
+#   adapter:
+#     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
+#     cls: ReactomePathwayGOAdapter
+#     args:
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       write_properties: true
+#       add_provenance: true
+#       subontology: molecular_function
+#       mapping_file: aux_files/go_subontology_mapping.pkl
+#   outdir: reactome/molecular_function
+#   nodes: false
+#   edges: true
+
+# pathway_to_cellular_component:
+#   adapter:
+#     module: biocypher_metta.adapters.reactome_pathway_go_adapter
+#     cls: ReactomePathwayGOAdapter
+#     args:
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       write_properties: true
+#       add_provenance: true
+#       subontology: cellular_component  
+#       mapping_file: aux_files/go_subontology_mapping.pkl
+#   outdir: reactome/cellular_component
+#   nodes: false
+#   edges: true
+
 go_biological_process:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
