@@ -148,6 +148,11 @@ pathway_to_biological_process:
   nodes: false
   edges: true
 
+# The following adapters for Molecular Function and Cellular Component are commented out
+# because the current dataset only contains Biological Process edges.
+# Including unused adapters causes the CI to fail due to schema and adapter validation rules.
+# These can be uncommented once corresponding datasets are available.
+
 # pathway_to_molecular_function:
 #   adapter:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
