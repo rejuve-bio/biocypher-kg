@@ -139,7 +139,7 @@ pathway_to_biological_process:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
     args:
-      filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Pathways2GoTerms_human.txt
       write_properties: true
       add_provenance: true
       subontology: biological_process
