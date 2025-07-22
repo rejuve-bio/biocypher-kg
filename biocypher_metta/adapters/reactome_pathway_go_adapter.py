@@ -2,6 +2,16 @@ import os
 import pickle
 from biocypher_metta.adapters import Adapter
 
+# Example Pathways2GoTerms_Human  TXT input files
+# Identifier	Name	GO_Term
+# R-HSA-73843	5-Phosphoribose 1-diphosphate biosynthesis	GO:0006015
+# R-HSA-1369062	ABC transporters in lipid homeostasis	GO:0006869
+# R-HSA-382556	ABC-family proteins mediated transport	GO:0055085
+# R-HSA-9660821	ADORA2B mediated anti-inflammatory cytokines production	GO:0002862
+# R-HSA-418592	ADP signalling through P2Y purinoceptor 1	GO:0030168
+# R-HSA-392170	ADP signalling through P2Y purinoceptor 12	GO:0030168
+# R-HSA-198323	AKT phosphorylates targets in the cytosol	GO:0043491
+
 class ReactomePathwayGOAdapter(Adapter):
     """
     Adapter for Reactome Pathway to specific GO subontology mappings.
@@ -62,7 +72,7 @@ class ReactomePathwayGOAdapter(Adapter):
                 properties = {
                     'pathway_name': pathway_name,
                     'go_term_id': full_go_term,
-                    'target_type': go_type,
+                    'subontology': go_type, 
                 }
                 
                 if self.add_provenance:  
