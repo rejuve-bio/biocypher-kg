@@ -599,7 +599,7 @@ cellular component:
   input_label: cellular_component
   inherit_properties: true
   kgx_properties:
-    category: "biolink:CellularComponent"
+    category: "biolink:CellularComponent" 
 
 # ---
 # 3D genome structures
@@ -675,12 +675,38 @@ regulatory association:
     agent_type: "manual_agent"
 
   properties:
-    source: 
+    source:
       type: str
       biolink: knowledge_source
     source_url: 
       type: str
       biolink: source_web_page
+
+# ---
+# association
+
+association:
+  description: >-
+    A typed association between two entities that represents some form of 
+    relationship or connection in a biomedical context.
+  abstract: true
+  represented_as: edge
+  properties:
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+    knowledge_level:
+      type: str
+      const: knowledge_assertion
+    agent_type:
+      type: str
+      const: manual_agent
+  kgx_properties:
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
 
 # ---
 # expression
@@ -1103,6 +1129,74 @@ cellular component subclass:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+pathway_to_biological_process:
+    is_a: association
+    biolink_predicate: "biolink:participates_in"
+    source: pathway
+    target: biological_process
+    represented_as: edge
+    input_label: pathway_to_biological_process
+    description: >-
+      An association between a pathway and a biological process, indicating that the pathway is involved in the process.
+    properties:
+      pathway_name: str
+      go_term_id: str
+      go_term_type: 
+        type: str
+        const: biological_process
+      source: 
+        type: str
+        biolink: knowledge_source
+      source_url:
+        type: str
+        biolink: source_web_page    
+    kgx_properties:
+      subject_category: "biolink:Pathway"
+      object_category: "biolink:BiologicalProcess"
+      knowledge_level: "knowledge_assertion"
+      agent_type: "manual_agent"
+
+pathway_to_molecular_function:
+    is_a: association
+    source: pathway
+    target: molecular_function
+    biolink_predicate: "biolink:related_to"
+    represented_as: edge
+    input_label: pathway_to_molecular_function
+    description: >-
+      An association between a pathway and a molecular function, indicating that the pathway is involved in the function.
+    properties:
+      pathway_name: str
+      go_term_id: str
+      go_term_type:
+        type: str
+        const: molecular_function
+    kgx_properties:
+      subject_category: "biolink:Pathway"
+      object_category: "biolink:MolecularActivity"
+      knowledge_level: "knowledge_assertion"
+      agent_type: "manual_agent"
+pathway_to_cellular_component:
+    is_a: association
+    source: pathway
+    target: cellular_component
+    biolink_predicate: "biolink:related_to"
+    represented_as: edge
+    input_label: pathway_to_cellular_component
+    description: >-
+      An association between a pathway and a cellular component, indicating that the pathway is associated with the component.
+    properties:
+      pathway_name: str
+      go_term_id: str
+      go_term_type:
+        type: str
+        const: cellular_component
+    kgx_properties:
+      subject_category: "biolink:Pathway"
+      object_category: "biolink:CellularComponent"
+      knowledge_level: "knowledge_assertion"
+      agent_type: "manual_agent"
 
 go gene product:
   is_a: annotation
