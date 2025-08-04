@@ -203,10 +203,7 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source_url'] = self.source_url
                 yield f'phenotype_{id}', f'genotype_{id}', self.label, props    
 
-        elif self.label == 'characterized_by':                          # phenotype to ontology schema
-            go_mapping_file = './aux_files/go_subontology_mapping.pkl'
-            with open(go_mapping_file, 'rb') as f:
-                go_subontology_mapping = pickle.load(f)
+        elif self.label == 'characterized_by':                          # phenotype to ontology schema (except cellular_component)
             id = -1
             for row in rows:
                 id += 1
@@ -226,25 +223,58 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source_url'] = self.source_url
 
                 phenotype_ontology_id = row[3]   # onto: fbbt or fbcv or  fbdv  or go...
+                if row[5] != '':
+                    props['qualifier_term_ids'] = [ name for name in row[5].split('|') ]
 
                 # if go's subontology is 'cellular_component', 'characterized_by' edge label seems 
-                # to be not the best name
-                # if phenotype_ontology_id.startswith('go'):
-                #     sub_onto_go = go_subontology_mapping[phenotype_ontology_id]
+                # to be not the best name: use inheres_in (from PATO)
+                if phenotype_ontology_id.startswith('go'):
+                    sub_onto_go = self.go_subontology(phenotype_ontology_id)
+                    if sub_onto_go == 'cellular_component':
+                        continue
+                #         self.label = 'inheres_in'
+                #         yield f'phenotype_{id}', phenotype_ontology_id, self.label, props            
                     # if phenotype_ontology_id == 'go_0016028':
                     #     print(f'genotype_phenotype::characterized_by edge:\nOntology different from FB ontos: {phenotype_ontology_id}')
                     #     print('Yielding it for neo4j_csv_writer')
+                # else:
                 yield f'phenotype_{id}', phenotype_ontology_id, self.label, props    
                 
-                if row[5] != '':
-                    # props['qualifier_term_ids'] = [ name.replace(':', '_').lower() for name in row[5].split('|') ]
-                    props['qualifier_term_ids'] = [ name for name in row[5].split('|') ]
-                    # terms_ids = [ t_id.replace(':', '_').lower() for t_id in row[5].split('|') ]
+                if row[5] != '':                                   
                     terms_ids = [ t_id for t_id in row[5].split('|') ]
                     for term_id in terms_ids:
                         yield f'phenotype_{id}', term_id, self.label, props    
                     #     props['qualifier_term_ids'].append( (term_id.split('_')[0], term_id) )
+        
+        elif self.label == 'inheres_in':
+            id = -1
+            for row in rows:
+                id += 1
+                phenotype_ontology_id = row[3]  
+                # if go's subontology is 'cellular_component', 'characterized_by' edge label seems 
+                # to be not the best name: use inheres_in (from PATO)
+                if phenotype_ontology_id.startswith('go'):
+                    sub_onto_go = self.go_subontology(phenotype_ontology_id)
+                    if sub_onto_go != 'cellular_component':
+                        continue                
+                props = {}     
+                if row[6] in self.fbrf_to_pmid_pmcid_doi_dict:
+                    ref = self.fbrf_to_pmid_pmcid_doi_dict[row[6]]
+                    props['miniref'] = ref['miniref']
+                    props['fb_ref'] = f'http://flybase.org/reports/{row[6]}.htm'                 # FBrf#
+                    props['pmid_ref'] = ref['pmid']
+                    props['pmcid'] = ref['pmcid']
+                    props['doi'] = ref['doi']
+                else:
+                    props['fb_ref'] = row[6]  
+                props['taxon_id'] = 7227
+                if self.add_provenance:
+                    props['source'] = self.source
+                    props['source_url'] = self.source_url                
+                if row[5] != '':
+                    props['qualifier_term_ids'] = [ name for name in row[5].split('|') ]
 
+                yield f'phenotype_{id}', phenotype_ontology_id, self.label, props    
 
 
     def get_alleles(self, geno_ids: str) -> list[str]:
@@ -269,3 +299,9 @@ class GenotypePhenotypeAdapter(Adapter):
                 'doi': row[3]
             }
         return fbrf_to_refs_dict
+    
+    def go_subontology(self, go_id):
+        go_mapping_file = './aux_files/go_subontology_mapping.pkl'
+        with open(go_mapping_file, 'rb') as f:
+            go_subontology_mapping = pickle.load(f)
+        return go_subontology_mapping[go_id]

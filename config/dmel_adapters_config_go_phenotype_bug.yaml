@@ -1,0 +1,455 @@
+
+dmel_phenotype_to_ontology:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+       label: characterized_by
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/genotype_phenotype_data_fb_2024_06.tsv.gz
+       dmel_fbrf_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbrf_pmid_pmcid_doi_fb_2024_06.tsv.gz
+  outdir: flybase/genotype_phenotype
+  nodes: False
+  edges: True
+
+
+dmel_genotype:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+       label: genotype
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/genotype_phenotype_data_fb_2024_06.tsv.gz
+       dmel_fbrf_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbrf_pmid_pmcid_doi_fb_2024_06.tsv.gz
+  outdir: flybase/genotype_phenotype
+  nodes: True
+  edges: False
+
+dmel_phenotype:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+      label: phenotype
+      dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/genotype_phenotype_data_fb_2024_06.tsv.gz
+      dmel_fbrf_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbrf_pmid_pmcid_doi_fb_2024_06.tsv.gz
+  outdir: flybase/genotype_phenotype
+  nodes: True
+  edges: False
+
+dmel_allele_to_phenotype:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+       label: involved_in
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/genotype_phenotype_data_fb_2024_06.tsv.gz
+       dmel_fbrf_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbrf_pmid_pmcid_doi_fb_2024_06.tsv.gz
+  outdir: flybase/genotype_phenotype
+  nodes: False
+  edges: True
+
+
+
+dmel_phenotype_to_genotype:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+       label: genetically_informed_by
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/genotype_phenotype_data_fb_2024_06.tsv.gz
+       dmel_fbrf_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbrf_pmid_pmcid_doi_fb_2024_06.tsv.gz
+  outdir: flybase/genotype_phenotype
+  nodes: False
+  edges: True
+
+gaf_biological_process_gene_product:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/gene_association.fb.gz
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
+      label: biological_process_gene
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_molecular_function_gene_product:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/gene_association.fb.gz
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
+      label: molecular_function_gene
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_product:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/gene_association.fb.gz
+      gaf_type: 'flybase'
+      gaf_source: 'flybase'
+      label: cellular_component_gene
+  outdir: gaf
+  nodes: False
+  edges: True
+
+
+
+dmel_disease_model:
+  adapter:
+    module: biocypher_metta.adapters.dmel.disease_model_adapter
+    cls: DiseaseModelAdapter
+    args:
+      label: dmel_disease_model
+      dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/disease_model_annotations_fb_2024_06.tsv.gz
+  outdir: flybase/disease_model
+  nodes: True
+  edges: False
+
+
+dmel_gene_to_disease_model:
+  adapter:
+    module: biocypher_metta.adapters.dmel.disease_model_adapter
+    cls: DiseaseModelAdapter
+    args:
+       label: modelled_to_human_disease
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/disease_model_annotations_fb_2024_06.tsv.gz
+  outdir: flybase/disease_model
+  nodes: False
+  edges: True
+
+dmel_gene_to_do_term:
+  adapter:
+    module: biocypher_metta.adapters.dmel.disease_model_adapter
+    cls: DiseaseModelAdapter
+    args:
+       label: modelled_to_do_term
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/disease_model_annotations_fb_2024_06.tsv.gz
+  outdir: flybase/disease_model
+  nodes: False
+  edges: True
+
+
+
+allele:
+  adapter:
+    module: biocypher_metta.adapters.dmel.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbal_to_fbgn_fb_2024_06.tsv.gz
+       label: allele
+  outdir: allele
+  nodes: True
+  edges: False
+
+
+dmel_allele_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.dmel.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbal_to_fbgn_fb_2024_06.tsv.gz
+       label: variant_of
+  outdir: allele
+  nodes: False
+  edges: True
+
+
+dmel_gene_genetic_adapter:
+    adapter:
+        module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter
+        cls: GeneGeneticAssociationAdapter
+        args:
+          dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/gene_genetic_interactions_fb_2024_06.tsv.gz
+    outdir: flybase/gene_genetic
+    nodes: False
+    edges: True
+
+
+dmel_allele_to_allele_genetic_interaction_adapter:
+    adapter:
+        module: biocypher_metta.adapters.dmel.allele_genetic_interaction_adapter
+        cls: AlleleGeneticInteractionAdapter
+        args:
+          label: allele_to_allele_genetic_interaction
+          dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/allele_genetic_interactions_fb_2024_06.tsv.gz
+          dmel_fbal_to_fbgn_file: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/current_flybase/fbal_to_fbgn_fb_2024_06.tsv.gz
+    outdir: flybase/allele_genetic
+    nodes: False
+    edges: True
+
+
+go_ontology_terms:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology
+  nodes: True
+  edges: False
+
+
+go_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      label: go_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology
+  nodes: False
+  edges: True
+
+
+go_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: biological_process
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/biological_process
+  nodes: True
+  edges: False
+
+
+go_biological_process_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: biological_process_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/biological_process
+  nodes: False
+  edges: True
+
+
+go_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: molecular_function
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/molecular_function
+  nodes: True
+  edges: False
+
+
+go_molecular_function_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: molecular_function_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/molecular_function
+  nodes: False
+  edges: True
+
+
+go_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: cellular_component
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/cellular_component
+  nodes: True
+  edges: False
+
+
+go_cellular_component_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: cellular_component_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/cellular_component
+  nodes: False
+  edges: True
+
+
+sequence_ontology:
+  adapter:
+    module: biocypher_metta.adapters.sequence_ontology_adapter
+    cls: SequenceOntologyAdapter
+    args:
+      ontology: 'so'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+
+so_sequence_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.sequence_ontology_adapter
+    cls: SequenceOntologyAdapter
+    args:
+      ontology: 'so'
+      label: so_subclass_of
+      type: edge
+      dry_run: False
+  7    cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+
+FB_development_ontology:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
+    cls: FBDevelopmentOntologyAdapter
+    args:
+      ontology: 'FBdv'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+FBdv_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
+    cls: FBDevelopmentOntologyAdapter
+    args:
+      ontology: 'FBdv'
+      label: FBdv_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+FB_gross_anatomy_ontology:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBgross_anatomy_ontology_adapter
+    cls: FBGrossAnatomyAdapter
+    args:
+      ontology: 'FBbt'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+FBbt_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBgross_anatomy_ontology_adapter
+    cls: FBGrossAnatomyAdapter
+    args:
+      ontology: 'FBbt'
+      label: FBbt_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+FB_controlled_vocabulary_ontology:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBcontrolled_vocabulary_ontology_adapter
+    cls: FBControlledVocabularyOntologyAdapter
+    args:
+      ontology: 'FBcv'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+FBcv_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBcontrolled_vocabulary_ontology_adapter
+    cls: FBControlledVocabularyOntologyAdapter
+    args:
+      ontology: 'FBcv'
+      label: FBcv_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+
+disease_ontology:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+disease_do_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      label: do_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+

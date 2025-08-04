@@ -1456,6 +1456,14 @@ phenotype to ontology:
   properties:
     taxon_id: int             # 7227 for dmel / 9606 for hsa 
 
+phenotype to cellular component:
+  represented_as: edge
+  input_label: inheres_in
+  is_a: annotation
+  source: phenotype
+  target: cellular component
+  properties:
+    taxon_id: int             # 7227 for dmel / 9606 for hsa 
 
 # Links an allele (and its gene: an allele is a 'variant_of' a gene) to phenotypes.
 allele to phenotype:
