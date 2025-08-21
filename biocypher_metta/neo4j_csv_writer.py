@@ -18,7 +18,8 @@ class Neo4jCSVWriter(BaseWriter):
             "'": "",
             '"': ""
         })
-        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon'])
+        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon', 'so', 'do', 'mi', 'fbbt', 'fbdv', 'fbcv'])
+        
         self.create_edge_types()
         self._node_writers = {}
         self._edge_writers = {}
@@ -41,24 +42,67 @@ class Neo4jCSVWriter(BaseWriter):
                 if source_type is not None and target_type is not None:
                     if isinstance(v["input_label"], list):
                         label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
+                        if isinstance(source_type, list):
+                            source_type = [self.convert_input_labels(st) for st in source_type]
+                        else:
+                            source_type = self.convert_input_labels(source_type)
+                        if isinstance(target_type, list):
+                            target_type = [self.convert_input_labels(tt) for tt in target_type]
+                        else:
+                            target_type = self.convert_input_labels(target_type)
                     else:
                         label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
+                        if isinstance(source_type, list):
+                            source_type = [self.convert_input_labels(st) for st in source_type]
+                        else:
+                            source_type = self.convert_input_labels(source_type)
+                        if isinstance(target_type, list):
+                            target_type = [self.convert_input_labels(tt) for tt in target_type]
+                        else:
+                            target_type = self.convert_input_labels(target_type)
+                    
                     output_label = v.get("output_label", label)
 
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
-                        "output_label": output_label.lower()
-                    }
+                    # Handle different combinations of source/target types (single/list)
+                    if isinstance(source_type, str) and isinstance(target_type, str):
+                        if '.' not in k:                            
+                            self.edge_node_types[label.lower()] = {
+                                "source": source_type.lower(), 
+                                "target": target_type.lower(),
+                                "output_label": output_label.lower() if output_label is not None else None
+                            }
+                    
+                    elif isinstance(source_type, list) and isinstance(target_type, str):
+                        source_type_lower = [st.lower() for st in source_type]
+                        self.edge_node_types[label.lower()] = {
+                            "target": target_type.lower(),
+                            "output_label": output_label.lower() if output_label is not None else None
+                        }
+                        self.edge_node_types[label.lower()]["source"] = source_type_lower
+                        
+                    elif isinstance(source_type, str) and isinstance(target_type, list):
+                        target_type_lower = [tt.lower() for tt in target_type]
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "output_label": output_label.lower() if output_label is not None else None
+                        } 
+                        self.edge_node_types[label.lower()]["target"] = target_type_lower
+                    
+                    elif isinstance(source_type, list) and isinstance(target_type, list):
+                        source_type_lower = [st.lower() for st in source_type]
+                        target_type_lower = [tt.lower() for tt in target_type]
+                        self.edge_node_types[label.lower()] = {
+                            "output_label": output_label.lower() if output_label is not None else None
+                        }
+                        self.edge_node_types[label.lower()]["source"] = source_type_lower
+                        self.edge_node_types[label.lower()]["target"] = target_type_lower
+                    else:
+                        print(f"UNKNOWN key type: => {k}")
 
     def preprocess_value(self, value):
         value_type = type(value)
         if value_type is list:
-            return json.dumps([self.preprocess_value(item) for item in value])
+            return json.dumps([self.preprocess_value(item) for item in value]).replace('\\"', '"')
         if value_type is rdflib.term.Literal:
             return str(value).translate(self.translation_table)
         if value_type is str:
@@ -66,11 +110,32 @@ class Neo4jCSVWriter(BaseWriter):
         return value
 
     def convert_input_labels(self, label):
+        if isinstance(label, list):
+            labels = []
+            for aLabel in label:
+                labels.append(aLabel.replace(" ", "_"))
+            return labels
         return label.lower().replace(" ", "_")
 
     def preprocess_id(self, prev_id):
-        replace_map = str.maketrans({' ': '_', ':':'_'})
-        return prev_id.lower().strip().translate(replace_map)
+        prev_id = str(prev_id)
+        
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            prefix = prefix.upper()
+        
+            if prefix.lower() in self.ontologies:
+                clean_local = local_id.strip().translate(str.maketrans({' ': '_'}))
+                result = f"{prefix}_{clean_local}"
+                return result
+            else:
+                clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
+                clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
+                result = clean_local
+                return result
+        
+        result = prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+        return result
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
@@ -114,6 +179,8 @@ class Neo4jCSVWriter(BaseWriter):
         
         try:
             for node in nodes:
+                self.extract_node_info(node)
+                
                 id, label, properties = node
                 if "." in label:
                     label = label.split(".")[1]
@@ -179,34 +246,65 @@ class Neo4jCSVWriter(BaseWriter):
     
         try:
             for edge in edges:
+                # Extract edge info for counting (from BaseWriter)
+                self.extract_edge_info(edge)
+                
                 source_id, target_id, label, properties = edge
                 label = label.lower()
-                edge_freq[label] += 1
-            
+                
                 edge_info = self.edge_node_types[label]
-                source_type = edge_info["source"]
-                target_type = edge_info["target"]
-            
+                
+                if isinstance(source_id, tuple):
+                    source_type = source_id[0]
+                    if isinstance(edge_info["source"], list):
+                        if source_type not in edge_info["source"]:
+                            raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
+                    else:
+                        if source_type != edge_info["source"]:
+                            raise TypeError(f"Type '{source_type}' must be '{edge_info['source']}'")
+                    source_id = source_id[1]
+                else:
+                    if isinstance(edge_info["source"], list):
+                        source_type = edge_info["source"][0]
+                    else:
+                        source_type = edge_info["source"]
+
+                if isinstance(target_id, tuple):
+                    target_type = target_id[0]
+                    if isinstance(edge_info["target"], list):
+                        if target_type not in edge_info["target"]:
+                            raise TypeError(f"Type '{target_type}' must be one of {edge_info['target']}")
+                    else:
+                        if target_type != edge_info["target"]:
+                            raise TypeError(f"Type '{target_type}' must be '{edge_info['target']}'")
+                    target_id = target_id[1]
+                else:
+                    if isinstance(edge_info["target"], list):
+                        target_type = edge_info["target"][0]
+                    else:
+                        target_type = edge_info["target"]
+
                 if source_type == "ontology_term":
                     source_type = self.preprocess_id(source_id).split('_')[0]
                 if target_type == "ontology_term":
                     target_type = self.preprocess_id(target_id).split('_')[0]
-            
-                # Use input label if output_label is None or empty
+                
+                edge_freq[f"{label}|{source_type}|{target_type}"] += 1
+                          
                 edge_label = edge_info.get("output_label") or label
-            
+                
                 edge_data = {
                     'source_id': self.preprocess_id(source_id),
                     'target_id': self.preprocess_id(target_id),
                     'source_type': source_type,
                     'target_type': target_type,
                     'label': edge_label,
-                    **properties
+                    **properties  
                 }
-            
+                
                 writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
                 self.temp_buffer[writer_key].append(edge_data)
-            
+                
                 if len(self.temp_buffer[writer_key]) >= self.batch_size:
                     self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
         
@@ -215,8 +313,7 @@ class Neo4jCSVWriter(BaseWriter):
         
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
-                # Use input label if output_label is None or empty
-                edge_label = self.edge_node_types[input_label].get("output_label") or input_label
+                edge_label = self.edge_node_types[input_label].get("output_label") or input_label 
             
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"edges_{file_suffix}.csv"
@@ -262,17 +359,17 @@ class Neo4jCSVWriter(BaseWriter):
         absolute_path = csv_path.resolve().as_posix()
     
         cypher_query = f"""
-    CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
 
-    CALL apoc.periodic.iterate(
-        "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-        "MERGE (n:{label} {{id: row.id}})
-        SET n += apoc.map.removeKeys(row, ['id'])",
-        {{batchSize:1000, parallel:true, concurrency:4}}
-    )
-    YIELD batches, total
-    RETURN batches, total;
-    """
+CALL apoc.periodic.iterate(
+    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "MERGE (n:{label} {{id: row.id}})
+    SET n += apoc.map.removeKeys(row, ['id'])",
+    {{batchSize:1000, parallel:true, concurrency:4}}
+)
+YIELD batches, total
+RETURN batches, total;
+"""
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
@@ -280,17 +377,17 @@ class Neo4jCSVWriter(BaseWriter):
         absolute_path = csv_path.resolve().as_posix()
     
         cypher_query = f"""
-    CALL apoc.periodic.iterate(
-        "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-        "MATCH (source:{source_type} {{id: row.source_id}})
-        MATCH (target:{target_type} {{id: row.target_id}})
-        MERGE (source)-[r:{edge_label}]->(target)
-        SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
-        {{batchSize:1000}}
-    )
-    YIELD batches, total
-    RETURN batches, total;
-    """
+CALL apoc.periodic.iterate(
+    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "MATCH (source:{source_type} {{id: row.source_id}})
+    MATCH (target:{target_type} {{id: row.target_id}})
+    MERGE (source)-[r:{edge_label}]->(target)
+    SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
+    {{batchSize:1000}}
+)
+YIELD batches, total
+RETURN batches, total;
+"""
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 

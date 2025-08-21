@@ -32,7 +32,7 @@ class ReactomeAdapter(Adapter):
     ALLOWED_LABELS = ['genes_pathways',
                       'parent_pathway_of', 'child_pathway_of']
 
-    def __init__(self, filepath, label, write_properties, add_provenance):
+    def __init__(self, filepath, label, write_properties, add_provenance, ensembl_uniprot_map_path=None):
         if label not in ReactomeAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +
                              ', '.join(ReactomeAdapter.ALLOWED_LABELS))
@@ -41,8 +41,40 @@ class ReactomeAdapter(Adapter):
         self.label = label
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
+        
+        # Load the Ensembl to UniProt mapping if provided
+        self.ensembl_uniprot_map = {}
+        if ensembl_uniprot_map_path:
+            try:
+                import pickle
+                with open(ensembl_uniprot_map_path, 'rb') as f:
+                    self.ensembl_uniprot_map = pickle.load(f)
+                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
+            except Exception as e:
+                print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
+                self.ensembl_uniprot_map = {}
 
         super(ReactomeAdapter, self).__init__(write_properties, add_provenance)
+
+    def _get_source_type_and_id(self, ensembl_id):
+        # Remove version number if present (e.g., ENSG00000000419.14 -> ENSG00000000419)
+        clean_id = ensembl_id.split('.')[0]
+        
+        if clean_id.startswith('ENSG'):
+            return 'gene', clean_id
+        elif clean_id.startswith('ENST'):
+            return 'transcript', clean_id
+        elif clean_id.startswith('ENSP'):
+            # Skip protein entries if no UniProt mapping is available
+            if self.ensembl_uniprot_map and clean_id in self.ensembl_uniprot_map:
+                uniprot_id = self.ensembl_uniprot_map[clean_id]
+                return 'protein', uniprot_id
+            else:
+                # Skip protein entries without UniProt mapping
+                return None
+        else:
+            # Skip non-human IDs
+            return None
 
     def get_edges(self):
         with open(self.filepath) as input:
@@ -50,29 +82,33 @@ class ReactomeAdapter(Adapter):
             if self.write_properties and self.add_provenance:
                 _props['source'] = self.source
                 _props['source_url'] = self.source_url
+                
             for line in input:
                 if self.label == 'genes_pathways':
                     data = line.strip().split('\t')
                     pathway_id = data[1]
+                    
+                    # Only process human pathways (R-HSA prefix)
                     if pathway_id.startswith('R-HSA'):
-                        ensg_id = data[0].split('.')[0]
-                        _id = ensg_id + '_' + pathway_id
-                        _source = f"ENSEMBL:{ensg_id}"
-                        _target = f"REACT:{pathway_id}"
-                        yield _source, _target, self.label, _props
+                        ensembl_id = data[0]
+                        result = self._get_source_type_and_id(ensembl_id)
+                        
+                        # Skip if not a human Ensembl ID or protein without UniProt mapping
+                        if result is None:
+                            continue
+                            
+                        source_type, formatted_source_id = result
+                        target_id = pathway_id
+                        
+                        # Return the source with type information for BioCypher
+                        yield (source_type, formatted_source_id), target_id, self.label, _props
+                        
                 else:
+                    # Handle pathway-pathway relationships
                     parent, child = line.strip().split('\t')
                     if parent.startswith('R-HSA'):
-                        parent = 'REACT:' + parent.upper()
-                        child = 'REACT:' + child.upper()
+                        
                         if self.label == 'parent_pathway_of':
-                            _id = parent + '_' + child
-                            _source = parent
-                            _target = child
-
-                            yield _source, _target, self.label, _props
+                            yield parent, child, self.label, _props
                         elif self.label == 'child_pathway_of':
-                            _id = child + '_' + parent
-                            _source =  child
-                            _target =  parent
-                            yield  _source, _target, self.label, _props
+                            yield child, parent, self.label, _props

@@ -29,15 +29,61 @@ class PrologWriter(BaseWriter):
                 if source_type is not None and target_type is not None:
                     if isinstance(v["input_label"], list):
                         label = self.sanitize_text(v["input_label"][0])
-                        source_type = self.sanitize_text(v["source"][0])
-                        target_type = self.sanitize_text(v["target"][0])
+                        if isinstance(source_type, list):
+                            source_type = [self.sanitize_text(st) for st in source_type]
+                        else:
+                            source_type = self.sanitize_text(source_type)
+                        if isinstance(target_type, list):
+                            target_type = [self.sanitize_text(tt) for tt in target_type]
+                        else:
+                            target_type = self.sanitize_text(target_type)
                     else:
                         label = self.sanitize_text(v["input_label"])
-                        source_type = self.sanitize_text(v["source"])
-                        target_type = self.sanitize_text(v["target"])
+                        if isinstance(source_type, list):
+                            source_type = [self.sanitize_text(st) for st in source_type]
+                        else:
+                            source_type = self.sanitize_text(source_type)
+                        if isinstance(target_type, list):
+                            target_type = [self.sanitize_text(tt) for tt in target_type]
+                        else:
+                            target_type = self.sanitize_text(target_type)
+                    
                     output_label = v.get("output_label", None)
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower(),
-                                                           "output_label": output_label.lower() if output_label is not None else None}
+
+                    if isinstance(source_type, str) and isinstance(target_type, str):
+                        if '.' not in k:
+                            self.edge_node_types[label.lower()] = {
+                                "source": source_type.lower(), 
+                                "target": target_type.lower(),
+                                "output_label": output_label.lower() if output_label is not None else None
+                            }
+                    
+                    elif isinstance(source_type, list) and isinstance(target_type, str):
+                        source_type_lower = [st.lower() for st in source_type]
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type_lower,
+                            "target": target_type.lower(),
+                            "output_label": output_label.lower() if output_label is not None else None
+                        }
+                        
+                    elif isinstance(source_type, str) and isinstance(target_type, list):
+                        target_type_lower = [tt.lower() for tt in target_type]
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type.lower(), 
+                            "target": target_type_lower,
+                            "output_label": output_label.lower() if output_label is not None else None
+                        } 
+                    
+                    elif isinstance(source_type, list) and isinstance(target_type, list):
+                        source_type_lower = [st.lower() for st in source_type]
+                        target_type_lower = [tt.lower() for tt in target_type]
+                        self.edge_node_types[label.lower()] = {
+                            "source": source_type_lower,
+                            "target": target_type_lower,
+                            "output_label": output_label.lower() if output_label is not None else None
+                        }
+                    else:
+                        print(f"UNKNOWN key type: => {k}")
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
@@ -102,24 +148,71 @@ class PrologWriter(BaseWriter):
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
-        source_id = self.preprocess_id(source_id)  # Added ID preprocessing
-        target_id = self.preprocess_id(target_id)  # Added ID preprocessing
+        source_id_processed = source_id
+        target_id_processed = target_id
         label = label.lower()
-        source_id = source_id.lower()
-        target_id = target_id.lower()
-        source_type = self.edge_node_types[label]["source"]
-        target_type = self.edge_node_types[label]["target"]
-        output_label = self.edge_node_types[label]["output_label"]
-        if output_label is not None:
-            label = output_label.lower()
-        source_id = self.sanitize_text(source_id)
-        target_id = self.sanitize_text(target_id)
-        label = self.sanitize_text(label)
+        
+        if isinstance(source_id, tuple):
+            source_type = source_id[0]
+            source_id_processed = self.preprocess_id(source_id[1])
+            if label in self.edge_node_types:
+                valid_source_types = self.edge_node_types[label]["source"]
+                if isinstance(valid_source_types, list):
+                    if source_type not in valid_source_types:
+                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
+                else:
+                    if source_type != valid_source_types:
+                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+        else:
+            source_id_processed = self.preprocess_id(source_id)
+            if label in self.edge_node_types:
+                source_type_info = self.edge_node_types[label]["source"]
+                if isinstance(source_type_info, list):
+                    source_type = source_type_info[0]  
+                else:
+                    source_type = source_type_info
+            else:
+                source_type = "unknown"
+
+        if isinstance(target_id, tuple):
+            target_type = target_id[0]
+            target_id_processed = self.preprocess_id(target_id[1])
+            if label in self.edge_node_types:
+                valid_target_types = self.edge_node_types[label]["target"]
+                if isinstance(valid_target_types, list):
+                    if target_type not in valid_target_types:
+                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
+                else:
+                    if target_type != valid_target_types:
+                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
+        else:
+            target_id_processed = self.preprocess_id(target_id)
+            if label in self.edge_node_types:
+                target_type_info = self.edge_node_types[label]["target"]
+                if isinstance(target_type_info, list):
+                    target_type = target_type_info[0]  
+                else:
+                    target_type = target_type_info
+            else:
+                target_type = "unknown"
+
+        output_label = None
+        if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
+            output_label = self.edge_node_types[label]["output_label"]
+            label_to_use = output_label
+        else:
+            label_to_use = label
+
         if source_type == "ontology_term":
-            source_type = source_id.split('_')[0]
+            source_type = source_id_processed.split('_')[0]
         if target_type == "ontology_term":
-            target_type = target_id.split('_')[0]
-        def_out = f"{label}({source_type}({source_id}), {target_type}({target_id}))"
+            target_type = target_id_processed.split('_')[0]
+        
+        source_id_processed = self.sanitize_text(source_id_processed)
+        target_id_processed = self.sanitize_text(target_id_processed)
+        label_to_use = self.sanitize_text(label_to_use)
+        
+        def_out = f"{label_to_use}({source_type}({source_id_processed}), {target_type}({target_id_processed}))"
         return self.write_property(def_out, properties)
 
 
