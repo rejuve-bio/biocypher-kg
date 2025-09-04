@@ -96,7 +96,6 @@ pathway:
     cls: ReactomePathwayAdapter
     args:
       filepath: ./samples/reactome/ReactomePathways.txt
-      ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
 
   outdir: reactome
@@ -109,6 +108,7 @@ genes_pathways:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
 
   outdir: reactome
