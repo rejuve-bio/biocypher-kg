@@ -104,6 +104,7 @@ genes_pathways:
     cls: ReactomeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Ensembl2Reactome_All_Levels.txt
+      ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
 
   outdir: reactome

@@ -13,8 +13,8 @@ class MeTTaWriter(BaseWriter):
                  output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
         
-        # Initialize auxiliary edge node types for tuple handling
-        self.aux_edge_node_types = {}
+        # Initialize edge node types for tuple handling
+        self.edge_node_types = {}
         
         self.create_type_hierarchy()
 
@@ -41,7 +41,6 @@ class MeTTaWriter(BaseWriter):
 
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
-        self.edge_node_types = {}
         
         def edge_data_constructor(edge_type, source_type, target_type, label):
             return f"(: {label.lower()} (-> {source_type.upper()} {target_type.upper()} {edge_type.upper()}))"
@@ -96,20 +95,10 @@ class MeTTaWriter(BaseWriter):
                             "target": target_type.lower(),
                             "output_label": output_label.lower() if output_label is not None else None
                         }
-                        self.aux_edge_node_types[label.lower()] = {
-                            "source": source_type_lower,
-                            "target": target_type.lower(),
-                            "output_label": output_label.lower() if output_label is not None else None
-                        }
                         
                     elif isinstance(source_type, str) and isinstance(target_type, list):
                         target_type_lower = [tt.lower() for tt in target_type]
                         self.edge_node_types[label.lower()] = {
-                            "source": source_type.lower(), 
-                            "target": target_type_lower,
-                            "output_label": output_label.lower() if output_label is not None else None
-                        }
-                        self.aux_edge_node_types[label.lower()] = {
                             "source": source_type.lower(), 
                             "target": target_type_lower,
                             "output_label": output_label.lower() if output_label is not None else None
@@ -119,11 +108,6 @@ class MeTTaWriter(BaseWriter):
                         source_type_lower = [st.lower() for st in source_type]
                         target_type_lower = [tt.lower() for tt in target_type]
                         self.edge_node_types[label.lower()] = {
-                            "source": source_type_lower,
-                            "target": target_type_lower,
-                            "output_label": output_label.lower() if output_label is not None else None
-                        }
-                        self.aux_edge_node_types[label.lower()] = {
                             "source": source_type_lower,
                             "target": target_type_lower,
                             "output_label": output_label.lower() if output_label is not None else None
