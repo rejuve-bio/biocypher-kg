@@ -26,7 +26,6 @@ from biocypher_metta.adapters import Adapter
 # R-BTA-109581	R-BTA-75153
 # R-BTA-109582	R-BTA-140877
 
-
 class ReactomeAdapter(Adapter):
 
     ALLOWED_LABELS = ['genes_pathways',
@@ -61,19 +60,17 @@ class ReactomeAdapter(Adapter):
         clean_id = ensembl_id.split('.')[0]
         
         if clean_id.startswith('ENSG'):
-            return 'gene', clean_id
+            return 'gene', f"ENSEMBL:{clean_id}"
         elif clean_id.startswith('ENST'):
-            return 'transcript', clean_id
+            return 'transcript', f"ENSEMBL:{clean_id}"
         elif clean_id.startswith('ENSP'):
             # Skip protein entries if no UniProt mapping is available
             if self.ensembl_uniprot_map and clean_id in self.ensembl_uniprot_map:
                 uniprot_id = self.ensembl_uniprot_map[clean_id]
-                return 'protein', uniprot_id
+                return 'protein', f"UniProtKB:{uniprot_id}"
             else:
-                # Skip protein entries without UniProt mapping
                 return None
         else:
-            # Skip non-human IDs
             return None
 
     def get_edges(self):
@@ -88,7 +85,7 @@ class ReactomeAdapter(Adapter):
                     data = line.strip().split('\t')
                     pathway_id = data[1]
                     
-                    # Only process human pathways (R-HSA prefix)
+                    # Only process human pathways (R-HSA prefix) and add REACT prefix
                     if pathway_id.startswith('R-HSA'):
                         ensembl_id = data[0]
                         result = self._get_source_type_and_id(ensembl_id)
@@ -97,18 +94,19 @@ class ReactomeAdapter(Adapter):
                         if result is None:
                             continue
                             
-                        source_type, formatted_source_id = result
-                        target_id = pathway_id
+                        source_type, source_id = result
+                        target_id = f"REACT:{pathway_id}"  
                         
-                        # Return the source with type information for BioCypher
-                        yield (source_type, formatted_source_id), target_id, self.label, _props
-                        
+                        yield (source_type, source_id), target_id, self.label, _props
+
                 else:
                     # Handle pathway-pathway relationships
                     parent, child = line.strip().split('\t')
-                    if parent.startswith('R-HSA'):
+                    if parent.startswith('R-HSA') and child.startswith('R-HSA'):
+                        parent_prefixed = f"REACT:{parent}"
+                        child_prefixed = f"REACT:{child}"
                         
                         if self.label == 'parent_pathway_of':
-                            yield parent, child, self.label, _props
+                            yield parent_prefixed, child_prefixed, self.label, _props
                         elif self.label == 'child_pathway_of':
-                            yield child, parent, self.label, _props
+                            yield child_prefixed, parent_prefixed, self.label, _props
