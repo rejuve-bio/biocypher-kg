@@ -42,8 +42,19 @@ class MeTTaWriter(BaseWriter):
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         
-        def edge_data_constructor(edge_type, source_type, target_type, label):
-            return f"(: {label.lower()} (-> {source_type.upper()} {target_type.upper()} {edge_type.upper()}))"
+        def edge_data_constructor(edge_type, source_types, target_types, label):
+            # Handle both single types and lists of types
+            if isinstance(source_types, list):
+                source_str = ' '.join([st.upper() for st in source_types])
+            else:
+                source_str = source_types.upper()
+                
+            if isinstance(target_types, list):
+                target_str = ' '.join([tt.upper() for tt in target_types])
+            else:
+                target_str = target_types.upper()
+                
+            return f"(: {label.lower()} (-> {source_str} {target_str} {edge_type.upper()}))"
 
         def node_data_constructor(node_type, node_label):
             return f"(: {node_label.lower()} (-> $x {node_type.upper()}))"
@@ -53,67 +64,28 @@ class MeTTaWriter(BaseWriter):
                 edge_type = self.convert_input_labels(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
+                
                 if source_type is not None and target_type is not None:
                     if isinstance(v["input_label"], list):
                         label = self.convert_input_labels(v["input_label"][0])
-                        if isinstance(source_type, list):
-                            source_type = [self.convert_input_labels(st) for st in source_type]
-                        else:
-                            source_type = self.convert_input_labels(source_type)
-                        if isinstance(target_type, list):
-                            target_type = [self.convert_input_labels(tt) for tt in target_type]
-                        else:
-                            target_type = self.convert_input_labels(target_type)
                     else:
                         label = self.convert_input_labels(v["input_label"])
-                        if isinstance(source_type, list):
-                            source_type = [self.convert_input_labels(st) for st in source_type]
-                        else:
-                            source_type = self.convert_input_labels(source_type)
-                        if isinstance(target_type, list):
-                            target_type = [self.convert_input_labels(tt) for tt in target_type]
-                        else:
-                            target_type = self.convert_input_labels(target_type)
-
+                    
+                    source_type_normalized = self._normalize_type(source_type)
+                    target_type_normalized = self._normalize_type(target_type)
+                    
                     output_label = v.get("output_label", None)
+                    output_label_lower = output_label.lower() if output_label is not None else None
 
-                    # Handle different combinations of source/target types (single/list)
-                    if isinstance(source_type, str) and isinstance(target_type, str):
-                        if '.' not in k:
-                            out_str = edge_data_constructor(edge_type, source_type, target_type, label)
-                            file.write(out_str + "\n")
-                            self.edge_node_types[label.lower()] = {
-                                "source": source_type.lower(), 
-                                "target": target_type.lower(),
-                                "output_label": output_label.lower() if output_label is not None else None
-                            }
-                    
-                    elif isinstance(source_type, list) and isinstance(target_type, str):
-                        source_type_lower = [st.lower() for st in source_type]
-                        self.edge_node_types[label.lower()] = {
-                            "source": source_type_lower,
-                            "target": target_type.lower(),
-                            "output_label": output_label.lower() if output_label is not None else None
-                        }
+                    if '.' not in k:
+                        out_str = edge_data_constructor(edge_type, source_type_normalized, target_type_normalized, label)
+                        file.write(out_str + "\n")
                         
-                    elif isinstance(source_type, str) and isinstance(target_type, list):
-                        target_type_lower = [tt.lower() for tt in target_type]
                         self.edge_node_types[label.lower()] = {
-                            "source": source_type.lower(), 
-                            "target": target_type_lower,
-                            "output_label": output_label.lower() if output_label is not None else None
+                            "source": source_type_normalized, 
+                            "target": target_type_normalized,
+                            "output_label": output_label_lower
                         }
-                    
-                    elif isinstance(source_type, list) and isinstance(target_type, list):
-                        source_type_lower = [st.lower() for st in source_type]
-                        target_type_lower = [tt.lower() for tt in target_type]
-                        self.edge_node_types[label.lower()] = {
-                            "source": source_type_lower,
-                            "target": target_type_lower,
-                            "output_label": output_label.lower() if output_label is not None else None
-                        }
-                    else:
-                        print(f"UNKNOWN key type: => {k}")
 
             elif v["represented_as"] == "node":
                 label = v["input_label"]
@@ -125,6 +97,12 @@ class MeTTaWriter(BaseWriter):
                 for l in label:
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
+
+    def _normalize_type(self, type_value):
+        if isinstance(type_value, list):
+            return [self.convert_input_labels(item).lower() for item in type_value]
+        else:
+            return self.convert_input_labels(type_value).lower()
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
@@ -293,7 +271,7 @@ class MeTTaWriter(BaseWriter):
 
     def check_property(self, prop):
         if isinstance(prop, str):
-            if " " in prop:
+            if "" in prop:
                 prop = prop.replace(" ", "_").strip("_")
             if '->' in prop:
                 prop = prop.replace('->', '-\\>')

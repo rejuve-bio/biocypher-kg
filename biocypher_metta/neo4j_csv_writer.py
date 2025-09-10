@@ -42,62 +42,27 @@ class Neo4jCSVWriter(BaseWriter):
                 if source_type is not None and target_type is not None:
                     if isinstance(v["input_label"], list):
                         label = self.convert_input_labels(v["input_label"][0])
-                        if isinstance(source_type, list):
-                            source_type = [self.convert_input_labels(st) for st in source_type]
-                        else:
-                            source_type = self.convert_input_labels(source_type)
-                        if isinstance(target_type, list):
-                            target_type = [self.convert_input_labels(tt) for tt in target_type]
-                        else:
-                            target_type = self.convert_input_labels(target_type)
                     else:
                         label = self.convert_input_labels(v["input_label"])
-                        if isinstance(source_type, list):
-                            source_type = [self.convert_input_labels(st) for st in source_type]
-                        else:
-                            source_type = self.convert_input_labels(source_type)
-                        if isinstance(target_type, list):
-                            target_type = [self.convert_input_labels(tt) for tt in target_type]
-                        else:
-                            target_type = self.convert_input_labels(target_type)
+                    
+                    source_type_normalized = self._normalize_type(source_type)
+                    target_type_normalized = self._normalize_type(target_type)
                     
                     output_label = v.get("output_label", label)
+                    output_label_lower = output_label.lower() if output_label is not None else None
 
-                    # Handle different combinations of source/target types (single/list)
-                    if isinstance(source_type, str) and isinstance(target_type, str):
-                        if '.' not in k:                            
-                            self.edge_node_types[label.lower()] = {
-                                "source": source_type.lower(), 
-                                "target": target_type.lower(),
-                                "output_label": output_label.lower() if output_label is not None else None
-                            }
-                    
-                    elif isinstance(source_type, list) and isinstance(target_type, str):
-                        source_type_lower = [st.lower() for st in source_type]
+                    if '.' not in k:
                         self.edge_node_types[label.lower()] = {
-                            "target": target_type.lower(),
-                            "output_label": output_label.lower() if output_label is not None else None
+                            "source": source_type_normalized, 
+                            "target": target_type_normalized,
+                            "output_label": output_label_lower
                         }
-                        self.edge_node_types[label.lower()]["source"] = source_type_lower
-                        
-                    elif isinstance(source_type, str) and isinstance(target_type, list):
-                        target_type_lower = [tt.lower() for tt in target_type]
-                        self.edge_node_types[label.lower()] = {
-                            "source": source_type.lower(), 
-                            "output_label": output_label.lower() if output_label is not None else None
-                        } 
-                        self.edge_node_types[label.lower()]["target"] = target_type_lower
-                    
-                    elif isinstance(source_type, list) and isinstance(target_type, list):
-                        source_type_lower = [st.lower() for st in source_type]
-                        target_type_lower = [tt.lower() for tt in target_type]
-                        self.edge_node_types[label.lower()] = {
-                            "output_label": output_label.lower() if output_label is not None else None
-                        }
-                        self.edge_node_types[label.lower()]["source"] = source_type_lower
-                        self.edge_node_types[label.lower()]["target"] = target_type_lower
-                    else:
-                        print(f"UNKNOWN key type: => {k}")
+
+    def _normalize_type(self, type_value):
+        if isinstance(type_value, list):
+            return [self.convert_input_labels(item).lower() for item in type_value]
+        else:
+            return self.convert_input_labels(type_value).lower()
 
     def preprocess_value(self, value):
         value_type = type(value)
