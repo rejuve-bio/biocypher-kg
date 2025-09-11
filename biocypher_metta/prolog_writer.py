@@ -25,31 +25,20 @@ class PrologWriter(BaseWriter):
             if v["represented_as"] == "edge":
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
-                
+            
                 if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
-                        label = self.sanitize_text(v["input_label"][0])
-                    else:
-                        label = self.sanitize_text(v["input_label"])
-                    
-                    source_type_normalized = self._normalize_type(source_type)
-                    target_type_normalized = self._normalize_type(target_type)
-                    
+                    label = self.sanitize_text(v["input_label"])
+                    source_type_normalized = self.sanitize_text(source_type)
+                    target_type_normalized = self.sanitize_text(target_type)
+                
                     output_label = v.get("output_label", None)
-                    output_label_lower = output_label.lower() if output_label is not None else None
 
                     if '.' not in k:
-                        self.edge_node_types[label.lower()] = {
+                        self.edge_node_types[label] = {
                             "source": source_type_normalized, 
                             "target": target_type_normalized,
-                            "output_label": output_label_lower
+                            "output_label": output_label
                         }
-
-    def _normalize_type(self, type_value):
-        if isinstance(type_value, list):
-            return [self.sanitize_text(item).lower() for item in type_value]
-        else:
-            return self.sanitize_text(type_value).lower()
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""

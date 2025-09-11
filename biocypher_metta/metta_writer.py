@@ -64,45 +64,37 @@ class MeTTaWriter(BaseWriter):
                 edge_type = self.convert_input_labels(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
-                
+        
                 if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
-                        label = self.convert_input_labels(v["input_label"][0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                    
-                    source_type_normalized = self._normalize_type(source_type)
-                    target_type_normalized = self._normalize_type(target_type)
-                    
+                    label = self.convert_input_labels(v["input_label"])
+                    source_type_normalized = self.convert_input_labels(source_type)
+                    target_type_normalized = self.convert_input_labels(target_type)
+            
                     output_label = v.get("output_label", None)
-                    output_label_lower = output_label.lower() if output_label is not None else None
 
                     if '.' not in k:
                         out_str = edge_data_constructor(edge_type, source_type_normalized, target_type_normalized, label)
                         file.write(out_str + "\n")
-                        
-                        self.edge_node_types[label.lower()] = {
+                
+                        self.edge_node_types[label] = {
                             "source": source_type_normalized, 
                             "target": target_type_normalized,
-                            "output_label": output_label_lower
+                            "output_label": output_label
                         }
 
             elif v["represented_as"] == "node":
-                label = v["input_label"]
-                if not isinstance(label, list):
-                    label = [label]
-
-                label = [self.convert_input_labels(l) for l in label]
+                label = self.convert_input_labels(v["input_label"])
                 node_type = self.convert_input_labels(k)
-                for l in label:
+        
+                # Handle both single labels and lists
+                if isinstance(label, list):
+                    labels_to_process = label
+                else:
+                    labels_to_process = [label]
+            
+                for l in labels_to_process:
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
-
-    def _normalize_type(self, type_value):
-        if isinstance(type_value, list):
-            return [self.convert_input_labels(item).lower() for item in type_value]
-        else:
-            return self.convert_input_labels(type_value).lower()
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
@@ -282,19 +274,15 @@ class MeTTaWriter(BaseWriter):
         
         return str(prop)
 
-    def convert_input_labels(self, label, replace_char="_"):
-        """
-        A method that removes spaces in input labels and replaces them with replace_char
-        :param label: Input label of a node or edge
-        :param replace_char: the character to replace spaces with
-        :return:
-        """
+    def convert_input_labels(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []
             for aLabel in label:
-                labels.append(aLabel.replace(" ", replace_char))
+                processed = aLabel.replace(" ", replace_char)
+                labels.append(processed.lower() if lowercase else processed)
             return labels
-        return label.replace(" ", replace_char)
+        processed = label.replace(" ", replace_char)
+        return processed.lower() if lowercase else processed
 
     def get_parent(self, G, node):
         """
@@ -307,10 +295,3 @@ class MeTTaWriter(BaseWriter):
 
     def summary(self):
         self.bcy.summary()
-
-    def clear_counts(self):
-        """
-        Clear/reset any internal counters.
-        This method is called at the start of processing each adapter.
-        """
-        pass
