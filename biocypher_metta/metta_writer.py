@@ -28,8 +28,8 @@ class MeTTaWriter(BaseWriter):
             for node in G.nodes:
                 if "mixin" in node: continue
                 ancestor = list(self.get_parent(G, node))[-1]
-                node = self.convert_input_labels(node)
-                ancestor = self.convert_input_labels(ancestor)
+                node = self.normalize_text(node)
+                ancestor = self.normalize_text(ancestor)
                 if ancestor == node:
                     f.write(f"(: {node.upper()} Type)\n")
                 else:
@@ -61,14 +61,14 @@ class MeTTaWriter(BaseWriter):
 
         for k, v in schema.items():
             if v["represented_as"] == "edge":
-                edge_type = self.convert_input_labels(k)
+                edge_type = self.normalize_text(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
         
                 if source_type is not None and target_type is not None:
-                    label = self.convert_input_labels(v["input_label"])
-                    source_type_normalized = self.convert_input_labels(source_type)
-                    target_type_normalized = self.convert_input_labels(target_type)
+                    label = self.normalize_text(v["input_label"])
+                    source_type_normalized = self.normalize_text(source_type)
+                    target_type_normalized = self.normalize_text(target_type)
             
                     output_label = v.get("output_label", None)
 
@@ -83,8 +83,8 @@ class MeTTaWriter(BaseWriter):
                         }
 
             elif v["represented_as"] == "node":
-                label = self.convert_input_labels(v["input_label"])
-                node_type = self.convert_input_labels(k)
+                label = self.normalize_text(v["input_label"])
+                node_type = self.normalize_text(k)
         
                 # Handle both single labels and lists
                 if isinstance(label, list):
@@ -151,7 +151,7 @@ class MeTTaWriter(BaseWriter):
         id = self.preprocess_id(str(id))  
         if "." in label:
             label = label.split(".")[1]
-        def_out = f"({self.convert_input_labels(label)} {id})"
+        def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
     def write_edge(self, edge):
@@ -274,7 +274,7 @@ class MeTTaWriter(BaseWriter):
         
         return str(prop)
 
-    def convert_input_labels(self, label, replace_char="_", lowercase=True):
+    def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []
             for aLabel in label:

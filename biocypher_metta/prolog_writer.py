@@ -27,9 +27,9 @@ class PrologWriter(BaseWriter):
                 target_type = v.get("target", None)
             
                 if source_type is not None and target_type is not None:
-                    label = self.sanitize_text(v["input_label"])
-                    source_type_normalized = self.sanitize_text(source_type)
-                    target_type_normalized = self.sanitize_text(target_type)
+                    label = self.normalize_text(v["input_label"])
+                    source_type_normalized = self.normalize_text(source_type)
+                    target_type_normalized = self.normalize_text(target_type)
                 
                     output_label = v.get("output_label", None)
 
@@ -97,8 +97,8 @@ class PrologWriter(BaseWriter):
         if "." in label:
             label = label.split(".")[1]
         label = label.lower()
-        id = self.sanitize_text(id.lower())
-        def_out = f"{self.sanitize_text(label)}({id})"
+        id = self.normalize_text(id.lower())
+        def_out = f"{self.normalize_text(label)}({id})"
         return self.write_property(def_out, properties)
 
     def write_edge(self, edge):
@@ -163,9 +163,9 @@ class PrologWriter(BaseWriter):
         if target_type == "ontology_term":
             target_type = target_id_processed.split('_')[0]
         
-        source_id_processed = self.sanitize_text(source_id_processed)
-        target_id_processed = self.sanitize_text(target_id_processed)
-        label_to_use = self.sanitize_text(label_to_use)
+        source_id_processed = self.normalize_text(source_id_processed)
+        target_id_processed = self.normalize_text(target_id_processed)
+        label_to_use = self.normalize_text(label_to_use)
         
         def_out = f"{label_to_use}({source_type}({source_id_processed}), {target_type}({target_id_processed}))"
         return self.write_property(def_out, properties)
@@ -177,7 +177,7 @@ class PrologWriter(BaseWriter):
             if k in self.excluded_properties or v is None or v == "": continue
             if k == 'biological_context':
                 try:
-                    prop = self.sanitize_text(v)
+                    prop = self.normalize_text(v)
                     ontology = prop.split('_')[0]
                     out_str.append(f'{k}({def_out}, {ontology}({prop})).')
                 except Exception as e:
@@ -186,7 +186,7 @@ class PrologWriter(BaseWriter):
             elif isinstance(v, list):
                 prop = "["
                 for i, e in enumerate(v):
-                    prop += f'{self.sanitize_text(e)}'
+                    prop += f'{self.normalize_text(e)}'
                     if i != len(v) - 1: prop += ","
                 prop += "]"
                 out_str.append(f'{k}({def_out}, {prop}).')
@@ -194,12 +194,12 @@ class PrologWriter(BaseWriter):
                 prop = f"{k}({def_out})."
                 out_str.extend(self.write_property(prop, v))
             else:
-                prop = self.sanitize_text(v)
+                prop = self.normalize_text(v)
                 if prop is not None:
                     out_str.append(f'{k}({def_out}, {prop}).')
         return out_str
 
-    def sanitize_text(self, prop):
+    def normalize_text(self, prop):
         replace_chars = {
             " ": "_",
             "-": "_",
@@ -217,7 +217,7 @@ class PrologWriter(BaseWriter):
 
             # sanitizes each string separated by comma ','
             if "," in prop:
-                prop = ",".join([self.sanitize_text(p) for p in prop.split(',') if self.sanitize_text(p) not in ["", None]])
+                prop = ",".join([self.normalize_text(p) for p in prop.split(',') if self.normalize_text(p) not in ["", None]])
                 return prop if prop != "" else None
             
             prop = re.sub(r'[^\w_,]', '', prop) # removes special characters except for underscores "_" and comma ","
@@ -234,7 +234,7 @@ class PrologWriter(BaseWriter):
                     return f"'{prop}'"
         elif isinstance(prop, list):
             for i in range(len(prop)):
-                prop[i] = self.sanitize_text(prop[i])
+                prop[i] = self.normalize_text(prop[i])
             prop = [p for p in prop if p != None]
         return prop
 

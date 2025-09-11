@@ -39,9 +39,9 @@ class Neo4jCSVWriter(BaseWriter):
                 target_type = v.get("target", None)
 
                 if source_type is not None and target_type is not None:
-                    label = self.convert_input_labels(v["input_label"])
-                    source_type_normalized = self.convert_input_labels(source_type)
-                    target_type_normalized = self.convert_input_labels(target_type)
+                    label = self.normalize_text(v["input_label"])
+                    source_type_normalized = self.normalize_text(source_type)
+                    target_type_normalized = self.normalize_text(target_type)
                 
                     output_label = v.get("output_label", label)
 
@@ -63,7 +63,7 @@ class Neo4jCSVWriter(BaseWriter):
             return value.translate(self.translation_table)
         return value
 
-    def convert_input_labels(self, label, replace_char="_", lowercase=True):
+    def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []
             for aLabel in label:
