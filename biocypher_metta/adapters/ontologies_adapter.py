@@ -125,14 +125,153 @@ class OntologyAdapter(Adapter):
         
         if use_cached:
             print(f"Using cached ontology from {cached_path}")
-            onto = self.world.get_ontology(cached_path).load()
-            self.version = meta.get('version', 'unknown')
+            try:
+                onto = self.world.get_ontology(cached_path).load()
+                self.version = meta.get('version', 'unknown')
+            except (TypeError, Exception) as e:
+                error_handled = False
+                
+                # Handle entity type conflicts
+                if isinstance(e, TypeError) and "belongs to more than one entity types" in str(e):
+                    print(f"Warning: Cached ontology has entity type conflicts - {e}")
+                    error_handled = True
+                
+                # Handle RDF/XML parsing errors
+                elif "OwlReadyOntologyParsingError" in str(type(e)) or "parsing error" in str(e).lower():
+                    print(f"Warning: Cached ontology parsing error - {e}")
+                    error_handled = True
+                
+                if error_handled:
+                    print("Attempting to load cached file with rdflib as fallback...")
+                    # Fallback to rdflib parsing
+                    self.graph = rdflib.Graph()
+                    
+                    # Try different parsing formats
+                    formats_to_try = ['xml', 'turtle', 'n3', 'nt']
+                    rdflib_success = False
+                    
+                    for fmt in formats_to_try:
+                        try:
+                            print(f"Trying rdflib with format: {fmt}")
+                            self.graph.parse(cached_path, format=fmt)
+                            print(f"Successfully loaded cached ontology using rdflib with format: {fmt}")
+                            self.version = meta.get('version', 'unknown')
+                            rdflib_success = True
+                            break
+                        except Exception as fmt_e:
+                            print(f"Failed with format {fmt}: {fmt_e}")
+                            continue
+                    
+                    if rdflib_success:
+                        return
+                    else:
+                        print("All rdflib formats failed for cached file.")
+                        raise e
+                else:
+                    raise e
         else:
             print(f"Downloading ontology from {ontology_url}")
-            onto = self.world.get_ontology(ontology_url).load()
+            try:
+                onto = self.world.get_ontology(ontology_url).load()
+            except (TypeError, Exception) as e:
+                error_handled = False
+                
+                # Handle entity type conflicts
+                if isinstance(e, TypeError) and "belongs to more than one entity types" in str(e):
+                    print(f"Warning: Ontology has entity type conflicts - {e}")
+                    entity_match = re.search(r"'([^']+)' belongs to more than one entity types", str(e))
+                    if entity_match:
+                        problematic_entity = entity_match.group(1)
+                        print(f"Problematic entity: {problematic_entity}")
+                    error_handled = True
+                
+                # Handle RDF/XML parsing errors
+                elif "OwlReadyOntologyParsingError" in str(type(e)) or "parsing error" in str(e).lower():
+                    print(f"Warning: Ontology parsing error - {e}")
+                    if "RDF/XML parsing error" in str(e):
+                        # Extract line/column info if available
+                        line_match = re.search(r"line (\d+)", str(e))
+                        col_match = re.search(r"column (\d+)", str(e))
+                        if line_match and col_match:
+                            print(f"Error at line {line_match.group(1)}, column {col_match.group(1)}")
+                    error_handled = True
+                
+                if error_handled:
+                    print("Attempting to load with rdflib as fallback...")
+                    # Fallback to rdflib parsing
+                    self.graph = rdflib.Graph()
+                    
+                    # Try different parsing formats
+                    formats_to_try = ['xml', 'turtle', 'n3', 'nt']
+                    rdflib_success = False
+                    
+                    for fmt in formats_to_try:
+                        try:
+                            print(f"Trying rdflib with format: {fmt}")
+                            self.graph.parse(ontology_url, format=fmt)
+                            print(f"Successfully loaded ontology using rdflib with format: {fmt}")
+                            rdflib_success = True
+                            break
+                        except Exception as fmt_e:
+                            print(f"Failed with format {fmt}: {fmt_e}")
+                            continue
+                    
+                    if rdflib_success:
+                        # Still try to extract version info and cache
+                        self._extract_version_info()
+                        
+                        if self.cache_dir:
+                            print(f"Caching ontology to {cached_path}")
+                            # Download and save the raw file for caching
+                            try:
+                                response = requests.get(ontology_url, timeout=60)
+                                response.raise_for_status()
+                                with open(cached_path, 'wb') as f:
+                                    f.write(response.content)
+                            except Exception as cache_e:
+                                print(f"Warning: Could not cache ontology file: {cache_e}")
+                            
+                            meta = {
+                                'date': dt.now().isoformat(),
+                                'url': ontology_url,
+                                'hash': self._calculate_file_hash(cached_path) if os.path.exists(cached_path) else None,
+                                'version': self.version,
+                                'loaded_with_rdflib': True,  # Flag to indicate fallback was used
+                                'parsing_error': str(e)[:500]  # Store first 500 chars of error for reference
+                            }
+                            with open(meta_path, 'w') as f:
+                                json.dump(meta, f)
+                        
+                        self.clear_cache()
+                        
+                        if self.graph is None:
+                            raise ValueError("Failed to initialize graph from ontology")
+                        
+                        print(f"Graph initialized with {len(self.graph)} triples for {self.ontology}")
+                        return
+                    else:
+                        print("All rdflib formats failed. Attempting owlready2 with disabled indexing...")
+                        # Try one more approach - disable property indexing
+                        try:
+                            self.world = World()
+                            # Temporarily disable indexing
+                            old_indexed = self.world.graph.indexed
+                            self.world.graph.indexed = False
+                            onto = self.world.get_ontology(ontology_url).load()
+                            # Re-enable indexing after loading
+                            self.world.graph.indexed = old_indexed
+                            print("Successfully loaded ontology with disabled indexing")
+                        except Exception as final_e:
+                            print(f"All loading methods failed. Final error: {final_e}")
+                            print(f"Original error: {e}")
+                            raise e
+                else:
+                    # Re-raise if it's not a handled error type
+                    raise e
 
+        # If we get here, owlready2 loading was successful
         self.graph = self.world.as_rdflib_graph()
-    
+
         if not use_cached:
             self._extract_version_info()
 
@@ -150,7 +289,7 @@ class OntologyAdapter(Adapter):
                     json.dump(meta, f)
 
         self.clear_cache()
-    
+
         if self.graph is None:
             raise ValueError("Failed to initialize graph from ontology")
 

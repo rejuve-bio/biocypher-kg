@@ -84,59 +84,41 @@ def preprocess_schema():
         source_type = v.get("source", None)
         target_type = v.get("target", None)
 
-
         if source_type is not None and target_type is not None:
             # Handle both single labels and lists of labels
             input_label = v["input_label"]
             if isinstance(input_label, list):
                 label = convert_input_labels(input_label[0])
-                if isinstance(source_type, list):
-                    source_type = convert_input_labels(source_type[0])
-                if isinstance(target_type, list):
-                    target_type = convert_input_labels(target_type[0])
             else:
                 label = convert_input_labels(input_label)
-                source_type = convert_input_labels(source_type)
-                target_type = convert_input_labels(target_type)
             
-            output_label = v.get("output_label")
+            # Handle source_type which can be a string or list
+            if isinstance(source_type, list):
+                processed_source = [convert_input_labels(s).lower() for s in source_type]
+            else:
+                processed_source = convert_input_labels(source_type).lower()
+            
+            # Handle target_type which can be a string or list  
+            if isinstance(target_type, list):
+                processed_target = [convert_input_labels(t).lower() for t in target_type]
+            else:
+                processed_target = convert_input_labels(target_type).lower()
+            
+            # Handle output_label
+            output_label = v.get("output_label", None)
             if output_label:
                 if isinstance(output_label, list):
-                    output_label = convert_input_labels(output_label[0])
+                    processed_output_label = convert_input_labels(output_label[0]).lower()
                 else:
-                    output_label = convert_input_labels(output_label)
+                    processed_output_label = convert_input_labels(output_label).lower()
+            else:
+                processed_output_label = None
 
             edge_node_types[label.lower()] = {
-                "source": source_type.lower(),
-                "target": target_type.lower(),
-                "output_label": output_label.lower() if output_label else None,
+                "source": processed_source,
+                "target": processed_target,
+                "output_label": processed_output_label,
             }
-
-            if source_type is not None and target_type is not None:
-                if isinstance(v["input_label"], list):
-                    label = convert_input_labels(v["input_label"][0])
-                else:
-                    label = convert_input_labels(v["input_label"])
-                
-                # Handle source_type which can be a string or list
-                if isinstance(source_type, list):
-                    processed_source = [s.lower() for s in convert_input_labels(source_type)]
-                else:
-                    processed_source = convert_input_labels(source_type).lower()
-                
-                if isinstance(target_type, list):
-                    processed_target = [t.lower() for t in convert_input_labels(target_type)]
-                else:
-                    processed_target = convert_input_labels(target_type).lower()
-                
-                output_label = v.get("output_label", None)
-
-                edge_node_types[label.lower()] = {
-                    "source": processed_source,
-                    "target": processed_target,
-                    "output_label": output_label.lower() if output_label else None,
-                }
-
 
     return edge_node_types
 

@@ -25,19 +25,20 @@ class PrologWriter(BaseWriter):
             if v["represented_as"] == "edge":
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
-                # ## TODO fix this in the scheme config
+            
                 if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
-                        label = self.sanitize_text(v["input_label"][0])
-                        source_type = self.sanitize_text(v["source"][0])
-                        target_type = self.sanitize_text(v["target"][0])
-                    else:
-                        label = self.sanitize_text(v["input_label"])
-                        source_type = self.sanitize_text(v["source"])
-                        target_type = self.sanitize_text(v["target"])
+                    label = self.normalize_text(v["input_label"])
+                    source_type_normalized = self.normalize_text(source_type)
+                    target_type_normalized = self.normalize_text(target_type)
+                
                     output_label = v.get("output_label", None)
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target": target_type.lower(),
-                                                           "output_label": output_label.lower() if output_label is not None else None}
+
+                    if '.' not in k:
+                        self.edge_node_types[label] = {
+                            "source": source_type_normalized, 
+                            "target": target_type_normalized,
+                            "output_label": output_label
+                        }
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
@@ -96,30 +97,77 @@ class PrologWriter(BaseWriter):
         if "." in label:
             label = label.split(".")[1]
         label = label.lower()
-        id = self.sanitize_text(id.lower())
-        def_out = f"{self.sanitize_text(label)}({id})"
+        id = self.normalize_text(id.lower())
+        def_out = f"{self.normalize_text(label)}({id})"
         return self.write_property(def_out, properties)
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
-        source_id = self.preprocess_id(source_id)  # Added ID preprocessing
-        target_id = self.preprocess_id(target_id)  # Added ID preprocessing
+        source_id_processed = source_id
+        target_id_processed = target_id
         label = label.lower()
-        source_id = source_id.lower()
-        target_id = target_id.lower()
-        source_type = self.edge_node_types[label]["source"]
-        target_type = self.edge_node_types[label]["target"]
-        output_label = self.edge_node_types[label]["output_label"]
-        if output_label is not None:
-            label = output_label.lower()
-        source_id = self.sanitize_text(source_id)
-        target_id = self.sanitize_text(target_id)
-        label = self.sanitize_text(label)
+        
+        if isinstance(source_id, tuple):
+            source_type = source_id[0]
+            source_id_processed = self.preprocess_id(source_id[1])
+            if label in self.edge_node_types:
+                valid_source_types = self.edge_node_types[label]["source"]
+                if isinstance(valid_source_types, list):
+                    if source_type not in valid_source_types:
+                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
+                else:
+                    if source_type != valid_source_types:
+                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+        else:
+            source_id_processed = self.preprocess_id(source_id)
+            if label in self.edge_node_types:
+                source_type_info = self.edge_node_types[label]["source"]
+                if isinstance(source_type_info, list):
+                    source_type = source_type_info[0]  
+                else:
+                    source_type = source_type_info
+            else:
+                source_type = "unknown"
+
+        if isinstance(target_id, tuple):
+            target_type = target_id[0]
+            target_id_processed = self.preprocess_id(target_id[1])
+            if label in self.edge_node_types:
+                valid_target_types = self.edge_node_types[label]["target"]
+                if isinstance(valid_target_types, list):
+                    if target_type not in valid_target_types:
+                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
+                else:
+                    if target_type != valid_target_types:
+                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
+        else:
+            target_id_processed = self.preprocess_id(target_id)
+            if label in self.edge_node_types:
+                target_type_info = self.edge_node_types[label]["target"]
+                if isinstance(target_type_info, list):
+                    target_type = target_type_info[0]  
+                else:
+                    target_type = target_type_info
+            else:
+                target_type = "unknown"
+
+        output_label = None
+        if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
+            output_label = self.edge_node_types[label]["output_label"]
+            label_to_use = output_label
+        else:
+            label_to_use = label
+
         if source_type == "ontology_term":
-            source_type = source_id.split('_')[0]
+            source_type = source_id_processed.split('_')[0]
         if target_type == "ontology_term":
-            target_type = target_id.split('_')[0]
-        def_out = f"{label}({source_type}({source_id}), {target_type}({target_id}))"
+            target_type = target_id_processed.split('_')[0]
+        
+        source_id_processed = self.normalize_text(source_id_processed)
+        target_id_processed = self.normalize_text(target_id_processed)
+        label_to_use = self.normalize_text(label_to_use)
+        
+        def_out = f"{label_to_use}({source_type}({source_id_processed}), {target_type}({target_id_processed}))"
         return self.write_property(def_out, properties)
 
 
@@ -129,7 +177,7 @@ class PrologWriter(BaseWriter):
             if k in self.excluded_properties or v is None or v == "": continue
             if k == 'biological_context':
                 try:
-                    prop = self.sanitize_text(v)
+                    prop = self.normalize_text(v)
                     ontology = prop.split('_')[0]
                     out_str.append(f'{k}({def_out}, {ontology}({prop})).')
                 except Exception as e:
@@ -138,7 +186,7 @@ class PrologWriter(BaseWriter):
             elif isinstance(v, list):
                 prop = "["
                 for i, e in enumerate(v):
-                    prop += f'{self.sanitize_text(e)}'
+                    prop += f'{self.normalize_text(e)}'
                     if i != len(v) - 1: prop += ","
                 prop += "]"
                 out_str.append(f'{k}({def_out}, {prop}).')
@@ -146,12 +194,12 @@ class PrologWriter(BaseWriter):
                 prop = f"{k}({def_out})."
                 out_str.extend(self.write_property(prop, v))
             else:
-                prop = self.sanitize_text(v)
+                prop = self.normalize_text(v)
                 if prop is not None:
                     out_str.append(f'{k}({def_out}, {prop}).')
         return out_str
 
-    def sanitize_text(self, prop):
+    def normalize_text(self, prop):
         replace_chars = {
             " ": "_",
             "-": "_",
@@ -169,7 +217,7 @@ class PrologWriter(BaseWriter):
 
             # sanitizes each string separated by comma ','
             if "," in prop:
-                prop = ",".join([self.sanitize_text(p) for p in prop.split(',') if self.sanitize_text(p) not in ["", None]])
+                prop = ",".join([self.normalize_text(p) for p in prop.split(',') if self.normalize_text(p) not in ["", None]])
                 return prop if prop != "" else None
             
             prop = re.sub(r'[^\w_,]', '', prop) # removes special characters except for underscores "_" and comma ","
@@ -186,7 +234,7 @@ class PrologWriter(BaseWriter):
                     return f"'{prop}'"
         elif isinstance(prop, list):
             for i in range(len(prop)):
-                prop[i] = self.sanitize_text(prop[i])
+                prop[i] = self.normalize_text(prop[i])
             prop = [p for p in prop if p != None]
         return prop
 
