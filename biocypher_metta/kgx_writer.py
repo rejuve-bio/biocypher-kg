@@ -33,8 +33,13 @@ class KGXWriter(BaseWriter):
         self.create_node_types()
 
     def create_edge_types(self):
+        """
+        Map edge types to their source and target node types based on the schema,
+        supporting multiple source and target types.
+        """
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         self.edge_node_types = {}
+        self.edge_configs = {}
 
         for k, v in schema.items():
             if v.get("represented_as") == "edge":
@@ -43,22 +48,33 @@ class KGXWriter(BaseWriter):
                 target_type = v.get("target", None)
 
                 if source_type and target_type:
+                    # Convert to list if not already
+                    if not isinstance(source_type, list):
+                        source_type = [source_type]
+                    if not isinstance(target_type, list):
+                        target_type = [target_type]
+
+                    # Normalize all source/target types
+                    source_type = self._normalize_label(source_type)
+                    target_type = self._normalize_label(target_type)
+
+                    # Determine label
                     if isinstance(v["input_label"], list):
                         label = self._normalize_label(v["input_label"][0])
-                        source_type = self._normalize_label(source_type[0])
-                        target_type = self._normalize_label(target_type[0])
                     else:
                         label = self._normalize_label(v["input_label"])
-                        source_type = self._normalize_label(source_type)
-                        target_type = self._normalize_label(target_type)
+
                     output_label = v.get("output_label", label)
 
+                    # Store the full list of source/target types
                     self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
+                        "source": source_type,
+                        "target": target_type,
                         "output_label": output_label.lower()
                     }
-                    self.edge_configs[label.lower()] = v  # Store full config
+
+                    # Keep full edge config for KGX properties
+                    self.edge_configs[label.lower()] = v
 
     def create_node_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -346,79 +362,95 @@ class KGXWriter(BaseWriter):
         return node_freq, self._node_headers
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
+        """
+        Write edges to CSV/Neo4j Cypher files, supporting multiple source and target types.
+        """
         self.temp_buffer.clear()
         self._temp_files.clear()
         self._edge_headers.clear()
         edge_freq = defaultdict(int)
         output_dir = self.get_output_path(path_prefix, adapter_name)
-    
+
         try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 normalized_label = self._normalize_label(label)
                 edge_freq[normalized_label] += 1
-            
+
                 # Get edge info from schema
                 edge_info = self.edge_node_types.get(normalized_label, {})
-                edge_config = self.edge_configs.get(normalized_label, {})  # Get full config
-                source_type = edge_info.get("source", "")
-                target_type = edge_info.get("target", "")
+                edge_config = self.edge_configs.get(normalized_label, {})
+                
+                source_types = edge_info.get("source", [])
+                target_types = edge_info.get("target", [])
+                if not isinstance(source_types, list):
+                    source_types = [source_types]
+                if not isinstance(target_types, list):
+                    target_types = [target_types]
+
                 edge_label = edge_info.get("output_label", normalized_label)
-                
-               
                 kgx_props = edge_config.get('kgx_properties', {})
-                
                 validated_props = self._validate_edge_properties(normalized_label, properties)
-                            
                 edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
-    
-                # Create base edge data with required properties
-                edge_data = {
-                    'id': self.preprocess_id(edge_id),
-                    'subject': self.preprocess_id(source_id),
-                    'object': self.preprocess_id(target_id),
-                    'label': edge_label,
-                    'source_type': source_type,
-                    'target_type': target_type,
-                    **validated_props
-                }
-                
-                # Add predicate if defined in schema
-                if 'predicate' in self.edge_schema_properties.get(normalized_label, set()):
-                    edge_data['predicate'] = edge_config.get('biolink_predicate')
-                
-                # Merge in all KGX properties from schema
-                for kgx_key, kgx_value in kgx_props.items():
-                    if kgx_key not in edge_data:  # Don't overwrite existing properties
-                        edge_data[kgx_key] = kgx_value
-                
-                writer_key = self._init_edge_writer(edge_label, source_type, target_type, edge_data, path_prefix, adapter_name)
-                self.temp_buffer[writer_key].append(edge_data)
-            
-                if len(self.temp_buffer[writer_key]) >= self.batch_size:
-                    self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
-        
+
+                # Generate edges for all source/target type combinations
+                for src_type in source_types:
+                    for tgt_type in target_types:
+                        src_type_final = src_type
+                        tgt_type_final = tgt_type
+
+                        if src_type == "ontology_term":
+                            src_type_final = self.preprocess_id(source_id).split('_')[0]
+                        if tgt_type == "ontology_term":
+                            tgt_type_final = self.preprocess_id(target_id).split('_')[0]
+
+                        edge_data = {
+                            'id': self.preprocess_id(edge_id),
+                            'subject': self.preprocess_id(source_id),
+                            'object': self.preprocess_id(target_id),
+                            'label': edge_label,
+                            'source_type': src_type_final,
+                            'target_type': tgt_type_final,
+                            **validated_props
+                        }
+
+                        # Add predicate if defined in schema
+                        if 'predicate' in self.edge_schema_properties.get(normalized_label, set()):
+                            edge_data['predicate'] = edge_config.get('biolink_predicate')
+
+                        # Merge KGX properties from schema
+                        for kgx_key, kgx_value in kgx_props.items():
+                            if kgx_key not in edge_data:
+                                edge_data[kgx_key] = kgx_value
+
+                        writer_key = self._init_edge_writer(edge_label, src_type_final, tgt_type_final, edge_data, path_prefix, adapter_name)
+                        self.temp_buffer[writer_key].append(edge_data)
+
+                        if len(self.temp_buffer[writer_key]) >= self.batch_size:
+                            self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
+
+            # Flush remaining buffers
             for key in list(self.temp_buffer.keys()):
                 self._write_buffer_to_temp(key, self.temp_buffer[key])
-        
+
+            # Write CSV and Cypher files
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
                 edge_label = self.edge_node_types.get(input_label, {}).get("output_label", input_label)
-                
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"{file_suffix}_edges.csv"
                 cypher_file_path = output_dir / f"{file_suffix}_edges.cypher"
-            
+
                 if csv_file_path.exists():
                     csv_file_path.unlink()
                 if cypher_file_path.exists():
                     cypher_file_path.unlink()
-            
+
                 with open(csv_file_path, 'w', newline='') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=sorted(self._edge_headers[key]), 
-                                     delimiter=self.csv_delimiter, extrasaction='ignore')
+                    writer = csv.DictWriter(csvfile, fieldnames=sorted(self._edge_headers[key]),
+                                            delimiter=self.csv_delimiter, extrasaction='ignore')
                     writer.writeheader()
-                
+
                     if key in self._temp_files and self._temp_files[key].exists():
                         with open(self._temp_files[key], 'r') as temp_f:
                             chunk = []
@@ -428,17 +460,17 @@ class KGXWriter(BaseWriter):
                                     for data in chunk:
                                         writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
                                     chunk.clear()
-                        
                             for data in chunk:
                                 writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
-            
+
                 self.write_edge_cypher(edge_label, source_type, target_type, csv_file_path, cypher_file_path)
+
                 if key in self._temp_files and self._temp_files[key].exists():
                     self._temp_files[key].unlink()
-            
+
         finally:
             self._cleanup_temp_files()
-            
+
         return edge_freq
 
     def write_node_cypher(self, label, csv_path, cypher_path):
