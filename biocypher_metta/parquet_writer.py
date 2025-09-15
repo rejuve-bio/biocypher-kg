@@ -120,7 +120,11 @@ class ParquetWriter(BaseWriter):
         """
         Convert input labels to a uniform format.
         """
-        return label.lower().replace(" ", "_")
+        if not label:
+            logger.warning("Received None or empty label in convert_input_labels")
+            return "unknown_label"
+        return str(label).lower().replace(" ", "_")
+
 
     def preprocess_id(self, prev_id):
         """
