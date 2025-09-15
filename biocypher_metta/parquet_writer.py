@@ -69,32 +69,41 @@ class ParquetWriter(BaseWriter):
     def create_edge_types(self):
         """
         Map edge types to their source and target node types based on the schema.
+        Ensures source/target are always lists of lowercase strings.
         """
-        schema = schema = self.safe_schema()
+        schema = self.safe_schema()
         self.edge_node_types = {}
 
         for k, v in schema.items():
             if v["represented_as"] == "edge":
                 edge_type = self.convert_input_labels(k)
-                source_type = v.get("source", None)
-                target_type = v.get("target", None)
 
-                if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
-                        label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
-                    output_label = v.get("output_label", None)
+                # Handle input_label
+                input_label = v.get("input_label")
+                if isinstance(input_label, list):
+                    label = self.convert_input_labels(input_label[0])
+                else:
+                    label = self.convert_input_labels(input_label)
 
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
-                        "output_label": output_label.lower() if output_label else label
-                    }
+                # Normalize source/target to lists
+                source_types = v.get("source", [])
+                target_types = v.get("target", [])
+                if not isinstance(source_types, list):
+                    source_types = [source_types]
+                if not isinstance(target_types, list):
+                    target_types = [target_types]
+
+                # Lowercase everything
+                source_types = [self.convert_input_labels(s) for s in source_types]
+                target_types = [self.convert_input_labels(t) for t in target_types]
+
+                output_label = v.get("output_label")
+                self.edge_node_types[label.lower()] = {
+                    "source": source_types,
+                    "target": target_types,
+                    "output_label": output_label.lower() if output_label else label,
+                }
+
 
     def preprocess_value(self, value):
         """
