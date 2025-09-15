@@ -69,7 +69,7 @@ class ParquetWriter(BaseWriter):
     def create_edge_types(self):
         """
         Map edge types to their source and target node types based on the schema.
-        Ensures source/target are always lists of lowercase strings.
+        Ensures source/target are always lists of lowercase strings. 
         """
         schema = self.safe_schema()
         self.edge_node_types = {}
