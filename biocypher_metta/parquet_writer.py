@@ -129,9 +129,21 @@ class ParquetWriter(BaseWriter):
     def preprocess_id(self, prev_id):
         """
         Preprocess IDs for consistent referencing.
+        Handles string IDs and tuple IDs like (type, id).
         """
         replace_map = str.maketrans({' ': '_', ':':'_'})
-        return prev_id.lower().strip().translate(replace_map)
+
+        # If tuple, use the second element (the actual ID) for processing
+        if isinstance(prev_id, tuple):
+            actual_id = prev_id[1] if len(prev_id) > 1 else str(prev_id[0])
+        else:
+            actual_id = prev_id
+
+        if not actual_id:
+            return "unknown_id"
+
+        return str(actual_id).lower().strip().translate(replace_map)
+
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         """
