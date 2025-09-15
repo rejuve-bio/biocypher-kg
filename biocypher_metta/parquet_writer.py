@@ -12,7 +12,8 @@ from biocypher_metta import BaseWriter
 
 class ParquetWriter(BaseWriter):
     """
-    A BioCypher writer that outputs nodes and edges to Parquet files.
+    A BioCypher writer that outputs nodes and edges to Parquet files extend to 
+    support list source or target types from the schema..
      
     """
 

@@ -6,6 +6,7 @@ from biocypher._logger import logger
 from biocypher_metta import BaseWriter
 
 class KGXWriter(BaseWriter):
+    
     def __init__(self, schema_config, biocypher_config, output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
         self.csv_delimiter = ','
@@ -477,17 +478,17 @@ class KGXWriter(BaseWriter):
         absolute_path = csv_path.resolve().as_posix()
     
         cypher_query = f"""
-CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
+        CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
 
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MERGE (n:{label} {{id: row.id}})
-    SET n += apoc.map.removeKeys(row, ['id'])",
-    {{batchSize:1000, parallel:true, concurrency:4}}
-)
-YIELD batches, total
-RETURN batches, total;
-"""
+        CALL apoc.periodic.iterate(
+            "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+            "MERGE (n:{label} {{id: row.id}})
+            SET n += apoc.map.removeKeys(row, ['id'])",
+            {{batchSize:1000, parallel:true, concurrency:4}}
+        )
+        YIELD batches, total
+        RETURN batches, total;
+        """
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
@@ -495,19 +496,19 @@ RETURN batches, total;
         absolute_path = csv_path.resolve().as_posix()
     
         cypher_query = f"""
-CREATE CONSTRAINT IF NOT EXISTS FOR ()-[r:{edge_label}]-() REQUIRE r.id IS UNIQUE;
+        CREATE CONSTRAINT IF NOT EXISTS FOR ()-[r:{edge_label}]-() REQUIRE r.id IS UNIQUE;
 
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MATCH (source:{source_type} {{id: row.subject}})
-    MATCH (target:{target_type} {{id: row.object}})
-    MERGE (source)-[r:{edge_label} {{id: row.id}}]->(target)
-    SET r += apoc.map.removeKeys(row, ['id', 'subject', 'object', 'label', 'source_type', 'target_type'])",
-    {{batchSize:1000}}
-)
-YIELD batches, total
-RETURN batches, total;
-"""
+        CALL apoc.periodic.iterate(
+            "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+            "MATCH (source:{source_type} {{id: row.subject}})
+            MATCH (target:{target_type} {{id: row.object}})
+            MERGE (source)-[r:{edge_label} {{id: row.id}}]->(target)
+            SET r += apoc.map.removeKeys(row, ['id', 'subject', 'object', 'label', 'source_type', 'target_type'])",
+            {{batchSize:1000}}
+        )
+        YIELD batches, total
+        RETURN batches, total;
+        """
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
