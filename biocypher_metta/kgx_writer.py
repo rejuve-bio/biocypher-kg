@@ -233,18 +233,27 @@ class KGXWriter(BaseWriter):
         if value_type is str:
             return value.translate(self.translation_table)
         return value
-
     def preprocess_id(self, prev_id):
-      """Ensure ID remains in CURIE format while cleaning special characters"""
-      if ':' in prev_id:
-          prefix, local_id = prev_id.split(':', 1)
-          # Standardize prefix to uppercase
-          prefix = prefix.upper()
-          # Clean local ID (remove duplicate prefix if present)
-          clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-          clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-          return f"{prefix}:{clean_local}"
-      return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+        """Ensure ID remains in CURIE format while cleaning special characters.
+        Handles both string and tuple IDs.
+        """
+        if prev_id is None:
+            return None
+
+        # If ID is a tuple, use the second element (the actual ID string)
+        if isinstance(prev_id, tuple):
+            prev_id = prev_id[1]
+
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            # Standardize prefix to uppercase
+            prefix = prefix.upper()
+            # Clean local ID (remove duplicate prefix if present)
+            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
+            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
+            return f"{prefix}:{clean_local}"
+
+        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
