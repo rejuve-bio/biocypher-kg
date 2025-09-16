@@ -36,7 +36,7 @@ class KGXWriter(BaseWriter):
     def create_edge_types(self):
         """
         Map edge types to their source and target node types based on the schema,
-        supporting multiple source and target types.
+        supporting multiple source and target types from the schema.
         """
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         self.edge_node_types = {}

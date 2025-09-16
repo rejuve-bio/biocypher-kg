@@ -47,7 +47,7 @@ def get_writer(writer_type: str, output_dir: Path):
             overwrite=True
         )
 
-    elif writer_type == 'KGX':
+    elif writer_type == 'kgx':
         return KGXWriter(
             schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
