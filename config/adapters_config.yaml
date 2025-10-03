@@ -411,6 +411,17 @@ string:
   nodes: False
   edges: True
 
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/reactome_homo_sapiens_interactions_tab_delimited.txt.gz
+
+  outdir: reactome/ppi
+  nodes: False
+  edges: True
+
 tadmap:
   adapter:
     module: biocypher_metta.adapters.tadmap_adapter

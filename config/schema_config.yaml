@@ -832,6 +832,10 @@ post translational interaction:
     score:  
       type: float
       biolink: has_quantitative_value
+    interaction_type:
+      type: str
+    reactome_pathway:
+      type: str
 
 expressed in:
   description: >-
