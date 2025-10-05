@@ -1154,7 +1154,7 @@ pgboost:
     module: biocypher_metta.adapters.pgboost_adapter
     cls: PgBoostAdapter
     args:
-      filepath: ./samples/pgboost_scores.tsv.gz
+      filepath: ./samples/pgboost_scores_sample.tsv.gz
 
   outdir: pgboost
   nodes: False
