@@ -28,7 +28,7 @@ class ABCAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = "activity_by_contact"
+        self.label = "predicted_variant_gene_association"
         self.source = "ABC"
         self.source_url = "https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz"
         super(ABCAdapter, self).__init__(write_properties, add_provenance)
