@@ -21,7 +21,7 @@ class PgBoostAdapter(Adapter):
         self.percentile_threshold = percentile_threshold
         self.label = 'predicted_variant_gene_association'
         self.source = 'pgBoost'
-        self.source_url = 'https://zenodo.org/records/14957607'
+        self.source_url = 'https://zenodo.org/records/14957607/files/pgboost_scores.tsv.gz?download=1'
         
         if hgnc_processor is None:
             self.hgnc_processor = HGNCSymbolProcessor()
