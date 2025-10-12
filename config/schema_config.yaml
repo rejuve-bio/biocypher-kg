@@ -946,22 +946,6 @@ gene to pathway association:
     An interaction between a gene or gene product and a biological process or pathway.
   is_a: annotation
   mixins: [biolink:GeneToPathwayAssociation]
-  inherit_properties: true
-  represented_as: edge
-  input_label: genes_pathways
-  source: gene
-  target: pathway
-  kgx_properties:
-    subject_category: "biolink:Gene"
-    object_category: "biolink:Pathway"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
-gene to pathway association:
-  description: >-
-    An interaction between a gene or gene product and a biological process or pathway.
-  is_a: annotation
-  mixins: [biolink:GeneToPathwayAssociation]
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge

@@ -257,20 +257,18 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 
 # Run build
 @app.command()
-def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)], 
-         adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx,KGX"),
-         write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
-         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
-         buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
-         overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
-         include_adapters: Optional[List[str]] = typer.Option(
-              None,
-              help="Specific adapters to include (space-separated, default: all)",
-              case_sensitive=False,
-          )):
+def main(
+    output_dir: Annotated[Path, typer.Option(help="Output directory")],
+    adapters_config: Annotated[Path, typer.Option(help="Path to adapters config YAML file")],
+    dbsnp_rsids: Annotated[Path, typer.Option(help="Path to dbSNP rsids pickle file")],
+    dbsnp_pos: Annotated[Path, typer.Option(help="Path to dbSNP position pickle file")],
+    writer_type: Annotated[str, typer.Option(help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX")] = "metta",
+    write_properties: Annotated[bool, typer.Option(help="Write properties to nodes and edges")] = True,
+    add_provenance: Annotated[bool, typer.Option(help="Add provenance to nodes and edges")] = True,
+    buffer_size: Annotated[int, typer.Option(help="Buffer size for Parquet writer")] = 10000,
+    overwrite: Annotated[bool, typer.Option(help="Overwrite existing Parquet files")] = True,
+    include_adapters: Annotated[Optional[List[str]], typer.Option(help="Specific adapters to include (space-separated, default: all)")] = None,
+):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
