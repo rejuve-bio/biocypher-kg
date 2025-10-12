@@ -8,7 +8,7 @@ import pyarrow.parquet as pq
 from collections import defaultdict
 from biocypher._logger import logger
 from biocypher_metta import BaseWriter
-
+import re
 
 class ParquetWriter(BaseWriter):
     """
@@ -126,23 +126,52 @@ class ParquetWriter(BaseWriter):
         return str(label).lower().replace(" ", "_")
 
 
+    
+
     def preprocess_id(self, prev_id):
         """
-        Preprocess IDs for consistent referencing.
-        Handles string IDs and tuple IDs like (type, id).
+        Normalize IDs for Parquet output:
+        - Accept (type, id) tuples and strings
+        - Remove provider prefixes like 'ensembl_' or 'react_' or 'ensembl:' / 'react:'
+        - Remove surrounding parentheses
+        - Remove leading 'gene'/'protein'/'transcript' tokens if attached
+        - Return a lowercase, normalized id (e.g. 'ensg00000000419' or 'r-hsa-162699')
         """
-        replace_map = str.maketrans({' ': '_', ':':'_'})
+        if prev_id is None:
+            return None
 
-        # If tuple, use the second element (the actual ID) for processing
+        # If tuple like ("GENE", "ENSEMBL:ENSG...") take second element
         if isinstance(prev_id, tuple):
-            actual_id = prev_id[1] if len(prev_id) > 1 else str(prev_id[0])
-        else:
-            actual_id = prev_id
+            # typical tuple is (type, id)
+            prev_id = prev_id[1] if len(prev_id) > 1 else prev_id[0]
 
-        if not actual_id:
-            return "unknown_id"
+        # ensure string
+        prev_id = str(prev_id).strip()
 
-        return str(actual_id).lower().strip().translate(replace_map)
+        # remove surrounding parentheses if any
+        if prev_id.startswith("(") and prev_id.endswith(")"):
+            prev_id = prev_id[1:-1].strip()
+
+        # remove a leading type token e.g. "gene " or "GENE " that may have been prepended
+        prev_id = re.sub(r'^(gene|protein|transcript)\s*', '', prev_id, flags=re.IGNORECASE)
+
+        # unify separators and lowercase
+        normalized = prev_id.strip()
+
+        # remove common provider prefixes and separators
+        # examples to handle:
+        #   "ensembl_ensg00000000419" -> "ensg00000000419"
+        #   "ensembl:ENSG00000000419" -> "ensg00000000419"
+        #   "react_r-hsa-162699" or "REACT:R-HSA-162699" -> "r-hsa-162699"
+        normalized = normalized.replace("ENSEMBL:", "").replace("ensembl:", "")
+        normalized = normalized.replace("REACT:", "").replace("react:", "")
+        normalized = normalized.replace("ensembl_", "").replace("react_", "")
+
+        # replace spaces with underscore, keep hyphens as-is, lowercase
+        normalized = normalized.replace(" ", "_").lower()
+
+        return normalized
+
 
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
@@ -269,6 +298,7 @@ class ParquetWriter(BaseWriter):
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         """
         Write edges to Parquet files, skipping edges that belong to multiple entity types.
+        This version normalizes IDs and resolves gene/transcript/protein by CURIE prefix.
         """
         self.temp_buffer.clear()
         self._temp_files.clear()
@@ -280,49 +310,80 @@ class ParquetWriter(BaseWriter):
             # First pass: collect data and schema information
             for edge in edges:
                 try:
-                    source_id, target_id, label, properties = edge
+                    source_id_raw, target_id_raw, label, properties = edge
                     label = label.lower()
                     edge_freq[label] += 1
 
-                    if label in self.edge_node_types:
-                        edge_info = self.edge_node_types[label]
-                        source_types = edge_info["source"]
-                        target_types = edge_info["target"]
+                    if label not in self.edge_node_types:
+                        # If label unknown in schema, skip or fallback to writing generic edges
+                        logger.debug(f"Edge label '{label}' not in schema, skipping.")
+                        continue
 
-                        filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
+                    edge_info = self.edge_node_types[label]
+                    source_types = edge_info["source"]
+                    target_types = edge_info["target"]
 
-                        # Generate edges for all source/target type combinations
-                        for src_type in source_types:
-                            for tgt_type in target_types:
-                                src_type_final = src_type
-                                tgt_type_final = tgt_type
+                    # Filter props per user exclusion before writing
+                    filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
 
-                                if src_type == "ontology_term":
-                                    src_type_final = self.preprocess_id(source_id).split('_')[0]
-                                if tgt_type == "ontology_term":
-                                    tgt_type_final = self.preprocess_id(target_id).split('_')[0]
+                    # Clean IDs once
+                    clean_source = self.preprocess_id(source_id_raw)
+                    clean_target = self.preprocess_id(target_id_raw)
 
-                                edge_data = {
-                                    'source_id': self.preprocess_id(source_id),
-                                    'target_id': self.preprocess_id(target_id),
-                                    'source_type': src_type_final,
-                                    'target_type': tgt_type_final,
-                                    'label': edge_info.get("output_label", label),
-                                    **filtered_props
-                                }
+                    # Resolve 'gene'/'transcript'/'protein' by inspecting cleaned id prefix
+                    def resolve_bio_type_from_id(cid):
+                        if not cid:
+                            return "unknown"
+                        c = cid.lower()
+                        if c.startswith("ensg"):
+                            return "gene"
+                        if c.startswith("enst"):
+                            return "transcript"
+                        if c.startswith("ensp"):
+                            return "protein"
+                        # fallback to trying ontology-derived type if provided
+                        return None
 
-                                writer_key = self._init_edge_writer(label, src_type_final, tgt_type_final, properties, path_prefix, adapter_name)
-                                self.temp_buffer[writer_key].append(
-                                    {k: (json.dumps(v) if isinstance(v, list) else self.preprocess_value(v))
-                                    for k, v in edge_data.items()}
-                                )
+                    # Generate edges for all source/target type combinations
+                    for src_type in source_types:
+                        for tgt_type in target_types:
+                            src_type_final = src_type
+                            tgt_type_final = tgt_type
 
-                                if len(self.temp_buffer[writer_key]) >= self.batch_size:
-                                    self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
+                            # if the schema says 'ontology_term' or a generic 'gene' class,
+                            # try to infer exact biological type from the ID
+                            if isinstance(src_type, str) and src_type.lower() in ("ontology_term", "gene", "transcript", "protein"):
+                                inferred = resolve_bio_type_from_id(clean_source)
+                                if inferred:
+                                    src_type_final = inferred
+                            if isinstance(tgt_type, str) and tgt_type.lower() in ("ontology_term", "gene", "transcript", "protein"):
+                                inferred = resolve_bio_type_from_id(clean_target)
+                                if inferred:
+                                    tgt_type_final = inferred
+
+                            edge_label = edge_info.get("output_label", label)
+
+                            # Build edge row using cleaned ids and filtered props
+                            edge_row = {
+                                "source_id": clean_source,
+                                "target_id": clean_target,
+                                "source_type": src_type_final,
+                                "target_type": tgt_type_final,
+                                "label": edge_label,
+                                **{k: (json.dumps(v) if isinstance(v, list) else self.preprocess_value(v))
+                                for k, v in filtered_props.items()}
+                            }
+
+                            # writer_key uses original label (schema key) for grouping
+                            writer_key = self._init_edge_writer(label, src_type_final, tgt_type_final, edge_row, path_prefix, adapter_name)
+                            self.temp_buffer[writer_key].append(edge_row)
+
+                            if len(self.temp_buffer[writer_key]) >= self.batch_size:
+                                self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
 
                 except TypeError as e:
                     if "belongs to more than one entity types" in str(e):
-                        logger.warning(f"Skipping conflicting edge {source_id}->{target_id} ({label}): {e}")
+                        logger.warning(f"Skipping conflicting edge {source_id_raw}->{target_id_raw} ({label}): {e}")
                         continue
                     else:
                         raise
