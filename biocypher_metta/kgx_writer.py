@@ -4,6 +4,8 @@ import csv
 from pathlib import Path
 from biocypher._logger import logger
 from biocypher_metta import BaseWriter
+import re
+
 
 class KGXWriter(BaseWriter):
     
@@ -233,27 +235,47 @@ class KGXWriter(BaseWriter):
         if value_type is str:
             return value.translate(self.translation_table)
         return value
+        
+        
+    
+
     def preprocess_id(self, prev_id):
-        """Ensure ID remains in CURIE format while cleaning special characters.
-        Handles both string and tuple IDs.
-        """
+        """Clean ID to remove parentheses and type prefixes like gene/protein/transcript"""
         if prev_id is None:
             return None
 
-        # If ID is a tuple, use the second element (the actual ID string)
+        # If prev_id is a tuple, get the actual string (usually the second element)
         if isinstance(prev_id, tuple):
             prev_id = prev_id[1]
 
-        if ':' in prev_id:
-            prefix, local_id = prev_id.split(':', 1)
-            # Standardize prefix to uppercase
-            prefix = prefix.upper()
-            # Clean local ID (remove duplicate prefix if present)
-            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-            return f"{prefix}:{clean_local}"
+        # Ensure we are working with a string
+        prev_id = str(prev_id).strip()
 
-        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+        # Remove surrounding parentheses if present
+        if prev_id.startswith("(") and prev_id.endswith(")"):
+            prev_id = prev_id[1:-1].strip()
+
+        # Remove type prefixes like gene/protein/transcript at the start
+        prev_id = re.sub(r"^(gene|protein|transcript)\s*", "", prev_id, flags=re.IGNORECASE)
+
+        # Strip any remaining whitespace
+        prev_id = prev_id.strip()
+
+        return prev_id
+
+
+
+    # ----------------- RESOLVE GENE / TRANSCRIPT / PROTEIN -----------------
+    def _resolve_gene_transcript_protein(self, node_id):
+        """Determine correct type based on CURIE prefix."""
+        node_id = str(node_id).upper()
+        if node_id.startswith("ENSG"):
+            return "gene"
+        elif node_id.startswith("ENST"):
+            return "transcript"
+        elif node_id.startswith("ENSP"):
+            return "protein"
+        return "gene"  # fallback
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
@@ -372,9 +394,6 @@ class KGXWriter(BaseWriter):
         return node_freq, self._node_headers
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
-        """
-        Write edges to CSV/Neo4j Cypher files, supporting multiple source and target types.
-        """
         self.temp_buffer.clear()
         self._temp_files.clear()
         self._edge_headers.clear()
@@ -390,7 +409,7 @@ class KGXWriter(BaseWriter):
                 # Get edge info from schema
                 edge_info = self.edge_node_types.get(normalized_label, {})
                 edge_config = self.edge_configs.get(normalized_label, {})
-                
+
                 source_types = edge_info.get("source", [])
                 target_types = edge_info.get("target", [])
                 if not isinstance(source_types, list):
@@ -399,25 +418,31 @@ class KGXWriter(BaseWriter):
                     target_types = [target_types]
 
                 edge_label = edge_info.get("output_label", normalized_label)
-                kgx_props = edge_config.get('kgx_properties', {})
+                kgx_props = edge_config.get("kgx_properties", {})
                 validated_props = self._validate_edge_properties(normalized_label, properties)
-                edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
+                edge_id = properties.get("id", f"{source_id}_{edge_label}_{target_id}")
 
-                # Generate edges for all source/target type combinations
                 for src_type in source_types:
                     for tgt_type in target_types:
                         src_type_final = src_type
                         tgt_type_final = tgt_type
 
-                        if src_type == "ontology_term":
-                            src_type_final = self.preprocess_id(source_id).split('_')[0]
-                        if tgt_type == "ontology_term":
-                            tgt_type_final = self.preprocess_id(target_id).split('_')[0]
+                        # ---- FIX: resolve gene/transcript/protein ----
+                        # Determine the final source and target types based on ENSEMBL prefixes
+                        if src_type.lower() in ["gene", "transcript", "protein"]:
+                            src_type_final = self._resolve_gene_transcript_protein(source_id)
+                        if tgt_type.lower() in ["gene", "transcript", "protein"]:
+                            tgt_type_final = self._resolve_gene_transcript_protein(target_id)
+
+                        # Preprocess IDs to remove brackets and GENE/PROTEIN/TX labels
+                        source_id_clean = self.preprocess_id(source_id)
+                        target_id_clean = self.preprocess_id(target_id)
+                        edge_id_clean = f"{source_id_clean}_{edge_label}_{target_id_clean}"
 
                         edge_data = {
-                            'id': self.preprocess_id(edge_id),
-                            'subject': self.preprocess_id(source_id),
-                            'object': self.preprocess_id(target_id),
+                            'id': edge_id_clean,
+                            'subject': source_id_clean,
+                            'object': target_id_clean,
                             'label': edge_label,
                             'source_type': src_type_final,
                             'target_type': tgt_type_final,
@@ -433,7 +458,9 @@ class KGXWriter(BaseWriter):
                             if kgx_key not in edge_data:
                                 edge_data[kgx_key] = kgx_value
 
-                        writer_key = self._init_edge_writer(edge_label, src_type_final, tgt_type_final, edge_data, path_prefix, adapter_name)
+                        writer_key = self._init_edge_writer(
+                            edge_label, src_type_final, tgt_type_final, edge_data, path_prefix, adapter_name
+                        )
                         self.temp_buffer[writer_key].append(edge_data)
 
                         if len(self.temp_buffer[writer_key]) >= self.batch_size:
@@ -443,26 +470,27 @@ class KGXWriter(BaseWriter):
             for key in list(self.temp_buffer.keys()):
                 self._write_buffer_to_temp(key, self.temp_buffer[key])
 
-            # Write CSV and Cypher files
+            # Write CSV files
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
                 edge_label = self.edge_node_types.get(input_label, {}).get("output_label", input_label)
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"{file_suffix}_edges.csv"
-                cypher_file_path = output_dir / f"{file_suffix}_edges.cypher"
 
                 if csv_file_path.exists():
                     csv_file_path.unlink()
-                if cypher_file_path.exists():
-                    cypher_file_path.unlink()
 
-                with open(csv_file_path, 'w', newline='') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=sorted(self._edge_headers[key]),
-                                            delimiter=self.csv_delimiter, extrasaction='ignore')
+                with open(csv_file_path, "w", newline="") as csvfile:
+                    writer = csv.DictWriter(
+                        csvfile,
+                        fieldnames=sorted(self._edge_headers[key]),
+                        delimiter=self.csv_delimiter,
+                        extrasaction="ignore"
+                    )
                     writer.writeheader()
 
                     if key in self._temp_files and self._temp_files[key].exists():
-                        with open(self._temp_files[key], 'r') as temp_f:
+                        with open(self._temp_files[key], "r") as temp_f:
                             chunk = []
                             for line in temp_f:
                                 chunk.append(json.loads(line))
@@ -472,11 +500,6 @@ class KGXWriter(BaseWriter):
                                     chunk.clear()
                             for data in chunk:
                                 writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
-
-                self.write_edge_cypher(edge_label, source_type, target_type, csv_file_path, cypher_file_path)
-
-                if key in self._temp_files and self._temp_files[key].exists():
-                    self._temp_files[key].unlink()
 
         finally:
             self._cleanup_temp_files()
