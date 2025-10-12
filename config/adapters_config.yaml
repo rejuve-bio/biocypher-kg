@@ -1137,7 +1137,7 @@ snp_to_in_gene:
 
 promoter_ccre:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-PLS-gene.bed.gz
@@ -1148,7 +1148,7 @@ promoter_ccre:
 
 promoter_ccre_associates_with_gene:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-PLS-gene.bed.gz
@@ -1159,7 +1159,7 @@ promoter_ccre_associates_with_gene:
 
 enhancer_ccre:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-ELS-gene.bed.gz
@@ -1170,7 +1170,7 @@ enhancer_ccre:
 
 enhancer_ccre_associates_with_gene:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/cCRE-ELS-gene.bed.gz
