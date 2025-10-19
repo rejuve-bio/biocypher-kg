@@ -14,15 +14,15 @@ class UniprotAdapter(Adapter):
     ALLOWED_LABELS = ['translates_to', 'translation_of']
     
     ISOFORM_PATTERN = re.compile(r'\[([\w\-]+)\]')
-    
+
     def __init__(self, filepath, type, label, write_properties=True, add_provenance=True):
-        if type not in UniprotAdapter.ALLOWED_TYPES:
-            raise ValueError('Invalid type. Allowed values: ' +
-                             ', '.join(UniprotAdapter.ALLOWED_TYPES))
-        if label not in UniprotAdapter.ALLOWED_LABELS:
-            raise ValueError('Invalid label. Allowed values: ' +
-                             ', '.join(UniprotAdapter.ALLOWED_LABELS))
-        
+        if type not in self.ALLOWED_TYPES:
+            raise ValueError('Invalid type. Allowed values: ' + 
+                           ', '.join(self.ALLOWED_TYPES))
+        if label not in self.ALLOWED_LABELS:
+            raise ValueError('Invalid label. Allowed values: ' + 
+                           ', '.join(self.ALLOWED_LABELS))
+            
         self.filepath = filepath
         self.dataset = label
         self.type = type
@@ -30,40 +30,49 @@ class UniprotAdapter(Adapter):
         self.source = "Uniprot"
         self.source_url = "https://www.uniprot.org/"
         super(UniprotAdapter, self).__init__(write_properties, add_provenance)
-    
-    def parse_ensembl_reference(self, dbxref_item):
+
+    def parse_ensembl_reference(self, line):
         try:
-            isoform_match = self.ISOFORM_PATTERN.search(dbxref_item)
+            isoform_match = self.ISOFORM_PATTERN.search(line)
             isoform_id = isoform_match.group(1) if isoform_match else None
-            
-            transcript_id = dbxref_item.split(':')[-1].split('.')[0].split()[0]
-            
-            if transcript_id.startswith('ENST'):
-                return transcript_id, isoform_id
+
+            parts = line.split(';')
+            if len(parts) >= 2:
+                transcript = parts[1].strip().split('.')[0]  
+                if transcript.startswith('ENST'):
+                    return transcript, isoform_id
             return None, None
         except Exception as e:
-            print(f"Error parsing dbxref: {dbxref_item}")
+            print(f"Error parsing line: {line}")
             print(f"Error details: {str(e)}")
             return None, None
-    
+
     def get_edges(self):
+        current_protein_id = None
+        accession = None
+        
         with gzip.open(self.filepath, 'rt') as input_file:
-            records = SeqIO.parse(input_file, 'swiss')
-            for record in records:
-                dbxrefs = record.dbxrefs
+            for line in input_file:
+                line = line.strip()
                 
-                for item in dbxrefs:
-                    if item.startswith('Ensembl') and 'ENST' in item:
+                if line.startswith('ID '):
+                    current_protein_id = line.split()[1]
+                    accession = None
+                    
+                elif line.startswith('AC '):
+                    accessions = line[5:].split()
+                    if accessions and accessions[0]:
+                        accession = accessions[0].rstrip(';')
+                        
+                elif line.startswith('DR   Ensembl;') and accession:
+                    transcript_id, isoform_id = self.parse_ensembl_reference(line)
+                    
+                    if transcript_id:
                         try:
-                            transcript_id, isoform_id = self.parse_ensembl_reference(item)
-                            
-                            if not transcript_id:
-                                continue
-                            
-                            protein_id = isoform_id if isoform_id else record.id.upper()
+                            protein_id = isoform_id if isoform_id else accession
                             
                             ensg_id = "ENSEMBL:" + transcript_id
-                            uniprot_id = "UniProtKB:" + protein_id
+                            uniprot_id = "UniProtKB:" + protein_id.upper()
                             
                             _props = {}
                             if self.write_properties and self.add_provenance:
@@ -71,15 +80,11 @@ class UniprotAdapter(Adapter):
                                 _props['source_url'] = self.source_url
                             
                             if self.type == 'translates to':
-                                _source = ensg_id
-                                _target = uniprot_id
-                                yield _source, _target, self.label, _props
+                                yield ensg_id, uniprot_id, self.label, _props
                             elif self.type == 'translation of':
-                                _source = uniprot_id
-                                _target = ensg_id
-                                yield _source, _target, self.label, _props
+                                yield uniprot_id, ensg_id, self.label, _props
                                 
                         except Exception as e:
-                            print(f'Failed to process edge {self.type}: {record.id}')
+                            print(f'Failed to process edge {self.type}: {current_protein_id}')
                             print(f'Error: {str(e)}')
                             continue
