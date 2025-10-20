@@ -53,7 +53,7 @@ class EnhancerAtlasAdapter(Adapter):
         chr = enhancer_info.split(':')[0]
         start = int(enhancer_info.split(':')[1].split('-')[0]) + 1 #+1 since it is 0-based genomic coordinate
         end = int(enhancer_info.split(':')[1].split('-')[1])
-        gene = info.split('_')[1].split('$')[0]
+        gene = f"ENSEMBL:{info.split('_')[1].split('$')[0]}"
         return chr, start, end, gene
     
     def get_nodes(self):
@@ -63,7 +63,8 @@ class EnhancerAtlasAdapter(Adapter):
                 chr = info[EnhancerAtlasAdapter.INDEX['chr']]
                 start = int(info[EnhancerAtlasAdapter.INDEX['coord_start']]) + 1 #+1 since it is 0-based genomic coordinate
                 end = int(info[EnhancerAtlasAdapter.INDEX['coord_end']])
-                enhancer_region_id = build_regulatory_region_id(chr, start, end)
+                #CURIE format for enhancer region ID
+                enhancer_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     props = {}
@@ -92,7 +93,8 @@ class EnhancerAtlasAdapter(Adapter):
                         info = line.strip().split('\t')
                         chr, start, end, gene = self.parse_enhancer_gene(line)
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                            enhancer_region_id = build_regulatory_region_id(chr, start, end)
+                            # CURIE format for enhancer region ID
+                            enhancer_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                             score = to_float(info[1])
                             props = {}
                             if self.write_properties:

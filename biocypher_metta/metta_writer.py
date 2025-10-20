@@ -3,6 +3,7 @@ import pathlib
 import os
 from biocypher._logger import logger
 import networkx as nx
+from collections import Counter, defaultdict
 
 from biocypher_metta import BaseWriter
 
@@ -11,6 +12,10 @@ class MeTTaWriter(BaseWriter):
     def __init__(self, schema_config, biocypher_config,
                  output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
+        
+        # Initialize edge node types for tuple handling
+        self.edge_node_types = {}
+        
         self.create_type_hierarchy()
 
         #self.excluded_properties = ["license", "version", "source"]
@@ -23,11 +28,10 @@ class MeTTaWriter(BaseWriter):
             for node in G.nodes:
                 if "mixin" in node: continue
                 ancestor = list(self.get_parent(G, node))[-1]
-                node = self.convert_input_labels(node)
-                ancestor = self.convert_input_labels(ancestor)
+                node = self.normalize_text(node)
+                ancestor = self.normalize_text(ancestor)
                 if ancestor == node:
                     f.write(f"(: {node.upper()} Type)\n")
-
                 else:
                     f.write(f"(<: {node.upper()} {ancestor.upper()})\n")
 
@@ -37,47 +41,72 @@ class MeTTaWriter(BaseWriter):
 
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
-        self.edge_node_types = {}
-        def edge_data_constructor(edge_type, source_type, target_type, label):
-            return f"(: {label.lower()} (-> {source_type.upper()} {target_type.upper()} {edge_type.upper()}))"
+        
+        def edge_data_constructor(edge_type, source_types, target_types, label):
+            # Handle both single types and lists of types
+            if isinstance(source_types, list):
+                source_str = ' '.join([st.upper() for st in source_types])
+            else:
+                source_str = source_types.upper()
+                
+            if isinstance(target_types, list):
+                target_str = ' '.join([tt.upper() for tt in target_types])
+            else:
+                target_str = target_types.upper()
+                
+            return f"(: {label.lower()} (-> {source_str} {target_str} {edge_type.upper()}))"
 
         def node_data_constructor(node_type, node_label):
             return f"(: {node_label.lower()} (-> $x {node_type.upper()}))"
 
         for k, v in schema.items():
-            if v["represented_as"] == "edge": #(: (label $x $y) (-> source_type target_type
-                edge_type = self.convert_input_labels(k)
-                #Check if there are source and target fields
+            if v["represented_as"] == "edge":
+                edge_type = self.normalize_text(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
+        
                 if source_type is not None and target_type is not None:
-                    # ## TODO fix this in the scheme config
-                    if isinstance(v["input_label"], list):
-                        label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
-
+                    label = self.normalize_text(v["input_label"])
+                    source_type_normalized = self.normalize_text(source_type)
+                    target_type_normalized = self.normalize_text(target_type)
+            
                     output_label = v.get("output_label", None)
-                    out_str = edge_data_constructor(edge_type, source_type, target_type, label)
-                    file.write(out_str + "\n")
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":
-                        target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+
+                    if '.' not in k:
+                        out_str = edge_data_constructor(edge_type, source_type_normalized, target_type_normalized, label)
+                        file.write(out_str + "\n")
+                
+                        self.edge_node_types[label] = {
+                            "source": source_type_normalized, 
+                            "target": target_type_normalized,
+                            "output_label": output_label
+                        }
 
             elif v["represented_as"] == "node":
-                label = v["input_label"]
-                if not isinstance(label, list):
-                    label = [label]
-
-                label = [self.convert_input_labels(l) for l in label]
-                node_type = self.convert_input_labels(k)
-                for l in label:
+                label = self.normalize_text(v["input_label"])
+                node_type = self.normalize_text(k)
+        
+                # Handle both single labels and lists
+                if isinstance(label, list):
+                    labels_to_process = label
+                else:
+                    labels_to_process = [label]
+            
+                for l in labels_to_process:
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
 
+    def preprocess_id(self, prev_id):
+        """Ensure ID remains in CURIE format while cleaning special characters"""
+        prev_id = str(prev_id)
+        
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            prefix = prefix.upper()
+            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
+            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
+            return f"{prefix}:{clean_local}"
+        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -90,17 +119,14 @@ class MeTTaWriter(BaseWriter):
         
         with open(file_path, "a") as f:
             for node in nodes:
-                self.extract_node_info(node) # Count nodes and extract node properties
+                self.extract_node_info(node)  # Count nodes and extract node properties
                 out_str = self.write_node(node)
                 for s in out_str:
                     f.write(s + "\n")
-
             f.write("\n")
 
         logger.info("Finished writing out nodes")
         return self.node_freq, self.node_props
-
-
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -113,41 +139,98 @@ class MeTTaWriter(BaseWriter):
 
         with open(file_path, "a") as f:
             for edge in edges:
-                self.extract_edge_info(edge) # Count edges
+                self.extract_edge_info(edge)  # Count edges
                 out_str = self.write_edge(edge)
                 for s in out_str:
                     f.write(s + "\n")
-
             f.write("\n")
         return self.edge_freq
 
     def write_node(self, node):
         id, label, properties = node
+        id = self.preprocess_id(str(id))  
         if "." in label:
             label = label.split(".")[1]
-        def_out = f"({self.convert_input_labels(label)} {id})"
+        def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
+        source_id_processed = source_id
+        target_id_processed = target_id
         label = label.lower()
-        source_type = self.edge_node_types[label]["source"]
-        target_type = self.edge_node_types[label]["target"]
-        output_label = self.edge_node_types[label]["output_label"]
-        if output_label is not None:
-            label = output_label
-        if source_type == "ontology_term":
-            source_type = source_id.replace(':', '_').split('_')[0].lower()
-        if target_type == "ontology_term":
-            target_type = target_id.replace(':', '_').split('_')[0].lower()
-        def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
-        return self.write_property(def_out, properties)
+        
+        if isinstance(source_id, tuple):
+            source_type = source_id[0]
+            source_id_processed = self.preprocess_id(str(source_id[1]))  
+            if label in self.edge_node_types:
+                valid_source_types = self.edge_node_types[label]["source"]
+                if isinstance(valid_source_types, list):
+                    if source_type not in valid_source_types:
+                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
+                else:
+                    if source_type != valid_source_types:
+                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+        else:
+            source_id_processed = self.preprocess_id(str(source_id)) 
+            if label in self.edge_node_types:
+                source_type_info = self.edge_node_types[label]["source"]
+                if isinstance(source_type_info, list):
+                    source_type = source_type_info[0] 
+                else:
+                    source_type = source_type_info
+            else:
+                source_type = "unknown"
 
+        if isinstance(target_id, tuple):
+            target_type = target_id[0]
+            target_id_processed = self.preprocess_id(str(target_id[1])) 
+            if label in self.edge_node_types:
+                valid_target_types = self.edge_node_types[label]["target"]
+                if isinstance(valid_target_types, list):
+                    if target_type not in valid_target_types:
+                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
+                else:
+                    if target_type != valid_target_types:
+                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
+        else:
+            target_id_processed = self.preprocess_id(str(target_id))  
+            if label in self.edge_node_types:
+                target_type_info = self.edge_node_types[label]["target"]
+                if isinstance(target_type_info, list):
+                    target_type = target_type_info[0]  
+                else:
+                    target_type = target_type_info
+            else:
+                target_type = "unknown"
+
+        output_label = None
+        if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
+            output_label = self.edge_node_types[label]["output_label"]
+            label_to_use = output_label
+        else:
+            label_to_use = label
+
+        if source_type == "ontology_term":
+            source_type = source_id_processed.replace(':', '_').split('_')[0].lower()
+        if target_type == "ontology_term":
+            target_type = target_id_processed.replace(':', '_').split('_')[0].lower()
+
+        if isinstance(source_type, list):
+            def_out = ""
+            for a_source_type in source_type:
+                def_out += f"({label_to_use} ({a_source_type} {source_id_processed}) ({target_type} {target_id_processed}))" + "\n"
+            def_out = def_out.rstrip('\n')
+        else:
+            def_out = f"({label_to_use} ({source_type} {source_id_processed}) ({target_type} {target_id_processed}))"
+
+        return self.write_property(def_out, properties)
 
     def write_property(self, def_out, property):
         out_str = [def_out]
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
+            
             if k == 'biological_context':
                 try:
                     ontology_id = self.check_property(v).upper().replace('_', ':')
@@ -159,8 +242,16 @@ class MeTTaWriter(BaseWriter):
             elif isinstance(v, list):
                 prop = "("
                 for i, e in enumerate(v):
-                    prop += f'{self.check_property(e)}'
-                    if i != len(v) - 1: prop += " "
+                    if isinstance(e, tuple):
+                        tuple_prop = '('
+                        for el in e:
+                            tuple_prop += f'{self.check_property(el)} '
+                        tuple_prop = tuple_prop.rstrip()
+                        prop += tuple_prop + ')'
+                    else:
+                        prop += f'{self.check_property(e)}'
+                    if i != len(v) - 1: 
+                        prop += " "
                 prop += ")"
                 out_str.append(f'({k} {def_out} {prop})')
             elif isinstance(v, dict):
@@ -172,23 +263,26 @@ class MeTTaWriter(BaseWriter):
 
     def check_property(self, prop):
         if isinstance(prop, str):
-            if " " in prop:
+            if "" in prop:
                 prop = prop.replace(" ", "_").strip("_")
+            if '->' in prop:
+                prop = prop.replace('->', '-\\>')
 
             special_chars = ["(", ")"]
             escape_char = "\\"
             return "".join(escape_char + c if c in special_chars or c == escape_char else c for c in prop)
+        
+        return str(prop)
 
-        return prop
-
-    def convert_input_labels(self, label, replace_char="_"):
-        """
-        A method that removes spaces in input labels and replaces them with replace_char
-        :param label: Input label of a node or edge
-        :param replace_char: the character to replace spaces with
-        :return:
-        """
-        return label.replace(" ", replace_char)
+    def normalize_text(self, label, replace_char="_", lowercase=True):
+        if isinstance(label, list):
+            labels = []
+            for aLabel in label:
+                processed = aLabel.replace(" ", replace_char)
+                labels.append(processed.lower() if lowercase else processed)
+            return labels
+        processed = label.replace(" ", replace_char)
+        return processed.lower() if lowercase else processed
 
     def get_parent(self, G, node):
         """
@@ -201,6 +295,3 @@ class MeTTaWriter(BaseWriter):
 
     def summary(self):
         self.bcy.summary()
-
-
-        

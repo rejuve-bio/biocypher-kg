@@ -1,3 +1,4 @@
+
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter
@@ -107,11 +108,60 @@ genes_pathways:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
 
   outdir: reactome
   nodes: False
   edges: True
+
+pathway_to_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.reactome_pathway_go_adapter
+    cls: ReactomePathwayGOAdapter
+    args:
+      filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+      write_properties: true
+      add_provenance: true
+      subontology: biological_process
+      mapping_file: aux_files/go_subontology_mapping.pkl
+  outdir: reactome/biological_process
+  nodes: false
+  edges: true
+# The following adapters for Molecular Function and Cellular Component are commented out
+# because the current dataset only contains Biological Process edges.
+# Including unused adapters causes the CI to fail due to schema and adapter validation rules.
+# These can be uncommented once corresponding datasets are available.
+
+# pathway_to_molecular_function:
+#   adapter:
+#     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
+#     cls: ReactomePathwayGOAdapter
+#     args:
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       write_properties: true
+#       add_provenance: true
+#       subontology: molecular_function
+#       mapping_file: aux_files/go_subontology_mapping.pkl
+#       label: pathway_to_molecular_function
+#   outdir: reactome/molecular_function
+#   nodes: false
+#   edges: true
+
+# pathway_to_cellular_component:
+#   adapter:
+#     module: biocypher_metta.adapters.reactome_pathway_go_adapter
+#     cls: ReactomePathwayGOAdapter
+#     args:
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       write_properties: true
+#       add_provenance: true
+#       subontology: cellular_component  
+#       mapping_file: aux_files/go_subontology_mapping.pkl
+#       label: pathway_to_cellular_component
+#   outdir: reactome/cellular_component
+#   nodes: false
+#   edges: true
 
 parent_pathway_of:
   adapter:
@@ -278,6 +328,57 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
+gaf_biological_process_gene:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: biological_process_gene
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_molecular_function_gene:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: molecular_function_gene
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_part_of:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: cellular_component_gene_part_of
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_located_in:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: ./samples/goa_human_sample.gaf.gz
+      label: cellular_component_gene_located_in
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+
+  outdir: gaf
+  nodes: False
+  edges: True
 
 coexpression:
   adapter:
@@ -312,6 +413,17 @@ string:
       ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
 
   outdir: string
+  nodes: False
+  edges: True
+
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: ./samples/reactome_homo_sapiens_interactions_tab_delimited_sample.txt.gz
+
+  outdir: reactome/ppi
   nodes: False
   edges: True
 
@@ -982,7 +1094,7 @@ snp_to_in_gene:
 
 promoter_ccre:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: ./samples/cCRE/cCRE-PLS-gene.bed.gz
@@ -993,7 +1105,7 @@ promoter_ccre:
 
 promoter_ccre_associates_with_gene:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: ./samples/cCRE/cCRE-PLS-gene.bed.gz
@@ -1004,7 +1116,7 @@ promoter_ccre_associates_with_gene:
 
 enhancer_ccre:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: ./samples/cCRE/cCRE-ELS-gene.bed.gz
@@ -1015,11 +1127,34 @@ enhancer_ccre:
 
 enhancer_ccre_associates_with_gene:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_elements_adapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
     cls: EncodecCREAdapter
     args:
       filepath: ./samples/cCRE/cCRE-ELS-gene.bed.gz
       label: enhancer_gene
   outdir: ccre/enhancer_ccre
+  nodes: False
+  edges: True
+
+encode_re2g:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: ./samples/ENCODE_rE2G_K562.bed.gz
+
+  outdir: encode_re2g
+  nodes: True
+  edges: False
+
+encode_re2g_gene_associates:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: ./samples/ENCODE_rE2G_K562.bed.gz
+      label: enhancer_gene
+
+  outdir: encode_re2g
   nodes: False
   edges: True

@@ -60,7 +60,8 @@ class RNACentralAdapter(Adapter):
         with gzip.open(self.filepath, 'rt') as input:
             for line in input:
                 infos = line.split('\t')
-                rna_id = infos[RNACentralAdapter.INDEX['id']].split('_')[0]
+                #CURIE format for RNAcentral ID
+                rna_id =f"RNACENTRAL:{infos[RNACentralAdapter.INDEX['id']].split('_')[0]}"
                 chr = infos[RNACentralAdapter.INDEX['chr']]
                 start = int(infos[RNACentralAdapter.INDEX['coord_start']].strip())+1 # +1 since it is 0 indexed coordinate
                 end = int(infos[RNACentralAdapter.INDEX['coord_end']].strip())
@@ -87,8 +88,8 @@ class RNACentralAdapter(Adapter):
                 
                 if not rna_id.endswith('_9606'):
                     continue
-                
-                rna_id = rna_id.split('_')[0]
+                #CURIE format for RNAcentral ID
+                rna_id =f"RNACENTRAL:{rna_id.split('_')[0]}"
 
                 # Skip if subontology doesn't match
                 if self.subontology and self.subontology_mapping:

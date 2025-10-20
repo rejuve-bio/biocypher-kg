@@ -38,7 +38,9 @@ class EPDAdapter(Adapter):
                 chr = line[EPDAdapter.INDEX['chr']]
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
-                promoter_id = build_regulatory_region_id(chr, coord_start, coord_end)
+                #CURIE ID Format
+                # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
+                promoter_id = f"SO:{build_regulatory_region_id(chr, coord_start, coord_end)}"
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
                     props = {}
@@ -61,12 +63,16 @@ class EPDAdapter(Adapter):
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
-                ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_id, None)
+                #CURIE ID Format
+                # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
+                ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
                 if ensembl_gene_id is None:
                     continue
                 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
-                    promoter_id = build_regulatory_region_id(chr, coord_start, coord_end)
+                    #CURIE ID Format
+                    # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
+                    promoter_id = f"SO:{build_regulatory_region_id(chr, coord_start, coord_end)}"
                     props = {}
                     if self.write_properties:
                         if self.add_provenance:

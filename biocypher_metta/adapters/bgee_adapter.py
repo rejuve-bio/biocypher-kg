@@ -30,8 +30,9 @@ class BgeeAdapter(Adapter):
                     data = line.strip().split('\t')
                     if data[BgeeAdapter.INDEX['expression']] != 'present':
                         continue
-
-                    source_id = data[BgeeAdapter.INDEX['gene']]
+                    
+                    #CURIE format for source ID (subject)
+                    source_id =f"ENSEMBL:{data[BgeeAdapter.INDEX['gene']]}"
                     target_id = data[BgeeAdapter.INDEX['anatomical_entity']].split(' ∩ ')[0]
                     score = float(data[BgeeAdapter.INDEX['expression_score']])
 

@@ -46,8 +46,8 @@ class CoxpresdbAdapter(Adapter):
                         co_ensembl_id = entrez_ensembl_dict.get(co_entrez_id)
                         if co_ensembl_id:
                             _id = entrez_id + '_' + co_entrez_id + '_' + self.label
-                            source = ensembl_id
-                            target = co_ensembl_id
+                            source = f"ENSEMBL:{ensembl_id}"
+                            target = f"ENSEMBL:{co_ensembl_id}"
                             _props = {}
                             if self.write_properties:
                                 _props['score'] = float(score)

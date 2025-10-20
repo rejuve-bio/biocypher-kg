@@ -61,8 +61,8 @@ class GTExEQTLAdapter(Adapter):
                     variant_id = row[COL_DICT["rsid"]]
                     gene_id = row[COL_DICT["gene_id"]]
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                        _source = variant_id
-                        _target = gene_id
+                        _source = f"DBSNP:{variant_id}"
+                        _target = f"ENSEMBL:{gene_id}"
                         _props = {}
                         if self.write_properties:
                             tissue_name = row[COL_DICT["tissue"]].split(".")[0]
