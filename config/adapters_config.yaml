@@ -1281,3 +1281,14 @@ encode_re2g_gene_associates:
   outdir: encode_re2g
   nodes: False
   edges: True
+
+pgboost:
+  adapter:
+    module: biocypher_metta.adapters.pgboost_adapter
+    cls: PgBoostAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/encode_re2g/pgBoost/pgboost_scores.tsv.gz
+
+  outdir: pgboost
+  nodes: False
+  edges: True

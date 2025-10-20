@@ -1616,6 +1616,33 @@ closest gene to variant association:
       type: str
       biolink: source_web_page
 
+predicted variant to gene association:
+  description: >-
+      A probabilistic association between a sequence variant (SNP) and a target gene,
+      predicted by computational models that integrate regulatory, chromatin, or genomic distance features.
+      This includes models such as pgBoost (Dorans et al. 2024) or the ABC variant-level predictions.
+  is_a: regulatory association
+  mixins: [biolink:VariantToGeneAssociation]
+  biolink_predicate: "biolink:affects"
+  inherit_properties: true
+  represented_as: edge
+  input_label: predicted_variant_gene_association
+  source: snp
+  target: gene
+  kgx_properties:
+    subject_category: "biolink:Snv"
+    object_category: "biolink:Gene"
+    knowledge_level: "prediction"
+    agent_type: "computational_agent"
+  properties:
+    score: 
+      type: float
+      biolink: has_quantitative_value
+    biological_context: 
+      type: str
+      biolink: has_biological_sequence
+    percentile: float
+
 upstream gene to variant association:
   is_a: closest gene to variant association
   mixins: [biolink:VariantToGeneAssociation]
@@ -1815,29 +1842,6 @@ gene in tad region:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-activity by contact:
-  description: >-
-    An association between a variant in a regulatory region and a gene it predicted by the ABC model (Fulco et.al 2019)
-  is_a: regulatory association
-  mixins: [biolink:VariantToGeneAssociation]
-  biolink_predicate: "biolink:affects" 
-  inherit_properties: true
-  represented_as: edge
-  input_label: activity_by_contact
-  source: snp
-  target: gene
-  kgx_properties:
-    subject_category: "biolink:Snv"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-  properties:
-    score: 
-      type: float
-      biolink: has_quantitative_value
-    biological_context: 
-      type: str
-      biolink: has_biological_sequence
 
 chromatin state:
   is_a: related to at instance level
