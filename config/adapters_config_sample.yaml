@@ -1092,47 +1092,130 @@ snp_to_in_gene:
   nodes: False
   edges: True
 
+proximal_enhancer_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer
+      element_filter: proximal
+  outdir: ccre/enhancer_ccre/proximal
+  nodes: True
+  edges: False
+
+proximal_enhancer_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      label: enhancer_gene
+      element_filter: proximal
+  outdir: ccre/enhancer_ccre/proximal
+  nodes: False
+  edges: True
+
+proximal_enhancer_ccre_associates_with_gene_coding_only:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer_gene
+      element_filter: proximal
+  outdir: ccre/enhancer_ccre/proximal/coding_only
+  nodes: False
+  edges: True
+
+distal_enhancer_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer
+      element_filter: distal
+  outdir: ccre/enhancer_ccre/distal
+  nodes: True
+  edges: False
+
+distal_enhancer_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      label: enhancer_gene
+      element_filter: distal
+  outdir: ccre/enhancer_ccre/distal
+  nodes: False
+  edges: True
+
+distal_enhancer_ccre_associates_with_gene_coding_only:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer_gene
+      element_filter: distal
+  outdir: ccre/enhancer_ccre/distal/coding_only
+  nodes: False
+  edges: True
+
 promoter_ccre:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
-    cls: EncodecCREAdapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/cCRE-PLS-gene.bed.gz
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: promoter
+      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
   outdir: ccre/promoter_ccre
   nodes: True
   edges: False
 
-promoter_ccre_associates_with_gene:
+promoter_ccre_associates_with_gene_nearest_gene:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
-    cls: EncodecCREAdapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/cCRE-PLS-gene.bed.gz
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      edge_type: nearest
       label: promoter_gene
+      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
   outdir: ccre/promoter_ccre
   nodes: False
   edges: True
 
-enhancer_ccre:
+promoter_ccre_associates_with_gene_nearest_gene_coding_only:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
-    cls: EncodecCREAdapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/cCRE-ELS-gene.bed.gz
-      label: enhancer
-  outdir: ccre/enhancer_ccre
-  nodes: True
-  edges: False
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: promoter_gene
+      edge_type: nearest
+      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+  outdir: ccre/promoter_ccre/coding_only
+  nodes: False
+  edges: True
 
-enhancer_ccre_associates_with_gene:
+promoter_ccre_associates_with_gene_eqtl:
   adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_element_adapter
-    cls: EncodecCREAdapter
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/cCRE-ELS-gene.bed.gz
-      label: enhancer_gene
-  outdir: ccre/enhancer_ccre
+      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: promoter_gene
+      edge_type: eqtl
+      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+  outdir: ccre/promoter_ccre/eqtl
   nodes: False
   edges: True
 
