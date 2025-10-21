@@ -116,50 +116,51 @@ def validate_node_type(node_id, node_label, schema_node_labels):
         # For non-tuple IDs, check if the label is in schema
         label = convert_input_labels(node_label)
         return label in schema_node_labels
-
 def validate_edge_type_compatibility(source_id, target_id, edge_label, edges_schema):
     """
     Validate if source and target types are compatible with edge schema.
-    Handles both single types and list types.
+    Handles both single types and list types. Robust against None and non-string inputs.
     """
+    if not edge_label or not isinstance(edge_label, str):
+        return False, f"Invalid edge label: {edge_label}"
+
     if edge_label.lower() not in edges_schema:
         return False, f"Edge label '{edge_label}' not found in schema"
     
     edge_def = edges_schema[edge_label.lower()]
     valid_source_types = edge_def["source"]
     valid_target_types = edge_def["target"]
-    
+
     # Extract source type
-    if isinstance(source_id, tuple):
-        source_type = source_id[0].lower()
+    if isinstance(source_id, tuple) and source_id and source_id[0]:
+        source_type = str(source_id[0]).lower()
     else:
-        # For non-tuple source IDs, we can't validate type compatibility
-        return True, "Cannot validate source type for non-tuple ID"
+        return True, f"Cannot validate source type for ID: {source_id}"
     
     # Extract target type
-    if isinstance(target_id, tuple):
-        target_type = target_id[0].lower()
+    if isinstance(target_id, tuple) and target_id and target_id[0]:
+        target_type = str(target_id[0]).lower()
     else:
-        # For non-tuple target IDs, we can't validate type compatibility
-        return True, "Cannot validate target type for non-tuple ID"
+        return True, f"Cannot validate target type for ID: {target_id}"
     
     # Validate source type
     if isinstance(valid_source_types, list):
-        if source_type not in valid_source_types:
+        if source_type not in [str(t).lower() for t in valid_source_types]:
             return False, f"Source type '{source_type}' not in valid types {valid_source_types}"
     else:
-        if source_type != valid_source_types:
+        if source_type != str(valid_source_types).lower():
             return False, f"Source type '{source_type}' does not match required '{valid_source_types}'"
     
     # Validate target type
     if isinstance(valid_target_types, list):
-        if target_type not in valid_target_types:
+        if target_type not in [str(t).lower() for t in valid_target_types]:
             return False, f"Target type '{target_type}' not in valid types {valid_target_types}"
     else:
-        if target_type != valid_target_types:
+        if target_type != str(valid_target_types).lower():
             return False, f"Target type '{target_type}' does not match required '{valid_target_types}'"
     
     return True, "Valid"
+
 
 @pytest.mark.filterwarnings("ignore")
 class TestBiocypherKG:
