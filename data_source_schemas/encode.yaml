@@ -23,7 +23,8 @@ nodes:
       end: int
       accession_d: str
       accession_e: str
-  
+
+
   transcription binding site:
     url: https://genome.ucsc.edu/cgi-bin/hgTables
     description: A region of DNA where a transcription factor binds to regulate gene expression

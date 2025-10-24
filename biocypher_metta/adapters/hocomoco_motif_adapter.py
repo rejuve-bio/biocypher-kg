@@ -3,6 +3,9 @@ import pickle
 import csv
 from biocypher_metta.adapters import Adapter
 
+# Human data:
+# https://hocomoco11.autosome.org/downloads_v11
+
 # Example TF motif file from HOCOMOCO (e.g. ATF1_HUMAN.H11MO.0.B.pwm), which adastra used.
 # Each pwm (position weight matrix) is a N x 4 matrix, where N is the length of the TF motif.
 # >ATF1_HUMAN.H11MO.0.B
@@ -18,19 +21,21 @@ from biocypher_metta.adapters import Adapter
 # 0.13987841615191168	0.6170180100710398	-0.5426512454816383	-0.8788317538331962
 # 0.7561011054759478	-0.7707228823699511	-0.2914989252431338	-0.4151773801942997
 
+# Mouse data:
+# https://hocomoco11.autosome.org/downloads_v11_mouse
 
 class HoCoMoCoMotifAdapter(Adapter):
     def __init__(self, filepath, annotation_file, hgnc_to_ensembl_map,
-                 write_properties, add_provenance):
+                 write_properties, add_provenance, taxon_id):
 
         self.filepath = filepath
         assert os.path.isdir(self.filepath), f"{self.filepath} is not a directory"
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.model_tf_path = annotation_file
-
+        self.taxon_id = taxon_id
         self.label = 'motif'
         self.source = 'HOCOMOCOv11'
-        self.source_url = 'hocomoco11.autosome.org/motif/'
+        self.source_url = 'https://hocomoco11.autosome.org/downloads_v11'
 
         self.load_model_tf_mapping()
 
@@ -45,6 +50,7 @@ class HoCoMoCoMotifAdapter(Adapter):
                 model = row[0].strip()
                 tf = row[1].strip()
                 self.model_tf_map[model] = tf
+
     def get_nodes(self):
         for filename in os.listdir(self.filepath):
             if filename.endswith('.pwm'):
@@ -75,7 +81,8 @@ class HoCoMoCoMotifAdapter(Adapter):
                         'pwm_C': pwm["pmw_C"],
                         'pwm_G': pwm["pmw_G"],
                         'pwm_T': pwm["pmw_T"],
-                        'length': length
+                        'length': length,
+                        "taxon_id": f'NCBITaxon:{self.taxon_id}'
                     }
                     if self.add_provenance:
                         props['source'] = self.source

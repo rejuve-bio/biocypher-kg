@@ -3,7 +3,7 @@
 biocypher:
   offline: true
   debug: false
-  schema_config_path: config/schema_config.yaml
+  #schema_config_path: config/schema_config.yaml    # schema_config_path is a parameter to create_knowledge_graph
 
 neo4j:
   delimiter: '\t'

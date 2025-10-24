@@ -7,6 +7,9 @@ import hgvs.dataproviders.uta
 from hgvs.easy import parser
 from hgvs.extras.babelfish import Babelfish
 
+
+
+
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
 

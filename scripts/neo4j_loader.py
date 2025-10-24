@@ -104,8 +104,8 @@ class Neo4jLoader:
             return
 
         return {
-            'nodes': sorted(directory.glob("nodes_*.cypher")),
-            'edges': sorted(directory.glob("edges_*.cypher"))
+            'nodes': sorted(directory.glob("*nodes*.cypher")),
+            'edges': sorted(directory.glob("*edges*.cypher"))
         }
 
 def get_neo4j_credentials():
@@ -135,8 +135,9 @@ def process_output_directory(output_dir):
     query_dirs = []
     for path in Path(output_dir).rglob("*"):
         if path.is_dir() and (
-            list(path.glob("nodes_*.cypher")) or 
-            list(path.glob("edges_*.cypher"))
+            # list(path.glob("nodes_*.cypher")) or 
+            # list(path.glob("edges_*.cypher"))
+            list(path.glob("*.cypher")) 
         ):
             query_dirs.append(path)
     return query_dirs

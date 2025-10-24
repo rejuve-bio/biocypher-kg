@@ -1,0 +1,68 @@
+{
+  "node_count": 2803,
+  "edge_count": 16042,
+  "dataset_count": 1,
+  "data_size": "0.00 GB",
+  "top_entities": [
+    {
+      "name": "pathway",
+      "count": 2803
+    }
+  ],
+  "top_connections": [
+    {
+      "name": "child_pathway_of",
+      "count": 16042
+    }
+  ],
+  "frequent_relationships": [
+    {
+      "entities": [
+        "pathway",
+        "pathway"
+      ],
+      "count": 16042
+    }
+  ],
+  "schema": {
+    "nodes": [
+      {
+        "data": {
+          "name": "pathway",
+          "properties": [
+            "id",
+            "source_url",
+            "taxon_id",
+            "source",
+            "pathway_name"
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "source": "pathway",
+          "target": "pathway",
+          "possible_connections": [
+            "child_pathway_of"
+          ]
+        }
+      }
+    ]
+  },
+  "datasets": [
+    {
+      "name": "REACTOME",
+      "version": null,
+      "url": "https://reactome.org",
+      "nodes": [
+        "pathway"
+      ],
+      "edges": [
+        "child_pathway_of"
+      ],
+      "imported_on": "2025-09-29"
+    }
+  ]
+}

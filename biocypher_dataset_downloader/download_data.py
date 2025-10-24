@@ -1,7 +1,16 @@
+import sys
+import os
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..'))
+
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import typer
 from pathlib import Path
 from typing_extensions import Annotated
-from downloader import DownloadManager
+from download_manager import DownloadManager
 import logging
 
 logging.basicConfig(level=logging.INFO)

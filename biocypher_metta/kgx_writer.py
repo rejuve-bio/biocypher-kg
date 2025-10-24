@@ -6,6 +6,10 @@ from biocypher._logger import logger
 from biocypher_metta import BaseWriter
 
 class KGXWriter(BaseWriter):
+    '''
+    KGX specification:
+    https://github.com/biolink/kgx/blob/master/docs/kgx_format.md
+    '''
     def __init__(self, schema_config, biocypher_config, output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
         self.csv_delimiter = ','
@@ -118,6 +122,7 @@ class KGXWriter(BaseWriter):
         # Handle inherited properties if inherit_properties is True
         if config.get('inherit_properties', False):
             self._add_inherited_properties(label, config)
+            
     def _process_edge_schema(self, label, config):
         """Extract valid properties from edge schema including KGX properties"""
         # Required edge properties
@@ -218,6 +223,8 @@ class KGXWriter(BaseWriter):
         return value
 
     def preprocess_id(self, prev_id):
+      if isinstance( prev_id, tuple ):
+          prev_id = prev_id[1]
       """Ensure ID remains in CURIE format while cleaning special characters"""
       if ':' in prev_id:
           prefix, local_id = prev_id.split(':', 1)
@@ -345,6 +352,7 @@ class KGXWriter(BaseWriter):
                 
         return node_freq, self._node_headers
 
+
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
         self._temp_files.clear()
@@ -369,8 +377,13 @@ class KGXWriter(BaseWriter):
                 kgx_props = edge_config.get('kgx_properties', {})
                 
                 validated_props = self._validate_edge_properties(normalized_label, properties)
-                            
-                edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
+                if isinstance(source_id, tuple):
+                    if source_id[0] not in edge_info["source"]:
+                        raise TypeError(f"Type '{source_id[0]}' must be one of {edge_info['source']}")
+                    check target_id also
+                    edge_id = properties.get('id', f"{source_id[1]}_{edge_label}_{target_id}")
+                else:
+                    edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
     
                 # Create base edge data with required properties
                 edge_data = {

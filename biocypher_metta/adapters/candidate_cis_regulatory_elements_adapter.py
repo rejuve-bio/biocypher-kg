@@ -1,40 +1,45 @@
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
+from biocypher_metta.adapters.hsa.hgnc_processor import HGNCSymbolProcessor
+
+# Human AND mouse data:
+# https://screen.wenglab.org/downloads
+
 
 class EncodecCREAdapter(Adapter):
-    def __init__(self, filepath, write_properties, add_provenance, label, hgnc_pickle_path='hgnc_gene_data/hgnc_data.pkl'):
+    def __init__(self, filepath, write_properties, add_provenance, label, taxon_id, hgnc_pickle_path='hgnc_gene_data/hgnc_data.pkl'):
         self.filepath = filepath
         self.label = label
         self.source = "ENCODE cCRE"
         self.source_url = "https://screen.wenglab.org/downloads"
         self.hgnc_pickle_path = hgnc_pickle_path
-
-        self.hgnc_processor = HGNCSymbolProcessor()
-        self.hgnc_processor.update_hgnc_data()
-        
-        try:
-            with open(self.hgnc_pickle_path, 'rb') as f:
-                data = pickle.load(f)
+        self.taxon_id = taxon_id
+        if taxon_id == 9606:
+            self.hgnc_processor = HGNCSymbolProcessor()
+            self.hgnc_processor.update_hgnc_data()
             
-            self.current_symbols = data['current_symbols']
-            self.symbol_aliases = data['symbol_aliases']
-            self.ensembl_to_symbol = data['ensembl_to_symbol']
-            
-            self.symbol_to_ensembl = {}
-            for ensembl_id, symbol in self.ensembl_to_symbol.items():
-                if ensembl_id.startswith('ENSG') and '.' not in ensembl_id:
-                    self.symbol_to_ensembl[symbol] = ensembl_id
-            
-            print(f"HGNC data loaded from {self.hgnc_pickle_path}")
-        except Exception as e:
-            print(f"Error loading HGNC data: {e}")
-            print("Proceeding without HGNC data")
-            self.current_symbols = {}
-            self.symbol_aliases = {}
-            self.ensembl_to_symbol = {}
-            self.symbol_to_ensembl = {}
+            try:
+                with open(self.hgnc_pickle_path, 'rb') as f:
+                    data = pickle.load(f)
+                
+                self.current_symbols = data['current_symbols']
+                self.symbol_aliases = data['symbol_aliases']
+                self.ensembl_to_symbol = data['ensembl_to_symbol']
+                
+                self.symbol_to_ensembl = {}
+                for ensembl_id, symbol in self.ensembl_to_symbol.items():
+                    if ensembl_id.startswith('ENSG') and '.' not in ensembl_id:
+                        self.symbol_to_ensembl[symbol] = ensembl_id
+                
+                print(f"HGNC data loaded from {self.hgnc_pickle_path}")
+            except Exception as e:
+                print(f"Error loading HGNC data: {e}")
+                print("Proceeding without HGNC data")
+                self.current_symbols = {}
+                self.symbol_aliases = {}
+                self.ensembl_to_symbol = {}
+                self.symbol_to_ensembl = {}
 
         super(EncodecCREAdapter, self).__init__(write_properties, add_provenance)
 
@@ -66,7 +71,7 @@ class EncodecCREAdapter(Adapter):
                     accession_d = fields[3]
                     accession_e = fields[4]
 
-                    props = {}
+                    props = {'taxon_id': f'NCBITaxon:{self.taxon_id}'}
                     if self.write_properties:
                         props.update({
                             'chr': chrom,
@@ -74,6 +79,7 @@ class EncodecCREAdapter(Adapter):
                             'end': end,
                             'accession_d': accession_d,
                             'accession_e': accession_e,
+                            
                         })
 
                         if self.add_provenance:
@@ -98,7 +104,10 @@ class EncodecCREAdapter(Adapter):
                     nearest_gene = fields[6]
                     distance = int(fields[7])
 
-                    gene_id = f"ENSEMBL:{self._get_ensembl_id(nearest_gene)}"
+                    if self.taxon_id == 9606:
+                        gene_id = f"ENSEMBL:{self._get_ensembl_id(nearest_gene)}"
+                    else:
+                        gene_id = f"ENSEMBL:{nearest_gene}"
 
                     props = {
                         'distance': distance

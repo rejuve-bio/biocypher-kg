@@ -16,10 +16,18 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # URS0000000006_1317357    GO:0005840    Rfam:RF02541
 # URS0000000008_381046    GO:0030533    Rfam:RF00005
 
+
+# Fly data:
+# https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+# http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+
+# ID mappings:
+# https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/
+
 class RNACentralAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'id': 3, 'rna_type': 13}
 
-    def __init__(self, filepath, rfam_filepath, write_properties, add_provenance,
+    def __init__(self, filepath, rfam_filepath, write_properties, add_provenance, taxon_id,
                  type=None, label=None, 
                  chr=None, start=None, end=None, 
                  mapping_file='aux_files/go_subontology_mapping.pkl'):
@@ -35,6 +43,7 @@ class RNACentralAdapter(Adapter):
         self.source = 'RNAcentral'
         self.version = '24'
         self.source_url = 'https://rnacentral.org/downloads'
+        self.taxon_id = taxon_id
 
         self.subontology = None
         self.subontology_mapping = None
@@ -73,7 +82,7 @@ class RNACentralAdapter(Adapter):
                         props['start'] = start
                         props['end'] = end
                         props['rna_type'] = infos[RNACentralAdapter.INDEX['rna_type']].strip()
-                    
+                        props['taxon_id'] = f'NCBITaxon:{self.taxon_id}'
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -105,6 +114,7 @@ class RNACentralAdapter(Adapter):
                 props = {}
                 if self.write_properties:
                     props['rfam'] = rfam
+                    props['taxon_id'] = f'NCBITaxon:{self.taxon_id}'
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url

@@ -18,7 +18,7 @@ class ReactomePathwayGOAdapter(Adapter):
     Filters pathways to only include terms from the specified subontology.
     """
     
-    def __init__(self, filepath, write_properties, add_provenance, 
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id,
                  subontology, mapping_file='aux_files/go_subontology_mapping.pkl'):
         super().__init__(write_properties, add_provenance)
         
@@ -26,6 +26,7 @@ class ReactomePathwayGOAdapter(Adapter):
             raise ValueError("Invalid subontology specified")
             
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.subontology = subontology
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"

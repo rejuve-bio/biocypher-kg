@@ -44,15 +44,20 @@ from biocypher_metta.adapters import Adapter
 
 class GAFAdapter(Adapter):
     DATASET = 'gaf'
-    RNACENTRAL_ID_MAPPING_PATH = './samples/rnacentral_ensembl_gencode.tsv.gz'
+    RNACENTRAL_ID_MAPPING_PATH = './aux_files/hsa/rnacentral_ensembl_gencode.tsv.gz'
     SOURCES = {
         'human': 'http://geneontology.org/gene-associations/goa_human.gaf.gz',
         'human_isoform': 'http://geneontology.org/gene-associations/goa_human_isoform.gaf.gz',
         'rna': 'http://geneontology.org/gene-associations/goa_human_rna.gaf.gz',
-        'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv'
+        'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
+        # dmel GAF file for GO annotations:
+        # Flybase GAF file is updated more frequently than GO one.
+        'flybase': 'https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz'
+        # other species/organism come here:
+
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human', 
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, gaf_source = 'GOA', gaf_type='human', 
                  label=None, mapping_file='aux_files/go_subontology_mapping.pkl', hgnc_to_ensembl_map=None):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
@@ -63,8 +68,9 @@ class GAFAdapter(Adapter):
         self.type = gaf_type
         self.label = label
         self.hgnc_to_ensembl_map = None if hgnc_to_ensembl_map == None else pickle.load(open(hgnc_to_ensembl_map, 'rb'))
-        self.source = "GOA"
+        self.source = gaf_source
         self.source_url = GAFAdapter.SOURCES[gaf_type]
+        self.taxon_id = taxon_id
 
         self.subontology = None
         self.subontology_mapping = None
@@ -100,16 +106,20 @@ class GAFAdapter(Adapter):
             negated = True
         return negated
 
+
     def get_edges(self):
         if self.type == 'rna':
             self.load_rnacentral_mapping()
-
         with gzip.open(self.filepath, 'rt') as input_file:
             for annotation in gafiterator(input_file):
                 # Skip if qualifier contains 'NOT'
                 if "NOT" in annotation['Qualifier']:
+                    print(f"annotation['Qualifier']  :::------>   {annotation['Qualifier']}")
                     continue
-                
+                if self.taxon_id != int(annotation['Taxon_ID'][0].split(':')[-1]):
+                    print(f"annotation['Taxon_ID'][0].split(':')[-1]  :::------>   {annotation['Taxon_ID'][0].split(':')[-1]}")
+                    continue
+                label = self.label
                 # Get raw IDs
                 source_raw = annotation['DB_Object_ID']
                 gene_symbol = annotation['DB_Object_Symbol']
@@ -126,10 +136,14 @@ class GAFAdapter(Adapter):
                     transcript_id = self.rnacentral_mapping.get(source_raw)
                     if transcript_id is None:
                         continue
-                    source = f"RNACENTRAL:{source_raw}"  # CURIE format for RNAcentral
+                    source = ("transcript", f"RNACENTRAL:{source_raw}")  # CURIE format for RNAcentral
+                elif self.type == 'flybase':
+                    label = "biological_process_gene"
+                    source = ("gene", f"ENSEMBL:{source_raw}")    # Flybase use genes
                 else:
                     # Default to UniProt for protein annotations
-                    source = f"UniProt:{source_raw}"
+                    source = ("protein", f"UniProt:{source_raw}")
+
 
                 # Cellular component filtering using qualifier
                 qualifier = annotation['Qualifier']
@@ -143,28 +157,35 @@ class GAFAdapter(Adapter):
                     else:
                         continue
                 
-                # use gene instead of protein
-                if self.hgnc_to_ensembl_map != None:
+                # use gene instead of protein (for human)
+                if self.hgnc_to_ensembl_map != None and self.taxon_id == 9606:
                     ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_symbol, None)
                     if ensembl_gene_id == None:
                         continue
-                    source = f"ENSEMBL:{ensembl_gene_id}"  # CURIE format for Ensembl
+                    label = "biological_process_gene"
+                    source = ("gene", f"ENSEMBL:{ensembl_gene_id}")  # CURIE format for Ensembl
                 
-                # Check for redundancy
-                edge = (source, target, self.label)
+                # Check for redundancy  (Not necessary if we use DAS)
+                edge = (source, target, label)
                 if edge in self.seen_edges:
                     continue  
                 self.seen_edges.add(edge)  
-                
+                if source[0] == 'protein':
+                    print(f'gaaaaaafff protein... {source}')                
                 props = {}
                 if self.write_properties:
+                    # if self.taxon_id != int(annotation['Taxon_ID'][0].split(':')[-1]):
+                    #     raise ValueError(f'GAFAdapter::Invalid taxon. taxon_id parameter ({self.taxon_id}) different from data taxon id ({annotation['Taxon_ID'][0].split(':')[-1]}) ')
                     props = {
                         'qualifier': qualifier,
                         'db_reference': annotation['DB:Reference'],
-                        'evidence': annotation['Evidence']
+                        'evidence': annotation['Evidence'],
+                        "taxon_id": f'NCBITaxon:{self.taxon_id}'
                     }
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-
-                yield source, target, self.label, props
+                if label != self.label:                    
+                    yield source, target, label, props
+                else:
+                    yield source, target, self.label, props
