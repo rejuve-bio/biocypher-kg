@@ -4,6 +4,7 @@ import csv
 from pathlib import Path
 from biocypher._logger import logger
 from biocypher_metta import BaseWriter
+import re
 
 class KGXWriter(BaseWriter):
     '''
@@ -20,6 +21,14 @@ class KGXWriter(BaseWriter):
             "'": "",
             '"': ""
         })
+
+        self.type_hierarchy = {
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+        }
+
         self._node_headers = defaultdict(set)
         self._edge_headers = defaultdict(set)
         self._temp_files = {}
@@ -36,25 +45,29 @@ class KGXWriter(BaseWriter):
         self.create_edge_types()
         self.create_node_types()
 
+        # specific for edge IDs
+        # Uppercase the token immediately before a colon (e.g., UniProtKB:, go:)
+        self.CURIE_BEFORE_COLON = re.compile(r'([A-Za-z][A-Za-z0-9]*)\:')
+
+
     def create_edge_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         self.edge_node_types = {}
 
         for k, v in schema.items():
             if v.get("represented_as") == "edge":
-                edge_type = self._normalize_label(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
 
                 if source_type and target_type:
                     if isinstance(v["input_label"], list):
-                        label = self._normalize_label(v["input_label"][0])
-                        source_type = self._normalize_label(source_type[0])
-                        target_type = self._normalize_label(target_type[0])
+                        label = self._to_lower(v["input_label"][0])
+                        source_type = self._to_lower(source_type[0])
+                        target_type = self._to_lower(target_type[0])
                     else:
-                        label = self._normalize_label(v["input_label"])
-                        source_type = self._normalize_label(source_type)
-                        target_type = self._normalize_label(target_type)
+                        label = self._to_lower(v["input_label"])
+                        source_type = self._to_lower(source_type)
+                        target_type = self._to_lower(target_type)
                     output_label = v.get("output_label", label)
 
                     self.edge_node_types[label.lower()] = {
@@ -70,9 +83,9 @@ class KGXWriter(BaseWriter):
         for k, v in schema.items():
             if v.get("represented_as") == "node":
                 if isinstance(v["input_label"], list):
-                    label = self._normalize_label(v["input_label"][0])
+                    label = self._to_lower(v["input_label"][0])
                 else:
-                    label = self._normalize_label(v["input_label"])
+                    label = self._to_lower(v["input_label"])
                 output_label = v.get("output_label", label)
                 
                 self.node_configs[label.lower()] = {
@@ -85,7 +98,7 @@ class KGXWriter(BaseWriter):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         
         for label, config in schema.items():
-            normalized_label = self._normalize_label(config.get("input_label"))
+            normalized_label = self._to_lower(config.get("input_label"))
             
             if config.get("represented_as") == "node":
                 if isinstance(normalized_label, list):
@@ -127,7 +140,12 @@ class KGXWriter(BaseWriter):
         """Extract valid properties from edge schema including KGX properties"""
         # Required edge properties
         self.edge_schema_properties[label].update([
-            'id', 'subject', 'object', 'label', 'source_type', 'target_type'
+            'id',               # unique ID for an edge: subject + '_' + label + '_' + object
+            'subject',          # source node's ID of an edge
+            'object',           # target node's ID of an edge
+            'label',            # "type" of an edge
+            'source_type',      # subject's type
+            'target_type'       # object's type
         ])
         
         # Add predicate if defined in schema
@@ -177,16 +195,18 @@ class KGXWriter(BaseWriter):
                 if parent_config.get('inherit_properties', False):
                     self._add_inherited_properties(label, parent_config)
 
-    def _normalize_label(self, label):
+    def _to_lower(self, label):
+        """ Return lower(labe(s)); otherwise, None"""
         if not label:
             return label
         if isinstance(label, list):
             return [l.lower().replace(" ", "_") for l in label]
         return label.lower().replace(" ", "_")
 
+
     def _validate_node_properties(self, label, properties):
         """Validate node properties against schema and return only valid ones"""
-        normalized_label = self._normalize_label(label)
+        normalized_label = self._to_lower(label)
         if isinstance(normalized_label, list):
             normalized_label = normalized_label[0]
         
@@ -201,7 +221,7 @@ class KGXWriter(BaseWriter):
 
     def _validate_edge_properties(self, label, properties):
         """Validate edge properties against schema and return only valid ones"""
-        normalized_label = self._normalize_label(label)
+        normalized_label = self._to_lower(label)
         if isinstance(normalized_label, list):
             normalized_label = normalized_label[0]
         
@@ -222,19 +242,43 @@ class KGXWriter(BaseWriter):
             return value.translate(self.translation_table)
         return value
 
-    def preprocess_id(self, prev_id):
-      if isinstance( prev_id, tuple ):
-          prev_id = prev_id[1]
-      """Ensure ID remains in CURIE format while cleaning special characters"""
-      if ':' in prev_id:
-          prefix, local_id = prev_id.split(':', 1)
-          # Standardize prefix to uppercase
-          prefix = prefix.upper()
-          # Clean local ID (remove duplicate prefix if present)
-          clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-          clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-          return f"{prefix}:{clean_local}"
-      return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+    
+    def preprocess_id(self, prev_id: str, is_edge_id = False):
+        """
+        Ensure ID remains in CURIE format while cleaning special characters 
+        """
+        if not is_edge_id:     
+            if isinstance( prev_id, tuple ):
+                prev_id = prev_id[1]
+            if ':' in prev_id:
+                prefix, local_id = prev_id.split(':', 1)
+                # Standardize prefix to uppercase
+                prefix = prefix.upper()
+                # Clean local ID (remove duplicate prefix if present)
+                clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
+                clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
+                return f"{prefix}:{clean_local}"
+            return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+        else:
+            return self.CURIE_BEFORE_COLON.sub(lambda m: m.group(1).upper() + ':', prev_id).replace(':', '_')
+            # print(prev_id)
+            # # ENsseemmMBL:ENSG00000000938_genes_pathways_REACT:R-HSA-418346
+            # toks = prev_id.split(':')
+            # pre_source = toks[0].upper()
+            # print(pre_source)
+            # in_between_toks = toks[1].split('_')
+            # pre_target = in_between_toks[-1].upper()
+            # print(pre_target)
+            
+            # id = f'{pre_source}_'
+            # _len = len(in_between_toks)
+            # for i in range(_len - 1):
+            #     id += f'{in_between_toks[i]}_'
+            #     print(id)
+            # id += pre_target + '_' + toks[-1]
+            # print(id)
+            # return id
+
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
@@ -277,7 +321,7 @@ class KGXWriter(BaseWriter):
         try:
             for node in nodes:
                 node_id, label, properties = node
-                normalized_label = self._normalize_label(label)
+                normalized_label = self._to_lower(label)
                 node_freq[normalized_label] += 1
                 
                 # Get node info from schema
@@ -352,6 +396,63 @@ class KGXWriter(BaseWriter):
                 
         return node_freq, self._node_headers
 
+    # def _normalize_id(self, node_id, allowed_types, role):
+    #     """
+    #     Normalize a node identifier that can be either a plain ID (string)
+    #     or a (type, id) tuple. If a tuple is provided, the type is validated
+    #     against the allowed types for the given node and the raw ID value is returned.
+
+    #     Parameters:
+    #         node_id: str | tuple[str, str]
+    #             The node identifier. It can be:
+    #             - a string representing the raw ID, or
+    #             - a tuple (type, id) where 'type' is the semantic category and 'id' is the raw ID.
+    #         allowed_types: Collection[str]
+    #             Set or list of allowed semantic types for this role (e.g., {"gene", "protein"}).
+    #         role: str
+    #             A label used in error messages to indicate which endpoint is being validated
+    #             (e.g., "source" or "target").
+
+    #     Returns:
+    #         str: The normalized raw ID value.
+
+    #     Raises:
+    #         TypeError: If a tuple is provided and its type is not included in allowed_types.
+    #     """
+    #     # If node_id is a (type, id) tuple, validate the type and return the raw id value.
+    #     if isinstance(node_id, tuple):
+    #         typ, val = node_id
+    #         # Ensure the provided type is one of the allowed semantic categories.
+    #         if typ not in allowed_types:
+    #             raise TypeError(f"{role} type '{typ}' must be one of {allowed_types}")
+    #         return val
+    #     # Otherwise, assume node_id is already a plain ID string and return it as-is.
+    #     return node_id
+
+    def _get_true_edge_end_type(self, supertype: str, edge_end_id):
+        """
+            Checks the type of an edge's (source or target) if it's different from the schema.
+
+            supertype: supertype of edge_end_id's type. It must be in the edge's schema definition
+            edge_end_id:    source or target id of an edge. 
+                            If it's a  string then supertype is the type to be returned
+                            Otherwise, if it's a tuple, its first element carries the true 
+                            type that must be in the self.type_hierarchy dictionary
+        """
+        if isinstance(edge_end_id, str):
+            return supertype
+        if isinstance(edge_end_id, tuple):
+            end_type = edge_end_id[0]
+            if supertype in self.type_hierarchy:
+                if end_type in self.type_hierarchy[supertype]:
+                    return end_type
+                else:
+                    raise TypeError(f"{end_type}, the type of the node {edge_end_id[1]} is not a(n) {supertype}")
+            else:
+                raise TypeError(f"Supertype {supertype} of {edge_end_id} is not an allowed supertype.")
+        else:
+            raise TypeError(f"{edge_end_id} should be a str or tuple...")                                                                                   
+
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
@@ -363,38 +464,49 @@ class KGXWriter(BaseWriter):
         try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
-                normalized_label = self._normalize_label(label)
+                normalized_label = self._to_lower(label)
                 edge_freq[normalized_label] += 1
             
                 # Get edge info from schema
                 edge_info = self.edge_node_types.get(normalized_label, {})
                 edge_config = self.edge_configs.get(normalized_label, {})  # Get full config
-                source_type = edge_info.get("source", "")
-                target_type = edge_info.get("target", "")
+
+                # tuples are used to carry the type of source/target in schemas that accept more than one (related) types
+                # For example: gene, transcript, and protein are GeneOrGeneProducts in Biolink type system.
+                # Only types defined in the schema are legal ones. self.get_true_edge_end_type() checks and return the correct ids
+                source_type = self._get_true_edge_end_type( edge_info.get("source", ""), source_id ) # source_id could be a tuple
+                target_type = self._get_true_edge_end_type( edge_info.get("target", ""), target_id ) # target_id could be a tuple
                 edge_label = edge_info.get("output_label", normalized_label)
-                
-               
-                kgx_props = edge_config.get('kgx_properties', {})
-                
+                               
+                kgx_props = edge_config.get('kgx_properties', {})                
                 validated_props = self._validate_edge_properties(normalized_label, properties)
+                
                 if isinstance(source_id, tuple):
-                    if source_id[0] not in edge_info["source"]:
-                        raise TypeError(f"Type '{source_id[0]}' must be one of {edge_info['source']}")
-                    check target_id also
-                    edge_id = properties.get('id', f"{source_id[1]}_{edge_label}_{target_id}")
+                    edge_source = source_id[1]
                 else:
-                    edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
-    
+                    edge_source = source_id
+                if isinstance(target_id, tuple):
+                    edge_target = target_id[1]
+                else:
+                    edge_target = target_id
+                    
+                # id is mandatory, but we don't need to require this ID from clients, as we can create it here...
+                # edge_id = str(properties.get("id", f"{edge_source}_{edge_label}_{edge_target}"))
+                edge_id = self.preprocess_id(f"{edge_source}_{edge_label}_{edge_target}", is_edge_id = True)
+                # print(edge_id)
                 # Create base edge data with required properties
                 edge_data = {
-                    'id': self.preprocess_id(edge_id),
+                    # 'id': edge_id,                            #  Look below
                     'subject': self.preprocess_id(source_id),
                     'object': self.preprocess_id(target_id),
                     'label': edge_label,
                     'source_type': source_type,
                     'target_type': target_type,
-                    **validated_props
+                    **validated_props           # this already has an 'id' entry that overwrites the 'id' above
                 }
+                edge_data['id'] = edge_id       # creates/updates the 'id' entry. 
+     
+                # print(edge_data['id'])
                 
                 # Add predicate if defined in schema
                 if 'predicate' in self.edge_schema_properties.get(normalized_label, set()):

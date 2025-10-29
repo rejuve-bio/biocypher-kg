@@ -169,9 +169,7 @@ class GAFAdapter(Adapter):
                 edge = (source, target, label)
                 if edge in self.seen_edges:
                     continue  
-                self.seen_edges.add(edge)  
-                if source[0] == 'protein':
-                    print(f'gaaaaaafff protein... {source}')                
+                self.seen_edges.add(edge)          
                 props = {}
                 if self.write_properties:
                     # if self.taxon_id != int(annotation['Taxon_ID'][0].split(':')[-1]):

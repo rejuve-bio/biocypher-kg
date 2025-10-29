@@ -58,7 +58,6 @@ class ReactomePathwayAdapter(Adapter):
                                 props['source'] = self.source
                                 props['source_url'] = self.source_url
                                 props['taxon_id'] = f'NCBITaxon:{self.taxon_id}'
-                        print(f'Yielding pathway node {pathway_id.lower()}...............')
                         yield pathway_id, self.label, props
                 elif self.taxon_id == 7227:           
                     if species == 'Drosophila melanogaster':

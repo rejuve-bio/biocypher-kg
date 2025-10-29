@@ -4,6 +4,10 @@ biocypher:
   offline: true
   debug: false
   #schema_config_path: config/schema_config.yaml    # schema_config_path is a parameter to create_knowledge_graph
+  head_ontology:
+    url: config/biolink-model.owl.ttl  # https://github.com/biolink/biolink-model/raw/v3.2.1/biolink-model.owl.ttl
+    root_node: entity
+  bmt_model_path: config/biolink-model.yaml
 
 neo4j:
   delimiter: '\t'

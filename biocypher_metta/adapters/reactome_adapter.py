@@ -32,7 +32,7 @@ class ReactomeAdapter(Adapter):
     ALLOWED_LABELS = ['genes_pathways',
                       'parent_pathway_of', 'child_pathway_of']
 
-    def __init__(self, filepath, label, write_properties, add_provenance, ensembl_uniprot_map_path=None, taxon_id=None):
+    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
         """
         Added taxon_id parameter to handle multiple species data.
 
@@ -91,6 +91,7 @@ class ReactomeAdapter(Adapter):
                 if self.label == 'genes_pathways':
                     entity_id, pathway_id = data[0], data[1]
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
+                    
                     pathway_id = f'REACT:{pathway_id}'
                     if organism_pathway_prefix in organism_taxon_map:
                         taxon = organism_taxon_map[organism_pathway_prefix]
@@ -114,11 +115,14 @@ class ReactomeAdapter(Adapter):
                                     print(f"No UniProt mapping for {entity_id}")
                                     continue
                             source = (source_type, curie_entity_id)
-                            target = pathway_id
-                            yield source, target, self.label, props
+                            # target = pathway_id
+                            # Mandatory property for KGXWriter
+                            props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
+                            yield source, pathway_id, self.label, props
 
                         # Drosophila only
                         elif self.taxon_id == 7227 and organism_pathway_prefix == 'R-DME':
+                            # print(f'path: {organism_pathway_prefix} // {pathway_id}')
                             # source_type = self._get_entity_type(entity_id)
                             if entity_id.startswith('FBpp'):
                                 uniprot_id = self.ensembl_uniprot_map.get(entity_id)
@@ -132,8 +136,10 @@ class ReactomeAdapter(Adapter):
                             else:
                                 curie_entity_id = f'ENSEMBL:{entity_id}'
                             source = (source_type, curie_entity_id)
-                            target = pathway_id
-                            yield source, target, self.label, props
+                            # target = pathway_id
+                            # Mandatory property for KGXWriter
+                            props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
+                            yield source, pathway_id, self.label, props
                         # Human only
                         elif self.taxon_id == 9606 and organism_pathway_prefix == 'R-HSA':
                             # source_type = self._get_entity_type(entity_id)
@@ -152,8 +158,11 @@ class ReactomeAdapter(Adapter):
                                     continue
 
                             source = (source_type, curie_entity_id)
-                            target = pathway_id
-                            yield source, target, self.label, props
+                            # target = pathway_id
+                            # Mandatory property for KGXWriter
+                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
+                            # print(f"reactome: {props['id']}")
+                            yield source, pathway_id, self.label, props
                 else:
                     # Handle pathway-pathway relationships
                     parent, child = data[0], data[1]

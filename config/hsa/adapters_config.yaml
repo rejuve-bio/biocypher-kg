@@ -340,8 +340,8 @@ gaf_molecular_function_gene:
       hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
       taxon_id: 9606  
   outdir: gaf
-    nodes: False
-    edges: True
+  nodes: False
+  edges: True
 
 gaf_cellular_component_gene_part_of:
   adapter:
@@ -1046,9 +1046,6 @@ polyphen2:
       filepath: /mnt/hdd_1/abdu/biocypher_data/polyphen2/dbNsfpPolyPhen2.bed.gz
 
   outdir: polyphen-2
-  nodes: True
-  edges: False
-outdir: polyphen-2
   nodes: True
   edges: False
 

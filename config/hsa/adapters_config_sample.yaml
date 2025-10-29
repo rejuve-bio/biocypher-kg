@@ -1,80 +1,80 @@
 
-# gencode_gene:
-#   adapter:
-#     module: biocypher_metta.adapters.gencode_gene_adapter
-#     cls: GencodeGeneAdapter
-#     args:
-#       filepath: ./samples/hsa/gencode_sample.gtf.gz
-#       gene_alias_file_path: ./aux_files/hsa/Homo_sapiens.gene_info.gz
-#       taxon_id: 9606
-#   outdir: gencode/gene
-#   nodes: True
-#   edges: False
+gencode_gene:
+  adapter:
+    module: biocypher_metta.adapters.gencode_gene_adapter
+    cls: GencodeGeneAdapter
+    args:
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
+      gene_alias_file_path: ./aux_files/hsa/Homo_sapiens.gene_info.gz
+      taxon_id: 9606
+  outdir: gencode/gene
+  nodes: True
+  edges: False
 
 
-# gencode_transcripts:
+gencode_transcripts:
+  adapter:
+    module: biocypher_metta.adapters.gencode_transcript_adapter
+    cls: GencodeTranscriptAdapter
+    args:
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
+      type: transcript
+      label: transcript
+      taxon_id: 9606
+  outdir: gencode/transcript
+  nodes: True
+  edges: False
+
+
+transcribed_to:
+  adapter:
+    module: biocypher_metta.adapters.gencode_transcript_adapter
+    cls: GencodeTranscriptAdapter
+    args:
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
+      type: transcribed to
+      label: transcribed_to
+      taxon_id: 9606
+  outdir: gencode/transcript
+  nodes: False
+  edges: True
+
+# transcribed_from:
 #   adapter:
 #     module: biocypher_metta.adapters.gencode_transcript_adapter
 #     cls: GencodeTranscriptAdapter
 #     args:
 #       filepath: ./samples/hsa/gencode_sample.gtf.gz
-#       type: transcript
-#       label: transcript
-#       taxon_id: 9606
-#   outdir: gencode/transcript
-#   nodes: True
-#   edges: False
+#       type: transcribed from
+#       label: transcribed_from
 
-
-# transcribed_to:
-#   adapter:
-#     module: biocypher_metta.adapters.gencode_transcript_adapter
-#     cls: GencodeTranscriptAdapter
-#     args:
-#       filepath: ./samples/hsa/gencode_sample.gtf.gz
-#       type: transcribed to
-#       label: transcribed_to
-#       taxon_id: 9606
 #   outdir: gencode/transcript
 #   nodes: False
 #   edges: True
 
-# # transcribed_from:
-# #   adapter:
-# #     module: biocypher_metta.adapters.gencode_transcript_adapter
-# #     cls: GencodeTranscriptAdapter
-# #     args:
-# #       filepath: ./samples/hsa/gencode_sample.gtf.gz
-# #       type: transcribed from
-# #       label: transcribed_from
 
-# #   outdir: gencode/transcript
-# #   nodes: False
-# #   edges: True
+gencode_exon:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
+      taxon_id: 9606
+  outdir: gencode/exon
+  nodes: True
+  edges: False
 
-
-# gencode_exon:
-#   adapter:
-#     module: biocypher_metta.adapters.gencode_exon_adapter
-#     cls: GencodeExonAdapter
-#     args:
-#       filepath: ./samples/hsa/gencode_sample.gtf.gz
-#       taxon_id: 9606
-#   outdir: gencode/exon
-#   nodes: True
-#   edges: False
-
-# transcript_includes_exon:
-#   adapter:
-#     module: biocypher_metta.adapters.gencode_exon_adapter
-#     cls: GencodeExonAdapter
-#     args:
-#       filepath: ./samples/hsa/gencode_sample.gtf.gz
-#       label: includes
-#       taxon_id: 9606      
-#   outdir: gencode/exon
-#   nodes: False
-#   edges: True
+transcript_includes_exon:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
+      label: includes
+      taxon_id: 9606      
+  outdir: gencode/exon
+  nodes: False
+  edges: True
 
 uniprotkb_sprot:
   adapter:
