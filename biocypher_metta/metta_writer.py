@@ -97,16 +97,13 @@ class MeTTaWriter(BaseWriter):
                     file.write(out_str + "\n")
 
     def preprocess_id(self, prev_id):
-        """Ensure ID remains in CURIE format while cleaning special characters"""
+        """Clean ID by removing prefix and uppercasing the identifier"""
         prev_id = str(prev_id)
-        
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            prefix = prefix.upper()
-            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-            return f"{prefix}:{clean_local}"
-        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+            clean_local = local_id.strip().replace(' ', '_').upper()
+            return clean_local
+        return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
