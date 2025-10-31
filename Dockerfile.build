@@ -1,0 +1,26 @@
+FROM biocypher/base:1.2.0
+
+# Install Poetry
+RUN pip install --no-cache-dir poetry==1.8.3
+
+# Copy Poetry config and dependency files
+COPY pyproject.toml poetry.lock /src/
+
+# Set working directory
+WORKDIR /src
+
+# Configure Poetry to use a fallback mirror and increase timeout
+RUN poetry config virtualenvs.create false && \
+    poetry config installer.max-retries 3 && \
+    poetry source add --priority=supplemental pypi-mirror https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/ || true
+
+# Install dependencies with retry logic
+RUN poetry install --no-root || (sleep 5 && poetry install --no-root) || (sleep 10 && poetry install --no-root)
+
+# Create and set permissions for biocypher-log and output directories
+RUN mkdir -p /usr/app/data/biocypher-log /usr/app/data/output_human /usr/app/data/output_fly && \
+    chmod -R 777 /usr/app/data/biocypher-log /usr/app/data/output_human /usr/app/data/output_fly
+
+# Ensure scripts are executable
+COPY scripts/build.sh /src/scripts/build.sh
+RUN chmod +x /src/scripts/build.sh
