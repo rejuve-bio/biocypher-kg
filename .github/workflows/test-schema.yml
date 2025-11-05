@@ -2,40 +2,45 @@ name: Test Adapters Against Schema
 
 on:
   push:
-    branches: "main"
+    branches: ["main"]
 
   pull_request:
-    branches: "main"
+    branches: ["main"]
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10.12"
 
-      - name: Install Poetry
+      - name: Install uv
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
+          curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Cache Poetry packages
+      - name: Cache uv packages
         uses: actions/cache@v3
         with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-poetry-
+            ${{ runner.os }}-uv-
 
       - name: Install dependencies
         run: |
-          poetry install
+          uv sync
 
       - name: Run tests
         run: |
-          poetry run pytest test/test.py --adapters-config=./config/adapters_config_sample.yaml --dbsnp-rsids=./aux_files/sample_dbsnp_rsids.pkl --dbsnp-pos=./aux_files/sample_dbsnp_pos.pkl -v -s
+          uv run pytest test/test.py \
+            --adapters-config=./config/adapters_config_sample.yaml \
+            --dbsnp-rsids=./aux_files/sample_dbsnp_rsids.pkl \
+            --dbsnp-pos=./aux_files/sample_dbsnp_pos.pkl \
+            -v -s
