@@ -1,12 +1,76 @@
 # BioCypher KG
 
 A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher) knowledge graphs with multiple output formats.
-##option 1
-# BioCypher Knowledge Graph CLI Tool
+## Prerequisites
+
+- Python 3.9+  
+- [UV](https://github.com/astral-sh/uv) package manager  
+
+## Quick Start (Option 1)
+
+### 1. Clone and Setup
+```bash
+git clone https://github.com/rejuve-bio/biocypher-kg.git
+cd biocypher-kg
+make setup
+```
+
+### 2. Run the Application
+
+#### Option 1: Interactive Mode (Recommended for new users)
+```bash
+make run
+```
+This will guide you through all parameters step by step with sensible defaults.
+
+#### Option 2: Quick Sample Run
+```bash
+make run-sample WRITER_TYPE=<metta,neo4j,prolog>
+```
+
+#### Option 3: Direct Run with Parameters
+```bash
+make run-direct OUTPUT_DIR=./output \
+               ADAPTERS_CONFIG=./config.yaml \
+               DBSNP_RSIDS=./rsids.txt \
+               DBSNP_POS=./pos.txt \
+               WRITER_TYPE=metta \
+               WRITE_PROPERTIES=no \
+               ADD_PROVENANCE=no
+```
+### Interactive Mode Example
+When you run `make run`, you'll see:
+```
+🚀 Starting interactive knowledge graph creation...
+
+📁 Enter output directory [./output]: 
+⚙️  Enter adapters config path [./config/adapters_config_sample.yaml]: 
+🧬 Enter dbSNP RSIDs path [./aux_files/sample_dbsnp_rsids.pkl]: 
+📍 Enter dbSNP positions path [./aux_files/sample_dbsnp_pos.pkl]: 
+📝 Enter writer type (metta/prolog/neo4j) [metta]: 
+📋 Write properties? (yes/no) [no]: 
+🔗 Add provenance? (yes/no) [no]: 
+```
+
+### Available Make Commands
+```bash
+make help           # Show all commands
+make setup          # Install UV and dependencies
+make run            # Interactive mode (recommended)
+make run-interactive # Same as make run
+make run-direct     # Direct mode with parameters
+make run-sample     # Run with sample data
+make test           # Run tests
+make clean          # Clean temporary files
+make distclean      # Full clean
+```
+
+
+## BioCypher Knowledge Graph CLI Tool (Option 2)
 
 A user-friendly command line interface for generating knowledge graphs using BioCypher, with support for both Human and Drosophila melanogaster (Fly) data.
 
-## Features
+### Features
 
 - 🧬 Human and 🪰 Fly organism support  
 - ⚡ Default configurations for quick start  
@@ -15,12 +79,6 @@ A user-friendly command line interface for generating knowledge graphs using Bio
 - 🔍 Multiple output formats (Neo4j, MeTTa, Prolog)  
 - 📈 Progress tracking and logging  
 
-## Installation
-
-### Prerequisites
-
-- Python 3.9+  
-- Poetry (for dependency management)  
 
 ### Setup
 
@@ -29,12 +87,12 @@ A user-friendly command line interface for generating knowledge graphs using Bio
 git clone https://github.com/rejuve-bio/biocypher-kg.git
 cd biocypher-kg
 
-# 2. Install dependencies using Poetry
-poetry install
+# 2. Install dependencies using UV
+uv sync
 
 # 3. Create required directories and run the CLI
 mkdir -p output_human output_fly
-poetry run python biocypher_cli/cli.py
+uv run python biocypher_cli/cli.py
 
 # 📂 Project Structure:
 # biocypher-kg/
@@ -50,49 +108,7 @@ poetry run python biocypher_cli/cli.py
 # ├── output_human/             # Default human output
 # ├── output_fly/               # Default fly output
 # └── pyproject.toml            # Dependencies
-
-##Option 2
-## ⚙️ Installation (local)
-
-1. Clone this repository.
-```{bash}
-git clone https://github.com/rejuve-bio/biocypher-kg.git
 ```
-
-2. Install the dependencies using [Poetry](https://python-poetry.org/). (Or feel
- free to use your own dependency management system. We provide a `pyproject.toml`
- to define dependencies.)
-```{bash}
-poetry install
-```
-
-3. You are ready to go!
-```{bash}
-poetry shell
-python create_knowledge_graph.py \
-    --output_dir <output_directory> \
-    --adapters_config <path_to_adapters_config> \
-    --dbsnp_rsids <path_to_dbsnp_rsids_map> \
-    --dbsnp_pos <path_to_dbsnp_pos_map> \
-    [--writer_type {metta,prolog,neo4j}] \
-    [--write_properties {true,false}] \
-    [--add_provenance {true,false}]
-```
-
-### Knowledge Graph Creation
-The `create_knowledge_graph.py` script supports multiple configuration options:
-
-**Arguments:**
-- `--output_dir`: Directory to save generated knowledge graph files (required)
-- `--adapters_config`: Path to YAML file with adapter configurations (required)
-- `--dbsnp_rsids`: Path to pickle file with dbSNP RSID mappings (required)
-- `--dbsnp_pos`: Path to pickle file with dbSNP position mappings (required)
-- `--writer_type`: Choose output format (optional)
-  - `metta`: MeTTa format (default)
-  - `prolog`: Prolog format
-  - `neo4j`: Neo4j CSV format
-- `--write_properties`: Include node and edge properties (optional, default: true)
-- `--add_provenance`: Add provenance information (optional, default: true)
 
 ## 🛠 Usage
 
