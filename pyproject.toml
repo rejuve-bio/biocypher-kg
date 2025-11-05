@@ -1,35 +1,104 @@
-[tool.poetry]
-name = "biocypher-metta"
+[project]
+name = "biocypher-kg"
 version = "0.0.1"
-description = "Library creating a BioCypher-driven knowledge graph for Opencog Hyperon"
+description = "Library creating a BioCypher-driven knowledge graph for Opencog Hyperon, Neo4j and Prolog"
 authors = [
     "Abdulrahman S. Omar <xabush@singularitynet.io>",
 ]
-license = "MIT"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-biocypher = "^0.5.4"
-numpy = "^1.23.1"
-tqdm = "^4.64.0"
-pandas = "^2.0.1"
-pyyaml = "^6.0.1"
-biopython = "^1.8.1" #Solution for psycopg2 install error -> https://stackoverflow.com/a/64604562/3380414
-owlready2 = "^0.44"
-obonet = "1.0.0"
-hgvs = "1.5.4"
-typer = ">=0.12.0"
-google-cloud-storage = "^2.14.0" #Needed to download GTex data from Google Cloud Storage
-liftover = "^1.2.2"
-pytest-cov = "^5.0.0"
-setuptools = "*"
-rich = "^14.0.0"
-questionary = "^2.1.0"
-pyarrow = "^20.0.0"
-click = ">=8.1.0"
-
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.10"
+dependencies = [
+    "appdirs==1.4.4",
+    "asttokens==3.0.0",
+    "attrs==25.4.0",
+    "biocommons-seqrepo==0.6.11",
+    "biocypher==0.5.44",
+    "biopython==1.86",
+    "bioutils==0.6.1",
+    "cachetools==6.2.1",
+    "certifi==2025.10.5",
+    "charset-normalizer==3.4.4",
+    "click==8.3.0",
+    "coloredlogs==15.0.1",
+    "colorlog==6.10.1",
+    "configparser==7.2.0",
+    "coverage==7.11.0",
+    "decorator==5.2.1",
+    "exceptiongroup==1.3.0",
+    "executing==2.2.1",
+    "google-api-core==2.28.1",
+    "google-auth==2.42.1",
+    "google-cloud-core==2.5.0",
+    "google-cloud-storage==2.19.0",
+    "google-crc32c==1.7.1",
+    "google-resumable-media==2.7.2",
+    "googleapis-common-protos==1.71.0",
+    "hgvs==1.5.4",
+    "humanfriendly==10.0",
+    "idna==3.11",
+    "importlib-metadata==8.7.0",
+    "iniconfig==2.3.0",
+    "ipython==8.37.0",
+    "isodate==0.6.1",
+    "jedi==0.19.2",
+    "liftover==1.3.3",
+    "markdown-it-py==4.0.0",
+    "matplotlib-inline==0.2.1",
+    "mdurl==0.1.2",
+    "more-itertools==10.8.0",
+    "neo4j==4.4.13",
+    "neo4j-utils==0.0.7",
+    "networkx==3.4.2",
+    "numpy==1.26.4",
+    "obonet==1.0.0",
+    "owlready2==0.44",
+    "packaging==25.0",
+    "pandas==2.3.3",
+    "parsley==1.3",
+    "parso==0.8.5",
+    "pexpect==4.9.0",
+    "platformdirs==4.5.0",
+    "pluggy==1.6.0",
+    "pooch==1.8.2",
+    "prompt-toolkit==3.0.52",
+    "proto-plus==1.26.1",
+    "protobuf==6.33.0",
+    "psycopg2==2.9.11",
+    "ptyprocess==0.7.0",
+    "pure-eval==0.2.3",
+    "pyarrow==20.0.0",
+    "pyasn1==0.6.1",
+    "pyasn1-modules==0.4.2",
+    "pygments==2.19.2",
+    "pyparsing==3.2.5",
+    "pysam==0.23.3",
+    "pytest==8.4.2",
+    "pytest-cov==5.0.0",
+    "python-dateutil==2.9.0.post0",
+    "pytz==2025.2",
+    "pyyaml==6.0.3",
+    "questionary==2.1.1",
+    "rdflib==6.3.2",
+    "requests==2.32.5",
+    "rich==14.2.0",
+    "rsa==4.9.1",
+    "setuptools==80.9.0",
+    "shellingham==1.5.4",
+    "six==1.17.0",
+    "sqlparse==0.5.3",
+    "stack-data==0.6.3",
+    "stringcase==1.2.0",
+    "tabulate==0.9.0",
+    "toml==0.10.2",
+    "tomli==2.3.0",
+    "tqdm==4.67.1",
+    "traitlets==5.14.3",
+    "treelib==1.6.4",
+    "typer==0.20.0",
+    "typing-extensions==4.15.0",
+    "tzdata==2025.2",
+    "urllib3==2.5.0",
+    "wcwidth==0.2.14",
+    "yoyo-migrations==9.0.0",
+    "zipp==3.23.0",
+]
