@@ -39,6 +39,7 @@ jobs:
 
       - name: Run tests
         run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           uv run pytest test/test.py \
             --adapters-config=./config/adapters_config_sample.yaml \
             --dbsnp-rsids=./aux_files/sample_dbsnp_rsids.pkl \

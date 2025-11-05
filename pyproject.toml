@@ -1,5 +1,5 @@
 [project]
-name = "biocypher-kg"
+name = "biocypher-metta"
 version = "0.0.1"
 description = "Library creating a BioCypher-driven knowledge graph for Opencog Hyperon, Neo4j and Prolog"
 authors = [
