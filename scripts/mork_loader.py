@@ -5,6 +5,90 @@ from pathlib import Path
 from mork_client import ManagedMORK
 
 
+def get_user_input():
+    """
+    Get input arguments interactively from the user
+    """
+    print("=== MeTTa Dataset Loader - Interactive Mode ===\n")
+    
+    # Get dataset path
+    while True:
+        dataset_path = input("Enter the dataset path (directory containing .metta files): ").strip()
+        if dataset_path:
+            if os.path.exists(dataset_path):
+                break
+            else:
+                print(f"Error: Path '{dataset_path}' does not exist. Please try again.")
+        else:
+            print("Dataset path cannot be empty. Please try again.")
+    
+    # Get MORK port
+    while True:
+        mork_port_input = input("Enter MORK server port (default: 8080): ").strip()
+        if not mork_port_input:
+            mork_port = 8080
+            break
+        try:
+            mork_port = int(mork_port_input)
+            if mork_port > 0 and mork_port < 65536:
+                break
+            else:
+                print("Port must be between 1 and 65535. Please try again.")
+        except ValueError:
+            print("Invalid port number. Please enter a valid integer.")
+    
+    # Get space name
+    while True:
+        space = input("Enter MORK space name (default: 'default'): ").strip()
+        if not space:
+            space = "default"
+            break
+        if space.strip():
+            break
+        print("Space name cannot be empty. Please try again.")
+    
+    # Get clear before load option
+    while True:
+        clear_input = input("Clear existing data before loading? (y/n, default: y): ").strip().lower()
+        if not clear_input:
+            clear_before_load = True
+            break
+        if clear_input in ['y', 'yes']:
+            clear_before_load = True
+            break
+        elif clear_input in ['n', 'no']:
+            clear_before_load = False
+            break
+        else:
+            print("Please enter 'y' for yes or 'n' for no.")
+    
+    return dataset_path, mork_port, space, clear_before_load
+
+
+def confirm_loading(dataset_path, mork_port, space, clear_before_load):
+    """
+    Confirm the loading parameters with the user
+    """
+    print("\n=== Loading Configuration ===")
+    print(f"Dataset path: {dataset_path}")
+    print(f"MORK server port: {mork_port}")
+    print(f"Target space: {space}")
+    print(f"Clear before load: {'Yes' if clear_before_load else 'No'}")
+    
+    # Count .metta files for confirmation
+    metta_files = glob.glob(os.path.join(dataset_path, "**/*.metta"), recursive=True)
+    print(f"Found {len(metta_files)} .metta files")
+    
+    while True:
+        confirm = input("\nProceed with loading? (y/n): ").strip().lower()
+        if confirm in ['y', 'yes']:
+            return True
+        elif confirm in ['n', 'no']:
+            return False
+        else:
+            print("Please enter 'y' to continue or 'n' to cancel.")
+
+
 def load_metta_dataset(dataset_path, mork_port, space, clear_before_load=True):
     """
     Load MeTTa dataset into MORK server
@@ -96,3 +180,35 @@ def load_metta_dataset(dataset_path, mork_port, space, clear_before_load=True):
     except Exception as e:
         print(f"Error: Failed to load dataset: {e}")
         return False
+
+
+def main():
+    """
+    Main interactive function
+    """
+    try:
+        # Get user input
+        dataset_path, mork_port, space, clear_before_load = get_user_input()
+        
+        # Confirm with user
+        if not confirm_loading(dataset_path, mork_port, space, clear_before_load):
+            print("Loading cancelled by user.")
+            return
+        
+        # Load the dataset
+        print("\nStarting dataset loading...")
+        success = load_metta_dataset(dataset_path, mork_port, space, clear_before_load)
+        
+        if success:
+            print("\n✅ Dataset loading completed successfully!")
+        else:
+            print("\n❌ Dataset loading failed!")
+            
+    except KeyboardInterrupt:
+        print("\n\nOperation cancelled by user.")
+    except Exception as e:
+        print(f"\n❌ An unexpected error occurred: {e}")
+
+
+if __name__ == "__main__":
+    main()
