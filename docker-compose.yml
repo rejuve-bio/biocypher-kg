@@ -1,49 +1,73 @@
-version: '3.3'
+# version: '3.3'
 
 services:
-
   build:
-    image: biocypher/base:1.2.0
+    build:
+      context: .
+      dockerfile: Dockerfile.build
     container_name: build
+    environment:
+      - POETRY_REQUESTS_TIMEOUT=300  # Increase timeout to 5 minutes
     volumes:
       - biocypher_neo4j_volume:/usr/app/data
       - .:/src/
-    command:
-      - /bin/bash
-      - /src/scripts/build.sh
-
-  import:
-    image: neo4j:4.4-enterprise
-    container_name: import
-    environment:
-      NEO4J_AUTH: none
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
-      FILL_DB_ON_STARTUP: "yes"
-    volumes:
-      - biocypher_neo4j_volume:/data
-      - ./scripts/import.sh:/scripts/import.sh
-    command:
-      - /bin/bash
+      - ~/.liftover:/root/.liftover
+      - /mnt/hdd_2/abdu/biocypher_data:/mnt/hdd_2/abdu/biocypher_data  # Mount actual data directory
+    working_dir: /src
+    command: /bin/bash /src/scripts/build.sh
+    networks:
+      - neo4j_network
+  import:  
+    build:  
+      context: .  
+      dockerfile: Dockerfile.import  
+    container_name: import  
+    user: root
+    environment:  
+      NEO4J_URI: bolt://deploy:7687
+      NEO4J_USERNAME: neo4j
+      NEO4J_PASSWORD: password123
+      # OUTPUT_SUBFOLDER can be 'output_human' (default) or 'output_fly' (or any other subfolder)
+      # Override at runtime: docker compose run -e OUTPUT_SUBFOLDER=output_fly import
+      OUTPUT_SUBFOLDER: ${OUTPUT_SUBFOLDER:-output_human}
+    volumes:  
+      - biocypher_neo4j_volume:/usr/app/data  # SAME path as build container
+      - ./scripts:/scripts  
+    command:  
+      - /bin/bash  
       - /scripts/import.sh
-    depends_on:
+    depends_on:  
       build:
-        condition: service_completed_successfully
+        condition: service_completed_successfully  # Wait for build to complete successfully
+      deploy:  
+        condition: service_started
+    networks:
+      - neo4j_network
 
   deploy:
-    image: neo4j:4.4-enterprise
+  
+    image: neo4j:4.4-community
     container_name: deploy
     volumes:
-      - biocypher_neo4j_volume:/data
+      - biocypher_neo4j_volume:/var/lib/neo4j/import/usr/app/data  # Mount data volume at Neo4j import directory
+      - neo4j_data:/data  # Separate volume for Neo4j database files
     environment:
-      NEO4J_dbms_security_auth__enabled: "false"
+      NEO4J_AUTH: neo4j/password123
       NEO4J_dbms_databases_default__to__read__only: "false"
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      # Enable APOC plugin
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+      NEO4J_dbms_security_procedures_allowlist: apoc.*
+      NEO4JLABS_PLUGINS: '["apoc"]'  # Auto-install APOC
     ports:
       - "127.0.0.1:7474:7474"
       - "127.0.0.1:7687:7687"
-    depends_on:
-      import:
-        condition: service_completed_successfully
+    networks:
+      - neo4j_network
 
 volumes:
   biocypher_neo4j_volume:
+  neo4j_data:
+
+networks:
+  neo4j_network:
+    driver: bridge
