@@ -4,8 +4,10 @@ services:
   mork-biocypher:
     build: .
     container_name: mork-biocypher
+    env_file:
+      - .env
     ports:
-      - "8027:8027"
+      - "${HOST_PORT}:8027"
     volumes:
       - ./data:/app/data
       - ./reports:/app/reports

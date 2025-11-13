@@ -29,6 +29,7 @@ cd biocypher-mork
 # Create necessary folders
 mkdir reports
 mkdir benchmarks
+touch .env # update your .env values
 
 # Build Docker containers
 docker compose build
@@ -53,7 +54,7 @@ python3 benchmark.py
 
 ```bash 
 docker run -d \
-  -p 8027:8027 \
+  -p ${HOST_PORT}:8027 \
   --name mork-biocypher \
   -v $(pwd)/data:/app/data \
   -v $(pwd)/reports:/app/reports \

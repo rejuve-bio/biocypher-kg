@@ -3,8 +3,10 @@ import glob
 from pathlib import Path
 from client import MORK   
 
-def connect_to_mork(host="localhost", port=8431):
+def connect_to_mork(host="localhost", port=None):
     """Connect to the running MORK instance."""
+    if port is None:
+        port = os.getenv("HOST_PORT", 8431)
     url = f"http://{host}:{port}"
     print(f"Connecting to MORK at {url} ...")
     server = MORK(url)
@@ -58,7 +60,7 @@ def load_metta_files(server, data_dir):
     print("\n" + "="*50)
     print("...LOADING SUMMARY:")
     print(f"   [SUCCESS] Successfully loaded: {successful_files} files")
-    print(f"   [FAILED] Failed to load: {failed_files} files") 
+    print(f"   [FAILED] Failed to load: {failed_files} files")
     print(f"   Total processed: {len(files)} files")
     print("="*50)
     
@@ -83,11 +85,11 @@ def show_summary(server):
 
 def main():
     # Update the path where .metta files are stored
-    dataset_path = "/mnt/hdd_1/abdu_md/metta_v1"
+    dataset_path = os.getenv("DATASET_PATH", "./data")    
 
     print("... Starting MORK Data Loading Process...")
     
-    server = connect_to_mork("localhost", 8431)
+    server = connect_to_mork("localhost")
     successful, failed = load_metta_files(server, dataset_path)
     show_summary(server)
     
