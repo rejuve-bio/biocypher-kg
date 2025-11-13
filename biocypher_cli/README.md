@@ -46,3 +46,8 @@ poetry run python biocypher_cli/cli.py
 # ├── output_human/             # Default human output
 # ├── output_fly/               # Default fly output
 # └── pyproject.toml            # Dependencies
+```
+```bash
+cd /biocypher-kg
+python biocypher_cli/cli.py
+```
