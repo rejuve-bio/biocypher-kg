@@ -53,16 +53,20 @@ class Neo4jCSVWriter(BaseWriter):
                         }
 
 
-    def preprocess_value(self, value):
+    def preprocess_value(self, value, key=None):
         value_type = type(value)
         if value_type is list:
-            return json.dumps([self.preprocess_value(item) for item in value]).replace('\\"', '"')
+            return json.dumps([self.preprocess_value(item, key) for item in value]).replace('\\"', '"')
         if value_type is rdflib.term.Literal:
-            return str(value).translate(self.translation_table)
-        if value_type is str:
-            return value.translate(self.translation_table)
+            value = str(value).translate(self.translation_table)
+        elif value_type is str:
+            value = value.translate(self.translation_table)
+        
+        # If this is an ID field (contains 'id' or 'ID' in the key), apply preprocess_id
+        if key and ('id' in key.lower() or 'identifier' in key.lower()):
+            return self.preprocess_id(value)
+        
         return value
-
     def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []
@@ -74,24 +78,16 @@ class Neo4jCSVWriter(BaseWriter):
         return processed.lower() if lowercase else processed
 
     def preprocess_id(self, prev_id):
+        """Clean ID by removing prefix and uppercasing the identifier"""
         prev_id = str(prev_id)
         
+        # Split from the right, max 1 split
         if ':' in prev_id:
-            prefix, local_id = prev_id.split(':', 1)
-            prefix = prefix.upper()
+            _, local_id = prev_id.rsplit(':', 1)
+            clean_local = local_id.strip().replace(' ', '_').upper()
+            return clean_local
         
-            if prefix.lower() in self.ontologies:
-                clean_local = local_id.strip().translate(str.maketrans({' ': '_'}))
-                result = f"{prefix}_{clean_local}"
-                return result
-            else:
-                clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-                clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-                result = clean_local
-                return result
-        
-        result = prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
-        return result
+        return prev_id.strip().replace(' ', '_').upper()
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
@@ -174,11 +170,11 @@ class Neo4jCSVWriter(BaseWriter):
                                 chunk.append(json.loads(line))
                                 if len(chunk) >= self.batch_size:
                                     for data in chunk:
-                                        writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
+                                        writer.writerow({k: self.preprocess_value(v, k) for k, v in data.items()})
                                     chunk.clear()
                             
                             for data in chunk:
-                                writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
+                                writer.writerow({k: self.preprocess_value(v, k) for k, v in data.items()})
                 
                 self.write_node_cypher(label, csv_file_path, cypher_file_path)
                 if label in self._temp_files and self._temp_files[label].exists():
@@ -292,11 +288,11 @@ class Neo4jCSVWriter(BaseWriter):
                                 chunk.append(json.loads(line))
                                 if len(chunk) >= self.batch_size:
                                     for data in chunk:
-                                        writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
+                                        writer.writerow({k: self.preprocess_value(v, k) for k, v in data.items()})
                                     chunk.clear()
                         
                             for data in chunk:
-                                writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
+                                writer.writerow({k: self.preprocess_value(v, k) for k, v in data.items()})
             
                 self.write_edge_cypher(edge_label, source_type, target_type, csv_file_path, cypher_file_path)
                 if key in self._temp_files and self._temp_files[key].exists():
