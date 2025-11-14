@@ -41,3 +41,9 @@ class BaseWriter(ABC):
         self.node_freq.clear()
         self.node_props.clear()
         self.edge_freq.clear()
+
+    def save_adapter_metadata(self, adapter_name: str, path_prefix: str = None):
+        pass
+
+    def save_adapter_metadata_from_dict(self, adapter_name: str, path_prefix: str,                                  node_counts: dict, edge_counts: dict, properties: dict):
+        pass
