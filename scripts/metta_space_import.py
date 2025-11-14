@@ -69,7 +69,6 @@ def load_metta_space(input_dir: Annotated[pathlib.Path,
             metta.import_file(full_path)
             logger.debug(memory_usage(f"After loading {full_path}"))
 
-        # get properties of (gene ENSG00000290825)
         prog1 = '''
             !(match &self ($x (gene ENSG00000290825) $y) ($x (gene ENSG00000290825) $y))
         '''
@@ -78,7 +77,6 @@ def load_metta_space(input_dir: Annotated[pathlib.Path,
 
         logger.debug(memory_usage("After executing query"))
 
-        # find genes on chr16 b/n base numbers 53MB and 56MB
         prog2 = '''
             !(match &self (, (chr $g "chr16")
                             (start $g $start)
