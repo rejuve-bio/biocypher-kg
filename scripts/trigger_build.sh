@@ -3,7 +3,7 @@
 set -e
 
 BASE_PATH="${BASE_PATH:-/mnt/hdd_1/kedist/metta_kg_versions}"
-REPO_PATH="${REPO_PATH:-/mnt/hdd_1/kedist/biocypher-deploy}"
+REPO_PATH="${REPO_PATH:-/mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg}"
 LOGS_PATH="${BASE_PATH}/logs"
 BUILD_SCRIPT="${REPO_PATH}/scripts/server_build.sh"
 VERSION=""

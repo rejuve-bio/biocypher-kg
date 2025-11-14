@@ -2,7 +2,7 @@
 
 set -e
 
-REPO_PATH="${REPO_PATH:-/mnt/hdd_1/kedist/biocypher-deploy}"
+REPO_PATH="${REPO_PATH:-/mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg}"
 BASE_PATH="${BASE_PATH:-/mnt/hdd_1/kedist/metta_kg_versions}"
 BUILD_WORKSPACE="${BASE_PATH}/build_workspace"
 LOGS_PATH="${BASE_PATH}/logs"

@@ -274,7 +274,7 @@ jobs:
 
       - name: Upload deploy config to server
         env:
-          CONFIG_PATH: /mnt/hdd_1/kedist/biocypher-deploy/config/deploy_config.yaml
+          CONFIG_PATH: /mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg/config/deploy_config.yaml
         run: |
           if [ "${{ needs.determine_changes.outputs.build_mode }}" == "incremental" ]; then
             echo "📤 Uploading deploy config..."
@@ -296,7 +296,7 @@ jobs:
           CHANGED_OUTDIRS: ${{ needs.determine_changes.outputs.changed_outdirs }}
           COMMIT_SHA: ${{ github.sha }}
           BRANCH: ${{ github.ref_name }}
-          REPO_PATH: /mnt/hdd_1/kedist/biocypher-deploy
+          REPO_PATH: /mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg
           BASE_PATH: /mnt/hdd_1/kedist/metta_kg_versions
         run: |
           echo "🚀 Triggering background build on server..."
@@ -371,7 +371,7 @@ jobs:
           SSH into the server and run:
           \`\`\`bash
           # Check status
-          bash /mnt/hdd_1/kedist/biocypher-deploy/scripts/check_build_status.sh $VERSION
+          bash /mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg/scripts/check_build_status.sh $VERSION
 
           # Monitor live log
           tail -f ${BASE_PATH}/logs/${VERSION}.log
