@@ -8,7 +8,7 @@ import pyarrow.parquet as pq
 from collections import defaultdict
 from biocypher._logger import logger
 from biocypher_metta import BaseWriter
-
+import re
 
 class ParquetWriter(BaseWriter):
     """
@@ -53,36 +53,57 @@ class ParquetWriter(BaseWriter):
         self._edge_headers = defaultdict(set)
         self._temp_files = {}
         self.temp_buffer = defaultdict(list)
+    def safe_schema(self):
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        safe = {}
+        for k, v in schema.items():
+            try:
+                # Will raise TypeError if entity belongs to multiple types
+                if v.get("represented_as"):
+                    safe[k] = v
+            except TypeError:
+                logger.warning(f"Skipping conflicting entity: {k}")
+                continue
+        return safe
 
     def create_edge_types(self):
         """
         Map edge types to their source and target node types based on the schema.
+        Ensures source/target are always lists of lowercase strings. 
         """
-        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        schema = self.safe_schema()
         self.edge_node_types = {}
 
         for k, v in schema.items():
             if v["represented_as"] == "edge":
                 edge_type = self.convert_input_labels(k)
-                source_type = v.get("source", None)
-                target_type = v.get("target", None)
 
-                if source_type is not None and target_type is not None:
-                    if isinstance(v["input_label"], list):
-                        label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
-                    output_label = v.get("output_label", None)
+                # Handle input_label
+                input_label = v.get("input_label")
+                if isinstance(input_label, list):
+                    label = self.convert_input_labels(input_label[0])
+                else:
+                    label = self.convert_input_labels(input_label)
 
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
-                        "output_label": output_label.lower() if output_label else label
-                    }
+                # Normalize source/target to lists
+                source_types = v.get("source", [])
+                target_types = v.get("target", [])
+                if not isinstance(source_types, list):
+                    source_types = [source_types]
+                if not isinstance(target_types, list):
+                    target_types = [target_types]
+
+                # Lowercase everything
+                source_types = [self.convert_input_labels(s) for s in source_types]
+                target_types = [self.convert_input_labels(t) for t in target_types]
+
+                output_label = v.get("output_label")
+                self.edge_node_types[label.lower()] = {
+                    "source": source_types,
+                    "target": target_types,
+                    "output_label": output_label.lower() if output_label else label,
+                }
+
 
     def preprocess_value(self, value):
         """
@@ -99,14 +120,59 @@ class ParquetWriter(BaseWriter):
         """
         Convert input labels to a uniform format.
         """
-        return label.lower().replace(" ", "_")
+        if not label:
+            logger.warning("Received None or empty label in convert_input_labels")
+            return "unknown_label"
+        return str(label).lower().replace(" ", "_")
+
+
+    
 
     def preprocess_id(self, prev_id):
         """
-        Preprocess IDs for consistent referencing.
+        Normalize IDs for Parquet output:
+        - Accept (type, id) tuples and strings
+        - Remove provider prefixes like 'ensembl_' or 'react_' or 'ensembl:' / 'react:'
+        - Remove surrounding parentheses
+        - Remove leading 'gene'/'protein'/'transcript' tokens if attached
+        - Return a lowercase, normalized id (e.g. 'ensg00000000419' or 'r-hsa-162699')
         """
-        replace_map = str.maketrans({' ': '_', ':':'_'})
-        return prev_id.lower().strip().translate(replace_map)
+        if prev_id is None:
+            return None
+
+        # If tuple like ("GENE", "ENSEMBL:ENSG...") take second element
+        if isinstance(prev_id, tuple):
+            # typical tuple is (type, id)
+            prev_id = prev_id[1] if len(prev_id) > 1 else prev_id[0]
+
+        # ensure string
+        prev_id = str(prev_id).strip()
+
+        # remove surrounding parentheses if any
+        if prev_id.startswith("(") and prev_id.endswith(")"):
+            prev_id = prev_id[1:-1].strip()
+
+        # remove a leading type token e.g. "gene " or "GENE " that may have been prepended
+        prev_id = re.sub(r'^(gene|protein|transcript)\s*', '', prev_id, flags=re.IGNORECASE)
+
+        # unify separators and lowercase
+        normalized = prev_id.strip()
+
+        # remove common provider prefixes and separators
+        # examples to handle:
+        #   "ensembl_ensg00000000419" -> "ensg00000000419"
+        #   "ensembl:ENSG00000000419" -> "ensg00000000419"
+        #   "react_r-hsa-162699" or "REACT:R-HSA-162699" -> "r-hsa-162699"
+        normalized = normalized.replace("ENSEMBL:", "").replace("ensembl:", "")
+        normalized = normalized.replace("REACT:", "").replace("react:", "")
+        normalized = normalized.replace("ensembl_", "").replace("react_", "")
+
+        # replace spaces with underscore, keep hyphens as-is, lowercase
+        normalized = normalized.replace(" ", "_").lower()
+
+        return normalized
+
+
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         """
@@ -156,7 +222,7 @@ class ParquetWriter(BaseWriter):
 
     def write_nodes(self, nodes, path_prefix=None, adapter_name=None):
         """
-        Write nodes to Parquet files
+        Write nodes to Parquet files, skipping nodes that belong to multiple entity types.
         """
         self.temp_buffer.clear()
         self._temp_files.clear()
@@ -167,20 +233,30 @@ class ParquetWriter(BaseWriter):
         try:
             # First pass: collect data and schema information
             for node in nodes:
-                id, label, properties = node
-                if "." in label:
-                    label = label.split(".")[1]
-                label = label.lower()
-                node_freq[label] += 1
+                try:
+                    id, label, properties = node
+                    if "." in label:
+                        label = label.split(".")[1]
+                    label = label.lower()
+                    node_freq[label] += 1
 
-                writer_key = self._init_node_writer(label, properties, path_prefix, adapter_name)
-                # Filter out excluded properties
-                filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
-                node_data = {'id': self.preprocess_id(id), **filtered_props}
-                self.temp_buffer[label].append(node_data)
+                    writer_key = self._init_node_writer(label, properties, path_prefix, adapter_name)
+                    filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
+                    node_data = {'id': self.preprocess_id(id), **filtered_props}
+                    self.temp_buffer[label].append(
+                        {k: (json.dumps(v) if isinstance(v, list) else self.preprocess_value(v))
+                        for k, v in node_data.items()}
+                    )
 
-                if len(self.temp_buffer[label]) >= self.batch_size:
-                    self._write_buffer_to_temp(label, self.temp_buffer[label])
+                    if len(self.temp_buffer[label]) >= self.batch_size:
+                        self._write_buffer_to_temp(label, self.temp_buffer[label])
+
+                except TypeError as e:
+                    if "belongs to more than one entity types" in str(e):
+                        logger.warning(f"Skipping conflicting node {id}: {e}")
+                        continue
+                    else:
+                        raise
 
             # Flush remaining buffers
             for label in list(self.temp_buffer.keys()):
@@ -189,7 +265,6 @@ class ParquetWriter(BaseWriter):
             # Second pass: convert to Parquet
             for label in self._node_headers.keys():
                 parquet_file_path = output_dir / f"nodes_{label}.parquet"
-
                 if parquet_file_path.exists():
                     parquet_file_path.unlink()
 
@@ -197,17 +272,14 @@ class ParquetWriter(BaseWriter):
                 if label in self._temp_files and self._temp_files[label].exists():
                     with open(self._temp_files[label], 'r') as temp_f:
                         for line in temp_f:
-                            data = json.loads(line)
-                            data_rows.append({k: self.preprocess_value(v) for k, v in data.items()})
+                            data_rows.append(json.loads(line))
 
                 if data_rows:
                     df = pd.DataFrame(data_rows)
-                    # Ensure all columns from headers exist
                     for col in self._node_headers[label]:
                         if col not in df.columns:
                             df[col] = None
 
-                    # Convert to PyArrow Table and write to Parquet
                     table = pa.Table.from_pandas(df)
                     pq.write_table(table, parquet_file_path, compression='snappy')
 
@@ -225,7 +297,8 @@ class ParquetWriter(BaseWriter):
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         """
-        Write edges to Parquet files
+        Write edges to Parquet files, skipping edges that belong to multiple entity types.
+        This version normalizes IDs and resolves gene/transcript/protein by CURIE prefix.
         """
         self.temp_buffer.clear()
         self._temp_files.clear()
@@ -236,39 +309,84 @@ class ParquetWriter(BaseWriter):
         try:
             # First pass: collect data and schema information
             for edge in edges:
-                source_id, target_id, label, properties = edge
-                label = label.lower()
-                edge_freq[label] += 1
+                try:
+                    source_id_raw, target_id_raw, label, properties = edge
+                    label = label.lower()
+                    edge_freq[label] += 1
 
-                # Get edge type information
-                if label in self.edge_node_types:
+                    if label not in self.edge_node_types:
+                        # If label unknown in schema, skip or fallback to writing generic edges
+                        logger.debug(f"Edge label '{label}' not in schema, skipping.")
+                        continue
+
                     edge_info = self.edge_node_types[label]
-                    source_type = edge_info["source"]
-                    target_type = edge_info["target"]
+                    source_types = edge_info["source"]
+                    target_types = edge_info["target"]
 
-                    if source_type == "ontology_term":
-                        source_type = self.preprocess_id(source_id).split('_')[0]
-                    if target_type == "ontology_term":
-                        target_type = self.preprocess_id(target_id).split('_')[0]
-
-                    edge_label = edge_info.get("output_label", label)
-
-                    # Filter out excluded properties
+                    # Filter props per user exclusion before writing
                     filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
-                    edge_data = {
-                        'source_id': self.preprocess_id(source_id),
-                        'target_id': self.preprocess_id(target_id),
-                        'source_type': source_type,
-                        'target_type': target_type,
-                        'label': edge_label,  
-                        **filtered_props
-                    }
 
-                    writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)
-                    self.temp_buffer[writer_key].append(edge_data)
+                    # Clean IDs once
+                    clean_source = self.preprocess_id(source_id_raw)
+                    clean_target = self.preprocess_id(target_id_raw)
 
-                    if len(self.temp_buffer[writer_key]) >= self.batch_size:
-                        self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
+                    # Resolve 'gene'/'transcript'/'protein' by inspecting cleaned id prefix
+                    def resolve_bio_type_from_id(cid):
+                        if not cid:
+                            return "unknown"
+                        c = cid.lower()
+                        if c.startswith("ensg"):
+                            return "gene"
+                        if c.startswith("enst"):
+                            return "transcript"
+                        if c.startswith("ensp"):
+                            return "protein"
+                        # fallback to trying ontology-derived type if provided
+                        return None
+
+                    # Generate edges for all source/target type combinations
+                    for src_type in source_types:
+                        for tgt_type in target_types:
+                            src_type_final = src_type
+                            tgt_type_final = tgt_type
+
+                            # if the schema says 'ontology_term' or a generic 'gene' class,
+                            # try to infer exact biological type from the ID
+                            if isinstance(src_type, str) and src_type.lower() in ("ontology_term", "gene", "transcript", "protein"):
+                                inferred = resolve_bio_type_from_id(clean_source)
+                                if inferred:
+                                    src_type_final = inferred
+                            if isinstance(tgt_type, str) and tgt_type.lower() in ("ontology_term", "gene", "transcript", "protein"):
+                                inferred = resolve_bio_type_from_id(clean_target)
+                                if inferred:
+                                    tgt_type_final = inferred
+
+                            edge_label = edge_info.get("output_label", label)
+
+                            # Build edge row using cleaned ids and filtered props
+                            edge_row = {
+                                "source_id": clean_source,
+                                "target_id": clean_target,
+                                "source_type": src_type_final,
+                                "target_type": tgt_type_final,
+                                "label": edge_label,
+                                **{k: (json.dumps(v) if isinstance(v, list) else self.preprocess_value(v))
+                                for k, v in filtered_props.items()}
+                            }
+
+                            # writer_key uses original label (schema key) for grouping
+                            writer_key = self._init_edge_writer(label, src_type_final, tgt_type_final, edge_row, path_prefix, adapter_name)
+                            self.temp_buffer[writer_key].append(edge_row)
+
+                            if len(self.temp_buffer[writer_key]) >= self.batch_size:
+                                self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
+
+                except TypeError as e:
+                    if "belongs to more than one entity types" in str(e):
+                        logger.warning(f"Skipping conflicting edge {source_id_raw}->{target_id_raw} ({label}): {e}")
+                        continue
+                    else:
+                        raise
 
             # Flush remaining buffers
             for key in list(self.temp_buffer.keys()):
@@ -277,7 +395,6 @@ class ParquetWriter(BaseWriter):
             # Second pass: convert to Parquet
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
-
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 parquet_file_path = output_dir / f"edges_{file_suffix}.parquet"
 
@@ -288,17 +405,14 @@ class ParquetWriter(BaseWriter):
                 if key in self._temp_files and self._temp_files[key].exists():
                     with open(self._temp_files[key], 'r') as temp_f:
                         for line in temp_f:
-                            data = json.loads(line)
-                            data_rows.append({k: self.preprocess_value(v) for k, v in data.items()})
+                            data_rows.append(json.loads(line))
 
                 if data_rows:
                     df = pd.DataFrame(data_rows)
-                    # Ensure all columns from headers exist
                     for col in self._edge_headers[key]:
                         if col not in df.columns:
                             df[col] = None
 
-                    # Convert to PyArrow Table and write to Parquet
                     table = pa.Table.from_pandas(df)
                     pq.write_table(table, parquet_file_path, compression='snappy')
 
@@ -313,6 +427,7 @@ class ParquetWriter(BaseWriter):
             self._temp_files.clear()
 
         return edge_freq
+
 
     def get_output_path(self, prefix=None, adapter_name=None):
         """

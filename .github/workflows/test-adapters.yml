@@ -63,8 +63,8 @@ jobs:
           echo "$CHANGED_FILES"
 
           ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
-          WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog)(?=_writer\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
-          ALL_WRITERS="metta,neo4j,prolog"
+          WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog|parquet|kgx|networkx)(?=_writer\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+          ALL_WRITERS="metta,neo4j,prolog,parquet,kgx,networkx"
 
           echo "adapters=$ADAPTERS" >> $GITHUB_OUTPUT
           echo "writers=$WRITERS" >> $GITHUB_OUTPUT
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        writer-type: [metta, neo4j, prolog]
+        writer-type: [metta, neo4j, prolog, parquet, kgx, networkx]
 
     steps:
       - uses: actions/checkout@v4
@@ -164,6 +164,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+
           uv sync
 
       - uses: actions/download-artifact@v4
@@ -200,6 +201,7 @@ jobs:
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"
                 uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+
               else
                 echo "Skipping unchanged writer: $CURRENT_WRITER"
               fi
