@@ -17,13 +17,13 @@
         "data": {
           "name": "gene",
           "properties": [
-            "synonyms",
-            "start",
-            "gene_name",
-            "gene_type",
-            "end",
             "id",
-            "chr"
+            "gene_name",
+            "chr",
+            "start",
+            "gene_type",
+            "synonyms",
+            "end"
           ]
         }
       }

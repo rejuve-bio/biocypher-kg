@@ -1,53 +1,53 @@
 chr|end|gene_name|gene_type|id|start|synonyms
-chr20|9839076|PAK5|protein_coding|ensg00000101349|9537370|"[""p21CDKN1A-activated kinase 7"", ""PAK7"", ""serine/threonine-protein kinase PAK 5"", ""serine/threonine-protein kinase PAK 7"", ""p21 (RAC1) activated kinase 5"", ""protein kinase PAK5"", ""PAK-5"", ""PAK5"", ""serine/threonine-protein kinase PAK7"", ""HGNC:15916"", ""p21-activated kinase 7"", ""p21(CDKN1A)-activated kinase 7"", ""p21 (RAC1) activated kinase 7"", ""PAK-7"", ""p21 protein (Cdc42/Rac)-activated kinase 7"", ""p21-activated kinase 5""]"
+chr20|9839076|PAK5|protein_coding|ensg00000101349|9537370|"[""p21 protein (Cdc42/Rac)-activated kinase 7"", ""p21CDKN1A-activated kinase 7"", ""serine/threonine-protein kinase PAK7"", ""p21-activated kinase 5"", ""protein kinase PAK5"", ""serine/threonine-protein kinase PAK 5"", ""p21(CDKN1A)-activated kinase 7"", ""PAK7"", ""PAK-5"", ""p21-activated kinase 7"", ""PAK5"", ""PAK-7"", ""serine/threonine-protein kinase PAK 7"", ""p21 (RAC1) activated kinase 5"", ""HGNC:15916"", ""p21 (RAC1) activated kinase 7""]"
 chr20|9571257|unknown|lncRNA|ensg00000286740|9562941|
 chr20|9577689|unknown|lncRNA|ensg00000232738|9575608|
 chr20|9873900|unknown|lncRNA|ensg00000286470|9835556|
 chr20|10007116|PARAL1|lncRNA|ensg00000243961|9986088|
-chr20|10058303|ANKEF1|protein_coding|ensg00000132623|9986126|"[""HGNC:15803"", ""ANKRD5"", ""ankyrin repeat and EF-hand domain containing 1"", ""ankyrin repeat and EF-hand domain-containing protein 1"", ""ankyrin repeat domain-containing protein 5"", ""ANKEF1""]"
-chr20|10368831|SNAP25-AS1|lncRNA|ensg00000227906|10006381|"[""SNAP25 antisense RNA 1 (non-protein coding)"", ""SNAP25-AS1"", ""SNAP25 antisense RNA 1"", ""HGNC:44312""]"
+chr20|10058303|ANKEF1|protein_coding|ensg00000132623|9986126|"[""ANKRD5"", ""ankyrin repeat domain-containing protein 5"", ""HGNC:15803"", ""ANKEF1"", ""ankyrin repeat and EF-hand domain-containing protein 1"", ""ankyrin repeat and EF-hand domain containing 1""]"
+chr20|10368831|SNAP25-AS1|lncRNA|ensg00000227906|10006381|"[""SNAP25-AS1"", ""HGNC:44312"", ""SNAP25 antisense RNA 1"", ""SNAP25 antisense RNA 1 (non-protein coding)""]"
 chr20|10026168|unknown|misc_RNA|ensg00000276525|10025917|
-chr20|10308258|SNAP25|protein_coding|ensg00000132639|10172395|"[""SNAP25"", ""CMS18"", ""bA416N4.2"", ""HGNC:11132"", ""synaptosome associated protein 25kDa"", ""synaptosome associated protein 25"", ""synaptosomal-associated protein 25"", ""SNAP"", ""RIC4"", ""RIC-4"", ""SNAP-25"", ""resistance to inhibitors of cholinesterase 4 homolog"", ""SUP"", ""synaptosomal-associated protein, 25kDa"", ""SEC9"", ""dJ1068F16.2""]"
+chr20|10308258|SNAP25|protein_coding|ensg00000132639|10172395|"[""SNAP25"", ""RIC4"", ""SEC9"", ""bA416N4.2"", ""RIC-4"", ""SNAP"", ""SUP"", ""resistance to inhibitors of cholinesterase 4 homolog"", ""HGNC:11132"", ""synaptosome associated protein 25kDa"", ""SNAP-25"", ""dJ1068F16.2"", ""synaptosome associated protein 25"", ""synaptosomal-associated protein 25"", ""CMS18"", ""synaptosomal-associated protein, 25kDa""]"
 chr20|10200824|unknown|lncRNA|ensg00000230506|10172522|
 chr20|10186740|unknown|lncRNA|ensg00000232448|10172701|
 chr20|10309905|unknown|lncRNA|ensg00000289505|10308422|
 chr20|10318753|unknown|lncRNA|ensg00000286936|10317889|
 chr20|10334698|HIGD1AP15|processed_pseudogene|ensg00000237005|10334419|
-chr20|10349628|RPL23AP6|processed_pseudogene|ensg00000214835|10349157|"[""RPL23AP6"", ""RPL23A_36_1683"", ""ribosomal protein L23a pseudogene 6"", ""dJ1068F16.1"", ""HGNC:16555""]"
+chr20|10349628|RPL23AP6|processed_pseudogene|ensg00000214835|10349157|"[""HGNC:16555"", ""ribosomal protein L23a pseudogene 6"", ""RPL23A_36_1683"", ""dJ1068F16.1"", ""RPL23AP6""]"
 chr20|10387806|SDAD1P2|processed_pseudogene|ensg00000230750|10385779|
-chr20|10434222|MKKS|protein_coding|ensg00000125863|10401009|"[""KMS"", ""alternative protein MKKS"", ""HMCS"", ""HGNC:7108"", ""Bardet-Biedl syndrome 6 protein"", ""molecular chaperone MKKS"", ""McKusick-Kaufman/Bardet-Biedl syndromes putative chaperonin"", ""MKS"", ""MKKS centrosomal shuttling protein"", ""BBS6"", ""MKKS""]"
-chr20|10431922|MKKS|protein_coding|ensg00000285508|10413520|"[""LOC128706666"", ""uncharacterized LOC128706666""]"
+chr20|10434222|MKKS|protein_coding|ensg00000125863|10401009|"[""KMS"", ""MKKS"", ""McKusick-Kaufman/Bardet-Biedl syndromes putative chaperonin"", ""alternative protein MKKS"", ""MKS"", ""MKKS centrosomal shuttling protein"", ""HGNC:7108"", ""Bardet-Biedl syndrome 6 protein"", ""HMCS"", ""BBS6"", ""molecular chaperone MKKS""]"
+chr20|10431922|MKKS|protein_coding|ensg00000285508|10413520|"[""uncharacterized LOC128706666"", ""LOC128706666""]"
 chr20|10420737|MKKS|protein_coding|ensg00000285723|10420546|"[""LOC128706665"", ""uncharacterized LOC128706665""]"
-chr20|10636829|SLX4IP|protein_coding|ensg00000149346|10435305|"[""HGNC:16225"", ""bA254M13.1"", ""bA204H22.1"", ""C20orf94"", ""protein SLX4IP"", ""dJ1099D15.3"", ""SLX4IP"", ""SLX4 interacting protein""]"
+chr20|10636829|SLX4IP|protein_coding|ensg00000149346|10435305|"[""bA254M13.1"", ""bA204H22.1"", ""SLX4IP"", ""C20orf94"", ""protein SLX4IP"", ""dJ1099D15.3"", ""SLX4 interacting protein"", ""HGNC:16225""]"
 chr20|10614229|DNAJC9P1|processed_pseudogene|ensg00000235036|10612861|
-chr20|10673999|JAG1|protein_coding|ensg00000101384|10637684|"[""AHD"", ""DCHE"", ""JAGL1"", ""jagged canonical Notch ligand 1"", ""AGS"", ""protein jagged-1"", ""AWS"", ""CD339"", ""CMT2HH"", ""HJ1"", ""HGNC:6188"", ""AGS1"", ""JAG1""]"
-chr20|10649695|MIR6870|miRNA|ensg00000273745|10649636|"[""MIR6870"", ""microRNA 6870"", ""hsa-mir-6870"", ""HGNC:50184"", ""microRNA mir-6870""]"
+chr20|10673999|JAG1|protein_coding|ensg00000101384|10637684|"[""protein jagged-1"", ""CMT2HH"", ""AGS"", ""jagged canonical Notch ligand 1"", ""HGNC:6188"", ""CD339"", ""JAGL1"", ""JAG1"", ""AHD"", ""DCHE"", ""AGS1"", ""HJ1"", ""AWS""]"
+chr20|10649695|MIR6870|miRNA|ensg00000273745|10649636|"[""microRNA mir-6870"", ""MIR6870"", ""hsa-mir-6870"", ""HGNC:50184"", ""microRNA 6870""]"
 chr20|10994924|unknown|lncRNA|ensg00000270792|10672695|
 chr20|10754033|LINC01752|lncRNA|ensg00000224961|10696949|
 chr20|10765286|unknown|lncRNA|ensg00000234900|10753278|
 chr20|10909279|unknown|lncRNA|ensg00000232900|10875333|"[""LOC101929413""]"
-chr20|10889088|FAT1P1|processed_pseudogene|ensg00000217809|10888582|"[""dJ697P8.1"", ""FAT1P1"", ""FAT atypical cadherin 1 pseudogene 1"", ""FAT tumor suppressor homolog pseudogene 1"", ""HGNC:16582"", ""FAT tumor suppressor homolog 1 pseudogene 1""]"
+chr20|10889088|FAT1P1|processed_pseudogene|ensg00000217809|10888582|"[""HGNC:16582"", ""FAT tumor suppressor homolog 1 pseudogene 1"", ""FAT1P1"", ""FAT atypical cadherin 1 pseudogene 1"", ""FAT tumor suppressor homolog pseudogene 1"", ""dJ697P8.1""]"
 chr20|11029455|LINC02871|lncRNA|ensg00000125899|10996293|
 chr20|11001763|unknown|lncRNA|ensg00000270777|11001304|
 chr20|11301525|unknown|lncRNA|ensg00000230990|11234170|
-chr20|11345855|RPS11P1|processed_pseudogene|ensg00000235544|11345383|"[""RPS11P1"", ""HGNC:16553"", ""ribosomal protein S11 pseudogene 1"", ""dJ1060K6.1"", ""RPS11_3_1684""]"
+chr20|11345855|RPS11P1|processed_pseudogene|ensg00000235544|11345383|"[""HGNC:16553"", ""dJ1060K6.1"", ""ribosomal protein S11 pseudogene 1"", ""RPS11_3_1684"", ""RPS11P1""]"
 chr20|11541647|unknown|lncRNA|ensg00000282478|11536406|
 chr20|11581335|unknown|lncRNA|ensg00000287754|11566484|
 chr20|11609048|LIN28AP3|processed_pseudogene|ensg00000271397|11608436|
-chr20|11621477|PGAM3P|processed_pseudogene|ensg00000237256|11621051|"[""PGAM3P"", ""HGNC:16557"", ""phosphoglycerate mutase 3, pseudogene"", ""dJ1128N12.1""]"
+chr20|11621477|PGAM3P|processed_pseudogene|ensg00000237256|11621051|"[""dJ1128N12.1"", ""PGAM3P"", ""phosphoglycerate mutase 3, pseudogene"", ""HGNC:16557""]"
 chr20|11687323|unknown|lncRNA|ensg00000261411|11685144|
-chr20|11878429|LINC00687|lncRNA|ensg00000228422|11800463|"[""dJ1012F16.1"", ""LINC00687"", ""C20orf61"", ""HGNC:16194"", ""long intergenic non-protein coding RNA 687""]"
-chr20|11819091|RN7SKP111|misc_RNA|ensg00000222281|11818821|"[""RNA, 7SK small nuclear pseudogene 111"", ""HGNC:45835"", ""RN7SKP111"", ""RN7SK pseudogene 111""]"
+chr20|11878429|LINC00687|lncRNA|ensg00000228422|11800463|"[""LINC00687"", ""C20orf61"", ""long intergenic non-protein coding RNA 687"", ""HGNC:16194"", ""dJ1012F16.1""]"
+chr20|11819091|RN7SKP111|misc_RNA|ensg00000222281|11818821|"[""RNA, 7SK small nuclear pseudogene 111"", ""RN7SKP111"", ""RN7SK pseudogene 111"", ""HGNC:45835""]"
 chr20|11838574|ANAPC13P1|processed_pseudogene|ensg00000271298|11838355|
-chr20|11926609|BTBD3|protein_coding|ensg00000132640|11890723|"[""BTBD3"", ""BTB/POZ domain-containing protein 3"", ""dJ742J24.1"", ""HGNC:15854"", ""BTB (POZ) domain containing 3"", ""BTB domain containing 3""]"
+chr20|11926609|BTBD3|protein_coding|ensg00000132640|11890723|"[""dJ742J24.1"", ""BTB domain containing 3"", ""BTBD3"", ""BTB/POZ domain-containing protein 3"", ""BTB (POZ) domain containing 3"", ""HGNC:15854""]"
 chr20|11918677|BTBD3-AS1|lncRNA|ensg00000236526|11909404|
 chr20|12318221|unknown|lncRNA|ensg00000235292|12243308|
 chr20|12316485|unknown|lncRNA|ensg00000230437|12305613|
 chr20|12381255|PA2G4P2|processed_pseudogene|ensg00000235698|12380056|
-chr20|12952519|LINC01722|lncRNA|ensg00000233048|12865202|"[""HGNC:52510"", ""LINC01722"", ""long intergenic non-protein coding RNA 1722""]"
+chr20|12952519|LINC01722|lncRNA|ensg00000233048|12865202|"[""LINC01722"", ""long intergenic non-protein coding RNA 1722"", ""HGNC:52510""]"
 chr20|12937097|unknown|lncRNA|ensg00000269931|12934877|
 chr20|12940902|unknown|lncRNA|ensg00000286087|12936262|
-chr20|13008417|LINC01723|lncRNA|ensg00000234265|12950288|"[""long intergenic non-protein coding RNA 1723"", ""LINC01723"", ""HGNC:52511""]"
-chr20|13169103|SPTLC3|protein_coding|ensg00000172296|13008972|"[""SPTLC2L"", ""serine palmitoyltransferase 3"", ""SPTLC3"", ""serine-palmitoyl-CoA transferase 3"", ""C20orf38"", ""LCB3"", ""dJ718P11.1"", ""serine palmitoyltransferase long chain base subunit 3"", ""LCB2B"", ""SPT 3"", ""hLCB2b"", ""dJ718P11"", ""long chain base biosynthesis protein 2b"", ""HGNC:16253"", ""serine palmitoyltransferase, long chain base subunit 2-like (aminotransferase 2)"", ""long chain base biosynthesis protein 3"", ""SPT3"", ""LCB 3""]"
-chrX|1602520|AKAP17A|protein_coding|ensg00000197976|1591604|"[""HGNC:18783"", ""CCDC133"", ""DXYS155E"", ""XE7Y"", ""A kinase (PRKA) anchor protein 17A"", ""AKAP-17A"", ""721P"", ""PRKA17A"", ""pseudoautosomal gene XE7"", ""splicing factor, arginine/serine-rich 17A"", ""XE7"", ""B-lymphocyte surface antigen"", ""A-kinase anchor protein 17A"", ""AKAP17A"", ""SFRS17A"", ""A-kinase anchoring protein 17A"", ""CXYorf3"", ""protein kinase A-anchoring protein 17A""]"
-chrY|1602520|AKAP17A|protein_coding|ensg00000197976_par_y|1591604|"[""HGNC:18783"", ""CCDC133"", ""DXYS155E"", ""XE7Y"", ""A kinase (PRKA) anchor protein 17A"", ""AKAP-17A"", ""721P"", ""PRKA17A"", ""pseudoautosomal gene XE7"", ""splicing factor, arginine/serine-rich 17A"", ""XE7"", ""B-lymphocyte surface antigen"", ""A-kinase anchor protein 17A"", ""AKAP17A"", ""SFRS17A"", ""A-kinase anchoring protein 17A"", ""CXYorf3"", ""protein kinase A-anchoring protein 17A""]"
+chr20|13008417|LINC01723|lncRNA|ensg00000234265|12950288|"[""HGNC:52511"", ""long intergenic non-protein coding RNA 1723"", ""LINC01723""]"
+chr20|13169103|SPTLC3|protein_coding|ensg00000172296|13008972|"[""serine palmitoyltransferase long chain base subunit 3"", ""SPTLC3"", ""SPT3"", ""serine-palmitoyl-CoA transferase 3"", ""hLCB2b"", ""long chain base biosynthesis protein 2b"", ""SPT 3"", ""C20orf38"", ""LCB 3"", ""HGNC:16253"", ""serine palmitoyltransferase, long chain base subunit 2-like (aminotransferase 2)"", ""dJ718P11"", ""long chain base biosynthesis protein 3"", ""dJ718P11.1"", ""LCB2B"", ""serine palmitoyltransferase 3"", ""LCB3"", ""SPTLC2L""]"
+chrX|1602520|AKAP17A|protein_coding|ensg00000197976|1591604|"[""AKAP-17A"", ""HGNC:18783"", ""CXYorf3"", ""splicing factor, arginine/serine-rich 17A"", ""pseudoautosomal gene XE7"", ""A kinase (PRKA) anchor protein 17A"", ""protein kinase A-anchoring protein 17A"", ""A-kinase anchor protein 17A"", ""B-lymphocyte surface antigen"", ""AKAP17A"", ""DXYS155E"", ""XE7"", ""XE7Y"", ""CCDC133"", ""SFRS17A"", ""PRKA17A"", ""A-kinase anchoring protein 17A"", ""721P""]"
+chrY|1602520|AKAP17A|protein_coding|ensg00000197976_par_y|1591604|"[""AKAP-17A"", ""HGNC:18783"", ""CXYorf3"", ""splicing factor, arginine/serine-rich 17A"", ""pseudoautosomal gene XE7"", ""A kinase (PRKA) anchor protein 17A"", ""protein kinase A-anchoring protein 17A"", ""A-kinase anchor protein 17A"", ""B-lymphocyte surface antigen"", ""AKAP17A"", ""DXYS155E"", ""XE7"", ""XE7Y"", ""CCDC133"", ""SFRS17A"", ""PRKA17A"", ""A-kinase anchoring protein 17A"", ""721P""]"

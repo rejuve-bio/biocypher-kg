@@ -131,7 +131,7 @@ def find_aux_files(organism: str = None) -> Dict[str, str]:
     aux = PROJECT_ROOT / "aux_files"
     options = {
         "Human - dbSNP rsIDs": str(aux / "sample_dbsnp_rsids.pkl"),
-        "Human - dbSNP Positions": str(aux /"sample_dbsnp_pos.pkl"),
+        "Human - dbSNP Positions": str(aux / "sample_dbsnp_pos.pkl"),
     }
     # Keep any existing logic if present
     # ...existing code...
