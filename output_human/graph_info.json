@@ -1,0 +1,45 @@
+{
+  "node_count": 52,
+  "edge_count": 0,
+  "dataset_count": 1,
+  "data_size": "0.10 GB",
+  "top_entities": [
+    {
+      "name": "gene",
+      "count": 52
+    }
+  ],
+  "top_connections": [],
+  "frequent_relationships": [],
+  "schema": {
+    "nodes": [
+      {
+        "data": {
+          "name": "gene",
+          "properties": [
+            "synonyms",
+            "start",
+            "gene_name",
+            "gene_type",
+            "end",
+            "id",
+            "chr"
+          ]
+        }
+      }
+    ],
+    "edges": []
+  },
+  "datasets": [
+    {
+      "name": "GENCODE",
+      "version": "v44",
+      "url": "https://www.gencodegenes.org/human/",
+      "nodes": [
+        "gene"
+      ],
+      "edges": [],
+      "imported_on": "2025-11-15"
+    }
+  ]
+}

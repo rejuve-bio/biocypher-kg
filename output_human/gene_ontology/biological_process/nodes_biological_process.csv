@@ -1,0 +1,101 @@
+alternative_ids|id|source|source_url|synonyms|term_name
+"[""GO:0006866""]"|GO_0006865|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||amino acid transport
+|GO_0009627|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""salicylic acid-dependent systemic resistance""]"|systemic acquired resistance
+|GO_0060382|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of DNA strand elongation
+|GO_0160213|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||beta-arrestin-dependent dopamine receptor signaling pathway
+|GO_0042252|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||establishment of planar polarity of larval imaginal disc epithelium
+|GO_0052482|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""cell wall thickening during defense response""]"|defense response by cell wall thickening
+|GO_0097103|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""angiogenic stalk cell fate specification""]"|endothelial stalk cell fate specification
+|GO_0080065|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""4-alpha-methyl-delta7-sterol-4alpha-methyl oxidase activity""]"|4-alpha-methyl-delta7-sterol oxidation
+|GO_0021862|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||early neuron differentiation in forebrain
+|GO_0030707|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||follicle cell of egg chamber development
+|GO_2001299|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""N(omega),N(omega)-dimethyl-L-arginine breakdown"", ""N(omega),N(omega)-dimethyl-L-arginine catabolism"", ""N(omega),N(omega)-dimethyl-L-arginine degradation""]"|N(omega),N(omega)-dimethyl-L-arginine catabolic process
+|GO_0098545|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||maintenance of protein complex location in cytoplasm
+|GO_0019452|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""L-cysteine breakdown to taurine"", ""L-cysteine degradation to taurine""]"|L-cysteine catabolic process to taurine
+|GO_0002292|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""T cell development involved in immune response"", ""T cell differentiation during immune response"", ""T lymphocyte differentiation during immune response"", ""T-cell differentiation during immune response"", ""T-lymphocyte differentiation during immune response""]"|T cell differentiation involved in immune response
+|GO_0007021|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""tubulin folding"", ""tubulin-specific chaperone activity"", ""tubulin assembly""]"|tubulin complex assembly
+|GO_0160062|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cutin-based cuticle development
+|GO_0015787|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""UDP-glucuronic acid transport"", ""UDP-glucuronic acid transmembrane transport""]"|UDP-glucuronate transmembrane transport
+|GO_0002130|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||wobble position ribose methylation
+|GO_0106218|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""GAG biosynthetic process"", ""galactosaminogalactan anabolism"", ""galactosaminogalactan biosynthesis"", ""galactosaminogalactan formation"", ""galactosaminogalactan synthesis""]"|galactosaminogalactan biosynthetic process
+|GO_0007154|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cell communication
+|GO_0039646|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||symbiont-mediated perturbation of host cell cycle G0/G1 transition checkpoint
+|GO_0044829|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""positive regulation by host of viral genome replication""]"|host-mediated activation of viral genome replication
+"[""GO:0075601""]"|GO_0019043|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""lysogenic commitment""]"|establishment of viral latency
+|GO_0009723|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""response to ethene stimulus"", ""response to ethylene stimulus""]"|response to ethylene
+|GO_1904570|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of selenocysteine incorporation"", ""down-regulation of selenocysteine incorporation"", ""downregulation of selenocysteine incorporation""]"|negative regulation of selenocysteine incorporation
+|GO_0090436|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||leaf pavement cell development
+|GO_0014841|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||skeletal muscle satellite cell proliferation
+|GO_0019513|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""lactose breakdown, using glucoside 3-dehydrogenase"", ""lactose degradation, using glucoside 3-dehydrogenase""]"|lactose catabolic process, using glucoside 3-dehydrogenase
+|GO_1903691|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""up regulation of wound healing, spreading of epidermal cells"", ""up-regulation of wound healing, spreading of epidermal cells"", ""upregulation of wound healing, spreading of epidermal cells""]"|positive regulation of wound healing, spreading of epidermal cells
+|GO_1990401|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||embryonic lung development
+"[""GO:0000063""]"|GO_0006913|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||nucleocytoplasmic transport
+|GO_1904238|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||pericyte cell differentiation
+|GO_1904530|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of actin cross-linking activity"", ""down-regulation of actin cross-linking activity"", ""downregulation of actin cross-linking activity"", ""inhibition of actin cross-linking activity"", ""negative regulation of actin cross-linking activity"", ""down regulation of F-actin binding"", ""down regulation of actin filament binding"", ""down-regulation of F-actin binding"", ""down-regulation of actin filament binding"", ""downregulation of F-actin binding"", ""downregulation of actin filament binding"", ""negative regulation of F-actin binding""]"|negative regulation of actin filament binding
+|GO_0010747|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""positive regulation of plasma membrane long-chain fatty acid transport""]"|positive regulation of long-chain fatty acid import across plasma membrane
+|GO_0007134|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||meiotic telophase I
+|GO_1903392|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of adherens junction assembly and maintenance"", ""down regulation of adherens junction organisation"", ""down regulation of adherens junction organization"", ""down-regulation of adherens junction assembly and maintenance"", ""down-regulation of adherens junction organisation"", ""down-regulation of adherens junction organization"", ""downregulation of adherens junction assembly and maintenance"", ""downregulation of adherens junction organisation"", ""downregulation of adherens junction organization"", ""negative regulation of adherens junction assembly and maintenance"", ""negative regulation of adherens junction organisation""]"|negative regulation of adherens junction organization
+|GO_0060313|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down-regulation of blood vessel remodeling"", ""negative regulation of blood vessel remodelling""]"|negative regulation of blood vessel remodeling
+|GO_0061374|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mammillothalamic axonal tract development
+|GO_0030961|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||peptidyl-arginine hydroxylation
+|GO_0071371|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""cellular response to gonadotrophin stimulus""]"|cellular response to gonadotropin stimulus
+|GO_0060846|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||blood vessel endothelial cell fate commitment
+|GO_0031392|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""regulation of prostaglandin anabolism"", ""regulation of prostaglandin biosynthesis"", ""regulation of prostaglandin formation"", ""regulation of prostaglandin synthesis""]"|regulation of prostaglandin biosynthetic process
+|GO_0032061|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of translation in response to osmotic stress"", ""down-regulation of translation in response to osmotic stress"", ""downregulation of translation in response to osmotic stress""]"|negative regulation of translation in response to osmotic stress
+|GO_1904344|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""regulation of stomach mucosal blood circulation""]"|regulation of gastric mucosal blood circulation
+|GO_0008056|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||ocellus development
+|GO_0034196|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""glyceride transport""]"|acylglycerol transport
+|GO_0062012|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""regulation of small molecule metabolism""]"|regulation of small molecule metabolic process
+|GO_0036255|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||response to methylamine
+|GO_0031125|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""rRNA 3 end processing""]"|rRNA 3-end processing
+"[""GO:0034226"", ""GO:0061461""]"|GO_0015819|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""L-lysine transport""]"|lysine transport
+|GO_0032535|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of cellular component size
+|GO_1900617|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""emericellamide A anabolism"", ""emericellamide A biosynthesis"", ""emericellamide A formation"", ""emericellamide A synthesis""]"|emericellamide A biosynthetic process
+|GO_0003232|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||bulbus arteriosus development
+|GO_0007284|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""spermatogonium division""]"|spermatogonial cell division
+|GO_0070096|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""TOM complex assembly"", ""mitochondrion outer membrane translocase complex assembly""]"|mitochondrial outer membrane translocase complex assembly
+|GO_0042221|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""response to chemical stimulus"", ""response to chemical substance""]"|response to chemical
+|GO_1905396|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cellular response to flavonoid
+|GO_1990268|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||response to gold nanoparticle
+|GO_0018195|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||peptidyl-arginine modification
+|GO_0032537|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""host-seeking behaviour""]"|host-seeking behavior
+|GO_0042837|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""D-glucarate anabolism"", ""D-glucarate biosynthesis"", ""D-glucarate formation"", ""D-glucarate synthesis"", ""saccharate biosynthesis"", ""saccharate biosynthetic process""]"|D-glucarate biosynthetic process
+|GO_0075254|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""negative regulation of ureidospore formation""]"|negative regulation of uredospore formation
+|GO_0071692|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""protein localisation in extracellular region"", ""protein localization in extracellular region""]"|protein localization to extracellular region
+|GO_0042751|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""aestivation""]"|estivation
+"[""GO:0016194"", ""GO:0016195""]"|GO_0006887|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nonselective vesicle exocytosis"", ""vesicle exocytosis""]"|exocytosis
+|GO_0098906|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of Purkinje myocyte action potential
+|GO_0002840|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""regulation of T cell mediated immune response to tumour cell"", ""regulation of T lymphocyte mediated immune response to tumor cell"", ""regulation of T-cell mediated immune response to tumor cell"", ""regulation of T-lymphocyte mediated immune response to tumor cell""]"|regulation of T cell mediated immune response to tumor cell
+|GO_0035993|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||deltoid tuberosity development
+|GO_0002400|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nasal tolerance"", ""tolerance induction in NALT""]"|tolerance induction in nasopharyngeal-associated lymphoid tissue
+"[""GO:0035638""]"|GO_0140448|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""signal maturation""]"|signaling receptor ligand precursor processing
+|GO_1900495|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of butyryl-CoA biosynthesis from acetyl-CoA"", ""down regulation of butyryl-CoA biosynthetic process from acetyl-CoA"", ""down-regulation of butyryl-CoA biosynthesis from acetyl-CoA"", ""down-regulation of butyryl-CoA biosynthetic process from acetyl-CoA"", ""downregulation of butyryl-CoA biosynthesis from acetyl-CoA"", ""downregulation of butyryl-CoA biosynthetic process from acetyl-CoA"", ""inhibition of butyryl-CoA biosynthesis from acetyl-CoA"", ""negative regulation of butyryl-CoA biosynthesis from acetyl-CoA""]"|negative regulation of butyryl-CoA biosynthetic process from acetyl-CoA
+|GO_1901142|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""insulin metabolism""]"|insulin metabolic process
+|GO_0003160|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||endocardium morphogenesis
+"[""GO:0061488""]"|GO_0098702|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""adenine import into cell""]"|adenine import across plasma membrane
+|GO_0048667|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""neuron morphogenesis involved in differentiation""]"|cell morphogenesis involved in neuron differentiation
+|GO_1902269|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""up regulation of polyamine transmembrane transport"", ""up-regulation of polyamine transmembrane transport"", ""upregulation of polyamine transmembrane transport""]"|positive regulation of polyamine transmembrane transport
+|GO_0099557|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||trans-synaptic signaling by trans-synaptic complex, modulating synaptic transmission
+|GO_0097392|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""CXCL16 production""]"|chemokine (C-X-C motif) ligand 16 production
+|GO_0033137|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||negative regulation of peptidyl-serine phosphorylation
+|GO_0002174|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mammary stem cell proliferation
+|GO_0002018|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""renin-angiotensin control of aldosterone production""]"|renin-angiotensin regulation of aldosterone production
+|GO_0100001|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of skeletal muscle contraction by action potential
+|GO_0045659|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of neutrophil differentiation"", ""down-regulation of neutrophil differentiation"", ""downregulation of neutrophil differentiation""]"|negative regulation of neutrophil differentiation
+|GO_0046206|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""trypanothione metabolism""]"|trypanothione metabolic process
+|GO_0021832|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cell-cell adhesion involved in cerebral cortex tangential migration using cell-cell interactions
+|GO_0001911|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of leukocyte mediated cytotoxicity"", ""down-regulation of leukocyte mediated cytotoxicity"", ""downregulation of leukocyte mediated cytotoxicity"", ""negative regulation of immune cell mediated cytotoxicity"", ""negative regulation of leucocyte mediated cytotoxicity""]"|negative regulation of leukocyte mediated cytotoxicity
+|GO_1905831|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""down regulation of bipolar spindle biosynthesis"", ""down regulation of bipolar spindle formation"", ""down regulation of spindle assembly"", ""down regulation of spindle biosynthesis"", ""down regulation of spindle formation"", ""down-regulation of bipolar spindle biosynthesis"", ""down-regulation of bipolar spindle formation"", ""down-regulation of spindle assembly"", ""down-regulation of spindle biosynthesis"", ""down-regulation of spindle formation"", ""downregulation of bipolar spindle biosynthesis"", ""downregulation of bipolar spindle formation"", ""downregulation of spindle assembly"", ""downregulation of spindle biosynthesis"", ""downregulation of spindle formation"", ""negative regulation of bipolar spindle biosynthesis"", ""negative regulation of bipolar spindle formation"", ""negative regulation of spindle biosynthesis"", ""negative regulation of spindle formation""]"|negative regulation of spindle assembly
+|GO_1902822|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of late endosome to lysosome transport
+|GO_2000863|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""positive regulation of oestrogen secretion""]"|positive regulation of estrogen secretion
+|GO_0010564|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of cell cycle process
+|GO_1903830|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||magnesium ion transmembrane transport
+|GO_0097326|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||melanocyte adhesion
+|GO_0042117|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||monocyte activation
+|GO_0010249|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""auxin conjugate metabolism""]"|auxin conjugate metabolic process
+|GO_1903352|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||L-ornithine transmembrane transport
+|GO_0051099|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""up regulation of binding"", ""up-regulation of binding"", ""upregulation of binding""]"|positive regulation of binding
+|GO_0042487|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""regulation of odontogenesis of dentine-containing teeth"", ""regulation of odontogenesis of dentine-containing tooth""]"|regulation of odontogenesis of dentin-containing tooth
+|GO_1990580|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||regulation of cytoplasmic translational termination
+|GO_0110098|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||positive regulation of calcium import into the mitochondrion
+|GO_0001958|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||endochondral ossification

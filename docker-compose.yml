@@ -1,49 +1,43 @@
-version: '3.3'
 
+version: "3.9"
 services:
-
-  build:
-    image: biocypher/base:1.2.0
-    container_name: build
-    volumes:
-      - biocypher_neo4j_volume:/usr/app/data
-      - .:/src/
-    command:
-      - /bin/bash
-      - /src/scripts/build.sh
-
-  import:
-    image: neo4j:4.4-enterprise
-    container_name: import
+  biocypher:
+    build: .
+    container_name: biocypher
     environment:
-      NEO4J_AUTH: none
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
-      FILL_DB_ON_STARTUP: "yes"
+      BIOCYPHER_NEO4J_URI: bolt://neo4j:7687
+      BIOCYPHER_NEO4J_USER: neo4j
+      BIOCYPHER_NEO4J_PASSWORD: myNewPass456
     volumes:
-      - biocypher_neo4j_volume:/data
-      - ./scripts/import.sh:/scripts/import.sh
-    command:
-      - /bin/bash
-      - /scripts/import.sh
+      - ./config:/app/config
+      - ./data_source_schemas:/app/data_source_schemas
+      - ./scripts:/app/scripts
+      - ./aux_files:/app/aux_files
+      - ./output:/app/output
+      - ./output_human:/app/output_human
     depends_on:
-      build:
-        condition: service_completed_successfully
+      neo4j:
+        condition: service_healthy
 
-  deploy:
-    image: neo4j:4.4-enterprise
-    container_name: deploy
-    volumes:
-      - biocypher_neo4j_volume:/data
+  neo4j:
+    build: ./deploy
+    container_name: neo4j
     environment:
-      NEO4J_dbms_security_auth__enabled: "false"
-      NEO4J_dbms_databases_default__to__read__only: "false"
       NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_AUTH: neo4j/myNewPass456
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      NEO4J_dbms_security_procedures_allowlist: "apoc.*"
     ports:
-      - "127.0.0.1:7474:7474"
-      - "127.0.0.1:7687:7687"
-    depends_on:
-      import:
-        condition: service_completed_successfully
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - biocypher_data:/data
+      - ./plugins:/plugins
+      - ./output_human:/import
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p myNewPass456 'RETURN 1;'"]
+      interval: 5s
+      retries: 20
 
 volumes:
-  biocypher_neo4j_volume:
+  biocypher_data:

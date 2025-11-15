@@ -1,0 +1,102 @@
+alternative_ids|id|source|source_url|synonyms|term_name
+|0011323|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Cleft of chin"", ""Midline defect of chin""]"|Cleft of chin
+|0033520|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Paradoxical embolism
+|6000943|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Femoral slcerotic foci"", ""Sclerotic foci of the femur""]"|Femoral osteopoikilosis
+|6000773|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Recent history of moisture in external ear canal
+|6000712|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Gelatinous drop-like dystrophic cornea
+|0025783|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Diagnostic behavioral phenotype
+|0031160|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Myelokathexis
+|0011777|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Thyroid papillary adenoma
+|0032267|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Empty delta sign
+|0034039|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Doublet premature ventricular contractions""]"|Ventricular couplet
+|0001147|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Retinal exudates""]"|Retinal exudate
+"[""HP:0006917"", ""HP:0007921""]"|0001751|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Impaired vestibular function"", ""Interictal vestibular dysfunction"", ""Vestibular function defect""]"|Abnormal vestibular function
+|0008711|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Benign prostatic hypertrophy""]"|Benign prostatic hyperplasia
+|0000960|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Pilonidal dimple"", ""Spinal dimple""]"|Sacral dimple
+|0007505|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Progressive hyperpigmentation
+|0032696|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Focal cognitive seizure with receptive dysphasia/aphasia
+|0008019|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Superior subluxated lens""]"|Superior lens subluxation
+|0034279|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""2,8-dihydroxyadenine urinary crystals""]"|2,8-dihydroxyadenine crystalluria
+|4000133|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""ACE inhibitors trigger attacks""]"|Triggered by angiotensin-converting enzyme inhibitor
+|0011884|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal umbilical stump bleeding
+|0011890|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Prolonged bleeding following procedure""]"|Prolonged bleeding following procedure
+|0041152|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""bone sternoclavicular joint""]"|Fractured sternoclavicular joint
+|0034965|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Hypoplasia of cranial nerve IV""]"|Hypoplastic trochlear nerve
+|0008030|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Retinal arteritis
+|0000029|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Testicular degeneration""]"|Testicular atrophy
+|0025664|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Moderate to late preterm birth
+|0007308|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Extrapyramidal dyskinesia
+|6000075|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Subcutaneous arteriolar thrombosis
+|0025110|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Placoid macular lesion
+|0005211|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Midgut malrotation
+|0001543|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Gastroschisis
+|0025271|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Esophageal spasms
+|0012726|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Recurrent low potassium""]"|Episodic hypokalemia
+|0032514|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Accessory puncta"", ""Double lacrimal puncta"", ""Double punctum"", ""Lacrimal punctum, duplication"", ""Punctum reduplication"", ""Supernumerary punctum""]"|Supernumerary lacrimal punctum
+|0011963|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Pretesticular azoospermia
+|6000640|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Lipid-laden bone-marrow macrophages
+|0032652|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Elevated CSF chitotriosidase 1 level""]"|Elevated CSF chitotriosidase 1 concentration
+|0020165|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Branch retinal vein occlusion
+|0002700|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Big foramen magnum"", ""Dilation of foramen magnum"", ""Enlarged foramen magnum"", ""Wide foramen magnum""]"|Large foramen magnum
+|0034087|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Anti-U11/U12 RNP antibody positivity
+|0033059|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Decreased circulating complement C6 concentration
+|0002584|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Intestinal bleeding"", ""Intestinal haemorrhage"", ""Intestinal hemorrhage""]"|Intestinal bleeding
+|0003762|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Double uterus"", ""Didelphic uteri"", ""Didelphic uterus"", ""Didelphyc uterus"", ""Doubling of uterus"", ""Duplex uterus"", ""Duplicated uterus"", ""Duplication of uterus"", ""Uterine didelphis"", ""Uterine didelphys"", ""Uterus didelphis"", ""Uterus didelphus"", ""Uterus duplex""]"|Uterus didelphys
+|0410247|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Increased level of anti-dander IgE antibody""]"|Increased anti-animal dander IgE antibody level
+|0000791|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Uric acid stones"", ""Uric acid urolithiasis""]"|Uric acid nephrolithiasis
+|0200047|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Inflammation of cartilage of pinna""]"|Chondritis of pinna
+|5200416|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Delusion of infidelity"", ""Pathological jealousy""]"|Morbid jealousy
+"[""HP:0005594"", ""HP:0006831"", ""HP:0007538""]"|0000992|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Photosensitive skin"", ""Photosensitive skin rashes"", ""Photosensitivity"", ""Sensitivity to sunlight"", ""Skin photosensitivity"", ""Sun sensitivity""]"|Cutaneous photosensitivity
+|0007647|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Congenital extraocular muscle anomaly
+|0033890|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal renal arteriole lumen morphology
+|0002049|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Proximal tubular acidosis"", ""Renal tubular acidosis, proximal"", ""Renal tubular acidosis, type II""]"|Proximal renal tubular acidosis
+|5200423|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal experience of reality
+|0009189|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Fragmentation of end part of the long bone of hand""]"|Fragmentation of the metacarpal epiphyses
+"[""HP:0009029""]"|0003805|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Rimmed vacuoles on biopsy""]"|Rimmed vacuoles
+|0010091|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Fused innermost bone of big toe""]"|Symphalangism affecting the proximal phalanx of the hallux
+|0034674|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal ankle physiology
+|0025746|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Diminished urine glutamine level
+|0025756|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal nail attachment
+|0002193|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Pseudobulbar behavioral symptoms"", ""Pseudobulbar behavioural symptoms""]"|Pseudobulbar affect
+|0012449|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Sacroiliac joint synovitis
+|0030389|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal circulating thromboxane concentration
+|0033654|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Beaded septum sign
+|0001639|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Cardiomyopathy, hypertrophic"", ""Enlarged and thickened heart muscle"", ""HCM""]"|Hypertrophic cardiomyopathy
+"[""HP:0008844"", ""HP:0008865"", ""HP:0008868"", ""HP:0008901"", ""HP:0008918""]"|0008897|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Growth delay as children"", ""Growth retardation as children"", ""Postnatal growth deceleration"", ""Postnatal growth deficiency"", ""Postnatal growth failure""]"|Postnatal growth retardation
+|0001898|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Increased RBC mass""]"|Increased red blood cell mass
+|0031363|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Palpable purpura
+|0034762|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Tongue neurofibroma
+"[""HP:0007584""]"|0001070|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Stippled pigmentation"", ""Mottled skin coloring"", ""Mottled skin colouring""]"|Mottled pigmentation
+|0012162|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Common carotid artery dissection
+|0010515|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Thymic hypoplasia or aplasia"", ""Absent/small thymus"", ""Absent/underdeveloped thymus""]"|Aplasia/Hypoplasia of the thymus
+|0007011|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Trochlear nerve palsy""]"|Fourth cranial nerve palsy
+|0032724|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Focal impaired awareness tonic seizure
+"[""HP:0008690""]"|0000061|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Ambiguous genitalia due to virilization"", ""Atypical appearance of female genitals""]"|Ambiguous genitalia, female
+|0008776|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Abnormal kidney artery"", ""Abnormality of the renal artery""]"|Abnormal renal artery morphology
+|0030373|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Abnormal proportion of memory B cells""]"|Abnormal memory B cell proportion
+|0025811|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Bamboo hair"", ""Helical hair""]"|Trichorrhexis invaginata
+|0100718|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Uterine rupture
+|6000020|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Binge drinking
+|6001345|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Osgood-Schlatter disease""]"|Tibial tubercle apophysitis
+|0031946|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Elevated urinary N,N-dimethylglycine level
+|0430047|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Large joint hypermobilty
+|0010735|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Polyostotic fibrous dysplasia
+|0012430|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Paucity of cerebral white matter""]"|Cerebral white matter hypoplasia
+|0008178|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal cartilage matrix
+|0410210|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Abnormal cord blood measurement
+|0009384|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Cone-shaped end part of the little finger bones"", ""Cone-shaped end part of the pinkie finger bones"", ""Cone-shaped end part of the pinky finger bones""]"|Cone-shaped epiphyses of the 5th finger
+|0012840|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Proximal
+|6000302|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||History of compressive footwear
+|0000108|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Renal corticomedullary cystic disease"", ""Corticomedullary renal cysts""]"|Renal corticomedullary cysts
+|0030936|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Muscularis propria malformation"", ""Segmental additional circular muscle coat""]"|Abnormal layering of muscularis propria
+|0025834|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Decreased proliferation in response to PHA""]"|Decreased PHA-induced T-cell proliferation
+|0031429|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Decreased circulating osteocalcin level
+"[""HP:0006056"", ""HP:0006100"", ""HP:0009801""]"|0009767|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Aplastic/hypoplastic phalanges"", ""Aplastic/hypoplastic phalanges of the hand"", ""Hypoplastic/absent phalanges""]"|Aplasia/Hypoplasia of the phalanges of the hand
+|0001310|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Abnormal finger chase test"", ""Abnormal finger-nose-finger test"", ""Lack of coordination of movement""]"|Dysmetria
+|0030452|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Chylolymphatic mesenteric cyst
+|0000997|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Axillary freckling
+|0011460|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Embryonal onset
+|0033870|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Intraluminal thrombi within medullary peritubular capillaries""]"|Medullary peritubular capillary intraluminal thrombi
+|0033768|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Penile candidiasis""]"|Penile thrush
+|0034652|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl|"[""Octenedioic acid high in urine""]"|Elevated urine octenedioic acid level
+|0040030|Human Phenotype Ontology|http://purl.obolibrary.org/obo/hp.owl||Chorioretinal hypopigmentation

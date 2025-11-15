@@ -1,0 +1,7 @@
+id|phred_score|raw_cadd_score|source|source_url
+rs10|6.177|0.223125|CADD|https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+rs10|6.489|0.245354|CADD|https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+rs10|6.243|0.227741|CADD|https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+rs1000000|3.295|0.042237|CADD|https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+rs1000000|2.365|-0.017686|CADD|https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+rs1000000|2.512|-0.007486|CADD|https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz

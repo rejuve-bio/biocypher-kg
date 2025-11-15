@@ -1,0 +1,20 @@
+label|modification|source|source_id|source_type|source_url|target_id|target_type
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_0000236|uberon
+histone_modification|H3K4me1|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_0000236|uberon
+histone_modification|H3K27me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_0000037|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0000948|uberon
+histone_modification|H3K4me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0000948|uberon
+histone_modification|H3K4me1|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0000948|uberon
+histone_modification|H3K4me1|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0000059|uberon
+histone_modification|H3K27me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0002370|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0002370|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_0002248|uberon
+histone_modification|H3K9me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_0002248|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0008450|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_1001608|uberon
+histone_modification|H3K4me1|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_1001608|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_1001608|uberon
+histone_modification|H3K4me1|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_1001608|uberon
+histone_modification|H3K27me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|cl_2000045|uberon
+histone_modification|H3K36me3|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0002108|uberon
+histone_modification|H3K4me1|Roadmap Epigenomics Project|rs10000007|snp|https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz|uberon_0002108|uberon

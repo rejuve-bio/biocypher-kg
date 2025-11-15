@@ -1,0 +1,994 @@
+go_term_id|label|pathway_name|source_id|source_type|subontology|target_id|target_type
+GO:0006015|pathway_to_biological_process|5-Phosphoribose 1-diphosphate biosynthesis|r-hsa-73843|pathway|biological_process|GO_0006015|biological_process
+GO:0006869|pathway_to_biological_process|ABC transporters in lipid homeostasis|r-hsa-1369062|pathway|biological_process|GO_0006869|biological_process
+GO:0055085|pathway_to_biological_process|ABC-family proteins mediated transport|r-hsa-382556|pathway|biological_process|GO_0055085|biological_process
+GO:0002862|pathway_to_biological_process|ADORA2B mediated anti-inflammatory cytokines production|r-hsa-9660821|pathway|biological_process|GO_0002862|biological_process
+GO:0030168|pathway_to_biological_process|ADP signalling through P2Y purinoceptor 1|r-hsa-418592|pathway|biological_process|GO_0030168|biological_process
+GO:0030168|pathway_to_biological_process|ADP signalling through P2Y purinoceptor 12|r-hsa-392170|pathway|biological_process|GO_0030168|biological_process
+GO:0043491|pathway_to_biological_process|AKT phosphorylates targets in the cytosol|r-hsa-198323|pathway|biological_process|GO_0043491|biological_process
+GO:0043491|pathway_to_biological_process|AKT phosphorylates targets in the nucleus|r-hsa-198693|pathway|biological_process|GO_0043491|biological_process
+GO:2000074|pathway_to_biological_process|AKT-mediated inactivation of FOXO1A|r-hsa-211163|pathway|biological_process|GO_2000074|biological_process
+GO:0042304|pathway_to_biological_process|AMPK inhibits chREBP transcriptional activation activity|r-hsa-163680|pathway|biological_process|GO_0042304|biological_process
+GO:0031145|pathway_to_biological_process|APC/C-mediated degradation of cell cycle proteins|r-hsa-174143|pathway|biological_process|GO_0031145|biological_process
+GO:0031145|pathway_to_biological_process|APC/C:Cdc20 mediated degradation of Cyclin B|r-hsa-174048|pathway|biological_process|GO_0031145|biological_process
+GO:0031145|pathway_to_biological_process|APC/C:Cdc20 mediated degradation of Securin|r-hsa-174154|pathway|biological_process|GO_0031145|biological_process
+GO:0007096|pathway_to_biological_process|APC/C:Cdc20 mediated degradation of mitotic proteins|r-hsa-176409|pathway|biological_process|GO_0007096|biological_process
+GO:0036500|pathway_to_biological_process|ATF6 (ATF6-alpha) activates chaperones|r-hsa-381033|pathway|biological_process|GO_0036500|biological_process
+GO:0010389|pathway_to_biological_process|AURKA Activation by TPX2|r-hsa-8854518|pathway|biological_process|GO_0010389|biological_process
+GO:0006805|pathway_to_biological_process|Abacavir metabolism|r-hsa-2161541|pathway|biological_process|GO_0006805|biological_process
+GO:0072530|pathway_to_biological_process|Abacavir transmembrane transport|r-hsa-2161517|pathway|biological_process|GO_0072530|biological_process
+GO:0006284|pathway_to_biological_process|Abasic sugar-phosphate removal via the single-nucleotide replacement pathway|r-hsa-73930|pathway|biological_process|GO_0006284|biological_process
+GO:0006103|pathway_to_biological_process|Abnormal conversion of 2-oxoglutarate to 2-hydroxyglutarate|r-hsa-2978092|pathway|biological_process|GO_0006103|biological_process
+GO:0006836|pathway_to_biological_process|Acetylcholine Neurotransmitter Release Cycle|r-hsa-264642|pathway|biological_process|GO_0006836|biological_process
+GO:0032024|pathway_to_biological_process|Acetylcholine regulates insulin secretion|r-hsa-399997|pathway|biological_process|GO_0032024|biological_process
+GO:0007340|pathway_to_biological_process|Acrosome Reaction and Sperm:Oocyte Membrane Binding|r-hsa-1300645|pathway|biological_process|GO_0007340|biological_process
+GO:0046677|pathway_to_biological_process|Action of antimicrobials|r-hsa-9638771|pathway|biological_process|GO_0046677|biological_process
+GO:0051897|pathway_to_biological_process|Activated NTRK2 signals through PI3K|r-hsa-9028335|pathway|biological_process|GO_0051897|biological_process
+GO:0046579|pathway_to_biological_process|Activated NTRK2 signals through RAS|r-hsa-9026519|pathway|biological_process|GO_0046579|biological_process
+GO:0051897|pathway_to_biological_process|Activated NTRK3 signals through PI3K|r-hsa-9603381|pathway|biological_process|GO_0051897|biological_process
+GO:0051388|pathway_to_biological_process|Activated NTRK3 signals through PLCG1|r-hsa-9034793|pathway|biological_process|GO_0051388|biological_process
+GO:0046579|pathway_to_biological_process|Activated NTRK3 signals through RAS|r-hsa-9034864|pathway|biological_process|GO_0046579|biological_process
+GO:0060765|pathway_to_biological_process|Activated PKN1 stimulates transcription of AR (androgen receptor) regulated genes KLK2 and KLK3|r-hsa-5625886|pathway|biological_process|GO_0060765|biological_process
+GO:1901030|pathway_to_biological_process|Activation and oligomerization of BAK protein|r-hsa-111452|pathway|biological_process|GO_1901030|biological_process
+GO:0051897|pathway_to_biological_process|Activation of AKT2|r-hsa-165158|pathway|biological_process|GO_0051897|biological_process
+GO:0007268|pathway_to_biological_process|Activation of AMPK downstream of NMDARs|r-hsa-9619483|pathway|biological_process|GO_0007268|biological_process
+GO:0006260|pathway_to_biological_process|Activation of ATR in response to replication stress|r-hsa-176187|pathway|biological_process|GO_0006260|biological_process
+GO:1903749|pathway_to_biological_process|Activation of BH3-only proteins|r-hsa-114452|pathway|biological_process|GO_1903749|biological_process
+GO:0007268|pathway_to_biological_process|Activation of Ca-permeable Kainate Receptor|r-hsa-451308|pathway|biological_process|GO_0007268|biological_process
+GO:1901381|pathway_to_biological_process|Activation of G protein gated Potassium channels|r-hsa-1296041|pathway|biological_process|GO_1901381|biological_process
+GO:0009790|pathway_to_biological_process|Activation of HOX genes during differentiation|r-hsa-5619507|pathway|biological_process|GO_0009790|biological_process
+GO:0007268|pathway_to_biological_process|Activation of Na-permeable kainate receptors|r-hsa-451307|pathway|biological_process|GO_0007268|biological_process
+GO:0016601|pathway_to_biological_process|Activation of RAC1|r-hsa-428540|pathway|biological_process|GO_0016601|biological_process
+GO:0007268|pathway_to_biological_process|Activation of RAC1 downstream of NMDARs|r-hsa-9619229|pathway|biological_process|GO_0007268|biological_process
+GO:0007265|pathway_to_biological_process|Activation of RAS in B cells|r-hsa-1169092|pathway|biological_process|GO_0007265|biological_process
+GO:0007169|pathway_to_biological_process|Activation of TRKA receptors|r-hsa-187015|pathway|biological_process|GO_0007169|biological_process
+GO:0097190|pathway_to_biological_process|Activation of caspases through apoptosome-mediated cleavage|r-hsa-111459|pathway|biological_process|GO_0097190|biological_process
+GO:0019216|pathway_to_biological_process|Activation of gene expression by SREBF (SREBP)|r-hsa-2426168|pathway|biological_process|GO_0019216|biological_process
+GO:0045944|pathway_to_biological_process|Activation of the TFAP2 (AP-2) family of transcription factors|r-hsa-8866907|pathway|biological_process|GO_0045944|biological_process
+GO:0006270|pathway_to_biological_process|Activation of the pre-replicative complex|r-hsa-68962|pathway|biological_process|GO_0006270|biological_process
+GO:1903749|pathway_to_biological_process|Activation, myristolyation of BID and translocation to mitochondria|r-hsa-75108|pathway|biological_process|GO_1903749|biological_process
+GO:1901030|pathway_to_biological_process|Activation, translocation and oligomerization of BAX|r-hsa-114294|pathway|biological_process|GO_1901030|biological_process
+GO:0035965|pathway_to_biological_process|Acyl chain remodeling of CL|r-hsa-1482798|pathway|biological_process|GO_0035965|biological_process
+GO:0036155|pathway_to_biological_process|Acyl chain remodeling of DAG and TAG|r-hsa-1482883|pathway|biological_process|GO_0036155|biological_process
+GO:0036151|pathway_to_biological_process|Acyl chain remodelling of PC|r-hsa-1482788|pathway|biological_process|GO_0036151|biological_process
+GO:0036152|pathway_to_biological_process|Acyl chain remodelling of PE|r-hsa-1482839|pathway|biological_process|GO_0036152|biological_process
+GO:0036148|pathway_to_biological_process|Acyl chain remodelling of PG|r-hsa-1482925|pathway|biological_process|GO_0036148|biological_process
+GO:0036149|pathway_to_biological_process|Acyl chain remodelling of PI|r-hsa-1482922|pathway|biological_process|GO_0036149|biological_process
+GO:0036150|pathway_to_biological_process|Acyl chain remodelling of PS|r-hsa-1482801|pathway|biological_process|GO_0036150|biological_process
+GO:0002250|pathway_to_biological_process|Adaptive Immune System|r-hsa-1280218|pathway|biological_process|GO_0002250|biological_process
+GO:0007189|pathway_to_biological_process|Adenylate cyclase activating pathway|r-hsa-170660|pathway|biological_process|GO_0007189|biological_process
+GO:0007193|pathway_to_biological_process|Adenylate cyclase inhibitory pathway|r-hsa-170670|pathway|biological_process|GO_0007193|biological_process
+GO:0034332|pathway_to_biological_process|Adherens junctions interactions|r-hsa-418990|pathway|biological_process|GO_0034332|biological_process
+GO:1904177|pathway_to_biological_process|Adipogenesis|r-hsa-9843745|pathway|biological_process|GO_1904177|biological_process
+GO:0030168|pathway_to_biological_process|Adrenaline signalling through Alpha-2 adrenergic receptor|r-hsa-392023|pathway|biological_process|GO_0030168|biological_process
+GO:0046676|pathway_to_biological_process|Adrenaline,noradrenaline inhibits insulin secretion|r-hsa-400042|pathway|biological_process|GO_0046676|biological_process
+GO:0046222|pathway_to_biological_process|Aflatoxin activation and detoxification|r-hsa-5423646|pathway|biological_process|GO_0046222|biological_process
+GO:0035973|pathway_to_biological_process|Aggrephagy|r-hsa-9646399|pathway|biological_process|GO_0035973|biological_process
+GO:0097055|pathway_to_biological_process|Agmatine biosynthesis|r-hsa-351143|pathway|biological_process|GO_0097055|biological_process
+GO:0009078|pathway_to_biological_process|Alanine metabolism|r-hsa-8964540|pathway|biological_process|GO_0009078|biological_process
+GO:0001561|pathway_to_biological_process|Alpha-oxidation of phytanate|r-hsa-389599|pathway|biological_process|GO_0001561|biological_process
+GO:0002753|pathway_to_biological_process|Alpha-protein kinase 1 signaling pathway|r-hsa-9645460|pathway|biological_process|GO_0002753|biological_process
+GO:0006957|pathway_to_biological_process|Alternative complement activation|r-hsa-173736|pathway|biological_process|GO_0006957|biological_process
+GO:0006865|pathway_to_biological_process|Amino acid transport across the plasma membrane|r-hsa-352230|pathway|biological_process|GO_0006865|biological_process
+GO:0034198|pathway_to_biological_process|Amino acids regulate mTORC1|r-hsa-9639288|pathway|biological_process|GO_0034198|biological_process
+GO:1990000|pathway_to_biological_process|Amyloid fiber formation|r-hsa-977225|pathway|biological_process|GO_1990000|biological_process
+GO:0030199|pathway_to_biological_process|Anchoring fibril formation|r-hsa-2214320|pathway|biological_process|GO_0030199|biological_process
+GO:0097711|pathway_to_biological_process|Anchoring of the basal body to the plasma membrane|r-hsa-5620912|pathway|biological_process|GO_0097711|biological_process
+GO:0006702|pathway_to_biological_process|Androgen biosynthesis|r-hsa-193048|pathway|biological_process|GO_0006702|biological_process
+GO:0051711|pathway_to_biological_process|Anti-inflammatory response favouring Leishmania parasite infection|r-hsa-9662851|pathway|biological_process|GO_0051711|biological_process
+GO:0042590|pathway_to_biological_process|Antigen processing-Cross presentation|r-hsa-1236975|pathway|biological_process|GO_0042590|biological_process
+GO:0010499|pathway_to_biological_process|Antigen processing: Ub, ATP-independent proteasomal degradation|r-hsa-9912633|pathway|biological_process|GO_0010499|biological_process
+GO:0000209|pathway_to_biological_process|Antigen processing: Ubiquitination & Proteasome degradation|r-hsa-983168|pathway|biological_process|GO_0000209|biological_process
+GO:0046677|pathway_to_biological_process|Antimicrobial action and antimicrobial resistance in Mtb|r-hsa-9639775|pathway|biological_process|GO_0046677|biological_process
+GO:0019730|pathway_to_biological_process|Antimicrobial peptides|r-hsa-6803157|pathway|biological_process|GO_0019730|biological_process
+GO:0046677|pathway_to_biological_process|Antimicrobial resistance|r-hsa-9913143|pathway|biological_process|GO_0046677|biological_process
+GO:0006915|pathway_to_biological_process|Apoptosis|r-hsa-109581|pathway|biological_process|GO_0006915|biological_process
+GO:0006309|pathway_to_biological_process|Apoptosis induced DNA fragmentation|r-hsa-140342|pathway|biological_process|GO_0006309|biological_process
+GO:0097194|pathway_to_biological_process|Apoptotic execution phase|r-hsa-75153|pathway|biological_process|GO_0097194|biological_process
+GO:0006833|pathway_to_biological_process|Aquaporin-mediated transport|r-hsa-445717|pathway|biological_process|GO_0006833|biological_process
+GO:0019369|pathway_to_biological_process|Arachidonate metabolism|r-hsa-2142753|pathway|biological_process|GO_0019369|biological_process
+GO:0019369|pathway_to_biological_process|Arachidonate production from DAG|r-hsa-426048|pathway|biological_process|GO_0019369|biological_process
+GO:0018279|pathway_to_biological_process|Asparagine N-linked glycosylation|r-hsa-446203|pathway|biological_process|GO_0018279|biological_process
+GO:0170033|pathway_to_biological_process|Aspartate and asparagine metabolism|r-hsa-8963693|pathway|biological_process|GO_0170033|biological_process
+GO:0019068|pathway_to_biological_process|Assembly Of The HIV Virion|r-hsa-175474|pathway|biological_process|GO_0019068|biological_process
+GO:0019068|pathway_to_biological_process|Assembly of Viral Components at the Budding Site|r-hsa-168316|pathway|biological_process|GO_0019068|biological_process
+GO:0036388|pathway_to_biological_process|Assembly of the pre-replicative complex|r-hsa-68867|pathway|biological_process|GO_0036388|biological_process
+GO:0016255|pathway_to_biological_process|Attachment of GPI anchor to uPAR|r-hsa-162791|pathway|biological_process|GO_0016255|biological_process
+GO:0044406|pathway_to_biological_process|Attachment of bacteria to epithelial cells|r-hsa-9638630|pathway|biological_process|GO_0044406|biological_process
+GO:0006914|pathway_to_biological_process|Autophagy|r-hsa-9612973|pathway|biological_process|GO_0006914|biological_process
+GO:0007411|pathway_to_biological_process|Axon guidance|r-hsa-422475|pathway|biological_process|GO_0007411|biological_process
+GO:0050771|pathway_to_biological_process|Axonal growth inhibition (RHOA activation)|r-hsa-193634|pathway|biological_process|GO_0050771|biological_process
+GO:0050772|pathway_to_biological_process|Axonal growth stimulation|r-hsa-209563|pathway|biological_process|GO_0050772|biological_process
+GO:0051388|pathway_to_biological_process|BDNF activates NTRK2 (TRKB) signaling|r-hsa-9024909|pathway|biological_process|GO_0051388|biological_process
+GO:2001244|pathway_to_biological_process|BH3-only proteins associate with and inactivate anti-apoptotic BCL-2 members|r-hsa-111453|pathway|biological_process|GO_2001244|biological_process
+GO:0009617|pathway_to_biological_process|Bacterial Infection Pathways|r-hsa-9824439|pathway|biological_process|GO_0009617|biological_process
+GO:0006284|pathway_to_biological_process|Base Excision Repair|r-hsa-73884|pathway|biological_process|GO_0006284|biological_process
+GO:0006285|pathway_to_biological_process|Base-Excision Repair, AP Site Formation|r-hsa-73929|pathway|biological_process|GO_0006285|biological_process
+GO:0035567|pathway_to_biological_process|Beta-catenin independent WNT signaling|r-hsa-3858494|pathway|biological_process|GO_0035567|biological_process
+GO:0033540|pathway_to_biological_process|Beta-oxidation of pristanoyl-CoA|r-hsa-389887|pathway|biological_process|GO_0033540|biological_process
+GO:0033540|pathway_to_biological_process|Beta-oxidation of very long chain fatty acids|r-hsa-390247|pathway|biological_process|GO_0033540|biological_process
+GO:0015701|pathway_to_biological_process|Bicarbonate transporters|r-hsa-425381|pathway|biological_process|GO_0015701|biological_process
+GO:0008206|pathway_to_biological_process|Bile acid and bile salt metabolism|r-hsa-194068|pathway|biological_process|GO_0008206|biological_process
+GO:0006898|pathway_to_biological_process|Binding and Uptake of Ligands by Scavenger Receptors|r-hsa-2173782|pathway|biological_process|GO_0006898|biological_process
+GO:0044409|pathway_to_biological_process|Binding and entry of HIV virion|r-hsa-173107|pathway|biological_process|GO_0044409|biological_process
+GO:0042710|pathway_to_biological_process|Biofilm formation|r-hsa-9931953|pathway|biological_process|GO_0042710|biological_process
+GO:0006805|pathway_to_biological_process|Biological oxidations|r-hsa-211859|pathway|biological_process|GO_0006805|biological_process
+GO:0042759|pathway_to_biological_process|Biosynthesis of DHA-derived SPMs|r-hsa-9018677|pathway|biological_process|GO_0042759|biological_process
+GO:0042759|pathway_to_biological_process|Biosynthesis of DPA-derived SPMs|r-hsa-9018683|pathway|biological_process|GO_0042759|biological_process
+GO:0019372|pathway_to_biological_process|Biosynthesis of DPAn-3 SPMs|r-hsa-9025094|pathway|biological_process|GO_0019372|biological_process
+GO:0042759|pathway_to_biological_process|Biosynthesis of DPAn-3-derived 13-series resolvins|r-hsa-9026403|pathway|biological_process|GO_0042759|biological_process
+GO:0042759|pathway_to_biological_process|Biosynthesis of EPA-derived SPMs|r-hsa-9018679|pathway|biological_process|GO_0042759|biological_process
+GO:2001301|pathway_to_biological_process|Biosynthesis of Lipoxins (LX)|r-hsa-2142700|pathway|biological_process|GO_2001301|biological_process
+GO:0042759|pathway_to_biological_process|Biosynthesis of electrophilic ω-3 PUFA oxo-derivatives|r-hsa-9027604|pathway|biological_process|GO_0042759|biological_process
+GO:0050728|pathway_to_biological_process|Biosynthesis of specialized proresolving mediators (SPMs)|r-hsa-9018678|pathway|biological_process|GO_0050728|biological_process
+GO:0006488|pathway_to_biological_process|Biosynthesis of the N-glycan precursor (dolichol lipid-linked oligosaccharide, LLO) and transfer to a nascent protein|r-hsa-446193|pathway|biological_process|GO_0006488|biological_process
+GO:0006768|pathway_to_biological_process|Biotin transport and metabolism|r-hsa-196780|pathway|biological_process|GO_0006768|biological_process
+GO:0009312|pathway_to_biological_process|Blood group systems biosynthesis|r-hsa-9033658|pathway|biological_process|GO_0009312|biological_process
+GO:0009083|pathway_to_biological_process|Branched-chain amino acid catabolism|r-hsa-70895|pathway|biological_process|GO_0009083|biological_process
+GO:0019068|pathway_to_biological_process|Budding|r-hsa-168302|pathway|biological_process|GO_0019068|biological_process
+GO:0019058|pathway_to_biological_process|Budding and maturation of HIV virion|r-hsa-162588|pathway|biological_process|GO_0019058|biological_process
+GO:0002223|pathway_to_biological_process|C-type lectin receptors (CLRs)|r-hsa-5621481|pathway|biological_process|GO_0002223|biological_process
+GO:0010951|pathway_to_biological_process|CASP8 activity is inhibited|r-hsa-5218900|pathway|biological_process|GO_0010951|biological_process
+GO:0002862|pathway_to_biological_process|CD163 mediating an anti-inflammatory response|r-hsa-9662834|pathway|biological_process|GO_0002862|biological_process
+GO:0006890|pathway_to_biological_process|COPI-dependent Golgi-to-ER retrograde traffic|r-hsa-6811434|pathway|biological_process|GO_0006890|biological_process
+GO:0048208|pathway_to_biological_process|COPII-mediated vesicle transport|r-hsa-204005|pathway|biological_process|GO_0048208|biological_process
+GO:0006692|pathway_to_biological_process|COX reactions|r-hsa-140180|pathway|biological_process|GO_0006692|biological_process
+GO:0007268|pathway_to_biological_process|CREB1 phosphorylation through NMDA receptor-mediated activation of RAS signaling|r-hsa-442742|pathway|biological_process|GO_0007268|biological_process
+GO:0007268|pathway_to_biological_process|CREB1 phosphorylation through the activation of Adenylate Cyclase|r-hsa-442720|pathway|biological_process|GO_0007268|biological_process
+GO:0007268|pathway_to_biological_process|CREB1 phosphorylation through the activation of CaMKII/CaMKK/CaMKIV cascasde|r-hsa-442729|pathway|biological_process|GO_0007268|biological_process
+GO:0050650|pathway_to_biological_process|CS-GAG biosynthesis|r-hsa-2022870|pathway|biological_process|GO_0050650|biological_process
+GO:0030167|pathway_to_biological_process|CS/DS degradation|r-hsa-2024101|pathway|biological_process|GO_0030167|biological_process
+GO:1901381|pathway_to_biological_process|Ca2+ activated K+ channels|r-hsa-1296052|pathway|biological_process|GO_1901381|biological_process
+GO:0007223|pathway_to_biological_process|Ca2+ pathway|r-hsa-4086398|pathway|biological_process|GO_0007223|biological_process
+GO:0061337|pathway_to_biological_process|Cardiac conduction|r-hsa-5576891|pathway|biological_process|GO_0061337|biological_process
+GO:0060914|pathway_to_biological_process|Cardiogenesis|r-hsa-9733709|pathway|biological_process|GO_0060914|biological_process
+GO:0006853|pathway_to_biological_process|Carnitine shuttle|r-hsa-200425|pathway|biological_process|GO_0006853|biological_process
+GO:0045329|pathway_to_biological_process|Carnitine synthesis|r-hsa-71262|pathway|biological_process|GO_0045329|biological_process
+GO:0010950|pathway_to_biological_process|Caspase activation via Death Receptors in the presence of ligand|r-hsa-140534|pathway|biological_process|GO_0010950|biological_process
+GO:0097192|pathway_to_biological_process|Caspase activation via Dependence Receptors in the absence of ligand|r-hsa-418889|pathway|biological_process|GO_0097192|biological_process
+GO:0097191|pathway_to_biological_process|Caspase activation via extrinsic apoptotic signalling pathway|r-hsa-5357769|pathway|biological_process|GO_0097191|biological_process
+GO:0042423|pathway_to_biological_process|Catecholamine biosynthesis|r-hsa-209905|pathway|biological_process|GO_0042423|biological_process
+GO:0031145|pathway_to_biological_process|Cdc20:Phospho-APC/C mediated degradation of Cyclin A|r-hsa-174184|pathway|biological_process|GO_0031145|biological_process
+GO:0007049|pathway_to_biological_process|Cell Cycle|r-hsa-1640170|pathway|biological_process|GO_0007049|biological_process
+GO:0000075|pathway_to_biological_process|Cell Cycle Checkpoints|r-hsa-69620|pathway|biological_process|GO_0000075|biological_process
+GO:0000278|pathway_to_biological_process|Cell Cycle, Mitotic|r-hsa-69278|pathway|biological_process|GO_0000278|biological_process
+GO:0097190|pathway_to_biological_process|Cell death signalling via NRAGE, NRIF and NADE|r-hsa-204998|pathway|biological_process|GO_0097190|biological_process
+GO:0034329|pathway_to_biological_process|Cell junction organization|r-hsa-446728|pathway|biological_process|GO_0034329|biological_process
+GO:0060326|pathway_to_biological_process|Cell recruitment (pro-inflammatory response)|r-hsa-9664424|pathway|biological_process|GO_0060326|biological_process
+GO:0045454|pathway_to_biological_process|Cell redox homeostasis|r-hsa-1222541|pathway|biological_process|GO_0045454|biological_process
+GO:0050900|pathway_to_biological_process|Cell surface interactions at the vascular wall|r-hsa-202733|pathway|biological_process|GO_0050900|biological_process
+GO:0045216|pathway_to_biological_process|Cell-cell junction organization|r-hsa-421270|pathway|biological_process|GO_0045216|biological_process
+GO:0090398|pathway_to_biological_process|Cellular Senescence|r-hsa-2559583|pathway|biological_process|GO_0090398|biological_process
+GO:0008645|pathway_to_biological_process|Cellular hexose transport|r-hsa-189200|pathway|biological_process|GO_0008645|biological_process
+GO:0062197|pathway_to_biological_process|Cellular response to chemical stress|r-hsa-9711123|pathway|biological_process|GO_0062197|biological_process
+GO:0034605|pathway_to_biological_process|Cellular response to heat stress|r-hsa-3371556|pathway|biological_process|GO_0034605|biological_process
+GO:0071456|pathway_to_biological_process|Cellular response to hypoxia|r-hsa-1234174|pathway|biological_process|GO_0071456|biological_process
+GO:0098780|pathway_to_biological_process|Cellular response to mitochondrial stress|r-hsa-9840373|pathway|biological_process|GO_0098780|biological_process
+GO:0009267|pathway_to_biological_process|Cellular response to starvation|r-hsa-9711097|pathway|biological_process|GO_0009267|biological_process
+GO:0071260|pathway_to_biological_process|Cellular responses to mechanical stimuli|r-hsa-9855142|pathway|biological_process|GO_0071260|biological_process
+GO:0051716|pathway_to_biological_process|Cellular responses to stimuli|r-hsa-8953897|pathway|biological_process|GO_0051716|biological_process
+GO:0033554|pathway_to_biological_process|Cellular responses to stress|r-hsa-2262752|pathway|biological_process|GO_0033554|biological_process
+GO:0097190|pathway_to_biological_process|Ceramide signalling|r-hsa-193681|pathway|biological_process|GO_0097190|biological_process
+GO:0009893|pathway_to_biological_process|ChREBP activates metabolic gene expression|r-hsa-163765|pathway|biological_process|GO_0009893|biological_process
+GO:0061684|pathway_to_biological_process|Chaperone Mediated Autophagy|r-hsa-9613829|pathway|biological_process|GO_0061684|biological_process
+GO:0006457|pathway_to_biological_process|Chaperonin-mediated protein folding|r-hsa-390466|pathway|biological_process|GO_0006457|biological_process
+GO:0006695|pathway_to_biological_process|Cholesterol biosynthesis|r-hsa-191273|pathway|biological_process|GO_0006695|biological_process
+GO:0033489|pathway_to_biological_process|Cholesterol biosynthesis via desmosterol|r-hsa-6807047|pathway|biological_process|GO_0033489|biological_process
+GO:0033490|pathway_to_biological_process|Cholesterol biosynthesis via lathosterol|r-hsa-6807062|pathway|biological_process|GO_0033490|biological_process
+GO:0042426|pathway_to_biological_process|Choline catabolism|r-hsa-6798163|pathway|biological_process|GO_0042426|biological_process
+GO:0006029|pathway_to_biological_process|Chondroitin sulfate/dermatan sulfate metabolism|r-hsa-1793185|pathway|biological_process|GO_0006029|biological_process
+GO:0044725|pathway_to_biological_process|Chromatin modifications during the maternal to zygotic transition (MZT)|r-hsa-9821002|pathway|biological_process|GO_0044725|biological_process
+GO:0006325|pathway_to_biological_process|Chromatin organization|r-hsa-4839726|pathway|biological_process|GO_0006325|biological_process
+GO:0034378|pathway_to_biological_process|Chylomicron assembly|r-hsa-8963888|pathway|biological_process|GO_0034378|biological_process
+GO:0034382|pathway_to_biological_process|Chylomicron clearance|r-hsa-8964026|pathway|biological_process|GO_0034382|biological_process
+GO:0034371|pathway_to_biological_process|Chylomicron remodeling|r-hsa-8963901|pathway|biological_process|GO_0034371|biological_process
+GO:0060271|pathway_to_biological_process|Cilium Assembly|r-hsa-5617833|pathway|biological_process|GO_0060271|biological_process
+GO:0007623|pathway_to_biological_process|Circadian clock|r-hsa-9909396|pathway|biological_process|GO_0007623|biological_process
+GO:0006099|pathway_to_biological_process|Citric acid cycle (TCA cycle)|r-hsa-71403|pathway|biological_process|GO_0006099|biological_process
+GO:0007186|pathway_to_biological_process|Class A/1 (Rhodopsin-like receptors)|r-hsa-373076|pathway|biological_process|GO_0007186|biological_process
+GO:0002474|pathway_to_biological_process|Class I MHC mediated antigen processing & presentation|r-hsa-983169|pathway|biological_process|GO_0002474|biological_process
+GO:0045046|pathway_to_biological_process|Class I peroxisomal membrane protein import|r-hsa-9603798|pathway|biological_process|GO_0045046|biological_process
+GO:0006958|pathway_to_biological_process|Classical antibody-mediated complement activation|r-hsa-173623|pathway|biological_process|GO_0006958|biological_process
+GO:0009235|pathway_to_biological_process|Cobalamin (Cbl) metabolism|r-hsa-9759218|pathway|biological_process|GO_0009235|biological_process
+GO:0015937|pathway_to_biological_process|Coenzyme A biosynthesis|r-hsa-196783|pathway|biological_process|GO_0015937|biological_process
+GO:0030574|pathway_to_biological_process|Collagen degradation|r-hsa-1442490|pathway|biological_process|GO_0030574|biological_process
+GO:0030199|pathway_to_biological_process|Collagen formation|r-hsa-1474290|pathway|biological_process|GO_0030199|biological_process
+GO:0006956|pathway_to_biological_process|Complement cascade|r-hsa-166658|pathway|biological_process|GO_0006956|biological_process
+GO:0032981|pathway_to_biological_process|Complex I biogenesis|r-hsa-6799198|pathway|biological_process|GO_0032981|biological_process
+GO:0034551|pathway_to_biological_process|Complex III assembly|r-hsa-9865881|pathway|biological_process|GO_0034551|biological_process
+GO:0033617|pathway_to_biological_process|Complex IV assembly|r-hsa-9864848|pathway|biological_process|GO_0033617|biological_process
+GO:0007076|pathway_to_biological_process|Condensation of Prometaphase Chromosomes|r-hsa-2514853|pathway|biological_process|GO_0007076|biological_process
+GO:0007076|pathway_to_biological_process|Condensation of Prophase Chromosomes|r-hsa-2299718|pathway|biological_process|GO_0007076|biological_process
+GO:0006600|pathway_to_biological_process|Creatine metabolism|r-hsa-71288|pathway|biological_process|GO_0006600|biological_process
+GO:0042407|pathway_to_biological_process|Cristae formation|r-hsa-8949613|pathway|biological_process|GO_0042407|biological_process
+GO:0002479|pathway_to_biological_process|Cross-presentation of particulate exogenous antigens (phagosomes)|r-hsa-1236973|pathway|biological_process|GO_0002479|biological_process
+GO:0002479|pathway_to_biological_process|Cross-presentation of soluble exogenous antigens (endosomes)|r-hsa-1236978|pathway|biological_process|GO_0002479|biological_process
+GO:0030199|pathway_to_biological_process|Crosslinking of collagen fibrils|r-hsa-2243919|pathway|biological_process|GO_0030199|biological_process
+GO:0045740|pathway_to_biological_process|Cyclin A:Cdk2-associated events at S phase entry|r-hsa-69656|pathway|biological_process|GO_0045740|biological_process
+GO:0019346|pathway_to_biological_process|Cysteine formation from homocysteine|r-hsa-1614603|pathway|biological_process|GO_0019346|biological_process
+GO:0034599|pathway_to_biological_process|Cytoprotection by HMOX1|r-hsa-9707564|pathway|biological_process|GO_0034599|biological_process
+GO:0016226|pathway_to_biological_process|Cytosolic iron-sulfur cluster assembly|r-hsa-2564830|pathway|biological_process|GO_0016226|biological_process
+GO:0032481|pathway_to_biological_process|Cytosolic sensors of pathogen-associated DNA |r-hsa-1834949|pathway|biological_process|GO_0032481|biological_process
+GO:0050427|pathway_to_biological_process|Cytosolic sulfonation of small molecules|r-hsa-156584|pathway|biological_process|GO_0050427|biological_process
+GO:0019985|pathway_to_biological_process|DNA Damage Bypass|r-hsa-73893|pathway|biological_process|GO_0019985|biological_process
+GO:0000715|pathway_to_biological_process|DNA Damage Recognition in GG-NER|r-hsa-5696394|pathway|biological_process|GO_0000715|biological_process
+GO:0006302|pathway_to_biological_process|DNA Double-Strand Break Repair|r-hsa-5693532|pathway|biological_process|GO_0006302|biological_process
+GO:0006281|pathway_to_biological_process|DNA Repair|r-hsa-73894|pathway|biological_process|GO_0006281|biological_process
+GO:0006261|pathway_to_biological_process|DNA Replication|r-hsa-69306|pathway|biological_process|GO_0006261|biological_process
+GO:0031507|pathway_to_biological_process|DNA methylation|r-hsa-5334118|pathway|biological_process|GO_0031507|biological_process
+GO:0006270|pathway_to_biological_process|DNA replication initiation|r-hsa-68952|pathway|biological_process|GO_0006270|biological_process
+GO:0006271|pathway_to_biological_process|DNA strand elongation|r-hsa-69190|pathway|biological_process|GO_0006271|biological_process
+GO:0050651|pathway_to_biological_process|DS-GAG biosynthesis|r-hsa-2022923|pathway|biological_process|GO_0050651|biological_process
+GO:0000289|pathway_to_biological_process|Deadenylation of mRNA|r-hsa-429947|pathway|biological_process|GO_0000289|biological_process
+GO:0000288|pathway_to_biological_process|Deadenylation-dependent mRNA decay|r-hsa-429914|pathway|biological_process|GO_0000288|biological_process
+GO:0007166|pathway_to_biological_process|Death Receptor Signaling|r-hsa-73887|pathway|biological_process|GO_0007166|biological_process
+GO:0090263|pathway_to_biological_process|Degradation of AXIN|r-hsa-4641257|pathway|biological_process|GO_0090263|biological_process
+GO:0090090|pathway_to_biological_process|Degradation of DVL|r-hsa-4641258|pathway|biological_process|GO_0090090|biological_process
+GO:0009450|pathway_to_biological_process|Degradation of GABA|r-hsa-916853|pathway|biological_process|GO_0009450|biological_process
+GO:0000098|pathway_to_biological_process|Degradation of cysteine and homocysteine|r-hsa-1614558|pathway|biological_process|GO_0000098|biological_process
+GO:0022617|pathway_to_biological_process|Degradation of the extracellular matrix|r-hsa-1474228|pathway|biological_process|GO_0022617|biological_process
+GO:0034080|pathway_to_biological_process|Deposition of new CENPA-containing nucleosomes at the centromere|r-hsa-606279|pathway|biological_process|GO_0034080|biological_process
+GO:0045007|pathway_to_biological_process|Depurination|r-hsa-73927|pathway|biological_process|GO_0045007|biological_process
+GO:0045008|pathway_to_biological_process|Depyrimidination|r-hsa-73928|pathway|biological_process|GO_0045008|biological_process
+GO:0034599|pathway_to_biological_process|Detoxification of Reactive Oxygen Species|r-hsa-3299685|pathway|biological_process|GO_0034599|biological_process
+GO:0016579|pathway_to_biological_process|Deubiquitination|r-hsa-5688426|pathway|biological_process|GO_0016579|biological_process
+GO:0003334|pathway_to_biological_process|Differentiation of Keratinocytes in Interfollicular Epidermis in Mammalian Skin|r-hsa-9725554|pathway|biological_process|GO_0003334|biological_process
+GO:0007586|pathway_to_biological_process|Digestion|r-hsa-8935690|pathway|biological_process|GO_0007586|biological_process
+GO:0044245|pathway_to_biological_process|Digestion of dietary carbohydrate|r-hsa-189085|pathway|biological_process|GO_0044245|biological_process
+GO:0044241|pathway_to_biological_process|Digestion of dietary lipid|r-hsa-192456|pathway|biological_process|GO_0044241|biological_process
+GO:0060070|pathway_to_biological_process|Disassembly of the destruction complex and recruitment of AXIN to the membrane|r-hsa-4641262|pathway|biological_process|GO_0060070|biological_process
+GO:0042730|pathway_to_biological_process|Dissolution of Fibrin Clot|r-hsa-75205|pathway|biological_process|GO_0042730|biological_process
+GO:0006836|pathway_to_biological_process|Dopamine Neurotransmitter Release Cycle|r-hsa-212676|pathway|biological_process|GO_0006836|biological_process
+GO:0000122|pathway_to_biological_process|Downregulation of SMAD2/3:SMAD4 transcriptional activity|r-hsa-2173795|pathway|biological_process|GO_0000122|biological_process
+GO:0030512|pathway_to_biological_process|Downregulation of TGF-beta receptor signaling|r-hsa-2173788|pathway|biological_process|GO_0030512|biological_process
+GO:0006805|pathway_to_biological_process|Drug ADME|r-hsa-9748784|pathway|biological_process|GO_0006805|biological_process
+GO:0006289|pathway_to_biological_process|Dual Incision in GG-NER|r-hsa-5696400|pathway|biological_process|GO_0006289|biological_process
+GO:0042059|pathway_to_biological_process|EGFR downregulation|r-hsa-182971|pathway|biological_process|GO_0042059|biological_process
+GO:0007165|pathway_to_biological_process|EGFR interacts with phospholipase C-gamma|r-hsa-212718|pathway|biological_process|GO_0007165|biological_process
+GO:0007052|pathway_to_biological_process|EML4 and NUDC in mitotic spindle formation|r-hsa-9648025|pathway|biological_process|GO_0007052|biological_process
+GO:0048013|pathway_to_biological_process|EPH-Ephrin signaling|r-hsa-2682334|pathway|biological_process|GO_0048013|biological_process
+GO:1904380|pathway_to_biological_process|ER Quality Control Compartment (ERQC)|r-hsa-901032|pathway|biological_process|GO_1904380|biological_process
+GO:0006888|pathway_to_biological_process|ER to Golgi Anterograde Transport|r-hsa-199977|pathway|biological_process|GO_0006888|biological_process
+GO:0002479|pathway_to_biological_process|ER-Phagosome pathway|r-hsa-1236974|pathway|biological_process|GO_0002479|biological_process
+GO:2000145|pathway_to_biological_process|ERBB2 Regulates Cell Motility|r-hsa-6785631|pathway|biological_process|GO_2000145|biological_process
+GO:0006690|pathway_to_biological_process|Eicosanoids|r-hsa-211979|pathway|biological_process|GO_0006690|biological_process
+GO:0006124|pathway_to_biological_process|Electron transport from NADPH to Ferredoxin|r-hsa-2395516|pathway|biological_process|GO_0006124|biological_process
+GO:0016125|pathway_to_biological_process|Endogenous sterols|r-hsa-211976|pathway|biological_process|GO_0016125|biological_process
+GO:0016197|pathway_to_biological_process|Endosomal Sorting Complex Required For Transport (ESCRT)|r-hsa-917729|pathway|biological_process|GO_0016197|biological_process
+GO:0002480|pathway_to_biological_process|Endosomal/Vacuolar pathway|r-hsa-1236977|pathway|biological_process|GO_0002480|biological_process
+GO:0051726|pathway_to_biological_process|Energy dependent regulation of mTOR by LKB1-AMPK|r-hsa-380972|pathway|biological_process|GO_0051726|biological_process
+GO:0019065|pathway_to_biological_process|Entry of Influenza Virion into Host Cell via Endocytosis|r-hsa-168275|pathway|biological_process|GO_0019065|biological_process
+GO:0042420|pathway_to_biological_process|Enzymatic degradation of Dopamine by monoamine oxidase|r-hsa-379398|pathway|biological_process|GO_0042420|biological_process
+GO:0042420|pathway_to_biological_process|Enzymatic degradation of dopamine by COMT|r-hsa-379397|pathway|biological_process|GO_0042420|biological_process
+GO:0040029|pathway_to_biological_process|Epigenetic regulation of gene expression|r-hsa-212165|pathway|biological_process|GO_0040029|biological_process
+GO:0001837|pathway_to_biological_process|Epithelial-Mesenchymal Transition (EMT) during gastrulation|r-hsa-9758919|pathway|biological_process|GO_0001837|biological_process
+GO:0051897|pathway_to_biological_process|Erythropoietin activates Phosphoinositide-3-kinase (PI3K)|r-hsa-9027276|pathway|biological_process|GO_0051897|biological_process
+GO:0046579|pathway_to_biological_process|Erythropoietin activates RAS|r-hsa-9027284|pathway|biological_process|GO_0046579|biological_process
+GO:1904894|pathway_to_biological_process|Erythropoietin activates STAT5|r-hsa-9027283|pathway|biological_process|GO_1904894|biological_process
+GO:0007062|pathway_to_biological_process|Establishment of Sister Chromatid Cohesion|r-hsa-2468052|pathway|biological_process|GO_0007062|biological_process
+GO:0006703|pathway_to_biological_process|Estrogen biosynthesis|r-hsa-193144|pathway|biological_process|GO_0006703|biological_process
+GO:0006068|pathway_to_biological_process|Ethanol oxidation|r-hsa-71384|pathway|biological_process|GO_0006068|biological_process
+GO:0006414|pathway_to_biological_process|Eukaryotic Translation Elongation|r-hsa-156842|pathway|biological_process|GO_0006414|biological_process
+GO:0006413|pathway_to_biological_process|Eukaryotic Translation Initiation|r-hsa-72613|pathway|biological_process|GO_0006413|biological_process
+GO:0006415|pathway_to_biological_process|Eukaryotic Translation Termination|r-hsa-72764|pathway|biological_process|GO_0006415|biological_process
+GO:0075733|pathway_to_biological_process|Export of Viral Ribonucleoproteins from Nucleus|r-hsa-168274|pathway|biological_process|GO_0075733|biological_process
+GO:0010468|pathway_to_biological_process|Expression and translocation of olfactory receptors|r-hsa-9752946|pathway|biological_process|GO_0010468|biological_process
+GO:0030198|pathway_to_biological_process|Extracellular matrix organization|r-hsa-1474244|pathway|biological_process|GO_0030198|biological_process
+GO:0007598|pathway_to_biological_process|Extrinsic Pathway of Fibrin Clot Formation|r-hsa-140834|pathway|biological_process|GO_0007598|biological_process
+GO:0044528|pathway_to_biological_process|FASTK family proteins regulate processing and stability of mitochondrial RNAs|r-hsa-9837092|pathway|biological_process|GO_0044528|biological_process
+GO:0045930|pathway_to_biological_process|FBXL7 down-regulates AURKA during mitotic entry and in early mitosis|r-hsa-8854050|pathway|biological_process|GO_0045930|biological_process
+GO:0002862|pathway_to_biological_process|FCGR3A-mediated IL10 synthesis|r-hsa-9664323|pathway|biological_process|GO_0002862|biological_process
+GO:0038096|pathway_to_biological_process|FCGR3A-mediated phagocytosis|r-hsa-9664422|pathway|biological_process|GO_0038096|biological_process
+GO:0019221|pathway_to_biological_process|FLT3 Signaling|r-hsa-9607240|pathway|biological_process|GO_0019221|biological_process
+GO:0036297|pathway_to_biological_process|Fanconi Anemia Pathway|r-hsa-6783310|pathway|biological_process|GO_0036297|biological_process
+GO:0097190|pathway_to_biological_process|FasL/ CD95L signaling|r-hsa-75157|pathway|biological_process|GO_0097190|biological_process
+GO:0006631|pathway_to_biological_process|Fatty acid metabolism|r-hsa-8978868|pathway|biological_process|GO_0006631|biological_process
+GO:0006631|pathway_to_biological_process|Fatty acids|r-hsa-211935|pathway|biological_process|GO_0006631|biological_process
+GO:0046949|pathway_to_biological_process|Fatty acyl-CoA biosynthesis|r-hsa-75105|pathway|biological_process|GO_0046949|biological_process
+GO:0038095|pathway_to_biological_process|Fc epsilon receptor (FCERI) signaling|r-hsa-2454202|pathway|biological_process|GO_0038095|biological_process
+GO:0038096|pathway_to_biological_process|Fcgamma receptor (FCGR) dependent phagocytosis|r-hsa-2029480|pathway|biological_process|GO_0038096|biological_process
+GO:0007338|pathway_to_biological_process|Fertilization|r-hsa-1187000|pathway|biological_process|GO_0007338|biological_process
+GO:0006457|pathway_to_biological_process|Folding of actin by CCT/TriC|r-hsa-390450|pathway|biological_process|GO_0006457|biological_process
+GO:0042776|pathway_to_biological_process|Formation of ATP by chemiosmotic coupling|r-hsa-163210|pathway|biological_process|GO_0042776|biological_process
+GO:0048320|pathway_to_biological_process|Formation of axial mesoderm|r-hsa-9796292|pathway|biological_process|GO_0048320|biological_process
+GO:0001706|pathway_to_biological_process|Formation of definitive endoderm|r-hsa-9823730|pathway|biological_process|GO_0001706|biological_process
+GO:0048391|pathway_to_biological_process|Formation of intermediate mesoderm|r-hsa-9761174|pathway|biological_process|GO_0048391|biological_process
+GO:0048370|pathway_to_biological_process|Formation of lateral plate mesoderm|r-hsa-9758920|pathway|biological_process|GO_0048370|biological_process
+GO:0048341|pathway_to_biological_process|Formation of paraxial mesoderm|r-hsa-9793380|pathway|biological_process|GO_0048341|biological_process
+GO:0001887|pathway_to_biological_process|Formation of selenosugars for excretion|r-hsa-2408499|pathway|biological_process|GO_0001887|biological_process
+GO:0009226|pathway_to_biological_process|Formation of the active cofactor, UDP-glucuronate|r-hsa-173599|pathway|biological_process|GO_0009226|biological_process
+GO:0090017|pathway_to_biological_process|Formation of the anterior neural plate|r-hsa-9823739|pathway|biological_process|GO_0090017|biological_process
+GO:1904837|pathway_to_biological_process|Formation of the beta-catenin:TCF transactivating complex|r-hsa-201722|pathway|biological_process|GO_1904837|biological_process
+GO:0070268|pathway_to_biological_process|Formation of the cornified envelope|r-hsa-6809371|pathway|biological_process|GO_0070268|biological_process
+GO:0072179|pathway_to_biological_process|Formation of the nephric duct|r-hsa-9830364|pathway|biological_process|GO_0072179|biological_process
+GO:0090018|pathway_to_biological_process|Formation of the posterior neural plate|r-hsa-9832991|pathway|biological_process|GO_0090018|biological_process
+GO:0060676|pathway_to_biological_process|Formation of the ureteric bud|r-hsa-9830674|pathway|biological_process|GO_0060676|biological_process
+GO:0006457|pathway_to_biological_process|Formation of tubulin folding intermediates by CCT/TriC|r-hsa-389960|pathway|biological_process|GO_0006457|biological_process
+GO:0019640|pathway_to_biological_process|Formation of xylulose-5-phosphate|r-hsa-5661270|pathway|biological_process|GO_0019640|biological_process
+GO:0032024|pathway_to_biological_process|Free fatty acids regulate insulin secretion|r-hsa-400451|pathway|biological_process|GO_0032024|biological_process
+GO:0046370|pathway_to_biological_process|Fructose biosynthesis|r-hsa-5652227|pathway|biological_process|GO_0046370|biological_process
+GO:0061624|pathway_to_biological_process|Fructose catabolism|r-hsa-70350|pathway|biological_process|GO_0061624|biological_process
+GO:0006000|pathway_to_biological_process|Fructose metabolism|r-hsa-5652084|pathway|biological_process|GO_0006000|biological_process
+GO:0046718|pathway_to_biological_process|Fusion and Uncoating of the Influenza Virion|r-hsa-168270|pathway|biological_process|GO_0046718|biological_process
+GO:0019064|pathway_to_biological_process|Fusion of the Influenza Virion to the Host Cell Endosome|r-hsa-168288|pathway|biological_process|GO_0019064|biological_process
+GO:0000080|pathway_to_biological_process|G1 Phase|r-hsa-69236|pathway|biological_process|GO_0000080|biological_process
+GO:0000082|pathway_to_biological_process|G1/S Transition|r-hsa-69206|pathway|biological_process|GO_0000082|biological_process
+GO:0007346|pathway_to_biological_process|G2 Phase|r-hsa-68911|pathway|biological_process|GO_0007346|biological_process
+GO:0000086|pathway_to_biological_process|G2/M Transition|r-hsa-69275|pathway|biological_process|GO_0000086|biological_process
+GO:0009449|pathway_to_biological_process|GABA synthesis|r-hsa-888568|pathway|biological_process|GO_0009449|biological_process
+GO:0042350|pathway_to_biological_process|GDP-fucose biosynthesis|r-hsa-6787639|pathway|biological_process|GO_0042350|biological_process
+GO:0007186|pathway_to_biological_process|GPCR downstream signalling|r-hsa-388396|pathway|biological_process|GO_0007186|biological_process
+GO:0033499|pathway_to_biological_process|Galactose catabolism|r-hsa-70370|pathway|biological_process|GO_0033499|biological_process
+GO:0017187|pathway_to_biological_process|Gamma-carboxylation, transport, and amino-terminal cleavage of proteins|r-hsa-159854|pathway|biological_process|GO_0017187|biological_process
+GO:0016264|pathway_to_biological_process|Gap junction assembly|r-hsa-190861|pathway|biological_process|GO_0016264|biological_process
+GO:0006297|pathway_to_biological_process|Gap-filling DNA repair synthesis and ligation in GG-NER|r-hsa-5696397|pathway|biological_process|GO_0006297|biological_process
+GO:0007369|pathway_to_biological_process|Gastrulation|r-hsa-9758941|pathway|biological_process|GO_0007369|biological_process
+GO:0031047|pathway_to_biological_process|Gene Silencing by RNA|r-hsa-211000|pathway|biological_process|GO_0031047|biological_process
+GO:0006351|pathway_to_biological_process|Gene expression (Transcription)|r-hsa-74160|pathway|biological_process|GO_0006351|biological_process
+GO:0060260|pathway_to_biological_process|Generic Transcription Pathway|r-hsa-212436|pathway|biological_process|GO_0060260|biological_process
+GO:0090009|pathway_to_biological_process|Germ layer formation at gastrulation|r-hsa-9754189|pathway|biological_process|GO_0090009|biological_process
+GO:0070911|pathway_to_biological_process|Global Genome Nucleotide Excision Repair (GG-NER)|r-hsa-5696399|pathway|biological_process|GO_0070911|biological_process
+GO:0071377|pathway_to_biological_process|Glucagon signaling in metabolic regulation|r-hsa-163359|pathway|biological_process|GO_0071377|biological_process
+GO:0032024|pathway_to_biological_process|Glucagon-like Peptide-1 (GLP1) regulates insulin secretion|r-hsa-381676|pathway|biological_process|GO_0032024|biological_process
+GO:0006704|pathway_to_biological_process|Glucocorticoid biosynthesis|r-hsa-194002|pathway|biological_process|GO_0006704|biological_process
+GO:0006094|pathway_to_biological_process|Gluconeogenesis|r-hsa-70263|pathway|biological_process|GO_0006094|biological_process
+GO:0006006|pathway_to_biological_process|Glucose metabolism|r-hsa-70326|pathway|biological_process|GO_0006006|biological_process
+GO:0019585|pathway_to_biological_process|Glucuronidation|r-hsa-156588|pathway|biological_process|GO_0019585|biological_process
+GO:0006836|pathway_to_biological_process|Glutamate Neurotransmitter Release Cycle|r-hsa-210500|pathway|biological_process|GO_0006836|biological_process
+GO:0170033|pathway_to_biological_process|Glutamate and glutamine metabolism|r-hsa-8964539|pathway|biological_process|GO_0170033|biological_process
+GO:1901687|pathway_to_biological_process|Glutathione conjugation|r-hsa-156590|pathway|biological_process|GO_1901687|biological_process
+GO:0006749|pathway_to_biological_process|Glutathione synthesis and recycling|r-hsa-174403|pathway|biological_process|GO_0006749|biological_process
+GO:0046474|pathway_to_biological_process|Glycerophospholipid biosynthesis|r-hsa-1483206|pathway|biological_process|GO_0046474|biological_process
+GO:0046475|pathway_to_biological_process|Glycerophospholipid catabolism|r-hsa-6814848|pathway|biological_process|GO_0046475|biological_process
+GO:0006546|pathway_to_biological_process|Glycine degradation|r-hsa-6783984|pathway|biological_process|GO_0006546|biological_process
+GO:0005980|pathway_to_biological_process|Glycogen breakdown (glycogenolysis)|r-hsa-70221|pathway|biological_process|GO_0005980|biological_process
+GO:0005977|pathway_to_biological_process|Glycogen metabolism|r-hsa-8982491|pathway|biological_process|GO_0005977|biological_process
+GO:0005978|pathway_to_biological_process|Glycogen synthesis|r-hsa-3322077|pathway|biological_process|GO_0005978|biological_process
+GO:0061621|pathway_to_biological_process|Glycolysis|r-hsa-70171|pathway|biological_process|GO_0061621|biological_process
+GO:0030203|pathway_to_biological_process|Glycosaminoglycan metabolism|r-hsa-1630316|pathway|biological_process|GO_0030203|biological_process
+GO:0120532|pathway_to_biological_process|Glycosaminoglycan-protein linkage region biosynthesis|r-hsa-1971475|pathway|biological_process|GO_0120532|biological_process
+GO:0006688|pathway_to_biological_process|Glycosphingolipid biosynthesis|r-hsa-9840309|pathway|biological_process|GO_0006688|biological_process
+GO:0046479|pathway_to_biological_process|Glycosphingolipid catabolism|r-hsa-9840310|pathway|biological_process|GO_0046479|biological_process
+GO:0006687|pathway_to_biological_process|Glycosphingolipid metabolism|r-hsa-1660662|pathway|biological_process|GO_0006687|biological_process
+GO:0035627|pathway_to_biological_process|Glycosphingolipid transport|r-hsa-9845576|pathway|biological_process|GO_0035627|biological_process
+GO:0019752|pathway_to_biological_process|Glyoxylate metabolism and glycine degradation|r-hsa-389661|pathway|biological_process|GO_0019752|biological_process
+GO:0048313|pathway_to_biological_process|Golgi Cisternae Pericentriolar Stack Reorganization|r-hsa-162658|pathway|biological_process|GO_0048313|biological_process
+GO:0060397|pathway_to_biological_process|Growth hormone receptor signaling|r-hsa-982772|pathway|biological_process|GO_0060397|biological_process
+GO:0019058|pathway_to_biological_process|HCMV Infection|r-hsa-9609646|pathway|biological_process|GO_0019058|biological_process
+GO:0034380|pathway_to_biological_process|HDL assembly|r-hsa-8963896|pathway|biological_process|GO_0034380|biological_process
+GO:0034384|pathway_to_biological_process|HDL clearance|r-hsa-8964011|pathway|biological_process|GO_0034384|biological_process
+GO:0034375|pathway_to_biological_process|HDL remodeling|r-hsa-8964058|pathway|biological_process|GO_0034375|biological_process
+GO:0016032|pathway_to_biological_process|HIV Infection|r-hsa-162906|pathway|biological_process|GO_0016032|biological_process
+GO:0006368|pathway_to_biological_process|HIV Transcription Elongation|r-hsa-167169|pathway|biological_process|GO_0006368|biological_process
+GO:0006367|pathway_to_biological_process|HIV Transcription Initiation|r-hsa-167161|pathway|biological_process|GO_0006367|biological_process
+GO:0015012|pathway_to_biological_process|HS-GAG biosynthesis|r-hsa-2022928|pathway|biological_process|GO_0015012|biological_process
+GO:0030200|pathway_to_biological_process|HS-GAG degradation|r-hsa-2024096|pathway|biological_process|GO_0030200|biological_process
+GO:1900034|pathway_to_biological_process|HSF1-dependent transactivation|r-hsa-3371571|pathway|biological_process|GO_1900034|biological_process
+GO:0071383|pathway_to_biological_process|HSP90 chaperone cycle for steroid hormone receptors (SHR) in the presence of ligand|r-hsa-3371497|pathway|biological_process|GO_0071383|biological_process
+GO:0006783|pathway_to_biological_process|Heme biosynthesis|r-hsa-189451|pathway|biological_process|GO_0006783|biological_process
+GO:0042167|pathway_to_biological_process|Heme degradation|r-hsa-189483|pathway|biological_process|GO_0042167|biological_process
+GO:0042168|pathway_to_biological_process|Heme signaling|r-hsa-9707616|pathway|biological_process|GO_0042168|biological_process
+GO:0007596|pathway_to_biological_process|Hemostasis|r-hsa-109582|pathway|biological_process|GO_0007596|biological_process
+GO:0030201|pathway_to_biological_process|Heparan sulfate/heparin (HS-GAG) metabolism|r-hsa-1638091|pathway|biological_process|GO_0030201|biological_process
+GO:0097700|pathway_to_biological_process|High laminar flow shear stress activates signaling by PIEZO1 and PECAM1:CDH5:KDR in endothelial cells|r-hsa-9856530|pathway|biological_process|GO_0097700|biological_process
+GO:0006548|pathway_to_biological_process|Histidine catabolism|r-hsa-70921|pathway|biological_process|GO_0006548|biological_process
+GO:0000724|pathway_to_biological_process|Homology Directed Repair|r-hsa-5693538|pathway|biological_process|GO_0000724|biological_process
+GO:0030214|pathway_to_biological_process|Hyaluronan degradation|r-hsa-2160916|pathway|biological_process|GO_0030214|biological_process
+GO:0030212|pathway_to_biological_process|Hyaluronan metabolism|r-hsa-2142845|pathway|biological_process|GO_0030212|biological_process
+GO:0006644|pathway_to_biological_process|Hydrolysis of LPC|r-hsa-1483115|pathway|biological_process|GO_0006644|biological_process
+GO:0006644|pathway_to_biological_process|Hydrolysis of LPE|r-hsa-1483152|pathway|biological_process|GO_0006644|biological_process
+GO:0008612|pathway_to_biological_process|Hypusine synthesis from eIF5A-lysine|r-hsa-204626|pathway|biological_process|GO_0008612|biological_process
+GO:0033271|pathway_to_biological_process|IP3 and IP4 transport between cytosol and nucleus|r-hsa-1855196|pathway|biological_process|GO_0033271|biological_process
+GO:0033271|pathway_to_biological_process|IP6 and IP7 transport between cytosol and nucleus|r-hsa-1855229|pathway|biological_process|GO_0033271|biological_process
+GO:0033271|pathway_to_biological_process|IPs transport between ER lumen and cytosol|r-hsa-1855215|pathway|biological_process|GO_0033271|biological_process
+GO:0033271|pathway_to_biological_process|IPs transport between ER lumen and nucleus|r-hsa-1855156|pathway|biological_process|GO_0033271|biological_process
+GO:0033271|pathway_to_biological_process|IPs transport between cytosol and ER lumen|r-hsa-1855184|pathway|biological_process|GO_0033271|biological_process
+GO:0033271|pathway_to_biological_process|IPs transport between nucleus and ER lumen|r-hsa-1855192|pathway|biological_process|GO_0033271|biological_process
+GO:0033271|pathway_to_biological_process|IPs transport between nucleus and cytosol|r-hsa-1855170|pathway|biological_process|GO_0033271|biological_process
+GO:0043123|pathway_to_biological_process|IRAK1 recruits IKK complex|r-hsa-937039|pathway|biological_process|GO_0043123|biological_process
+GO:0036498|pathway_to_biological_process|IRE1alpha activates chaperones|r-hsa-381070|pathway|biological_process|GO_0036498|biological_process
+GO:0050776|pathway_to_biological_process|Immunoregulatory interactions between a Lymphoid and a non-Lymphoid cell|r-hsa-198933|pathway|biological_process|GO_0050776|biological_process
+GO:0022400|pathway_to_biological_process|Inactivation, recovery and regulation of the phototransduction cascade|r-hsa-2514859|pathway|biological_process|GO_0022400|biological_process
+GO:0016486|pathway_to_biological_process|Incretin synthesis, secretion, and inactivation|r-hsa-400508|pathway|biological_process|GO_0016486|biological_process
+GO:0060141|pathway_to_biological_process|Induction of Cell-Cell Fusion|r-hsa-9733458|pathway|biological_process|GO_0060141|biological_process
+GO:0051701|pathway_to_biological_process|Infection with Enterobacteria|r-hsa-9640148|pathway|biological_process|GO_0051701|biological_process
+GO:0051701|pathway_to_biological_process|Infection with Mycobacterium tuberculosis|r-hsa-9635486|pathway|biological_process|GO_0051701|biological_process
+GO:0019058|pathway_to_biological_process|Influenza Infection|r-hsa-168255|pathway|biological_process|GO_0019058|biological_process
+GO:0019083|pathway_to_biological_process|Influenza Viral RNA Transcription and Replication|r-hsa-168273|pathway|biological_process|GO_0019083|biological_process
+GO:0006925|pathway_to_biological_process|Influenza Virus Induced Apoptosis|r-hsa-168277|pathway|biological_process|GO_0006925|biological_process
+GO:0048239|pathway_to_biological_process|Inhibition of DNA recombination at telomere|r-hsa-9670095|pathway|biological_process|GO_0048239|biological_process
+GO:0039524|pathway_to_biological_process|Inhibition of Host mRNA Processing and RNA Silencing|r-hsa-168315|pathway|biological_process|GO_0039524|biological_process
+GO:0044003|pathway_to_biological_process|Inhibition of membrane repair|r-hsa-9635644|pathway|biological_process|GO_0044003|biological_process
+GO:0045087|pathway_to_biological_process|Innate Immune System|r-hsa-168249|pathway|biological_process|GO_0045087|biological_process
+GO:0043647|pathway_to_biological_process|Inositol phosphate metabolism|r-hsa-1483249|pathway|biological_process|GO_0043647|biological_process
+GO:0015798|pathway_to_biological_process|Inositol transporters|r-hsa-429593|pathway|biological_process|GO_0015798|biological_process
+GO:0045048|pathway_to_biological_process|Insertion of tail-anchored proteins into the endoplasmic reticulum membrane|r-hsa-9609523|pathway|biological_process|GO_0045048|biological_process
+GO:0005999|pathway_to_biological_process|Insulin effects increased synthesis of Xylulose-5-Phosphate|r-hsa-163754|pathway|biological_process|GO_0005999|biological_process
+GO:0030070|pathway_to_biological_process|Insulin processing|r-hsa-264876|pathway|biological_process|GO_0030070|biological_process
+GO:0038020|pathway_to_biological_process|Insulin receptor recycling|r-hsa-77387|pathway|biological_process|GO_0038020|biological_process
+GO:0043488|pathway_to_biological_process|Insulin-like Growth Factor-2 mRNA Binding Proteins (IGF2BPs/IMPs/VICKZs) bind RNA|r-hsa-428359|pathway|biological_process|GO_0043488|biological_process
+GO:0043467|pathway_to_biological_process|Integration of energy metabolism|r-hsa-163685|pathway|biological_process|GO_0043467|biological_process
+GO:0075713|pathway_to_biological_process|Integration of provirus|r-hsa-162592|pathway|biological_process|GO_0075713|biological_process
+GO:0035036|pathway_to_biological_process|Interaction With Cumulus Cells And The Zona Pellucida|r-hsa-2534343|pathway|biological_process|GO_0035036|biological_process
+GO:0006103|pathway_to_biological_process|Interconversion of 2-oxoglutarate and 2-hydroxyglutarate|r-hsa-880009|pathway|biological_process|GO_0006103|biological_process
+GO:0015949|pathway_to_biological_process|Interconversion of nucleotide di- and triphosphates|r-hsa-499943|pathway|biological_process|GO_0015949|biological_process
+GO:0006596|pathway_to_biological_process|Interconversion of polyamines|r-hsa-351200|pathway|biological_process|GO_0006596|biological_process
+GO:0019221|pathway_to_biological_process|Interferon Signaling|r-hsa-913531|pathway|biological_process|GO_0019221|biological_process
+GO:0060337|pathway_to_biological_process|Interferon alpha/beta signaling|r-hsa-909733|pathway|biological_process|GO_0060337|biological_process
+GO:0060333|pathway_to_biological_process|Interferon gamma signaling|r-hsa-877300|pathway|biological_process|GO_0060333|biological_process
+GO:0070498|pathway_to_biological_process|Interleukin-1 signaling|r-hsa-9020702|pathway|biological_process|GO_0070498|biological_process
+GO:0035722|pathway_to_biological_process|Interleukin-12 family signaling|r-hsa-447115|pathway|biological_process|GO_0035722|biological_process
+GO:0035723|pathway_to_biological_process|Interleukin-15 signaling|r-hsa-8983432|pathway|biological_process|GO_0035723|biological_process
+GO:0097400|pathway_to_biological_process|Interleukin-17 signaling|r-hsa-448424|pathway|biological_process|GO_0097400|biological_process
+GO:0035655|pathway_to_biological_process|Interleukin-18 signaling|r-hsa-9012546|pathway|biological_process|GO_0035655|biological_process
+GO:0038110|pathway_to_biological_process|Interleukin-2 signaling|r-hsa-9020558|pathway|biological_process|GO_0038110|biological_process
+GO:0038114|pathway_to_biological_process|Interleukin-21 signaling|r-hsa-9020958|pathway|biological_process|GO_0038114|biological_process
+GO:0038155|pathway_to_biological_process|Interleukin-23 signaling|r-hsa-9020933|pathway|biological_process|GO_0038155|biological_process
+GO:0070106|pathway_to_biological_process|Interleukin-27 signaling|r-hsa-9020956|pathway|biological_process|GO_0070106|biological_process
+GO:0038172|pathway_to_biological_process|Interleukin-33 signaling|r-hsa-9014843|pathway|biological_process|GO_0038172|biological_process
+GO:0070757|pathway_to_biological_process|Interleukin-35 Signalling|r-hsa-8984722|pathway|biological_process|GO_0070757|biological_process
+GO:0071345|pathway_to_biological_process|Interleukin-37 signaling|r-hsa-9008059|pathway|biological_process|GO_0071345|biological_process
+GO:0071345|pathway_to_biological_process|Interleukin-38 signaling|r-hsa-9007892|pathway|biological_process|GO_0071345|biological_process
+GO:0070102|pathway_to_biological_process|Interleukin-6 signaling|r-hsa-1059683|pathway|biological_process|GO_0070102|biological_process
+GO:0038111|pathway_to_biological_process|Interleukin-7 signaling|r-hsa-1266695|pathway|biological_process|GO_0038111|biological_process
+GO:0038113|pathway_to_biological_process|Interleukin-9 signaling|r-hsa-8985947|pathway|biological_process|GO_0038113|biological_process
+GO:0050892|pathway_to_biological_process|Intestinal absorption|r-hsa-8963676|pathway|biological_process|GO_0050892|biological_process
+GO:0106001|pathway_to_biological_process|Intestinal hexose absorption|r-hsa-8981373|pathway|biological_process|GO_0106001|biological_process
+GO:0098856|pathway_to_biological_process|Intestinal lipid absorption|r-hsa-8963678|pathway|biological_process|GO_0098856|biological_process
+GO:0006631|pathway_to_biological_process|Intracellular metabolism of fatty acids regulates insulin secretion|r-hsa-434313|pathway|biological_process|GO_0006631|biological_process
+GO:0015671|pathway_to_biological_process|Intracellular oxygen transport|r-hsa-8981607|pathway|biological_process|GO_0015671|biological_process
+GO:0035735|pathway_to_biological_process|Intraflagellar transport|r-hsa-5620924|pathway|biological_process|GO_0035735|biological_process
+GO:0097193|pathway_to_biological_process|Intrinsic Pathway for Apoptosis|r-hsa-109606|pathway|biological_process|GO_0097193|biological_process
+GO:0007597|pathway_to_biological_process|Intrinsic Pathway of Fibrin Clot Formation|r-hsa-140837|pathway|biological_process|GO_0007597|biological_process
+GO:0034220|pathway_to_biological_process|Ion channel transport|r-hsa-983712|pathway|biological_process|GO_0034220|biological_process
+GO:1903779|pathway_to_biological_process|Ion homeostasis|r-hsa-5578775|pathway|biological_process|GO_1903779|biological_process
+GO:0006879|pathway_to_biological_process|Iron uptake and transport|r-hsa-917937|pathway|biological_process|GO_0006879|biological_process
+GO:0007254|pathway_to_biological_process|JNK (c-Jun kinases) phosphorylation and  activation mediated by activated human TAK1|r-hsa-450321|pathway|biological_process|GO_0007254|biological_process
+GO:0018146|pathway_to_biological_process|Keratan sulfate biosynthesis|r-hsa-2022854|pathway|biological_process|GO_0018146|biological_process
+GO:0042340|pathway_to_biological_process|Keratan sulfate degradation|r-hsa-2022857|pathway|biological_process|GO_0042340|biological_process
+GO:0042339|pathway_to_biological_process|Keratan sulfate/keratin metabolism|r-hsa-1638074|pathway|biological_process|GO_0042339|biological_process
+GO:0031424|pathway_to_biological_process|Keratinization|r-hsa-6805567|pathway|biological_process|GO_0031424|biological_process
+GO:1902224|pathway_to_biological_process|Ketone body metabolism|r-hsa-74182|pathway|biological_process|GO_1902224|biological_process
+GO:0001822|pathway_to_biological_process|Kidney development|r-hsa-9830369|pathway|biological_process|GO_0001822|biological_process
+GO:0031343|pathway_to_biological_process|Killing mechanisms|r-hsa-9664420|pathway|biological_process|GO_0031343|biological_process
+GO:0007018|pathway_to_biological_process|Kinesins|r-hsa-983189|pathway|biological_process|GO_0007018|biological_process
+GO:0034383|pathway_to_biological_process|LDL clearance|r-hsa-8964038|pathway|biological_process|GO_0034383|biological_process
+GO:0034374|pathway_to_biological_process|LDL remodeling|r-hsa-8964041|pathway|biological_process|GO_0034374|biological_process
+GO:0002862|pathway_to_biological_process|LTC4-CYSLTR mediated IL4 production|r-hsa-9664535|pathway|biological_process|GO_0002862|biological_process
+GO:0005989|pathway_to_biological_process|Lactose synthesis|r-hsa-5653890|pathway|biological_process|GO_0005989|biological_process
+GO:0061738|pathway_to_biological_process|Late endosomal microautophagy|r-hsa-9615710|pathway|biological_process|GO_0061738|biological_process
+GO:0052572|pathway_to_biological_process|Latent infection - Other responses of Mtb to phagocytosis|r-hsa-1222499|pathway|biological_process|GO_0052572|biological_process
+GO:0001867|pathway_to_biological_process|Lectin pathway of complement activation|r-hsa-166662|pathway|biological_process|GO_0001867|biological_process
+GO:0051701|pathway_to_biological_process|Leishmania infection|r-hsa-9658195|pathway|biological_process|GO_0051701|biological_process
+GO:0031342|pathway_to_biological_process|Leishmania parasite growth and survival|r-hsa-9664433|pathway|biological_process|GO_0031342|biological_process
+GO:0006909|pathway_to_biological_process|Leishmania phagocytosis|r-hsa-9664417|pathway|biological_process|GO_0006909|biological_process
+GO:0043651|pathway_to_biological_process|Linoleic acid (LA) metabolism|r-hsa-2046105|pathway|biological_process|GO_0043651|biological_process
+GO:0034389|pathway_to_biological_process|Lipid particle organization|r-hsa-8964572|pathway|biological_process|GO_0034389|biological_process
+GO:0061724|pathway_to_biological_process|Lipophagy|r-hsa-9613354|pathway|biological_process|GO_0061724|biological_process
+GO:0046718|pathway_to_biological_process|Listeria monocytogenes entry into host cells|r-hsa-8876384|pathway|biological_process|GO_0046718|biological_process
+GO:0007268|pathway_to_biological_process|Long-term potentiation|r-hsa-9620244|pathway|biological_process|GO_0007268|biological_process
+GO:0006554|pathway_to_biological_process|Lysine catabolism|r-hsa-71064|pathway|biological_process|GO_0006554|biological_process
+GO:0009313|pathway_to_biological_process|Lysosomal oligosaccharide catabolism|r-hsa-8853383|pathway|biological_process|GO_0009313|biological_process
+GO:0000087|pathway_to_biological_process|M Phase|r-hsa-68886|pathway|biological_process|GO_0000087|biological_process
+GO:0051403|pathway_to_biological_process|MAP kinase activation|r-hsa-450294|pathway|biological_process|GO_0051403|biological_process
+GO:0007346|pathway_to_biological_process|MASTL Facilitates Mitotic Progression|r-hsa-2465910|pathway|biological_process|GO_0007346|biological_process
+GO:0006307|pathway_to_biological_process|MGMT-mediated DNA damage reversal|r-hsa-5657655|pathway|biological_process|GO_0006307|biological_process
+GO:0019886|pathway_to_biological_process|MHC class II antigen presentation|r-hsa-2132295|pathway|biological_process|GO_0019886|biological_process
+GO:0016236|pathway_to_biological_process|Macroautophagy|r-hsa-1632852|pathway|biological_process|GO_0016236|biological_process
+GO:0043490|pathway_to_biological_process|Malate-aspartate shuttle|r-hsa-9856872|pathway|biological_process|GO_0043490|biological_process
+GO:0044003|pathway_to_biological_process|Manipulation of host energy metabolism|r-hsa-9636667|pathway|biological_process|GO_0044003|biological_process
+GO:0160021|pathway_to_biological_process|Maternal to zygotic transition (MZT)|r-hsa-9816359|pathway|biological_process|GO_0160021|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of nucleoprotein|r-hsa-9694631|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of nucleoprotein|r-hsa-9683610|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of protein 3a|r-hsa-9694719|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of protein 3a|r-hsa-9683673|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of protein M|r-hsa-9694594|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of protein M|r-hsa-9683612|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of spike protein|r-hsa-9694548|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Maturation of spike protein|r-hsa-9683686|pathway|biological_process|GO_0019082|biological_process
+GO:0042438|pathway_to_biological_process|Melanin biosynthesis|r-hsa-5662702|pathway|biological_process|GO_0042438|biological_process
+GO:0061024|pathway_to_biological_process|Membrane Trafficking|r-hsa-199991|pathway|biological_process|GO_0061024|biological_process
+GO:0075733|pathway_to_biological_process|Membrane binding and targetting of GAG proteins|r-hsa-174490|pathway|biological_process|GO_0075733|biological_process
+GO:0008152|pathway_to_biological_process|Metabolism|r-hsa-1430728|pathway|biological_process|GO_0008152|biological_process
+GO:0002003|pathway_to_biological_process|Metabolism of Angiotensinogen to Angiotensins|r-hsa-2022377|pathway|biological_process|GO_0002003|biological_process
+GO:0016070|pathway_to_biological_process|Metabolism of RNA|r-hsa-8953854|pathway|biological_process|GO_0016070|biological_process
+GO:0044238|pathway_to_biological_process|Metabolism of amino acids and derivatives|r-hsa-71291|pathway|biological_process|GO_0044238|biological_process
+GO:0006775|pathway_to_biological_process|Metabolism of fat-soluble vitamins|r-hsa-6806667|pathway|biological_process|GO_0006775|biological_process
+GO:0046655|pathway_to_biological_process|Metabolism of folate and pterines|r-hsa-196757|pathway|biological_process|GO_0046655|biological_process
+GO:0001887|pathway_to_biological_process|Metabolism of ingested H2SeO4 and H2SeO3 into H2Se|r-hsa-2408550|pathway|biological_process|GO_0001887|biological_process
+GO:0001887|pathway_to_biological_process|Metabolism of ingested MeSeO2H into MeSeH|r-hsa-5263617|pathway|biological_process|GO_0001887|biological_process
+GO:0001887|pathway_to_biological_process|Metabolism of ingested SeMet, Sec, MeSec into H2Se|r-hsa-2408508|pathway|biological_process|GO_0001887|biological_process
+GO:0006629|pathway_to_biological_process|Metabolism of lipids|r-hsa-556833|pathway|biological_process|GO_0006629|biological_process
+GO:0046209|pathway_to_biological_process|Metabolism of nitric oxide: NOS3 activation and regulation|r-hsa-202131|pathway|biological_process|GO_0046209|biological_process
+GO:0055086|pathway_to_biological_process|Metabolism of nucleotides|r-hsa-15869|pathway|biological_process|GO_0055086|biological_process
+GO:0006595|pathway_to_biological_process|Metabolism of polyamines|r-hsa-351202|pathway|biological_process|GO_0006595|biological_process
+GO:0006778|pathway_to_biological_process|Metabolism of porphyrins|r-hsa-189445|pathway|biological_process|GO_0006778|biological_process
+GO:0019538|pathway_to_biological_process|Metabolism of proteins|r-hsa-392499|pathway|biological_process|GO_0019538|biological_process
+GO:0042429|pathway_to_biological_process|Metabolism of serotonin|r-hsa-380612|pathway|biological_process|GO_0042429|biological_process
+GO:0008202|pathway_to_biological_process|Metabolism of steroids|r-hsa-8957322|pathway|biological_process|GO_0008202|biological_process
+GO:0042373|pathway_to_biological_process|Metabolism of vitamin K|r-hsa-6806664|pathway|biological_process|GO_0042373|biological_process
+GO:0006767|pathway_to_biological_process|Metabolism of water-soluble vitamins and cofactors|r-hsa-196849|pathway|biological_process|GO_0006767|biological_process
+GO:0044847|pathway_to_biological_process|Metal ion assimilation from the host|r-hsa-9638482|pathway|biological_process|GO_0044847|biological_process
+GO:0019509|pathway_to_biological_process|Methionine salvage pathway|r-hsa-1237112|pathway|biological_process|GO_0019509|biological_process
+GO:0032259|pathway_to_biological_process|Methylation|r-hsa-156581|pathway|biological_process|GO_0032259|biological_process
+GO:0001887|pathway_to_biological_process|Methylation of MeSeH for excretion|r-hsa-2408552|pathway|biological_process|GO_0001887|biological_process
+GO:0010586|pathway_to_biological_process|MicroRNA (miRNA) biogenesis|r-hsa-203927|pathway|biological_process|GO_0010586|biological_process
+GO:0006705|pathway_to_biological_process|Mineralocorticoid biosynthesis|r-hsa-193993|pathway|biological_process|GO_0006705|biological_process
+GO:1903604|pathway_to_biological_process|Miscellaneous substrates|r-hsa-211958|pathway|biological_process|GO_1903604|biological_process
+GO:0055085|pathway_to_biological_process|Miscellaneous transport and binding events|r-hsa-5223345|pathway|biological_process|GO_0055085|biological_process
+GO:0006298|pathway_to_biological_process|Mismatch Repair|r-hsa-5358508|pathway|biological_process|GO_0006298|biological_process
+GO:0006635|pathway_to_biological_process|Mitochondrial Fatty Acid Beta-Oxidation|r-hsa-77289|pathway|biological_process|GO_0006635|biological_process
+GO:0000957|pathway_to_biological_process|Mitochondrial RNA degradation|r-hsa-9836573|pathway|biological_process|GO_0000957|biological_process
+GO:1990845|pathway_to_biological_process|Mitochondrial Uncoupling|r-hsa-166187|pathway|biological_process|GO_1990845|biological_process
+GO:0007005|pathway_to_biological_process|Mitochondrial biogenesis|r-hsa-1592230|pathway|biological_process|GO_0007005|biological_process
+GO:0006851|pathway_to_biological_process|Mitochondrial calcium ion transport|r-hsa-8949215|pathway|biological_process|GO_0006851|biological_process
+GO:0016226|pathway_to_biological_process|Mitochondrial iron-sulfur cluster biogenesis|r-hsa-1362409|pathway|biological_process|GO_0016226|biological_process
+GO:0016556|pathway_to_biological_process|Mitochondrial mRNA modification|r-hsa-9937008|pathway|biological_process|GO_0016556|biological_process
+GO:0035694|pathway_to_biological_process|Mitochondrial protein degradation|r-hsa-9837999|pathway|biological_process|GO_0035694|biological_process
+GO:0006626|pathway_to_biological_process|Mitochondrial protein import|r-hsa-1268020|pathway|biological_process|GO_0006626|biological_process
+GO:0070126|pathway_to_biological_process|Mitochondrial ribosome-associated quality control|r-hsa-9937383|pathway|biological_process|GO_0070126|biological_process
+GO:0006391|pathway_to_biological_process|Mitochondrial transcription initiation|r-hsa-163282|pathway|biological_process|GO_0006391|biological_process
+GO:0006393|pathway_to_biological_process|Mitochondrial transcription termination|r-hsa-163316|pathway|biological_process|GO_0006393|biological_process
+GO:0032543|pathway_to_biological_process|Mitochondrial translation|r-hsa-5368287|pathway|biological_process|GO_0032543|biological_process
+GO:0070125|pathway_to_biological_process|Mitochondrial translation elongation|r-hsa-5389840|pathway|biological_process|GO_0070125|biological_process
+GO:0070124|pathway_to_biological_process|Mitochondrial translation initiation|r-hsa-5368286|pathway|biological_process|GO_0070124|biological_process
+GO:0070126|pathway_to_biological_process|Mitochondrial translation termination|r-hsa-5419276|pathway|biological_process|GO_0070126|biological_process
+GO:0000423|pathway_to_biological_process|Mitophagy|r-hsa-5205647|pathway|biological_process|GO_0000423|biological_process
+GO:0007091|pathway_to_biological_process|Mitotic Metaphase/Anaphase Transition|r-hsa-68881|pathway|biological_process|GO_0007091|biological_process
+GO:0000236|pathway_to_biological_process|Mitotic Prometaphase|r-hsa-68877|pathway|biological_process|GO_0000236|biological_process
+GO:0007094|pathway_to_biological_process|Mitotic Spindle Checkpoint|r-hsa-69618|pathway|biological_process|GO_0007094|biological_process
+GO:0000281|pathway_to_biological_process|Mitotic Telophase/Cytokinesis|r-hsa-68884|pathway|biological_process|GO_0000281|biological_process
+GO:0052031|pathway_to_biological_process|Modulation by Mtb of host immune system|r-hsa-9637628|pathway|biological_process|GO_0052031|biological_process
+GO:0032324|pathway_to_biological_process|Molybdenum cofactor biosynthesis|r-hsa-947581|pathway|biological_process|GO_0032324|biological_process
+GO:0033214|pathway_to_biological_process|Mtb iron assimilation by chelation|r-hsa-1222449|pathway|biological_process|GO_0033214|biological_process
+GO:0002755|pathway_to_biological_process|MyD88 cascade initiated on plasma membrane|r-hsa-975871|pathway|biological_process|GO_0002755|biological_process
+GO:0002756|pathway_to_biological_process|MyD88-independent TLR4 cascade |r-hsa-166166|pathway|biological_process|GO_0002756|biological_process
+GO:0002755|pathway_to_biological_process|MyD88:MAL(TIRAP) cascade initiated on plasma membrane|r-hsa-166058|pathway|biological_process|GO_0002755|biological_process
+GO:0051149|pathway_to_biological_process|Myogenesis|r-hsa-525793|pathway|biological_process|GO_0051149|biological_process
+GO:0006457|pathway_to_biological_process|N-glycan trimming in the ER and Calnexin/Calreticulin cycle|r-hsa-532668|pathway|biological_process|GO_0006457|biological_process
+GO:2001233|pathway_to_biological_process|NADE modulates death signalling|r-hsa-205025|pathway|biological_process|GO_2001233|biological_process
+GO:0006740|pathway_to_biological_process|NADPH regeneration|r-hsa-389542|pathway|biological_process|GO_0006740|biological_process
+GO:0032455|pathway_to_biological_process|NGF processing|r-hsa-167060|pathway|biological_process|GO_0032455|biological_process
+GO:0007190|pathway_to_biological_process|NGF-independant TRKA activation|r-hsa-187024|pathway|biological_process|GO_0007190|biological_process
+GO:0038061|pathway_to_biological_process|NIK-->noncanonical NF-kB signaling|r-hsa-5676590|pathway|biological_process|GO_0038061|biological_process
+GO:0007221|pathway_to_biological_process|NOTCH3 Intracellular Domain Regulates Transcription|r-hsa-9013508|pathway|biological_process|GO_0007221|biological_process
+GO:0006355|pathway_to_biological_process|NOTCH4 Intracellular Domain Regulates Transcription|r-hsa-9013695|pathway|biological_process|GO_0006355|biological_process
+GO:0030522|pathway_to_biological_process|NR1H2 and NR1H3-mediated signaling|r-hsa-9024446|pathway|biological_process|GO_0030522|biological_process
+GO:0043065|pathway_to_biological_process|NRAGE signals death through JNK|r-hsa-193648|pathway|biological_process|GO_0043065|biological_process
+GO:0043065|pathway_to_biological_process|NRIF signals cell death from the nucleus|r-hsa-205043|pathway|biological_process|GO_0043065|biological_process
+GO:0050687|pathway_to_biological_process|NS1 Mediated Effects on Host Pathways|r-hsa-168276|pathway|biological_process|GO_0050687|biological_process
+GO:0051388|pathway_to_biological_process|NTF3 activates NTRK2 (TRKB) signaling|r-hsa-9025046|pathway|biological_process|GO_0051388|biological_process
+GO:0051388|pathway_to_biological_process|NTF3 activates NTRK3 signaling|r-hsa-9034013|pathway|biological_process|GO_0051388|biological_process
+GO:0051388|pathway_to_biological_process|NTF4 activates NTRK2 (TRKB) signaling|r-hsa-9026357|pathway|biological_process|GO_0051388|biological_process
+GO:2001241|pathway_to_biological_process|NTRK3 as a dependence receptor|r-hsa-9603505|pathway|biological_process|GO_2001241|biological_process
+GO:0050687|pathway_to_biological_process|Nef and signal transduction|r-hsa-164944|pathway|biological_process|GO_0050687|biological_process
+GO:0050687|pathway_to_biological_process|Nef-mediates down modulation of cell surface receptors by recruiting them to clathrin adapters|r-hsa-164938|pathway|biological_process|GO_0050687|biological_process
+GO:0045814|pathway_to_biological_process|Negative epigenetic regulation of rRNA expression|r-hsa-5250941|pathway|biological_process|GO_0045814|biological_process
+GO:0045746|pathway_to_biological_process|Negative regulation of NOTCH4 signaling|r-hsa-9604323|pathway|biological_process|GO_0045746|biological_process
+GO:0090090|pathway_to_biological_process|Negative regulation of TCF-dependent signaling by WNT ligand antagonists|r-hsa-3772470|pathway|biological_process|GO_0090090|biological_process
+GO:0000122|pathway_to_biological_process|Negative regulation of activity of TFAP2 (AP-2) family transcription factors|r-hsa-8866904|pathway|biological_process|GO_0000122|biological_process
+GO:0032480|pathway_to_biological_process|Negative regulators of DDX58/IFIH1 signaling|r-hsa-936440|pathway|biological_process|GO_0032480|biological_process
+GO:0072210|pathway_to_biological_process|Nephron development|r-hsa-9831926|pathway|biological_process|GO_0072210|biological_process
+GO:0007399|pathway_to_biological_process|Nervous system development|r-hsa-9675108|pathway|biological_process|GO_0007399|biological_process
+GO:0007268|pathway_to_biological_process|Neuronal System|r-hsa-112316|pathway|biological_process|GO_0007268|biological_process
+GO:0007269|pathway_to_biological_process|Neurotransmitter release cycle|r-hsa-112310|pathway|biological_process|GO_0007269|biological_process
+GO:0001504|pathway_to_biological_process|Neurotransmitter uptake and metabolism In glial cells|r-hsa-112313|pathway|biological_process|GO_0001504|biological_process
+GO:0043312|pathway_to_biological_process|Neutrophil degranulation|r-hsa-6798695|pathway|biological_process|GO_0043312|biological_process
+GO:1901847|pathway_to_biological_process|Nicotinate metabolism|r-hsa-196807|pathway|biological_process|GO_1901847|biological_process
+GO:0000183|pathway_to_biological_process|NoRC negatively regulates rRNA expression|r-hsa-427413|pathway|biological_process|GO_0000183|biological_process
+GO:0006303|pathway_to_biological_process|Nonhomologous End-Joining (NHEJ)|r-hsa-5693571|pathway|biological_process|GO_0006303|biological_process
+GO:0000184|pathway_to_biological_process|Nonsense-Mediated Decay (NMD)|r-hsa-927802|pathway|biological_process|GO_0000184|biological_process
+GO:0006836|pathway_to_biological_process|Norepinephrine Neurotransmitter Release Cycle|r-hsa-181430|pathway|biological_process|GO_0006836|biological_process
+GO:0006367|pathway_to_biological_process|Notch-HLH transcription pathway|r-hsa-350054|pathway|biological_process|GO_0006367|biological_process
+GO:0007084|pathway_to_biological_process|Nuclear Envelope (NE) Reassembly|r-hsa-2995410|pathway|biological_process|GO_0007084|biological_process
+GO:0007077|pathway_to_biological_process|Nuclear Envelope Breakdown|r-hsa-2980766|pathway|biological_process|GO_0007077|biological_process
+GO:0006401|pathway_to_biological_process|Nuclear RNA decay|r-hsa-9930044|pathway|biological_process|GO_0006401|biological_process
+GO:0006367|pathway_to_biological_process|Nuclear Receptor transcription pathway|r-hsa-383280|pathway|biological_process|GO_0006367|biological_process
+GO:0006334|pathway_to_biological_process|Nucleosome assembly|r-hsa-774815|pathway|biological_process|GO_0006334|biological_process
+GO:0006289|pathway_to_biological_process|Nucleotide Excision Repair|r-hsa-5696398|pathway|biological_process|GO_0006289|biological_process
+GO:0034404|pathway_to_biological_process|Nucleotide biosynthesis|r-hsa-8956320|pathway|biological_process|GO_0034404|biological_process
+GO:0034656|pathway_to_biological_process|Nucleotide catabolism|r-hsa-8956319|pathway|biological_process|GO_0034656|biological_process
+GO:0043173|pathway_to_biological_process|Nucleotide salvage|r-hsa-8956321|pathway|biological_process|GO_0043173|biological_process
+GO:0035872|pathway_to_biological_process|Nucleotide-binding domain, leucine rich repeat containing receptor (NLR) signaling pathways|r-hsa-168643|pathway|biological_process|GO_0035872|biological_process
+GO:0036066|pathway_to_biological_process|O-glycosylation of TSR domain-containing proteins|r-hsa-5173214|pathway|biological_process|GO_0036066|biological_process
+GO:0006493|pathway_to_biological_process|O-linked glycosylation|r-hsa-5173105|pathway|biological_process|GO_0006493|biological_process
+GO:0016266|pathway_to_biological_process|O-linked glycosylation of mucins|r-hsa-913709|pathway|biological_process|GO_0016266|biological_process
+GO:0015701|pathway_to_biological_process|O2/CO2 exchange in erythrocytes|r-hsa-1480926|pathway|biological_process|GO_0015701|biological_process
+GO:0051607|pathway_to_biological_process|OAS antiviral response|r-hsa-8983711|pathway|biological_process|GO_0051607|biological_process
+GO:1901290|pathway_to_biological_process|OGDH complex synthesizes succinyl-CoA from 2-OG|r-hsa-9853506|pathway|biological_process|GO_1901290|biological_process
+GO:0006996|pathway_to_biological_process|Organelle biogenesis and maintenance|r-hsa-1852241|pathway|biological_process|GO_0006996|biological_process
+GO:0060071|pathway_to_biological_process|PCP/CE pathway|r-hsa-4086400|pathway|biological_process|GO_0060071|biological_process
+GO:0006086|pathway_to_biological_process|PDH complex synthesizes acetyl-CoA from PYR|r-hsa-9861559|pathway|biological_process|GO_0006086|biological_process
+GO:0036499|pathway_to_biological_process|PERK regulates gene expression|r-hsa-381042|pathway|biological_process|GO_0036499|biological_process
+GO:0015914|pathway_to_biological_process|PI and PC transport between ER and Golgi membranes|r-hsa-1483196|pathway|biological_process|GO_0015914|biological_process
+GO:0043491|pathway_to_biological_process|PI3K/AKT activation|r-hsa-198203|pathway|biological_process|GO_0043491|biological_process
+GO:0051896|pathway_to_biological_process|PI5P, PP2A and IER3 Regulate PI3K/AKT Signaling|r-hsa-6811558|pathway|biological_process|GO_0051896|biological_process
+GO:0016236|pathway_to_biological_process|PINK1-PRKN Mediated Mitophagy|r-hsa-5205685|pathway|biological_process|GO_0016236|biological_process
+GO:0051897|pathway_to_biological_process|PIP3 activates AKT signaling|r-hsa-1257604|pathway|biological_process|GO_0051897|biological_process
+GO:0045332|pathway_to_biological_process|PIPs transport between Golgi and plasma membranes|r-hsa-1660510|pathway|biological_process|GO_0045332|biological_process
+GO:0045332|pathway_to_biological_process|PIPs transport between early and late endosome membranes|r-hsa-1660502|pathway|biological_process|GO_0045332|biological_process
+GO:0045332|pathway_to_biological_process|PIPs transport between early endosome and Golgi membranes|r-hsa-1660537|pathway|biological_process|GO_0045332|biological_process
+GO:0045332|pathway_to_biological_process|PIPs transport between late endosome and Golgi membranes|r-hsa-1660508|pathway|biological_process|GO_0045332|biological_process
+GO:0045332|pathway_to_biological_process|PIPs transport between plasma and early endosome membranes|r-hsa-1660524|pathway|biological_process|GO_0045332|biological_process
+GO:0034587|pathway_to_biological_process|PIWI-interacting RNA (piRNA) biogenesis|r-hsa-5601884|pathway|biological_process|GO_0034587|biological_process
+GO:0034199|pathway_to_biological_process|PKA activation|r-hsa-163615|pathway|biological_process|GO_0034199|biological_process
+GO:0010737|pathway_to_biological_process|PKA-mediated phosphorylation of key metabolic factors|r-hsa-163358|pathway|biological_process|GO_0010737|biological_process
+GO:0039585|pathway_to_biological_process|PKR-mediated signaling|r-hsa-9833482|pathway|biological_process|GO_0039585|biological_process
+GO:0048011|pathway_to_biological_process|PLC-gamma1 signalling|r-hsa-167021|pathway|biological_process|GO_0048011|biological_process
+GO:0010468|pathway_to_biological_process|PP2A-mediated dephosphorylation of key metabolic factors|r-hsa-163767|pathway|biological_process|GO_0010468|biological_process
+GO:0019222|pathway_to_biological_process|PPARA activates gene expression|r-hsa-1989781|pathway|biological_process|GO_0019222|biological_process
+GO:0045814|pathway_to_biological_process|PRC2 methylates histones and DNA|r-hsa-212300|pathway|biological_process|GO_0045814|biological_process
+GO:0046427|pathway_to_biological_process|PTK6 Activates STAT3|r-hsa-8849474|pathway|biological_process|GO_0046427|biological_process
+GO:0009968|pathway_to_biological_process|PTK6 Down-Regulation|r-hsa-8849472|pathway|biological_process|GO_0009968|biological_process
+GO:0045787|pathway_to_biological_process|PTK6 Regulates Cell Cycle|r-hsa-8849470|pathway|biological_process|GO_0045787|biological_process
+GO:0045742|pathway_to_biological_process|PTK6 Regulates RTKs and Their Effectors AKT1 and DOK1|r-hsa-8849469|pathway|biological_process|GO_0045742|biological_process
+GO:0019072|pathway_to_biological_process|Packaging of Eight RNA Segments|r-hsa-168303|pathway|biological_process|GO_0019072|biological_process
+GO:0075001|pathway_to_biological_process|Parasite infection|r-hsa-9664407|pathway|biological_process|GO_0075001|biological_process
+GO:0044419|pathway_to_biological_process|Parasitic Infection Pathways|r-hsa-9824443|pathway|biological_process|GO_0044419|biological_process
+GO:0006098|pathway_to_biological_process|Pentose phosphate pathway|r-hsa-71336|pathway|biological_process|GO_0006098|biological_process
+GO:0016486|pathway_to_biological_process|Peptide hormone biosynthesis|r-hsa-209952|pathway|biological_process|GO_0016486|biological_process
+GO:0006518|pathway_to_biological_process|Peptide hormone metabolism|r-hsa-2980736|pathway|biological_process|GO_0006518|biological_process
+GO:0009062|pathway_to_biological_process|Peroxisomal lipid metabolism|r-hsa-390918|pathway|biological_process|GO_0009062|biological_process
+GO:0000425|pathway_to_biological_process|Pexophagy|r-hsa-9664873|pathway|biological_process|GO_0000425|biological_process
+GO:0001907|pathway_to_biological_process|Phagocyte cell death caused by cytosolic Mtb|r-hsa-9637698|pathway|biological_process|GO_0001907|biological_process
+GO:0009072|pathway_to_biological_process|Phenylalanine and tyrosine metabolism|r-hsa-8963691|pathway|biological_process|GO_0009072|biological_process
+GO:0006558|pathway_to_biological_process|Phenylalanine metabolism|r-hsa-8964208|pathway|biological_process|GO_0006558|biological_process
+GO:0055086|pathway_to_biological_process|Phosphate bond hydrolysis by NUDT proteins|r-hsa-2393930|pathway|biological_process|GO_0055086|biological_process
+GO:0006644|pathway_to_biological_process|Phospholipid metabolism|r-hsa-1483257|pathway|biological_process|GO_0006644|biological_process
+GO:1901990|pathway_to_biological_process|Phosphorylation of the APC/C|r-hsa-176412|pathway|biological_process|GO_1901990|biological_process
+GO:1903779|pathway_to_biological_process|Physiological factors|r-hsa-5578768|pathway|biological_process|GO_1903779|biological_process
+GO:0034377|pathway_to_biological_process|Plasma lipoprotein assembly|r-hsa-8963898|pathway|biological_process|GO_0034377|biological_process
+GO:0071827|pathway_to_biological_process|Plasma lipoprotein assembly, remodeling, and clearance|r-hsa-174824|pathway|biological_process|GO_0071827|biological_process
+GO:0034381|pathway_to_biological_process|Plasma lipoprotein clearance|r-hsa-8964043|pathway|biological_process|GO_0034381|biological_process
+GO:0034369|pathway_to_biological_process|Plasma lipoprotein remodeling|r-hsa-8963899|pathway|biological_process|GO_0034369|biological_process
+GO:0008611|pathway_to_biological_process|Plasmalogen biosynthesis|r-hsa-75896|pathway|biological_process|GO_0008611|biological_process
+GO:0030168|pathway_to_biological_process|Platelet activation, signaling and aggregation|r-hsa-76002|pathway|biological_process|GO_0030168|biological_process
+GO:0002576|pathway_to_biological_process|Platelet degranulation |r-hsa-114608|pathway|biological_process|GO_0002576|biological_process
+GO:0051726|pathway_to_biological_process|Polo-like kinase mediated events|r-hsa-156711|pathway|biological_process|GO_0051726|biological_process
+GO:0045815|pathway_to_biological_process|Positive epigenetic regulation of rRNA expression|r-hsa-5250913|pathway|biological_process|GO_0045815|biological_process
+GO:0007023|pathway_to_biological_process|Post-chaperonin tubulin folding pathway|r-hsa-389977|pathway|biological_process|GO_0007023|biological_process
+GO:0035194|pathway_to_biological_process|Post-transcriptional silencing by small RNAs|r-hsa-426496|pathway|biological_process|GO_0035194|biological_process
+GO:0006501|pathway_to_biological_process|Post-translational modification: synthesis of GPI-anchored proteins|r-hsa-163125|pathway|biological_process|GO_0006501|biological_process
+GO:0043687|pathway_to_biological_process|Post-translational protein modification|r-hsa-597592|pathway|biological_process|GO_0043687|biological_process
+GO:0071805|pathway_to_biological_process|Potassium Channels|r-hsa-1296071|pathway|biological_process|GO_0071805|biological_process
+GO:0006700|pathway_to_biological_process|Pregnenolone biosynthesis|r-hsa-196108|pathway|biological_process|GO_0006700|biological_process
+GO:0051899|pathway_to_biological_process|Presynaptic depolarization and calcium channel opening|r-hsa-112308|pathway|biological_process|GO_0051899|biological_process
+GO:0031124|pathway_to_biological_process|Processing of Capped Intronless Pre-mRNA|r-hsa-75067|pathway|biological_process|GO_0031124|biological_process
+GO:0012501|pathway_to_biological_process|Programmed Cell Death|r-hsa-5357801|pathway|biological_process|GO_0012501|biological_process
+GO:1904381|pathway_to_biological_process|Progressive trimming of alpha-1,2-linked mannose residues from Man9/8/7GlcNAc2 to produce Man5GlcNAc2|r-hsa-964827|pathway|biological_process|GO_1904381|biological_process
+GO:0006562|pathway_to_biological_process|Proline catabolism|r-hsa-70688|pathway|biological_process|GO_0006562|biological_process
+GO:0000165|pathway_to_biological_process|Prolonged ERK activation events|r-hsa-169893|pathway|biological_process|GO_0000165|biological_process
+GO:0019626|pathway_to_biological_process|Propionyl-CoA catabolism|r-hsa-71032|pathway|biological_process|GO_0019626|biological_process
+GO:0043248|pathway_to_biological_process|Proteasome assembly|r-hsa-9907900|pathway|biological_process|GO_0043248|biological_process
+GO:0051084|pathway_to_biological_process|Protein folding|r-hsa-391251|pathway|biological_process|GO_0051084|biological_process
+GO:0018126|pathway_to_biological_process|Protein hydroxylation|r-hsa-9629569|pathway|biological_process|GO_0018126|biological_process
+GO:0009249|pathway_to_biological_process|Protein lipoylation|r-hsa-9857492|pathway|biological_process|GO_0009249|biological_process
+GO:0008104|pathway_to_biological_process|Protein localization|r-hsa-9609507|pathway|biological_process|GO_0008104|biological_process
+GO:0006479|pathway_to_biological_process|Protein methylation|r-hsa-8876725|pathway|biological_process|GO_0006479|biological_process
+GO:0030091|pathway_to_biological_process|Protein repair|r-hsa-5676934|pathway|biological_process|GO_0030091|biological_process
+GO:0016567|pathway_to_biological_process|Protein ubiquitination|r-hsa-8852135|pathway|biological_process|GO_0016567|biological_process
+GO:0006195|pathway_to_biological_process|Purine catabolism|r-hsa-74259|pathway|biological_process|GO_0006195|biological_process
+GO:0009168|pathway_to_biological_process|Purine ribonucleoside monophosphate biosynthesis|r-hsa-73817|pathway|biological_process|GO_0009168|biological_process
+GO:0043101|pathway_to_biological_process|Purine salvage|r-hsa-74217|pathway|biological_process|GO_0043101|biological_process
+GO:0035590|pathway_to_biological_process|Purinergic signaling in leishmaniasis infection|r-hsa-9660826|pathway|biological_process|GO_0035590|biological_process
+GO:0046134|pathway_to_biological_process|Pyrimidine biosynthesis|r-hsa-500753|pathway|biological_process|GO_0046134|biological_process
+GO:0046135|pathway_to_biological_process|Pyrimidine catabolism|r-hsa-73621|pathway|biological_process|GO_0046135|biological_process
+GO:0043097|pathway_to_biological_process|Pyrimidine salvage|r-hsa-73614|pathway|biological_process|GO_0043097|biological_process
+GO:0071344|pathway_to_biological_process|Pyrophosphate hydrolysis|r-hsa-71737|pathway|biological_process|GO_0071344|biological_process
+GO:0070269|pathway_to_biological_process|Pyroptosis|r-hsa-5620971|pathway|biological_process|GO_0070269|biological_process
+GO:0042866|pathway_to_biological_process|Pyruvate metabolism|r-hsa-70268|pathway|biological_process|GO_0042866|biological_process
+GO:0070371|pathway_to_biological_process|RAF-independent MAPK1/3 activation|r-hsa-112409|pathway|biological_process|GO_0070371|biological_process
+GO:0000165|pathway_to_biological_process|RAF/MAP kinase cascade|r-hsa-5673001|pathway|biological_process|GO_0000165|biological_process
+GO:0051056|pathway_to_biological_process|RHO GTPase cycle|r-hsa-9012999|pathway|biological_process|GO_0051056|biological_process
+GO:0070266|pathway_to_biological_process|RIPK1-mediated regulated necrosis|r-hsa-5213460|pathway|biological_process|GO_0070266|biological_process
+GO:0006361|pathway_to_biological_process|RNA Polymerase I Promoter Clearance|r-hsa-73854|pathway|biological_process|GO_0006361|biological_process
+GO:0006360|pathway_to_biological_process|RNA Polymerase I Transcription|r-hsa-73864|pathway|biological_process|GO_0006360|biological_process
+GO:0006363|pathway_to_biological_process|RNA Polymerase I Transcription Termination|r-hsa-73863|pathway|biological_process|GO_0006363|biological_process
+GO:0006368|pathway_to_biological_process|RNA Polymerase II Promoter Escape|r-hsa-73776|pathway|biological_process|GO_0006368|biological_process
+GO:0006366|pathway_to_biological_process|RNA Polymerase II Transcription|r-hsa-73857|pathway|biological_process|GO_0006366|biological_process
+GO:0006368|pathway_to_biological_process|RNA Polymerase II Transcription Elongation|r-hsa-75955|pathway|biological_process|GO_0006368|biological_process
+GO:0006367|pathway_to_biological_process|RNA Polymerase II Transcription Initiation|r-hsa-75953|pathway|biological_process|GO_0006367|biological_process
+GO:0006367|pathway_to_biological_process|RNA Polymerase II Transcription Pre-Initiation And Promoter Opening|r-hsa-73779|pathway|biological_process|GO_0006367|biological_process
+GO:0006369|pathway_to_biological_process|RNA Polymerase II Transcription Termination|r-hsa-73856|pathway|biological_process|GO_0006369|biological_process
+GO:0006385|pathway_to_biological_process|RNA Polymerase III Chain Elongation|r-hsa-73780|pathway|biological_process|GO_0006385|biological_process
+GO:0006383|pathway_to_biological_process|RNA Polymerase III Transcription|r-hsa-74158|pathway|biological_process|GO_0006383|biological_process
+GO:0006386|pathway_to_biological_process|RNA Polymerase III Transcription Termination|r-hsa-73980|pathway|biological_process|GO_0006386|biological_process
+GO:0042795|pathway_to_biological_process|RNA polymerase II transcribes snRNA genes|r-hsa-6807505|pathway|biological_process|GO_0042795|biological_process
+GO:0045454|pathway_to_biological_process|ROS and RNS production in phagocytes|r-hsa-1222556|pathway|biological_process|GO_0045454|biological_process
+GO:0044003|pathway_to_biological_process|RSV-host interactions|r-hsa-9833110|pathway|biological_process|GO_0044003|biological_process
+GO:0045589|pathway_to_biological_process|RUNX1 and FOXP3 control the development of regulatory T lymphocytes (Tregs)|r-hsa-8877330|pathway|biological_process|GO_0045589|biological_process
+GO:0033146|pathway_to_biological_process|RUNX1 regulates estrogen receptor mediated transcription|r-hsa-8931987|pathway|biological_process|GO_0033146|biological_process
+GO:2000810|pathway_to_biological_process|RUNX1 regulates expression of components of tight junctions|r-hsa-8935964|pathway|biological_process|GO_2000810|biological_process
+GO:0045652|pathway_to_biological_process|RUNX1 regulates genes involved in megakaryocyte differentiation and platelet function|r-hsa-8936459|pathway|biological_process|GO_0045652|biological_process
+GO:0050855|pathway_to_biological_process|RUNX1 regulates transcription of genes involved in BCR signaling|r-hsa-8939245|pathway|biological_process|GO_0050855|biological_process
+GO:0030111|pathway_to_biological_process|RUNX1 regulates transcription of genes involved in WNT signaling|r-hsa-8939256|pathway|biological_process|GO_0030111|biological_process
+GO:1902036|pathway_to_biological_process|RUNX1 regulates transcription of genes involved in differentiation of HSCs|r-hsa-8939236|pathway|biological_process|GO_1902036|biological_process
+GO:0045616|pathway_to_biological_process|RUNX1 regulates transcription of genes involved in differentiation of keratinocytes|r-hsa-8939242|pathway|biological_process|GO_0045616|biological_process
+GO:0045637|pathway_to_biological_process|RUNX1 regulates transcription of genes involved in differentiation of myeloid cells|r-hsa-8939246|pathway|biological_process|GO_0045637|biological_process
+GO:0001959|pathway_to_biological_process|RUNX1 regulates transcription of genes involved in interleukin signaling|r-hsa-8939247|pathway|biological_process|GO_0001959|biological_process
+GO:0016236|pathway_to_biological_process|Receptor Mediated Mitophagy|r-hsa-8934903|pathway|biological_process|GO_0016236|biological_process
+GO:1904333|pathway_to_biological_process|Recognition of DNA damage by PCNA-containing replication complex|r-hsa-110314|pathway|biological_process|GO_1904333|biological_process
+GO:0060236|pathway_to_biological_process|Recruitment of NuMA to mitotic centrosomes|r-hsa-380320|pathway|biological_process|GO_0060236|biological_process
+GO:0015721|pathway_to_biological_process|Recycling of bile acids and salts|r-hsa-159418|pathway|biological_process|GO_0015721|biological_process
+GO:0097300|pathway_to_biological_process|Regulated Necrosis|r-hsa-5218859|pathway|biological_process|GO_0097300|biological_process
+GO:0031293|pathway_to_biological_process|Regulated proteolysis of p75NTR|r-hsa-193692|pathway|biological_process|GO_0031293|biological_process
+GO:1902041|pathway_to_biological_process|Regulation by c-FLIP|r-hsa-3371378|pathway|biological_process|GO_1902041|biological_process
+GO:1905784|pathway_to_biological_process|Regulation of APC/C activators between G1/S and early anaphase|r-hsa-176408|pathway|biological_process|GO_1905784|biological_process
+GO:0042981|pathway_to_biological_process|Regulation of Apoptosis|r-hsa-169911|pathway|biological_process|GO_0042981|biological_process
+GO:0051090|pathway_to_biological_process|Regulation of BACH1 activity|r-hsa-9708530|pathway|biological_process|GO_0051090|biological_process
+GO:0006355|pathway_to_biological_process|Regulation of CDH11 gene transcription|r-hsa-9762293|pathway|biological_process|GO_0006355|biological_process
+GO:0035195|pathway_to_biological_process|Regulation of CDH11 mRNA translation by microRNAs|r-hsa-9759811|pathway|biological_process|GO_0035195|biological_process
+GO:0030449|pathway_to_biological_process|Regulation of Complement cascade|r-hsa-977606|pathway|biological_process|GO_0030449|biological_process
+GO:2000047|pathway_to_biological_process|Regulation of Expression and Function of Type I Classical Cadherins|r-hsa-9764274|pathway|biological_process|GO_2000047|biological_process
+GO:2000047|pathway_to_biological_process|Regulation of Expression and Function of Type II Classical Cadherins|r-hsa-9764260|pathway|biological_process|GO_2000047|biological_process
+GO:0006110|pathway_to_biological_process|Regulation of Glucokinase by Glucokinase Regulatory Protein|r-hsa-170822|pathway|biological_process|GO_0006110|biological_process
+GO:1900034|pathway_to_biological_process|Regulation of HSF1-mediated heat shock response|r-hsa-3371453|pathway|biological_process|GO_1900034|biological_process
+GO:0034110|pathway_to_biological_process|Regulation of Homotypic Cell-Cell Adhesion|r-hsa-9759476|pathway|biological_process|GO_0034110|biological_process
+GO:0060338|pathway_to_biological_process|Regulation of IFNA/IFNB signaling|r-hsa-912694|pathway|biological_process|GO_0060338|biological_process
+GO:0060334|pathway_to_biological_process|Regulation of IFNG signaling|r-hsa-877312|pathway|biological_process|GO_0060334|biological_process
+GO:0043066|pathway_to_biological_process|Regulation of PAK-2p34 activity by PS-GAP/RHG10|r-hsa-211728|pathway|biological_process|GO_0043066|biological_process
+GO:0031295|pathway_to_biological_process|Regulation of T cell activation by CD28 family|r-hsa-388841|pathway|biological_process|GO_0031295|biological_process
+GO:0010803|pathway_to_biological_process|Regulation of TNFR1 signaling|r-hsa-5357905|pathway|biological_process|GO_0010803|biological_process
+GO:1901796|pathway_to_biological_process|Regulation of TP53 Activity|r-hsa-5633007|pathway|biological_process|GO_1901796|biological_process
+GO:0043066|pathway_to_biological_process|Regulation of activated PAK-2p34 by proteasome mediated degradation|r-hsa-211733|pathway|biological_process|GO_0043066|biological_process
+GO:0031018|pathway_to_biological_process|Regulation of beta-cell development|r-hsa-186712|pathway|biological_process|GO_0031018|biological_process
+GO:0045540|pathway_to_biological_process|Regulation of cholesterol biosynthesis by SREBP (SREBF)|r-hsa-1655829|pathway|biological_process|GO_0045540|biological_process
+GO:0141005|pathway_to_biological_process|Regulation of endogenous retroelements|r-hsa-9842860|pathway|biological_process|GO_0141005|biological_process
+GO:0141006|pathway_to_biological_process|Regulation of endogenous retroelements by Piwi-interacting RNAs (piRNAs)|r-hsa-9845323|pathway|biological_process|GO_0141006|biological_process
+GO:1904538|pathway_to_biological_process|Regulation of glycolysis by fructose 2,6-bisphosphate metabolism|r-hsa-9634600|pathway|biological_process|GO_1904538|biological_process
+GO:0032479|pathway_to_biological_process|Regulation of innate immune responses to cytosolic DNA|r-hsa-3134975|pathway|biological_process|GO_0032479|biological_process
+GO:0050796|pathway_to_biological_process|Regulation of insulin secretion|r-hsa-422356|pathway|biological_process|GO_0050796|biological_process
+GO:0019216|pathway_to_biological_process|Regulation of lipid metabolism by PPARalpha|r-hsa-400206|pathway|biological_process|GO_0019216|biological_process
+GO:0043488|pathway_to_biological_process|Regulation of mRNA stability by proteins that bind AU-rich elements|r-hsa-450531|pathway|biological_process|GO_0043488|biological_process
+GO:0060544|pathway_to_biological_process|Regulation of necroptotic cell death|r-hsa-5675482|pathway|biological_process|GO_0060544|biological_process
+GO:0090368|pathway_to_biological_process|Regulation of ornithine decarboxylase (ODC)|r-hsa-350562|pathway|biological_process|GO_0090368|biological_process
+GO:0010510|pathway_to_biological_process|Regulation of pyruvate dehydrogenase (PDH) complex|r-hsa-204174|pathway|biological_process|GO_0010510|biological_process
+GO:0062012|pathway_to_biological_process|Regulation of pyruvate metabolism|r-hsa-9861718|pathway|biological_process|GO_0062012|biological_process
+GO:0042403|pathway_to_biological_process|Regulation of thyroid hormone activity|r-hsa-350864|pathway|biological_process|GO_0042403|biological_process
+GO:0019076|pathway_to_biological_process|Release|r-hsa-168298|pathway|biological_process|GO_0019076|biological_process
+GO:0006465|pathway_to_biological_process|Removal of aminoterminal propeptides from gamma-carboxylated proteins|r-hsa-159782|pathway|biological_process|GO_0006465|biological_process
+GO:0044725|pathway_to_biological_process|Replacement of protamines by nucleosomes in the male pronucleus|r-hsa-9821993|pathway|biological_process|GO_0044725|biological_process
+GO:0048609|pathway_to_biological_process|Reproduction|r-hsa-1474165|pathway|biological_process|GO_0048609|biological_process
+GO:0006287|pathway_to_biological_process|Resolution of Abasic Sites (AP sites)|r-hsa-73933|pathway|biological_process|GO_0006287|biological_process
+GO:0045003|pathway_to_biological_process|Resolution of D-loop Structures through Synthesis-Dependent Strand Annealing (SDSA)|r-hsa-5693554|pathway|biological_process|GO_0045003|biological_process
+GO:0000070|pathway_to_biological_process|Resolution of Sister Chromatid Cohesion|r-hsa-2500257|pathway|biological_process|GO_0000070|biological_process
+GO:0022904|pathway_to_biological_process|Respiratory electron transport|r-hsa-611105|pathway|biological_process|GO_0022904|biological_process
+GO:0010999|pathway_to_biological_process|Response of EIF2AK1 (HRI) to heme deficiency|r-hsa-9648895|pathway|biological_process|GO_0010999|biological_process
+GO:0034198|pathway_to_biological_process|Response of EIF2AK4 (GCN2) to amino acid deficiency|r-hsa-9633012|pathway|biological_process|GO_0034198|biological_process
+GO:0052031|pathway_to_biological_process|Response of Mtb to phagocytosis|r-hsa-9637690|pathway|biological_process|GO_0052031|biological_process
+GO:0071495|pathway_to_biological_process|Response of endothelial cells to shear stress|r-hsa-9860931|pathway|biological_process|GO_0071495|biological_process
+GO:0010038|pathway_to_biological_process|Response to metal ions|r-hsa-5660526|pathway|biological_process|GO_0010038|biological_process
+GO:0001523|pathway_to_biological_process|Retinoid metabolism and transport|r-hsa-975634|pathway|biological_process|GO_0001523|biological_process
+GO:0051936|pathway_to_biological_process|Reuptake of GABA|r-hsa-888593|pathway|biological_process|GO_0051936|biological_process
+GO:0006307|pathway_to_biological_process|Reversal of alkylation damage by DNA dioxygenases|r-hsa-73943|pathway|biological_process|GO_0006307|biological_process
+GO:0006278|pathway_to_biological_process|Reverse Transcription of HIV RNA|r-hsa-162589|pathway|biological_process|GO_0006278|biological_process
+GO:0015701|pathway_to_biological_process|Reversible hydration of carbon dioxide|r-hsa-1475029|pathway|biological_process|GO_0015701|biological_process
+GO:0043043|pathway_to_biological_process|Rhesus blood group biosynthesis|r-hsa-9037628|pathway|biological_process|GO_0043043|biological_process
+GO:1901990|pathway_to_biological_process|SCF-beta-TrCP mediated degradation of Emi1|r-hsa-174113|pathway|biological_process|GO_1901990|biological_process
+GO:0000183|pathway_to_biological_process|SIRT1 negatively regulates rRNA expression|r-hsa-427359|pathway|biological_process|GO_0000183|biological_process
+GO:0006398|pathway_to_biological_process|SLBP Dependent Processing of Replication-Dependent Histone Pre-mRNAs|r-hsa-77588|pathway|biological_process|GO_0006398|biological_process
+GO:0016071|pathway_to_biological_process|SLBP independent Processing of Histone Pre-mRNAs|r-hsa-111367|pathway|biological_process|GO_0016071|biological_process
+GO:0055085|pathway_to_biological_process|SLC-mediated transmembrane transport|r-hsa-425407|pathway|biological_process|GO_0055085|biological_process
+GO:0034121|pathway_to_biological_process|SLC15A4:TASL-dependent IRF5 activation|r-hsa-9860276|pathway|biological_process|GO_0034121|biological_process
+GO:0045944|pathway_to_biological_process|SMAD2/SMAD3:SMAD4 heterotrimer regulates transcription|r-hsa-2173796|pathway|biological_process|GO_0045944|biological_process
+GO:0006614|pathway_to_biological_process|SRP-dependent cotranslational protein targeting to membrane|r-hsa-1799339|pathway|biological_process|GO_0006614|biological_process
+GO:0034097|pathway_to_biological_process|STAT5 Activation|r-hsa-9645135|pathway|biological_process|GO_0034097|biological_process
+GO:0016925|pathway_to_biological_process|SUMOylation|r-hsa-2990846|pathway|biological_process|GO_0016925|biological_process
+GO:0042000|pathway_to_biological_process|Secretion of toxins|r-hsa-9760173|pathway|biological_process|GO_0042000|biological_process
+GO:0016259|pathway_to_biological_process|Selenoamino acid metabolism|r-hsa-2408522|pathway|biological_process|GO_0016259|biological_process
+GO:0007600|pathway_to_biological_process|Sensory Perception|r-hsa-9709957|pathway|biological_process|GO_0007600|biological_process
+GO:0050909|pathway_to_biological_process|Sensory perception of taste|r-hsa-9717189|pathway|biological_process|GO_0050909|biological_process
+GO:0007605|pathway_to_biological_process|Sensory processing of sound|r-hsa-9659379|pathway|biological_process|GO_0007605|biological_process
+GO:0051306|pathway_to_biological_process|Separation of Sister Chromatids|r-hsa-2467813|pathway|biological_process|GO_0051306|biological_process
+GO:0006563|pathway_to_biological_process|Serine metabolism|r-hsa-977347|pathway|biological_process|GO_0006563|biological_process
+GO:0006836|pathway_to_biological_process|Serotonin Neurotransmitter Release Cycle|r-hsa-181429|pathway|biological_process|GO_0006836|biological_process
+GO:0046219|pathway_to_biological_process|Serotonin and melatonin biosynthesis|r-hsa-209931|pathway|biological_process|GO_0046219|biological_process
+GO:0030509|pathway_to_biological_process|Signaling by BMP|r-hsa-201451|pathway|biological_process|GO_0030509|biological_process
+GO:0019221|pathway_to_biological_process|Signaling by CSF1 (M-CSF) in myeloid cells|r-hsa-9680350|pathway|biological_process|GO_0019221|biological_process
+GO:0019221|pathway_to_biological_process|Signaling by CSF3 (G-CSF)|r-hsa-9674555|pathway|biological_process|GO_0019221|biological_process
+GO:0007173|pathway_to_biological_process|Signaling by EGFR|r-hsa-177929|pathway|biological_process|GO_0007173|biological_process
+GO:0038128|pathway_to_biological_process|Signaling by ERBB2|r-hsa-1227986|pathway|biological_process|GO_0038128|biological_process
+GO:0038162|pathway_to_biological_process|Signaling by Erythropoietin|r-hsa-9006335|pathway|biological_process|GO_0038162|biological_process
+GO:0008543|pathway_to_biological_process|Signaling by FGFR|r-hsa-190236|pathway|biological_process|GO_0008543|biological_process
+GO:0035329|pathway_to_biological_process|Signaling by Hippo|r-hsa-2028269|pathway|biological_process|GO_0035329|biological_process
+GO:0008286|pathway_to_biological_process|Signaling by Insulin receptor|r-hsa-74752|pathway|biological_process|GO_0008286|biological_process
+GO:0019221|pathway_to_biological_process|Signaling by Interleukins|r-hsa-449147|pathway|biological_process|GO_0019221|biological_process
+GO:0048012|pathway_to_biological_process|Signaling by MST1|r-hsa-8852405|pathway|biological_process|GO_0048012|biological_process
+GO:0007219|pathway_to_biological_process|Signaling by NOTCH|r-hsa-157118|pathway|biological_process|GO_0007219|biological_process
+GO:0048011|pathway_to_biological_process|Signaling by NTRKs|r-hsa-166520|pathway|biological_process|GO_0048011|biological_process
+GO:0007264|pathway_to_biological_process|Signaling by Rho GTPases|r-hsa-194315|pathway|biological_process|GO_0007264|biological_process
+GO:0007179|pathway_to_biological_process|Signaling by TGF-beta Receptor Complex|r-hsa-170834|pathway|biological_process|GO_0007179|biological_process
+GO:0048009|pathway_to_biological_process|Signaling by Type 1 Insulin-like Growth Factor 1 Receptor (IGF1R)|r-hsa-2404192|pathway|biological_process|GO_0048009|biological_process
+GO:0048010|pathway_to_biological_process|Signaling by VEGF|r-hsa-194138|pathway|biological_process|GO_0048010|biological_process
+GO:0016055|pathway_to_biological_process|Signaling by WNT|r-hsa-195721|pathway|biological_process|GO_0016055|biological_process
+GO:0007265|pathway_to_biological_process|Signalling to RAS|r-hsa-167044|pathway|biological_process|GO_0007265|biological_process
+GO:0007264|pathway_to_biological_process|Signalling to p38 via RIT and RIN|r-hsa-187706|pathway|biological_process|GO_0007264|biological_process
+GO:0030422|pathway_to_biological_process|Small interfering RNA (siRNA) biogenesis|r-hsa-426486|pathway|biological_process|GO_0030422|biological_process
+GO:0006936|pathway_to_biological_process|Smooth Muscle Contraction|r-hsa-445355|pathway|biological_process|GO_0006936|biological_process
+GO:0001756|pathway_to_biological_process|Somitogenesis|r-hsa-9824272|pathway|biological_process|GO_0001756|biological_process
+GO:0007281|pathway_to_biological_process|Specification of primordial germ cells|r-hsa-9827857|pathway|biological_process|GO_0007281|biological_process
+GO:0060896|pathway_to_biological_process|Specification of the neural plate border|r-hsa-9834899|pathway|biological_process|GO_0060896|biological_process
+GO:0035036|pathway_to_biological_process|Sperm Motility And Taxes|r-hsa-1300642|pathway|biological_process|GO_0035036|biological_process
+GO:0030149|pathway_to_biological_process|Sphingolipid catabolism|r-hsa-9845614|pathway|biological_process|GO_0030149|biological_process
+GO:0030148|pathway_to_biological_process|Sphingolipid de novo biosynthesis|r-hsa-1660661|pathway|biological_process|GO_0030148|biological_process
+GO:0006665|pathway_to_biological_process|Sphingolipid metabolism|r-hsa-428157|pathway|biological_process|GO_0006665|biological_process
+GO:0006264|pathway_to_biological_process|Strand-asynchronous mitochondrial DNA replication|r-hsa-9913635|pathway|biological_process|GO_0006264|biological_process
+GO:0030049|pathway_to_biological_process|Striated Muscle Contraction|r-hsa-390522|pathway|biological_process|GO_0030049|biological_process
+GO:0070221|pathway_to_biological_process|Sulfide oxidation to sulfate|r-hsa-1614517|pathway|biological_process|GO_0070221|biological_process
+GO:0000096|pathway_to_biological_process|Sulfur amino acid metabolism|r-hsa-1614635|pathway|biological_process|GO_0000096|biological_process
+GO:0033668|pathway_to_biological_process|Suppression of apoptosis|r-hsa-9635465|pathway|biological_process|GO_0033668|biological_process
+GO:0052041|pathway_to_biological_process|Suppression of autophagy|r-hsa-9636569|pathway|biological_process|GO_0052041|biological_process
+GO:0052170|pathway_to_biological_process|Suppression of phagosomal maturation|r-hsa-9637687|pathway|biological_process|GO_0052170|biological_process
+GO:0019082|pathway_to_biological_process|Synthesis And Processing Of GAG, GAGPOL Polyproteins|r-hsa-174495|pathway|biological_process|GO_0019082|biological_process
+GO:0019082|pathway_to_biological_process|Synthesis and processing of ENV and VPU|r-hsa-171286|pathway|biological_process|GO_0019082|biological_process
+GO:0097267|pathway_to_biological_process|Synthesis of (16-20)-hydroxyeicosatetraenoic acids (HETE)|r-hsa-2142816|pathway|biological_process|GO_0097267|biological_process
+GO:0019372|pathway_to_biological_process|Synthesis of 12-eicosatetraenoic acid derivatives|r-hsa-2142712|pathway|biological_process|GO_0019372|biological_process
+GO:0019372|pathway_to_biological_process|Synthesis of 15-eicosatetraenoic acid derivatives|r-hsa-2142770|pathway|biological_process|GO_0019372|biological_process
+GO:0019372|pathway_to_biological_process|Synthesis of 5-eicosatetraenoic acids|r-hsa-2142688|pathway|biological_process|GO_0019372|biological_process
+GO:2001312|pathway_to_biological_process|Synthesis of BMP|r-hsa-1483171|pathway|biological_process|GO_2001312|biological_process
+GO:0032049|pathway_to_biological_process|Synthesis of CL|r-hsa-1483076|pathway|biological_process|GO_0032049|biological_process
+GO:0006260|pathway_to_biological_process|Synthesis of DNA|r-hsa-69239|pathway|biological_process|GO_0006260|biological_process
+GO:0009298|pathway_to_biological_process|Synthesis of GDP-mannose|r-hsa-446205|pathway|biological_process|GO_0009298|biological_process
+GO:0051121|pathway_to_biological_process|Synthesis of Hepoxilins (HX) and Trioxilins (TrX)|r-hsa-2142696|pathway|biological_process|GO_0051121|biological_process
+GO:0046951|pathway_to_biological_process|Synthesis of Ketone Bodies|r-hsa-77111|pathway|biological_process|GO_0046951|biological_process
+GO:0006691|pathway_to_biological_process|Synthesis of Leukotrienes (LT) and Eoxins (EX)|r-hsa-2142691|pathway|biological_process|GO_0006691|biological_process
+GO:0006654|pathway_to_biological_process|Synthesis of PA|r-hsa-1483166|pathway|biological_process|GO_0006654|biological_process
+GO:0006656|pathway_to_biological_process|Synthesis of PC|r-hsa-1483191|pathway|biological_process|GO_0006656|biological_process
+GO:0006646|pathway_to_biological_process|Synthesis of PE|r-hsa-1483213|pathway|biological_process|GO_0006646|biological_process
+GO:0006655|pathway_to_biological_process|Synthesis of PG|r-hsa-1483148|pathway|biological_process|GO_0006655|biological_process
+GO:0006661|pathway_to_biological_process|Synthesis of PI|r-hsa-1483226|pathway|biological_process|GO_0006661|biological_process
+GO:0006661|pathway_to_biological_process|Synthesis of PIPs at the ER membrane|r-hsa-1483248|pathway|biological_process|GO_0006661|biological_process
+GO:0006661|pathway_to_biological_process|Synthesis of PIPs at the Golgi membrane|r-hsa-1660514|pathway|biological_process|GO_0006661|biological_process
+GO:0006661|pathway_to_biological_process|Synthesis of PIPs at the early endosome membrane|r-hsa-1660516|pathway|biological_process|GO_0006661|biological_process
+GO:0006661|pathway_to_biological_process|Synthesis of PIPs at the late endosome membrane|r-hsa-1660517|pathway|biological_process|GO_0006661|biological_process
+GO:0006661|pathway_to_biological_process|Synthesis of PIPs at the plasma membrane|r-hsa-1660499|pathway|biological_process|GO_0006661|biological_process
+GO:0006659|pathway_to_biological_process|Synthesis of PS|r-hsa-1483101|pathway|biological_process|GO_0006659|biological_process
+GO:0046457|pathway_to_biological_process|Synthesis of Prostaglandins (PG) and Thromboxanes (TX)|r-hsa-2162123|pathway|biological_process|GO_0046457|biological_process
+GO:0006048|pathway_to_biological_process|Synthesis of UDP-N-acetyl-glucosamine|r-hsa-446210|pathway|biological_process|GO_0006048|biological_process
+GO:0006699|pathway_to_biological_process|Synthesis of bile acids and bile salts|r-hsa-192105|pathway|biological_process|GO_0006699|biological_process
+GO:0017183|pathway_to_biological_process|Synthesis of diphthamide-EEF2|r-hsa-5358493|pathway|biological_process|GO_0017183|biological_process
+GO:0043048|pathway_to_biological_process|Synthesis of dolichyl-phosphate|r-hsa-446199|pathway|biological_process|GO_0043048|biological_process
+GO:0006488|pathway_to_biological_process|Synthesis of dolichyl-phosphate mannose|r-hsa-162699|pathway|biological_process|GO_0006488|biological_process
+GO:0018279|pathway_to_biological_process|Synthesis of dolichyl-phosphate-glucose|r-hsa-480985|pathway|biological_process|GO_0018279|biological_process
+GO:0019373|pathway_to_biological_process|Synthesis of epoxy (EET) and dihydroxyeicosatrienoic acids (DHET)|r-hsa-2142670|pathway|biological_process|GO_0019373|biological_process
+GO:0006506|pathway_to_biological_process|Synthesis of glycosylphosphatidylinositol (GPI)|r-hsa-162710|pathway|biological_process|GO_0006506|biological_process
+GO:0035338|pathway_to_biological_process|Synthesis of very long-chain fatty acyl-CoAs|r-hsa-75876|pathway|biological_process|GO_0035338|biological_process
+GO:0016486|pathway_to_biological_process|Synthesis, secretion, and deacylation of Ghrelin|r-hsa-422085|pathway|biological_process|GO_0016486|biological_process
+GO:0120116|pathway_to_biological_process|Synthesis, secretion, and inactivation of Glucagon-like Peptide-1 (GLP-1)|r-hsa-381771|pathway|biological_process|GO_0120116|biological_process
+GO:0050852|pathway_to_biological_process|TCR signaling|r-hsa-202403|pathway|biological_process|GO_0050852|biological_process
+GO:0141167|pathway_to_biological_process|TET1,2,3 and TDG demethylate DNA|r-hsa-5221030|pathway|biological_process|GO_0141167|biological_process
+GO:0045944|pathway_to_biological_process|TFAP2 (AP-2) family regulates transcription of other transcription factors|r-hsa-8866906|pathway|biological_process|GO_0045944|biological_process
+GO:0002756|pathway_to_biological_process|TICAM1, RIP1-mediated IKK complex recruitment|r-hsa-168927|pathway|biological_process|GO_0002756|biological_process
+GO:0007249|pathway_to_biological_process|TICAM1,TRAF6-dependent induction of TAK1 complex|r-hsa-9014325|pathway|biological_process|GO_0007249|biological_process
+GO:0035666|pathway_to_biological_process|TICAM1-dependent activation of IRF3/IRF7|r-hsa-9013973|pathway|biological_process|GO_0035666|biological_process
+GO:0033209|pathway_to_biological_process|TNF signaling|r-hsa-75893|pathway|biological_process|GO_0033209|biological_process
+GO:0007249|pathway_to_biological_process|TNFR1-induced NF-kappa-B signaling pathway|r-hsa-5357956|pathway|biological_process|GO_0007249|biological_process
+GO:0071550|pathway_to_biological_process|TNFR1-induced proapoptotic signaling|r-hsa-5357786|pathway|biological_process|GO_0071550|biological_process
+GO:2000304|pathway_to_biological_process|TNFR1-mediated ceramide production|r-hsa-5626978|pathway|biological_process|GO_2000304|biological_process
+GO:0033209|pathway_to_biological_process|TNFR2 non-canonical NF-kB pathway|r-hsa-5668541|pathway|biological_process|GO_0033209|biological_process
+GO:0030330|pathway_to_biological_process|TP53 Regulates Transcription of Cell Cycle Genes|r-hsa-6791312|pathway|biological_process|GO_0030330|biological_process
+GO:0042981|pathway_to_biological_process|TP53 Regulates Transcription of Cell Death Genes|r-hsa-5633008|pathway|biological_process|GO_0042981|biological_process
+GO:0007249|pathway_to_biological_process|TRAF6-mediated induction of TAK1 complex within TLR4 complex|r-hsa-937072|pathway|biological_process|GO_0007249|biological_process
+GO:0035666|pathway_to_biological_process|TRIF (TICAM1)-mediated TLR4 signaling |r-hsa-937061|pathway|biological_process|GO_0035666|biological_process
+GO:0048011|pathway_to_biological_process|TRKA activation by NGF|r-hsa-187042|pathway|biological_process|GO_0048011|biological_process
+GO:0070588|pathway_to_biological_process|TRP channels|r-hsa-3295583|pathway|biological_process|GO_0070588|biological_process
+GO:0016485|pathway_to_biological_process|TYSND1 cleaves peroxisomal proteins|r-hsa-9033500|pathway|biological_process|GO_0016485|biological_process
+GO:0050434|pathway_to_biological_process|Tat-mediated elongation of the HIV-1 transcript|r-hsa-167246|pathway|biological_process|GO_0050434|biological_process
+GO:0032201|pathway_to_biological_process|Telomere C-strand (Lagging Strand) Synthesis|r-hsa-174417|pathway|biological_process|GO_0032201|biological_process
+GO:0007004|pathway_to_biological_process|Telomere Extension By Telomerase|r-hsa-171319|pathway|biological_process|GO_0007004|biological_process
+GO:0000723|pathway_to_biological_process|Telomere Maintenance|r-hsa-157579|pathway|biological_process|GO_0000723|biological_process
+GO:0046146|pathway_to_biological_process|Tetrahydrobiopterin (BH4) synthesis, recycling, salvage and regulation|r-hsa-1474151|pathway|biological_process|GO_0046146|biological_process
+GO:0001523|pathway_to_biological_process|The canonical retinoid cycle in rods (twilight vision)|r-hsa-2453902|pathway|biological_process|GO_0001523|biological_process
+GO:1902600|pathway_to_biological_process|The fatty acid cycling model|r-hsa-167826|pathway|biological_process|GO_1902600|biological_process
+GO:0016056|pathway_to_biological_process|The phototransduction cascade|r-hsa-2514856|pathway|biological_process|GO_0016056|biological_process
+GO:0001523|pathway_to_biological_process|The retinoid cycle in cones (daylight vision)|r-hsa-2187335|pathway|biological_process|GO_0001523|biological_process
+GO:1902749|pathway_to_biological_process|The role of GTSE1 in G2/M progression after G2 checkpoint|r-hsa-8852276|pathway|biological_process|GO_1902749|biological_process
+GO:0019518|pathway_to_biological_process|Threonine catabolism|r-hsa-8849175|pathway|biological_process|GO_0019518|biological_process
+GO:0006590|pathway_to_biological_process|Thyroxine biosynthesis|r-hsa-209968|pathway|biological_process|GO_0006590|biological_process
+GO:0070830|pathway_to_biological_process|Tight junction interactions|r-hsa-420029|pathway|biological_process|GO_0070830|biological_process
+GO:0141082|pathway_to_biological_process|Tolerance by Mtb to nitric oxide produced by macrophages|r-hsa-1222538|pathway|biological_process|GO_0141082|biological_process
+GO:0052164|pathway_to_biological_process|Tolerance of reactive oxygen produced by macrophages|r-hsa-1222387|pathway|biological_process|GO_0052164|biological_process
+GO:0034166|pathway_to_biological_process|Toll Like Receptor 10 (TLR10) Cascade|r-hsa-168142|pathway|biological_process|GO_0034166|biological_process
+GO:0034134|pathway_to_biological_process|Toll Like Receptor 2 (TLR2) Cascade|r-hsa-181438|pathway|biological_process|GO_0034134|biological_process
+GO:0034138|pathway_to_biological_process|Toll Like Receptor 3 (TLR3) Cascade|r-hsa-168164|pathway|biological_process|GO_0034138|biological_process
+GO:0034142|pathway_to_biological_process|Toll Like Receptor 4 (TLR4) Cascade|r-hsa-166016|pathway|biological_process|GO_0034142|biological_process
+GO:0034146|pathway_to_biological_process|Toll Like Receptor 5 (TLR5) Cascade|r-hsa-168176|pathway|biological_process|GO_0034146|biological_process
+GO:0034162|pathway_to_biological_process|Toll Like Receptor 9 (TLR9) Cascade|r-hsa-168138|pathway|biological_process|GO_0034162|biological_process
+GO:0038123|pathway_to_biological_process|Toll Like Receptor TLR1:TLR2 Cascade|r-hsa-168179|pathway|biological_process|GO_0038123|biological_process
+GO:0038124|pathway_to_biological_process|Toll Like Receptor TLR6:TLR2 Cascade|r-hsa-168188|pathway|biological_process|GO_0038124|biological_process
+GO:0002224|pathway_to_biological_process|Toll-like Receptor Cascades|r-hsa-168898|pathway|biological_process|GO_0002224|biological_process
+GO:0006390|pathway_to_biological_process|Transcription from mitochondrial promoters|r-hsa-75944|pathway|biological_process|GO_0006390|biological_process
+GO:0019083|pathway_to_biological_process|Transcription of the HIV genome|r-hsa-167172|pathway|biological_process|GO_0019083|biological_process
+GO:0006283|pathway_to_biological_process|Transcription-Coupled Nucleotide Excision Repair (TC-NER)|r-hsa-6781827|pathway|biological_process|GO_0006283|biological_process
+GO:0070317|pathway_to_biological_process|Transcriptional Regulation by E2F6|r-hsa-8953750|pathway|biological_process|GO_0070317|biological_process
+GO:0040029|pathway_to_biological_process|Transcriptional Regulation by MECP2|r-hsa-8986944|pathway|biological_process|GO_0040029|biological_process
+GO:0006351|pathway_to_biological_process|Transcriptional activity of SMAD2/SMAD3:SMAD4 heterotrimer|r-hsa-2173793|pathway|biological_process|GO_0006351|biological_process
+GO:0060964|pathway_to_biological_process|Transcriptional regulation by small RNAs|r-hsa-5578749|pathway|biological_process|GO_0060964|biological_process
+GO:0006357|pathway_to_biological_process|Transcriptional regulation by the AP-2 (TFAP2) family of transcription factors|r-hsa-8864260|pathway|biological_process|GO_0006357|biological_process
+GO:0090335|pathway_to_biological_process|Transcriptional regulation of brown and beige adipocyte differentiation|r-hsa-9843743|pathway|biological_process|GO_0090335|biological_process
+GO:0030851|pathway_to_biological_process|Transcriptional regulation of granulopoiesis|r-hsa-9616222|pathway|biological_process|GO_0030851|biological_process
+GO:0035019|pathway_to_biological_process|Transcriptional regulation of pluripotent stem cells|r-hsa-452723|pathway|biological_process|GO_0035019|biological_process
+GO:0008584|pathway_to_biological_process|Transcriptional regulation of testis differentiation|r-hsa-9690406|pathway|biological_process|GO_0008584|biological_process
+GO:0050872|pathway_to_biological_process|Transcriptional regulation of white adipocyte differentiation|r-hsa-381340|pathway|biological_process|GO_0050872|biological_process
+GO:0033572|pathway_to_biological_process|Transferrin endocytosis and recycling|r-hsa-917977|pathway|biological_process|GO_0033572|biological_process
+GO:0006412|pathway_to_biological_process|Translation|r-hsa-72766|pathway|biological_process|GO_0006412|biological_process
+GO:0019081|pathway_to_biological_process|Translation of Accessory Proteins|r-hsa-9727281|pathway|biological_process|GO_0019081|biological_process
+GO:0019081|pathway_to_biological_process|Translation of Structural Proteins|r-hsa-9694635|pathway|biological_process|GO_0019081|biological_process
+GO:0019081|pathway_to_biological_process|Translation of Structural Proteins|r-hsa-9683701|pathway|biological_process|GO_0019081|biological_process
+GO:0070987|pathway_to_biological_process|Translesion Synthesis by POLH|r-hsa-110320|pathway|biological_process|GO_0070987|biological_process
+GO:0042276|pathway_to_biological_process|Translesion synthesis by POLI|r-hsa-5656121|pathway|biological_process|GO_0042276|biological_process
+GO:0042276|pathway_to_biological_process|Translesion synthesis by POLK|r-hsa-5655862|pathway|biological_process|GO_0042276|biological_process
+GO:0042276|pathway_to_biological_process|Translesion synthesis by REV1|r-hsa-110312|pathway|biological_process|GO_0042276|biological_process
+GO:0050427|pathway_to_biological_process|Transport and metabolism of PAPS|r-hsa-174362|pathway|biological_process|GO_0050427|biological_process
+GO:0019060|pathway_to_biological_process|Transport of HA trimer, NA tetramer and M2 tetramer from the endoplasmic reticulum to the Golgi Apparatus|r-hsa-168874|pathway|biological_process|GO_0019060|biological_process
+GO:0006406|pathway_to_biological_process|Transport of Mature Transcript to Cytoplasm|r-hsa-72202|pathway|biological_process|GO_0006406|biological_process
+GO:0015889|pathway_to_biological_process|Transport of RCbl within the body|r-hsa-9758890|pathway|biological_process|GO_0015889|biological_process
+GO:0075733|pathway_to_biological_process|Transport of Ribonucleoproteins into the Host Nucleus|r-hsa-168271|pathway|biological_process|GO_0075733|biological_process
+GO:0015909|pathway_to_biological_process|Transport of fatty acids|r-hsa-804914|pathway|biological_process|GO_0015909|biological_process
+GO:0006888|pathway_to_biological_process|Transport of gamma-carboxylated protein precursors from the endoplasmic reticulum to the Golgi apparatus|r-hsa-159763|pathway|biological_process|GO_0006888|biological_process
+GO:0015793|pathway_to_biological_process|Transport of glycerol from adipocytes to the liver by Aquaporins|r-hsa-432030|pathway|biological_process|GO_0015793|biological_process
+GO:0006811|pathway_to_biological_process|Transport of inorganic cations/anions and amino acids/oligopeptides|r-hsa-425393|pathway|biological_process|GO_0006811|biological_process
+GO:0043252|pathway_to_biological_process|Transport of organic anions|r-hsa-879518|pathway|biological_process|GO_0043252|biological_process
+GO:0006810|pathway_to_biological_process|Transport of small molecules|r-hsa-382551|pathway|biological_process|GO_0006810|biological_process
+GO:0019432|pathway_to_biological_process|Triglyceride biosynthesis|r-hsa-75109|pathway|biological_process|GO_0019432|biological_process
+GO:0019433|pathway_to_biological_process|Triglyceride catabolism|r-hsa-163560|pathway|biological_process|GO_0019433|biological_process
+GO:0006641|pathway_to_biological_process|Triglyceride metabolism|r-hsa-8979227|pathway|biological_process|GO_0006641|biological_process
+GO:0006569|pathway_to_biological_process|Tryptophan catabolism|r-hsa-71240|pathway|biological_process|GO_0006569|biological_process
+GO:0097706|pathway_to_biological_process|Turbulent (oscillatory, disturbed) flow shear stress activates signaling by PIEZO1 and integrins in endothelial cells|r-hsa-9860927|pathway|biological_process|GO_0097706|biological_process
+GO:0031581|pathway_to_biological_process|Type I hemidesmosome assembly|r-hsa-446107|pathway|biological_process|GO_0031581|biological_process
+GO:0006572|pathway_to_biological_process|Tyrosine catabolism|r-hsa-8963684|pathway|biological_process|GO_0006572|biological_process
+GO:0006744|pathway_to_biological_process|Ubiquinol biosynthesis|r-hsa-2142789|pathway|biological_process|GO_0006744|biological_process
+GO:0043161|pathway_to_biological_process|Ubiquitin-dependent degradation of Cyclin D|r-hsa-75815|pathway|biological_process|GO_0043161|biological_process
+GO:2000310|pathway_to_biological_process|Unblocking of NMDA receptors, glutamate binding and activation|r-hsa-438066|pathway|biological_process|GO_2000310|biological_process
+GO:0019061|pathway_to_biological_process|Uncoating of the HIV Virion|r-hsa-162585|pathway|biological_process|GO_0019061|biological_process
+GO:0019061|pathway_to_biological_process|Uncoating of the Influenza Virion|r-hsa-168336|pathway|biological_process|GO_0019061|biological_process
+GO:0030968|pathway_to_biological_process|Unfolded Protein Response (UPR)|r-hsa-381119|pathway|biological_process|GO_0030968|biological_process
+GO:0015889|pathway_to_biological_process|Uptake of dietary cobalamins into enterocytes|r-hsa-9758881|pathway|biological_process|GO_0015889|biological_process
+GO:0000050|pathway_to_biological_process|Urea cycle|r-hsa-70635|pathway|biological_process|GO_0000050|biological_process
+GO:0046952|pathway_to_biological_process|Utilization of Ketone Bodies|r-hsa-77108|pathway|biological_process|GO_0046952|biological_process
+GO:0034379|pathway_to_biological_process|VLDL assembly|r-hsa-8866423|pathway|biological_process|GO_0034379|biological_process
+GO:0034447|pathway_to_biological_process|VLDL clearance|r-hsa-8964046|pathway|biological_process|GO_0034447|biological_process
+GO:0032802|pathway_to_biological_process|VLDLR internalisation and degradation|r-hsa-8866427|pathway|biological_process|GO_0032802|biological_process
+GO:0003091|pathway_to_biological_process|Vasopressin regulates renal water homeostasis via Aquaporins|r-hsa-432040|pathway|biological_process|GO_0003091|biological_process
+GO:0009615|pathway_to_biological_process|Viral Infection Pathways|r-hsa-9824446|pathway|biological_process|GO_0009615|biological_process
+GO:0019070|pathway_to_biological_process|Viral RNP Complexes in the Host Cell Nucleus|r-hsa-168330|pathway|biological_process|GO_0019070|biological_process
+GO:0007603|pathway_to_biological_process|Visual phototransduction|r-hsa-2187338|pathway|biological_process|GO_0007603|biological_process
+GO:0042723|pathway_to_biological_process|Vitamin B1 (thiamin) metabolism|r-hsa-196819|pathway|biological_process|GO_0042723|biological_process
+GO:0006771|pathway_to_biological_process|Vitamin B2 (riboflavin) metabolism|r-hsa-196843|pathway|biological_process|GO_0006771|biological_process
+GO:0015939|pathway_to_biological_process|Vitamin B5 (pantothenate) metabolism|r-hsa-199220|pathway|biological_process|GO_0015939|biological_process
+GO:0042816|pathway_to_biological_process|Vitamin B6 activation to pyridoxal phosphate|r-hsa-964975|pathway|biological_process|GO_0042816|biological_process
+GO:0019852|pathway_to_biological_process|Vitamin C (ascorbate) metabolism|r-hsa-196836|pathway|biological_process|GO_0019852|biological_process
+GO:0042359|pathway_to_biological_process|Vitamin D (calciferol) metabolism|r-hsa-196791|pathway|biological_process|GO_0042359|biological_process
+GO:0042360|pathway_to_biological_process|Vitamin E transport|r-hsa-8877627|pathway|biological_process|GO_0042360|biological_process
+GO:0006766|pathway_to_biological_process|Vitamins|r-hsa-211916|pathway|biological_process|GO_0006766|biological_process
+GO:0010025|pathway_to_biological_process|Wax biosynthesis|r-hsa-9640463|pathway|biological_process|GO_0010025|biological_process
+GO:0006805|pathway_to_biological_process|Xenobiotics|r-hsa-211981|pathway|biological_process|GO_0006805|biological_process
+GO:0006367|pathway_to_biological_process|YAP1- and WWTR1 (TAZ)-stimulated gene expression|r-hsa-2032785|pathway|biological_process|GO_0006367|biological_process
+GO:0071577|pathway_to_biological_process|Zinc transporters|r-hsa-435354|pathway|biological_process|GO_0071577|biological_process
+GO:0038066|pathway_to_biological_process|activated TAK1 mediates p38 MAPK activation|r-hsa-450302|pathway|biological_process|GO_0038066|biological_process
+GO:0033559|pathway_to_biological_process|alpha-linolenic (omega3) and linoleic (omega6) acid metabolism|r-hsa-2046104|pathway|biological_process|GO_0033559|biological_process
+GO:0036109|pathway_to_biological_process|alpha-linolenic acid (ALA) metabolism|r-hsa-2046106|pathway|biological_process|GO_0036109|biological_process
+GO:0031124|pathway_to_biological_process|mRNA 3-end processing|r-hsa-72187|pathway|biological_process|GO_0031124|biological_process
+GO:0006370|pathway_to_biological_process|mRNA Capping|r-hsa-72086|pathway|biological_process|GO_0006370|biological_process
+GO:0016556|pathway_to_biological_process|mRNA Editing|r-hsa-75072|pathway|biological_process|GO_0016556|biological_process
+GO:0006382|pathway_to_biological_process|mRNA Editing: A to I Conversion|r-hsa-75064|pathway|biological_process|GO_0006382|biological_process
+GO:0016554|pathway_to_biological_process|mRNA Editing: C to U Conversion|r-hsa-72200|pathway|biological_process|GO_0016554|biological_process
+GO:0008380|pathway_to_biological_process|mRNA Splicing|r-hsa-72172|pathway|biological_process|GO_0008380|biological_process
+GO:0000398|pathway_to_biological_process|mRNA Splicing - Major Pathway|r-hsa-72163|pathway|biological_process|GO_0000398|biological_process
+GO:0000398|pathway_to_biological_process|mRNA Splicing - Minor Pathway|r-hsa-72165|pathway|biological_process|GO_0000398|biological_process
+GO:0030330|pathway_to_biological_process|p53-Dependent G1 DNA Damage Response|r-hsa-69563|pathway|biological_process|GO_0030330|biological_process
+GO:0048011|pathway_to_biological_process|p75 NTR receptor-mediated signalling|r-hsa-193704|pathway|biological_process|GO_0048011|biological_process
+GO:0045786|pathway_to_biological_process|p75NTR negatively regulates cell cycle via SC1|r-hsa-193670|pathway|biological_process|GO_0045786|biological_process
+GO:0050770|pathway_to_biological_process|p75NTR regulates axonogenesis|r-hsa-193697|pathway|biological_process|GO_0050770|biological_process
+GO:0043066|pathway_to_biological_process|p75NTR signals via NF-kB|r-hsa-193639|pathway|biological_process|GO_0043066|biological_process
+GO:0000154|pathway_to_biological_process|rRNA modification in the mitochondrion|r-hsa-6793080|pathway|biological_process|GO_0000154|biological_process
+GO:0000154|pathway_to_biological_process|rRNA modification in the nucleus and cytosol|r-hsa-6790901|pathway|biological_process|GO_0000154|biological_process
+GO:0006364|pathway_to_biological_process|rRNA processing|r-hsa-72312|pathway|biological_process|GO_0006364|biological_process
+GO:0000387|pathway_to_biological_process|snRNP Assembly|r-hsa-191859|pathway|biological_process|GO_0000387|biological_process
+GO:0006418|pathway_to_biological_process|tRNA Aminoacylation|r-hsa-379724|pathway|biological_process|GO_0006418|biological_process
+GO:0070900|pathway_to_biological_process|tRNA modification in the mitochondrion|r-hsa-6787450|pathway|biological_process|GO_0070900|biological_process
+GO:0006400|pathway_to_biological_process|tRNA modification in the nucleus and cytosol|r-hsa-6782315|pathway|biological_process|GO_0006400|biological_process
+GO:0008033|pathway_to_biological_process|tRNA processing|r-hsa-72306|pathway|biological_process|GO_0008033|biological_process
+GO:0090646|pathway_to_biological_process|tRNA processing in the mitochondrion|r-hsa-6785470|pathway|biological_process|GO_0090646|biological_process
+GO:0016078|pathway_to_biological_process|tRNA-derived small RNA (tsRNA or tRNA-related fragment, tRF) biogenesis|r-hsa-9708296|pathway|biological_process|GO_0016078|biological_process
+GO:0006892|pathway_to_biological_process|trans-Golgi Network Vesicle Budding|r-hsa-199992|pathway|biological_process|GO_0006892|biological_process

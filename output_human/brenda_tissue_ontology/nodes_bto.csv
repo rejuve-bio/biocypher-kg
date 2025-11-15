@@ -1,0 +1,102 @@
+id|source|source_url|synonyms|term_name
+BTO_0005753|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||CHO-A7 cell
+BTO_0006324|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:mesaconate-grown cell
+BTO_0005344|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||Ma-Mel-42b cell
+BTO_0001332|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""DU145 cell""]"|DU-145 cell
+BTO_0000592|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""adrenal gland tumor cell""]"|adrenal gland cancer cell
+BTO_0000482|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""distal convoluted tubule"", ""distal tubule""]"|renal distal tubule
+BTO_0004708|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||thyroid follicle
+BTO_0000086|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:arabinose-grown cell
+BTO_0004614|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""NOSE.1 cell""]"|NOSE1 cell
+BTO_0000011|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""NIH3T3-L1 cell""]"|3T3-L1 cell
+BTO_0002338|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:cellulose-grown cell
+BTO_0002346|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||fibula
+BTO_0001293|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||sporulated oocyst
+BTO_0005257|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||oropharynx
+BTO_0005970|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""LCC-9 cell"", ""LCC9 cell"", ""MCF7/LCC9 cell""]"|MCF-7/LCC9 cell
+BTO_0001642|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||liver bud
+BTO_0002614|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""rhizopodium""]"|reticulopodium
+BTO_0001218|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""scapula bone"", ""shoulder blade""]"|scapula
+BTO_0004067|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||C26-10 cell
+BTO_0005462|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""circulatory tube""]"|hemolymph vessel
+BTO_0003765|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""fibrous histiocytoma cell line"", ""sclerosing hemangioma2 cell line""]"|dermatofibroma cell line
+BTO_0005767|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||buccal gland
+BTO_0001740|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""laryngopharynx"", ""pars laryngea pharyngis""]"|hypopharynx
+BTO_0006202|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||76NF2V cell
+BTO_0002962|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||1290-2 cell
+BTO_0000185|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||medullary breast carcinoma cell
+BTO_0001903|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""exponential growth phase culture"", ""log phase culture""]"|logarithmic phase culture
+BTO_0006000|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||WPE-int cell
+BTO_0003393|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||granule cell
+BTO_0001306|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""runner""]"|stolon
+BTO_0002529|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||HBL-8 cell
+BTO_0006242|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""surface ectoderm""]"|external ectoderm
+BTO_0001904|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""SU 86.86 cell"", ""SU86.86 cell""]"|SU.86.86 cell
+BTO_0000103|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""26-L5 cell""]"|Colon 26-L5 cell
+BTO_0001808|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||saphenous vein
+BTO_0002449|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||hypothalamic nucleus
+BTO_0000323|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:D-mandelate-grown cell
+BTO_0002019|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""cavernous body of penis"", ""corpus cavernosum"", ""corpus spongiosum penis"", ""penile corpus cavernosum"", ""spongy body of male urethra"", ""spongy body of penis""]"|corpus cavernosum penis
+BTO_0003010|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""H-125 cell"", ""H125 cell"", ""HUT-125 cell"", ""HUT125 cell"", ""NCI-HUT 125 cell"", ""NCI-HUT-125 cell""]"|NCI-H125 cell
+BTO_0001457|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||hip
+BTO_0004637|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||urinary bladder endothelial cell
+BTO_0004700|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||anterior pharynx
+BTO_0003269|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||feather barbicels
+BTO_0001589|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||KLN205 cell
+BTO_0003945|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""MN9D cell""]"|MN-9D cell
+BTO_0004639|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""TT2 cell""]"|TT2 ES cell
+BTO_0006465|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||intestinal stem cell
+BTO_0005331|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:sulfur-grown cell
+BTO_0001346|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""endocoite""]"|tachyzoite
+BTO_0001363|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""male gonad"", ""orchis"", ""testicle"", ""testiculus""]"|testis
+BTO_0006132|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||corticospinal tract
+BTO_0000182|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""HT29 cell"", ""HT29-CRC cell""]"|HT-29 cell
+BTO_0001705|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""circumvallate papilla"", ""papilla vallatae""]"|vallate papilla
+BTO_0006031|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||HUASMC cell
+BTO_0001148|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||BALL-1 cell
+BTO_0003322|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""HCC2998 cell""]"|HCC-2998 cell
+BTO_0001731|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||glucagonoma cell
+BTO_0000229|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""semioval center""]"|centrum semiovale
+BTO_0005591|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||mesolimbic dopaminergic system
+BTO_0003775|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""SCC 4 cell"", ""SCC4 cell""]"|SCC-4 cell
+BTO_0002318|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""white muscle""]"|fast muscle
+BTO_0004039|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""ML3B cell""]"|ML-3B cell
+BTO_0001603|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||endocuticle
+BTO_0002679|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""vena testicularis dextra""]"|right testicular vein
+BTO_0004643|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:1-naphthoic acid-grown cell
+BTO_0004494|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||RGM-1 cell
+BTO_0006294|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||BWZ.36 cell
+BTO_0005249|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||M-07 cell
+BTO_0005731|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||culture condition:dichloromethane-grown cell
+BTO_0004710|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""inner layer of eyeball"", ""internal layer of eyeball"", ""nervous tunic of eyeball""]"|tunica interna bulbi
+BTO_0000175|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||epithalamus
+BTO_0004571|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||L3.3 cell
+BTO_0001419|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||urine
+BTO_0006240|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""PK15CD163 cell""]"|PK-15CD163 cell
+BTO_0002032|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""T84 cell""]"|T-84 cell
+BTO_0004450|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""LN444 cell""]"|LN-444 cell
+BTO_0004687|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||orbit
+BTO_0002163|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||gymnothecium
+BTO_0001418|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""vesica""]"|urinary bladder
+BTO_0004583|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||A-704 cell
+BTO_0005607|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""TCR gamma delta cell"", ""gamma delta T-cell"", ""gamma-delta T-cell"", ""gamma/delta T-cell""]"|gamma delta T-lymphocyte
+BTO_0002542|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""crureus"", ""intermediate great muscle"", ""intermediate vastus muscle"", ""musculus vastus intermedius""]"|femoral muscle
+BTO_0003947|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||MPCT-G cell
+BTO_0001359|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||medulloblastoma cell line
+BTO_0006477|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||T37i cell
+BTO_0005714|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||Mel-FH cell
+BTO_0000380|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""embryonic axes""]"|embryonic axis
+BTO_0001773|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||oocyst
+BTO_0001121|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||cauline leaf
+BTO_0002460|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""nuclei paraventriculares thalami"", ""paraventricular nucleus of thalamus""]"|paraventricular nucleus
+BTO_0003732|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""TUHR10TKB cell""]"|TUHR-10TKB cell
+BTO_0006328|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""293T/17 cell"", ""HEK 293T/17 cell"", ""HEK293T/17 cell""]"|HEK-293T/17 cell
+BTO_0005194|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||fine root
+BTO_0001920|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||Ehrlich Lettre ascites carcinoma cell
+BTO_0002900|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""MDDC cell""]"|monocyte-derived dendritic cell
+BTO_0005349|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||UKRV-Mel-27 cell
+BTO_0005279|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||Caco-2/15 cell
+BTO_0003501|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||OVSAYO cell
+BTO_0003954|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||dopaminergic system
+BTO_0002835|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl|"[""H-358 cell"", ""H358 cell""]"|NCI-H358 cell
+BTO_0004331|BRENDA Tissue Ontology|http://purl.obolibrary.org/obo/bto.owl||UW228-2 cell

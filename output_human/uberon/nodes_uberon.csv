@@ -1,0 +1,102 @@
+alternative_ids|id|source|source_url|synonyms|term_name
+|UBERON_0007801|UBERON|http://purl.obolibrary.org/obo/uberon.owl||pygostyle
+|UBERON_0028395|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""calcarine sulcus (dorsal)""]"|calcarine sulcus (dorsal)
+"[""UBERON:0007824""]"|UBERON_0007823|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""fin girdle"", ""fin girdle region"", ""limb girdle"", ""limb girdle region""]"|appendage girdle region
+|UBERON_0015766|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""epithelium of salivary duct"", ""salivary duct epithelium"", ""salivary ductal epithelium""]"|epithelium of duct of salivary gland
+"[""UBERON:0015242""]"|UBERON_0003974|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""upper third of vagina"", ""upper vagina"", ""cranial vagina"", ""pelvic part of vagina"", ""vagina upper part""]"|upper part of vagina
+|UBERON_0005902|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""back of head"", ""basicranial region"", ""occipital part of head"", ""occipital region of head""]"|occipital region
+|UBERON_0000933|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""branchial muscles"", ""musculi pharyngis"", ""musculus pharyngis"", ""tunica muscularis pharyngis"", ""branchial muscle"", ""muscle of pharynx"", ""muscle organ of pharynx"", ""pharyngeal muscle"", ""pharynx muscle"", ""pharynx muscle organ""]"|chordate pharyngeal muscle
+|UBERON_0011309|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""body of the mandible"", ""corpus mandibulae"", ""mandibular body""]"|body of mandible
+|UBERON_0004319|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""5th toe distal phalanx"", ""distal phalanx of 5th toe"", ""distal phalanx of fifth digit of foot"", ""distal phalanx of fifth toe"", ""distal phalanx of foot digit 5"", ""distal phalanx of little toe"", ""distal phalanx of pedal digit V"", ""distal phalanx of the 5th toe"", ""fifth distal phalanx of foot"", ""foot digit 5 distal phalanx""]"|distal phalanx of pedal digit 5
+|UBERON_0002341|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""epithelial tissue of segmental bronchus"", ""epithelial tissue of tertiary bronchus"", ""epithelium of tertiary bronchus"", ""segmental bronchial epithelium"", ""segmental bronchus epithelial tissue"", ""segmental bronchus epithelium"", ""tertiary bronchus epithelial tissue"", ""tertiary bronchus epithelium""]"|epithelium of segmental bronchus
+|UBERON_2001312|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""anterodorsal lateral line ganglion""]"|dorsal anterior lateral line ganglion
+|UBERON_0001643|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""CN-III"", ""cranial nerve III"", ""nerve III"", ""occulomotor"", ""oculomotor nerve or its root"", ""nervus oculomotorius"", ""nervus oculomotorius [III]"", ""oculomotor III"", ""oculomotor III nerve"", ""oculomotor nerve [III]"", ""oculomotor nerve tree"", ""third cranial nerve""]"|oculomotor nerve
+|UBERON_2001806|UBERON|http://purl.obolibrary.org/obo/uberon.owl||intracranial diverticulum of swimbladder
+|UBERON_0000019|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""camera-type eye plus associated structures"", ""eyes"", ""orbital part of face"", ""orbital region"", ""regio orbitalis""]"|camera-type eye
+|UBERON_4200044|UBERON|http://purl.obolibrary.org/obo/uberon.owl||articular surface for the calcaneum on the astragalus
+|UBERON_0008432|UBERON|http://purl.obolibrary.org/obo/uberon.owl||thoracic vertebral foramen
+|UBERON_3000784|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""medial condyle""]"|ulnar condyle
+|UBERON_0037534|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""lateral common iliac node""]"|lateral common iliac lymph node
+|UBERON_0005200|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""anterior mammary gland"", ""breast mammary gland""]"|thoracic mammary gland
+|UBERON_0018143|UBERON|http://purl.obolibrary.org/obo/uberon.owl||transverse process of cervical vertebra
+|UBERON_0014398|UBERON|http://purl.obolibrary.org/obo/uberon.owl||respiratory muscle
+|UBERON_0003260|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""hindgut endoderm""]"|endoderm of hindgut
+|UBERON_0001635|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""arteria superior cerebelli""]"|superior cerebellar artery
+|UBERON_3010163|UBERON|http://purl.obolibrary.org/obo/uberon.owl||metacarpal fold
+|UBERON_0010577|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""fore limb digit 3 phalanx pre-cartilage condensation"", ""manual digit III phalanx pre-cartilage condensation""]"|manual digit 3 phalanx pre-cartilage condensation
+|UBERON_0015085|UBERON|http://purl.obolibrary.org/obo/uberon.owl||distal carpal bone 1 cartilage
+|UBERON_0014735|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""paleocortex"", ""paleocortex (Zilles)"", ""palaeocortex"", ""paleocortex (semicortex)""]"|paleocortex
+|UBERON_0022776|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""composite part spanning multiple base regional parts of brain""]"|composite part spanning multiple base regional parts of brain
+|UBERON_2002043|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""posterior branch of parapophysis 4"", ""posterior wing of parapophysis 4""]"|posterior limb of parapophysis 4
+|UBERON_0018562|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""c"", ""permanent lower canine tooth"", ""lower permanent canine tooth"", ""mandibular secondary canine tooth""]"|lower secondary canine tooth
+|UBERON_0034972|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""glomus jugulare"", ""glomus tympanicum"", ""jugulotympanic body"", ""tympanic body""]"|jugular body
+|UBERON_2000264|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""preopercles"", ""preoperculum""]"|preopercle
+|UBERON_0011948|UBERON|http://purl.obolibrary.org/obo/uberon.owl||ureter subluminal urothelium
+|UBERON_0001092|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""C1 vertebra"", ""atlas"", ""atlas (CI)"", ""atlas [C I]"", ""atlas vertebra"", ""cervical atlas"", ""cervical vertebra 1"", ""first cervical vertebra"", ""vertebra 1""]"|vertebral bone 1
+|UBERON_0034841|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""CA3Rsp""]"|stratum pyramidale of rostral CA3
+|UBERON_0015043|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""manual digit 1 metacarpus element"", ""manual digit I metacarpus endochondral element""]"|manual digit 1 metacarpus endochondral element
+|UBERON_0006071|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""post-anal caudal region"", ""post-anal tail region"", ""postsacral region"", ""tail region""]"|caudal region
+|UBERON_0008284|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""columella muscle""]"|columnella muscle
+|UBERON_2005073|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""AV ring""]"|atrioventricular ring
+|UBERON_0004912|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""hepatic diverticulum""]"|biliary bud
+|UBERON_0018113|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""left renal stroma"", ""stroma of left kidney""]"|left kidney interstitium
+|UBERON_0008799|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""set of transverse palatine folds"", ""hard palate palatal rugae"", ""hard palate ruga"", ""impressiones rugales"", ""palatal rugae"", ""palatine fold"", ""palatine rugae"", ""plica palatina transversa"", ""plicae palatinae transversae"", ""ruga of palate"", ""ruga palatina"", ""rugae of palate"", ""rugae palatinae"", ""transverse palatine folds"", ""transverse palatine folds set"", ""transverse palatine ridge""]"|transverse palatine fold
+|UBERON_8440062|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""PS (sensu Mustela putorius furo)""]"|posterior suprasylvian visual cortical area (sensu Mustela putorius furo)
+|UBERON_6004788|UBERON|http://purl.obolibrary.org/obo/uberon.owl||insect adult external abdomen
+|UBERON_2001286|UBERON|http://purl.obolibrary.org/obo/uberon.owl||caudal vein plexus
+|UBERON_0035146|UBERON|http://purl.obolibrary.org/obo/uberon.owl||tractus sacci vasculosi
+|UBERON_0014534|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""external medullary lamina of the thalamus"", ""external medullary lamina"", ""lamella medullaris externa"", ""lamina medullaris externa"", ""lamina medullaris externa thalami"", ""lamina medullaris lateralis thalami"", ""lamina medullaris thalami externa""]"|external medullary lamina of thalamus
+|UBERON_2002038|UBERON|http://purl.obolibrary.org/obo/uberon.owl||basioccipital-exoccipital joint
+|UBERON_0000109|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""blastocystis trilaminaris stage"", ""trilaminar blastocyst stage"", ""trilaminar blastoderm stage"", ""trilaminar disk stage"", ""trilaminar germ stage"", ""trilaminar stage""]"|gastrula stage
+|UBERON_0011695|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""embryonic circulatory system"", ""fetal circulatory system"", ""conceptus cardiovascular system""]"|embryonic cardiovascular system
+|UBERON_0007522|UBERON|http://purl.obolibrary.org/obo/uberon.owl||striated muscle sphincter
+|UBERON_8600134|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""ascending colonic lamina propria"", ""lamina propria of ascending colon""]"|ascending colon lamina propria
+|UBERON_0002663|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""nuclei septales"", ""parolfactory nuclei"", ""septal nuclei"", ""septal nucleus""]"|septal nuclear complex
+|UBERON_0022716|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""lateral orbital frontal cortex""]"|lateral orbital frontal cortex
+|UBERON_0001843|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""horizontal semicircular canal"", ""lateral semicircular canals"", ""lateral semicircular duct""]"|lateral semicircular canal
+|UBERON_0035084|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""NTP vertebra"", ""postpygal vertebra""]"|non-transverse process-bearing vertebra
+|UBERON_3010831|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""occipito-otic"", ""otic-occipital complex"", ""occipital-petrosal""]"|occipito-petrosal
+|UBERON_0010167|UBERON|http://purl.obolibrary.org/obo/uberon.owl||beard
+|UBERON_0013277|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""processus vaginalis vestige"", ""vestige of processus vaginalis""]"|remnant of processus vaginalis
+|UBERON_2000497|UBERON|http://purl.obolibrary.org/obo/uberon.owl||pelvic adductor profundus
+|UBERON_0011972|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""deltoid collateral ligament of ankle joint"", ""deltoid ligament of ankle joint"", ""ligamentum collaterale mediale (articulatio talocruralis)"", ""ligamentum collaterale mediale articulationis talocruralis"", ""ligamentum deltoideum"", ""ligamentum deltoideum (articulatio talocruralis)"", ""medial collateral ligament of ankle joint""]"|medial ligament of ankle joint
+|UBERON_3000763|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""procoracoid bridge""]"|epicoracoid bridge
+|UBERON_0002509|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""nodi lymphoidei mesenterici"", ""mesenteric node""]"|mesenteric lymph node
+|UBERON_0035969|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""encapsulated nerve ending""]"|encapsulated tactile receptor
+|UBERON_0016565|UBERON|http://purl.obolibrary.org/obo/uberon.owl||cerebral blood vessel
+|UBERON_0001510|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""knee skin"", ""knee zone of skin"", ""zone of skin of knee""]"|skin of knee
+|UBERON_0018405|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""inferior dental nerve""]"|inferior alveolar nerve
+|UBERON_0009860|UBERON|http://purl.obolibrary.org/obo/uberon.owl||ascidian digestive gland
+|UBERON_0002945|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""nucleus ventralis posteromedialis thalami"", ""ventral posterior medial nucleus of dorsal thalamus"", ""ventral posteromedial nucleus of the thalamus principal part"", ""ventral posteromedial nucleus of the thalamus, general"", ""ventral posteromedial nucleus of the thalamus, principal part"", ""ventroposterior medial thalamic nucleus"", ""arcuate nucleus of thalamus"", ""arcuate nucleus of the thalamus"", ""arcuate nucleus-3"", ""nucleus arcuatus thalami"", ""nucleus semilunaris thalami"", ""nucleus ventralis posterior medialis thalami"", ""nucleus ventralis posteromedialis"", ""nucleus ventralis posteromedialis thalami"", ""nucleus ventrocaudalis anterior internus (hassler)"", ""posteromedial ventral nucleus"", ""posteromedial ventral nucleus of thalamus"", ""posteromedial ventral nucleus of the thalamus"", ""semilunar nucleus"", ""thalamic gustatory nucleus"", ""ventral posterior medial nucleus"", ""ventral posterior medial nucleus of thalamus"", ""ventral posteromedial nucleus of thalamus"", ""ventral posteromedial nucleus of the thalamus"", ""ventral posteromedial thalamic nucleus"", ""ventroposteromedial nucleus of the thalamus""]"|ventral posteromedial nucleus of thalamus
+|UBERON_0005013|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""male urethra mucosa"", ""male urethra mucosa of organ"", ""male urethra mucous membrane"", ""male urethra organ mucosa"", ""mucosa of organ of male urethra"", ""mucous membrane of male urethra"", ""organ mucosa of male urethra""]"|mucosa of male urethra
+|UBERON_0004077|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""lobule IV of cerebellum vermis"", ""vermic lobule IV""]"|cerebellum vermis lobule IV
+|UBERON_3000192|UBERON|http://purl.obolibrary.org/obo/uberon.owl||foramen perilymphaticum
+|UBERON_0012274|UBERON|http://purl.obolibrary.org/obo/uberon.owl||columnar epithelium
+|UBERON_0006904|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""cranial mesoderm"", ""head mesoderm"", ""head mesenchyme derived from mesoderm"", ""head mesenchyme from head mesoderm"", ""head mesenchyme from mesoderm"", ""mesenchyme derived from head mesoderm"", ""mesenchyme from head mesoderm""]"|head mesenchyme from mesoderm
+|UBERON_2000251|UBERON|http://purl.obolibrary.org/obo/uberon.owl||adipose fin
+|UBERON_0006476|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""B09-33"", ""BA33"", ""Brodmann (1909) area 33"", ""Brodmann area 33"", ""Brodmann area 33, pregenual"", ""Brodmanns area 33"", ""area 33 of Brodmann"", ""area 33 of Brodmann-1909"", ""area praegenualis"", ""pregenual area 33""]"|Brodmann (1909) area 33
+|UBERON_0010721|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""cuneiform"", ""cuneiform bone"", ""distal tarsal"", ""distal tarsal bone"", ""os cuneiform"", ""os cuneiforme""]"|distal tarsal bone
+|UBERON_2007001|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""dorsorostral cluster"", ""drc""]"|dorso-rostral cluster
+|UBERON_2001096|UBERON|http://purl.obolibrary.org/obo/uberon.owl||immature anterior macula
+|UBERON_0039856|UBERON|http://purl.obolibrary.org/obo/uberon.owl||right ovarian vein
+|UBERON_0014835|UBERON|http://purl.obolibrary.org/obo/uberon.owl||serratus muscle
+|UBERON_8600028|UBERON|http://purl.obolibrary.org/obo/uberon.owl||chorionic mesenchymal villus
+|UBERON_0035850|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""infra-orbital bridge""]"|infraorbital bridge
+|UBERON_0011164|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""chondrocranium bone""]"|neurocranium bone
+|UBERON_2002058|UBERON|http://purl.obolibrary.org/obo/uberon.owl||Weberian complex centrum
+|UBERON_0034921|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""anatomical cluster""]"|multi organ part structure
+|UBERON_0001482|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""muscle organ of shoulder"", ""shoulder muscle"", ""shoulder muscle organ""]"|muscle of shoulder
+|UBERON_2000074|UBERON|http://purl.obolibrary.org/obo/uberon.owl||somite 26
+|UBERON_0013494|UBERON|http://purl.obolibrary.org/obo/uberon.owl||keratin-coated spine
+|UBERON_2001949|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""caudal-fin hook""]"|caudal fin hook
+|UBERON_0010745|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""sacral vertebral cartilage condensation"", ""sacral vertebral cartilage condensation group""]"|sacral vertebra cartilage element
+|UBERON_0001851|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""cortex"", ""cortex of organ""]"|cortex
+|UBERON_0001831|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""glandula parotidea"", ""parotid""]"|parotid gland
+|UBERON_3010653|UBERON|http://purl.obolibrary.org/obo/uberon.owl||ramus nasalis medialis
+|UBERON_0011007|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""right auricle endocardium""]"|endocardium of right auricle
+|UBERON_2001765|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""pectoral fin lepidotrichium 5"", ""pectoral fin ray 5""]"|pectoral fin ray 5
+|UBERON_0035237|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""internal carotid arterial subdivision"", ""subdivision of internal carotid artery""]"|branch of internal carotid artery
+|UBERON_2000116|UBERON|http://purl.obolibrary.org/obo/uberon.owl||macula lagena
+|UBERON_0015169|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""tapetal layer"", ""tapetum layer""]"|tapetum
+|UBERON_2000815|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""nucleus of MLF medulla"", ""nucleus of the medial longitudinal fasciculus medulla oblongata""]"|nucleus of medial longitudinal fasciculus of medulla
+|UBERON_0001994|UBERON|http://purl.obolibrary.org/obo/uberon.owl|"[""chondroid cartilage"", ""hyaline cartilage""]"|hyaline cartilage tissue

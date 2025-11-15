@@ -1,0 +1,101 @@
+alternative_ids|id|source|source_url|synonyms|term_name
+|GO_0034424|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Vps55/Vps68 complex
+|GO_0030122|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""HA2"", ""HA2 clathrin adaptor""]"|AP-2 adaptor complex
+|GO_1990249|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||nucleotide-excision repair, DNA damage recognition complex
+|GO_0045111|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||intermediate filament cytoskeleton
+|GO_1990354|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||activated SUMO-E1 ligase complex
+|GO_1990901|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||old cell pole
+|GO_0032545|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||CURI complex
+"[""GO:0000441""]"|GO_0000439|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""SSL2-core TFIIH complex"", ""core TFIIH complex""]"|transcription factor TFIIH core complex
+|GO_0070993|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cytosolic translation preinitiation complex
+|GO_0000178|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""exosome (ribonucleasease complex)"", ""exosome multienzyme ribonuclease complex""]"|exosome (RNase complex)
+|GO_0005633|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""ascus lipid particle""]"|ascus lipid droplet
+|GO_0035792|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""other organism postsynaptic membrane"", ""other organism post-synaptic membrane""]"|host cell postsynaptic membrane
+|GO_0005591|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||collagen type VIII trimer
+"[""GO:0016283""]"|GO_0033290|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""eukaryotic 48S initiation complex"", ""eukaryotic 48S pre-initiation complex""]"|eukaryotic 48S preinitiation complex
+"[""GO:0017167""]"|GO_0030126|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""coatomer""]"|COPI vesicle coat
+|GO_0034676|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""alpha6-beta4 integrin complex""]"|integrin alpha6-beta4 complex
+|GO_0097228|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||sperm principal piece
+|GO_0031610|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||nuclear proteasome regulatory particle, base subcomplex
+|GO_0097356|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""perinucleolar region""]"|perinucleolar compartment
+|GO_0035997|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||rhabdomere microvillus membrane
+|GO_0071124|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alpha1-beta1 integrin-tyrosine-protein phosphatase non-receptor type 2 complex
+|GO_0000800|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""axial element""]"|lateral element
+|GO_0070732|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||spindle envelope
+|GO_0020010|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||conoid
+|GO_0097523|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""transcription protein-DNA-RNA complex""]"|transcription ternary complex
+|GO_0044095|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||host cell nucleoplasm
+|GO_0005655|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nucleolar RNase P complex""]"|nucleolar ribonuclease P complex
+|GO_0070250|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mating projection membrane
+|GO_0000308|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cytoplasmic cyclin-dependent protein kinase holoenzyme complex
+|GO_0044306|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nerve terminal"", ""neuron projection terminal"", ""neuron terminal specialization""]"|neuron projection terminus
+|GO_0016593|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Paf1 complex"", ""Paf1p complex""]"|Cdc73/Paf1 complex
+|GO_0140168|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nuclear RNP granule""]"|nuclear ribonucleoprotein granule
+|GO_0180049|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Mrh5C complex""]"|Mrh5C translation activator complex
+|GO_0160281|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""cytoplasmic face of trans-Golgi network membrane"", ""cytoplasmic leaflet of trans-Golgi network membrane"", ""cytoplasmic side of trans-Golgi network""]"|cytoplasmic side of trans-Golgi network membrane
+|GO_0034992|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""MAS"", ""MTOC attachment site"", ""microtubule organising centre attachment site""]"|microtubule organizing center attachment site
+|GO_0001518|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""voltage gated sodium channel complex"", ""voltage-dependent sodium channel complex"", ""voltage-sensitive sodium channel complex""]"|voltage-gated sodium channel complex
+|GO_0034426|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||etioplast membrane
+|GO_0061801|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""laminin 3B32 complex""]"|laminin-5B complex
+|GO_0030690|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Noc1p-Noc2p complex
+|GO_0097196|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Shu complex
+"[""GO:0005959""]"|GO_0005958|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||DNA-dependent protein kinase-DNA ligase 4 complex
+|GO_0035692|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||macrophage migration inhibitory factor receptor complex
+"[""GO:0016022""]"|GO_0005788|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""ER cisterna"", ""ER lumen"", ""cisternal lumen"", ""endoplasmic reticulum cisterna""]"|endoplasmic reticulum lumen
+|GO_0005814|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||centriole
+|GO_0030932|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||amyloplast ADPG pyrophosphorylase complex
+|GO_0140671|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Ada2/Gcn5/Ada3 transcription activator complex"", ""ADA HAT complex"", ""ADA histone acetyltransferase complex""]"|ADA complex
+|GO_0030678|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""mitochondrial RNase P complex""]"|mitochondrial ribonuclease P complex
+|GO_0089716|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Pip2-Oaf1 complex
+|GO_0038037|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""G-protein coupled receptor dimer"", ""G-protein coupled receptor dimeric complex"", ""GPCR dimer""]"|G protein-coupled receptor dimeric complex
+|GO_0009534|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||chloroplast thylakoid
+|GO_0032151|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mitotic septin complex
+"[""GO:0005961"", ""GO:0070015""]"|GO_0005960|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""glycine dehydrogenase complex (decarboxylating)"", ""glycine cleavage system"", ""glycine decarboxylase complex"", ""glycine dehydrogenase (decarboxylating) complex"", ""glycine synthase complex""]"|glycine cleavage complex
+|GO_1990452|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""PRKN-FBXW7-Cul1 complex"", ""Park2-FBXW7-Cul1 complex"", ""Parkin-FBXW7-Cul1 protein complex"", ""Parkin/Cul1/F-box protein complex""]"|Parkin-FBXW7-Cul1 ubiquitin ligase complex
+|GO_1902554|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""PDR16 complex dimer"", ""PDR16 complex homodimer""]"|serine/threonine protein kinase complex
+|GO_0031484|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||myosin XIV complex
+"[""GO:0002137"", ""GO:0031618"", ""GO:0034507"", ""GO:0062199""]"|GO_0005721|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""chromosome, centric outer repeat region"", ""chromosome, centromeric inner repeat region"", ""chromosome, centromeric outer repeat region"", ""centric heterochromatin"", ""centromeric heterochromatin""]"|pericentric heterochromatin
+|GO_0048269|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""MAT complex""]"|methionine adenosyltransferase complex
+|GO_0097663|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||SCF-Dia2/Pof3 ubiquitin ligase complex
+|GO_0140363|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||TIS granule
+|GO_0046729|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||viral procapsid
+|GO_1990201|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alkanesulfonate monooxygenase complex
+"[""GO:0080137""]"|GO_0000419|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""DNA-directed RNA polymerase IVb complex"", ""DNA-directed RNA polymerase V complex""]"|RNA polymerase V complex
+|GO_0090654|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||basolateral recycling endosome
+|GO_0120201|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cone photoreceptor disc membrane
+|GO_0033645|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||host cell endomembrane system
+|GO_0098526|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||inhibitory neuromuscular junction of somatic myotube
+|GO_0009842|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""cyanoplast"", ""muroplast""]"|cyanelle
+|GO_0160112|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||axonemal B tubule inner sheath
+|GO_0070388|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""procollagen-proline, 2-oxoglutarate-4-dioxygenase complex, alpha(III) type""]"|procollagen-proline 4-dioxygenase complex, alpha(III) type
+|GO_0060110|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""basal layer of collagen and cuticulin-based exoskeleton extracellular matrix""]"|basal layer of collagen and cuticulin-based cuticle extracellular matrix
+|GO_0071540|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""eIF3e-containing eukaryotic translation initiation factor 3 complex""]"|eukaryotic translation initiation factor 3 complex, eIF3e
+|GO_0001535|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""radial spokehead""]"|radial spoke head
+|GO_0046821|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||extrachromosomal DNA
+|GO_0034980|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||FHL2-CREB complex
+|GO_0019035|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""pre-integration complex""]"|viral integration complex
+|GO_0140220|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""pathogen inclusion"", ""pathogen-containing compartment""]"|pathogen-containing vacuole
+|GO_0016605|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""nuclear dot"", ""ND10"", ""PML NB"", ""PML nuclear body""]"|PML body
+|GO_0042601|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||endospore-forming forespore
+|GO_0005898|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""IL-13 receptor complex""]"|interleukin-13 receptor complex
+|GO_0180022|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""ASC-1 complex"", ""RQT complex"", ""activating signal cointegrator 1 complex""]"|RQC-trigger complex
+|GO_0099012|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||neuronal dense core vesicle membrane
+|GO_0098875|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||epididymosome
+|GO_0005712|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||chiasma
+|GO_0009551|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||secondary plasmodesma
+|GO_0008305|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""laminin receptor protein""]"|integrin complex
+|GO_0110085|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||mitotic actomyosin contractile ring
+|GO_1990295|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""PAA"", ""post-anaphase array""]"|post-anaphase microtubule array
+|GO_0043853|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""methanol-coenzyme M methyltransferase complex"", ""methanol: CoM methyltransferase complex"", ""methanol: coenzyme M methyltransferase complex"", ""methanol:CoM methyltransferase complex"", ""methanol:coenzyme M methyltransferase complex""]"|methanol-CoM methyltransferase complex
+|GO_0097465|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||somatic spine
+|GO_0032166|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||chlamydospore septin filament array
+|GO_1990621|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Vps4 complex"", ""Vta1-Vps4 complex"", ""vacuolar protein sorting-associated complex"", ""ESCRT-IV""]"|ESCRT IV complex
+|GO_0098556|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cytoplasmic side of rough endoplasmic reticulum membrane
+|GO_0060198|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""clathrin sculpted vesicle""]"|clathrin-sculpted vesicle
+|GO_0035838|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""growing cell end""]"|growing cell tip
+|GO_0002189|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""PRPP synthetase complex"", ""phosphoribosylpyrophosphate synthetase complex""]"|ribose phosphate diphosphokinase complex
+|GO_0005813|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||centrosome
+|GO_1990508|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""CDK8 kinase module"", ""SRB8-SRB11 complex"", ""SRB8/9/10/11 complex""]"|CKM complex
+|GO_0031421|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||invertasome
+|GO_0034704|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||calcium channel complex
+|GO_0008290|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||F-actin capping protein complex
