@@ -58,30 +58,37 @@ class OntologyAdapter(Adapter):
     def get_ontology_source(self):
         """
         Returns the source and source URL for a given ontology.
-        This method should be overridden in child classes for specific ontologies.
+        This method must be overridden in child classes for specific ontologies.
         """
         pass
 
+    @abstractmethod
     def get_uri_prefixes(self):
         """
-        Returns a dictionary of URI prefixes for filtering terms.
-        Should be overridden by subclasses to define their specific prefixes.
+        Returns a dictionary of URI prefixes for filtering ontology terms.
+        This method must be overridden by subclasses to define their specific URI prefixes.
+
+        At minimum, must return a dictionary with a 'primary' key that specifies
+        the primary URI prefix for the ontology. This is used for ontology filtration
+        to ensure only terms from the correct ontology are included.
         """
-        return {}
+        pass
     
     def is_term_of_type(self, uri, prefix_type='primary'):
-        if not self.uri_prefixes or prefix_type not in self.uri_prefixes:
-            return True  # If no prefixes defined, accept all terms
-        
-        return str(uri).startswith(self.uri_prefixes[prefix_type])
-    
-    def should_include_node(self, node):
-        
-        return self.is_term_of_type(node, 'primary')
-    
-    def should_include_edge(self, from_node, to_node, predicate=None, edge_type=None):
+        if prefix_type not in self.uri_prefixes:
+            raise ValueError(
+                f"Prefix type '{prefix_type}' not found in uri_prefixes. "
+                f"Available types: {list(self.uri_prefixes.keys())}. "
+                f"Ensure get_uri_prefixes() includes this prefix type."
+            )
 
-        return (self.should_include_node(from_node) and 
+        return str(uri).startswith(self.uri_prefixes[prefix_type])
+
+    def should_include_node(self, node):
+        return self.is_term_of_type(node, 'primary')
+
+    def should_include_edge(self, from_node, to_node):
+        return (self.should_include_node(from_node) and
                 self.should_include_node(to_node))
 
     def update_graph(self):
@@ -705,5 +712,3 @@ class OntologyAdapter(Adapter):
     def get_all_property_values_from_node(self, node, collection):
         node_key = OntologyAdapter.to_key(node)
         return self.cache.get(node_key, {}).get(collection, [])
-
-
