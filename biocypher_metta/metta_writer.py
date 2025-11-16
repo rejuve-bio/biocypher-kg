@@ -12,14 +12,54 @@ class MeTTaWriter(BaseWriter):
     def __init__(self, schema_config, biocypher_config,
                  output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
-        
+
         # Initialize edge node types for tuple handling
         self.edge_node_types = {}
-        
+
+        # Build mapping of labels to whether they are ontology terms from schema
+        self.label_is_ontology = self._build_label_types_map()
+
         self.create_type_hierarchy()
 
-        #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
+
+    def _build_label_types_map(self):
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        label_is_ontology = {}
+
+        ontology_types = set()
+        for schema_type, config in schema.items():
+            if config.get("represented_as") == "node":
+                is_a = config.get("is_a")
+                if schema_type.lower() == "ontology term":
+                    ontology_types.add(schema_type.lower())
+                elif is_a:
+                    parent_types = [is_a] if isinstance(is_a, str) else is_a
+                    for parent in parent_types:
+                        if parent.lower() == "ontology term":
+                            ontology_types.add(schema_type.lower())
+                            break
+
+        for schema_type, config in schema.items():
+            if config.get("represented_as") == "node":
+                input_label = config.get("input_label")
+
+                if isinstance(input_label, list):
+                    labels_to_process = input_label
+                else:
+                    labels_to_process = [input_label]
+
+                is_ontology = schema_type.lower() in ontology_types
+
+                for label in labels_to_process:
+                    normalized_label = label.split(".")[-1] if "." in label else label
+                    label_is_ontology[normalized_label.lower()] = is_ontology
+
+        return label_is_ontology
+
+    def _is_ontology_label(self, label):
+        normalized_label = label.lower()
+        return self.label_is_ontology.get(normalized_label, False)
 
     def create_type_hierarchy(self):
         G = self.ontology._nx_graph
@@ -43,7 +83,6 @@ class MeTTaWriter(BaseWriter):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         
         def edge_data_constructor(edge_type, source_types, target_types, label):
-            # Handle both single types and lists of types
             if isinstance(source_types, list):
                 source_str = ' '.join([st.upper() for st in source_types])
             else:
@@ -86,7 +125,6 @@ class MeTTaWriter(BaseWriter):
                 label = self.normalize_text(v["input_label"])
                 node_type = self.normalize_text(k)
         
-                # Handle both single labels and lists
                 if isinstance(label, list):
                     labels_to_process = label
                 else:
@@ -96,13 +134,16 @@ class MeTTaWriter(BaseWriter):
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
 
-    def preprocess_id(self, prev_id):
-        """Clean ID by removing prefix and uppercasing the identifier"""
+    def preprocess_id(self, prev_id, preserve_prefix=False):
         prev_id = str(prev_id)
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            clean_local = local_id.strip().replace(' ', '_').upper()
-            return clean_local
+            if preserve_prefix:
+                clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
+                return clean_id
+            else:
+                clean_local = local_id.strip().replace(' ', '_').upper()
+                return clean_local
         return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
@@ -145,7 +186,11 @@ class MeTTaWriter(BaseWriter):
 
     def write_node(self, node):
         id, label, properties = node
-        id = self.preprocess_id(str(id))  
+        # Determine if this is an ontology term label
+        label_to_check = label.split(".")[1] if "." in label else label
+        is_ontology = self._is_ontology_label(label_to_check)
+        # Preserve prefix only for ontology terms
+        id = self.preprocess_id(str(id), preserve_prefix=is_ontology)
         if "." in label:
             label = label.split(".")[1]
         def_out = f"({self.normalize_text(label)} {id})"
@@ -156,10 +201,11 @@ class MeTTaWriter(BaseWriter):
         source_id_processed = source_id
         target_id_processed = target_id
         label = label.lower()
-        
+
         if isinstance(source_id, tuple):
             source_type = source_id[0]
-            source_id_processed = self.preprocess_id(str(source_id[1]))  
+            preserve_source_prefix = self._is_ontology_label(source_type)
+            source_id_processed = self.preprocess_id(str(source_id[1]), preserve_prefix=preserve_source_prefix)
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
@@ -169,19 +215,21 @@ class MeTTaWriter(BaseWriter):
                     if source_type != valid_source_types:
                         raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
-            source_id_processed = self.preprocess_id(str(source_id)) 
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
                 if isinstance(source_type_info, list):
-                    source_type = source_type_info[0] 
+                    source_type = source_type_info[0]
                 else:
                     source_type = source_type_info
             else:
                 source_type = "unknown"
+            preserve_source_prefix = self._is_ontology_label(source_type)
+            source_id_processed = self.preprocess_id(str(source_id), preserve_prefix=preserve_source_prefix)
 
         if isinstance(target_id, tuple):
             target_type = target_id[0]
-            target_id_processed = self.preprocess_id(str(target_id[1])) 
+            preserve_target_prefix = self._is_ontology_label(target_type)
+            target_id_processed = self.preprocess_id(str(target_id[1]), preserve_prefix=preserve_target_prefix)
             if label in self.edge_node_types:
                 valid_target_types = self.edge_node_types[label]["target"]
                 if isinstance(valid_target_types, list):
@@ -191,15 +239,16 @@ class MeTTaWriter(BaseWriter):
                     if target_type != valid_target_types:
                         raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
-            target_id_processed = self.preprocess_id(str(target_id))  
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
                 if isinstance(target_type_info, list):
-                    target_type = target_type_info[0]  
+                    target_type = target_type_info[0]
                 else:
                     target_type = target_type_info
             else:
                 target_type = "unknown"
+            preserve_target_prefix = self._is_ontology_label(target_type)
+            target_id_processed = self.preprocess_id(str(target_id), preserve_prefix=preserve_target_prefix)
 
         output_label = None
         if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
@@ -282,9 +331,6 @@ class MeTTaWriter(BaseWriter):
         return processed.lower() if lowercase else processed
 
     def get_parent(self, G, node):
-        """
-        Get the immediate parent of a node in the ontology.
-        """
         return nx.dfs_preorder_nodes(G, node, depth_limit=2)
 
     def show_ontology_structure(self):
