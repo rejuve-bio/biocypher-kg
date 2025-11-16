@@ -87,7 +87,7 @@ class OntologyAdapter(Adapter):
     def should_include_node(self, node):
         return self.is_term_of_type(node, 'primary')
 
-    def should_include_edge(self, from_node, to_node):
+    def should_include_edge(self, from_node, to_node, predicate=None, edge_type=None):
         return (self.should_include_node(from_node) and
                 self.should_include_node(to_node))
 
