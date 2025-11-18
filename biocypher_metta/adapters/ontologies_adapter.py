@@ -67,7 +67,6 @@ class OntologyAdapter(Adapter):
         """
         Returns a dictionary of URI prefixes for filtering ontology terms.
         This method must be overridden by subclasses to define their specific URI prefixes.
-
         At minimum, must return a dictionary with a 'primary' key that specifies
         the primary URI prefix for the ontology. This is used for ontology filtration
         to ensure only terms from the correct ontology are included.
@@ -84,13 +83,19 @@ class OntologyAdapter(Adapter):
 
         return str(uri).startswith(self.uri_prefixes[prefix_type])
 
+    def get_included_prefix_types(self):
+        return ['primary']
+
     def should_include_node(self, node):
-        return self.is_term_of_type(node, 'primary')
+        for prefix_type in self.get_included_prefix_types():
+            if self.is_term_of_type(node, prefix_type):
+                return True
+        return False
 
     def should_include_edge(self, from_node, to_node, predicate=None, edge_type=None):
         return (self.should_include_node(from_node) and
                 self.should_include_node(to_node))
-
+    
     def update_graph(self):
         if self.ontology not in self.ONTOLOGIES:
             raise ValueError(f"Ontology '{self.ontology}' is not defined in this adapter.")
