@@ -470,15 +470,18 @@ class KGXWriter(BaseWriter):
             for key in list(self.temp_buffer.keys()):
                 self._write_buffer_to_temp(key, self.temp_buffer[key])
 
-            # Write CSV files
+            # Write CSV and matching Cypher files for each (label, source_type, target_type)
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
-                edge_label = self.edge_node_types.get(input_label, {}).get("output_label", input_label)
+                edge_label = input_label
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"{file_suffix}_edges.csv"
+                cypher_file_path = output_dir / f"{file_suffix}_edges.cypher"
 
                 if csv_file_path.exists():
                     csv_file_path.unlink()
+                if cypher_file_path.exists():
+                    cypher_file_path.unlink()
 
                 with open(csv_file_path, "w", newline="") as csvfile:
                     writer = csv.DictWriter(
@@ -500,6 +503,8 @@ class KGXWriter(BaseWriter):
                                     chunk.clear()
                             for data in chunk:
                                 writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
+
+                self.write_edge_cypher(edge_label, source_type, target_type, csv_file_path, cypher_file_path)
 
         finally:
             self._cleanup_temp_files()
