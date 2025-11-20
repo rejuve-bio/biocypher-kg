@@ -711,12 +711,12 @@ association:
 # ---
 # expression
 
-transcribed to:
+transcribes to:
   represented_as: edge
   is_a: expression
-  biolink_predicate: "biolink:transcribed_to"
+  biolink_predicate: "biolink:TranscriptToGeneRelationship"
   inherit_properties: true
-  input_label: transcribed_to
+  input_label: transcribes_to
   source: gene
   target: transcript
   kgx_properties:

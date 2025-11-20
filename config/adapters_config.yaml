@@ -23,14 +23,14 @@ gencode_transcripts:
   nodes: True
   edges: False
 
-transcribed_to:
+transcribes_to:
   adapter:
     module: biocypher_metta.adapters.gencode_adapter
     cls: GencodeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
-      type: transcribed to
-      label: transcribed_to
+      type: transcribes to
+      label: transcribes_to
 
   outdir: gencode/transcript
   nodes: False
