@@ -77,7 +77,7 @@ wheels = [
 ]
 
 [[package]]
-name = "biocypher-kg"
+name = "biocypher-metta"
 version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
