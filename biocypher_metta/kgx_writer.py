@@ -394,6 +394,14 @@ class KGXWriter(BaseWriter):
         return node_freq, self._node_headers
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
+        """Write edges in KGX CSV format and generate matching Cypher.
+
+        Handles list-valued source/target types from the schema and adapters
+        that emit typed IDs as (type, id) tuples (e.g. ReactomeAdapter,
+        GAFAdapter). For each concrete (edge_label, source_type, target_type)
+        combination, one CSV and one Cypher file are produced.
+        """
+
         self.temp_buffer.clear()
         self._temp_files.clear()
         self._edge_headers.clear()
@@ -420,23 +428,45 @@ class KGXWriter(BaseWriter):
                 edge_label = edge_info.get("output_label", normalized_label)
                 kgx_props = edge_config.get("kgx_properties", {})
                 validated_props = self._validate_edge_properties(normalized_label, properties)
-                edge_id = properties.get("id", f"{source_id}_{edge_label}_{target_id}")
+
+                # Support adapters that emit typed IDs as (type, id) tuples
+                has_typed_source = isinstance(source_id, tuple) and len(source_id) == 2
+                has_typed_target = isinstance(target_id, tuple) and len(target_id) == 2
+
+                typed_source_type = source_id[0] if has_typed_source else None
+                typed_source_id = source_id[1] if has_typed_source else source_id
+                typed_target_type = target_id[0] if has_typed_target else None
+                typed_target_id = target_id[1] if has_typed_target else target_id
 
                 for src_type in source_types:
                     for tgt_type in target_types:
+                        # Start from schema-declared types
                         src_type_final = src_type
                         tgt_type_final = tgt_type
+                        src_id_for_clean = typed_source_id
+                        tgt_id_for_clean = typed_target_id
 
-                        # ---- FIX: resolve gene/transcript/protein ----
-                        # Determine the final source and target types based on ENSEMBL prefixes
-                        if src_type.lower() in ["gene", "transcript", "protein"]:
-                            src_type_final = self._resolve_gene_transcript_protein(source_id)
-                        if tgt_type.lower() in ["gene", "transcript", "protein"]:
-                            tgt_type_final = self._resolve_gene_transcript_protein(target_id)
+                        # If adapter provides explicit types, require them to match schema combo
+                        if has_typed_source:
+                            if src_type.lower() != typed_source_type.lower():
+                                continue
+                            src_type_final = typed_source_type
+                        else:
+                            # Fall back to resolving type from ID only when there is no explicit type
+                            if src_type.lower() in ["gene", "transcript", "protein"]:
+                                src_type_final = self._resolve_gene_transcript_protein(src_id_for_clean)
 
-                        # Preprocess IDs to remove brackets and GENE/PROTEIN/TX labels
-                        source_id_clean = self.preprocess_id(source_id)
-                        target_id_clean = self.preprocess_id(target_id)
+                        if has_typed_target:
+                            if tgt_type.lower() != typed_target_type.lower():
+                                continue
+                            tgt_type_final = typed_target_type
+                        else:
+                            if tgt_type.lower() in ["gene", "transcript", "protein"]:
+                                tgt_type_final = self._resolve_gene_transcript_protein(tgt_id_for_clean)
+
+                        # Preprocess IDs to remove brackets and type prefixes
+                        source_id_clean = self.preprocess_id(src_id_for_clean)
+                        target_id_clean = self.preprocess_id(tgt_id_for_clean)
                         edge_id_clean = f"{source_id_clean}_{edge_label}_{target_id_clean}"
 
                         edge_data = {
