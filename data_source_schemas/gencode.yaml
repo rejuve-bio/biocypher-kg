@@ -48,10 +48,10 @@ relationships:
     source: transcript
     target: gene
 
-  transcribed to:
+  transcribes to:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
     description: inverse of transcribed from
-    input_label: transcribed_to
+    input_label: transcribes_to
     source: gene
     target: transcript
 
