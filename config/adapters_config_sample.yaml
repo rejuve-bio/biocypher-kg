@@ -39,19 +39,6 @@ transcribes_to:
   nodes: False
   edges: True
 
-transcribed_from:
-  adapter:
-    module: biocypher_metta.adapters.gencode_adapter
-    cls: GencodeAdapter
-    args:
-      filepath: ./samples/gencode_sample.gtf.gz
-      type: transcribed from
-      label: transcribed_from
-
-  outdir: gencode/transcript
-  nodes: False
-  edges: True
-
 
 uniprotkb_sprot:
   adapter:
@@ -77,18 +64,6 @@ uniprotkb_sprot_translates_to:
   nodes: False
   edges: True
 
-uniprotkb_sprot_translates_of:
-  adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
-    cls: UniprotAdapter
-    args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
-      type: translation of
-      label: translation_of
-
-  outdir: uniprot
-  nodes: False
-  edges: True
 
 pathway:
   adapter:
@@ -110,7 +85,6 @@ genes_pathways:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
       ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
-
   outdir: reactome
   nodes: False
   edges: True
