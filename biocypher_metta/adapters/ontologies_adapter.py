@@ -84,7 +84,7 @@ class OntologyAdapter(Adapter):
         return str(uri).startswith(self.uri_prefixes[prefix_type])
 
     def should_include_node(self, node):
-        for prefix_type in self.uri_prefixes
+        for prefix_type in self.uri_prefixes:
             if self.is_term_of_type(node, prefix_type):
                 return True
         return False
