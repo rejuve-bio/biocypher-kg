@@ -36,18 +36,6 @@ transcribes_to:
   nodes: False
   edges: True
 
-transcribed_from:
-  adapter:
-    module: biocypher_metta.adapters.gencode_adapter
-    cls: GencodeAdapter
-    args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
-      type: transcribed from
-      label: transcribed_from
-
-  outdir: gencode/transcript
-  nodes: False
-  edges: True
 
 uniprotkb_sprot:
   adapter:
@@ -73,18 +61,6 @@ uniprotkb_sprot_translates_to:
   nodes: False
   edges: True
 
-uniprotkb_sprot_translates_of:
-  adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
-    cls: UniprotAdapter
-    args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
-      type: translation of
-      label: translation_of
-
-  outdir: uniprot
-  nodes: False
-  edges: True
 
 pathway:
   adapter:
