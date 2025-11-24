@@ -26,19 +26,19 @@ app = typer.Typer()
 
 # Function to choose the writer class based on user input
 def get_writer(writer_type: str, output_dir: Path):
-    if writer_type == 'metta':
+    if writer_type.lower() == 'metta':
         return MeTTaWriter(schema_config="config/schema_config.yaml",
                            biocypher_config="config/biocypher_config.yaml",
                            output_dir=output_dir)
-    elif writer_type == 'prolog':
+    elif writer_type.lower() == 'prolog':
         return PrologWriter(schema_config="config/schema_config.yaml",
                             biocypher_config="config/biocypher_config.yaml",
                             output_dir=output_dir)
-    elif writer_type == 'neo4j':
+    elif writer_type.lower() == 'neo4j':
         return Neo4jCSVWriter(schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
-    elif writer_type == 'parquet':
+    elif writer_type.lower() == 'parquet':
         return ParquetWriter(
             schema_config="config/schema_config.yaml",
             biocypher_config="config/biocypher_config.yaml",
@@ -47,13 +47,13 @@ def get_writer(writer_type: str, output_dir: Path):
             overwrite=True
         )
 
-    elif writer_type == 'KGX':
+    elif writer_type.lower() == 'kgx':
         return KGXWriter(
             schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
 
-    elif writer_type == 'networkx':
+    elif writer_type.lower() == 'networkx':
         return NetworkXWriter(
             schema_config="config/schema_config.yaml",
             biocypher_config="config/biocypher_config.yaml",
