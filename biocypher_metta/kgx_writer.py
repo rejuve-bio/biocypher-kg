@@ -4,8 +4,11 @@ import csv
 from pathlib import Path
 from biocypher._logger import logger
 from biocypher_metta import BaseWriter
+import re
+
 
 class KGXWriter(BaseWriter):
+    
     def __init__(self, schema_config, biocypher_config, output_dir):
         super().__init__(schema_config, biocypher_config, output_dir)
         self.csv_delimiter = ','
@@ -33,8 +36,13 @@ class KGXWriter(BaseWriter):
         self.create_node_types()
 
     def create_edge_types(self):
+        """
+        Map edge types to their source and target node types based on the schema,
+        supporting multiple source and target types from the schema.
+        """
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         self.edge_node_types = {}
+        self.edge_configs = {}
 
         for k, v in schema.items():
             if v.get("represented_as") == "edge":
@@ -43,22 +51,33 @@ class KGXWriter(BaseWriter):
                 target_type = v.get("target", None)
 
                 if source_type and target_type:
+                    # Convert to list if not already
+                    if not isinstance(source_type, list):
+                        source_type = [source_type]
+                    if not isinstance(target_type, list):
+                        target_type = [target_type]
+
+                    # Normalize all source/target types
+                    source_type = self._normalize_label(source_type)
+                    target_type = self._normalize_label(target_type)
+
+                    # Determine label
                     if isinstance(v["input_label"], list):
                         label = self._normalize_label(v["input_label"][0])
-                        source_type = self._normalize_label(source_type[0])
-                        target_type = self._normalize_label(target_type[0])
                     else:
                         label = self._normalize_label(v["input_label"])
-                        source_type = self._normalize_label(source_type)
-                        target_type = self._normalize_label(target_type)
+
                     output_label = v.get("output_label", label)
 
+                    # Store the full list of source/target types
                     self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
+                        "source": source_type,
+                        "target": target_type,
                         "output_label": output_label.lower()
                     }
-                    self.edge_configs[label.lower()] = v  # Store full config
+
+                    # Keep full edge config for KGX properties
+                    self.edge_configs[label.lower()] = v
 
     def create_node_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -216,18 +235,47 @@ class KGXWriter(BaseWriter):
         if value_type is str:
             return value.translate(self.translation_table)
         return value
+        
+        
+    
 
     def preprocess_id(self, prev_id):
-      """Ensure ID remains in CURIE format while cleaning special characters"""
-      if ':' in prev_id:
-          prefix, local_id = prev_id.split(':', 1)
-          # Standardize prefix to uppercase
-          prefix = prefix.upper()
-          # Clean local ID (remove duplicate prefix if present)
-          clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-          clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-          return f"{prefix}:{clean_local}"
-      return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+        """Clean ID to remove parentheses and type prefixes like gene/protein/transcript"""
+        if prev_id is None:
+            return None
+
+        # If prev_id is a tuple, get the actual string (usually the second element)
+        if isinstance(prev_id, tuple):
+            prev_id = prev_id[1]
+
+        # Ensure we are working with a string
+        prev_id = str(prev_id).strip()
+
+        # Remove surrounding parentheses if present
+        if prev_id.startswith("(") and prev_id.endswith(")"):
+            prev_id = prev_id[1:-1].strip()
+
+        # Remove type prefixes like gene/protein/transcript at the start
+        prev_id = re.sub(r"^(gene|protein|transcript)\s*", "", prev_id, flags=re.IGNORECASE)
+
+        # Strip any remaining whitespace
+        prev_id = prev_id.strip()
+
+        return prev_id
+
+
+
+    # ----------------- RESOLVE GENE / TRANSCRIPT / PROTEIN -----------------
+    def _resolve_gene_transcript_protein(self, node_id):
+        """Determine correct type based on CURIE prefix."""
+        node_id = str(node_id).upper()
+        if node_id.startswith("ENSG"):
+            return "gene"
+        elif node_id.startswith("ENST"):
+            return "transcript"
+        elif node_id.startswith("ENSP"):
+            return "protein"
+        return "gene"  # fallback
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
         if buffer and label_or_key in self._temp_files:
@@ -346,81 +394,136 @@ class KGXWriter(BaseWriter):
         return node_freq, self._node_headers
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
+        """Write edges in KGX CSV format and generate matching Cypher.
+
+        Handles list-valued source/target types from the schema and adapters
+        that emit typed IDs as (type, id) tuples (e.g. ReactomeAdapter,
+        GAFAdapter). For each concrete (edge_label, source_type, target_type)
+        combination, one CSV and one Cypher file are produced.
+        """
+
         self.temp_buffer.clear()
         self._temp_files.clear()
         self._edge_headers.clear()
         edge_freq = defaultdict(int)
         output_dir = self.get_output_path(path_prefix, adapter_name)
-    
+
         try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 normalized_label = self._normalize_label(label)
                 edge_freq[normalized_label] += 1
-            
+
                 # Get edge info from schema
                 edge_info = self.edge_node_types.get(normalized_label, {})
-                edge_config = self.edge_configs.get(normalized_label, {})  # Get full config
-                source_type = edge_info.get("source", "")
-                target_type = edge_info.get("target", "")
+                edge_config = self.edge_configs.get(normalized_label, {})
+
+                source_types = edge_info.get("source", [])
+                target_types = edge_info.get("target", [])
+                if not isinstance(source_types, list):
+                    source_types = [source_types]
+                if not isinstance(target_types, list):
+                    target_types = [target_types]
+
                 edge_label = edge_info.get("output_label", normalized_label)
-                
-               
-                kgx_props = edge_config.get('kgx_properties', {})
-                
+                kgx_props = edge_config.get("kgx_properties", {})
                 validated_props = self._validate_edge_properties(normalized_label, properties)
-                            
-                edge_id = properties.get('id', f"{source_id}_{edge_label}_{target_id}")
-    
-                # Create base edge data with required properties
-                edge_data = {
-                    'id': self.preprocess_id(edge_id),
-                    'subject': self.preprocess_id(source_id),
-                    'object': self.preprocess_id(target_id),
-                    'label': edge_label,
-                    'source_type': source_type,
-                    'target_type': target_type,
-                    **validated_props
-                }
-                
-                # Add predicate if defined in schema
-                if 'predicate' in self.edge_schema_properties.get(normalized_label, set()):
-                    edge_data['predicate'] = edge_config.get('biolink_predicate')
-                
-                # Merge in all KGX properties from schema
-                for kgx_key, kgx_value in kgx_props.items():
-                    if kgx_key not in edge_data:  # Don't overwrite existing properties
-                        edge_data[kgx_key] = kgx_value
-                
-                writer_key = self._init_edge_writer(edge_label, source_type, target_type, edge_data, path_prefix, adapter_name)
-                self.temp_buffer[writer_key].append(edge_data)
-            
-                if len(self.temp_buffer[writer_key]) >= self.batch_size:
-                    self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
-        
+
+                # Support adapters that emit typed IDs as (type, id) tuples
+                has_typed_source = isinstance(source_id, tuple) and len(source_id) == 2
+                has_typed_target = isinstance(target_id, tuple) and len(target_id) == 2
+
+                typed_source_type = source_id[0] if has_typed_source else None
+                typed_source_id = source_id[1] if has_typed_source else source_id
+                typed_target_type = target_id[0] if has_typed_target else None
+                typed_target_id = target_id[1] if has_typed_target else target_id
+
+                for src_type in source_types:
+                    for tgt_type in target_types:
+                        # Start from schema-declared types
+                        src_type_final = src_type
+                        tgt_type_final = tgt_type
+                        src_id_for_clean = typed_source_id
+                        tgt_id_for_clean = typed_target_id
+
+                        # If adapter provides explicit types, require them to match schema combo
+                        if has_typed_source:
+                            if src_type.lower() != typed_source_type.lower():
+                                continue
+                            src_type_final = typed_source_type
+                        else:
+                            # Fall back to resolving type from ID only when there is no explicit type
+                            if src_type.lower() in ["gene", "transcript", "protein"]:
+                                src_type_final = self._resolve_gene_transcript_protein(src_id_for_clean)
+
+                        if has_typed_target:
+                            if tgt_type.lower() != typed_target_type.lower():
+                                continue
+                            tgt_type_final = typed_target_type
+                        else:
+                            if tgt_type.lower() in ["gene", "transcript", "protein"]:
+                                tgt_type_final = self._resolve_gene_transcript_protein(tgt_id_for_clean)
+
+                        # Preprocess IDs to remove brackets and type prefixes
+                        source_id_clean = self.preprocess_id(src_id_for_clean)
+                        target_id_clean = self.preprocess_id(tgt_id_for_clean)
+                        edge_id_clean = f"{source_id_clean}_{edge_label}_{target_id_clean}"
+
+                        edge_data = {
+                            'id': edge_id_clean,
+                            'subject': source_id_clean,
+                            'object': target_id_clean,
+                            'label': edge_label,
+                            'source_type': src_type_final,
+                            'target_type': tgt_type_final,
+                            **validated_props
+                        }
+
+                        # Add predicate if defined in schema
+                        if 'predicate' in self.edge_schema_properties.get(normalized_label, set()):
+                            edge_data['predicate'] = edge_config.get('biolink_predicate')
+
+                        # Merge KGX properties from schema
+                        for kgx_key, kgx_value in kgx_props.items():
+                            if kgx_key not in edge_data:
+                                edge_data[kgx_key] = kgx_value
+
+                        writer_key = self._init_edge_writer(
+                            edge_label, src_type_final, tgt_type_final, edge_data, path_prefix, adapter_name
+                        )
+                        self.temp_buffer[writer_key].append(edge_data)
+
+                        if len(self.temp_buffer[writer_key]) >= self.batch_size:
+                            self._write_buffer_to_temp(writer_key, self.temp_buffer[writer_key])
+
+            # Flush remaining buffers
             for key in list(self.temp_buffer.keys()):
                 self._write_buffer_to_temp(key, self.temp_buffer[key])
-        
+
+            # Write CSV and matching Cypher files for each (label, source_type, target_type)
             for key in self._edge_headers.keys():
                 input_label, source_type, target_type = key
-                edge_label = self.edge_node_types.get(input_label, {}).get("output_label", input_label)
-                
+                edge_label = input_label
                 file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
                 csv_file_path = output_dir / f"{file_suffix}_edges.csv"
                 cypher_file_path = output_dir / f"{file_suffix}_edges.cypher"
-            
+
                 if csv_file_path.exists():
                     csv_file_path.unlink()
                 if cypher_file_path.exists():
                     cypher_file_path.unlink()
-            
-                with open(csv_file_path, 'w', newline='') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=sorted(self._edge_headers[key]), 
-                                     delimiter=self.csv_delimiter, extrasaction='ignore')
+
+                with open(csv_file_path, "w", newline="") as csvfile:
+                    writer = csv.DictWriter(
+                        csvfile,
+                        fieldnames=sorted(self._edge_headers[key]),
+                        delimiter=self.csv_delimiter,
+                        extrasaction="ignore"
+                    )
                     writer.writeheader()
-                
+
                     if key in self._temp_files and self._temp_files[key].exists():
-                        with open(self._temp_files[key], 'r') as temp_f:
+                        with open(self._temp_files[key], "r") as temp_f:
                             chunk = []
                             for line in temp_f:
                                 chunk.append(json.loads(line))
@@ -428,34 +531,31 @@ class KGXWriter(BaseWriter):
                                     for data in chunk:
                                         writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
                                     chunk.clear()
-                        
                             for data in chunk:
                                 writer.writerow({k: self.preprocess_value(v) for k, v in data.items()})
-            
+
                 self.write_edge_cypher(edge_label, source_type, target_type, csv_file_path, cypher_file_path)
-                if key in self._temp_files and self._temp_files[key].exists():
-                    self._temp_files[key].unlink()
-            
+
         finally:
             self._cleanup_temp_files()
-            
+
         return edge_freq
 
     def write_node_cypher(self, label, csv_path, cypher_path):
         absolute_path = csv_path.resolve().as_posix()
     
         cypher_query = f"""
-CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
+        CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
 
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MERGE (n:{label} {{id: row.id}})
-    SET n += apoc.map.removeKeys(row, ['id'])",
-    {{batchSize:1000, parallel:true, concurrency:4}}
-)
-YIELD batches, total
-RETURN batches, total;
-"""
+        CALL apoc.periodic.iterate(
+            "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+            "MERGE (n:{label} {{id: row.id}})
+            SET n += apoc.map.removeKeys(row, ['id'])",
+            {{batchSize:1000, parallel:true, concurrency:4}}
+        )
+        YIELD batches, total
+        RETURN batches, total;
+        """
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
@@ -463,19 +563,19 @@ RETURN batches, total;
         absolute_path = csv_path.resolve().as_posix()
     
         cypher_query = f"""
-CREATE CONSTRAINT IF NOT EXISTS FOR ()-[r:{edge_label}]-() REQUIRE r.id IS UNIQUE;
+        CREATE CONSTRAINT IF NOT EXISTS FOR ()-[r:{edge_label}]-() REQUIRE r.id IS UNIQUE;
 
-CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
-    "MATCH (source:{source_type} {{id: row.subject}})
-    MATCH (target:{target_type} {{id: row.object}})
-    MERGE (source)-[r:{edge_label} {{id: row.id}}]->(target)
-    SET r += apoc.map.removeKeys(row, ['id', 'subject', 'object', 'label', 'source_type', 'target_type'])",
-    {{batchSize:1000}}
-)
-YIELD batches, total
-RETURN batches, total;
-"""
+        CALL apoc.periodic.iterate(
+            "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+            "MATCH (source:{source_type} {{id: row.subject}})
+            MATCH (target:{target_type} {{id: row.object}})
+            MERGE (source)-[r:{edge_label} {{id: row.id}}]->(target)
+            SET r += apoc.map.removeKeys(row, ['id', 'subject', 'object', 'label', 'source_type', 'target_type'])",
+            {{batchSize:1000}}
+        )
+        YIELD batches, total
+        RETURN batches, total;
+        """
         with open(cypher_path, 'w') as f:
             f.write(cypher_query)
 
