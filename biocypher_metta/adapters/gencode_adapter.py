@@ -141,7 +141,7 @@ class GencodeAdapter(Adapter):
                         if self.type == 'transcript':
                             if self.write_properties:
                                 props = {
-                                    'transcript_id': f":ENSEMBL:{info['transcript_id']}",
+                                    'transcript_id': f"ENSEMBL:{info['transcript_id']}",
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': info['transcript_type'],
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],

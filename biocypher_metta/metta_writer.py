@@ -31,13 +31,14 @@ class MeTTaWriter(BaseWriter):
         for schema_type, config in schema.items():
             if config.get("represented_as") == "node":
                 is_a = config.get("is_a")
-                if schema_type.lower() == "ontology term":
-                    ontology_types.add(schema_type.lower())
+                normalized_schema_type = self.normalize_text(schema_type)
+                if normalized_schema_type == "ontology_term":
+                    ontology_types.add(normalized_schema_type)
                 elif is_a:
                     parent_types = [is_a] if isinstance(is_a, str) else is_a
                     for parent in parent_types:
-                        if parent.lower() == "ontology term":
-                            ontology_types.add(schema_type.lower())
+                        if self.normalize_text(parent) == "ontology_term":
+                            ontology_types.add(normalized_schema_type)
                             break
 
         for schema_type, config in schema.items():
@@ -49,16 +50,18 @@ class MeTTaWriter(BaseWriter):
                 else:
                     labels_to_process = [input_label]
 
-                is_ontology = schema_type.lower() in ontology_types
+                normalized_schema_type = self.normalize_text(schema_type)
+                is_ontology = normalized_schema_type in ontology_types
 
                 for label in labels_to_process:
                     normalized_label = label.split(".")[-1] if "." in label else label
-                    label_is_ontology[normalized_label.lower()] = is_ontology
+                    normalized_label = self.normalize_text(normalized_label)
+                    label_is_ontology[normalized_label] = is_ontology
 
         return label_is_ontology
 
     def _is_ontology_label(self, label):
-        normalized_label = label.lower()
+        normalized_label = self.normalize_text(label) if label else None
         return self.label_is_ontology.get(normalized_label, False)
 
     def create_type_hierarchy(self):
