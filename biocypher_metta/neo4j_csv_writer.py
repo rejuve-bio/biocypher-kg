@@ -13,13 +13,14 @@ class Neo4jCSVWriter(BaseWriter):
         self.csv_delimiter = '|'
         self.array_delimiter = ';'
         self.translation_table = str.maketrans({
-            self.csv_delimiter: '', 
-            self.array_delimiter: ' ', 
+            self.csv_delimiter: '',
+            self.array_delimiter: ' ',
             "'": "",
             '"': ""
         })
-        self.ontologies = set(['go', 'bto', 'efo', 'cl', 'clo', 'uberon', 'so', 'do', 'mi', 'fbbt', 'fbdv', 'fbcv'])
-        
+
+        self.label_is_ontology = self._build_label_types_map()
+
         self.create_edge_types()
         self._node_writers = {}
         self._edge_writers = {}
@@ -28,6 +29,48 @@ class Neo4jCSVWriter(BaseWriter):
         self._temp_files = {}
         self.batch_size = 10000
         self.temp_buffer = defaultdict(list)
+
+    def _build_label_types_map(self):
+        """Build mapping of node labels to whether they are ontology terms."""
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        label_is_ontology = {}
+
+        ontology_types = set()
+        for schema_type, config in schema.items():
+            if config.get("represented_as") == "node":
+                is_a = config.get("is_a")
+                normalized_schema_type = self.normalize_text(schema_type)
+                if normalized_schema_type == "ontology_term":
+                    ontology_types.add(normalized_schema_type)
+                elif is_a:
+                    parent_types = [is_a] if isinstance(is_a, str) else is_a
+                    for parent in parent_types:
+                        if self.normalize_text(parent) == "ontology_term":
+                            ontology_types.add(normalized_schema_type)
+                            break
+
+        for schema_type, config in schema.items():
+            if config.get("represented_as") == "node":
+                input_label = config.get("input_label")
+
+                if isinstance(input_label, list):
+                    labels_to_process = input_label
+                else:
+                    labels_to_process = [input_label]
+
+                normalized_schema_type = self.normalize_text(schema_type)
+                is_ontology = normalized_schema_type in ontology_types
+
+                for label in labels_to_process:
+                    normalized_label = label.split(".")[-1] if "." in label else label
+                    normalized_label = self.normalize_text(normalized_label)
+                    label_is_ontology[normalized_label] = is_ontology
+
+        return label_is_ontology
+
+    def _is_ontology_label(self, label):
+        normalized_label = self.normalize_text(label) if label else None
+        return self.label_is_ontology.get(normalized_label, False)
 
     def create_edge_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -61,10 +104,7 @@ class Neo4jCSVWriter(BaseWriter):
             value = str(value).translate(self.translation_table)
         elif value_type is str:
             value = value.translate(self.translation_table)
-        
-        # If this is an ID field (contains 'id' or 'ID' in the key), apply preprocess_id
-        if key and ('id' in key.lower() or 'identifier' in key.lower()):
-            return self.preprocess_id(value)
+
         
         return value
     def normalize_text(self, label, replace_char="_", lowercase=True):
@@ -77,16 +117,22 @@ class Neo4jCSVWriter(BaseWriter):
         processed = label.replace(" ", replace_char)
         return processed.lower() if lowercase else processed
 
-    def preprocess_id(self, prev_id):
-        """Clean ID by removing prefix and uppercasing the identifier"""
+    def preprocess_id(self, prev_id, label=None):
+        """
+        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        """
         prev_id = str(prev_id)
-        
-        # Split from the right, max 1 split
+
         if ':' in prev_id:
-            _, local_id = prev_id.rsplit(':', 1)
-            clean_local = local_id.strip().replace(' ', '_').upper()
-            return clean_local
-        
+            prefix, local_id = prev_id.split(':', 1)
+
+            if label and self._is_ontology_label(label):
+                clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
+                return clean_id
+            else:
+                clean_local = local_id.strip().replace(' ', '_').upper()
+                return clean_local
+
         return prev_id.strip().replace(' ', '_').upper()
 
     def _write_buffer_to_temp(self, label_or_key, buffer):
@@ -140,7 +186,7 @@ class Neo4jCSVWriter(BaseWriter):
                 node_freq[label] += 1
                 
                 writer_key = self._init_node_writer(label, properties, path_prefix, adapter_name)
-                node_data = {'id': self.preprocess_id(id), **properties}
+                node_data = {'id': self.preprocess_id(id, label=label), **properties}
                 self.temp_buffer[label].append(node_data)
                 
                 if len(self.temp_buffer[label]) >= self.batch_size:
@@ -237,21 +283,21 @@ class Neo4jCSVWriter(BaseWriter):
                         target_type = edge_info["target"]
 
                 if source_type == "ontology_term":
-                    source_type = self.preprocess_id(source_id).split('_')[0]
+                    source_type = self.preprocess_id(source_id, label=source_type).split('_')[0]
                 if target_type == "ontology_term":
-                    target_type = self.preprocess_id(target_id).split('_')[0]
-                
+                    target_type = self.preprocess_id(target_id, label=target_type).split('_')[0]
+
                 edge_freq[f"{label}|{source_type}|{target_type}"] += 1
-                          
+
                 edge_label = edge_info.get("output_label") or label
-                
+
                 edge_data = {
-                    'source_id': self.preprocess_id(source_id),
-                    'target_id': self.preprocess_id(target_id),
+                    'source_id': self.preprocess_id(source_id, label=source_type),
+                    'target_id': self.preprocess_id(target_id, label=target_type),
                     'source_type': source_type,
                     'target_type': target_type,
                     'label': edge_label,
-                    **properties  
+                    **properties
                 }
                 
                 writer_key = self._init_edge_writer(label, source_type, target_type, properties, path_prefix, adapter_name)

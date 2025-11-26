@@ -15,8 +15,8 @@ from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 
 class GencodeAdapter(Adapter):
-    ALLOWED_TYPES = ['transcript', 'transcribed to', 'transcribed from']
-    ALLOWED_LABELS = ['transcript', 'transcribed_to', 'transcribed_from']
+    ALLOWED_TYPES = ['transcript', 'transcribes to', 'transcribed from']
+    ALLOWED_LABELS = ['transcript', 'transcribes_to', 'transcribed_from']
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_name',
                     'transcript_id', 'transcript_type', 'transcript_name', 'tag']
 
@@ -141,7 +141,7 @@ class GencodeAdapter(Adapter):
                         if self.type == 'transcript':
                             if self.write_properties:
                                 props = {
-                                    'transcript_id': f":ENSEMBL:{info['transcript_id']}",
+                                    'transcript_id': f"ENSEMBL:{info['transcript_id']}",
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': info['transcript_type'],
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
@@ -195,7 +195,7 @@ class GencodeAdapter(Adapter):
                     _props['source_url'] = self.source_url
                
                 try:
-                    if self.type == 'transcribed to':
+                    if self.type == 'transcribes to':
                         _id = gene_key + '_' + transcript_key
                         _source = f"ENSEMBL:{gene_key}"
                         _target = f"ENSEMBL:{transcript_key}"

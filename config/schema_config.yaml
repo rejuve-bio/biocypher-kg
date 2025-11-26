@@ -711,12 +711,12 @@ association:
 # ---
 # expression
 
-transcribed to:
+transcribes to:
   represented_as: edge
   is_a: expression
-  biolink_predicate: "biolink:transcribed_to"
+  biolink_predicate: "biolink:TranscriptToGeneRelationship"
   inherit_properties: true
-  input_label: transcribed_to
+  input_label: transcribes_to
   source: gene
   target: transcript
   kgx_properties:
@@ -1002,7 +1002,7 @@ bto subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: bto_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: bto
   target: bto
   kgx_properties:
@@ -1017,7 +1017,7 @@ efo subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: efo_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: efo
   target: efo
   kgx_properties:
@@ -1033,7 +1033,7 @@ uberon subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: uberon_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: uberon
   target: uberon
   kgx_properties:
@@ -1048,7 +1048,7 @@ clo subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: clo_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: clo
   target: clo
   kgx_properties:
@@ -1063,7 +1063,7 @@ cl subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: cl_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: cl
   target: cl
   kgx_properties:
@@ -1079,7 +1079,7 @@ hpo subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: hpo_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: hpo
   target: hpo
   kgx_properties:
@@ -1096,7 +1096,7 @@ biological process subclass:
   inherit_properties: true
   represented_as: edge
   input_label: biological_process_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: biological_process
   target: biological_process
   kgx_properties:
@@ -1112,7 +1112,7 @@ molecular function subclass:
   inherit_properties: true
   represented_as: edge
   input_label: molecular_function_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: molecular_function
   target: molecular_function
   kgx_properties:
@@ -1127,7 +1127,7 @@ cellular component subclass:
   inherit_properties: true
   represented_as: edge
   input_label: cellular_component_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: cellular_component
   target: cellular_component
   kgx_properties:
