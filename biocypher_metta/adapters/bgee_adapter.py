@@ -39,6 +39,7 @@ class BgeeAdapter(Adapter):
                         #CURIE format for source ID (subject)
                         source_id =f"ENSEMBL:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
                         # if ' ∩ ' in data[BgeeAdapter.FIELD_INDEX['anatomical_entity']]:
+                        # to include all anatomical terms
                         anatomical_entities = self.split_by_intersection(data[BgeeAdapter.FIELD_INDEX['anatomical_entity']])
                         
                         for anatomical_entity in anatomical_entities:                            
