@@ -2,10 +2,14 @@ from inspect import getfullargspec
 import hashlib
 from math import log10, floor, isinf
 from liftover import get_lifter
+import logging
 
-import hgvs.dataproviders.uta
-from hgvs.easy import parser
-from hgvs.extras.babelfish import Babelfish
+# NOTE: hgvs.easy imports and its default data-provider try to connect to the
+# remote UTA PostgreSQL server at import time. Importing hgvs at module level
+# can therefore cause the entire process to fail if the network or the UTA
+# server is unavailable. We import hgvs modules lazily inside functions that
+# actually need them to avoid that problem.
+logger = logging.getLogger(__name__)
 
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
@@ -43,14 +47,26 @@ def build_regulatory_region_id(chr, pos_start, pos_end, assembly='GRCh38'):
 def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
     # translate hgvs naming to vcf format e.g. NC_000003.12:g.183917980C>T -> 3_183917980_C_T
     if validate:  # use tools from hgvs, which corrects ref allele if it's wrong
-        # got connection timed out error occasionally, could add a retry function
-        hdp = hgvs.dataproviders.uta.connect()
-        babelfish38 = Babelfish(hdp, assembly_name=assembly)
+        # Import hgvs pieces lazily and handle any connection/import errors
         try:
-            chr, pos_start, ref, alt, type = babelfish38.hgvs_to_vcf(
-                parser.parse(hgvs_id))
+            import hgvs.dataproviders.uta as hgvs_uta
+            from hgvs.easy import parser as hgvs_parser
+            from hgvs.extras.babelfish import Babelfish as HgvsBabelfish
         except Exception as e:
-            print(e)
+            logger.warning(
+                "hgvs import failed or unavailable: %s -- cannot validate HGVS ids; "
+                "returning None. To enable validation, ensure network access to the UTA "
+                "service or provide a local UTA sqlite DB.",
+                e,
+            )
+            return None
+
+        try:
+            hdp = hgvs_uta.connect()
+            babelfish38 = HgvsBabelfish(hdp, assembly_name=assembly)
+            chr, pos_start, ref, alt, type = babelfish38.hgvs_to_vcf(hgvs_parser.parse(hgvs_id))
+        except Exception as e:
+            logger.warning("HGVS validation failed for %s: %s", hgvs_id, e)
             return None
 
         if type == 'sub' or type == 'delins':
