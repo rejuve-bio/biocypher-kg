@@ -1,0 +1,11 @@
+expected_records:
+  - input: "ENSG00000256927"
+    output:
+      label: "expressed_in"
+      source: ["gene", "ENSG00000256927"]
+      target: ["tissue", "Pancreas"]
+
+  - input: "rs174575"
+    # The GTEx sample used does not include a variant->gene eQTL edge in this minimal fixture.
+    # This expectation was removed because the adapter output for the sample contains
+    # `expressed_in` edges (gene->tissue) but not per-variant eQTL edges.

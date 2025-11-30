@@ -1,0 +1,6 @@
+expected_records:
+  - input: "uniprotkb:P37840"
+    output:
+      label: "physical association"
+      source: ["protein", "uniprotkb:P37840"]
+      target: ["protein", "uniprotkb:P51572"]

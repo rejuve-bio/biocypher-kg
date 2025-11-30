@@ -122,6 +122,117 @@ def preprocess_schema():
 
     return edge_node_types
 
+
+# Mapping of supported species to their adapter configs and output directories
+SPECIES_CONFIG = {
+    "hsa": {
+        "adapters_config": "config/adapters_config_sample.yaml",
+        "output_dir": "output_human",
+        "name": "Human",
+    },
+    "dmel": {
+        "adapters_config": "config/dmel_adapters_config_sample.yaml",
+        "output_dir": "output_fly",
+        "name": "Drosophila melanogaster",
+    },
+    "mmo": {
+        "adapters_config": "config/mmo_adapters_config_sample.yaml",
+        "output_dir": "output_mouse",
+        "name": "Mouse",
+    },
+    "rno": {
+        "adapters_config": "config/rno_adapters_config_sample.yaml",
+        "output_dir": "output_rat",
+        "name": "Rat",
+    },
+}
+
+
+def generate_for_species(
+    species_code: str,
+    config: dict,
+    dbsnp_rsids_dict,
+    dbsnp_pos_dict,
+    adapters_config_override: Optional[Path],
+    output_dir_override: Optional[Path],
+    writer_type: str,
+    write_properties: bool,
+    add_provenance: bool,
+    buffer_size: int,
+    overwrite: bool,
+    include_adapters: Optional[List[str]],
+    schema_dict: dict,
+):
+    """Generate knowledge graph for a specific species using the provided
+    configuration override values when present.
+    """
+    adapters_config_path = Path(adapters_config_override) if adapters_config_override else Path(config["adapters_config"])
+    species_output_dir = Path(output_dir_override) if output_dir_override else Path(config["output_dir"])
+    species_output_dir.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"Generating KG for {species_code} using adapters config: {adapters_config_path}")
+
+    bc = get_writer(writer_type, species_output_dir)
+    if writer_type == 'parquet':
+        bc.buffer_size = buffer_size
+        bc.overwrite = overwrite
+
+    with open(adapters_config_path, "r") as fp:
+        try:
+            adapters_dict = yaml.safe_load(fp)
+        except yaml.YAMLError as e:
+            logger.error("Error while trying to load adapter config for %s", species_code)
+            logger.error(e)
+            return None
+
+    if include_adapters:
+        original_count = len(adapters_dict)
+        include_lower = [a.lower() for a in include_adapters]
+        adapters_dict = {
+            k: v for k, v in adapters_dict.items()
+            if k.lower() in include_lower
+        }
+        if not adapters_dict:
+            available = "\n".join(f" - {a}" for a in adapters_dict.keys())
+            logger.error(f"No matching adapters found for {species_code}. Available adapters:\n{available}")
+            return None
+
+    nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+        adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
+    )
+
+    if writer_type == 'networkx':
+        bc.write_graph()
+        logger.info("NetworkX graph saved successfully for %s", species_code)
+
+    if hasattr(bc, 'finalize'):
+        bc.finalize()
+
+    graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, species_output_dir)
+
+    for dataset in datasets_dict:
+        datasets_dict[dataset]["nodes"] = list(datasets_dict[dataset]["nodes"]) if isinstance(datasets_dict[dataset].get("nodes"), set) else datasets_dict[dataset].get("nodes", [])
+        datasets_dict[dataset]["edges"] = list(datasets_dict[dataset]["edges"]) if isinstance(datasets_dict[dataset].get("edges"), set) else datasets_dict[dataset].get("edges", [])
+        graph_info['datasets'].append(datasets_dict[dataset])
+
+    graph_info["dataset_count"] = len(graph_info['datasets'])
+
+    graph_info_json = json.dumps(graph_info, indent=2)
+    file_path = species_output_dir / "graph_info.json"
+    with open(file_path, "w") as f:
+        f.write(graph_info_json)
+
+    logger.info("Done for %s", species_code)
+    logger.info(f"Total nodes processed for {species_code}: {sum(nodes_count.values())}")
+    logger.info(f"Total edges processed for {species_code}: {sum(edges_count.values())}")
+
+    return {
+        "nodes_count": nodes_count,
+        "edges_count": edges_count,
+        "graph_info": graph_info,
+        "output_dir": str(species_output_dir),
+    }
+
 def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir):
     graph_info = {
         'node_count': sum(nodes_count.values()),
@@ -258,16 +369,20 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 # Run build
 @app.command()
 def main(
-    output_dir: Annotated[Path, typer.Option(help="Output directory")],
-    adapters_config: Annotated[Path, typer.Option(help="Path to adapters config YAML file")],
     dbsnp_rsids: Annotated[Path, typer.Option(help="Path to dbSNP rsids pickle file")],
     dbsnp_pos: Annotated[Path, typer.Option(help="Path to dbSNP position pickle file")],
+    output_dir: Annotated[Optional[Path], typer.Option(help="Output directory (overrides species default)")] = None,
+    adapters_config: Annotated[Optional[Path], typer.Option(help="Path to adapters config YAML file (overrides species default)")] = None,
     writer_type: Annotated[str, typer.Option(help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX")] = "metta",
     write_properties: Annotated[bool, typer.Option(help="Write properties to nodes and edges")] = True,
     add_provenance: Annotated[bool, typer.Option(help="Add provenance to nodes and edges")] = True,
     buffer_size: Annotated[int, typer.Option(help="Buffer size for Parquet writer")] = 10000,
     overwrite: Annotated[bool, typer.Option(help="Overwrite existing Parquet files")] = True,
     include_adapters: Annotated[Optional[List[str]], typer.Option(help="Specific adapters to include (space-separated, default: all)")] = None,
+    species: str = typer.Option(
+        default="hsa",
+        help="Species to generate KG for: all, hsa (human), dmel(fly), mmo (mouse), rno (rat)"
+    )
 ):
     """
     Main function. Call individual adapters to download and process data. Build
@@ -280,69 +395,56 @@ def main(
     logger.info("Loading dbsnp pos map")
     dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
 
-    # Choose the writer based on user input or default to 'metta'
-    bc = get_writer(writer_type, output_dir)
-    logger.info(f"Using {writer_type} writer")
-
-    if writer_type == 'parquet':
-        bc.buffer_size = buffer_size
-        bc.overwrite = overwrite
-
     schema_dict = preprocess_schema()
 
-    with open(adapters_config, "r") as fp:
-        try:
-            adapters_dict = yaml.safe_load(fp)
-        except yaml.YAMLError as e:
-            logger.error("Error while trying to load adapter config")
-            logger.error(e)
+    if species == 'all':
+        results = {}
+        skip_codes = {"mmo", "rno"}
+        for species_code, cfg in SPECIES_CONFIG.items():
+            if species_code in skip_codes:
+                logger.info("Skipping species %s in 'all' batch", species_code)
+                continue
+            res = generate_for_species(
+                species_code,
+                cfg,
+                dbsnp_rsids_dict,
+                dbsnp_pos_dict,
+                adapters_config_override=adapters_config,
+                output_dir_override=output_dir,
+                writer_type=writer_type,
+                write_properties=write_properties,
+                add_provenance=add_provenance,
+                buffer_size=buffer_size,
+                overwrite=overwrite,
+                include_adapters=include_adapters,
+                schema_dict=schema_dict,
+            )
+            results[species_code] = res
+        logger.info("Completed 'all' species run")
+        return results
 
-    # Filter adapters if specific ones are requested
-    if include_adapters:
-         original_count = len(adapters_dict)
-         include_lower = [a.lower() for a in include_adapters]
-         adapters_dict = {
-             k: v for k, v in adapters_dict.items()
-             if k.lower() in include_lower
-         }
-         if not adapters_dict:
-             available = "\n".join(f" - {a}" for a in adapters_dict.keys())
-             logger.error(f"No matching adapters found. Available adapters:\n{available}")
-             raise typer.Exit(1)
-             
-         logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
-    # Run adapters
-    nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
-        adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
+    # Single species run
+    if species not in SPECIES_CONFIG:
+        logger.error("Unsupported species: %s", species)
+        raise typer.Exit(1)
+
+    cfg = SPECIES_CONFIG[species]
+    result = generate_for_species(
+        species,
+        cfg,
+        dbsnp_rsids_dict,
+        dbsnp_pos_dict,
+        adapters_config_override=adapters_config,
+        output_dir_override=output_dir,
+        writer_type=writer_type,
+        write_properties=write_properties,
+        add_provenance=add_provenance,
+        buffer_size=buffer_size,
+        overwrite=overwrite,
+        include_adapters=include_adapters,
+        schema_dict=schema_dict,
     )
-
-    # For NetworkX writer, save the graph after processing all adapters
-    if writer_type == 'networkx':
-        bc.write_graph()
-        logger.info("NetworkX graph saved successfully")
-
-    if hasattr(bc, 'finalize'):
-        bc.finalize()
-
-    # Gather graph info
-    graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir)
-
-    for dataset in datasets_dict:
-        datasets_dict[dataset]["nodes"] = list(datasets_dict[dataset]["nodes"])
-        datasets_dict[dataset]["edges"] = list(datasets_dict[dataset]["edges"])
-        graph_info['datasets'].append(datasets_dict[dataset])
-
-    graph_info["dataset_count"] = len(graph_info['datasets'])
-
-    # Write the graph info to JSON
-    graph_info_json = json.dumps(graph_info, indent=2)
-    file_path = f"{output_dir}/graph_info.json"
-    with open(file_path, "w") as f:
-        f.write(graph_info_json)
-
-    logger.info("Done")
-    logger.info(f"Total nodes processed: {sum(nodes_count.values())}")
-    logger.info(f"Total edges processed: {sum(edges_count.values())}")
+    return result
 
 if __name__ == "__main__":
     app()

@@ -1,4 +1,4 @@
 label|source|source_id|source_type|source_url|target_id|target_type
-in_dnase_i_hotspot|Roadmap Epigenomics Project|rs10|snp|https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz|cl_0000037|uberon
-in_dnase_i_hotspot|Roadmap Epigenomics Project|rs10|snp|https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz|cl_0002327|uberon
-in_dnase_i_hotspot|Roadmap Epigenomics Project|rs10000009|snp|https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz|uberon_0001971|uberon
+in_dnase_i_hotspot|Roadmap Epigenomics Project|RS10|snp|https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz|CL_0000037|uberon
+in_dnase_i_hotspot|Roadmap Epigenomics Project|RS10|snp|https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz|CL_0002327|uberon
+in_dnase_i_hotspot|Roadmap Epigenomics Project|RS10000009|snp|https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz|UBERON_0001971|uberon

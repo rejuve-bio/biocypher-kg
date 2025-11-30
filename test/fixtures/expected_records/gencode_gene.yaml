@@ -1,0 +1,7 @@
+expected_records:
+  - input: "ENSG00000101349"
+    output:
+      id: ["gene", "ENSG00000101349"]
+      label: "gene"
+      properties:
+        symbol: "PAK5"

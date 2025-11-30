@@ -1,4 +1,4 @@
 chr|distance|label|pos|source|source_id|source_type|source_url|target_id|target_type
-chr7|-510121|closest_gene|92754574|RefSeq Closest Gene|rs10|snp|https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz|ensg00000105810|gene
-chr4|743570|closest_gene|113632097|RefSeq Closest Gene|rs10000007|snp|https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz|ensg00000145349|gene
-chr4|879024|closest_gene|70183236|RefSeq Closest Gene|rs10000009|snp|https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz|ensg00000109205|gene
+chr7|-510121|closest_gene|92754574|RefSeq Closest Gene|RS10|snp|https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz|ENSG00000105810|gene
+chr4|743570|closest_gene|113632097|RefSeq Closest Gene|RS10000007|snp|https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz|ENSG00000145349|gene
+chr4|879024|closest_gene|70183236|RefSeq Closest Gene|RS10000009|snp|https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz|ENSG00000109205|gene

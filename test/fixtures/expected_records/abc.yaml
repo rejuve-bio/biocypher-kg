@@ -1,0 +1,5 @@
+expected_records:
+  - input: "rs10000009"
+    output:
+      label: "activity_by_contact"
+      source: ["variant", "rs10000009"]

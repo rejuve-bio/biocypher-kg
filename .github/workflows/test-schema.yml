@@ -45,3 +45,6 @@ jobs:
             --dbsnp-rsids=./aux_files/sample_dbsnp_rsids.pkl \
             --dbsnp-pos=./aux_files/sample_dbsnp_pos.pkl \
             -v -s
+      - name: Run adapter record validation
+        run: |
+          poetry run pytest test/test.py::TestBiocypherKG::test_adapter_record_validation -q
