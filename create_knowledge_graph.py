@@ -24,6 +24,32 @@ from typing import Union, List, Optional
 
 app = typer.Typer()
 
+
+# Mapping of supported species to their adapter configs and output directories
+SPECIES_CONFIG = {
+    "hsa": {
+        "adapters_config": "config/adapters_config_sample.yaml",
+        "output_dir": "output_human",
+        "name": "Human",
+    },
+    "dmel": {
+        "adapters_config": "config/dmel_adapters_config_sample.yaml",
+        "output_dir": "output_fly",
+        "name": "Drosophila melanogaster",
+    },
+    "mmo": {
+        "adapters_config": "config/mmo_adapters_config_sample.yaml",
+        "output_dir": "output_mouse",
+        "name": "Mouse",
+    },
+    "rno": {
+        "adapters_config": "config/rno_adapters_config_sample.yaml",
+        "output_dir": "output_rat",
+        "name": "Rat",
+    },
+}
+
+
 # Function to choose the writer class based on user input
 def get_writer(writer_type: str, output_dir: Path):
     if writer_type.lower() == 'metta':
@@ -123,29 +149,6 @@ def preprocess_schema():
     return edge_node_types
 
 
-# Mapping of supported species to their adapter configs and output directories
-SPECIES_CONFIG = {
-    "hsa": {
-        "adapters_config": "config/adapters_config_sample.yaml",
-        "output_dir": "output_human",
-        "name": "Human",
-    },
-    "dmel": {
-        "adapters_config": "config/dmel_adapters_config_sample.yaml",
-        "output_dir": "output_fly",
-        "name": "Drosophila melanogaster",
-    },
-    "mmo": {
-        "adapters_config": "config/mmo_adapters_config_sample.yaml",
-        "output_dir": "output_mouse",
-        "name": "Mouse",
-    },
-    "rno": {
-        "adapters_config": "config/rno_adapters_config_sample.yaml",
-        "output_dir": "output_rat",
-        "name": "Rat",
-    },
-}
 
 
 def generate_for_species(
