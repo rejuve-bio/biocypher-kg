@@ -1,4 +1,3 @@
-
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter
@@ -1005,6 +1004,7 @@ bgee_gene_expressed_in_anatomical_entity:
     cls: BgeeAdapter
     args:
       filepath: ./samples/Homo_sapiens_expr_sample.tsv.gz
+      taxon_id: 9606
   outdir: bgee
   nodes: False
   edges: True
