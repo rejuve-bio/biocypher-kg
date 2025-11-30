@@ -50,7 +50,6 @@ SPECIES_CONFIG = {
 }
 
 
-# Function to choose the writer class based on user input
 def get_writer(writer_type: str, output_dir: Path):
     if writer_type.lower() == 'metta':
         return MeTTaWriter(schema_config="config/schema_config.yaml",
