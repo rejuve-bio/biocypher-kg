@@ -36,6 +36,43 @@ transcribes_to:
   nodes: False
   edges: True
 
+gencode_exon:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      target_type: exon   # it could be anything here
+      taxon_id: 9606      # multi-species version needs this
+  outdir: gencode/exon
+  nodes: True
+  edges: False
+
+exon_part_of_transcript: # replaces transcript_includes_exon
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      label: part_of_transcript
+      target_type: transcript
+      taxon_id: 9606      
+  outdir: gencode/exon
+  nodes: False
+  edges: True
+
+exon_part_of_gene:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      label: part_of_gene
+      target_type: gene
+      taxon_id: 9606      
+  outdir: gencode/exon
+  nodes: False
+  edges: True
 
 uniprotkb_sprot:
   adapter:
@@ -545,37 +582,38 @@ refseq_closest_gene:
   nodes: False
   edges: True
 
-#topld_afr:
-#    adapter:
-#        module: biocypher_metta.adapters.topld_adapter
-#        cls: TopLDAdapter
-#        args:
-#            filepath: /mnt/hdd_2/abdu/biocypher_data/topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
-#            ancestry: AFR
-#            dbsnp_pos_map: None # will be provided by import script
-#            chr: chr16
-#            start: 53000000
-#            end:  56000000
-#
-#    outdir: top_ld/afr
-#    nodes: False
-#    edges: True
-#
-#topld_eas:
-#    adapter:
-#        module: biocypher_metta.adapters.topld_adapter
-#        cls: TopLDAdapter
-#        args:
-#            filepath: /mnt/hdd_2/abdu/biocypher_data/topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-#            ancestry: EAS
-#            dbsnp_pos_map: None # will be provided by import script
-#            chr: chr16
-#            start: 53000000
-#            end:  56000000
-#
-#    outdir: top_ld/EAS
-#    nodes: False
-#    edges: True
+# There is no adapter config for topld SAMPLE data
+topld_afr:
+   adapter:
+       module: biocypher_metta.adapters.topld_adapter
+       cls: TopLDAdapter
+       args:
+           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
+           ancestry: AFR
+           dbsnp_pos_map: None # will be provided by import script
+           chr: chr16
+           start: 53000000
+           end:  56000000
+
+   outdir: top_ld/afr
+   nodes: False
+   edges: True
+
+topld_eas:
+   adapter:
+       module: biocypher_metta.adapters.topld_adapter
+       cls: TopLDAdapter
+       args:
+           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+           ancestry: EAS
+           dbsnp_pos_map: None # will be provided by import script
+           chr: chr16
+           start: 53000000
+           end:  56000000
+
+   outdir: top_ld/EAS
+   nodes: False
+   edges: True
 
 topld_eur:
   adapter:
@@ -593,44 +631,21 @@ topld_eur:
   nodes: False
   edges: True
 
-#topld_sas:
-#    adapter:
-#        module: biocypher_metta.adapters.topld_adapter
-#        cls: TopLDAdapter
-#        args:
-#            filepath: /mnt/hdd_2/abdu/biocypher_data/topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-#            ancestry: SAS
-#            dbsnp_pos_map: None # will be provided by import script
-#            chr: chr16
-#            start: 53000000
-#            end:  56000000
-#
-#    outdir: top_ld/SAS
-#    nodes: False
-#    edges: True
+topld_sas:
+   adapter:
+       module: biocypher_metta.adapters.topld_adapter
+       cls: TopLDAdapter
+       args:
+           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+           ancestry: SAS
+           dbsnp_pos_map: None # will be provided by import script
+           chr: chr16
+           start: 53000000
+           end:  56000000
 
-gencode_exon:
-  adapter:
-    module: biocypher_metta.adapters.gencode_exon_adapter
-    cls: GencodeExonAdapter
-    args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
-
-  outdir: gencode/exon
-  nodes: True
-  edges: False
-
-transcript_includes_exon:
-  adapter:
-    module: biocypher_metta.adapters.gencode_exon_adapter
-    cls: GencodeExonAdapter
-    args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
-      label: includes
-  outdir: gencode/exon
-  nodes: False
-  edges: True
-
+   outdir: top_ld/SAS
+   nodes: False
+   edges: True
 
 rna_central_non_coding_rna:
   adapter:
