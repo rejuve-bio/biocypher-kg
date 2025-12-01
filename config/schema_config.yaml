@@ -1893,25 +1893,61 @@ histone modification:
       type: str
       biolink: phenotypic_state
 
-transcript to exon:
-  is_a: related to at instance
-  mixins: [biolink:ExonToTranscriptRelationship]
-  biolink_predicate: "biolink:has_part"
-  description: >-
-    An association between a transcript and its exons
+
+exon part_of gene:
+  is_a: related to at instance # corrected from "related to at instance"
+  mixins: [biolink:SequenceFeatureRelationship]   # https://biolink.github.io/biolink-model/SequenceFeatureRelationship/
+  biolink_predicate: "biolink:part_of"            # https://biolink.github.io/biolink-model/part_of/
+  description: >-                                 # https://biolink.github.io/biolink-model/SequenceFeatureRelationship/
+    Description: For example, a particular exon is part of a particular transcript or gene    
   represented_as: edge
-  input_label: includes
-  source: transcript
-  target: exon
+  input_label: part_of_gene
+  output_label: part_of
+  source: exon
+  target: gene
+  properties:
+    source:
+      type: str
+      biolink: provided_by
+    source_url:
+      type: str
+      biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
   kgx_properties:
     subject_category: "biolink:Transcript"
     object_category: "biolink:Exon"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-  properties: 
-    source: 
+
+exon part_of transcript:
+  is_a: related to at instance # corrected from "related to at instance"
+  mixins: [biolink:ExonToTranscriptRelationship]
+  biolink_predicate: "biolink:has_part"
+  description: >-
+    An association between an exon and its gene
+  represented_as: edge
+  input_label: part_of_transcript
+  output_label: part_of
+  source: exon
+  target: transcript
+  properties:
+    source:
       type: str
       biolink: provided_by
-    source_url: 
+    source_url:
       type: str
       biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    subject_category: "biolink:Transcript"
+    object_category: "biolink:Exon"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"

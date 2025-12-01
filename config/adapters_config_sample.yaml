@@ -38,6 +38,43 @@ transcribes_to:
   nodes: False
   edges: True
 
+gencode_exon:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: ./samples/gencode_sample.gtf.gz
+      target_type: exon   # it could be anything here
+      taxon_id: 9606
+  outdir: gencode/exon
+  nodes: True
+  edges: False
+
+exon_part_of_transcript:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: ./samples/gencode_sample.gtf.gz
+      label: part_of_transcript
+      target_type: transcript
+      taxon_id: 9606      
+  outdir: gencode/exon
+  nodes: False
+  edges: True
+
+exon_part_of_gene:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: ./samples/gencode_sample.gtf.gz
+      label: part_of_gene
+      target_type: gene
+      taxon_id: 9606      
+  outdir: gencode/exon
+  nodes: False
+  edges: True
 
 uniprotkb_sprot:
   adapter:
@@ -45,7 +82,6 @@ uniprotkb_sprot:
     cls: UniprotProteinAdapter
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
-
   outdir: uniprot
   nodes: True
   edges: False
@@ -553,27 +589,6 @@ topld_eur:
     nodes: False
     edges: True
 
-gencode_exon:
-  adapter:
-    module: biocypher_metta.adapters.gencode_exon_adapter
-    cls: GencodeExonAdapter
-    args:
-      filepath: ./samples/gencode_sample.gtf.gz
-
-  outdir: gencode/exon
-  nodes: True
-  edges: False
-
-transcript_includes_exon:
-  adapter:
-    module: biocypher_metta.adapters.gencode_exon_adapter
-    cls: GencodeExonAdapter
-    args:
-      filepath: ./samples/gencode_sample.gtf.gz
-      label: includes
-  outdir: gencode/exon
-  nodes: False
-  edges: True
 
 rna_central_non_coding_rna:
   adapter:
