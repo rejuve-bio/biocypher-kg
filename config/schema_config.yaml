@@ -721,10 +721,6 @@ tad:
   inherit_properties: true
   kgx_properties:
     category: "biolink:GenomicEntity"
-  properties:
-    genes: 
-      type: str[]
-      biolink: has_gene_or_gene_product
 
 # ---
 # Associations

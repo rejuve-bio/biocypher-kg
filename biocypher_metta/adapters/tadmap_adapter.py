@@ -58,18 +58,9 @@ class TADMapAdapter(Adapter):
             for row in tad_file:
                 row = row.strip().split(',')
                 loc_info = row[TADMapAdapter.INDEX['loc_info']].split('|')
-                genes_info = row[TADMapAdapter.INDEX['genes']].split(';')
                 chr = loc_info[TADMapAdapter.INDEX['chr']]
                 start = loc_info[TADMapAdapter.INDEX['start']]
                 end = loc_info[TADMapAdapter.INDEX['end']]
-                genes = []
-                for gene in genes_info:
-                    try:
-                        gene = gene.split('|')
-                        gene = gene[1].split(':')[1]
-                        genes.append(gene)
-                    except IndexError:
-                        continue
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     _id = f"SO:{build_regulatory_region_id(chr, start, end)}"
@@ -78,8 +69,7 @@ class TADMapAdapter(Adapter):
                         _props = {
                             'chr': chr,
                             'start': int(start),
-                            'end': int(end),
-                            'genes': genes
+                            'end': int(end)
                         }
                         if self.add_provenance:
                             _props['source'] = self.source
