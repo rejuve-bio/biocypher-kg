@@ -129,7 +129,7 @@ ontology term:
     description: 
       type: str
       biolink: description
-    synonyms: 
+    synonym: 
       type: str[]
       biolink: synonym
     source: 
@@ -171,7 +171,7 @@ gene:
       biolink: name
     gene_type: 
       type: str
-    synonyms: 
+    synonym: 
       type: str[]
       biolink: synonym
   kgx_properties:
@@ -186,13 +186,13 @@ protein:
   biolink_category: "biolink:Protein"
   inherit_properties: true
   properties:
-    accessions: 
+    accession: 
       type: str[]
       biolink: xref
     protein_name:
       type: str
       biolink: name
-    synonyms: 
+    synonym: 
       type: str[]
       biolink: synonym
     source: 
@@ -1655,7 +1655,7 @@ transcription factor to gene association:
   properties:
     evidence: str[]
     detection_method: str
-    databases: str[]
+    database: str[]
     evidence_type: str
 
 regulatory region to gene association:

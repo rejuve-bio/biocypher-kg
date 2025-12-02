@@ -7,9 +7,9 @@ nodes:
     description: A protein product
     input_label: protein
     properties:
-      accessions: str[]
+      accession: str[]
       protein_name: str
-      synonyms: str[]
+      synonym: str[]
 
 relationships:
   translates to:
