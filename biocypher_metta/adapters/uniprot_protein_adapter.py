@@ -84,10 +84,10 @@ class UniprotProteinAdapter(Adapter):
                     }
                     
                     if len(record.accessions) > 1:
-                        base_props['accessions'] = record.accessions[1:]
+                        base_props['accession'] = record.accessions[1:]
                     
                     if dbxrefs:
-                        base_props['synonyms'] = dbxrefs
+                        base_props['synonym'] = dbxrefs
                     
                     if self.add_provenance:
                         base_props['source'] = self.source
@@ -112,7 +112,7 @@ class UniprotProteinAdapter(Adapter):
                                 }
                                 
                                 if dbxrefs:
-                                    isoform_props['synonyms'] = dbxrefs
+                                    isoform_props['synonym'] = dbxrefs
                                 
                                 if self.add_provenance:
                                     isoform_props['source'] = self.source

@@ -172,7 +172,7 @@ class GencodeGeneAdapter(Adapter):
                                     'start': start if start else 'unknown',
                                     'end': end if end else 'unknown',
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
-                                    'synonyms': alias if alias else 'unknown'
+                                    'synonym': alias
                                 }
                                 if result['status'] == 'updated':
                                     props['old_gene_name'] = result['original']

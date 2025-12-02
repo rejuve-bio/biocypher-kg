@@ -71,7 +71,7 @@ class TFLinkAdapter(Adapter):
                     if self.write_properties:
                         _props = {
                             "evidence": pubmed_ids,
-                            "databases": sources,
+                            "database": sources,
                             "evidence_type": evidence_type,
                             "detection_method": row[TFLinkAdapter.INDEX['Detection.method']],
                             "taxon_id": f'{self.taxon_id}',
