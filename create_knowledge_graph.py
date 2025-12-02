@@ -14,7 +14,7 @@ from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
 import typer
 import yaml
-import importlib  #for reflection
+import importlib 
 from typing_extensions import Annotated
 import pickle
 import json
@@ -25,7 +25,6 @@ from typing import Union, List, Optional
 app = typer.Typer()
 
 
-# Mapping of supported species to their adapter configs and output directories
 SPECIES_CONFIG = {
     "hsa": {
         "adapters_config": "config/adapters_config_sample.yaml",
@@ -102,7 +101,6 @@ def preprocess_schema():
     edge_node_types = {}
 
     for k, v in schema.items():
-        # Skip abstract types and non-edge types
         if v.get('abstract', False) or v.get('represented_as') != 'edge':
             continue
             
@@ -117,19 +115,16 @@ def preprocess_schema():
             else:
                 label = convert_input_labels(input_label)
             
-            # Handle source_type which can be a string or list
             if isinstance(source_type, list):
                 processed_source = [convert_input_labels(s).lower() for s in source_type]
             else:
                 processed_source = convert_input_labels(source_type).lower()
             
-            # Handle target_type which can be a string or list  
             if isinstance(target_type, list):
                 processed_target = [convert_input_labels(t).lower() for t in target_type]
             else:
                 processed_target = convert_input_labels(target_type).lower()
             
-            # Handle output_label
             output_label = v.get("output_label", None)
             if output_label:
                 if isinstance(output_label, list):
@@ -368,7 +363,6 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 
     return nodes_count, nodes_props, edges_count, datasets_dict
 
-# Run build
 @app.command()
 def main(
     dbsnp_rsids: Annotated[Path, typer.Option(help="Path to dbSNP rsids pickle file")],
