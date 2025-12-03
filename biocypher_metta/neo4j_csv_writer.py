@@ -30,6 +30,7 @@ class Neo4jCSVWriter(BaseWriter):
         self.batch_size = 10000
         self.temp_buffer = defaultdict(list)
 
+
     def _build_label_types_map(self):
         """Build mapping of node labels to whether they are ontology terms."""
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -241,7 +242,15 @@ class Neo4jCSVWriter(BaseWriter):
         self._edge_headers.clear()
         edge_freq = defaultdict(int)
         output_dir = self.get_output_path(path_prefix, adapter_name)
-    
+        
+        # to use Biolink-compatible schema
+        self.type_hierarchy = {
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+        }
+
         try:
             for edge in edges:
                 # Extract edge info for counting (from BaseWriter)
@@ -258,7 +267,8 @@ class Neo4jCSVWriter(BaseWriter):
                         if source_type not in edge_info["source"]:
                             raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
                     else:
-                        if source_type != edge_info["source"]:
+                        # if source_type != edge_info["source"]:
+                        if source_type not in self.type_hierarchy:
                             raise TypeError(f"Type '{source_type}' must be '{edge_info['source']}'")
                     source_id = source_id[1]
                 else:
@@ -273,7 +283,8 @@ class Neo4jCSVWriter(BaseWriter):
                         if target_type not in edge_info["target"]:
                             raise TypeError(f"Type '{target_type}' must be one of {edge_info['target']}")
                     else:
-                        if target_type != edge_info["target"]:
+                        # if target_type != edge_info["target"]:
+                        if target_type not in self.type_hierarchy:
                             raise TypeError(f"Type '{target_type}' must be '{edge_info['target']}'")
                     target_id = target_id[1]
                 else:
