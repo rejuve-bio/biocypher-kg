@@ -1,0 +1,68 @@
+# ---
+flybase:
+  name: Flybase 2025_04
+  url: 
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/allele_genetic_interactions_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/fbal_to_fbgn_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/genotype_phenotype_data_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/best_gene_summary_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_genetic_interactions_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_group_data_fb_2025_04.tsv.gz    
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_groups_HGNC_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_rpkm_report_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/high-throughput_gene_expression_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/metabolic_pathway_group_data_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/physical_interactions_mitab_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/signaling_pathway_group_data_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/human_disease/disease_model_annotations_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/orthologs/dmel_paralogs_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_04.tsv.gz
+    
+
+
+gencode:
+  name: GENCODE v54
+  url: 
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.chr.gtf.gz
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+#     - https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
+    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
+
+uniprot:
+  name: UniProtKB/Swiss-Prot
+  url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
+
+reactome:
+  name: Reactome
+  url:
+    - https://reactome.org/download/current/ReactomePathways.txt
+    - https://reactome.org/download/current/ReactomePathwaysRelation.txt
+    - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/ReactionPMIDS.txt
+
+
+tflink:
+  name: TFLink
+  url: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv
+
+
+string:
+  name: STRING PPI
+  url: https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
+
+
+
+# epd:
+#   name: Eukaryotic Promoter Database
+#   url:
+#     - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
+#     # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/
+#     - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
+
+

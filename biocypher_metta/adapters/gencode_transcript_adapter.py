@@ -3,7 +3,10 @@ import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location
 from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
 
-# Example genocde vcf input file:
+# Human data:
+# https://www.gencodegenes.org/human/
+
+# Example gencode vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
 # ##provider: GENCODE
 # ##contact: gencode-help@ebi.ac.uk
@@ -14,11 +17,36 @@ from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
 # chr1    HAVANA  exon    11869   12227   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 1; exon_id "ENSE00002234944.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 
-class GencodeAdapter(Adapter):
-    ALLOWED_TYPES = ['transcript', 'transcribes to', 'transcribed from']
-    ALLOWED_LABELS = ['transcript', 'transcribes_to', 'transcribed_from']
-    ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_name',
-                    'transcript_id', 'transcript_type', 'transcript_name', 'tag']
+# Mouse data:
+# https://www.gencodegenes.org/mouse/
+
+
+# Fly data:
+# https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/
+
+# Example gencode vcf input file:
+# Dmel:
+# 3R	FlyBase	gene	17750129	17763188	.	-	.	gene_id "FBgn0038542"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding";
+# 3R	FlyBase	transcript	17750129	17758978	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding";
+# 3R	FlyBase	exon	17758709	17758978	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; exon_number "1"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding"; exon_id "FBtr0344474-E1";
+# 3R	FlyBase	exon	17757024	17757709	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; exon_number "2"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding"; exon_id "FBtr0344474-E2";
+
+# dmelSummaries: table
+#FBgn_ID	Gene_Symbol	Summary_Source	Summary
+
+
+class GencodeTranscriptAdapter(Adapter):
+    CURIE_PREFIX = {
+        7227: 'FlyBase',
+        9606: 'ENSEMBL'
+    }
+    ALLOWED_TYPES = ['transcript',
+                     'transcribes to', ]
+    ALLOWED_LABELS = ['transcript',
+                      'transcribes_to']
+
+    ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_biotype', 'gene_name',  # 'gene_biotype'  key for dmel data
+                    'transcript_id', 'transcript_type', 'transcript_biotype', 'transcript_name'] # 'transcript_biotype'  key for dmel data
 
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
@@ -47,12 +75,12 @@ class GencodeAdapter(Adapter):
         'Ensembl_canonical'
     }
 
-    def __init__(self, write_properties, add_provenance, filepath=None, 
+    def __init__(self, write_properties, add_provenance, taxon_id, filepath=None, 
                  type='gene', label='gencode_gene', 
                  chr=None, start=None, end=None):
-        if label not in GencodeAdapter.ALLOWED_LABELS:
+        if label not in GencodeTranscriptAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +
-                             ','.join(GencodeAdapter.ALLOWED_LABELS))
+                             ','.join(GencodeTranscriptAdapter.ALLOWED_LABELS))
 
         self.filepath = filepath
         self.type = type
@@ -61,15 +89,16 @@ class GencodeAdapter(Adapter):
         self.end = end
         self.label = label
         self.dataset = label
+        self.taxon_id = taxon_id
 
         self.source = 'GENCODE'
         self.version = 'v44'
-        self.source_url = 'https://www.gencodegenes.org/human/'
+        self.source_url = 'https://www.gencodegenes.org/'
 
         self.hgnc_processor = HGNCSymbolProcessor()
         self.hgnc_processor.update_hgnc_data()
 
-        super(GencodeAdapter, self).__init__(write_properties, add_provenance)
+        super(GencodeTranscriptAdapter, self).__init__(write_properties, add_provenance)
 
     def parse_info_metadata(self, info):
         parsed_info = {}
@@ -88,7 +117,7 @@ class GencodeAdapter(Adapter):
                 if len(tag_match) > 1:
                     tags.append(tag_match[1])
             else:
-                for key in GencodeAdapter.ALLOWED_KEYS:
+                for key in GencodeTranscriptAdapter.ALLOWED_KEYS:
                     if key in item:
                         value = item.split('"')[1] if '"' in item else item
                         parsed_info[key] = value.strip()
@@ -107,16 +136,17 @@ class GencodeAdapter(Adapter):
 
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as input:
+            not_processed = 0
             for line in input:
                 if line.startswith('#'):
                     continue
 
                 data_line = line.strip().split()
-                if data_line[GencodeAdapter.INDEX['type']] != 'transcript':
+                if data_line[GencodeTranscriptAdapter.INDEX['type']] != 'transcript':
                     continue
 
-                data = data_line[:GencodeAdapter.INDEX['info']]
-                info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
+                data = data_line[:GencodeTranscriptAdapter.INDEX['info']]
+                info = self.parse_info_metadata(data_line[GencodeTranscriptAdapter.INDEX['info']:])
                 
                 # Skip if we don't want to keep this transcript
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
@@ -124,16 +154,16 @@ class GencodeAdapter(Adapter):
 
                 result = self.hgnc_processor.process_identifier(info['gene_name'])
                 #CURIE ID Formatting
-                transcript_key = f"ENSEMBL:{info['transcript_id'].split('.')[0]}"
+                transcript_key = f"{info['transcript_id'].split('.')[0]}"
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
-                gene_key = f"ENSEMBL:{info['gene_id'].split('.')[0]}"
+                gene_key = f"{info['gene_id'].split('.')[0]}"
                 if info['gene_id'].endswith('_PAR_Y'):
                     gene_key = gene_key + '_PAR_Y'
                 
-                chr = data[GencodeAdapter.INDEX['chr']]
-                start = int(data[GencodeAdapter.INDEX['coord_start']])
-                end = int(data[GencodeAdapter.INDEX['coord_end']])
+                chr = data[GencodeTranscriptAdapter.INDEX['chr']]
+                start = int(data[GencodeTranscriptAdapter.INDEX['coord_start']])
+                end = int(data[GencodeTranscriptAdapter.INDEX['coord_end']])
             
                 props = {}
                 try:
@@ -141,7 +171,7 @@ class GencodeAdapter(Adapter):
                         if self.type == 'transcript':
                             if self.write_properties:
                                 props = {
-                                    'transcript_id': f"ENSEMBL:{info['transcript_id']}",
+                                    'transcript_id': info['transcript_id'],
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': info['transcript_type'],
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
@@ -153,18 +183,20 @@ class GencodeAdapter(Adapter):
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
                         
-                            if result['status'] == 'unknown':
-                                print(f"Unknown gene symbol: {result['original']}")
-                            elif result['status'] == 'updated':
-                                print(f"Replaced gene symbol: {result['original']} -> {result['current']}")
-                            elif result['status'] == 'ensembl_with_symbol' and result['original'] != result['current']:
-                                print(f"Ensembl symbol replaced: {result['original']} -> {result['current']}")
+                            # if result['status'] == 'unknown':
+                            #     print(f"Unknown gene symbol: {result['original']}")
+                            # elif result['status'] == 'updated':
+                            #     print(f"Replaced gene symbol: {result['original']} -> {result['current']}")
+                            # elif result['status'] == 'ensembl_with_symbol' and result['original'] != result['current']:
+                            #     print(f"Ensembl symbol replaced: {result['original']} -> {result['current']}")
                         
                             yield transcript_key, self.label, props
                 except Exception as e:
-                    print(
-                        f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-                    print(f'Error: {str(e)}')
+                    # print(
+                    #     f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                    # print(f'Error: {str(e)}')
+                    not_processed += 1
+        print(f"Not processed: {not_processed}")
 
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as input:
@@ -173,10 +205,10 @@ class GencodeAdapter(Adapter):
                     continue
 
                 data_line = line.strip().split()
-                if data_line[GencodeAdapter.INDEX['type']] != 'transcript':
+                if data_line[GencodeTranscriptAdapter.INDEX['type']] != 'transcript':
                     continue
 
-                info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
+                info = self.parse_info_metadata(data_line[GencodeTranscriptAdapter.INDEX['info']:])
                 
                 # Skip if we don't want to keep this transcript
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
@@ -197,14 +229,11 @@ class GencodeAdapter(Adapter):
                 try:
                     if self.type == 'transcribes to':
                         _id = gene_key + '_' + transcript_key
-                        _source = f"ENSEMBL:{gene_key}"
-                        _target = f"ENSEMBL:{transcript_key}"
+                        _source = f"{GencodeTranscriptAdapter.CURIE_PREFIX[self.taxon_id]}:{gene_key}"                        
+                        _target = f"{GencodeTranscriptAdapter.CURIE_PREFIX[self.taxon_id]}:{transcript_key}"                        
+
                         yield _source, _target, self.label, _props
-                    elif self.type == 'transcribed from':
-                        _id = transcript_key + '_' + gene_key
-                        _source = f"ENSEMBL:{transcript_key }"
-                        _target = f"ENSEMBL:{gene_key}"
-                        yield _source, _target, self.label, _props
+
                 except Exception as e:
                     print(
                         f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')

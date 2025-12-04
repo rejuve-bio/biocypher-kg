@@ -17,7 +17,7 @@ from biocypher_metta.adapters.helpers import to_float
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
 class StringPPIAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map,
+    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id,
                  write_properties, add_provenance):
         """
         Constructs StringPPI adapter that returns edges between proteins
@@ -25,7 +25,7 @@ class StringPPIAdapter(Adapter):
         :param ensembl_to_uniprot_map: file containing pickled dictionary mapping Ensemble Protein IDs to Uniprot IDs
         """
         self.filepath = filepath
-
+        self.taxon_id = taxon_id
         with open(ensembl_to_uniprot_map, "rb") as f:
             self.ensembl2uniprot = pickle.load(f)
 
@@ -45,13 +45,14 @@ class StringPPIAdapter(Adapter):
                 if protein1 in self.ensembl2uniprot and protein2 in self.ensembl2uniprot:
                     protein1_uniprot = self.ensembl2uniprot[protein1]
                     protein2_uniprot = self.ensembl2uniprot[protein2]
-                    _source = f"UniProtKB:{protein1_uniprot}"
-                    _target = f"UniProtKB:{protein2_uniprot}"
+                    _source = f"{protein1_uniprot}"
+                    _target = f"{protein2_uniprot}"
                     _props = {}
                     if self.write_properties:
                         _props = {
                             "score": to_float(row[2]) / 1000, # divide by 1000 to normalize score
                         }
+                        _props['taxon_id'] = f'{self.taxon_id}'
                         if self.add_provenance:
                             _props["source"] = self.source
                             _props["source_url"] = self.source_url

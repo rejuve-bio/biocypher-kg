@@ -200,6 +200,14 @@ class MeTTaWriter(BaseWriter):
         return self.write_property(def_out, properties)
 
     def write_edge(self, edge):
+        # to use Biolink-compatible schema
+        type_hierarchy = {
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+        }
+
         source_id, target_id, label, properties = edge
         source_id_processed = source_id
         target_id_processed = target_id
@@ -212,10 +220,11 @@ class MeTTaWriter(BaseWriter):
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
-                    if source_type not in valid_source_types:
+                    if source_type not in type_hierarchy:
                         raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
                 else:
-                    if source_type != valid_source_types:
+                    # if source_type != valid_source_types:
+                    if source_type not in type_hierarchy:
                         raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             if label in self.edge_node_types:
@@ -236,10 +245,11 @@ class MeTTaWriter(BaseWriter):
             if label in self.edge_node_types:
                 valid_target_types = self.edge_node_types[label]["target"]
                 if isinstance(valid_target_types, list):
-                    if target_type not in valid_target_types:
+                    if target_type not in type_hierarchy:
                         raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
                 else:
-                    if target_type != valid_target_types:
+                    # if target_type != valid_target_types:
+                    if target_type not in type_hierarchy:
                         raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             if label in self.edge_node_types:

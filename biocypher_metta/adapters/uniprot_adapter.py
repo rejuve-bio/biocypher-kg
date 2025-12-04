@@ -6,7 +6,7 @@ from biocypher_metta.adapters import Adapter
 # Data file is uniprot_sprot_human.dat.gz and uniprot_trembl_human.dat.gz at https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/.
 # We can use SeqIO from Bio to read the file.
 # Each record in file will have those attributes: https://biopython.org/docs/1.75/api/Bio.SeqRecord.html
-# id, name will be loaded for protein. Ensembl IDs(example: Ensembl:ENST00000372839.7) in dbxrefs will be used to create protein and transcript relationship.
+# id, name will be loaded for protein. Ensembl IDs(example: ENST00000372839.7) in dbxrefs will be used to create protein and transcript relationship.
 
 
 class UniprotAdapter(Adapter):
@@ -15,7 +15,7 @@ class UniprotAdapter(Adapter):
     
     ISOFORM_PATTERN = re.compile(r'\[([\w\-]+)\]')
 
-    def __init__(self, filepath, type, label, write_properties=True, add_provenance=True):
+    def __init__(self, filepath, type, label, taxon_id, write_properties=True, add_provenance=True):
         if type not in self.ALLOWED_TYPES:
             raise ValueError('Invalid type. Allowed values: ' + 
                            ', '.join(self.ALLOWED_TYPES))
@@ -29,6 +29,8 @@ class UniprotAdapter(Adapter):
         self.label = label
         self.source = "Uniprot"
         self.source_url = "https://www.uniprot.org/"
+        self.taxon_id = taxon_id
+        
         super(UniprotAdapter, self).__init__(write_properties, add_provenance)
 
     def parse_ensembl_reference(self, line):
@@ -71,7 +73,7 @@ class UniprotAdapter(Adapter):
                         try:
                             protein_id = isoform_id if isoform_id else accession
                             
-                            ensg_id = "ENSEMBL:" + transcript_id
+                            ensg_id = "" + transcript_id
                             uniprot_id = "UniProtKB:" + protein_id.upper()
                             
                             _props = {}

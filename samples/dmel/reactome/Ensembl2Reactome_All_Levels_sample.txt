@@ -1,0 +1,55 @@
+FBgn0000008	R-DME-1280218	https://reactome.org/PathwayBrowser/#/R-DME-1280218	Adaptive Immune System	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-983168	https://reactome.org/PathwayBrowser/#/R-DME-983168	Antigen processing: Ubiquitination & Proteasome degradation	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-983169	https://reactome.org/PathwayBrowser/#/R-DME-983169	Class I MHC mediated antigen processing & presentation	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-1266738	https://reactome.org/PathwayBrowser/#/R-DME-1266738	Developmental Biology	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-162582	https://reactome.org/PathwayBrowser/#/R-DME-162582	Signal Transduction	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-1640170	https://reactome.org/PathwayBrowser/#/R-DME-1640170	Cell Cycle	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-168249	https://reactome.org/PathwayBrowser/#/R-DME-168249	Innate Immune System	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-194315	https://reactome.org/PathwayBrowser/#/R-DME-194315	Signaling by Rho GTPases	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-195258	https://reactome.org/PathwayBrowser/#/R-DME-195258	RHO GTPase Effectors	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-2029480	https://reactome.org/PathwayBrowser/#/R-DME-2029480	Fcgamma receptor (FCGR) dependent phagocytosis	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-2029482	https://reactome.org/PathwayBrowser/#/R-DME-2029482	Regulation of actin dynamics for phagocytic cup formation	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-212165	https://reactome.org/PathwayBrowser/#/R-DME-212165	Epigenetic regulation of gene expression	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-376176	https://reactome.org/PathwayBrowser/#/R-DME-376176	Signaling by ROBO receptors	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-422475	https://reactome.org/PathwayBrowser/#/R-DME-422475	Axon guidance	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-428890	https://reactome.org/PathwayBrowser/#/R-DME-428890	Role of ABL in ROBO-SLIT signaling	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-453279	https://reactome.org/PathwayBrowser/#/R-DME-453279	Mitotic G1 phase and G1/S transition	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-525793	https://reactome.org/PathwayBrowser/#/R-DME-525793	Myogenesis	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5663213	https://reactome.org/PathwayBrowser/#/R-DME-5663213	RHO GTPases Activate WASPs and WAVEs	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5693532	https://reactome.org/PathwayBrowser/#/R-DME-5693532	DNA Double-Strand Break Repair	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5693565	https://reactome.org/PathwayBrowser/#/R-DME-5693565	Recruitment and ATM-mediated phosphorylation of repair and signaling proteins at DNA double strand breaks	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5693606	https://reactome.org/PathwayBrowser/#/R-DME-5693606	DNA Double Strand Break Response	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-69231	https://reactome.org/PathwayBrowser/#/R-DME-69231	Cyclin D associated events in G1	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-69236	https://reactome.org/PathwayBrowser/#/R-DME-69236	G1 Phase	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-69278	https://reactome.org/PathwayBrowser/#/R-DME-69278	Cell Cycle, Mitotic	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-73894	https://reactome.org/PathwayBrowser/#/R-DME-73894	DNA Repair	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-74160	https://reactome.org/PathwayBrowser/#/R-DME-74160	Gene expression (Transcription)	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-8953897	https://reactome.org/PathwayBrowser/#/R-DME-8953897	Cellular responses to stimuli	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9012999	https://reactome.org/PathwayBrowser/#/R-DME-9012999	RHO GTPase cycle	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9013149	https://reactome.org/PathwayBrowser/#/R-DME-9013149	RAC1 GTPase cycle	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9013423	https://reactome.org/PathwayBrowser/#/R-DME-9013423	RAC3 GTPase cycle	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9675108	https://reactome.org/PathwayBrowser/#/R-DME-9675108	Nervous system development	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9716542	https://reactome.org/PathwayBrowser/#/R-DME-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9818564	https://reactome.org/PathwayBrowser/#/R-DME-9818564	Epigenetic regulation of gene expression by MLL3 and MLL4 complexes	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9841922	https://reactome.org/PathwayBrowser/#/R-DME-9841922	MLL4 and MLL3 complexes regulate expression of PPARG target genes in adipogenesis and hepatic steatosis	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9851695	https://reactome.org/PathwayBrowser/#/R-DME-9851695	Epigenetic regulation of adipogenesis genes by MLL3 and MLL4 complexes	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9855142	https://reactome.org/PathwayBrowser/#/R-DME-9855142	Cellular responses to mechanical stimuli	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9860927	https://reactome.org/PathwayBrowser/#/R-DME-9860927	Turbulent (oscillatory, disturbed) flow shear stress activates signaling by PIEZO1 and integrins in endothelial cells	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9860931	https://reactome.org/PathwayBrowser/#/R-DME-9860931	Response of endothelial cells to shear stress	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9917777	https://reactome.org/PathwayBrowser/#/R-DME-9917777	Epigenetic regulation by WDR5-containing histone modifying complexes	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-1280218	https://reactome.org/PathwayBrowser/#/R-DME-1280218	Adaptive Immune System	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-983168	https://reactome.org/PathwayBrowser/#/R-DME-983168	Antigen processing: Ubiquitination & Proteasome degradation	IEA	Drosophila melanogaster
+FBgn0000018	R-DME-983169	https://reactome.org/PathwayBrowser/#/R-DME-983169	Class I MHC mediated antigen processing & presentation	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-112311	https://reactome.org/PathwayBrowser/#/R-DME-112311	Neurotransmitter clearance	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-112315	https://reactome.org/PathwayBrowser/#/R-DME-112315	Transmission across Chemical Synapses	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-112316	https://reactome.org/PathwayBrowser/#/R-DME-112316	Neuronal System	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-1430728	https://reactome.org/PathwayBrowser/#/R-DME-1430728	Metabolism	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-1483191	https://reactome.org/PathwayBrowser/#/R-DME-1483191	Synthesis of PC	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-1483206	https://reactome.org/PathwayBrowser/#/R-DME-1483206	Glycerophospholipid biosynthesis	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-1483257	https://reactome.org/PathwayBrowser/#/R-DME-1483257	Phospholipid metabolism	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-556833	https://reactome.org/PathwayBrowser/#/R-DME-556833	Metabolism of lipids	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-9748784	https://reactome.org/PathwayBrowser/#/R-DME-9748784	Drug ADME	IEA	Drosophila melanogaster
+FBgn0000024	R-DME-9749641	https://reactome.org/PathwayBrowser/#/R-DME-9749641	Aspirin ADME	IEA	Drosophila melanogaster
