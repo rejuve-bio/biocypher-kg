@@ -1,0 +1,11 @@
+gencode_gene:
+  adapter:
+    module: biocypher_metta.adapters.gencode_gene_adapter
+    cls: GencodeGeneAdapter
+    args:
+      filepath: ./samples/gencode_sample.gtf.gz
+      gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
+
+  outdir: gencode/gene
+  nodes: True
+  edges: False

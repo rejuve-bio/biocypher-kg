@@ -1,0 +1,5 @@
+expected_records:
+  - input: "nssv16889290"
+    output:
+      id: ["variant", "nssv16889290"]
+      label: "variant"

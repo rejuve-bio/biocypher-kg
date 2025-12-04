@@ -1,0 +1,102 @@
+id|source|source_url|synonyms|term_name
+EFO_0022197|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||blood 3-hydroxymyristate measurement
+EFO_0007221|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Pleuropneumonia, Contagious"", ""contagious pleuropneumonia""]"|contagious pleuropneumonia
+EFO_0803495|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""33-dibromobisphenol A""]"|dibromobisphenol a measurement
+EFO_1001077|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Idiopathic orbital inflammation"", ""Inflammatory pseudotumor of orbit (disorder)"", ""Orbital Pseudotumor"", ""Pseudotumor of orbit""]"|orbital plasma cell granuloma
+EFO_0001196|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""IMR90""]"|IMR-90
+EFO_0801158|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""dimethylguanidino valeric acid""]"|DMGV measurement
+EFO_0803246|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||v-set and transmembrane domain-containing protein 2-like protein measurement
+EFO_0007771|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||pathologic complete response measurement
+EFO_0022833|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""RCB1638""]"|Hepa 1-6
+EFO_0009226|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""HGBMHGB"", ""Methemoglobin/Total Hemoglobin""]"|Methemoglobin to Total Hemoglobin Ratio Measurement
+EFO_0002671|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||iberin
+EFO_0007965|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||response to combination chemotherapy
+EFO_0020396|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||g2/mitotic-specific cyclin-B1 measurement
+EFO_0022604|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""10X 3 v4"", ""10X 3 v4 sequencing"", ""10x 3 v4 sequencing""]"|10x 3 v4
+EFO_1001020|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""MCNS"", ""idiopathic minimal change nephrotic syndrome"", ""minimal change glomerulopathy"", ""minimal change nephrotic syndrome"", ""nephrotic syndrome with lesion of minimal change glomerulonephritis"", ""nephrotic syndrome with lesion of minimal change nephrotic syndrome"", ""Minimal Change Glomerulonephritis"", ""Minimal change disease (disorder)"", ""Nephrosis, Lipoid"", ""Nephrotic syndrome with Lesion of Minimal Change Glomerulonephritis"", ""Nephrotic syndrome with lesion of minimal change glomerulonephritis"", ""Nephrotic syndrome with lesion of minimal change nephrotic syndrome"", ""lipoid nephrosis"", ""minimal change disease"", ""minimal change glomerulonephritis"", ""minimal change nephropathy"", ""nil disease""]"|lipoid nephrosis
+EFO_0003898|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Ankylosing Spondylarthritides"", ""Ankylosing Spondylarthritis"", ""Ankylosing Spondyloarthritides"", ""Ankylosing Spondyloarthritis"", ""BECHTEREW DIS"", ""BECHTEREWS DIS"", ""Bechterew Disease"", ""Bechterews Disease"", ""Bechterews Disease"", ""Bekhterev syndrome"", ""Bekhterevs disease"", ""MARIE STRUEMPELL DIS"", ""Marie Struempell Disease"", ""Marie-Struempell Disease"", ""Marie-Strumpell disease"", ""Rheumatoid Spondylitis"", ""Spondylarthritides, Ankylosing"", ""Spondylarthritis Ankylopoietica"", ""Spondylarthritis, Ankylosing"", ""Spondylitis, Ankylosing"", ""Spondylitis, Rheumatoid"", ""Spondyloarthritides, Ankylosing"", ""Spondyloarthritis, Ankylosing"", ""ankylosing spondylarthritis"", ""ankylosing spondylitis""]"|ankylosing spondylitis
+EFO_0801180|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||metronidazole measurement
+EFO_0600042|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""serum clozapine-to-norclozapine ratio measurement""]"|serum clozapine-to-N-desmethylclozapine ratio measurement
+EFO_0800639|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||N6-methyladenosine measurement
+EFO_0002055|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||G1E-ER4
+EFO_0005444|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""OVCAR-8"", ""OVCAR.8""]"|OVCAR8
+EFO_0802976|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||protrudin measurement
+EFO_0803563|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||C38:3 phosphatidylserine plasmalogen measurement
+EFO_1001982|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""AS syndrome"", ""Anti-Jo1 syndrome"", ""Anti-Synthetase Syndrome"", ""anti-Jo1 syndrome"", ""antisynthetase syndrome""]"|Antisynthetase syndrome
+EFO_0009690|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""disease of renal system"", ""disease or disorder of renal system"", ""disease, urinary tract"", ""disease, urologic"", ""disease, urological"", ""diseases, urinary tract"", ""diseases, urologic"", ""diseases, urological"", ""disorder of renal system"", ""disorder of the urinary system"", ""disorder of urinary system"", ""non-neoplastic urinary tract disease"", ""renal system disease"", ""renal system disease or disorder"", ""urinary disease"", ""urinary system disease"", ""urinary system disorder"", ""urinary tract disease"", ""urinary tract diseases"", ""urinary tract disorder"", ""urologic disease"", ""urologic disorder"", ""urological disease"", ""urological diseases"", ""urological disorder"", ""urological disorders""]"|urinary system disease
+EFO_0010480|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||fumarate measurement
+EFO_0007148|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Corrigans disease"", ""Aortic Valve Insufficiency"", ""Rheumatic aortic insufficiency"", ""Rheumatic aortic regurgitation"", ""Rheumatic aortic valve regurgitation"", ""aortic incompetence"", ""aortic insufficiency"", ""aortic regurgitation"", ""aortic valve insufficiency"", ""rheumatic aortic insufficiency"", ""rheumatic aortic regurgitation"", ""rheumatic aortic valve insufficiency"", ""rheumatic aortic valve regurgitation""]"|aortic valve insufficiency
+EFO_0010063|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||Therapeutic Procedure
+EFO_0002764|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||ChIP-chip by SNP array
+EFO_0800592|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||picolinoylglycine measurement
+EFO_0022363|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||SLB-1 cells
+EFO_0001431|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||twin design
+EFO_0800678|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||leucylglycine measurement
+EFO_0009158|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""PEBEL"", ""encephalopathy, progressive, early-onset, with brain edema and/or leukoencephalopathy"", ""encephalopathy, progressive, early-onset, with brain edema and/or leukoencephalopathy  PEBEL"", ""encephalopathy, progressive, early-onset, with brain oedema and/or leukoencephalopathy  PEBEL""]"|encephalopathy, progressive, early-onset, with brain edema and/or leukoencephalopathy
+EFO_0020105|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||trunk bone mineral density
+EFO_0802209|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||vacuolar protein sorting-associated protein 4B measurement
+EFO_0002068|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||Kc
+EFO_0800117|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||N-acetylvaline measurement
+EFO_0004337|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""cognitive ability"", ""general cognitive ability"", ""general cognitive function""]"|intelligence
+EFO_0008643|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||3′-Seq
+EFO_0005377|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""UACC.62""]"|UACC-62
+EFO_0801447|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||carbohydrate sulfotransferase 1 measurement
+EFO_0021940|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||latent-transforming growth factor beta-binding protein 4 measurement
+EFO_0004799|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""gallstones"", ""cholelithiasis""]"|cholelithiasis
+EFO_0005410|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""familial tooth agenesis"", ""hypodontia"", ""selective tooth agenesis"", ""tooth agenesis"", ""tooth agenesis, selective""]"|tooth agenesis
+EFO_0006397|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||G118
+EFO_0802460|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||deoxyribonuclease-2-beta measurement
+EFO_0802875|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||poliovirus receptor measurement
+EFO_0000450|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||embryonic cuprophilic cell
+EFO_0801445|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||calpain-2 catalytic subunit measurement
+EFO_0009602|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""disease of prostate gland"", ""disease or disorder of prostate gland"", ""disorder of prostate gland"", ""prostate disease"", ""prostate disorder"", ""prostate gland disease"", ""prostate gland disease or disorder""]"|prostate disease
+EFO_0010990|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||dimethylamine measurement
+EFO_0002869|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""U2-OS""]"|U2OS
+EFO_0802108|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||synaptotagmin-11 measurement
+EFO_0022387|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""SJL/J-Pde6b^rd1"", ""Swiss Jim Lambert""]"|SJL/J
+EFO_0004442|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||AB SOLiD System 2.0
+EFO_0800871|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||X-24307 measurement
+EFO_1000050|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""kidney leiomyoma"", ""leiomyoma of kidney"", ""renal leiomyoma""]"|renal leiomyoma
+EFO_0021901|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||cholesterol in large LDL measurement 
+EFO_0802322|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||beta-defensin 116 measurement
+EFO_0021080|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||1-eicosadienoylglycerophosphocholine measurement
+EFO_0008822|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||MPRA
+EFO_1001783|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Fibroma, Desmoplastic""]"|desmoplastic fibroma
+EFO_0803197|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||tubulointerstitial nephritis antigen-like measurement
+EFO_0801514|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||cytochrome c oxidase subunit 4 isoform 2, mitochondrial measurement
+EFO_0021510|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||linoleate 18:2n6 measurement
+EFO_0009131|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||response to polyunsaturated fatty acid supplementation
+EFO_0010954|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""XL-ID"", ""x-linked cask-related intellectual disability""]"|cask-related x-linked intellectual disability
+EFO_1001165|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""chronic urticaria with gammapathy"", ""Schnitzler Syndrome"", ""Schnitzler syndrome"", ""Schnitzler syndrome (disorder)"", ""chronic urticaria with gammopathy"", ""chronic urticaria with macroglobulinemia""]"|Schnitzler syndrome
+EFO_0007316|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""HTLV-1"", ""Human T lymphotropic virus type 1"", ""HTLV-1 infectious disease"", ""HTLV-I Infections"", ""HTLV-I infectious disease"", ""Human T-lymphotropic virus 1 caused disease or disorder"", ""Human T-lymphotropic virus 1 disease or disorder"", ""Human T-lymphotropic virus 1 infectious disease"", ""human T-lymphotropic virus 1 infectious disease""]"|Human T-lymphotropic virus 1 infectious disease
+EFO_0800066|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||6-oxopiperidine-2-carboxylate measurement
+EFO_0008983|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||VirScan
+EFO_0002359|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||SW1116
+EFO_0022346|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||76N cell
+EFO_0006805|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||word list delayed recall measurement
+EFO_0800366|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||1-oleoyl-GPG (18:1) measurement
+EFO_0001115|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||GM07345
+EFO_0007534|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Venezuelan equine fever"", ""Encephalomyelitis, Venezuelan Equine"", ""Venezuelan equine encephalitis"", ""Venezuelan equine encephalitis virus caused disease or disorder"", ""Venezuelan equine encephalitis virus disease or disorder"", ""Venezuelan equine encephalitis virus infectious disease""]"|Venezuelan equine encephalitis
+EFO_0002052|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||EcR-RKO/KLF4
+EFO_0021678|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||beta-Pseudouridine measurement
+EFO_0801171|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||indole-3-lactic acid measurement
+EFO_0803097|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||speckle-type POZ protein measurement
+EFO_0021331|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||X-12749 measurement
+EFO_0004062|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||NL2099
+EFO_0021270|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||X-11850 measurement
+EFO_0007187|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Old Age pemphigus"", ""Parapemphigus"", ""benign pemphigus"", ""senile dermatitis herpetiformis"", ""Bullous pemphigoid"", ""Bullous pemphigoid (disorder)"", ""Pemphigoid, Bullous"", ""bullous pemphigoid""]"|bullous pemphigoid
+EFO_0008422|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||susceptibility to infectious disease measurement
+EFO_1001403|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""post partum thyroiditis"", ""post-partum thyroiditides"", ""post-partum thyroiditis"", ""postpartum thyroiditides"", ""thyroiditides, post-partum"", ""thyroiditides, postpartum"", ""thyroiditis, post-partum"", ""thyroiditis, postpartum"", ""postpartum thyroiditis""]"|postpartum thyroiditis
+EFO_0800433|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||myristoyl dihydrosphingomyelin (d18:0/14:0) measurement
+EFO_0000393|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""RB""]"|Robertsonian translocation
+EFO_0801819|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||n-acetyltransferase 14 measurement
+EFO_1000608|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""Xanthosarcoma"", ""inflammatory MFH"", ""inflammatory malignant fibrous histiocytoma"", ""malignant xanthogranuloma"", ""undifferentiated pleomorphic sarcoma, inflammatory variant""]"|Undifferentiated Pleomorphic Sarcoma, Inflammatory Variant
+EFO_0010540|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||thiamine measurement
+EFO_0802492|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||DnaJ homolog subfamily C member 4 measurement
+EFO_0010507|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||lactose measurement
+EFO_0005495|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""neurosecretory-motor neuron""]"|NSM
+EFO_0001771|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""normalization_testing_design""]"|normalization testing design
+EFO_0020844|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||ubiquitin+1, truncated mutation for UBB measurement
+EFO_0001087|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||AU565
+EFO_0000352|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl|"[""ClinicalHistory"", ""clinical information""]"|clinical history
+EFO_0008434|Experimental Factor Ontology|http://www.ebi.ac.uk/efo/efo.owl||initial pursuit acceleration

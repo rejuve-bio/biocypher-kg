@@ -1,0 +1,6 @@
+expected_records:
+  - input: "rs10000012"
+    output:
+      label: "snp_upstream_gene"
+      source: ["snp", "rs10000012"]
+      target: ["gene", "ENSG00000090316"]

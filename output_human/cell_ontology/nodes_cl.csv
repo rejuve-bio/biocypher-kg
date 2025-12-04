@@ -1,0 +1,102 @@
+id|source|source_url|synonyms|term_name
+CL_0000000|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||cell
+CL_0000001|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""primary cell line cell"", ""primary cell culture cell"", ""unpassaged cultured cell""]"|primary cultured cell
+CL_0000005|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""fibroblast neural crest derived""]"|neural crest derived fibroblast
+CL_0000006|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""neuronal receptor cell (sensu Animalia)""]"|neuronal receptor cell
+CL_0000007|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||early embryonic cell (metazoa)
+CL_0000008|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||migratory cranial neural crest cell
+CL_0000010|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||cultured cell
+CL_0000011|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||migratory trunk neural crest cell
+CL_0000014|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""germline stem cell""]"|germ line stem cell
+CL_0000015|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||male germ cell
+CL_0000016|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||male germ line stem cell
+CL_0000017|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||spermatocyte
+CL_0000018|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""nematoblast""]"|spermatid
+CL_0000019|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""sperm cell"", ""spermatozoid"", ""spermatozoon""]"|sperm
+CL_0000020|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""spermatogonial cell""]"|spermatogonium
+CL_0000021|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||female germ cell
+CL_0000022|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||female germ line stem cell
+CL_0000023|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""oogonium""]"|oocyte
+CL_0000024|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||oogonial cell
+CL_0000025|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""mature oocyte"", ""ovum""]"|egg cell
+CL_0000026|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""nurse cell""]"|invertebrate nurse cell
+CL_0000027|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||smooth muscle cell neural crest derived
+CL_0000028|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||CNS neuron (sensu Nematoda and Protostomia)
+CL_0000029|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""neuron neural crest derived""]"|neural crest derived neuron
+CL_0000030|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||glioblast
+CL_0000031|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""neuroblast""]"|neuroblast (sensu Vertebrata)
+CL_0000032|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""neural placode cell""]"|neuroplacodal cell
+CL_0000033|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||apocrine cell
+CL_0000034|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""animal stem cell""]"|stem cell
+CL_0000035|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""unipotent stem cell"", ""unipotential stem cell""]"|single fate stem cell
+CL_0000036|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""epithelial stem cell""]"|epithelial fate stem cell
+CL_0000037|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""HSC"", ""colony forming unit hematopoietic"", ""blood forming stem cell"", ""hemopoietic stem cell""]"|hematopoietic stem cell
+CL_0000038|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""BFU-E"", ""CFU-E"", ""blast forming unit erythroid"", ""burst forming unit erythroid"", ""colony forming unit erythroid"", ""erythroid stem cell""]"|erythroid progenitor cell
+CL_0000039|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||germ line cell
+CL_0000040|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""CFU-M"", ""colony forming unit macrophage"", ""colony forming unit monocyte"", ""monocyte stem cell""]"|monoblast
+CL_0000041|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""mature eosinocyte"", ""mature eosinophil leucocyte"", ""mature eosinophil leukocyte""]"|mature eosinophil
+CL_0000042|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""neutrophilic granuloblast""]"|neutrophilic myeloblast
+CL_0000043|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""mature basophil leucocyte"", ""mature basophil leukocyte""]"|mature basophil
+CL_0000047|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""NSC"", ""neuronal stem cell""]"|neural stem cell
+CL_0000048|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""multi-fate stem cell"", ""multifate stem cell"", ""multipotent cell"", ""multipotent stem cell""]"|multi fate stem cell
+CL_0000049|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""CFU-GEMM"", ""CFU-S"", ""CMP"", ""colony forming unit granulocyte, erythrocyte, macrophage, and megakaryocyte"", ""multipotential myeloid stem cell"", ""myeloid stem cell"", ""pluripotent stem cell (bone marrow)"", ""common myeloid precursor""]"|common myeloid progenitor
+CL_0000050|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""CFU-EM"", ""CFU-MegE"", ""MEP"", ""Meg/E progenitor"", ""colony forming unit erythroid megakaryocyte"", ""megakaryocyte/erythrocyte progenitor"", ""megakaryocyte/erythroid progenitor cell""]"|megakaryocyte-erythroid progenitor cell
+CL_0000051|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""CLP"", ""ELP"", ""committed lymphopoietic stem cell"", ""early lymphocyte progenitor"", ""lymphoid stem cell"", ""lymphopoietic stem cell"", ""common lymphocyte precursor"", ""common lymphocyte progenitor"", ""common lymphoid precursor""]"|common lymphoid progenitor
+CL_0000052|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""totipotential stem cell""]"|totipotent stem cell
+CL_0000056|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||myoblast
+CL_0000057|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||fibroblast
+CL_0000058|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""chrondoplast""]"|chondroblast
+CL_0000059|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""amelocyte"", ""enamel secreting cell""]"|ameloblast
+CL_0000060|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||odontoblast
+CL_0000061|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""cementum secreting cell""]"|cementoblast
+CL_0000062|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||osteoblast
+CL_0000064|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||ciliated cell
+CL_0000065|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||ependymal cell
+CL_0000066|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""epitheliocyte""]"|epithelial cell
+CL_0000067|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||ciliated epithelial cell
+CL_0000068|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||duct epithelial cell
+CL_0000069|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||branched duct epithelial cell
+CL_0000071|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||blood vessel endothelial cell
+CL_0000072|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||non-branched duct epithelial cell
+CL_0000075|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||columnar/cuboidal epithelial cell
+CL_0000076|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||squamous epithelial cell
+CL_0000077|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""mesotheliocyte""]"|mesothelial cell
+CL_0000078|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||peridermal cell
+CL_0000079|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||stratified epithelial cell
+CL_0000080|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||circulating cell
+CL_0000081|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||blood cell
+CL_0000082|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""lung epithelial cell""]"|epithelial cell of lung
+CL_0000083|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""pancreas epithelial cell"", ""pancreatic epithelial cell""]"|epithelial cell of pancreas
+CL_0000084|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""immature T cell"", ""mature T cell"", ""T lymphocyte"", ""T-cell"", ""T-lymphocyte""]"|T cell
+CL_0000091|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""hepatic macrophage"", ""littoral cell of hepatic sinusoid"", ""liver macrophage"", ""macrophagocytus stellatus"", ""stellate cell of von Kupffer"", ""von Kupffer cell""]"|Kupffer cell
+CL_0000092|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""chondroclast""]"|osteoclast
+CL_0000094|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""granular leucocyte"", ""granular leukocyte"", ""polymorphonuclear leukocyte""]"|granulocyte
+CL_0000095|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||neuron associated cell
+CL_0000096|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""PMN"", ""mature neutrocyte"", ""mature neutrophil leucocyte"", ""mature neutrophil leukocyte"", ""mature neutrophilic leucocyte"", ""mature neutrophilic leukocyte"", ""polymorphonuclear neutrophil"", ""polynuclear neutrophilic leucocyte"", ""polynuclear neutrophilic leukocyte""]"|mature neutrophil
+CL_0000097|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""tissue basophil"", ""histaminocyte"", ""labrocyte"", ""mastocyte""]"|mast cell
+CL_0000098|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||sensory epithelial cell
+CL_0000099|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""CNS interneuron""]"|interneuron
+CL_0000100|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""motoneuron""]"|motor neuron
+CL_0000101|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||sensory neuron
+CL_0000102|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""polymodal sensory neuron""]"|polymodal neuron
+CL_0000103|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||bipolar neuron
+CL_0000104|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||multipolar neuron
+CL_0000105|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||pseudounipolar neuron
+CL_0000106|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||unipolar neuron
+CL_0000107|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||autonomic neuron
+CL_0000108|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||cholinergic neuron
+CL_0000109|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||adrenergic neuron
+CL_0000110|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||peptidergic neuron
+CL_0000112|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||columnar neuron
+CL_0000113|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||mononuclear phagocyte
+CL_0000114|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""cell of surface ectoderm"", ""surface ectoderm cell""]"|surface ectodermal cell
+CL_0000115|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""endotheliocyte""]"|endothelial cell
+CL_0000116|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||pioneer neuron
+CL_0000117|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||CNS neuron (sensu Vertebrata)
+CL_0000118|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||basket cell
+CL_0000119|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""Golgi cell"", ""Golgi neuron"", ""cerebellar Golgi neuron"", ""cerebellum Golgi cell""]"|cerebellar Golgi cell
+CL_0000120|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||granule cell
+CL_0000121|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""PC"", ""PN"", ""Purkinje neuron"", ""cerebellar Purkinje cell""]"|Purkinje cell
+CL_0000122|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||stellate neuron
+CL_0000123|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl||neuron associated cell (sensu Vertebrata)
+CL_0000125|Cell Ontology|http://purl.obolibrary.org/obo/cl.owl|"[""neuroglia"", ""neuroglial cell""]"|glial cell

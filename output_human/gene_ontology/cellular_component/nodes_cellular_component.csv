@@ -1,0 +1,101 @@
+alternative_ids|id|source|source_url|synonyms|term_name
+|GO_0034683|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""alphav-beta3 integrin complex""]"|integrin alphav-beta3 complex
+|GO_0002929|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""meta-coactivator complex""]"|MECO complex
+|GO_0000930|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||gamma-tubulin complex
+|GO_0044178|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""host Golgi membrane""]"|host cell Golgi membrane
+|GO_0030915|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Smc5-Smc6 complex
+|GO_0043505|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""centromere specific nucleosome"", ""centromere-specific nucleosome"", ""centromeric nucleosome"", ""CENP-S-T-W-X"", ""CNP-T-W-S-X complex"", ""CenH3 containing nucleosome""]"|CENP-A containing nucleosome
+|GO_0140149|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||non-collagenous component of interstitial matrix
+|GO_0160014|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||exopher
+|GO_0005601|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||classical-complement-pathway C3/C5 convertase complex
+|GO_0090730|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Las1 complex
+|GO_0016914|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""FSH complex"", ""follicle stimulating hormone complex""]"|follicle-stimulating hormone complex
+|GO_0005874|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""microtubuli"", ""microtubulus""]"|microtubule
+|GO_0005775|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||vacuolar lumen
+|GO_0097518|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||parallel actin filament bundle
+|GO_0099143|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||presynaptic actin cytoskeleton
+|GO_0009579|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""photosynthetic membrane""]"|thylakoid
+|GO_1990150|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""vascular endothelial growth factor A complex""]"|VEGF-A complex
+|GO_1990203|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""multidrug efflux pump MdtBC""]"|MdtBC Complex
+|GO_0110092|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||nucleus leading edge
+|GO_0140086|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||basement membrane/interstitial matrix interface
+|GO_0001535|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""radial spokehead""]"|radial spoke head
+|GO_0160277|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""lumenal face of cis-Golgi cisternae membrane"", ""lumenal leaflet of cis-Golgi cisternae membrane""]"|lumenal side of cis-Golgi cisternae membrane
+|GO_0010170|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||glucose-1-phosphate adenylyltransferase complex
+|GO_0120334|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""RS2""]"|radial spoke 2
+|GO_0061201|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""clathrin sculpted GABA transport vesicle lumen"", ""clathrin sculpted gamma-aminobutyric acid transport vesicle lumen""]"|clathrin-sculpted gamma-aminobutyric acid transport vesicle lumen
+|GO_0070422|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""G protein complex (GNG2, GNB2L1, RAF1)""]"|G-protein beta/gamma-Raf-1 complex
+|GO_0090577|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||RNA polymerase IV transcription regulator complex
+|GO_0070176|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""DP/Rb/MuvB""]"|DRM complex
+|GO_0005870|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||actin capping protein of dynactin complex
+|GO_0150015|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||apical proximal dendrite
+|GO_0071540|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""eIF3e-containing eukaryotic translation initiation factor 3 complex""]"|eukaryotic translation initiation factor 3 complex, eIF3e
+|GO_0005692|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""snRNP U11""]"|U11 snRNP
+|GO_0035770|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""RNP granule"", ""mRNP granule""]"|ribonucleoprotein granule
+|GO_0170052|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||box C/D pre-rRNA cleavage RNP complex
+|GO_0044225|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||apical pole of neuron
+|GO_0160223|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""thylakoid membrane tubule""]"|pyrenoid tubule
+|GO_0005693|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""snRNP U12""]"|U12 snRNP
+|GO_0045239|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""TCA cycle enzyme complex""]"|tricarboxylic acid cycle heteromeric enzyme complex
+|GO_0031379|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||RNA-directed RNA polymerase complex
+|GO_0036020|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""endolysosomal membrane""]"|endolysosome membrane
+|GO_0071005|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""yeast U12-type spliceosomal complex A2-1"", ""major precatalytic spliceosome""]"|U2-type precatalytic spliceosome
+|GO_0043159|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||acrosomal matrix
+|GO_1902693|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||superoxide dismutase complex
+|GO_1990007|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||membrane stack
+|GO_0070465|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alpha1-beta1 integrin-alpha3(VI) complex
+|GO_0032156|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||septin cytoskeleton
+|GO_0071758|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||IgW immunoglobulin complex
+|GO_0031673|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""H band"", ""H disc""]"|H zone
+|GO_1903440|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||amylin receptor complex
+|GO_0033113|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||cyanelle membrane
+|GO_0034748|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Par3-APC-KIF3A complex
+|GO_0071055|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alpha9-beta1 integrin-ADAM9 complex
+|GO_0070461|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""SAGA family complex""]"|SAGA-type complex
+|GO_0070088|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""PHA granule""]"|polyhydroxyalkanoate granule
+|GO_0061689|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||tricellular tight junction
+|GO_0160279|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""cytoplasmic face of Golgi medial cisterna membrane"", ""cytoplasmic leaflet of Golgi medial cisterna membrane""]"|cytoplasmic side of medial-Golgi cisterna membrane
+|GO_0048224|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||lignin network
+|GO_0170051|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||box C/D methylation guide scaRNP complex
+|GO_1990617|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""ATF4-CHOP heterodimer"", ""CHOP-ATF4 heterodimer"", ""CHOP-CREB-2 complex"", ""CHOP/ATF4 complex"", ""GADD153-ATF4 complex""]"|CHOP-ATF4 complex
+|GO_1990330|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||IscS-IscU complex
+|GO_0070045|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||synaptobrevin 2-SNAP-25-syntaxin-2 complex
+|GO_0042567|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""IGF ternary complex""]"|insulin-like growth factor ternary complex
+|GO_0070437|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Grb2-Shc complex
+|GO_0012506|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||vesicle membrane
+|GO_0033186|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""chromatin assembly factor 1 complex""]"|CAF-1 complex
+|GO_0039620|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||T=7 icosahedral viral capsid
+|GO_0097180|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""serine-type endopeptidase inhibitor complex"", ""serpin complex""]"|serine protease inhibitor complex
+|GO_0046821|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||extrachromosomal DNA
+|GO_0060342|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||photoreceptor inner segment membrane
+|GO_0071744|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""membrane-bound IgE"", ""surface IgE""]"|IgE B cell receptor complex
+|GO_0071113|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||alphaIIb-beta3 integrin-ICAM-4 complex
+|GO_0097523|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""transcription protein-DNA-RNA complex""]"|transcription ternary complex
+|GO_0009288|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""flagellin-based flagellum""]"|bacterial-type flagellum
+|GO_0140178|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||lumenal side of cis-Golgi network membrane
+|GO_0097526|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||spliceosomal tri-snRNP complex
+|GO_0097585|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||dolichyl-phosphate-mannose-protein mannosyltransferase Pmt5p-Pmt3p dimer complex
+|GO_0031241|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""internal leaflet of cell outer membrane"", ""internal side of cell outer membrane"", ""internal side of outer membrane""]"|periplasmic side of cell outer membrane
+|GO_0033100|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||NuA3 histone acetyltransferase complex
+|GO_0071017|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""U12-type activated spliceosome"", ""minor catalytic step 1 spliceosome""]"|U12-type catalytic step 1 spliceosome
+|GO_1903600|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Sno1p-Snz1p""]"|glutaminase complex
+|GO_0071746|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""IgA antibody""]"|IgA immunoglobulin complex, circulating
+|GO_0071176|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""MAML2-RBP-Jkappa-Notch2 complex""]"|MAML2-RBP-Jkappa-ICN2 complex
+|GO_0140225|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""Top3-beta-TDRD3 complex""]"|DNA topoisomerase III-beta-TDRD3 complex
+|GO_0045298|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||tubulin complex
+|GO_0030314|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||junctional membrane complex
+|GO_0061671|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Cbp3p-Cbp6 complex
+|GO_1990199|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""MsbA complex"", ""MsbA dimer""]"|MsbA transporter complex
+|GO_0035649|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Nrd1 complex
+|GO_0031500|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||Tea1 cell-end complex
+|GO_0160280|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""lumenal face of medial-Golgi cisterna membrane"", ""lumenal leaflet of Golgi medial cisterna membrane""]"|lumenal side of medial-Golgi cisterna membrane
+"[""GO:0043925"", ""GO:0043926""]"|GO_0042729|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""DDD complex"", ""Dam1 complex"", ""Duo1p-Dam1p-Dad1p complex"", ""condensed nuclear chromosome kinetochore-associated DASH complex""]"|DASH complex
+|GO_0033102|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||acidocalcisome membrane
+|GO_1990024|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||C bouton
+|GO_0061496|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||half bridge of mitotic spindle pole body
+|GO_0071203|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||WASH complex
+"[""GO:0000780""]"|GO_0000779|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""condensed chromosome, centromere"", ""condensed chromosome, pericentric region"", ""condensed chromosome, centric region""]"|condensed chromosome, centromeric region
+|GO_0032797|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""SMN core complex"", ""survival motor neuron complex""]"|SMN complex
+|GO_0090573|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||RNA polymerase IV transcription repressor complex
+|GO_0005705|Gene Ontology|http://purl.obolibrary.org/obo/go.owl||polytene chromosome interband
+|GO_0019813|Gene Ontology|http://purl.obolibrary.org/obo/go.owl|"[""type III restriction enzyme complex""]"|type III site-specific deoxyribonuclease complex

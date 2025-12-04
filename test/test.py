@@ -6,9 +6,17 @@ import importlib
 import logging
 import os
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
+import utils as test_utils
 
 
 logging.basicConfig(level=logging.INFO)
+
+SAMPLE_DBSNP_RSID_MAP = {
+    'rs10000009': 71048952,
+}
 
 def convert_input_labels(label, replace_char="_"):
     return label.replace(" ", replace_char)
@@ -87,19 +95,23 @@ def setup_class(request):
     except Exception as e:
         pytest.fail(f"Error initializing BioCypher: {e}")
    
-    # Load adapters config
-    adapters_config_path = request.config.getoption("--adapters-config")
+    # Load adapters config (use sample config as default for local runs)
+    adapters_config_path = request.config.getoption("--adapters-config") or 'config/adapters_config_sample.yaml'
     dbsnp_rsids = request.config.getoption("--dbsnp-rsids")
     dbsnp_pos = request.config.getoption("--dbsnp-pos")
     if dbsnp_rsids:
         logging.info("Loading dbsnp rsids map")
         dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
     else:
-        logging.warning("--dbsnp-rsids not provided, skipping dbsnp rsids map loading")
-        dbsnp_rsids_dict = None
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+        logging.warning("--dbsnp-rsids not provided, loading small default sample dbsnp rsid map for tests")
+        dbsnp_rsids_dict = SAMPLE_DBSNP_RSID_MAP.copy()
+    if dbsnp_pos:
+        logging.info("Loading dbsnp pos map")
+        dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+    else:
+        logging.warning("--dbsnp-pos not provided, skipping dbsnp pos map loading")
+        dbsnp_pos_dict = None
    
-    # Load adapters config
     with open(adapters_config_path, 'r') as f:
         adapters_config = yaml.safe_load(f)
 
@@ -113,7 +125,6 @@ def validate_node_type(node_id, node_label, schema_node_labels):
         node_type = node_id[0]
         return node_type in schema_node_labels
     else:
-        # For non-tuple IDs, check if the label is in schema
         label = convert_input_labels(node_label)
         return label in schema_node_labels
 
@@ -129,21 +140,17 @@ def validate_edge_type_compatibility(source_id, target_id, edge_label, edges_sch
     valid_source_types = edge_def["source"]
     valid_target_types = edge_def["target"]
     
-    # Extract source type
+
     if isinstance(source_id, tuple):
         source_type = source_id[0].lower()
     else:
-        # For non-tuple source IDs, we can't validate type compatibility
         return True, "Cannot validate source type for non-tuple ID"
     
-    # Extract target type
     if isinstance(target_id, tuple):
         target_type = target_id[0].lower()
     else:
-        # For non-tuple target IDs, we can't validate type compatibility
         return True, "Cannot validate target type for non-tuple ID"
     
-    # Validate source type
     if isinstance(valid_source_types, list):
         if source_type not in valid_source_types:
             return False, f"Source type '{source_type}' not in valid types {valid_source_types}"
@@ -151,7 +158,6 @@ def validate_edge_type_compatibility(source_id, target_id, edge_label, edges_sch
         if source_type != valid_source_types:
             return False, f"Source type '{source_type}' does not match required '{valid_source_types}'"
     
-    # Validate target type
     if isinstance(valid_target_types, list):
         if target_type not in valid_target_types:
             return False, f"Target type '{target_type}' not in valid types {valid_target_types}"
@@ -160,6 +166,49 @@ def validate_edge_type_compatibility(source_id, target_id, edge_label, edges_sch
             return False, f"Target type '{target_type}' does not match required '{valid_target_types}'"
     
     return True, "Valid"
+
+def record_in(actual_records, expected_record):
+    """
+    Check if a record is in the list of actual records.
+    Considers both node and edge records.
+    """
+    for record in actual_records:
+        if isinstance(record, tuple):
+            if record[0] == expected_record['id']:
+                return True
+        else:
+            if record.get('id') == expected_record['id']:
+                return True
+    return False
+
+def instantiate_adapter(cfg, dbsnp_maps=None, **kwargs):
+    """
+    Instantiate an adapter class based on the configuration.
+    Supports mapping DB SNP IDs and additional keyword arguments.
+    """
+    adapter_module = importlib.import_module(cfg['adapter']['module'])
+    adapter_class = getattr(adapter_module, cfg['adapter']['cls'])
+    
+    adapter_args = cfg['adapter']['args'].copy()
+    combined = {}
+    combined.update(adapter_args)
+    if dbsnp_maps:
+        for k, v in dbsnp_maps.items():
+            if v is not None:
+                combined[k] = v
+    combined.update(kwargs)
+
+   
+    try:
+        import inspect
+        sig = inspect.signature(adapter_class.__init__)
+        valid_params = set(sig.parameters.keys())
+        valid_params.discard('self')
+        filtered = {k: v for k, v in combined.items() if k in valid_params}
+    except Exception:
+        filtered = combined
+
+    return adapter_class(**filtered)
 
 @pytest.mark.filterwarnings("ignore")
 class TestBiocypherKG:
@@ -177,10 +226,9 @@ class TestBiocypherKG:
             if config["nodes"]:
                 adapter_module = importlib.import_module(config['adapter']['module'])
                 adapter_class = getattr(adapter_module, config['adapter']['cls'])
-                    
-                # Add write_properties and add_provenance to the arguments
+                 
                 adapter_args = config['adapter']['args'].copy()
-                if "dbsnp_rsid_map" in adapter_args: #this for dbs that use grch37 assembly and to map grch37 to grch38
+                if "dbsnp_rsid_map" in adapter_args:
                         adapter_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
                 if "dbsnp_pos_map" in adapter_args:
                     adapter_args["dbsnp_pos_map"] = dbsnp_pos_dict
@@ -188,14 +236,12 @@ class TestBiocypherKG:
                 adapter_args['add_provenance'] = True
                     
                 adapter = adapter_class(**adapter_args)
-                
-                # Get a sample node from the adapter
+               
                 sample_node = next(adapter.get_nodes(), None)
                 assert sample_node, f"No nodes found for adapter '{adapter_name}'"
                 
                 node_id, node_label, node_props = sample_node
                 
-                # Validate node type
                 is_valid = validate_node_type(node_id, node_label, node_labels)
                 
                 if isinstance(node_id, tuple):
@@ -205,11 +251,7 @@ class TestBiocypherKG:
                     label = convert_input_labels(node_label)
                     assert label in node_labels, f"Node label '{label}' from adapter '{adapter_name}' not found in schema"
                 
-                #TODO Check if node properties are defined in schema
-                # schema_props = schema[label].get('properties', {})
-                # for prop in node_props:
-                #     assert prop in schema_props, f"Property '{prop}' of node '{node_label}' from adapter '{adapter_name}' not found in schema"
-
+              
     def test_adapter_edges_in_schema(self, setup_class):
         """
         What it tests: Similar to the node test, this one ensures that the edge labels produced by the adapters 
@@ -228,10 +270,8 @@ class TestBiocypherKG:
 
                 adapter_module = importlib.import_module(config['adapter']['module'])
                 adapter_class = getattr(adapter_module, config['adapter']['cls'])
-                    
-                    # Add write_properties and add_provenance to the arguments
                 adapter_args = config['adapter']['args'].copy()
-                if "dbsnp_rsid_map" in adapter_args: #this for dbs that use grch37 assembly and to map grch37 to grch38
+                if "dbsnp_rsid_map" in adapter_args: 
                     adapter_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
                 if "dbsnp_pos_map" in adapter_args:
                     adapter_args["dbsnp_pos_map"] = dbsnp_pos_dict
@@ -240,23 +280,50 @@ class TestBiocypherKG:
                 
                 adapter = adapter_class(**adapter_args)
                 
-                # Get a sample edge from the adapter
                 sample_edge = next(adapter.get_edges(), None)
                 assert sample_edge, f"No edges found for adapter '{adapter_name}'"
                 
                 source_id, target_id, edge_label, edge_props = sample_edge
                 assert edge_label.lower() in edges_schema, f"Edge label '{edge_label}' from adapter '{adapter_name}' not found in schema"
                 
-                # Validate source and target type compatibility
                 is_valid, message = validate_edge_type_compatibility(source_id, target_id, edge_label, edges_schema)
                 
-                # Only assert if validation failed (not just warning messages)
                 if not is_valid:
                     assert is_valid, f"Edge '{edge_label}' from adapter '{adapter_name}': {message}"
                 
-                #TODO Check if edge properties are defined in schema
-                # schema_props = schema[edge_label].get('properties', {})
-                # for prop in edge_props:
-                #     assert prop in schema_props, f"Property '{prop}' of edge '{edge_label}' from adapter '{adapter_name}' not found in schema"
+    def test_adapter_record_validation(self, setup_class):
+        node_labels, edges_schema, adapters_config, dbsnp_rsids_dict, dbsnp_pos_dict = setup_class
+        for adapter_name, cfg in adapters_config.items():
+            expected = test_utils.load_expected_records(adapter_name)
+            if not expected:
+                continue
+            adapter = instantiate_adapter(cfg, dbsnp_maps={"dbsnp_rsid_map": dbsnp_rsids_dict, "dbsnp_pos_map": dbsnp_pos_dict}, write_properties=True, add_provenance=True)
+            for map_attr in ("dbsnp_rsid_map", "dbsnp_pos_map"):
+                if hasattr(adapter, map_attr):
+                    val = getattr(adapter, map_attr)
+                    if not isinstance(val, dict):
+                        setattr(adapter, map_attr, {})
+
+            nodes_iter = getattr(adapter, 'get_nodes', None)
+            if callable(nodes_iter):
+                nodes_iter = nodes_iter()
+            if nodes_iter is None:
+                actual_nodes = []
+            else:
+                actual_nodes = list(nodes_iter)
+
+            edges_iter = getattr(adapter, 'get_edges', None)
+            if callable(edges_iter):
+                edges_iter = edges_iter()
+            if edges_iter is None:
+                actual_edges = []
+            else:
+                actual_edges = list(edges_iter)
+            for e in expected:
+                out = e.get('output', {})
+                if 'id' in out or (out.get('label') and out.get('label') in node_labels):
+                    assert test_utils.record_in_nodes(out, actual_nodes), f"Expected node not found for adapter {adapter_name}: {out}"
+                else:
+                    assert test_utils.record_in_edges(out, actual_edges), f"Expected edge not found for adapter {adapter_name}: {out}"
 
 # Additional tests can be added here

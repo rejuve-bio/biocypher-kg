@@ -38,6 +38,16 @@ def build_default_fly_command() -> List[str]:
         "--writer-type", "neo4j", "--no-add-provenance"
     ]
 
+
+def build_default_all_command() -> List[str]:
+    """Default command for running all supported species."""
+    return [
+        "python3", str(PROJECT_ROOT / "create_knowledge_graph.py"),
+        "--dbsnp-rsids", str(PROJECT_ROOT / "aux_files/sample_dbsnp_rsids.pkl"),
+        "--dbsnp-pos", str(PROJECT_ROOT / "aux_files/sample_dbsnp_pos.pkl"),
+        "--writer-type", "neo4j", "--no-add-provenance", "--species", "all",
+    ]
+
 def run_generation(cmd: List[str], show_logs: bool) -> None:
     try:
         console.print("\n[bold]Starting knowledge graph generation...[/]\n")
@@ -60,19 +70,27 @@ def run_generation(cmd: List[str], show_logs: bool) -> None:
         console.print(Panel.fit(f"[bold red]✖ Execution failed: {str(e)}[/]", style="red"))
 
 def generate_kg_workflow() -> None:
-    organism = select("Select organism to generate KG for:", choices=[{"name": "🧬 Human", "value": "human"}, {"name": "🪰 Drosophila melanogaster (Fly)", "value": "fly"}, "🔙 Back"], qmark=">", pointer="→").unsafe_ask()
+    organism = select("Select organism to generate KG for:", choices=[{"name": "🧬 Human", "value": "human"}, {"name": "🪰 Drosophila melanogaster (Fly)", "value": "fly"}, {"name": "🌐 All species", "value": "all"}, "🔙 Back"], qmark=">", pointer="→").unsafe_ask()
     if organism == "🔙 Back": return
     config_type = select(f"Select configuration type for {organism}:", choices=["⚡ Default Configuration", "🛠️ Custom Configuration", "🔙 Back"], qmark=">", pointer="→").unsafe_ask()
     if config_type == "🔙 Back": return
     if config_type == "⚡ Default Configuration":
-        if organism == "human": cmd = build_default_human_command()
-        else: cmd = build_default_fly_command()
-        console.print(Panel.fit(f"[bold]Using default {organism} configuration[/]\nOutput will be saved to 'output_{organism}' directory", style="blue"))
+        if organism == "human":
+            cmd = build_default_human_command()
+            console.print(Panel.fit(f"[bold]Using default human configuration[/]\nOutput will be saved to 'output_human' directory", style="blue"))
+        elif organism == "fly":
+            cmd = build_default_fly_command()
+            console.print(Panel.fit(f"[bold]Using default fly configuration[/]\nOutput will be saved to 'output_fly' directory", style="blue"))
+        else:
+            cmd = build_default_all_command()
+            console.print(Panel.fit(f"[bold]Using default 'all' configuration[/]\nRunning per-species defaults and sample aux files.", style="blue"))
     else:
         selections = configuration_workflow(organism)
         if not selections: return
         display_config_summary(selections)
         cmd = build_command_from_selections(selections)
+        if organism == "all":
+            cmd.extend(["--species", "all"])
     console.print(Panel.fit("[bold]Ready to generate knowledge graph[/]", style="blue"))
     show_logs = confirm("Show detailed logs during generation?", default=False).unsafe_ask()
     if confirm("Start knowledge graph generation?", default=True).unsafe_ask(): run_generation(cmd, show_logs)
