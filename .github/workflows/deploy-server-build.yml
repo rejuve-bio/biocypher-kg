@@ -1,0 +1,395 @@
+name: Deploy Knowledge Graph (Server Build)
+
+on:
+  workflow_run:
+    workflows: ["Test Adapters and Writers"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      force_full_build:
+        description: 'Force full rebuild (all adapters)'
+        required: false
+        default: 'false'
+
+jobs:
+  check_test_status:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Test workflow status
+        run: echo "Tests passed, proceeding with deployment"
+
+  determine_changes:
+    needs: check_test_status
+    runs-on: ubuntu-latest
+    outputs:
+      changed_adapters: ${{ steps.get-changes.outputs.adapters }}
+      changed_writers: ${{ steps.get-changes.outputs.writers }}
+      changed_outdirs: ${{ steps.get-outdirs.outputs.outdirs }}
+      config_changed: ${{ steps.get-changes.outputs.config_changed }}
+      changed_config_items: ${{ steps.get-changes.outputs.changed_config_items }}
+      main_script_changed: ${{ steps.get-changes.outputs.main_script_changed }}
+      metta_writer_changed: ${{ steps.get-changes.outputs.metta_writer_changed }}
+      build_mode: ${{ steps.determine-mode.outputs.build_mode }}
+      version: ${{ steps.generate-version.outputs.version }}
+      skip_deploy: ${{ steps.get-changes.outputs.skip_deploy }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install PyYAML
+        run: pip install PyYAML
+
+      - id: get-changes
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            HEAD_SHA=${{ github.event.workflow_run.head_sha }}
+            BASE_SHA=$(git rev-parse ${HEAD_SHA}^)
+          else
+            HEAD_SHA=${{ github.sha }}
+            BASE_SHA=${{ github.event.before }}
+          fi
+
+          echo "Comparing $BASE_SHA to $HEAD_SHA"
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+          WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog)(?=_writer\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+
+          echo "adapters=$ADAPTERS" >> $GITHUB_OUTPUT
+          echo "writers=$WRITERS" >> $GITHUB_OUTPUT
+
+          MAIN_SCRIPT_CHANGED=false
+          if echo "$CHANGED_FILES" | grep -q "create_knowledge_graph.py"; then
+            MAIN_SCRIPT_CHANGED=true
+          fi
+          echo "main_script_changed=$MAIN_SCRIPT_CHANGED" >> $GITHUB_OUTPUT
+
+          CONFIG_CHANGED=false
+          CHANGED_CONFIG_ITEMS=""
+          if echo "$CHANGED_FILES" | grep -q "config/adapters_config_sample.yaml"; then
+            CONFIG_CHANGED=true
+            echo "Config changed, detecting which adapters are affected..."
+            echo "Using commits: BASE=$BASE_SHA HEAD=$HEAD_SHA"
+            python .github/scripts/detect_config_changes.py "$BASE_SHA" "$HEAD_SHA"
+            CHANGED_CONFIG_ITEMS=$(cat .github/changed_config_items.txt)
+            echo "Changed config items (adapter keys): $CHANGED_CONFIG_ITEMS"
+          fi
+          echo "config_changed=$CONFIG_CHANGED" >> $GITHUB_OUTPUT
+          echo "changed_config_items=$CHANGED_CONFIG_ITEMS" >> $GITHUB_OUTPUT
+
+          METTA_WRITER_CHANGED=false
+          if echo "$WRITERS" | grep -q "metta"; then
+            METTA_WRITER_CHANGED=true
+          fi
+          echo "metta_writer_changed=$METTA_WRITER_CHANGED" >> $GITHUB_OUTPUT
+
+          SKIP_DEPLOY=false
+          if [ -z "$ADAPTERS" ] && [ -z "$CHANGED_CONFIG_ITEMS" ] && [ "$MAIN_SCRIPT_CHANGED" == "false" ] && [ "$METTA_WRITER_CHANGED" == "false" ]; then
+            echo "⏭️ No relevant changes detected - skipping deployment"
+            SKIP_DEPLOY=true
+          fi
+          echo "skip_deploy=$SKIP_DEPLOY" >> $GITHUB_OUTPUT
+
+      - id: get-outdirs
+        if: steps.get-changes.outputs.skip_deploy == 'false'
+        run: |
+          CHANGED_ADAPTERS="${{ steps.get-changes.outputs.adapters }}"
+          CONFIG_CHANGED="${{ steps.get-changes.outputs.config_changed }}"
+          CHANGED_CONFIG_ITEMS="${{ steps.get-changes.outputs.changed_config_items }}"
+
+          ALL_OUTDIRS=""
+
+          if [ -n "$CHANGED_ADAPTERS" ]; then
+            CODE_OUTDIRS=$(python .github/scripts/get_adapter_outdirs.py "$CHANGED_ADAPTERS" "config/adapters_config_sample.yaml")
+            echo "Outdirs from code changes: $CODE_OUTDIRS"
+            ALL_OUTDIRS="$CODE_OUTDIRS"
+          fi
+
+          if [ "$CONFIG_CHANGED" == "true" ] && [ -n "$CHANGED_CONFIG_ITEMS" ]; then
+            if [ "${{ github.event_name }}" == "workflow_run" ]; then
+              BASE_SHA="${{ github.event.workflow_run.head_sha }}^"
+              HEAD_SHA="${{ github.event.workflow_run.head_sha }}"
+            else
+              BASE_SHA="${{ github.event.before }}"
+              HEAD_SHA="${{ github.sha }}"
+            fi
+
+            echo "Getting outdirs for config changes (old + new)..."
+            CONFIG_OUTDIRS=$(python .github/scripts/get_config_outdirs.py "$BASE_SHA" "$HEAD_SHA" "$CHANGED_CONFIG_ITEMS")
+            echo "Outdirs from config changes: $CONFIG_OUTDIRS"
+
+            if [ -n "$ALL_OUTDIRS" ]; then
+              ALL_OUTDIRS="${ALL_OUTDIRS},${CONFIG_OUTDIRS}"
+            else
+              ALL_OUTDIRS="$CONFIG_OUTDIRS"
+            fi
+          fi
+
+          if [ -n "$ALL_OUTDIRS" ]; then
+            ALL_OUTDIRS=$(echo "$ALL_OUTDIRS" | tr ',' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
+          fi
+
+          echo "Final combined outdirs: $ALL_OUTDIRS"
+          echo "outdirs=$ALL_OUTDIRS" >> $GITHUB_OUTPUT
+
+      - id: determine-mode
+        if: steps.get-changes.outputs.skip_deploy == 'false'
+        run: |
+          FORCE_FULL="${{ github.event.inputs.force_full_build }}"
+          MAIN_CHANGED="${{ steps.get-changes.outputs.main_script_changed }}"
+          METTA_WRITER_CHANGED="${{ steps.get-changes.outputs.metta_writer_changed }}"
+
+          if [ "$FORCE_FULL" == "true" ] || [ "$MAIN_CHANGED" == "true" ] || [ "$METTA_WRITER_CHANGED" == "true" ]; then
+            echo "build_mode=full" >> $GITHUB_OUTPUT
+            echo "📦 Build mode: FULL (main script or writer changed)"
+          else
+            echo "build_mode=incremental" >> $GITHUB_OUTPUT
+            echo "🔄 Build mode: INCREMENTAL"
+          fi
+
+      - id: generate-version
+        if: steps.get-changes.outputs.skip_deploy == 'false'
+        run: |
+          TIMESTAMP=$(date -u +"%Y%m%d-%H%M%S")
+          VERSION="v-${TIMESTAMP}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
+
+  prepare_deploy_config:
+    needs: determine_changes
+    if: needs.determine_changes.outputs.skip_deploy == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install PyYAML
+        run: pip install PyYAML
+
+      - name: Prepare config
+        run: |
+          BUILD_MODE="${{ needs.determine_changes.outputs.build_mode }}"
+          if [ "$BUILD_MODE" == "full" ]; then
+            echo "Using full config for deployment"
+            cp config/adapters_config_sample.yaml config/deploy_config.yaml
+          else
+            echo "Preparing config for changed adapters and config items"
+            echo "Changed adapters (code): ${{ needs.determine_changes.outputs.changed_adapters }}"
+            echo "Changed config items: ${{ needs.determine_changes.outputs.changed_config_items }}"
+            if [ -f ".github/scripts/prepare_config.py" ]; then
+              python .github/scripts/prepare_config.py \
+                "${{ needs.determine_changes.outputs.changed_adapters }}" \
+                "${{ needs.determine_changes.outputs.config_changed }}" \
+                "${{ needs.determine_changes.outputs.changed_config_items }}"
+              mv config/test_config.yaml config/deploy_config.yaml
+              echo "Deploy config prepared with:"
+              echo "- Adapters with code changes"
+              echo "- Adapters with config changes"
+            else
+              echo "Warning: prepare_config.py not found, using full config"
+              cp config/adapters_config_sample.yaml config/deploy_config.yaml
+            fi
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deploy-config
+          path: config/deploy_config.yaml
+
+  # Trigger server-side build via SSH
+  trigger_server_build:
+    needs: [determine_changes, prepare_deploy_config]
+    if: needs.determine_changes.outputs.skip_deploy == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download deploy config
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-config
+          path: config
+
+      - name: Validate secrets
+        run: |
+          echo "Validating required secrets..."
+          MISSING_SECRETS=()
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            MISSING_SECRETS+=("SSH_PRIVATE_KEY")
+          fi
+          if [ -z "${{ secrets.SSH_HOST }}" ]; then
+            MISSING_SECRETS+=("SSH_HOST")
+          fi
+          if [ -z "${{ secrets.SSH_USER }}" ]; then
+            MISSING_SECRETS+=("SSH_USER")
+          fi
+          if [ -z "${{ secrets.TAILSCALE_AUTHKEY }}" ]; then
+            MISSING_SECRETS+=("TAILSCALE_AUTHKEY")
+          fi
+
+          if [ ${#MISSING_SECRETS[@]} -ne 0 ]; then
+            echo "❌ ERROR: Missing required secrets:"
+            for secret in "${MISSING_SECRETS[@]}"; do
+              echo "  - $secret"
+            done
+            exit 1
+          fi
+          echo "✅ All required secrets are configured"
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          # Test connection
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -o ConnectTimeout=30 \
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+              "echo '✅ Server connected successfully'"
+
+      - name: Upload deploy config to server
+        env:
+          CONFIG_PATH: /mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg/config/deploy_config.yaml
+        run: |
+          if [ "${{ needs.determine_changes.outputs.build_mode }}" == "incremental" ]; then
+            echo "📤 Uploading deploy config..."
+            scp -i ~/.ssh/deploy_key \
+                -o StrictHostKeyChecking=no \
+                -o UserKnownHostsFile=/dev/null \
+                config/deploy_config.yaml \
+                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${CONFIG_PATH}
+            echo "✅ Deploy config uploaded"
+          else
+            echo "ℹ️  Full build mode - using main config on server"
+          fi
+
+      - name: Trigger background build on server
+        env:
+          VERSION: ${{ needs.determine_changes.outputs.version }}
+          BUILD_MODE: ${{ needs.determine_changes.outputs.build_mode }}
+          CHANGED_ADAPTERS: ${{ needs.determine_changes.outputs.changed_adapters }}
+          CHANGED_OUTDIRS: ${{ needs.determine_changes.outputs.changed_outdirs }}
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          REPO_PATH: /mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg
+          BASE_PATH: /mnt/hdd_1/kedist/metta_kg_versions
+        run: |
+          echo "🚀 Triggering background build on server..."
+          SSH_CMD="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+          $SSH_CMD ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "chmod +x ${REPO_PATH}/scripts/trigger_build.sh ${REPO_PATH}/scripts/server_build.sh ${REPO_PATH}/scripts/check_build_status.sh"
+
+          CONFIG_ARG=""
+          if [ "$BUILD_MODE" == "incremental" ]; then
+            CONFIG_ARG="--config ${REPO_PATH}/config/deploy_config.yaml"
+          fi
+
+          $SSH_CMD ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << ENDSSH
+          export REPO_PATH="${REPO_PATH}"
+          export BASE_PATH="${BASE_PATH}"
+
+          bash ${REPO_PATH}/scripts/trigger_build.sh \
+            --version "${VERSION}" \
+            --build-mode "${BUILD_MODE}" \
+            --changed-adapters "${CHANGED_ADAPTERS}" \
+            --changed-outdirs "${CHANGED_OUTDIRS}" \
+            --commit "${COMMIT_SHA}" \
+            --branch "${BRANCH}" \
+            ${CONFIG_ARG}
+          ENDSSH
+
+      - name: Get initial build status
+        env:
+          VERSION: ${{ needs.determine_changes.outputs.version }}
+          BASE_PATH: /mnt/hdd_1/kedist/metta_kg_versions
+        run: |
+          echo "Checking initial build status..."
+          sleep 5
+
+          SSH_CMD="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+          $SSH_CMD ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "cat ${BASE_PATH}/${VERSION}/build_status.json" || echo "Status file not yet available"
+
+      - name: Create deployment summary
+        env:
+          VERSION: ${{ needs.determine_changes.outputs.version }}
+          BASE_PATH: /mnt/hdd_1/kedist/metta_kg_versions
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # 🚀 MeTTa Knowledge Graph Build Triggered
+
+          **Version:** \`$VERSION\`
+          **Commit:** \`${{ github.sha }}\`
+          **Branch:** \`${{ github.ref_name }}\`
+          **Build Mode:** ${{ needs.determine_changes.outputs.build_mode }}
+          **Writer:** MeTTa
+
+          ## Changes
+          - **Changed Adapters (code):** ${{ needs.determine_changes.outputs.changed_adapters || 'None' }}
+          - **Changed Config Items:** ${{ needs.determine_changes.outputs.changed_config_items || 'None' }}
+          - **Changed Output Dirs:** ${{ needs.determine_changes.outputs.changed_outdirs || 'None' }}
+          - **Changed Writers:** ${{ needs.determine_changes.outputs.changed_writers || 'None' }}
+          - **Config Changed:** ${{ needs.determine_changes.outputs.config_changed }}
+          - **Main Script Changed:** ${{ needs.determine_changes.outputs.main_script_changed }}
+
+          ## Build Information
+          - **Server:** ${{ secrets.SSH_HOST }} (via Tailscale)
+          - **Build running in background** - may take hours/days to complete
+          - **Log file:** \`${BASE_PATH}/logs/${VERSION}.log\`
+          - **Status file:** \`${BASE_PATH}/${VERSION}/build_status.json\`
+          - **Output path:** \`${BASE_PATH}/${VERSION}/\`
+
+          ## Monitor the Build
+
+          SSH into the server and run:
+          \`\`\`bash
+          # Check status
+          bash /mnt/hdd_1/kedist/biocypherKG-deploy/biocypher-kg/scripts/check_build_status.sh $VERSION
+
+          # Monitor live log
+          tail -f ${BASE_PATH}/logs/${VERSION}.log
+
+          # Check if process is running
+          cat ${BASE_PATH}/${VERSION}/build.pid | xargs ps -p
+          \`\`\`
+
+          ✅ Build triggered successfully!
+          EOF
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # ❌ Deployment Trigger Failed
+
+          Failed to trigger build for version \`${{ needs.determine_changes.outputs.version }}\`.
+
+          Please check the workflow logs for details.
+          EOF

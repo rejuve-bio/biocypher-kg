@@ -92,19 +92,16 @@ def preprocess_schema():
             else:
                 label = convert_input_labels(input_label)
             
-            # Handle source_type which can be a string or list
             if isinstance(source_type, list):
                 processed_source = [convert_input_labels(s).lower() for s in source_type]
             else:
                 processed_source = convert_input_labels(source_type).lower()
             
-            # Handle target_type which can be a string or list  
             if isinstance(target_type, list):
                 processed_target = [convert_input_labels(t).lower() for t in target_type]
             else:
                 processed_target = convert_input_labels(target_type).lower()
             
-            # Handle output_label
             output_label = v.get("output_label", None)
             if output_label:
                 if isinstance(output_label, list):
@@ -128,7 +125,8 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
         'edge_count': sum(edges_count.values()),
         'dataset_count': 0,
         'data_size': '',
-        'top_entities': [{'name': node, 'count': count} for node, count in nodes_count.items()],
+        'top_entities': [{'name': node, 'count': count}
+                        for node, count in sorted(nodes_count.items(), key=lambda x: x[1], reverse=True)],
         'top_connections': [],
         'frequent_relationships': [],
         'schema': {'nodes': [], 'edges': []},
@@ -189,15 +187,23 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
     edges_count = Counter()
     datasets_dict = {}
 
+    # Track metadata per outdir (multiple adapters can share same outdir)
+    outdir_metadata = defaultdict(lambda: {
+        'adapter_names': [],
+        'node_counts': Counter(),
+        'edge_counts': Counter(),
+        'properties': defaultdict(set)
+    })
+
     for c in adapters_dict:
-        writer.clear_counts() # Reset counter for this adapter
+        writer.clear_counts() 
         logger.info(f"Running adapter: {c}")
         adapter_config = adapters_dict[c]["adapter"]
         adapter_module = importlib.import_module(adapter_config["module"])
         adapter_cls = getattr(adapter_module, adapter_config["cls"])
         ctr_args = adapter_config["args"]
 
-        if "dbsnp_rsid_map" in ctr_args: #this for dbs that use grch37 assembly and to map grch37 to grch38
+        if "dbsnp_rsid_map" in ctr_args: 
             ctr_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
         if "dbsnp_pos_map" in ctr_args:
             ctr_args["dbsnp_pos_map"] = dbsnp_pos_dict
@@ -212,7 +218,7 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
         dataset_name = getattr(adapter, 'source', None)
         version = getattr(adapter, 'version', None)
         source_url = getattr(adapter, 'source_url', None)
-        
+
         if dataset_name is None:
             logger.warning(f"Dataset name is None for adapter: {c}. Ensure 'source' is defined in the adapter constructor.")
         else:
@@ -241,10 +247,10 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
             freq = writer.write_edges(edges, path_prefix=outdir)
             for edge_label_key in freq:
                 edges_count[edge_label_key] += freq[edge_label_key]
-                
+
                 parts = edge_label_key.split('|')
                 edge_type = parts[0]
-                
+
                 if edge_type.lower() in schema_dict:
                     output_label = schema_dict[edge_type.lower()]['output_label'] or edge_type
                 else:
@@ -252,6 +258,26 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
                 
                 if dataset_name is not None:
                     datasets_dict[dataset_name]['edges'].add(output_label)
+
+        
+        if write_nodes or write_edges:
+            outdir_metadata[outdir]['adapter_names'].append(c)
+            for node_type, count in writer.node_freq.items():
+                outdir_metadata[outdir]['node_counts'][node_type] += count
+            for edge_type, count in writer.edge_freq.items():
+                outdir_metadata[outdir]['edge_counts'][edge_type] += count
+            for node_type, props in writer.node_props.items():
+                outdir_metadata[outdir]['properties'][node_type].update(props)
+
+    for outdir, metadata in outdir_metadata.items():
+        adapter_names = '+'.join(sorted(metadata['adapter_names']))  
+        writer.save_adapter_metadata_from_dict(
+            adapter_name=adapter_names,
+            path_prefix=outdir,
+            node_counts=dict(metadata['node_counts']),
+            edge_counts=dict(metadata['edge_counts']),
+            properties={k: list(v) for k, v in metadata['properties'].items()}
+        )
 
     return nodes_count, nodes_props, edges_count, datasets_dict
 
@@ -269,18 +295,12 @@ def main(
     overwrite: Annotated[bool, typer.Option(help="Overwrite existing Parquet files")] = True,
     include_adapters: Annotated[Optional[List[str]], typer.Option(help="Specific adapters to include (space-separated, default: all)")] = None,
 ):
-    """
-    Main function. Call individual adapters to download and process data. Build
-    via BioCypher from node and edge data.
-    """
-
-    # Start biocypher
+    
     logger.info("Loading dbsnp rsids map")
     dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
     logger.info("Loading dbsnp pos map")
     dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
 
-    # Choose the writer based on user input or default to 'metta'
     bc = get_writer(writer_type, output_dir)
     logger.info(f"Using {writer_type} writer")
 
@@ -297,7 +317,6 @@ def main(
             logger.error("Error while trying to load adapter config")
             logger.error(e)
 
-    # Filter adapters if specific ones are requested
     if include_adapters:
          original_count = len(adapters_dict)
          include_lower = [a.lower() for a in include_adapters]
@@ -311,12 +330,10 @@ def main(
              raise typer.Exit(1)
              
          logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
-    # Run adapters
     nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
         adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict
     )
 
-    # For NetworkX writer, save the graph after processing all adapters
     if writer_type == 'networkx':
         bc.write_graph()
         logger.info("NetworkX graph saved successfully")
@@ -324,7 +341,6 @@ def main(
     if hasattr(bc, 'finalize'):
         bc.finalize()
 
-    # Gather graph info
     graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir)
 
     for dataset in datasets_dict:
@@ -334,7 +350,6 @@ def main(
 
     graph_info["dataset_count"] = len(graph_info['datasets'])
 
-    # Write the graph info to JSON
     graph_info_json = json.dumps(graph_info, indent=2)
     file_path = f"{output_dir}/graph_info.json"
     with open(file_path, "w") as f:

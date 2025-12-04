@@ -1,6 +1,8 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 import pathlib
 import os
+import json
+from datetime import datetime
 from biocypher._logger import logger
 import networkx as nx
 from collections import Counter, defaultdict
@@ -186,6 +188,73 @@ class MeTTaWriter(BaseWriter):
                     f.write(s + "\n")
             f.write("\n")
         return self.edge_freq
+
+    def save_adapter_metadata(self, adapter_name: str, path_prefix: str = None):
+        """
+        Save per-adapter metadata to enable fast graph_info aggregation.
+        This eliminates the need to scan MeTTa files during incremental builds.
+        """
+        if path_prefix is None:
+            logger.warning("No path_prefix specified, skipping adapter metadata")
+            return
+
+        # Use counts from writer
+        node_counts = dict(self.node_freq)
+        edge_counts = dict(self.edge_freq)
+        properties = {k: list(v) for k, v in self.node_props.items()}
+
+        return self.save_adapter_metadata_from_dict(
+            adapter_name=adapter_name,
+            path_prefix=path_prefix,
+            node_counts=node_counts,
+            edge_counts=edge_counts,
+            properties=properties
+        )
+
+    def save_adapter_metadata_from_dict(self, adapter_name: str, path_prefix: str,
+                                         node_counts: dict, edge_counts: dict, properties: dict):
+        """
+        Save per-adapter metadata from provided counts (supports aggregating multiple adapters per outdir).
+        """
+        if path_prefix is None:
+            logger.warning("No path_prefix specified, skipping adapter metadata")
+            return
+
+        # Get file statistics
+        adapter_dir = pathlib.Path(self.output_path) / path_prefix
+        file_stats = {}
+        total_size = 0
+
+        for metta_file in adapter_dir.glob("*.metta"):
+            file_size = metta_file.stat().st_size
+            total_size += file_size
+            file_stats[metta_file.name] = {
+                'size_bytes': file_size,
+                'lines': sum(1 for _ in open(metta_file))
+            }
+
+        # Build metadata
+        metadata = {
+            'adapter_name': adapter_name,
+            'outdir': path_prefix,
+            'generated_at': datetime.utcnow().isoformat() + 'Z',
+            'node_counts': node_counts,
+            'edge_counts': edge_counts,
+            'properties': properties,
+            'files': file_stats,
+            'total_size_bytes': total_size,
+            'total_nodes': sum(node_counts.values()),
+            'total_edges': sum(edge_counts.values())
+        }
+
+        # Save metadata
+        metadata_path = adapter_dir / ".adapter_metadata.json"
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+
+        logger.info(f"Saved adapter metadata: {adapter_name} ({metadata['total_nodes']} nodes, {metadata['total_edges']} edges)")
+
+        return metadata
 
     def write_node(self, node):
         id, label, properties = node
