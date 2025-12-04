@@ -704,6 +704,16 @@ do:
   kgx_properties:
     category: "biolink:Disease"
 
+chebi:
+  is_a: ontology term
+  represented_as: node
+  input_label: chemical_substance
+  mixins: [biolink:Disease]
+  biolink_category: "biolink:ChemicalEntity"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:ChemicalEntity"
+
 # Flybase development ontology (FBdv#) - dmel exclusive ontology term
 FBdv:
   is_a: ontology term
@@ -2268,6 +2278,22 @@ do subclass of:
     object_category: "biolink:Disease"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+chebi subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: chebi_subclass_of
+  output_label: subclass_of
+  biolink_predicate: "biolink:subclass_of"
+  source: chebi
+  target: chebi
+  kgx_properties:
+    subject_category: "biolink:ChemicalEntity"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
 
 # ---
 # regulatory association (edges)

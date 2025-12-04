@@ -807,7 +807,7 @@ disease_ontology:
       dry_run: True
       add_description: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: disease
   nodes: True
   edges: False
 
@@ -821,7 +821,34 @@ disease_do_subclass_of:
       type: edge
       dry_run: True
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: disease
   nodes: False
   edges: True
 
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: True
+  edges: False
+
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: False
+  edges: True
