@@ -81,6 +81,7 @@ class BaseMappingProcessor(ABC):
 
         previous_metadata = version_info.get('remote_metadata', {})
 
+        has_valid_metadata = False
         for url in urls:
             current_metadata = self.check_remote_version(url)
             if not current_metadata:
@@ -89,19 +90,26 @@ class BaseMappingProcessor(ABC):
             prev_meta = previous_metadata.get(url, {})
 
             if current_metadata.get('last_modified') and prev_meta.get('last_modified'):
+                has_valid_metadata = True
                 if current_metadata['last_modified'] != prev_meta['last_modified']:
                     print(f"{self.name}: Remote file updated (Last-Modified changed)")
                     return True
 
             if current_metadata.get('etag') and prev_meta.get('etag'):
+                has_valid_metadata = True
                 if current_metadata['etag'] != prev_meta['etag']:
                     print(f"{self.name}: Remote file updated (ETag changed)")
                     return True
 
             if current_metadata.get('content_length') and prev_meta.get('content_length'):
+                has_valid_metadata = True
                 if current_metadata['content_length'] != prev_meta['content_length']:
                     print(f"{self.name}: Remote file updated (size changed)")
                     return True
+
+        if not has_valid_metadata:
+            print(f"{self.name}: No valid remote metadata available for comparison")
+            return None
 
         print(f"{self.name}: No remote updates detected")
         return False
