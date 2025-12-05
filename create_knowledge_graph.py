@@ -11,6 +11,7 @@ from biocypher_metta.neo4j_csv_writer import *
 from biocypher_metta.kgx_writer import *
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.networkx_writer import NetworkXWriter
+from biocypher_metta.processors import DBSNPProcessor
 from biocypher._logger import logger
 import typer
 import yaml
@@ -260,25 +261,104 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 def main(
     output_dir: Annotated[Path, typer.Option(help="Output directory")],
     adapters_config: Annotated[Path, typer.Option(help="Path to adapters config YAML file")],
-    dbsnp_rsids: Annotated[Path, typer.Option(help="Path to dbSNP rsids pickle file")],
-    dbsnp_pos: Annotated[Path, typer.Option(help="Path to dbSNP position pickle file")],
     writer_type: Annotated[str, typer.Option(help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX")] = "metta",
     write_properties: Annotated[bool, typer.Option(help="Write properties to nodes and edges")] = True,
     add_provenance: Annotated[bool, typer.Option(help="Add provenance to nodes and edges")] = True,
     buffer_size: Annotated[int, typer.Option(help="Buffer size for Parquet writer")] = 10000,
     overwrite: Annotated[bool, typer.Option(help="Overwrite existing Parquet files")] = True,
     include_adapters: Annotated[Optional[List[str]], typer.Option(help="Specific adapters to include (space-separated, default: all)")] = None,
+    dbsnp_rsids: Annotated[Optional[Path], typer.Option(help="Custom dbSNP rsIDs pickle file (optional)")] = None,
+    dbsnp_pos: Annotated[Optional[Path], typer.Option(help="Custom dbSNP positions pickle file (optional)")] = None,
 ):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
     """
 
-    # Start biocypher
-    logger.info("Loading dbsnp rsids map")
-    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
-    logger.info("Loading dbsnp pos map")
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+    # Detect if using sample config
+    is_sample_config = 'sample' in str(adapters_config).lower()
+
+    # Initialize dbSNP mappings based on config and context
+    if is_sample_config:
+        # Sample config: use custom files if provided, otherwise use DBSNPProcessor with sample cache
+        if dbsnp_rsids and dbsnp_pos:
+            # User provided custom files for sample config
+            logger.info(f"Sample config with custom dbSNP files: {dbsnp_rsids}, {dbsnp_pos}")
+            with open(dbsnp_rsids, 'rb') as f:
+                dbsnp_rsids_dict = pickle.load(f)
+            with open(dbsnp_pos, 'rb') as f:
+                dbsnp_pos_dict = pickle.load(f)
+            logger.info(f"Loaded {len(dbsnp_rsids_dict):,} rsID mappings from custom files")
+        else:
+            # Use DBSNPProcessor with sample cache directory
+            logger.info("Sample config detected: using DBSNPProcessor with sample cache")
+            sample_cache_dir = Path('aux_files/sample_dbsnp')
+
+            # Check if sample cache exists
+            sample_mapping = sample_cache_dir / 'dbsnp_mapping.pkl'
+            if not sample_mapping.exists():
+                logger.warning(f"Sample dbSNP cache not found at {sample_mapping}")
+                logger.info("Continuing without rsID mappings")
+                dbsnp_rsids_dict = {}
+                dbsnp_pos_dict = {}
+            else:
+                try:
+                    dbsnp_processor = DBSNPProcessor(cache_dir=str(sample_cache_dir))
+                    # Just load existing cache
+                    dbsnp_processor.load_mapping()
+                    dbsnp_rsids_dict, dbsnp_pos_dict = dbsnp_processor.get_dict_wrappers()
+                    logger.info(f"Loaded {len(dbsnp_rsids_dict):,} sample rsID mappings from processor")
+                except Exception as e:
+                    logger.warning(f"Failed to load sample dbSNP mappings: {e}")
+                    logger.info("Continuing without rsID mappings")
+                    dbsnp_rsids_dict = {}
+                    dbsnp_pos_dict = {}
+
+    else:
+        # Main config: ALWAYS use server cache at /mnt/hdd_2/kedist/rsids_map
+        server_cache_dir = Path('/mnt/hdd_2/kedist/rsids_map')
+
+        # Check if server cache is accessible
+        if not server_cache_dir.exists() or not server_cache_dir.is_dir():
+            logger.error("=" * 80)
+            logger.error("ERROR: Main config requires server cache directory")
+            logger.error(f"Expected location: {server_cache_dir}")
+            logger.error("Directory not found!")
+            logger.error("")
+            logger.error("Solutions:")
+            logger.error("  1. Run on the bizon server where cache exists")
+            logger.error("  2. Use sample config instead: --adapters-config config/sample_adapters_config.yaml")
+            logger.error("  3. Create cache by running: python update_dbsnp.py")
+            logger.error("=" * 80)
+            raise typer.Exit(1)
+
+        try:
+            test_file = server_cache_dir / '.write_test'
+            test_file.touch()
+            test_file.unlink()
+            logger.info(f"Running on server with cache location: {server_cache_dir}")
+        except (PermissionError, OSError):
+            logger.info(f"Server cache found at: {server_cache_dir} (read-only)")
+
+        logger.info("Loading cached dbSNP mappings (common variants only, MAF ≥ 1%)")
+        logger.info(f"Cache location: {server_cache_dir}/dbsnp_mapping.pkl")
+        logger.info("Updates are handled by background service every 3 months")
+
+        dbsnp_processor = DBSNPProcessor(cache_dir=str(server_cache_dir))
+
+        try:
+            dbsnp_processor.load_mapping()
+            dbsnp_rsids_dict, dbsnp_pos_dict = dbsnp_processor.get_dict_wrappers()
+            logger.info(f"Loaded {len(dbsnp_rsids_dict):,} common rsID mappings (MAF ≥ 1%) from processor")
+        except Exception as e:
+            logger.error("=" * 80)
+            logger.error(f"ERROR: Failed to load dbSNP mappings: {e}")
+            logger.error("")
+            logger.error("Solutions:")
+            logger.error("  1. If cache doesn't exist, run: python update_dbsnp.py")
+            logger.error("  2. Use sample config instead: --adapters-config config/sample_adapters_config.yaml")
+            logger.error("=" * 80)
+            raise typer.Exit(1)
 
     # Choose the writer based on user input or default to 'metta'
     bc = get_writer(writer_type, output_dir)

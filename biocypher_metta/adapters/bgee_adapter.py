@@ -14,7 +14,7 @@ from collections import defaultdict
 class BgeeAdapter(Adapter):
     FIELD_INDEX = {'gene': 0, 'anatomical_entity': 2, 'developmental stage': 4, 'expression': 8, 'fdr': 10, 'expression_score': 11}
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label = 'expressed_in'):
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label='expressed_in'):
         self.filepath = filepath
         self.label = label
         self.taxon_id = taxon_id
@@ -22,8 +22,7 @@ class BgeeAdapter(Adapter):
         self.source = 'bgee'
         self.source_url = f'https://www.bgee.org/download/gene-expression-calls?id={self.taxon_id}'
         super(BgeeAdapter, self).__init__(write_properties, add_provenance)
-    
-    
+
     def get_edges(self):
         edge_dict = defaultdict(lambda: {"score": float("-inf"), "props": {}})
         try:
@@ -35,18 +34,16 @@ class BgeeAdapter(Adapter):
                         data = line.strip().split('\t')
                         if data[BgeeAdapter.FIELD_INDEX['expression']] != 'present':
                             continue
-                        
-                        #CURIE format for source ID (subject)
-                        source_id =f"ENSEMBL:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
-                        # if ' ∩ ' in data[BgeeAdapter.FIELD_INDEX['anatomical_entity']]:
-                        # to include all anatomical terms
+
+                        # CURIE format for source ID (subject)
+                        source_id = f"ENSEMBL:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
+
+                        # Handle multiple anatomical entities separated by intersection symbol
                         anatomical_entities = self.split_by_intersection(data[BgeeAdapter.FIELD_INDEX['anatomical_entity']])
-                        
-                        for anatomical_entity in anatomical_entities:                            
+
+                        for anatomical_entity in anatomical_entities:
                             target_id = anatomical_entity
                             score = float(data[BgeeAdapter.FIELD_INDEX['expression_score']])
-                        # target_id = data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].split(' ∩ ')[0]
-                        # score = float(data[BgeeAdapter.FIELD_INDEX['expression_score']])
 
                             # Add properties, including the score
                             props = {
@@ -59,9 +56,8 @@ class BgeeAdapter(Adapter):
                             if self.add_provenance:
                                 props.update({
                                     "source": self.source,
-                                    "source_url": self.source_url,                                
+                                    "source_url": self.source_url,
                                 })
-                        # elif self.label == 'expressed_in_developmental_stage':
 
                             # Update edge if new score is higher
                             edge_key = (source_id, target_id)
@@ -79,8 +75,9 @@ class BgeeAdapter(Adapter):
         """
         Split a string by the Unicode intersection separator '∩' and return a list of IDs.
         Trims whitespace and drops empty parts.
+
         Example:
-        "FBbt:00003725 ∩ UBERON:6000004 ∩ CL:0000540"
-        -> ["FBbt:00003725", "UBERON:6000004", "CL:0000540"]
+            "FBbt:00003725 ∩ UBERON:6000004 ∩ CL:0000540"
+            -> ["FBbt:00003725", "UBERON:6000004", "CL:0000540"]
         """
         return [part.strip() for part in s.split('∩') if part.strip()]

@@ -1,15 +1,22 @@
-import pickle
 import csv
 from biocypher_metta.adapters import Adapter
 from biocypher._logger import logger
 from biocypher_metta.adapters.helpers import to_float
+from biocypher_metta.processors import HGNCProcessor
 
 class MotifDiffAdapter(Adapter):
-    def __init__(self, filepath, hgnc_to_ensembl, label, write_properties, add_provenance, threshold=1e-3):
+    def __init__(self, filepath, hgnc_to_ensembl=None, label=None, write_properties=None,
+                 add_provenance=None, threshold=1e-3, hgnc_processor=None):
         self.filepath = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl, 'rb'))
         self.label = label
         self.threshold = threshold
+
+        # Use provided processor or create new one
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
 
         self.source = 'MotifDiff'
         self.source_url = 'https://github.com/rezwanhosseini/MotifDiff'
@@ -61,8 +68,8 @@ class MotifDiffAdapter(Adapter):
                             best_motifs[hgnc_symbol] = (confidence, score, tf_id)
             
                 for hgnc_symbol, (confidence, score, tf_id) in best_motifs.items():
-                    tf_ensembl = self.hgnc_to_ensembl_map.get(hgnc_symbol)
-                
+                    tf_ensembl = self.hgnc_processor.get_ensembl_id(hgnc_symbol)
+
                     if tf_ensembl is None:
                         logger.warning(f"Couldn't find Ensembl ID for TF {hgnc_symbol}")
                         continue

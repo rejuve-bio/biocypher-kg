@@ -1,6 +1,7 @@
 import gzip
 from Bio import SeqIO
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import EnsemblUniProtProcessor
 
 # Data file for genes_pathways: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
 # data format:
@@ -31,7 +32,8 @@ class ReactomeAdapter(Adapter):
     ALLOWED_LABELS = ['genes_pathways',
                       'parent_pathway_of', 'child_pathway_of']
 
-    def __init__(self, filepath, label, write_properties, add_provenance, ensembl_uniprot_map_path=None):
+    def __init__(self, filepath, label, write_properties, add_provenance,
+                 ensembl_uniprot_map_path=None, ensembl_uniprot_processor=None):
         if label not in ReactomeAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +
                              ', '.join(ReactomeAdapter.ALLOWED_LABELS))
@@ -40,18 +42,18 @@ class ReactomeAdapter(Adapter):
         self.label = label
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
-        
-        # Load the Ensembl to UniProt mapping if provided
-        self.ensembl_uniprot_map = {}
-        if ensembl_uniprot_map_path:
-            try:
-                import pickle
-                with open(ensembl_uniprot_map_path, 'rb') as f:
-                    self.ensembl_uniprot_map = pickle.load(f)
-                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
-            except Exception as e:
-                print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
-                self.ensembl_uniprot_map = {}
+
+        # Use provided processor or create new one
+        if ensembl_uniprot_processor is None:
+            self.processor = EnsemblUniProtProcessor()
+            self.processor.load_or_update()
+        else:
+            self.processor = ensembl_uniprot_processor
+
+        # Create mapping dict for backward compatibility
+        self.ensembl_uniprot_map = self.processor.mapping
+        if self.ensembl_uniprot_map:
+            print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
 
         super(ReactomeAdapter, self).__init__(write_properties, add_provenance)
 

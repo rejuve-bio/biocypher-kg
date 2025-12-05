@@ -4,6 +4,7 @@ import pickle
 
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
+from biocypher_metta.processors import HGNCProcessor
 # Example PEREGRINE input files:
 
 # PEREGRINEenhancershg38
@@ -32,16 +33,22 @@ class PEREGRINEAdapter(Adapter):
     ALLOWED_KEYS = []
     INDEX = {'enhancer': 0, 'gene': 1, 'tissue': 4, 'score': 7, 'chr': 0, 'start': 1, 'end': 2, 'id': 3}
 
-    def __init__(self, enhancers_file, enhancer_gene_link, 
-                 source_file, hgnc_ensembl_map, 
-                 tissue_ontology_map, write_properties, add_provenance, 
-                 type='enhancer', label='enhancer', delimiter='\t',
-                 chr=None, start=None, end=None):
-        
+    def __init__(self, enhancers_file, enhancer_gene_link,
+                 source_file, tissue_ontology_map=None, write_properties=None,
+                 add_provenance=None, type='enhancer', label='enhancer', delimiter='\t',
+                 chr=None, start=None, end=None, hgnc_processor=None):
+
         self.enhancers_file = enhancers_file
         self.enhancer_gene_link = enhancer_gene_link
         self.source_file = source_file
-        self.hgnc_ensembl_map = pickle.load(open(hgnc_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
+
         self.tissue_ontology_map = pickle.load(open(tissue_ontology_map, 'rb'))
         self.type = type
         self.label = label
@@ -126,11 +133,12 @@ class PEREGRINEAdapter(Adapter):
                 # CURIE ID Format: SO:0000165#:chr:start-end
                 enhancer_region_id = f"SO:{enhancer_id_map[id]}"
                 gene_hgnc_id = self.handle_gene(line[self.INDEX['gene']])
-                if gene_hgnc_id not in self.hgnc_ensembl_map:
-                    continue
                 # CURIE ID Format: ENSEMBL:ENSG00000123456
                 # where ENSEMBL is the namespace and ENSG00000123456 is the Ensembl gene ID
-                gene = f"ENSEMBL:{self.hgnc_ensembl_map[gene_hgnc_id]}"
+                ensembl_id = self.hgnc_processor.get_ensembl_id(gene_hgnc_id)
+                if ensembl_id is None:
+                    continue
+                gene = f"ENSEMBL:{ensembl_id}"
                 tissue_id = line[self.INDEX['tissue']]
                 score = None
                 if self.INDEX['score'] < len(line):

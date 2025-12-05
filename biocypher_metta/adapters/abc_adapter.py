@@ -5,6 +5,7 @@ import csv
 import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 from biocypher._logger import logger
+from biocypher_metta.processors import HGNCProcessor
 
 #Example ABC Data
 # rsid,chromosome,start_position,end_position,bait_chromosome,bait_start_position,bait_end_position,name,class,activity_base,target_gene,target_gene_tss,target_gene_expression,target_gene_promoter_activity_quantile,target_gene_is_expressed,distance,is_self_promoter,powerlaw_contact,powerlaw_contact_reference,hic_contact,hic_contact_pl_scaled,hic_contact_pl_scaled_adj,hic_pseudocount,abc_score_numerator,abc_score,powerlaw_score_numerator,powerlaw_score,cell_type,base_overlap
@@ -18,11 +19,17 @@ class ABCAdapter(Adapter):
     """
     Adapter for Activity-By-Contact (ABC) data from Fulco CP et.al 2019
     """
-    def __init__(self, filepath, hgnc_to_ensembl_map, tissue_to_ontology_id_map,
-                 dbsnp_rsid_map, write_properties, add_provenance,
-                 chr=None, start=None, end=None):
+    def __init__(self, filepath, hgnc_to_ensembl_map=None, tissue_to_ontology_id_map=None,
+                 dbsnp_rsid_map=None, write_properties=None, add_provenance=None,
+                 chr=None, start=None, end=None, hgnc_processor=None):
         self.file_path = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
+
         self.tissue_to_ontology_id_map = pickle.load(open(tissue_to_ontology_id_map, 'rb'))
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
@@ -45,7 +52,11 @@ class ABCAdapter(Adapter):
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         try:
                             _source = rsid
-                            _target = self.hgnc_to_ensembl_map[(row[COL_DICT['target_gene']]).strip()]
+                            target_gene = (row[COL_DICT['target_gene']]).strip()
+                            _target = self.hgnc_processor.get_ensembl_id(target_gene)
+                            if _target is None:
+                                logger.warning(f"Couldn't find Ensembl ID for gene {target_gene}")
+                                continue
                             props = {
                                 "score": to_float(row[COL_DICT['abc_score']]),
                                 "biological_context": self.tissue_to_ontology_id_map[row[COL_DICT['cell_type']]]

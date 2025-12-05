@@ -1,5 +1,6 @@
 import pickle
 from biocypher import BioCypher
+from biocypher_metta.processors import DBSNPProcessor
 import pytest
 import yaml
 import importlib
@@ -89,19 +90,53 @@ def setup_class(request):
    
     # Load adapters config
     adapters_config_path = request.config.getoption("--adapters-config")
-    dbsnp_rsids = request.config.getoption("--dbsnp-rsids")
-    dbsnp_pos = request.config.getoption("--dbsnp-pos")
-    if dbsnp_rsids:
-        logging.info("Loading dbsnp rsids map")
-        dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
-    else:
-        logging.warning("--dbsnp-rsids not provided, skipping dbsnp rsids map loading")
-        dbsnp_rsids_dict = None
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
-   
+
     # Load adapters config
     with open(adapters_config_path, 'r') as f:
         adapters_config = yaml.safe_load(f)
+
+    # Detect if using sample config
+    is_sample_config = 'sample' in str(adapters_config_path).lower()
+
+    # Initialize dbSNP mappings based on config
+    if is_sample_config:
+        # Sample config: use sample cache with DBSNPProcessor (load-only)
+        logging.info("Sample config detected: using sample dbSNP cache")
+        try:
+            dbsnp_processor = DBSNPProcessor(cache_dir='aux_files/sample_dbsnp')
+            dbsnp_processor.load_mapping()
+            dbsnp_rsids_dict, dbsnp_pos_dict = dbsnp_processor.get_dict_wrappers()
+            logging.info(f"Loaded {len(dbsnp_rsids_dict):,} sample rsID mappings")
+        except FileNotFoundError as e:
+            logging.warning(f"Sample dbSNP cache not found: {e}")
+            logging.info("Continuing without rsID mappings")
+            dbsnp_rsids_dict = {}
+            dbsnp_pos_dict = {}
+        except Exception as e:
+            logging.error(f"Failed to load sample dbSNP cache: {e}")
+            logging.info("Continuing without rsID mappings")
+            dbsnp_rsids_dict = {}
+            dbsnp_pos_dict = {}
+
+    else:
+        # Main config: use auto-updating processor
+        # For tests, always use local cache (not server location)
+        cache_dir = 'aux_files/dbsnp'
+        logging.info(f"Using local cache: {cache_dir}")
+
+        # Initialize DBSNPProcessor (load-only, no auto-updates)
+        logging.info("Initializing DBSNPProcessor for rsID mappings")
+        dbsnp_processor = DBSNPProcessor(cache_dir=cache_dir)
+
+        try:
+            dbsnp_processor.load_mapping()
+            dbsnp_rsids_dict, dbsnp_pos_dict = dbsnp_processor.get_dict_wrappers()
+            logging.info(f"Loaded {len(dbsnp_rsids_dict):,} rsID mappings")
+        except Exception as e:
+            logging.error(f"DBSNPProcessor failed: {e}")
+            logging.info("Continuing without rsID mappings")
+            dbsnp_rsids_dict = {}
+            dbsnp_pos_dict = {}
 
     return node_labels, edges_schema, adapters_config, dbsnp_rsids_dict, dbsnp_pos_dict
 
