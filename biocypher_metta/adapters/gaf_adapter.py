@@ -1,12 +1,9 @@
-import os
 import gzip
-import json
-import hashlib
-import pickle
 
 from Bio.UniProt.GOA import gafiterator
 
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import HGNCProcessor, GOSubontologyProcessor
 
 # GAF files are defined here: https://geneontology.github.io/docs/go-annotation-file-gaf-format-2.2/
 #
@@ -52,8 +49,8 @@ class GAFAdapter(Adapter):
         'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv'
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human', 
-                 label=None, mapping_file='aux_files/go_subontology_mapping.pkl', hgnc_to_ensembl_map=None):
+    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human',
+                 label=None, hgnc_processor=None, go_subontology_processor=None):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
                              ', '.join(GAFAdapter.SOURCES.keys()))
@@ -62,12 +59,26 @@ class GAFAdapter(Adapter):
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
         self.label = label
-        self.hgnc_to_ensembl_map = None if hgnc_to_ensembl_map == None else pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
+
+        # Use provided GO subontology processor or create new one
+        if go_subontology_processor is None:
+            self.go_subontology_processor = GOSubontologyProcessor()
+            self.go_subontology_processor.load_or_update()
+        else:
+            self.go_subontology_processor = go_subontology_processor
+
         self.source = "GOA"
         self.source_url = GAFAdapter.SOURCES[gaf_type]
 
         self.subontology = None
-        self.subontology_mapping = None
+        self.subontology_mapping = self.go_subontology_processor.mapping
 
         # Determine subontology based on label
         if label in 'molecular_function_gene_product':
@@ -76,10 +87,6 @@ class GAFAdapter(Adapter):
             self.subontology = 'cellular_component'
         elif label in 'biological_process_gene_product':
             self.subontology = 'biological_process'
-
-        if os.path.exists(mapping_file):
-            with open(mapping_file, 'rb') as f:
-                self.subontology_mapping = pickle.load(f)
 
         self.seen_edges = set()
 
@@ -144,9 +151,9 @@ class GAFAdapter(Adapter):
                         continue
                 
                 # use gene instead of protein
-                if self.hgnc_to_ensembl_map != None:
-                    ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_symbol, None)
-                    if ensembl_gene_id == None:
+                if self.hgnc_processor is not None:
+                    ensembl_gene_id = self.hgnc_processor.get_ensembl_id(gene_symbol)
+                    if ensembl_gene_id is None:
                         continue
                     source = f"ENSEMBL:{ensembl_gene_id}"  # CURIE format for Ensembl
                 

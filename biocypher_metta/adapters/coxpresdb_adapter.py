@@ -1,6 +1,6 @@
 
 from biocypher_metta.adapters import Adapter
-import pickle
+from biocypher_metta.processors import EntrezEnsemblProcessor
 import os
 
 # https://coxpresdb.jp/download/Hsa-r.c6-0/coex/Hsa-r.v22-05.G16651-S235187.combat_pca.subagging.z.d.zip
@@ -10,11 +10,11 @@ import os
 
 class CoxpresdbAdapter(Adapter):
 
-    def __init__(self, filepath, ensemble_to_entrez_path,
-                 write_properties, add_provenance):  
+    def __init__(self, filepath, ensemble_to_entrez_path=None,
+                 write_properties=None, add_provenance=None,
+                 entrez_ensembl_processor=None):
 
         self.file_path = filepath
-        self.ensemble_to_entrez_path = ensemble_to_entrez_path
         self.dataset = 'coxpresdb'
         self.label = 'coexpressed_with'
         self.source = 'CoXPresdb'
@@ -22,19 +22,26 @@ class CoxpresdbAdapter(Adapter):
         self.version = 'v8'
 
         assert os.path.isdir(self.file_path), "coxpresdb file path is not a directory"
+
+        # Use provided processor or create new one
+        if entrez_ensembl_processor is None:
+            self.processor = EntrezEnsemblProcessor()
+            self.processor.load_or_update()
+        else:
+            self.processor = entrez_ensembl_processor
+
         super(CoxpresdbAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
-        # entrez_to_ensembl.pkl is generated using those two files:
-        # gencode file: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.chr_patch_hapl_scaff.annotation.gtf.gz
-        # Homo_sapiens.gene_info.gz file: https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
-        # every gene has ensembl id in gencode file, every gene has hgnc id if available.
-        # every gene has entrez gene id in gene_info file, every gene has ensembl id or hgcn id if available
+        # Entrez-to-Ensembl mapping is now handled by EntrezEnsemblProcessor
+        # which automatically updates from:
+        # - NCBI Gene Info: https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
+        # - GENCODE: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/
 
         gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f))]
 
-        with open(self.ensemble_to_entrez_path, 'rb') as f:
-            entrez_ensembl_dict = pickle.load(f)
+        # Use processor mapping
+        entrez_ensembl_dict = self.processor.mapping
         for gene_id in gene_ids:
             gene_file_path = os.path.join(self.file_path, gene_id)
             entrez_id = gene_id

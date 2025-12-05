@@ -1,7 +1,7 @@
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
-from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor  
+from biocypher_metta.processors import HGNCProcessor  
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
 # ##provider: GENCODE
@@ -33,8 +33,8 @@ class GencodeGeneAdapter(Adapter):
         self.version = 'v44'
         self.source_url = 'https://www.gencodegenes.org/human/'
         
-        self.hgnc_processor = HGNCSymbolProcessor()
-        self.hgnc_processor.update_hgnc_data()
+        self.hgnc_processor = HGNCProcessor()
+        self.hgnc_processor.load_or_update()
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
 

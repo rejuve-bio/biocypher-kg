@@ -1,6 +1,6 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
-import pickle
+from biocypher_metta.processors import EnsemblUniProtProcessor
 import csv
 import gzip
 from biocypher_metta.adapters.helpers import to_float
@@ -17,17 +17,26 @@ from biocypher_metta.adapters.helpers import to_float
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
 class StringPPIAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map,
-                 write_properties, add_provenance):
+    def __init__(self, filepath, ensembl_to_uniprot_map=None,
+                 write_properties=None, add_provenance=None,
+                 ensembl_uniprot_processor=None):
         """
         Constructs StringPPI adapter that returns edges between proteins
         :param filepath: Path to the TSV file downloaded from String
-        :param ensembl_to_uniprot_map: file containing pickled dictionary mapping Ensemble Protein IDs to Uniprot IDs
+        :param ensembl_to_uniprot_map: DEPRECATED - use ensembl_uniprot_processor instead
+        :param ensembl_uniprot_processor: EnsemblUniProtProcessor instance for ID mapping
         """
         self.filepath = filepath
 
-        with open(ensembl_to_uniprot_map, "rb") as f:
-            self.ensembl2uniprot = pickle.load(f)
+        # Use provided processor or create new one
+        if ensembl_uniprot_processor is None:
+            self.processor = EnsemblUniProtProcessor()
+            self.processor.load_or_update()
+        else:
+            self.processor = ensembl_uniprot_processor
+
+        # Create mapping dict for backward compatibility
+        self.ensembl2uniprot = self.processor.mapping
 
         self.label = "interacts_with"
         self.source = "STRING"

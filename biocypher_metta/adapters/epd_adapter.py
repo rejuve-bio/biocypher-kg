@@ -1,8 +1,9 @@
 import csv
 import gzip
-import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+from biocypher_metta.processors import HGNCProcessor
+from biocypher._logger import logger
 # Example EPD bed input file:
 ##CHRM Start  End   Id  Score Strand -  -
 # chr1 959245 959305 NOC2L_1 900 - 959245 959256
@@ -13,11 +14,18 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 class EPDAdapter(Adapter):
     INDEX = {'chr' : 0, 'coord_start' : 1, 'coord_end' : 2, 'gene_id' : 3}
 
-    def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, 
-                 type='promoter', label='promoter', delimiter=' ',
-                 chr=None, start=None, end=None):
+    def __init__(self, filepath, hgnc_to_ensembl_map=None, write_properties=None,
+                 add_provenance=None, type='promoter', label='promoter', delimiter=' ',
+                 chr=None, start=None, end=None, hgnc_processor=None):
         self.filepath = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
+
         self.type = type
         self.label = label
         self.delimiter = delimiter
@@ -65,9 +73,11 @@ class EPDAdapter(Adapter):
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
                 #CURIE ID Format
                 # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
-                ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
-                if ensembl_gene_id is None:
+                ensembl_id = self.hgnc_processor.get_ensembl_id(gene_id)
+                if ensembl_id is None:
+                    logger.warning(f"Couldn't find Ensembl ID for gene {gene_id}")
                     continue
+                ensembl_gene_id = f"ENSEMBL:{ensembl_id}"
                 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
                     #CURIE ID Format

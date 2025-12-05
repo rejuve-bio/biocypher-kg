@@ -1,6 +1,6 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
-import pickle
+from biocypher_metta.processors import EntrezEnsemblProcessor
 import csv
 import gzip
 
@@ -14,18 +14,26 @@ import gzip
 
 class TFLinkAdapter(Adapter):
     INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
-    def __init__(self, filepath, entrez_to_ensemble_map,
-                 write_properties, add_provenance):
+    def __init__(self, filepath, entrez_to_ensemble_map=None,
+                 write_properties=None, add_provenance=None,
+                 entrez_ensembl_processor=None):
         """
         Constructs TFLink adapter that returns edges between TFs and their target gene
         :param filepath: Path to the TSV file downloaded from tflink
-        :param entrez_to_ensemble_map: file containing pickled dictionary mapping NCBI Entrez IDs to Ensemble IDs -
-        this b/c we use Ensemble IDs to identify genes where TFLink uses Entrez Ids
+        :param entrez_to_ensemble_map: DEPRECATED - use entrez_ensembl_processor instead
+        :param entrez_ensembl_processor: EntrezEnsemblProcessor instance for ID mapping
         """
         self.filepath = filepath
 
-        with open(entrez_to_ensemble_map, "rb") as f:
-            self.entrez2ensemble = pickle.load(f)
+        # Use provided processor or create new one
+        if entrez_ensembl_processor is None:
+            self.processor = EntrezEnsemblProcessor()
+            self.processor.load_or_update()
+        else:
+            self.processor = entrez_ensembl_processor
+
+        # Create mapping dict for backward compatibility
+        self.entrez2ensemble = self.processor.mapping
 
         self.label = "tf_gene"
         self.source = "TFLink"

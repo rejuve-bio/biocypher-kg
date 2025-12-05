@@ -1,9 +1,6 @@
 import rdflib
-import pickle
-import os
-import json
-from datetime import datetime
 from biocypher_metta.adapters.ontologies_adapter import OntologyAdapter
+from biocypher_metta.processors import GOSubontologyProcessor
 
 class GeneOntologyAdapter(OntologyAdapter):
     ONTOLOGIES = {
@@ -22,16 +19,30 @@ class GeneOntologyAdapter(OntologyAdapter):
         'cellular_component': 'cellular_component_subclass_of'
     }
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label=None, 
-                 dry_run=False, add_description=False, cache_dir=None):
+    def __init__(self, write_properties, add_provenance, ontology, type, label=None,
+                 dry_run=False, add_description=False, cache_dir=None,
+                 go_subontology_processor=None):
         # Temporarily set dry_run to False for parent init since we'll handle it here
-        super(GeneOntologyAdapter, self).__init__(write_properties, add_provenance, 
-                                                 ontology, type, label, False,   
+        super(GeneOntologyAdapter, self).__init__(write_properties, add_provenance,
+                                                 ontology, type, label, False,
                                                  add_description, cache_dir)
         self.dry_run = dry_run
-        self.mapping_file = os.path.join('aux_files/go_subontology_mapping.pkl')
-        self.meta_file = os.path.join(self.cache_dir, 'go_meta.json')
-        
+
+        # Use provided GO subontology processor or create new one
+        if go_subontology_processor is None:
+            # Set dependency_file to track GO.owl changes
+            dependency_file = None
+            if cache_dir:
+                import os
+                meta_file = os.path.join(cache_dir, 'go_meta.json')
+                if os.path.exists(meta_file):
+                    dependency_file = meta_file
+            self.go_subontology_processor = GOSubontologyProcessor(
+                dependency_file=dependency_file
+            )
+        else:
+            self.go_subontology_processor = go_subontology_processor
+
         if type == 'node':
             self.current_subontology = label if label in [
                 self.BIOLOGICAL_PROCESS,
@@ -45,9 +56,10 @@ class GeneOntologyAdapter(OntologyAdapter):
                     break
             else:
                 self.current_subontology = None
-                
+
         self.subontology_counter = 0
-        self.subontology_mapping = self.load_or_update_mapping()
+        # Mapping will be loaded when graph is ready
+        self.subontology_mapping = None
 
     def get_ontology_source(self):
         """Returns the source and source URL for the Gene Ontology."""
@@ -59,75 +71,25 @@ class GeneOntologyAdapter(OntologyAdapter):
             'primary': 'http://purl.obolibrary.org/obo/GO_'
         }
 
-    def should_update_mapping(self):
-        """Check if mapping file needs to be updated based on GO.owl timestamp"""
-        if not os.path.exists(self.mapping_file):
-            return True
-            
-        if not os.path.exists(self.meta_file):
-            return True
-            
-        with open(self.meta_file, 'r') as f:
-            meta = json.load(f)
-            owl_date = datetime.strptime(meta['date'], "%Y-%m-%dT%H:%M:%S.%f")
-            
-        mapping_timestamp = datetime.fromtimestamp(os.path.getmtime(self.mapping_file))
-        return mapping_timestamp < owl_date
-
-    def find_go_nodes(self, graph):
-        # subontologies are defined as namespaces
-        nodes_in_namespaces = list(graph.subject_objects(predicate=OntologyAdapter.NAMESPACE))
-        node_namespace_lookup = {}
-        for n in nodes_in_namespaces:
-            node = n[0]
-            namespace = n[1]
-            node_key = OntologyAdapter.to_key(node)
-            node_namespace_lookup[node_key] = str(namespace)
-        return node_namespace_lookup
-
-    def create_subontology_mapping(self):
-        """Create mapping of GO IDs to their subontologies"""
-        self.update_graph()
-        mapping = {}
-        nodes_in_go_namespaces = self.find_go_nodes(self.graph)
-        
-        for node in self.graph.all_nodes():
-            if not isinstance(node, rdflib.term.URIRef):
-                continue
-                
-            if self.is_a_restriction_block(node) or self.is_deprecated(node):
-                continue
-                
-            node_key = self._process_node_key(node)
-            if node_key is None:
-                continue
-                
-            namespace = nodes_in_go_namespaces.get(node_key)
-            if namespace in [self.BIOLOGICAL_PROCESS, self.MOLECULAR_FUNCTION, self.CELLULAR_COMPONENT]:
-                mapping[node_key] = namespace
-                
-        return mapping
-
-    def load_or_update_mapping(self):
-        """Load existing mapping or create new one if needed"""
-        if self.should_update_mapping():
-            mapping = self.create_subontology_mapping()
-            os.makedirs(os.path.dirname(self.mapping_file), exist_ok=True)
-            with open(self.mapping_file, 'wb') as f:
-                pickle.dump(mapping, f)
-            return mapping
-            
-        with open(self.mapping_file, 'rb') as f:
-            return pickle.load(f)
+    def _ensure_mapping_loaded(self):
+        """Ensure the subontology mapping is loaded."""
+        if self.subontology_mapping is None:
+            # Set graph on processor and load/update
+            self.go_subontology_processor.set_graph(self.graph)
+            self.go_subontology_processor.load_or_update()
+            self.subontology_mapping = self.go_subontology_processor.mapping
 
     def get_subontology(self, go_id):
         """Get subontology for a given GO ID"""
+        if self.subontology_mapping is None:
+            self._ensure_mapping_loaded()
         return self.subontology_mapping.get(go_id)
 
     def get_nodes(self):
         self.update_graph()
         self.cache_node_properties()
-        
+        self._ensure_mapping_loaded()
+
         if self.graph is not None and self.current_subontology:
             self.subontology_counter = 0
             processed_nodes = set()
@@ -181,6 +143,7 @@ class GeneOntologyAdapter(OntologyAdapter):
     def get_edges(self):
         self.update_graph()
         self.cache_edge_properties()
+        self._ensure_mapping_loaded()
 
         if self.graph is not None and self.current_subontology:
             edge_label = self.EDGE_LABELS[self.current_subontology]

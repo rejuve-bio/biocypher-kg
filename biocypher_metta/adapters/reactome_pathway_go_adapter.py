@@ -1,6 +1,5 @@
-import os
-import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import GOSubontologyProcessor
 
 # Example Pathways2GoTerms_Human  TXT input files
 # Identifier	Name	GO_Term
@@ -18,25 +17,27 @@ class ReactomePathwayGOAdapter(Adapter):
     Filters pathways to only include terms from the specified subontology.
     """
     
-    def __init__(self, filepath, write_properties, add_provenance, 
-                 subontology, mapping_file='aux_files/go_subontology_mapping.pkl'):
+    def __init__(self, filepath, write_properties, add_provenance,
+                 subontology, go_subontology_processor=None):
         super().__init__(write_properties, add_provenance)
-        
+
         if subontology not in ['biological_process', 'molecular_function', 'cellular_component']:
             raise ValueError("Invalid subontology specified")
-            
+
         self.filepath = filepath
         self.subontology = subontology
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
         self.skip_first_line = True
-        
-        # Load GO subontology mapping
-        if not os.path.exists(mapping_file):
-            raise FileNotFoundError(f"Mapping file not found: {mapping_file}")
-            
-        with open(mapping_file, 'rb') as f:
-            self.subontology_mapping = pickle.load(f)
+
+        # Use provided GO subontology processor or create new one
+        if go_subontology_processor is None:
+            self.go_subontology_processor = GOSubontologyProcessor()
+            self.go_subontology_processor.load_or_update()
+        else:
+            self.go_subontology_processor = go_subontology_processor
+
+        self.subontology_mapping = self.go_subontology_processor.mapping
 
     def get_edges(self):
         with open(self.filepath) as f:

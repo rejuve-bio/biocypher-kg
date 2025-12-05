@@ -3,7 +3,7 @@ import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
-
+from biocypher_metta.processors import HGNCProcessor
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, convert_genome_reference
 # Example dbSuper tsv input files:
 # chrom	 start	 stop	 se_id	 gene_symbol	 cell_name	 rank
@@ -15,12 +15,18 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 class DBSuperAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'se_id': 3, 'gene_id': 4, 'cell_name': 5}
 
-    def __init__(self, filepath, hgnc_to_ensembl_map, dbsuper_tissues_map,
-                 write_properties, add_provenance, 
-                 type='super enhancer', label='super_enhancer', delimiter='\t',
-                 chr=None, start=None, end=None):
+    def __init__(self, filepath, dbsuper_tissues_map=None, write_properties=None,
+                 add_provenance=None, type='super enhancer', label='super_enhancer',
+                 delimiter='\t', chr=None, start=None, end=None, hgnc_processor=None):
         self.filePath = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
+
         self.dbsuper_tissues_map = pickle.load(open(dbsuper_tissues_map, 'rb'))
         self.type = type
         self.label = label
@@ -73,9 +79,12 @@ class DBSuperAdapter(Adapter):
             next(reader)
             for line in reader:
                 gene_id = line[DBSuperAdapter.INDEX['gene_id']]
-                #CURIE ID For gene
+                #CURIE ID For gene - Get Ensembl ID from HGNC symbol
                 # Example: ENSEMBL:ENSG00000123456
-                ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
+                ensembl_id = self.hgnc_processor.get_ensembl_id(gene_id)
+                if ensembl_id is None:
+                    continue
+                ensembl_gene_id = f"ENSEMBL:{ensembl_id}"
                 chr = line[DBSuperAdapter.INDEX['chr']]
                 start_hg19 = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
                 end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']])

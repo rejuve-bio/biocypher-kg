@@ -1,9 +1,9 @@
 import gzip
-import pickle
 import csv
 from io import StringIO
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
+from biocypher_metta.processors import HGNCProcessor
 
 # Example data
 # Description for each field can be found here: http://genome.ucsc.edu/cgi-bin/hgTables
@@ -17,9 +17,17 @@ class TfbsAdapter(Adapter):
     INDEX = {'bin': 0, 'chr': 1, 'start': 2, 'end': 3, 'tf': 4, 'score': 5}
     
     def __init__(self, write_properties, add_provenance, filepath,
-                 hgnc_to_ensembl, label, chr=None, start=None, end=None):
+                 hgnc_to_ensembl=None, label=None, chr=None, start=None, end=None,
+                 hgnc_processor=None):
         self.filepath = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is None:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+        else:
+            self.hgnc_processor = hgnc_processor
+
         self.chr = chr
         self.start = start
         self.end = end
@@ -64,16 +72,17 @@ class TfbsAdapter(Adapter):
             start = int(data[TfbsAdapter.INDEX['start']].strip('"'))
             end = int(data[TfbsAdapter.INDEX['end']].strip('"'))
             tf = data[TfbsAdapter.INDEX['tf']].strip('"')
-            #CURIE ID Format
-            tf_ensembl = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(tf)}"
+            #CURIE ID Format - Get Ensembl ID from HGNC symbol
+            ensembl_id = self.hgnc_processor.get_ensembl_id(tf)
+            if ensembl_id is None:
+                continue
+            tf_ensembl = f"ENSEMBL:{ensembl_id}"
             tfbs_id = f"SO:0000235_{build_regulatory_region_id(chr, start, end)}"
-            
+
             score_str = data[TfbsAdapter.INDEX['score']].strip('"')
             score = to_float(score_str) / 1000  # divide by 1000 to normalize score
-            
+
             props = {}
-            if tf_ensembl is None:
-                continue
 
             if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                 if self.write_properties:
