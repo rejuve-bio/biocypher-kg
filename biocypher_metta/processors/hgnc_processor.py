@@ -20,7 +20,7 @@ from .base_mapping_processor import BaseMappingProcessor
 class HGNCProcessor(BaseMappingProcessor):
     HGNC_API_URL = (
         "https://www.genenames.org/cgi-bin/download/custom?"
-        "col=gd_app_sym&col=gd_prev_sym&col=gd_aliases&col=gd_pub_ensembl_id"
+        "col=gd_hgnc_id&col=gd_app_sym&col=gd_prev_sym&col=gd_aliases&col=gd_pub_ensembl_id"
         "&status=Approved&hgnc_dbtag=on&order_by=gd_app_sym_sort&format=text&submit=submit"
     )
 
@@ -50,7 +50,8 @@ class HGNCProcessor(BaseMappingProcessor):
         print(f"{self.name}: Available columns: {reader.fieldnames}")
 
         column_mapping = {
-            'symbol': ['Approved symbol', 'Symbol', 'HGNC ID'],
+            'symbol': ['Approved symbol', 'Symbol'],
+            'hgnc_id': ['HGNC ID'],
             'ensembl_id': ['Ensembl gene ID', 'Ensembl ID(supplied by Ensembl)', 'Ensembl ID'],
             'prev_symbol': ['Previous symbols', 'Previous symbol'],
             'alias_symbol': ['Alias symbols', 'Alias symbol']
@@ -68,29 +69,60 @@ class HGNCProcessor(BaseMappingProcessor):
         current_symbols = {}
         symbol_aliases = {}
         ensembl_to_symbol = {}
+        symbol_to_ensembl = {}
+        hgnc_id_to_symbol = {}
+        hgnc_id_to_ensembl = {}
 
         for row in reader:
             symbol = row[actual_columns['symbol']]
-            ensembl_id = row.get(actual_columns.get('ensembl_id', ''), '')
+
+            # Safely get ensembl_id and hgnc_id only if columns were found
+            ensembl_id = ''
+            if 'ensembl_id' in actual_columns and actual_columns['ensembl_id']:
+                ensembl_id = row.get(actual_columns['ensembl_id'], '').strip()
+
+            hgnc_id = ''
+            if 'hgnc_id' in actual_columns and actual_columns['hgnc_id']:
+                hgnc_id = row.get(actual_columns['hgnc_id'], '').strip()
 
             current_symbols[symbol] = symbol
 
-            if ensembl_id:
-                ensembl_to_symbol[ensembl_id] = symbol
-                base_ensembl = ensembl_id.split('.')[0]
-                ensembl_to_symbol[base_ensembl] = symbol
+            # Store HGNC ID to symbol mapping (always, even without Ensembl ID)
+            if hgnc_id:
+                hgnc_id_to_symbol[hgnc_id] = symbol
 
-            aliases = row.get(actual_columns.get('alias_symbol', ''), '').split('|')
-            prev_symbols = row.get(actual_columns.get('prev_symbol', ''), '').split('|')
+            if ensembl_id:
+                base_ensembl = ensembl_id.split('.')[0]
+
+                # Bidirectional Ensembl ↔ Symbol mappings
+                ensembl_to_symbol[ensembl_id] = symbol
+                ensembl_to_symbol[base_ensembl] = symbol
+                symbol_to_ensembl[symbol] = base_ensembl
+
+                # Store direct HGNC ID to Ensembl mapping when both exist
+                if hgnc_id:
+                    hgnc_id_to_ensembl[hgnc_id] = base_ensembl
+
+            # Safely get alias and prev symbols
+            aliases = []
+            if 'alias_symbol' in actual_columns and actual_columns['alias_symbol']:
+                aliases = row.get(actual_columns['alias_symbol'], '').split('|')
+
+            prev_symbols = []
+            if 'prev_symbol' in actual_columns and actual_columns['prev_symbol']:
+                prev_symbols = row.get(actual_columns['prev_symbol'], '').split('|')
 
             for alias in aliases + prev_symbols:
-                if alias:
-                    symbol_aliases[alias] = symbol
+                if alias and alias.strip():
+                    symbol_aliases[alias.strip()] = symbol
 
         return {
             'current_symbols': current_symbols,
             'symbol_aliases': symbol_aliases,
-            'ensembl_to_symbol': ensembl_to_symbol
+            'ensembl_to_symbol': ensembl_to_symbol,
+            'symbol_to_ensembl': symbol_to_ensembl,
+            'hgnc_id_to_symbol': hgnc_id_to_symbol,
+            'hgnc_id_to_ensembl': hgnc_id_to_ensembl
         }
 
     def process_identifier(self, identifier: str) -> Dict[str, Any]:
@@ -144,14 +176,51 @@ class HGNCProcessor(BaseMappingProcessor):
         result = self.process_identifier(identifier)
         return result['current']
 
-    def get_ensembl_id(self, symbol: str) -> str:
+    def get_symbol_from_hgnc_id(self, hgnc_id: str) -> str:
+        """
+        Get gene symbol from HGNC ID.
+
+        Args:
+            hgnc_id: HGNC ID (e.g., "HGNC:11998")
+
+        Returns:
+            Gene symbol (e.g., "TP53") or None if not found
+        """
         if not self.mapping:
             self.load_or_update()
 
-        ensembl_to_symbol = self.mapping.get('ensembl_to_symbol', {})
+        hgnc_id_to_symbol = self.mapping.get('hgnc_id_to_symbol', {})
+        return hgnc_id_to_symbol.get(hgnc_id)
 
-        for ensembl_id, gene_symbol in ensembl_to_symbol.items():
-            if gene_symbol == symbol and '.' not in ensembl_id:
-                return ensembl_id
+    def get_ensembl_id(self, identifier: str) -> str:
+        """
+        Get Ensembl ID for a gene symbol or HGNC ID.
 
-        return None
+        Args:
+            identifier: Gene symbol (e.g., "TP53") or HGNC ID (e.g., "HGNC:11998")
+
+        Returns:
+            Ensembl gene ID (e.g., "ENSG00000141510") or None if not found
+        """
+        if not self.mapping:
+            self.load_or_update()
+
+        # Check if it's an HGNC ID (format: HGNC:12345)
+        if identifier.startswith('HGNC:'):
+            # Try direct HGNC ID to Ensembl mapping first
+            hgnc_id_to_ensembl = self.mapping.get('hgnc_id_to_ensembl', {})
+            if identifier in hgnc_id_to_ensembl:
+                return hgnc_id_to_ensembl[identifier]
+
+            # Fallback: HGNC ID -> symbol -> Ensembl ID
+            hgnc_id_to_symbol = self.mapping.get('hgnc_id_to_symbol', {})
+            symbol = hgnc_id_to_symbol.get(identifier)
+            if symbol:
+                symbol_to_ensembl = self.mapping.get('symbol_to_ensembl', {})
+                return symbol_to_ensembl.get(symbol)
+
+            return None
+
+        # Otherwise treat as gene symbol - use direct mapping
+        symbol_to_ensembl = self.mapping.get('symbol_to_ensembl', {})
+        return symbol_to_ensembl.get(identifier)
