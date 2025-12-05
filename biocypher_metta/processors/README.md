@@ -1,4 +1,4 @@
-# BioCypher MeTTa Mapping Processors
+# BioCypher KG Mapping Processors
 
 This package provides automatic updating mapping processors for biological identifier conversions.
 
@@ -14,14 +14,16 @@ All processors inherit from `BaseMappingProcessor` and provide:
 
 ### 1. HGNCProcessor
 
-Maps between HGNC gene symbols, aliases, and Ensembl IDs.
+Maps between HGNC gene symbols, numeric IDs, aliases, and Ensembl IDs.
 
 **Data Source:** HGNC REST API
-**Update Strategy:** Time-based (every 48 hours)
+**Update Strategy:** Time-based (every 48 hours) - API lacks remote version metadata
 **Mappings:**
-- Current HGNC symbols
-- Previous/alias symbols → current symbols
-- Ensembl gene IDs ↔ HGNC symbols
+- Current HGNC symbols (`current_symbols`)
+- Previous/alias symbols → current symbols (`symbol_aliases`)
+- Symbol ↔ Ensembl ID (`symbol_to_ensembl`, `ensembl_to_symbol`)
+- HGNC ID → Symbol (`hgnc_id_to_symbol`)
+- HGNC ID → Ensembl ID (`hgnc_id_to_ensembl`)
 
 **Usage:**
 ```python
@@ -43,11 +45,45 @@ print(result)  # {'status': 'current', 'original': 'TP53', 'current': 'TP53'}
 # Get current symbol
 symbol = hgnc.get_current_symbol('old_symbol_name')
 
-# Get Ensembl ID
+# Get Ensembl ID from gene symbol
 ensembl_id = hgnc.get_ensembl_id('TP53')
+
+# Get Ensembl ID from HGNC numeric ID
+ensembl_id = hgnc.get_ensembl_id('HGNC:11998')  # Also works!
+
+# Get symbol from HGNC ID
+symbol = hgnc.get_symbol_from_hgnc_id('HGNC:11998')
 ```
 
-### 2. EntrezEnsemblProcessor
+### 2. DBSNPProcessor
+
+Maps between dbSNP rsIDs and genomic positions (chr:pos).
+
+**Data Source:** dbSNP VCF (30GB download)
+**Update Strategy:** Manual only (no auto-updates) - see update_dbsnp.py
+**Mappings:**
+- rsID → genomic position (`rsid_to_pos`)
+- Genomic position → rsID (`pos_to_rsid`)
+
+**Usage:**
+```python
+from biocypher_metta.processors import DBSNPProcessor
+
+# Load-only processor (never auto-updates)
+dbsnp = DBSNPProcessor(cache_dir='/mnt/hdd_2/kedist/rsids_map')
+dbsnp.load_mapping()  # Only loads, never downloads
+
+# Get position from rsID
+position = dbsnp.get_position('rs123456')
+# Returns: {'chr': 'chr1', 'pos': 12345}
+
+# Get wrappers for dict-like access
+rsid_to_pos, pos_to_rsid = dbsnp.get_dict_wrappers()
+```
+
+**Note:** Update dbSNP using `update_dbsnp.py` script (see main README).
+
+### 3. EntrezEnsemblProcessor
 
 Maps between NCBI Entrez Gene IDs and Ensembl Gene IDs.
 
@@ -55,7 +91,7 @@ Maps between NCBI Entrez Gene IDs and Ensembl Gene IDs.
 - NCBI Gene Info
 - GENCODE annotations
 
-**Update Strategy:** Time-based (every 7 days)
+**Update Strategy:** Remote version checking (ETag, Last-Modified headers)
 
 **Usage:**
 ```python
@@ -78,12 +114,12 @@ print(ensembl_id)  # ENSG00000141510
 entrez_id = processor.get_entrez_id('ENSG00000141510')
 ```
 
-### 3. EnsemblUniProtProcessor
+### 4. EnsemblUniProtProcessor
 
 Maps between Ensembl Protein IDs (ENSP) and UniProt IDs.
 
 **Data Source:** UniProt ID Mapping
-**Update Strategy:** Time-based (every 7 days)
+**Update Strategy:** Remote version checking (ETag, Last-Modified headers)
 
 **Usage:**
 ```python
@@ -106,7 +142,7 @@ print(uniprot_id)  # P04637 (TP53)
 ensembl_id = processor.get_ensembl_id('P04637')
 ```
 
-### 4. GOSubontologyProcessor
+### 5. GOSubontologyProcessor
 
 Maps GO term IDs to their subontologies (biological_process, molecular_function, cellular_component).
 
@@ -191,18 +227,35 @@ class MyCustomProcessor(BaseMappingProcessor):
 
 ## Update Strategies
 
-### Time-Based Updates
+Processors use three intelligent update strategies:
 
-Processors check if the specified time interval has passed since the last update:
+### 1. Time-Based Updates
+
+Checks if specified time interval has passed since last update. Used when remote version checking is unavailable.
+
+**Used by:** HGNCProcessor (API lacks version metadata)
 
 ```python
 processor = HGNCProcessor(update_interval_hours=48)
 processor.load_or_update()  # Updates if >48 hours have passed
 ```
 
-### Dependency-Based Updates
+### 2. Remote Version Checking
 
-Processors check if a dependency file has been modified:
+Checks HTTP headers (Last-Modified, ETag, Content-Length) to detect remote changes without downloading data.
+
+**Used by:** EntrezEnsemblProcessor, EnsemblUniProtProcessor
+
+```python
+processor = EntrezEnsemblProcessor()
+processor.load_or_update()  # Updates only if remote file changed
+```
+
+### 3. Dependency-Based Updates
+
+Checks if a dependency file has been modified more recently than the cache.
+
+**Used by:** GOSubontologyProcessor (updates when GO graph changes)
 
 ```python
 processor = GOSubontologyProcessor(
@@ -211,17 +264,16 @@ processor = GOSubontologyProcessor(
 processor.load_or_update()  # Updates if go.owl is newer than mapping
 ```
 
-### Combined Strategy
+### 4. Manual Only
 
-You can use both time-based and dependency-based updates:
+No automatic updates - requires explicit rebuild via standalone script.
+
+**Used by:** DBSNPProcessor (30GB download, updated via cronjob)
 
 ```python
-processor = BaseMappingProcessor(
-    name='my_processor',
-    update_interval_hours=168,  # Time-based
-    dependency_file='path/to/source.dat'  # Dependency-based
-)
-# Updates if either condition is met
+# Processor only loads, never updates
+dbsnp = DBSNPProcessor()
+dbsnp.load_mapping()  # Never triggers download
 ```
 
 ## File Structure
@@ -356,7 +408,3 @@ To add a new processor:
 4. Add to `__init__.py`
 5. Add documentation to this README
 6. Write tests
-
-## License
-
-See the main BioCypher MeTTa LICENSE file.
