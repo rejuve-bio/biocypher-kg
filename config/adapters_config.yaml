@@ -1061,6 +1061,7 @@ bgee_gene_expressed_in_anatomical_entity:
     cls: BgeeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+      taxon_id: 9606
   outdir: bgee
   nodes: False
   edges: True
