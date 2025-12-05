@@ -1,0 +1,7 @@
+{
+  "timestamp": "2025-12-05T08:42:53.879925",
+  "processor": "go_subontology",
+  "entries": 48196,
+  "dependency_file": "ontology_dataset_cache/go_meta.json",
+  "dependency_mtime": "2025-11-15T23:37:45.779988"
+}

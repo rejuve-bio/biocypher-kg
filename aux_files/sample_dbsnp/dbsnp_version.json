@@ -1,0 +1,7 @@
+{
+  "version": "sample",
+  "timestamp": "2024-01-01T00:00:00",
+  "processor": "dbsnp",
+  "entries": 2008,
+  "note": "Sample data - do not update"
+}
