@@ -3,9 +3,9 @@ gencode_gene:
     module: biocypher_metta.adapters.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
-      filepath: ./samples/gencode_sample.gtf.gz
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
       gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
-
+      taxon_id: 9606
   outdir: gencode/gene
   nodes: True
   edges: False
@@ -13,13 +13,13 @@ gencode_gene:
 
 gencode_transcripts:
   adapter:
-    module: biocypher_metta.adapters.gencode_adapter
-    cls: GencodeAdapter
+    module: biocypher_metta.adapters.gencode_transcript_adapter
+    cls: GencodeTranscriptAdapter
     args:
-      filepath: ./samples/gencode_sample.gtf.gz
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
       type: transcript
       label: transcript
-
+      taxon_id: 9606
   outdir: gencode/transcript
   nodes: True
   edges: False
@@ -27,14 +27,14 @@ gencode_transcripts:
 
 transcribes_to:
   adapter:
-    module: biocypher_metta.adapters.gencode_adapter
-    cls: GencodeAdapter
+    module: biocypher_metta.adapters.gencode_transcript_adapter
+    cls: GencodeTranscriptAdapter
     args:
-      filepath: ./samples/gencode_sample.gtf.gz
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
       type: transcribes to
       label: transcribes_to
-
-  outdir: gencode/transcript
+      taxon_id: 9606
+  outdir: gencode/gene
   nodes: False
   edges: True
 
@@ -43,8 +43,8 @@ gencode_exon:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: ./samples/gencode_sample.gtf.gz
-      target_type: exon   # it could be anything here
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
+      target_type: exon
       taxon_id: 9606
   outdir: gencode/exon
   nodes: True
@@ -55,7 +55,7 @@ exon_part_of_transcript:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: ./samples/gencode_sample.gtf.gz
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
       label: part_of_transcript
       target_type: transcript
       taxon_id: 9606      
@@ -68,7 +68,7 @@ exon_part_of_gene:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: ./samples/gencode_sample.gtf.gz
+      filepath: ./samples/hsa/gencode_sample.gtf.gz
       label: part_of_gene
       target_type: gene
       taxon_id: 9606      
@@ -81,7 +81,8 @@ uniprotkb_sprot:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
+      taxon_id: 9606
   outdir: uniprot
   nodes: True
   edges: False
@@ -91,23 +92,22 @@ uniprotkb_sprot_translates_to:
     module: biocypher_metta.adapters.uniprot_adapter
     cls: UniprotAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       type: translates to
       label: translates_to
-
+      taxon_id: 9606
   outdir: uniprot
   nodes: False
   edges: True
-
 
 pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_pathway_adapter
     cls: ReactomePathwayAdapter
     args:
-      filepath: ./samples/reactome/ReactomePathways.txt
-      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
-
+      filepath: ./samples/hsa/reactome/ReactomePathways.txt
+      pubmed_map_path: ./samples/hsa/reactome/ReactionPMIDS.txt
+      taxon_id: 9606
   outdir: reactome
   nodes: True
   edges: False
@@ -117,9 +117,10 @@ genes_pathways:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      filepath: ./samples/hsa/reactome/Ensembl2Reactome_All_Levels_sample.txt
       ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
+      taxon_id: 9606
   outdir: reactome
   nodes: False
   edges: True
@@ -129,14 +130,16 @@ pathway_to_biological_process:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
     args:
-      filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+      filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
       write_properties: true
       add_provenance: true
+      taxon_id: 9606      
       subontology: biological_process
       mapping_file: aux_files/go_subontology_mapping.pkl
   outdir: reactome/biological_process
   nodes: false
   edges: true
+
 # The following adapters for Molecular Function and Cellular Component are commented out
 # because the current dataset only contains Biological Process edges.
 # Including unused adapters causes the CI to fail due to schema and adapter validation rules.
@@ -147,7 +150,7 @@ pathway_to_biological_process:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
 #     cls: ReactomePathwayGOAdapter
 #     args:
-#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
 #       write_properties: true
 #       add_provenance: true
 #       subontology: molecular_function
@@ -162,7 +165,7 @@ pathway_to_biological_process:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter
 #     cls: ReactomePathwayGOAdapter
 #     args:
-#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
+#       filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
 #       write_properties: true
 #       add_provenance: true
 #       subontology: cellular_component  
@@ -177,9 +180,9 @@ parent_pathway_of:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      filepath: ./samples/hsa/reactome/ReactomePathwaysRelation.txt
       label: parent_pathway_of
-
+      taxon_id: 9606
   outdir: reactome
   nodes: False
   edges: True
@@ -189,9 +192,9 @@ child_pathway_of:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      filepath: ./samples/hsa/reactome/ReactomePathwaysRelation.txt
       label: child_pathway_of
-
+      taxon_id: 9606
   outdir: reactome
   nodes: False
   edges: True
@@ -294,9 +297,9 @@ gaf_biological_process_gene_product:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: biological_process_gene_product
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -306,9 +309,9 @@ gaf_molecular_function_gene_product:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: molecular_function_gene_product
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -318,9 +321,9 @@ gaf_cellular_component_gene_product_part_of:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_product_part_of
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -330,9 +333,9 @@ gaf_cellular_component_gene_product_located_in:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_product_located_in
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -342,10 +345,10 @@ gaf_biological_process_gene:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: biological_process_gene
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -355,10 +358,10 @@ gaf_molecular_function_gene:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: molecular_function_gene
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -368,10 +371,10 @@ gaf_cellular_component_gene_part_of:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_part_of
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -381,10 +384,10 @@ gaf_cellular_component_gene_located_in:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: ./samples/goa_human_sample.gaf.gz
+      filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_located_in
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-
+      taxon_id: 9606
   outdir: gaf
   nodes: False
   edges: True
@@ -394,45 +397,34 @@ coexpression:
     module: biocypher_metta.adapters.coxpresdb_adapter
     cls: CoxpresdbAdapter
     args:
-      filepath: ./samples/coxpressdb
-      ensemble_to_entrez_path: ./aux_files/entrez_to_ensembl.pkl
-
+      filepath: ./samples/hsa/coxpressdb
+      entrez_to_ensemble_path: ./aux_files/entrez_to_ensembl.pkl
+      taxon_id: 9606
   outdir: coxpressdb
   nodes: False
   edges: True
 
 tflink:
-    adapter:
-        module: biocypher_metta.adapters.tflink_adapter
-        cls: TFLinkAdapter
-        args:
-          filepath: ./samples/tflink_homo_sapiens_interactions.tsv.gz
-          entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
-
-    outdir: tflink
-    nodes: False
-    edges: True
+  adapter:
+    module: biocypher_metta.adapters.tflink_adapter
+    cls: TFLinkAdapter
+    args:
+      filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
+      entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
+      taxon_id: 9606
+  outdir: tflink
+  nodes: False
+  edges: True
 
 string:
   adapter:
     module: biocypher_metta.adapters.string_ppi_adapter
     cls: StringPPIAdapter
     args:
-      filepath: ./samples/string_human_ppi_v12.0.txt.gz
+      filepath: ./samples/hsa/string_human_ppi_v12.0.txt.gz
       ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
-
+      taxon_id: 9606
   outdir: string
-  nodes: False
-  edges: True
-
-reactome_ppi:
-  adapter:
-    module: biocypher_metta.adapters.reactome_ppi_adapter
-    cls: ReactomePPIAdapter
-    args:
-      filepath: ./samples/reactome_homo_sapiens_interactions_tab_delimited_sample.txt.gz
-
-  outdir: reactome/ppi
   nodes: False
   edges: True
 
@@ -441,8 +433,8 @@ tadmap:
     module: biocypher_metta.adapters.tadmap_adapter
     cls: TADMapAdapter
     args:
-      filepath: ./samples/tad_sample.csv
-
+      filepath: ./samples/hsa/tad_sample.csv
+      taxon_id: 9606
   outdir: tadmap
   nodes: True
   edges: False
@@ -452,9 +444,9 @@ tadmap_gene:
     module: biocypher_metta.adapters.tadmap_adapter
     cls: TADMapAdapter
     args:
-      filepath: ./samples/tad_sample.csv
+      filepath: ./samples/hsa/tad_sample.csv
       label: in_tad_region
-
+      taxon_id: 9606
   outdir: tadmap
   nodes: False
   edges: True
@@ -464,7 +456,7 @@ gtex_eqtl:
     module: biocypher_metta.adapters.gtex_eqtl_adapter
     cls: GTExEQTLAdapter
     args:
-      filepath: ./samples/gtex.forgedb.sample.csv.gz
+      filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
 
   outdir: gtex/eqtl
@@ -476,7 +468,7 @@ gtex_expression:
     module: biocypher_metta.adapters.gtex_expression_adapter
     cls: GTExExpressionAdapter
     args:
-      filepath: ./samples/gtex.forgedb.sample.csv.gz
+      filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       label: expressed_in
 
@@ -489,10 +481,10 @@ hocomoco:
     module: biocypher_metta.adapters.hocomoco_motif_adapter
     cls: HoCoMoCoMotifAdapter
     args:
-      filepath: ./samples/motifs
-      annotation_file: ./samples/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+      filepath: ./samples/hsa/motifs
+      annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-
+      taxon_id: 9606      
   outdir: hocomoco
   nodes: True
   edges: False
@@ -502,7 +494,7 @@ roadmap_chromatin_state:
     module: biocypher_metta.adapters.roadmap_state_adapter
     cls: RoadMapChromatinStateAdapter
     args:
-      filepath: ./samples/roadmap/chromatin_state
+      filepath: ./samples/hsa/roadmap/chromatin_state
       cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
@@ -515,7 +507,7 @@ roadmap_h3_mark:
     module: biocypher_metta.adapters.roadmap_h3_marks_adapter
     cls: RoadMapH3MarkAdapter
     args:
-      filepath: ./samples/roadmap/h3_marks
+      filepath: ./samples/hsa/roadmap/h3_marks
       cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
@@ -528,7 +520,7 @@ roadmap_dhs:
     module: biocypher_metta.adapters.roadmap_dhs_adapter
     cls: RoadMapDHSAdapter
     args:
-      filepath: ./samples/roadmap/dhs/erc2-DHS_sample.csv.gz
+      filepath: ./samples/hsa/roadmap/dhs/erc2-DHS_sample.csv.gz
       cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
@@ -541,7 +533,7 @@ abc:
     module: biocypher_metta.adapters.abc_adapter
     cls: ABCAdapter
     args:
-      filepath: ./samples/abc.forgedb_sample.csv.gz
+      filepath: ./samples/hsa/abc.forgedb_sample.csv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       tissue_to_ontology_id_map: ./aux_files/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
@@ -555,7 +547,7 @@ cadd:
     module: biocypher_metta.adapters.cadd_adapter
     cls: CADDAdapter
     args:
-      filepath: ./samples/cadd.forgedb_sample.csv.gz
+      filepath: ./samples/hsa/cadd.forgedb_sample.csv.gz
       dbsnp_rsid_map: None # will be provided by import script
 
   outdir: cadd
@@ -567,7 +559,7 @@ refseq_closest_gene:
     module: biocypher_metta.adapters.refseq_closest_gene_adapter
     cls: RefSeqClosestGeneAdapter
     args:
-      filepath: ./samples/closest_gene.forgedb_sample.csv.gz
+      filepath: ./samples/hsa/closest_gene.forgedb_sample.csv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsnp_rsid_map: None # will be provided by import script
 
@@ -580,7 +572,7 @@ topld_eur:
         module: biocypher_metta.adapters.topld_adapter
         cls: TopLDAdapter
         args:
-            filepath: ./samples/topld/EUR/topld_eur_chr16_sample.csv.gz
+            filepath: ./samples/hsa/topld/EUR/topld_eur_chr16_sample.csv.gz
             chr: chr16
             ancestry: EUR
             dbsnp_pos_map: None # will be provided by import script
@@ -589,17 +581,16 @@ topld_eur:
     nodes: False
     edges: True
 
-
 rna_central_non_coding_rna:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: ./samples/hsa/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
       label: non_coding_rna
       type: non_coding_rna
-
+      taxon_id: 9606
   outdir: rna_central
   nodes: True
   edges: False
@@ -609,11 +600,11 @@ rna_central_non_coding_rna_biological_process:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: ./samples/hsa/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
-
+      taxon_id: 9606
   outdir: rna_central
   nodes: False
   edges: True  
@@ -623,11 +614,11 @@ rna_central_non_coding_rna_molecular_function:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: ./samples/hsa/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
-
+      taxon_id: 9606
   outdir: rna_central
   nodes: False
   edges: True  
@@ -637,11 +628,11 @@ rna_central_non_coding_rna_cellular_component:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: ./samples/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: ./samples/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      filepath: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
+      rfam_filepath: ./samples/hsa/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
-
+      taxon_id: 9606
   outdir: rna_central
   nodes: False
   edges: True   
@@ -651,7 +642,7 @@ dgv_variant:
     module: biocypher_metta.adapters.dgv_variant_adapter
     cls: DGVVariantAdapter
     args:
-      filepath: ./samples/dgv_GRCh38_hg38_variants.txt.gz
+      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
 
   outdir: dgv
   nodes: True
@@ -662,9 +653,9 @@ epd_promoter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: ./samples/Hs_EPDnew.bed.gz
+      filepath: ./samples/hsa/Hs_EPDnew.bed.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
-
+      taxon_id: 9606
   outdir: epd
   nodes: True
   edges: False
@@ -674,11 +665,11 @@ epd_promoter_regulates_gene:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: ./samples/Hs_EPDnew.bed.gz
+      filepath: ./samples/hsa/Hs_EPDnew.bed.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       type: promoter to gene association
       label: promoter_gene
-
+      taxon_id: 9606
   outdir: epd
   nodes: False
   edges: True
@@ -688,7 +679,7 @@ dbvar_variant:
     module: biocypher_metta.adapters.dbvar_adapter
     cls: DBVarVariantAdapter
     args:
-      filepath: ./samples/dbvar_sample.vcf.gz
+      filepath: ./samples/hsa/dbvar_sample.vcf.gz
 
   outdir: dbvar
   nodes: True
@@ -699,9 +690,9 @@ peregrine_enhancer:
     module: biocypher_metta.adapters.peregrine_adapter
     cls: PEREGRINEAdapter
     args:
-      enhancers_file: ./samples/peregrine/PEREGRINEenhancershg38.gz
-      enhancer_gene_link: ./samples/peregrine/sample_enhancer_gene_link_18.tsv.gz
-      source_file: ./samples/peregrine/PEREGRINEenhancersources.gz
+      enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
+      enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
+      source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
       hgnc_ensembl_map: ./aux_files/hgnc_ensembl_map.pkl
       tissue_ontology_map: ./aux_files/peregrine_tissues_to_ontology_map.pkl
 
@@ -715,9 +706,9 @@ peregrine_enhancer_regulates:
     module: biocypher_metta.adapters.peregrine_adapter
     cls: PEREGRINEAdapter
     args:
-      enhancers_file: ./samples/peregrine/PEREGRINEenhancershg38.gz
-      enhancer_gene_link: ./samples/peregrine/sample_enhancer_gene_link_18.tsv.gz
-      source_file: ./samples/peregrine/PEREGRINEenhancersources.gz
+      enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
+      enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
+      source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
       hgnc_ensembl_map: ./aux_files/hgnc_ensembl_map.pkl
       tissue_ontology_map: ./aux_files/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
@@ -732,7 +723,7 @@ dbsuper_super_enhancer:
     module: biocypher_metta.adapters.dbsuper_adapter
     cls: DBSuperAdapter
     args:
-      filepath: ./samples/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
 
@@ -745,7 +736,7 @@ dbsuper_super_enhancer_regulates_gene:
     module: biocypher_metta.adapters.dbsuper_adapter
     cls: DBSuperAdapter
     args:
-      filepath: ./samples/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
@@ -760,7 +751,7 @@ dbsnp_snps:
     module: biocypher_metta.adapters.dbsnp_adapter
     cls: DBSNPAdapter
     args:
-      filepath: ./samples/dbsnp/dbsnp-sample-00-common_all.vcf.gz
+      filepath: ./samples/hsa/dbsnp/dbsnp-sample-00-common_all.vcf.gz
     
   outdir: dbsnp
   nodes: True
@@ -771,8 +762,8 @@ enhancer_atlas_enhancer:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: ./samples/enhancer_atlas/enhancer.bed.gz
-      enhancer_gene_filepath: ./samples/enhancer_atlas/enhancer_gene
+      enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
 
   outdir: enhancer_atlas
@@ -784,8 +775,8 @@ enhancer_atlas_enhancer_regulates:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: ./samples/enhancer_atlas/enhancer.bed.gz
-      enhancer_gene_filepath: ./samples/enhancer_atlas/enhancer_gene
+      enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
       input_label: enhancer_gene
@@ -906,17 +897,19 @@ cl_part_of:
   nodes: False
   edges: True
 
-motif_diff_tf_snp:
-  adapter:
-    module: biocypher_metta.adapters.motif_diff_adapter
-    cls: MotifDiffAdapter
-    args:
-      filepath: ./samples/sample_motif_diff_mono_probNorm_average.diff
-      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
-      label: tf_snp
-  outdir: MotifDiff
-  nodes: False
-  edges: True
+# fabian_tf_snp:
+#   adapter:
+#     module: biocypher_metta.adapters.fabian_adapter
+#     cls: FabianAdapter
+#     args:
+#       filepath: ./samples/hsa/fabian_sample_data.tsv
+#       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
+#       dbsnp_pos_map: None # will be provided by import script
+#       label: tfbs_snp
+#   outdir: fabian
+#   nodes: False
+#   edges: True
+
 
 experimental_factor_ontology:
   adapter:
@@ -960,19 +953,19 @@ brenda_tissue_ontology:
   nodes: True
   edges: False
 
-bto_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-    cls: BrendaTissueOntologyAdapter
-    args:
-      ontology: 'bto'
-      label: bto_subclass_of
-      type: edge
-      dry_run: True
-      cache_dir: ./ontology_dataset_cache
-  outdir: brenda_tissue_ontology
-  nodes: False
-  edges: True
+# bto_bto_subclass_of:
+#   adapter:
+#     module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+#     cls: BrendaTissueOntologyAdapter
+#     args:
+#       ontology: 'bto'
+#       label: bto_subclass_of
+#       type: edge
+#       dry_run: True
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: brenda_tissue_ontology
+#   nodes: False
+#   edges: True
 
 human_phenotype_ontology:
   adapter:
@@ -1007,19 +1000,47 @@ polyphen2:
     module: biocypher_metta.adapters.polyphen2_adapter
     cls: PolyPhen2Adapter
     args:
-      filepath: ./samples/polyPhen2_sample.bed.gz
+      filepath: ./samples/hsa/polyPhen2_sample.bed.gz
   
   outdir: polyphen-2
   nodes: True
   edges: False
 
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: True
+  edges: False
+
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: False
+  edges: True
+  
 bgee_gene_expressed_in_anatomical_entity:
   adapter:
     module: biocypher_metta.adapters.bgee_adapter
     cls: BgeeAdapter
     args:
-      filepath: ./samples/Homo_sapiens_expr_sample.tsv.gz
-      taxon_id: 9606
+      filepath: ./samples/hsa/Homo_sapiens_expr_sample.tsv.gz
+      taxon_id: 9606      
   outdir: bgee
   nodes: False
   edges: True
@@ -1029,9 +1050,10 @@ transcription_factor_binding_site:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: ./samples/sampleEncRegTfbsClustered.csv.gz
+      filepath: ./samples/hsa/sampleEncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: tfbs
+      taxon_id: 9606      
   outdir: tfbs
   nodes: True
   edges: False
@@ -1041,9 +1063,10 @@ gene_tfbs_association:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: ./samples/sampleEncRegTfbsClustered.csv.gz
+      filepath: ./samples/hsa/sampleEncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: gene_tfbs
+      taxon_id: 9606      
   outdir: tfbs
   nodes: False
   edges: True
@@ -1053,7 +1076,7 @@ snp_to_upstream_gene:
     module: biocypher_metta.adapters.gwas_adapter
     cls: GWASAdapter
     args:
-      filepath: ./samples/gwas-catalog_sample.tsv
+      filepath: ./samples/hsa/gwas-catalog_sample.tsv
       label: snp_upstream_gene
   outdir: gwas/upstream
   nodes: False
@@ -1064,7 +1087,7 @@ snp_to_downstream_gene:
     module: biocypher_metta.adapters.gwas_adapter
     cls: GWASAdapter
     args:
-      filepath: ./samples/gwas-catalog_sample.tsv
+      filepath: ./samples/hsa/gwas-catalog_sample.tsv
       label: snp_downstream_gene
   outdir: gwas/downstream
   nodes: False
@@ -1075,81 +1098,9 @@ snp_to_in_gene:
     module: biocypher_metta.adapters.gwas_adapter
     cls: GWASAdapter
     args:
-      filepath: ./samples/gwas-catalog_sample.tsv
+      filepath: ./samples/hsa/gwas-catalog_sample.tsv
       label: snp_in_gene
   outdir: gwas/ingene
-  nodes: False
-  edges: True
-
-proximal_enhancer_ccre:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
-    cls: EnhancercCREAdapter
-    args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
-      label: enhancer
-      element_filter: proximal
-  outdir: ccre/enhancer_ccre/proximal
-  nodes: True
-  edges: False
-
-proximal_enhancer_ccre_associates_with_gene:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
-    cls: EnhancercCREAdapter
-    args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-All.tsv.gz
-      label: enhancer_gene
-      element_filter: proximal
-  outdir: ccre/enhancer_ccre/proximal
-  nodes: False
-  edges: True
-
-proximal_enhancer_ccre_associates_with_gene_coding_only:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
-    cls: EnhancercCREAdapter
-    args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
-      label: enhancer_gene
-      element_filter: proximal
-  outdir: ccre/enhancer_ccre/proximal/coding_only
-  nodes: False
-  edges: True
-
-distal_enhancer_ccre:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
-    cls: EnhancercCREAdapter
-    args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
-      label: enhancer
-      element_filter: distal
-  outdir: ccre/enhancer_ccre/distal
-  nodes: True
-  edges: False
-
-distal_enhancer_ccre_associates_with_gene:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
-    cls: EnhancercCREAdapter
-    args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-All.tsv.gz
-      label: enhancer_gene
-      element_filter: distal
-  outdir: ccre/enhancer_ccre/distal
-  nodes: False
-  edges: True
-
-distal_enhancer_ccre_associates_with_gene_coding_only:
-  adapter:
-    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
-    cls: EnhancercCREAdapter
-    args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
-      label: enhancer_gene
-      element_filter: distal
-  outdir: ccre/enhancer_ccre/distal/coding_only
   nodes: False
   edges: True
 
@@ -1158,10 +1109,11 @@ promoter_ccre:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: promoter
-      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
   outdir: ccre/promoter_ccre
   nodes: True
   edges: False
@@ -1171,11 +1123,12 @@ promoter_ccre_associates_with_gene_nearest_gene:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-All.tsv.gz
       edge_type: nearest
       label: promoter_gene
-      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
   outdir: ccre/promoter_ccre
   nodes: False
   edges: True
@@ -1185,11 +1138,12 @@ promoter_ccre_associates_with_gene_nearest_gene_coding_only:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: promoter_gene
       edge_type: nearest
-      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
   outdir: ccre/promoter_ccre/coding_only
   nodes: False
   edges: True
@@ -1199,12 +1153,154 @@ promoter_ccre_associates_with_gene_eqtl:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
     args:
-      filepath: ./samples/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: promoter_gene
       edge_type: eqtl
-      eqtl_filepath: ./samples/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
   outdir: ccre/promoter_ccre/eqtl
+  nodes: False
+  edges: True
+
+
+
+promoter_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: promoter
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
+  outdir: ccre/promoter_ccre
+  nodes: True
+  edges: False
+
+promoter_ccre_associates_with_gene_nearest_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      edge_type: nearest
+      label: promoter_gene
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
+  outdir: ccre/promoter_ccre
+  nodes: False
+  edges: True
+
+promoter_ccre_associates_with_gene_nearest_gene_coding_only:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: promoter_gene
+      edge_type: nearest
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
+  outdir: ccre/promoter_ccre/coding_only
+  nodes: False
+  edges: True
+
+promoter_ccre_associates_with_gene_eqtl:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: promoter_gene
+      edge_type: eqtl
+      eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
+  outdir: ccre/promoter_ccre/eqtl
+  nodes: False
+  edges: True
+
+
+
+proximal_enhancer_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer
+      element_filter: proximal
+      taxon_id: 9606
+  outdir: ccre/enhancer_ccre/proximal
+  nodes: True
+  edges: False
+
+proximal_enhancer_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      label: enhancer_gene
+      element_filter: proximal
+      taxon_id: 9606
+  outdir: ccre/enhancer_ccre/proximal
+  nodes: False
+  edges: True
+
+proximal_enhancer_ccre_associates_with_gene_coding_only:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer_gene
+      element_filter: proximal
+      taxon_id: 9606
+  outdir: ccre/enhancer_ccre/proximal/coding_only
+  nodes: False
+  edges: True
+
+distal_enhancer_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer
+      element_filter: distal
+      taxon_id: 9606
+  outdir: ccre/enhancer_ccre/distal
+  nodes: True
+  edges: False
+
+distal_enhancer_ccre_associates_with_gene:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      label: enhancer_gene
+      element_filter: distal
+      taxon_id: 9606
+  outdir: ccre/enhancer_ccre/distal
+  nodes: False
+  edges: True
+
+distal_enhancer_ccre_associates_with_gene_coding_only:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
+    cls: EnhancercCREAdapter
+    args:
+      filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      label: enhancer_gene
+      element_filter: distal
+      taxon_id: 9606
+  outdir: ccre/enhancer_ccre/distal/coding_only
   nodes: False
   edges: True
 
@@ -1213,8 +1309,8 @@ encode_re2g:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
-      filepath: ./samples/ENCODE_rE2G_K562.bed.gz
-
+      filepath: ./samples/hsa/ENCODE_rE2G_K562.bed.gz
+      taxon_id: 9606
   outdir: encode_re2g
   nodes: True
   edges: False
@@ -1224,9 +1320,9 @@ encode_re2g_gene_associates:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
-      filepath: ./samples/ENCODE_rE2G_K562.bed.gz
+      filepath: ./samples/hsa/ENCODE_rE2G_K562.bed.gz
       label: enhancer_gene
-
+      taxon_id: 9606
   outdir: encode_re2g
   nodes: False
   edges: True

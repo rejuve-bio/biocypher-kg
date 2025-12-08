@@ -312,6 +312,8 @@ class Neo4jCSVWriter(BaseWriter):
                     source_type = self.preprocess_id(source_id, label=source_type).split('_')[0]
                 if target_type == "ontology_term" and not isinstance(target_id, tuple):
                     target_type = self.preprocess_id(target_id, label=target_type).split('_')[0]
+                    print(f'target id: {target_id}, target type: {target_type}')
+
 
                 edge_freq[f"{label}|{source_type}|{target_type}"] += 1
 
