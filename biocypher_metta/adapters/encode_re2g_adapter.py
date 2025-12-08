@@ -2,15 +2,25 @@ import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
+# Human data:
+# https://www.encodeproject.org/
+
+# Mouse data:
+# https://www.encodeproject.org/
+
+
+# Is this adapter used?   Where are the data?
+
+
 class ENCODERe2GAdapter(Adapter):
-    def __init__(self, filepath, write_properties, add_provenance, label='enhancer',
+    def __init__(self, filepath, taxon_id, write_properties, add_provenance, label='enhancer',
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
         self.label = label
-        
+        self.taxon_id = taxon_id
         self.source = "ENCODE-rE2G"
         self.version = "1.0"
         self.source_url = "https://www.encodeproject.org/"

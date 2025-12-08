@@ -5,7 +5,7 @@ class FBGrossAnatomyAdapter(OntologyAdapter):
         'FBbt': 'https://purl.obolibrary.org/obo/fbbt.owl'     
     }
     
-    def __init__(self, write_properties, add_provenance, ontology, type, label='FBbt', dry_run=False, add_description=False, cache_dir=None):
+    def __init__(self, write_properties, add_provenance, ontology, type, label='anatomy', dry_run=False, add_description=False, cache_dir=None):
         super(FBGrossAnatomyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
     
     def get_uri_prefixes(self):
@@ -14,7 +14,7 @@ class FBGrossAnatomyAdapter(OntologyAdapter):
             'primary': 'http://purl.obolibrary.org/obo/FBbt_',
             'go': 'http://purl.obolibrary.org/obo/GO_',
             'uberon': 'http://purl.obolibrary.org/obo/UBERON_',
-            'ro': '<http://purl.obolibrary.org/obo/RO_',
+            # 'ro': '<http://purl.obolibrary.org/obo/RO_',
             'bfo': 'http://purl.obolibrary.org/obo/BFO_',
         }
     

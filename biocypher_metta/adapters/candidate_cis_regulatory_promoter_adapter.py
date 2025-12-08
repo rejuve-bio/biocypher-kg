@@ -17,11 +17,12 @@ from biocypher_metta.adapters import Adapter
 
 class PromotercCREAdapter(Adapter):
     def __init__(
-        self, filepath, eqtl_filepath, gtex_tissue_ontology_map=None, write_properties=True, add_provenance=True, label="promoter", edge_type=None):
+        self, filepath, eqtl_filepath, taxon_id, gtex_tissue_ontology_map=None, write_properties=True, add_provenance=True, label="promoter", edge_type=None):
         self.filepath = filepath
         self.eqtl_filepath = eqtl_filepath
         self.gtex_tissue_ontology_map = gtex_tissue_ontology_map
         self.label = label
+        self.taxon_id = taxon_id
         self.source = "ENCODE"
         self.source_url = "https://screen.wenglab.org/downloads"
         
@@ -204,8 +205,8 @@ class PromotercCREAdapter(Adapter):
                 if not gene_id:
                     continue
                 
-                # Add ENSEMBL: prefix to gene_id
-                gene_id = f"ENSEMBL:{gene_id}"
+                # Add  prefix to gene_id
+                gene_id = f"{gene_id}"
                 
                 props = {
                     'distance': promoter_data['distance'],
@@ -230,7 +231,7 @@ class PromotercCREAdapter(Adapter):
                     if not gene_id:
                         continue
                     
-                    gene_id = f"ENSEMBL:{gene_id}"
+                    gene_id = f"{gene_id}"
                     
                     tissue = eqtl_data['tissue']
                     ontology_id = self._get_ontology_id(tissue)

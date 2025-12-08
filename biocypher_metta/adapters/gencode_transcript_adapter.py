@@ -76,7 +76,7 @@ class GencodeTranscriptAdapter(Adapter):
     }
 
     def __init__(self, write_properties, add_provenance, taxon_id, filepath=None, 
-                 type='gene', label='gencode_gene', 
+                 type='transcript', label='transcript', 
                  chr=None, start=None, end=None):
         if label not in GencodeTranscriptAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +
@@ -88,7 +88,7 @@ class GencodeTranscriptAdapter(Adapter):
         self.start = start
         self.end = end
         self.label = label
-        self.dataset = label
+        self.dataset = 'gencode_transcript'
         self.taxon_id = taxon_id
 
         self.source = 'GENCODE'
@@ -152,9 +152,15 @@ class GencodeTranscriptAdapter(Adapter):
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
                     continue
 
-                result = self.hgnc_processor.process_identifier(info['gene_name'])
+                gene_name = info.get('gene_name')
+                if not gene_name:
+                    print(f"No gene name found for transcript {info['transcript_id']}. Record: {info}.\nGene name will be 'unkown'")
+                    result = {'status': 'unknown', 'original': 'unknown', 'current': 'unknown'}
+                else:
+                    result = self.hgnc_processor.process_identifier(gene_name)
+                
                 #CURIE ID Formatting
-                transcript_key = f"{info['transcript_id'].split('.')[0]}"
+                transcript_key = f"{GencodeTranscriptAdapter.CURIE_PREFIX[self.taxon_id]}:{info['transcript_id'].split('.')[0]}"
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
                 gene_key = f"{info['gene_id'].split('.')[0]}"
@@ -170,10 +176,11 @@ class GencodeTranscriptAdapter(Adapter):
                     if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                         if self.type == 'transcript':
                             if self.write_properties:
+                                transcript_type_val = info.get('transcript_type')
                                 props = {
                                     'transcript_id': info['transcript_id'],
                                     'transcript_name': info['transcript_name'],
-                                    'transcript_type': info['transcript_type'],
+                                    'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],                                
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
                                 }
                                 if result['status'] == 'updated':
@@ -192,14 +199,15 @@ class GencodeTranscriptAdapter(Adapter):
                         
                             yield transcript_key, self.label, props
                 except Exception as e:
-                    # print(
-                    #     f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-                    # print(f'Error: {str(e)}')
+                    print(
+                        f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                    print(f'Error: {str(e)}')
                     not_processed += 1
-        print(f"Not processed: {not_processed}")
+        print(f"Not processed records: {not_processed}")
 
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as input:
+            not_processed = 0
             for line in input:
                 if line.startswith('#'):
                     continue
@@ -238,3 +246,5 @@ class GencodeTranscriptAdapter(Adapter):
                     print(
                         f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
                     print(f'Error: {str(e)}')
+                    not_processed += 1
+        print(f"Not processed records: {not_processed}")

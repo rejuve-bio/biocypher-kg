@@ -9,6 +9,7 @@ from Bio.UniProt.GOA import gafiterator
 from biocypher_metta.adapters import Adapter
 
 # GAF files are defined here: https://geneontology.github.io/docs/go-annotation-file-gaf-format-2.2/
+
 #
 # Example:
 # !gaf-version: 2.2
@@ -76,12 +77,13 @@ class GAFAdapter(Adapter):
         self.subontology_mapping = None
 
         # Determine subontology based on label
-        if label in 'molecular_function_gene_product':
+        if 'molecular_function' in label:
             self.subontology = 'molecular_function'
-        elif label in 'cellular_component_gene_product':
+        elif  'cellular_component' in label: #  == 'cellular_component_gene_product_part_of' or label == 'cellular_component_gene_product_located_in':
             self.subontology = 'cellular_component'
-        elif label in 'biological_process_gene_product':
+        elif 'biological_process' in label:
             self.subontology = 'biological_process'
+
 
         if os.path.exists(mapping_file):
             with open(mapping_file, 'rb') as f:
@@ -130,6 +132,8 @@ class GAFAdapter(Adapter):
                     if go_subontology != self.subontology:
                         continue
 
+                target = (self.subontology, target)
+
                 # Handle source ID based on type
                 if self.type == 'rna':
                     transcript_id = self.rnacentral_mapping.get(source_raw)
@@ -137,7 +141,7 @@ class GAFAdapter(Adapter):
                         continue
                     source = ("transcript", f"RNACENTRAL:{source_raw}")  # CURIE format for RNAcentral
                 elif self.type == 'flybase':
-                    label = "biological_process_gene"
+                    # label = "biological_process_gene"
                     source = ("gene", f"FlyBase:{source_raw}")    # Flybase use genes
                 else:
                     # Default to UniProt for protein annotations
@@ -161,7 +165,7 @@ class GAFAdapter(Adapter):
                     ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_symbol, None)
                     if ensembl_gene_id == None:
                         continue
-                    label = "biological_process_gene"
+                    # label = "biological_process_gene"
                     source = ("gene", f"ENSEMBL:{ensembl_gene_id}")  # CURIE format for Ensembl
                 
                 # Check for redundancy  (Not necessary if we use DAS)

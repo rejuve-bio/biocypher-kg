@@ -5,7 +5,7 @@ class GeneToSequenceOntologyAdapter(Adapter):
 
     def __init__(self, write_properties, add_provenance, filepath=None):
         self.filepath = filepath
-        self.label = 'so_classified_as'
+        self.label = 'sequence_classified_as'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
         super(GeneToSequenceOntologyAdapter, self).__init__(write_properties, add_provenance)

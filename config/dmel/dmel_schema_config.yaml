@@ -553,24 +553,24 @@ transcription binding site:
 # ---
 # ontologies
 
-# Uberon Ontology
-uberon:
-  is_a: ontology term
-  represented_as: node
-  input_label: uberon
-  output_label: anatomy
-  mixins: [biolink:AnatomicalEntity]
-  biolink_category: "biolink:AnatomicalEntity"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:AnatomicalEntity"
+# Uberon Ontology: THIS SHOULD BE anatomy ALSO
+# uberon:
+#   is_a: ontology term
+#   represented_as: node
+#   input_label: uberon
+#   output_label: anatomy
+#   mixins: [biolink:AnatomicalEntity]
+#   biolink_category: "biolink:AnatomicalEntity"
+#   inherit_properties: true
+#   kgx_properties:
+#     category: "biolink:AnatomicalEntity"
 
 # Cell line Ontology
-clo:
+cell line:
   is_a: ontology term
   represented_as: node
-  input_label: clo
-  output_label: cell_line
+  input_label: cell_line
+  # output_label: cell_line
   mixins: [biolink:CellLine]
   biolink_category: "biolink:CellLine"
   inherit_properties: true
@@ -578,11 +578,11 @@ clo:
     category: "biolink:CellLine"
 
 # Cell Ontology
-cl:
+cell type:
   is_a: ontology term
   represented_as: node
-  input_label: cl
-  output_label: cell_type
+  input_label: cell_type
+  # output_label: cell_type
   mixins: [biolink:Cell]
   biolink_category: "biolink:Cell"
   inherit_properties: true
@@ -590,11 +590,11 @@ cl:
     category: "biolink:Cell"
 
 # Experimental Factor Ontology
-efo:
+experimental factor:
   is_a: ontology term
   represented_as: node
-  input_label: efo
-  output_label: experimental_factor
+  input_label: experimental_factor
+  # output_label: experimental_factor
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
   inherit_properties: true
@@ -669,11 +669,11 @@ cellular component:
     category: "biolink:CellularComponent"
 
 # Molecular interactions ontology (MI) 
-mi:
+molecular interaction:
   is_a: ontology term
   represented_as: node
-  input_label: mi
-  output_label: molecular_interaction
+  input_label: molecular_interaction
+  # output_label: molecular_interaction
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
   inherit_properties: true
@@ -681,11 +681,11 @@ mi:
     category: "biolink:OntologyClass"
 
 # Sequence ontology (SO)
-so:
+sequence type:
   is_a: ontology term
   represented_as: node
-  input_label: so
-  output_label: sequence_type
+  input_label: sequence_type
+  # output_label: sequence_type
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
   inherit_properties: true
@@ -693,45 +693,46 @@ so:
     category: "biolink:OntologyClass"
 
 # disease ontology (DO) 
-do:
+disease:
   is_a: ontology term
   represented_as: node
-  input_label: do
-  output_label: disease
+  input_label: disease
+  # output_label: disease
   mixins: [biolink:Disease]
   biolink_category: "biolink:Disease"
   inherit_properties: true
   kgx_properties:
     category: "biolink:Disease"
 
-chebi:
+chemical substance:
   is_a: ontology term
   represented_as: node
   input_label: chemical_substance
-  mixins: [biolink:Disease]
+  # output_label: chemical_substance
+  mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
   kgx_properties:
     category: "biolink:ChemicalEntity"
 
 # Flybase development ontology (FBdv#) - dmel exclusive ontology term
-FBdv:
+developmental stage:
   is_a: ontology term
   represented_as: node
-  input_label: FBdv
-  output_label: developmental_stage
+  input_label: developmental_stage
+  # output_label: developmental_stage
   mixins: [biolink:LifeStage]
   biolink_category: "biolink:LifeStage"
   inherit_properties: true
   kgx_properties:
     category: "biolink:LifeStage"
 
-# Flybase gross anatomy ontology (FBbt#) - dmel exclusive ontology term
-FBbt:
+# Flybase gross anatomy ontology (FBbt#) - dmel exclusive ontology term  and uberon?
+anatomy:
   is_a: ontology term
   represented_as: node
-  input_label: FBbt
-  output_label: anatomy
+  input_label: anatomy
+  # output_label: anatomy
   mixins: [biolink:AnatomicalEntity]
   biolink_category: "biolink:AnatomicalEntity"
   inherit_properties: true
@@ -739,10 +740,10 @@ FBbt:
     category: "biolink:AnatomicalEntity"
 
 # Flybase Controlled Vocabulary ontology (FBcv#) (phenotype) - dmel exclusive ontology term
-FBcv:
+phenotype:
   is_a: ontology term
   represented_as: node
-  input_label: FBcv
+  input_label: phenotype
   output_label: phenotype
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
@@ -1337,7 +1338,7 @@ ptp physically interacts with:
       biolink: taxon
       range: biolink:OrganismTaxon
     interaction_type:
-      type: mi # Molecular Interaction Ontology
+      type: molecular_interaction # Molecular Interaction Ontology
       biolink: has_attribute
     interaction_comments:
       type: str
@@ -1360,7 +1361,7 @@ ptp physical interaction type:
   represented_as: edge
   input_label: ptp_physical_interaction_type
   source: ptp physically interacts with
-  target: mi
+  target: molecular_interaction
 
 
 ptt physically interacts with:
@@ -1557,8 +1558,8 @@ bto subclass of:
   represented_as: edge
   input_label: bto_subclass_of
   output_label: subclass_of
-  source: bto
-  target: bto
+  source: tissue
+  target: tissue
   kgx_properties:
     subject_category: "biolink:AnatomicalEntity"
     object_category: "biolink:AnatomicalEntity"
@@ -1572,8 +1573,8 @@ efo subclass of:
   represented_as: edge
   input_label: efo_subclass_of
   output_label: subclass_of
-  source: efo
-  target: efo
+  source: experimental factor 
+  target: experimental factor
   kgx_properties:
     subject_category: "biolink:OntologyClass"
     object_category: "biolink:OntologyClass"
@@ -1588,8 +1589,8 @@ uberon subclass of:
   represented_as: edge
   input_label: uberon_subclass_of
   output_label: subclass_of
-  source: uberon
-  target: uberon
+  source: anatomy
+  target: anatomy
   kgx_properties:
     subject_category: "biolink:AnatomicalEntity"
     object_category: "biolink:AnatomicalEntity"
@@ -1603,8 +1604,8 @@ clo subclass of:
   represented_as: edge
   input_label: clo_subclass_of
   output_label: subclass_of
-  source: clo
-  target: clo
+  source: cell line
+  target: cell line
   kgx_properties:
     subject_category: "biolink:CellLine"
     object_category: "biolink:CellLine"
@@ -1618,8 +1619,8 @@ cl subclass of:
   represented_as: edge
   input_label: cl_subclass_of
   output_label: subclass_of
-  source: cl
-  target: cl
+  source: cell type
+  target: cell type
   kgx_properties:
     subject_category: "biolink:Cell"
     object_category: "biolink:Cell"
@@ -1634,8 +1635,8 @@ biological process subclass:
   represented_as: edge
   input_label: biological_process_subclass_of
   output_label: subclass_of
-  source: biological_process
-  target: biological_process
+  source: biological process
+  target: biological process
   kgx_properties:
     subject_category: "biolink:BiologicalProcess"
     object_category: "biolink:BiologicalProcess"
@@ -1650,7 +1651,7 @@ molecular function subclass:
   represented_as: edge
   input_label: molecular_function_subclass_of
   output_label: subclass_of
-  source: molecular_function
+  source: molecular function
   target: molecular_function
   kgx_properties:
     subject_category: "biolink:MolecularActivity"
@@ -1826,15 +1827,15 @@ cellular component rna:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-gene to so:
+gene to sequence type:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
-  input_label: so_classified_as
+  input_label: sequence_classified_as
   output_label: classified_as
   biolink_predicate: "biolink:classified_as"
   source: gene
-  target: so
+  target: sequence type
   properties:
     taxon_id: # 7227 for dmel / 9606 for hsa
       type: str
@@ -2051,7 +2052,7 @@ modelled to do term:
   is_a: annotation
   biolink_predicate: "biolink:has_phenotype" # inferred predicate
   source: gene
-  target: do
+  target: disease
   properties:
     disease_model_id:
       type: str # dmel disease model ID
@@ -2196,8 +2197,8 @@ FBdv subclass of:
   input_label: FBdv_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: FBdv
-  target: FBdv
+  source: developmental stage
+  target: developmental stage
   kgx_properties:
     subject_category: "biolink:LifeStage"
     object_category: "biolink:LifeStage"
@@ -2211,8 +2212,8 @@ FBbt subclass of:
   input_label: FBbt_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: FBbt
-  target: FBbt
+  source: anatomy
+  target: anatomy
   kgx_properties:
     subject_category: "biolink:AnatomicalEntity"
     object_category: "biolink:AnatomicalEntity"
@@ -2226,8 +2227,8 @@ FBcv subclass of:
   input_label: FBcv_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: FBcv
-  target: FBcv
+  source: phenotype
+  target: phenotype
   kgx_properties:
     subject_category: "biolink:OntologyClass"
     object_category: "biolink:OntologyClass"
@@ -2241,8 +2242,8 @@ mi subclass of:
   input_label: mi_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: mi
-  target: mi
+  source: molecular interaction
+  target: molecular interaction
   kgx_properties:
     subject_category: "biolink:OntologyClass"
     object_category: "biolink:OntologyClass"
@@ -2256,8 +2257,8 @@ so subclass of:
   input_label: so_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: so
-  target: so
+  source: sequence type
+  target: sequence type
   kgx_properties:
     subject_category: "biolink:OntologyClass"
     object_category: "biolink:OntologyClass"
@@ -2271,8 +2272,8 @@ do subclass of:
   input_label: do_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: do
-  target: do
+  source: disease
+  target: disease
   kgx_properties:
     subject_category: "biolink:Disease"
     object_category: "biolink:Disease"
@@ -2286,8 +2287,8 @@ chebi subclass of:
   input_label: chebi_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: chebi
-  target: chebi
+  source: chemical substance
+  target: chemical substance
   kgx_properties:
     subject_category: "biolink:ChemicalEntity"
     object_category: "biolink:ChemicalEntity"

@@ -5,7 +5,7 @@ class FBDevelopmentOntologyAdapter(OntologyAdapter):
         'FBdv': 'https://purl.obolibrary.org/obo/fbdv.owl'
     }
     
-    def __init__(self, write_properties, add_provenance, ontology, type, label='FBdv', dry_run=False, add_description=False, cache_dir=None):
+    def __init__(self, write_properties, add_provenance, ontology, type, label='developmental_stage', dry_run=False, add_description=False, cache_dir=None):
         super(FBDevelopmentOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
     
     def get_ontology_source(self):

@@ -153,7 +153,11 @@ class GencodeGeneAdapter(Adapter):
                     start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
                     end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
                     
-                    result = self.hgnc_processor.process_identifier(info['gene_name'])
+                    gene_name = info.get('gene_name')
+                    if not gene_name:
+                        print(f"No gene name found for gene {gene_id}. Invalid record: {info}. Skipping it.")
+                        continue
+                    result = self.hgnc_processor.process_identifier(gene_name)
                     
                     props = {}
                     try:
@@ -189,4 +193,4 @@ class GencodeGeneAdapter(Adapter):
                     except Exception as e:
                         print(f'Failed to process line: {line}\nError: {str(e)}')
                         not_processed += 1
-        print(f"Not processed: {not_processed}")
+        print(f"Not processed records: {not_processed}")

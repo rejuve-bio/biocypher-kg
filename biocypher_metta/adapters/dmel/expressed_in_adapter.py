@@ -32,19 +32,32 @@ FBrf0245988	Cattenoz et al., 2020, EMBO J. 39(12): e104486	FBlc0003731	scRNAseq_
 FBrf0245988	Cattenoz et al., 2020, EMBO J. 39(12): e104486	FBlc0003731	scRNAseq_2020_Cattenoz_NI_seq_clustering		larval stage	embryonic/larval hemolymph	FBlc0003732	scRNAseq_2020_Cattenoz_NI_seq_clustering_plasmatocytes	FBbt:00001685	embryonic/larval plasmatocyte	FBgn0024989	CG3777	354.646665	0.0003379520108144643
 
 '''
-
-import csv
+import pickle
+import os
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 from biocypher_metta.adapters import Adapter
 from biocypher._logger import logger
 
-
 class ExpressedInAdapter(Adapter):
+
+    # GO subontology types
+    # BIOLOGICAL_PROCESS = 'biological_process'
+    # MOLECULAR_FUNCTION = 'molecular_function'
+    # CELLULAR_COMPONENT = 'cellular_component'
+
+    ontologies = {
+        'fbbt': 'anatomy',
+        'fbdv': 'developmental_stage',
+        'fbcv': 'phenotype',
+        'go': ['biological_process', 'molecular_function', 'cellular_component'],
+    }
+
     def __init__(self, write_properties, add_provenance, filepath):
         self.filepath = filepath
         self.label = 'expressed_in'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+
 
         super(ExpressedInAdapter, self).__init__(write_properties, add_provenance)
 
@@ -54,7 +67,10 @@ class ExpressedInAdapter(Adapter):
         self.version = expression_table.extract_date_string(self.filepath)
         # To avoid duplicates
         expresseds: dict[str, list[str]] = {}   
-        
+        go_subonto_mappings = os.path.join('aux_files/go_subontology_mapping.pkl')
+        with open(go_subonto_mappings, 'rb') as f:
+            go_subonto_mapping = pickle.load(f)
+
         # header:
         # Pub_ID	Pub_miniref	Clustering_Analysis_ID	Clustering_Analysis_Name	Source_Tissue_Sex	Source_Tissue_Stage
         # Source_Tissue_Anatomy	Cluster_ID	Cluster_Name	Cluster_Cell_Type_ID	Cluster_Cell_Type_Name	Gene_ID	Gene_Symbol	Mean_Expression	Spread
@@ -64,6 +80,9 @@ class ExpressedInAdapter(Adapter):
             #source_ids = row[1].split('|')
             source = f'{row[11].lower()}'                    # gene FBgn#                        It should not be lowercased by force...
             target = row[9].replace(':', '_').lower()   # Cluster_Cell_Type_ID  (FBbt#)     It should not be lowercased by force...
+            target_type = ExpressedInAdapter.ontologies.get(target.split('_')[0])
+            if isinstance(target_type, list):  #just for testing, remove later
+                target_type = target_type[0]
             if source in expresseds:
                 cell_types = expresseds[source]
                 if target not in cell_types:
@@ -76,6 +95,6 @@ class ExpressedInAdapter(Adapter):
             if self.add_provenance:
                 props['source'] = self.source
                 props['source_url'] = self.source_url
-            yield source, target, self.label, props
+            yield source, (target_type,target), self.label, props
 
 

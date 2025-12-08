@@ -5,12 +5,11 @@ gencode_gene:
     cls: GencodeGeneAdapter
     args:
       filepath: ./samples/hsa/gencode_sample.gtf.gz
-      gene_alias_file_path: ./aux_files/hsa/Homo_sapiens.gene_info.gz
+      gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
       taxon_id: 9606
   outdir: gencode/gene
   nodes: True
   edges: False
-
 
 gencode_transcripts:
   adapter:
@@ -25,7 +24,6 @@ gencode_transcripts:
   nodes: True
   edges: False
 
-
 transcribes_to:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
@@ -35,7 +33,7 @@ transcribes_to:
       type: transcribes to
       label: transcribes_to
       taxon_id: 9606
-  outdir: gencode/transcript
+  outdir: gencode/gene
   nodes: False
   edges: True
 
@@ -119,7 +117,7 @@ genes_pathways:
     cls: ReactomeAdapter
     args:
       filepath: ./samples/hsa/reactome/Ensembl2Reactome_All_Levels_sample.txt
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/string_ensembl_uniprot_map.pkl
       label: genes_pathways
       taxon_id: 9606
   outdir: reactome
@@ -348,7 +346,7 @@ gaf_biological_process_gene:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: biological_process_gene
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -361,7 +359,7 @@ gaf_molecular_function_gene:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: molecular_function_gene
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -374,7 +372,7 @@ gaf_cellular_component_gene_part_of:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_part_of
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -387,7 +385,7 @@ gaf_cellular_component_gene_located_in:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_located_in
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -399,7 +397,7 @@ coexpression:
     cls: CoxpresdbAdapter
     args:
       filepath: ./samples/hsa/coxpressdb
-      entrez_to_ensemble_path: ./aux_files/hsa/entrez_to_ensembl.pkl
+      entrez_to_ensemble_path: ./aux_files/entrez_to_ensembl.pkl
       taxon_id: 9606
   outdir: coxpressdb
   nodes: False
@@ -411,7 +409,7 @@ tflink:
     cls: TFLinkAdapter
     args:
       filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
-      entrez_to_ensemble_map: ./aux_files/hsa/entrez_to_ensembl.pkl
+      entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
       taxon_id: 9606
   outdir: tflink
   nodes: False
@@ -423,7 +421,7 @@ string:
     cls: StringPPIAdapter
     args:
       filepath: ./samples/hsa/string_human_ppi_v12.0.txt.gz
-      ensembl_to_uniprot_map: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
       taxon_id: 9606
   outdir: string
   nodes: False
@@ -458,7 +456,7 @@ gtex_eqtl:
     cls: GTExEQTLAdapter
     args:
       filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
 
   outdir: gtex/eqtl
   nodes: False
@@ -470,7 +468,7 @@ gtex_expression:
     cls: GTExExpressionAdapter
     args:
       filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       label: expressed_in
 
   outdir: gtex/expression
@@ -484,7 +482,7 @@ hocomoco:
     args:
       filepath: ./samples/hsa/motifs
       annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606      
   outdir: hocomoco
   nodes: True
@@ -496,7 +494,7 @@ roadmap_chromatin_state:
     cls: RoadMapChromatinStateAdapter
     args:
       filepath: ./samples/hsa/roadmap/chromatin_state
-      cell_to_ontology_id_map: ./aux_files/hsa/roadmap_ids_to_ontology.pkl
+      cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
   outdir: roadmap/chromatin_state
@@ -509,7 +507,7 @@ roadmap_h3_mark:
     cls: RoadMapH3MarkAdapter
     args:
       filepath: ./samples/hsa/roadmap/h3_marks
-      cell_to_ontology_id_map: ./aux_files/hsa/roadmap_ids_to_ontology.pkl
+      cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
   outdir: roadmap/h3_mark
@@ -522,7 +520,7 @@ roadmap_dhs:
     cls: RoadMapDHSAdapter
     args:
       filepath: ./samples/hsa/roadmap/dhs/erc2-DHS_sample.csv.gz
-      cell_to_ontology_id_map: ./aux_files/hsa/roadmap_ids_to_ontology.pkl
+      cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
   outdir: roadmap/dhs
@@ -535,8 +533,8 @@ abc:
     cls: ABCAdapter
     args:
       filepath: ./samples/hsa/abc.forgedb_sample.csv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
-      tissue_to_ontology_id_map: ./aux_files/hsa/abc_tissues_to_ontology_map.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+      tissue_to_ontology_id_map: ./aux_files/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
 
   outdir: abc
@@ -561,7 +559,7 @@ refseq_closest_gene:
     cls: RefSeqClosestGeneAdapter
     args:
       filepath: ./samples/hsa/closest_gene.forgedb_sample.csv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsnp_rsid_map: None # will be provided by import script
 
   outdir: refseq
@@ -655,7 +653,7 @@ epd_promoter:
     cls: EPDAdapter
     args:
       filepath: ./samples/hsa/Hs_EPDnew.bed.gz
-      gene_name_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
   outdir: epd
   nodes: True
@@ -667,7 +665,7 @@ epd_promoter_regulates_gene:
     cls: EPDAdapter
     args:
       filepath: ./samples/hsa/Hs_EPDnew.bed.gz
-      gene_name_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       type: promoter to gene association
       label: promoter_gene
       taxon_id: 9606
@@ -694,8 +692,8 @@ peregrine_enhancer:
       enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
       enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
       source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
-      hgnc_ensembl_map: ./aux_files/hsa/hgnc_ensembl_map.pkl
-      tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
+      hgnc_ensembl_map: ./aux_files/hgnc_ensembl_map.pkl
+      tissue_ontology_map: ./aux_files/peregrine_tissues_to_ontology_map.pkl
 
   outdir: peregrine
   nodes: True
@@ -710,8 +708,8 @@ peregrine_enhancer_regulates:
       enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
       enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
       source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
-      hgnc_ensembl_map: ./aux_files/hsa/hgnc_ensembl_map.pkl
-      tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
+      hgnc_ensembl_map: ./aux_files/hgnc_ensembl_map.pkl
+      tissue_ontology_map: ./aux_files/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
       label: enhancer_gene
 
@@ -725,8 +723,8 @@ dbsuper_super_enhancer:
     cls: DBSuperAdapter
     args:
       filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
-      dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+      dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
 
   outdir: dbsuper
   nodes: True
@@ -738,8 +736,8 @@ dbsuper_super_enhancer_regulates_gene:
     cls: DBSuperAdapter
     args:
       filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
-      dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
+      hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
+      dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
       label: super_enhancer_gene
 
@@ -765,7 +763,7 @@ enhancer_atlas_enhancer:
     args:
       enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
-      tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
 
   outdir: enhancer_atlas
   nodes: True
@@ -778,7 +776,7 @@ enhancer_atlas_enhancer_regulates:
     args:
       enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
-      tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
       input_label: enhancer_gene
 
@@ -904,7 +902,7 @@ fabian_tf_snp:
     cls: FabianAdapter
     args:
       filepath: ./samples/hsa/fabian_sample_data.tsv
-      hgnc_to_ensembl: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       dbsnp_pos_map: None # will be provided by import script
       label: tfbs_snp
   outdir: fabian
@@ -1052,7 +1050,7 @@ transcription_factor_binding_site:
     cls: TfbsAdapter
     args:
       filepath: ./samples/hsa/sampleEncRegTfbsClustered.csv.gz
-      hgnc_to_ensembl: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: tfbs
       taxon_id: 9606      
   outdir: tfbs
@@ -1065,7 +1063,7 @@ gene_tfbs_association:
     cls: TfbsAdapter
     args:
       filepath: ./samples/hsa/sampleEncRegTfbsClustered.csv.gz
-      hgnc_to_ensembl: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: gene_tfbs
       taxon_id: 9606      
   outdir: tfbs
@@ -1113,7 +1111,7 @@ promoter_ccre:
       filepath: ./samples/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: promoter
       eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       taxon_id: 9606
   outdir: ccre/promoter_ccre
   nodes: True
@@ -1128,7 +1126,7 @@ promoter_ccre_associates_with_gene_nearest_gene:
       edge_type: nearest
       label: promoter_gene
       eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       taxon_id: 9606
   outdir: ccre/promoter_ccre
   nodes: False
@@ -1143,7 +1141,7 @@ promoter_ccre_associates_with_gene_nearest_gene_coding_only:
       label: promoter_gene
       edge_type: nearest
       eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       taxon_id: 9606
   outdir: ccre/promoter_ccre/coding_only
   nodes: False
@@ -1158,7 +1156,7 @@ promoter_ccre_associates_with_gene_eqtl:
       label: promoter_gene
       edge_type: eqtl
       eqtl_filepath: ./samples/hsa/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       taxon_id: 9606
   outdir: ccre/promoter_ccre/eqtl
   nodes: False

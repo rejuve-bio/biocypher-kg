@@ -8,9 +8,10 @@ from biocypher_metta.adapters import Adapter
 # chr1	17343	17642	EH38D6144702	EH38E3951273	CA-TF	chr1	17436	17436	ENST00000619216.1	.	-	ENSG00000278267.1
 
 class EnhancercCREAdapter(Adapter):
-    def __init__(self, filepath, write_properties=True, add_provenance=True, label="cCRE", element_filter=None):
+    def __init__(self, filepath, taxon_id, write_properties=True, add_provenance=True, label="cCRE", element_filter=None):
         self.filepath = filepath
         self.label = label
+        self.taxon_id = taxon_id
         self.source = "ENCODE cCRE"
         self.source_url = "https://screen.wenglab.org/downloads"
         
@@ -106,7 +107,7 @@ class EnhancercCREAdapter(Adapter):
                 if gene_id and '.' in gene_id:
                     gene_id = gene_id.split('.')[0]
                 
-                # Add ENSEMBL: prefix like in first code
+                # Add  prefix like in first code
                 gene_id = f"ENSEMBL:{gene_id}"
                 
                 distance = "NA"  

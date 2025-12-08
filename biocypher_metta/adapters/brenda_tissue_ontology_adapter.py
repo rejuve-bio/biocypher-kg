@@ -5,7 +5,7 @@ class BrendaTissueOntologyAdapter(OntologyAdapter):
         'bto': 'http://purl.obolibrary.org/obo/bto.owl'
     }
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='bto', dry_run=False, add_description=False, cache_dir=None):        
+    def __init__(self, write_properties, add_provenance, ontology, type, label='tissue', dry_run=False, add_description=False, cache_dir=None):        
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
 
     def get_ontology_source(self):

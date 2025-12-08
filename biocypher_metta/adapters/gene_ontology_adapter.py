@@ -52,12 +52,6 @@ class GeneOntologyAdapter(OntologyAdapter):
     def get_ontology_source(self):
         """Returns the source and source URL for the Gene Ontology."""
         return 'Gene Ontology', 'http://purl.obolibrary.org/obo/go.owl'
-    
-    def get_uri_prefixes(self):
-        """Returns URI prefixes for Gene Ontology terms."""
-        return {
-            'primary': 'http://purl.obolibrary.org/obo/GO_'
-        }
 
     def should_update_mapping(self):
         """Check if mapping file needs to be updated based on GO.owl timestamp"""
@@ -246,3 +240,10 @@ class GeneOntologyAdapter(OntologyAdapter):
 
                     self.subontology_counter += 1
                     yield from_node_key, to_node_key, edge_label, props
+
+
+    def get_uri_prefixes(self):
+        """Define URI prefixes for Sequence Ontology."""
+        return {
+            'primary': 'http://purl.obolibrary.org/obo/GO_',
+        }                    
