@@ -285,10 +285,6 @@ class MeTTaWriter(BaseWriter):
         else:
             label_to_use = label
 
-        if source_type == "ontology_term":
-            source_type = source_id_processed.replace(':', '_').split('_')[0].lower()
-        if target_type == "ontology_term":
-            target_type = target_id_processed.replace(':', '_').split('_')[0].lower()
 
         if isinstance(source_type, list):
             def_out = ""
