@@ -1,7 +1,7 @@
 from biocypher_metta.adapters import Adapter
 import csv
 import gzip
-from biocypher_metta.adapters.helpers import to_float
+
 
 # Sample from the dataset
 # Interactor 1 uniprot id	Interactor 1 Ensembl gene id	Interactor 1 Entrez Gene id	Interactor 2 uniprot id	Interactor 2 Ensembl gene id	Interactor 2 Entrez Gene id	Interaction type	Interaction context	Pubmed references

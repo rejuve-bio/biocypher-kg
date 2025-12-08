@@ -816,6 +816,7 @@ enhancer_atlas_enhancer:
       enhancer_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/hs.bed.gz
       enhancer_gene_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
+      taxon_id: 9606  
   outdir: enhancer_atlas
   nodes: True
   edges: False
@@ -830,6 +831,7 @@ enhancer_atlas_enhancer_regulates:
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
       input_label: enhancer_gene
+      taxon_id: 9606        
   outdir: enhancer_atlas
   nodes: False
   edges: True

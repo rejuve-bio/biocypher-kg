@@ -765,7 +765,7 @@ enhancer_atlas_enhancer:
       enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
-
+      taxon_id: 9606  
   outdir: enhancer_atlas
   nodes: True
   edges: False
@@ -780,7 +780,7 @@ enhancer_atlas_enhancer_regulates:
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
       input_label: enhancer_gene
-
+      taxon_id: 9606  
   outdir: enhancer_atlas
   nodes: False
   edges: True
@@ -953,19 +953,19 @@ brenda_tissue_ontology:
   nodes: True
   edges: False
 
-# bto_bto_subclass_of:
-#   adapter:
-#     module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-#     cls: BrendaTissueOntologyAdapter
-#     args:
-#       ontology: 'bto'
-#       label: bto_subclass_of
-#       type: edge
-#       dry_run: True
-#       cache_dir: ./ontology_dataset_cache
-#   outdir: brenda_tissue_ontology
-#   nodes: False
-#   edges: True
+bto_bto_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: 'bto'
+      label: bto_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
 
 human_phenotype_ontology:
   adapter:
@@ -1224,8 +1224,6 @@ promoter_ccre_associates_with_gene_eqtl:
   nodes: False
   edges: True
 
-
-
 proximal_enhancer_ccre:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
@@ -1326,3 +1324,5 @@ encode_re2g_gene_associates:
   outdir: encode_re2g
   nodes: False
   edges: True
+
+  

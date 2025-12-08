@@ -517,16 +517,16 @@ efo:
   kgx_properties:
     category: "biolink:NamedThing"
 
-# # BRENDA Tissue Ontology
-# bto:
-#   is_a: ontology term
-#   mixins: [biolink:AnatomicalEntity]
-#   biolink_category: "biolink:AnatomicalEntity"
-#   represented_as: node
-#   input_label: bto
-#   inherit_properties: true
-#   kgx_properties:
-#     category: "biolink:AnatomicalEntity"
+# BRENDA Tissue Ontology
+bto:
+  is_a: ontology term
+  mixins: [biolink:AnatomicalEntity]
+  biolink_category: "biolink:AnatomicalEntity"
+  represented_as: node
+  input_label: bto
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:AnatomicalEntity"
 
 # Human Phenotype Ontology
 hpo:
@@ -1007,21 +1007,21 @@ child pathway of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-# bto subclass of:
-#   is_a: subclass of
-#   mixins: [biolink:AnatomicalEntityToAnatomicalEntityAssociation]
-#   biolink_predicate: "biolink:subclass_of"
-#   inherit_properties: true
-#   represented_as: edge
-#   input_label: bto_subclass_of
-#   output_label: is_a
-#   source: bto
-#   target: bto
-#   kgx_properties:
-#     subject_category: "biolink:AnatomicalEntity"
-#     object_category: "biolink:AnatomicalEntity"
-#     knowledge_level: "knowledge_assertion"
-#     agent_type: "manual_agent"
+bto subclass of:
+  is_a: subclass of
+  mixins: [biolink:AnatomicalEntityToAnatomicalEntityAssociation]
+  biolink_predicate: "biolink:subclass_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: bto_subclass_of
+  output_label: is_a
+  source: bto
+  target: bto
+  kgx_properties:
+    subject_category: "biolink:AnatomicalEntity"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
 
 efo subclass of:
   is_a: subclass of
