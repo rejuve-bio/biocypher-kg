@@ -1,6 +1,7 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 import pathlib
 import os
+import re
 from biocypher._logger import logger
 import networkx as nx
 from collections import Counter, defaultdict
@@ -299,7 +300,7 @@ class MeTTaWriter(BaseWriter):
         return self.write_property(def_out, properties)
 
     def write_property(self, def_out, property):
-        out_str = []
+        out_str = [def_out]
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": 
                 continue
@@ -340,17 +341,14 @@ class MeTTaWriter(BaseWriter):
 
     def check_property(self, prop):
         if isinstance(prop, str):
-            if "" in prop:
-                prop = prop.replace(" ", "_").strip("_")
-            if '->' in prop:
-                prop = prop.replace('->', '-\\>')
+            prop = prop.replace(" ", "_").strip("_")
+            prop = prop.replace("->", "-")
 
-            special_chars = ["(", ")"]
-            escape_char = "\\"
-            return "".join(escape_char + c if c in special_chars or c == escape_char else c for c in prop)
-        
+            # Keep only letters, numbers, underscores, colons, and hyphens
+            prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
+
         return str(prop)
-
+        
     def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []
