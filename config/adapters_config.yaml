@@ -12,7 +12,7 @@ gencode_gene:
 
 gencode_transcripts:
   adapter:
-    module: biocypher_metta.adapters.gencode_adapter
+    module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
@@ -25,14 +25,14 @@ gencode_transcripts:
 
 transcribes_to:
   adapter:
-    module: biocypher_metta.adapters.gencode_adapter
+    module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcribes to
       label: transcribes_to
 
-  outdir: gencode/transcript
+  outdir: gencode/gene
   nodes: False
   edges: True
 
@@ -394,7 +394,7 @@ coexpression:
     cls: CoxpresdbAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/coxpressdb
-      ensemble_to_entrez_path: ./aux_files/entrez_to_ensembl.pkl
+      entrez_to_ensemble_path: ./aux_files/entrez_to_ensembl.pkl
 
   outdir: coxpressdb
   nodes: False
@@ -1002,33 +1002,35 @@ efo_subclass_of:
   nodes: False
   edges: True
 
-brenda_tissue_ontology:
-  adapter:
-    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-    cls: BrendaTissueOntologyAdapter
-    args:
-      ontology: "bto"
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: brenda_tissue_ontology
-  nodes: True
-  edges: False
+# BTO is not linked to any other type...
 
-bto_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-    cls: BrendaTissueOntologyAdapter
-    args:
-      ontology: "bto"
-      label: bto_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: brenda_tissue_ontology
-  nodes: False
-  edges: True
+# brenda_tissue_ontology:
+#   adapter:
+#     module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+#     cls: BrendaTissueOntologyAdapter
+#     args:
+#       ontology: "bto"
+#       type: node
+#       dry_run: False
+#       add_description: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: brenda_tissue_ontology
+#   nodes: True
+#   edges: False
+
+# bto_subclass_of:
+#   adapter:
+#     module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+#     cls: BrendaTissueOntologyAdapter
+#     args:
+#       ontology: "bto"
+#       label: bto_subclass_of
+#       type: edge
+#       dry_run: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: brenda_tissue_ontology
+#   nodes: False
+#   edges: True
 
 human_phenotype_ontology:
   adapter:
@@ -1055,6 +1057,34 @@ hpo_subclass_of:
       dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: human_phenotype_ontology
+  nodes: False
+  edges: True
+
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: True
+  edges: False
+
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
   nodes: False
   edges: True
 
