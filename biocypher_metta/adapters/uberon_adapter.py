@@ -14,7 +14,7 @@ class UberonAdapter(OntologyAdapter):
     def get_uri_prefixes(self):
         return {
             'primary': 'http://purl.obolibrary.org/obo/UBERON_'
-        }
+        } 
 
     def get_nodes(self):
         for term_id, label, props in super().get_nodes():

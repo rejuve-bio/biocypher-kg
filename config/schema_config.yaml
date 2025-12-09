@@ -647,16 +647,6 @@ tissue:
 #     category: "biolink:PhenotypicFeature"
 
 
-chebi:
-  is_a: ontology term
-  represented_as: node
-  input_label: chemical_substance
-  mixins: [biolink:Disease]
-  biolink_category: "biolink:ChemicalEntity"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:ChemicalEntity"
-
 
 motif:
   represented_as: node
