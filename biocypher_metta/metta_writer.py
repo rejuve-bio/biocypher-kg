@@ -223,6 +223,14 @@ class MeTTaWriter(BaseWriter):
         }
 
     def write_edge(self, edge):
+        # to use Biolink-compatible schema
+        type_hierarchy = {
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+        }
+
         source_id, target_id, label, properties = edge
         source_id_processed = source_id
         target_id_processed = target_id
