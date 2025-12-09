@@ -207,7 +207,8 @@ class MeTTaWriter(BaseWriter):
             'gene': frozenset({'gene'}),
             'transcript': frozenset({'transcript'}),
             'protein': frozenset({'protein'}),
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'chemical_substance'}),
+            
+            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'chemical_substance', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
             'anatomy': frozenset({'anatomy'}),
             'developmental_stage': frozenset({'developmental_stage'}),
             'cell_type': frozenset({'cell_type'}),
@@ -220,6 +221,7 @@ class MeTTaWriter(BaseWriter):
             'biological_process': frozenset({'biological_process'}),
             'molecular_function': frozenset({'molecular_function'}),
             'cellular_component': frozenset({'cellular_component'}),
+            'tissue': frozenset({'tissue'}),
         }
 
     def write_edge(self, edge):

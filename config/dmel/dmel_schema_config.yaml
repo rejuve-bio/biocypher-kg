@@ -601,6 +601,19 @@ experimental factor:
   kgx_properties:
     category: "biolink:OntologyClass"
 
+
+# Experimental Factor Ontology
+experimental factor:
+  is_a: ontology term
+  represented_as: node
+  input_label: experimental_factor
+  # output_label: experimental_factor
+  mixins: [biolink:OntologyClass]
+  biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:OntologyClass"
+
 motif:
   represented_as: node
   is_a: epigenomic feature
