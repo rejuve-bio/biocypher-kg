@@ -281,26 +281,26 @@ snp:
   description: >-
     A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
 
-# structural variant:
-#   represented_as: node
-#   input_label: structural_variant
-#   is_a: genomic variant
-#   mixins: [biolink:SequenceVariant]
-#   biolink_category: "biolink:SequenceVariant"
-#   description: >-
-#     A structural variant is a larger scale genomic alteration that affects the structure of chromosomes, such as deletions, duplications, inversions, and translocations.
-#   inherit_properties: true
-#   kgx_properties:
-#     category: "biolink:SequenceVariant"
-#   properties:
-#       variant_accession: 
-#         type: str
-#         biolink: id
-#       variant_type: 
-#         type: str
-#       evidence: 
-#         type: str
-#         biolink: has_evidence
+structural variant:
+  represented_as: node
+  input_label: structural_variant
+  is_a: genomic variant
+  mixins: [biolink:SequenceVariant]
+  biolink_category: "biolink:SequenceVariant"
+  description: >-
+    A structural variant is a larger scale genomic alteration that affects the structure of chromosomes, such as deletions, duplications, inversions, and translocations.
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:SequenceVariant"
+  properties:
+      variant_accession: 
+        type: str
+        biolink: id
+      variant_type: 
+        type: str
+      evidence: 
+        type: str
+        biolink: has_evidence
 
 sequence variant:
   represented_as: node
