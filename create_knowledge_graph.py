@@ -1,7 +1,6 @@
 """
 Knowledge graph generation through BioCypher script
 """
-
 from datetime import date
 from pathlib import Path
 
@@ -9,7 +8,7 @@ from biocypher import BioCypher
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
-# from biocypher_metta.kgx_writer import *
+from biocypher_metta.kgx_writer import *
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
@@ -26,23 +25,22 @@ from typing import Union, List, Optional
 app = typer.Typer()
 
 # Function to choose the writer class based on user input
-# Added schema_config_path parameter
-def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path):
+def get_writer(writer_type: str, output_dir: Path):
     if writer_type.lower() == 'metta':
-        return MeTTaWriter(schema_config=str(schema_config_path), # Replaced hardcoded path
+        return MeTTaWriter(schema_config="config/schema_config.yaml",
                            biocypher_config="config/biocypher_config.yaml",
                            output_dir=output_dir)
     elif writer_type.lower() == 'prolog':
-        return PrologWriter(schema_config=str(schema_config_path), 
+        return PrologWriter(schema_config="config/schema_config.yaml",
                             biocypher_config="config/biocypher_config.yaml",
                             output_dir=output_dir)
     elif writer_type.lower() == 'neo4j':
-        return Neo4jCSVWriter(schema_config=str(schema_config_path), 
+        return Neo4jCSVWriter(schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
     elif writer_type.lower() == 'parquet':
         return ParquetWriter(
-            schema_config=str(schema_config_path), 
+            schema_config="config/schema_config.yaml",
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir,
             buffer_size=10000,
@@ -51,13 +49,13 @@ def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path):
 
     elif writer_type.lower() == 'kgx':
         return KGXWriter(
-            schema_config=str(schema_config_path), 
+            schema_config="config/schema_config.yaml",
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
 
     elif writer_type.lower() == 'networkx':
         return NetworkXWriter(
-            schema_config=str(schema_config_path), 
+            schema_config="config/schema_config.yaml",
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir
         )
@@ -65,15 +63,14 @@ def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path):
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
 
-#  Added schema_config_path parameter
-def preprocess_schema(schema_config_path: Path):
+def preprocess_schema():
     def convert_input_labels(label, replace_char="_"):
         if isinstance(label, list):
             return [item.replace(" ", replace_char) for item in label]
         return label.replace(" ", replace_char)
 
     bcy = BioCypher(
-        schema_config_path=str(schema_config_path), # Replaced hardcoded path
+        schema_config_path="config/schema_config.yaml", 
         biocypher_config_path="config/biocypher_config.yaml"
     )
     schema = bcy._get_ontology_mapping()._extend_schema()
@@ -260,25 +257,18 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 
 # Run build
 @app.command()
-def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)], 
-         adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         # NEW: Added schema_config as a mandatory CLI option
-         schema_config: Annotated[Path, typer.Option(
-             exists=True, file_okay=True, dir_okay=False,
-             help="Path to the schema config YAML file (required)."
-         )],
-         writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx,KGX"),
-         write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
-         add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
-         buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
-         overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
-         include_adapters: Optional[List[str]] = typer.Option(
-              None,
-              help="Specific adapters to include (space-separated, default: all)",
-              case_sensitive=False,
-          )):
+def main(
+    output_dir: Annotated[Path, typer.Option(help="Output directory")],
+    adapters_config: Annotated[Path, typer.Option(help="Path to adapters config YAML file")],
+    dbsnp_rsids: Annotated[Path, typer.Option(help="Path to dbSNP rsids pickle file")],
+    dbsnp_pos: Annotated[Path, typer.Option(help="Path to dbSNP position pickle file")],
+    writer_type: Annotated[str, typer.Option(help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX")] = "metta",
+    write_properties: Annotated[bool, typer.Option(help="Write properties to nodes and edges")] = True,
+    add_provenance: Annotated[bool, typer.Option(help="Add provenance to nodes and edges")] = True,
+    buffer_size: Annotated[int, typer.Option(help="Buffer size for Parquet writer")] = 10000,
+    overwrite: Annotated[bool, typer.Option(help="Overwrite existing Parquet files")] = True,
+    include_adapters: Annotated[Optional[List[str]], typer.Option(help="Specific adapters to include (space-separated, default: all)")] = None,
+):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
@@ -291,16 +281,14 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
     dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
 
     # Choose the writer based on user input or default to 'metta'
-    #  Passed schema_config to get_writer
-    bc = get_writer(writer_type, output_dir, schema_config)
+    bc = get_writer(writer_type, output_dir)
     logger.info(f"Using {writer_type} writer")
 
     if writer_type == 'parquet':
         bc.buffer_size = buffer_size
         bc.overwrite = overwrite
 
-    #  Passed schema_config to preprocess_schema
-    schema_dict = preprocess_schema(schema_config)
+    schema_dict = preprocess_schema()
 
     with open(adapters_config, "r") as fp:
         try:
@@ -358,6 +346,3 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
 
 if __name__ == "__main__":
     app()
-
-
-
