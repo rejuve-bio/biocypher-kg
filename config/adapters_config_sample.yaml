@@ -1326,4 +1326,50 @@ encode_re2g_gene_associates:
   nodes: False
   edges: True
 
-  
+uniprot_dbxref_bgee_gene:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_gene
+      dbxref: BGEE
+  outdir: uniprot/protein_has_xref_gene
+  nodes: False
+  edges: True
+
+uniprot_dbxref_ensembl_gene:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_gene
+      dbxref: ENSEMBL
+  outdir: uniprot/protein_has_xref_gene
+  nodes: False
+  edges: True
+
+uniprot_dbxref_ensembl_transcript:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_transcript
+      dbxref: ENSEMBL
+  outdir: uniprot/protein_has_xref_transcript
+  nodes: False
+  edges: True
+
+uniprot_dbxref_ensembl_protein:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_protein
+      dbxref: ENSEMBL
+  outdir: uniprot/protein_has_xref_protein
+  nodes: False
+  edges: True
