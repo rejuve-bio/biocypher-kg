@@ -18,10 +18,9 @@ class MeTTaWriter(BaseWriter):
 
         # Build mapping of labels to whether they are ontology terms from schema
         self.label_is_ontology = self._build_label_types_map()
-
         self.create_type_hierarchy()
-
         self.excluded_properties = []
+        self.type_hierarchy = self._type_hierarchy()
 
     def _build_label_types_map(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -199,15 +198,33 @@ class MeTTaWriter(BaseWriter):
         def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
-    def write_edge(self, edge):
+
+    def _type_hierarchy(self):
         # to use Biolink-compatible schema
-        type_hierarchy = {
+        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
+        return {
             'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
             'gene': frozenset({'gene'}),
             'transcript': frozenset({'transcript'}),
             'protein': frozenset({'protein'}),
+            
+            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'chemical_substance', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
+            'anatomy': frozenset({'anatomy'}),
+            'developmental_stage': frozenset({'developmental_stage'}),
+            'cell_type': frozenset({'cell_type'}),
+            'cell_line': frozenset({'cell_line'}),
+            'experimental_factor': frozenset({'experimental_factor'}),
+            'phenotype': frozenset({'phenotype'}),
+            'disease': frozenset({'disease'}),
+            'sequence_type': frozenset({'sequence_type'}),
+            'chemical_substance': frozenset({'chemical_substance'}),
+            'biological_process': frozenset({'biological_process'}),
+            'molecular_function': frozenset({'molecular_function'}),
+            'cellular_component': frozenset({'cellular_component'}),
+            'tissue': frozenset({'tissue'}),
         }
 
+    def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         source_id_processed = source_id
         target_id_processed = target_id
@@ -220,11 +237,11 @@ class MeTTaWriter(BaseWriter):
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
-                    if source_type not in type_hierarchy:
+                    if source_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
                 else:
                     # if source_type != valid_source_types:
-                    if source_type not in type_hierarchy:
+                    if source_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             if label in self.edge_node_types:
@@ -245,11 +262,11 @@ class MeTTaWriter(BaseWriter):
             if label in self.edge_node_types:
                 valid_target_types = self.edge_node_types[label]["target"]
                 if isinstance(valid_target_types, list):
-                    if target_type not in type_hierarchy:
+                    if target_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
                 else:
                     # if target_type != valid_target_types:
-                    if target_type not in type_hierarchy:
+                    if target_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             if label in self.edge_node_types:
@@ -270,10 +287,6 @@ class MeTTaWriter(BaseWriter):
         else:
             label_to_use = label
 
-        if source_type == "ontology_term":
-            source_type = source_id_processed.replace(':', '_').split('_')[0].lower()
-        if target_type == "ontology_term":
-            target_type = target_id_processed.replace(':', '_').split('_')[0].lower()
 
         if isinstance(source_type, list):
             def_out = ""

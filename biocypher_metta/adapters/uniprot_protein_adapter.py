@@ -8,17 +8,18 @@ from Bio import SwissProt
 # Data file is uniprot_sprot_human.dat.gz and uniprot_trembl_human.dat.gz at https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/.
 # We can use SeqIO from Bio to read the file.
 # Each record in file will have those attributes: https://biopython.org/docs/1.75/api/Bio.SeqRecord.html
-# id, name will be loaded for protein. Ensembl IDs(example: Ensembl:ENST00000372839.7) in dbxrefs will be used to create protein and transcript relationship.
+# id, name will be loaded for protein. Ensembl IDs(example: ENST00000372839.7) in dbxrefs will be used to create protein and transcript relationship.
 
 class UniprotProteinAdapter(Adapter):
     ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
     
-    def __init__(self, filepath, write_properties, add_provenance):
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id):
         self.filepath = filepath
         self.dataset = 'UniProtKB_protein'
         self.label = 'protein'
         self.source = "Uniprot"
         self.source_url = "https://www.uniprot.org/"
+        self.taxon_id = taxon_id
         
         super(UniprotProteinAdapter, self).__init__(write_properties, add_provenance)
     
@@ -69,9 +70,11 @@ class UniprotProteinAdapter(Adapter):
         with gzip.open(self.filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
             for record in records:
+                if self.taxon_id == 7227 and not record.entry_name.endswith("DROME"):
+                    continue
                 dbxrefs = self.get_dbxrefs(record.cross_references)
                 
-                base_id = "UniProtKB:" + record.accessions[0].upper()
+                base_id = record.accessions[0].upper()
                 base_props = {}
                 
                 if self.write_properties:
@@ -97,7 +100,7 @@ class UniprotProteinAdapter(Adapter):
                         isoforms = self.parse_isoforms(comment)
                         
                         for isoform in isoforms:
-                            isoform_id = "UniProtKB:" + isoform['id'].upper()
+                            isoform_id = isoform['id'].upper()
                             isoform_props = {}
                             
                             if self.write_properties:

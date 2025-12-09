@@ -473,71 +473,180 @@ transcription binding site:
 # ---
 # ontologies
 
-# Uberon Ontology
-uberon:
-  is_a: ontology term
-  mixins: [biolink:AnatomicalEntity]
-  biolink_category: "biolink:AnatomicalEntity"
-  represented_as: node
-  input_label: uberon
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:AnatomicalEntity"
-
 # Cell line Ontology
-clo:
+cell line:
   is_a: ontology term
-  biolink_category: "biolink:CellLine"
-  mixins: [biolink:CellLine]
   represented_as: node
-  input_label: clo
+  input_label: cell_line
+  mixins: [biolink:CellLine]
+  biolink_category: "biolink:CellLine"
   inherit_properties: true
   kgx_properties:
     category: "biolink:CellLine"
 
 # Cell Ontology
-cl:
+cell type:
   is_a: ontology term
-  biolink_category: "biolink:Cell"
-  mixins: [biolink:Cell]
   represented_as: node
-  input_label: cl
+  input_label: cell_type
+  # output_label: cell_type
+  mixins: [biolink:Cell]
+  biolink_category: "biolink:Cell"
   inherit_properties: true
   kgx_properties:
     category: "biolink:Cell"
 
 # Experimental Factor Ontology
-efo:
+experimental factor:
   is_a: ontology term
-  mixins: [biolink:OntologyClass]
-  #biolink_category: "biolink:OntologyClass"
   represented_as: node
-  input_label: efo
+  input_label: experimental_factor
+  # output_label: experimental_factor
+  mixins: [biolink:OntologyClass]
+  biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
   inherit_properties: true
   kgx_properties:
-    category: "biolink:NamedThing"
+    category: "biolink:OntologyClass"
 
-# BRENDA Tissue Ontology
-bto:
+# Molecular interactions ontology (MI) 
+molecular interaction:
   is_a: ontology term
+  represented_as: node
+  input_label: molecular_interaction
+  # output_label: molecular_interaction
+  mixins: [biolink:OntologyClass]
+  biolink_category: "biolink:OntologyClass"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:OntologyClass"
+
+# Sequence ontology (SO)
+sequence type:
+  is_a: ontology term
+  represented_as: node
+  input_label: sequence_type
+  # output_label: sequence_type
+  mixins: [biolink:OntologyClass]
+  biolink_category: "biolink:OntologyClass"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:OntologyClass"
+
+# disease ontology (DO) 
+disease:
+  is_a: ontology term
+  represented_as: node
+  input_label: disease
+  # output_label: disease
+  mixins: [biolink:Disease]
+  biolink_category: "biolink:Disease"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:Disease"
+
+#chebi
+chemical substance:
+  is_a: ontology term
+  represented_as: node
+  input_label: chemical_substance
+  # output_label: chemical_substance
+  mixins: [biolink:ChemicalEntity]
+  biolink_category: "biolink:ChemicalEntity"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:ChemicalEntity"
+
+# uberon
+anatomy:
+  is_a: ontology term
+  represented_as: node
+  input_label: anatomy
+  # output_label: anatomy
   mixins: [biolink:AnatomicalEntity]
   biolink_category: "biolink:AnatomicalEntity"
-  represented_as: node
-  input_label: bto
   inherit_properties: true
   kgx_properties:
     category: "biolink:AnatomicalEntity"
 
-# Human Phenotype Ontology
-hpo:
+# HPO
+phenotype:
   is_a: ontology term
-  mixins: [biolink:PhenotypicFeature]
-  biolink_category: "biolink:PhenotypicFeature"
   represented_as: node
-  input_label: hpo
+  input_label: phenotype
+  output_label: phenotype
+  mixins: [biolink:OntologyClass]
+  biolink_category: "biolink:OntologyClass"
   inherit_properties: true
   kgx_properties:
-    category: "biolink:PhenotypicFeature"
+    category: "biolink:OntologyClass"
+
+# # Uberon Ontology
+# uberon:
+#   is_a: ontology term
+#   mixins: [biolink:AnatomicalEntity]
+#   biolink_category: "biolink:AnatomicalEntity"
+#   represented_as: node
+#   input_label: uberon
+#   inherit_properties: true
+#   kgx_properties:
+#     category: "biolink:AnatomicalEntity"
+
+# # Cell line Ontology
+# clo:
+#   is_a: ontology term
+#   biolink_category: "biolink:CellLine"
+#   mixins: [biolink:CellLine]
+#   represented_as: node
+#   input_label: clo
+#   inherit_properties: true
+#   kgx_properties:
+#     category: "biolink:CellLine"
+
+# # Cell Ontology
+# cl:
+#   is_a: ontology term
+#   biolink_category: "biolink:Cell"
+#   mixins: [biolink:Cell]
+#   represented_as: node
+#   input_label: cl
+#   inherit_properties: true
+#   kgx_properties:
+#     category: "biolink:Cell"
+
+# # Experimental Factor Ontology
+# efo:
+#   is_a: ontology term
+#   mixins: [biolink:OntologyClass]
+#   #biolink_category: "biolink:OntologyClass"
+#   represented_as: node
+#   input_label: efo
+#   inherit_properties: true
+#   kgx_properties:
+#     category: "biolink:NamedThing"
+
+# BRENDA Tissue Ontology
+tissue:
+  is_a: ontology term
+  mixins: [biolink:AnatomicalEntity]
+  biolink_category: "biolink:AnatomicalEntity"
+  represented_as: node
+  input_label: tissue
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:AnatomicalEntity"
+
+# # Human Phenotype Ontology
+# hpo:
+#   is_a: ontology term
+#   mixins: [biolink:PhenotypicFeature]
+#   biolink_category: "biolink:PhenotypicFeature"
+#   represented_as: node
+#   input_label: hpo
+#   inherit_properties: true
+#   kgx_properties:
+#     category: "biolink:PhenotypicFeature"
+
+
 
 motif:
   represented_as: node
@@ -673,7 +782,6 @@ regulatory association:
     object_category: "biolink:GenomicEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-
   properties:
     source:
       type: str
@@ -925,7 +1033,7 @@ cl capable of:
     agent_type: "manual_agent"
   description: >-
     Represents the capability of a cell type (CL term) to carry out or be involved in a specific biological process.
-  source: cl
+  source: cell type
   target: biological process
 
 cl part of:
@@ -942,8 +1050,8 @@ cl part of:
     agent_type: "manual_agent"
   description: >-
     Represents a part-whole relationship between a CL term and an UBERON term.
-  source: cl
-  target: uberon
+  source: cell type
+  target: anatomy
 
 gene to pathway association:
   description: >-
@@ -1003,8 +1111,8 @@ bto subclass of:
   represented_as: edge
   input_label: bto_subclass_of
   output_label: is_a
-  source: bto
-  target: bto
+  source: tissue
+  target: tissue
   kgx_properties:
     subject_category: "biolink:AnatomicalEntity"
     object_category: "biolink:AnatomicalEntity"
@@ -1018,8 +1126,8 @@ efo subclass of:
   represented_as: edge
   input_label: efo_subclass_of
   output_label: is_a
-  source: efo
-  target: efo
+  source: experimental factor
+  target: experimental factor
   kgx_properties:
     subject_category: "biolink:OntologyClass"
     object_category: "biolink:OntologyClass"
@@ -1034,8 +1142,8 @@ uberon subclass of:
   represented_as: edge
   input_label: uberon_subclass_of
   output_label: is_a
-  source: uberon
-  target: uberon
+  source: anatomy
+  target: anatomy
   kgx_properties:
     subject_category: "biolink:AnatomicalEntity"
     object_category: "biolink:AnatomicalEntity"
@@ -1049,8 +1157,8 @@ clo subclass of:
   represented_as: edge
   input_label: clo_subclass_of
   output_label: is_a
-  source: clo
-  target: clo
+  source: cell line
+  target: cell line
   kgx_properties:
     subject_category: "biolink:CellLine"
     object_category: "biolink:CellLine"
@@ -1064,8 +1172,8 @@ cl subclass of:
   represented_as: edge
   input_label: cl_subclass_of
   output_label: is_a
-  source: cl
-  target: cl
+  source: cell type
+  target: cell type
   kgx_properties:
     subject_category: "biolink:Cell"
     object_category: "biolink:Cell"
@@ -1080,11 +1188,26 @@ hpo subclass of:
   represented_as: edge
   input_label: hpo_subclass_of
   output_label: is_a
-  source: hpo
-  target: hpo
+  source: phenotype
+  target: phenotype
   kgx_properties:
     subject_category: "biolink:PhenotypicFeature"
     object_category: "biolink:PhenotypicFeature"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+chebi subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: chebi_subclass_of
+  output_label: subclass_of
+  biolink_predicate: "biolink:subclass_of"
+  source: chemical substance
+  target: chemical substance
+  kgx_properties:
+    subject_category: "biolink:ChemicalEntity"
+    object_category: "biolink:ChemicalEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
@@ -1097,8 +1220,8 @@ biological process subclass:
   represented_as: edge
   input_label: biological_process_subclass_of
   output_label: is_a
-  source: biological_process
-  target: biological_process
+  source: biological process
+  target: biological process
   kgx_properties:
     subject_category: "biolink:BiologicalProcess"
     object_category: "biolink:BiologicalProcess"
@@ -1113,8 +1236,8 @@ molecular function subclass:
   represented_as: edge
   input_label: molecular_function_subclass_of
   output_label: is_a
-  source: molecular_function
-  target: molecular_function
+  source: molecular function
+  target: molecular function
   kgx_properties:
     subject_category: "biolink:MolecularActivity"
     object_category: "biolink:MolecularActivity"
@@ -1128,8 +1251,8 @@ cellular component subclass:
   represented_as: edge
   input_label: cellular_component_subclass_of
   output_label: is_a
-  source: cellular_component
-  target: cellular_component
+  source: cellular component
+  target: cellular component
   kgx_properties:
     subject_category: "biolink:CellularComponent"
     object_category: "biolink:CellularComponent"
@@ -1140,7 +1263,7 @@ pathway_to_biological_process:
     is_a: association
     biolink_predicate: "biolink:participates_in"
     source: pathway
-    target: biological_process
+    target: biological process
     represented_as: edge
     input_label: pathway_to_biological_process
     description: >-
@@ -1150,7 +1273,7 @@ pathway_to_biological_process:
       go_term_id: str
       go_term_type: 
         type: str
-        const: biological_process
+        const: biological process
       source: 
         type: str
         biolink: knowledge_source
@@ -1166,7 +1289,7 @@ pathway_to_biological_process:
 pathway_to_molecular_function:
     is_a: association
     source: pathway
-    target: molecular_function
+    target: molecular function
     biolink_predicate: "biolink:related_to"
     represented_as: edge
     input_label: pathway_to_molecular_function
@@ -1177,7 +1300,7 @@ pathway_to_molecular_function:
       go_term_id: str
       go_term_type:
         type: str
-        const: molecular_function
+        const: molecular function
     kgx_properties:
       subject_category: "biolink:Pathway"
       object_category: "biolink:MolecularActivity"
@@ -1186,7 +1309,7 @@ pathway_to_molecular_function:
 pathway_to_cellular_component:
     is_a: association
     source: pathway
-    target: cellular_component
+    target: cellular component
     biolink_predicate: "biolink:related_to"
     represented_as: edge
     input_label: pathway_to_cellular_component
@@ -1197,7 +1320,7 @@ pathway_to_cellular_component:
       go_term_id: str
       go_term_type:
         type: str
-        const: cellular_component
+        const: cellular component
     kgx_properties:
       subject_category: "biolink:Pathway"
       object_category: "biolink:CellularComponent"
@@ -1846,7 +1969,7 @@ chromatin state:
   represented_as: edge
   input_label: chromatin_state
   source: snp
-  target: uberon #TODO replace by cell ontology
+  target: anatomy #TODO replace by cell ontology
   kgx_properties:
     subject_category: "biolink:Snv"
     object_category: "biolink:Cell"
@@ -1866,7 +1989,7 @@ dnase I hotspot:
   represented_as: edge
   input_label: in_dnase_I_hotspot
   source: snp
-  target: uberon #TODO replace by cell ontology
+  target: anatomy #TODO replace by cell ontology
   kgx_properties:
     subject_category: "biolink:Snv"
     object_category: "biolink:Cell"
@@ -1882,7 +2005,7 @@ histone modification:
   represented_as: edge
   input_label: histone_modification
   source: snp
-  target: uberon #TODO replace by cell ontology
+  target: anatomy #TODO replace by cell ontology
   kgx_properties:
     subject_category: "biolink:Snv"
     object_category: "biolink:Cell"

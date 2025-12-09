@@ -40,7 +40,7 @@ class GencodeExonAdapter(Adapter):
         9606: 'ENSEMBL'
     }
 
-    ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_biotype', 'gene_biotype', 'transcript_name', 'exon_number', 'exon_id']
+    ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_biotype', 'transcript_name', 'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
      # Only transcripts that code for proteins
@@ -128,7 +128,7 @@ class GencodeExonAdapter(Adapter):
                     # If the exon_id ends with _PAR_Y, we append it to the exon_id
                     if info['exon_id'].endswith('_PAR_Y'):
                         exon_id = exon_id + '_PAR_Y'
-
+                    
                     chr = split_line[GencodeExonAdapter.INDEX['chr']]
                     start = int(split_line[GencodeExonAdapter.INDEX['coord_start']])
                     end = int(split_line[GencodeExonAdapter.INDEX['coord_end']])
@@ -188,8 +188,7 @@ class GencodeExonAdapter(Adapter):
 
                 try:
                     _source = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{exon_id}"
-                    _target = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{target_id}"
-
+                    _target = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{target_id}"                    
                     yield _source, _target, self.label, _props
                 except Exception as e:
                     print(

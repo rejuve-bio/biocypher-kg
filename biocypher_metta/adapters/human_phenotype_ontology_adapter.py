@@ -5,7 +5,7 @@ class HumanPhenotypeOntologyAdapter(OntologyAdapter):
         'hpo': 'http://purl.obolibrary.org/obo/hp.owl'
     }
 
-    def __init__(self, write_properties, add_provenance, ontology='hpo', type='node', label='hpo', 
+    def __init__(self, write_properties, add_provenance, ontology='hpo', type='node', label='phenotype', 
                  dry_run=False, add_description=False, cache_dir=None):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, 
                         add_description, cache_dir)

@@ -4,7 +4,7 @@ class ExperimentalFactorOntologyAdapter(OntologyAdapter):
         'efo': 'http://www.ebi.ac.uk/efo/efo.owl'
     }
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='efo', dry_run=False, add_description=False, cache_dir=None):
+    def __init__(self, write_properties, add_provenance, ontology, type, label='experimental_factor', dry_run=False, add_description=False, cache_dir=None):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
 
     def get_ontology_source(self):
@@ -12,8 +12,13 @@ class ExperimentalFactorOntologyAdapter(OntologyAdapter):
     
     def get_uri_prefixes(self):
         return {
-            'primary': 'http://www.ebi.ac.uk/efo/EFO_'
+            'primary': 'http://www.ebi.ac.uk/efo/EFO_',
+            'chebi': 'http://purl.obolibrary.org/obo/CHEBI_',
+            'hp': 'http://purl.obolibrary.org/obo/HP_',
+            'go': 'http://purl.obolibrary.org/obo/GO_',
+            'uberon': 'http://purl.obolibrary.org/obo/UBERON_',        
         }
+        
         
     def get_nodes(self):
         self.update_graph()

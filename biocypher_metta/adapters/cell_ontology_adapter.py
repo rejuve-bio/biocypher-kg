@@ -10,7 +10,7 @@ class CellOntologyAdapter(OntologyAdapter):
     CAPABLE_OF = rdflib.term.URIRef('http://purl.obolibrary.org/obo/RO_0002215')
     PART_OF = rdflib.term.URIRef('http://purl.obolibrary.org/obo/BFO_0000050')
 
-    def __init__(self, write_properties, add_provenance, ontology, type, label='cl', dry_run=False, add_description=False, cache_dir=None):
+    def __init__(self, write_properties, add_provenance, ontology, type, label='cell_type', dry_run=False, add_description=False, cache_dir=None):
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
        
     def get_ontology_source(self):
@@ -21,7 +21,8 @@ class CellOntologyAdapter(OntologyAdapter):
         return {
             'primary': 'http://purl.obolibrary.org/obo/CL_',
             'go': 'http://purl.obolibrary.org/obo/GO_',
-            'uberon': 'http://purl.obolibrary.org/obo/UBERON_'
+            'uberon': 'http://purl.obolibrary.org/obo/UBERON_',
+            'chebi': 'http://purl.obolibrary.org/obo/CHEBI_',
         }
     
     def should_include_edge(self, from_node, to_node, predicate=None, edge_type=None):

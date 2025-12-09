@@ -4,6 +4,9 @@ import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
+# Human data:
+# https://enhanceratlas.org/downloadv2.php
+
 # Example enhancer atlas input file:
 # enhancer signal - enrichment score calculated as the combination of enrichment scores from individual tracks.
 # a total of eight types of experimental approaches (i.e tracks) to identify enhancer
@@ -16,7 +19,7 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr1	902180	902820	10.3902750575485
 
 # enhancer_gene_file
-# the score is a predition score of the enhancer-gene interaction.
+# the score is a prediction score of the enhancer-gene interaction.
 # predicted the target genes of enhancers using IM-PET algorithm.
 
 # chr1:874840-876520_ENSG00000225880$LINC00115$chr1$762902$-	1.104330
@@ -30,7 +33,7 @@ class EnhancerAtlasAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'snp': 7}
 
     def __init__(self, enhancer_filepath, enhancer_gene_filepath, tissue_to_ontology_filepath, 
-                 write_properties, add_provenance, 
+                 write_properties, add_provenance, taxon_id,
                  type='enhancer', input_label='enhancer',
                  chr=None, start=None, end=None):
         self.enhancer_filepath = enhancer_filepath
@@ -41,8 +44,9 @@ class EnhancerAtlasAdapter(Adapter):
         self.end = end
         self.label = input_label
         self.type = type
+        self.taxon_id = taxon_id
 
-        self.source = 'Enancer Atlas'
+        self.source = 'Enhancer Atlas'
         self.version = '2.0'
         self.source_url = 'http://enhanceratlas.org/downloadv2.php'
 

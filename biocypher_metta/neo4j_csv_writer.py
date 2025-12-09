@@ -20,6 +20,8 @@ class Neo4jCSVWriter(BaseWriter):
         })
 
         self.label_is_ontology = self._build_label_types_map()
+        self.type_hierarchy = self._type_hierarchy()
+        print(self.label_is_ontology)
 
         self.create_edge_types()
         self._node_writers = {}
@@ -66,7 +68,6 @@ class Neo4jCSVWriter(BaseWriter):
                     normalized_label = label.split(".")[-1] if "." in label else label
                     normalized_label = self.normalize_text(normalized_label)
                     label_is_ontology[normalized_label] = is_ontology
-
         return label_is_ontology
 
     def _is_ontology_label(self, label):
@@ -225,8 +226,7 @@ class Neo4jCSVWriter(BaseWriter):
                 
                 self.write_node_cypher(label, csv_file_path, cypher_file_path)
                 if label in self._temp_files and self._temp_files[label].exists():
-                    self._temp_files[label].unlink()
-                
+                    self._temp_files[label].unlink()                
         finally:
             self.temp_buffer.clear()
             for temp_file in self._temp_files.values():
@@ -236,6 +236,32 @@ class Neo4jCSVWriter(BaseWriter):
                 
         return node_freq, self._node_headers
 
+
+    def _type_hierarchy(self):
+        # to use Biolink-compatible schema
+        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
+        return {
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+            
+            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'chemical_substance', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
+            'anatomy': frozenset({'anatomy'}),
+            'developmental_stage': frozenset({'developmental_stage'}),
+            'cell_type': frozenset({'cell_type'}),
+            'cell_line': frozenset({'cell_line'}),
+            'experimental_factor': frozenset({'experimental_factor'}),
+            'phenotype': frozenset({'phenotype'}),
+            'disease': frozenset({'disease'}),
+            'sequence_type': frozenset({'sequence_type'}),
+            'chemical_substance': frozenset({'chemical_substance'}),
+            'biological_process': frozenset({'biological_process'}),
+            'molecular_function': frozenset({'molecular_function'}),
+            'cellular_component': frozenset({'cellular_component'}),
+            'tissue': frozenset({'tissue'}),
+        }
+
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
         self._temp_files.clear()
@@ -243,14 +269,6 @@ class Neo4jCSVWriter(BaseWriter):
         edge_freq = defaultdict(int)
         output_dir = self.get_output_path(path_prefix, adapter_name)
         
-        # to use Biolink-compatible schema
-        self.type_hierarchy = {
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-        }
-
         try:
             for edge in edges:
                 # Extract edge info for counting (from BaseWriter)
@@ -293,10 +311,11 @@ class Neo4jCSVWriter(BaseWriter):
                     else:
                         target_type = edge_info["target"]
 
-                if source_type == "ontology_term":
+                if source_type == "ontology_term" and not isinstance(source_id, tuple):
                     source_type = self.preprocess_id(source_id, label=source_type).split('_')[0]
-                if target_type == "ontology_term":
+                if target_type == "ontology_term" and not isinstance(target_id, tuple):
                     target_type = self.preprocess_id(target_id, label=target_type).split('_')[0]
+
 
                 edge_freq[f"{label}|{source_type}|{target_type}"] += 1
 
