@@ -2135,3 +2135,48 @@ protein has_xref protein:
     object_category: "biolink:Protein"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+protein has_xref biological_process:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_biological_process
+  output_label: has_xref
+  source: protein
+  target: biological process
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:BiologicalProcess"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref molecular_function:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_molecular_function
+  output_label: has_xref
+  source: protein
+  target: molecular function
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref cellular_component:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_cellular_component
+  output_label: has_xref
+  source: protein
+  target: cellular component
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:CellularComponent"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"

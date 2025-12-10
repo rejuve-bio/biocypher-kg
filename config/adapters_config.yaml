@@ -1363,3 +1363,55 @@ uniprot_dbxref_ensembl_protein:
   outdir: uniprot/protein_has_xref_protein
   nodes: False
   edges: True
+
+
+uniprot_dbxref_string_protein:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_protein
+      dbxref: STRING
+  outdir: uniprot/has_xref_protein
+  nodes: False
+  edges: True
+
+uniprot_dbxref_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_biological_process
+      dbxref: GO
+      mapping_file: ./aux_files/go_subontology_mapping.pkl
+  outdir: uniprot/has_xref_biological_process
+  nodes: False
+  edges: True
+
+uniprot_dbxref_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_cellular_component
+      dbxref: GO
+      mapping_file: ./aux_files/go_subontology_mapping.pkl
+  outdir: uniprot/has_xref_cellular_component
+  nodes: False
+  edges: True
+
+uniprot_dbxref_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_molecular_function
+      dbxref: GO
+      mapping_file: ./aux_files/go_subontology_mapping.pkl
+  outdir: uniprot/has_xref_molecular_function
+  nodes: False
+  edges: True
