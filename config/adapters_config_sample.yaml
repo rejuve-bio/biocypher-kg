@@ -1333,6 +1333,7 @@ uniprot_dbxref_bgee_gene:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_gene
+      taxon_id: 9606
       dbxref: BGEE
   outdir: uniprot/has_xref_gene
   nodes: False
@@ -1345,6 +1346,7 @@ uniprot_dbxref_ensembl_gene:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_gene
+      taxon_id: 9606
       dbxref: ENSEMBL
   outdir: uniprot/has_xref_gene
   nodes: False
@@ -1357,6 +1359,7 @@ uniprot_dbxref_ensembl_transcript:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_transcript
+      taxon_id: 9606
       dbxref: ENSEMBL
   outdir: uniprot/has_xref_transcript
   nodes: False
@@ -1369,6 +1372,7 @@ uniprot_dbxref_ensembl_protein:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_protein
+      taxon_id: 9606
       dbxref: ENSEMBL
   outdir: uniprot/has_xref_protein
   nodes: False
@@ -1381,6 +1385,7 @@ uniprot_dbxref_string_protein:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_protein
+      taxon_id: 9606
       dbxref: STRING
   outdir: uniprot/has_xref_protein
   nodes: False
@@ -1393,6 +1398,7 @@ uniprot_dbxref_biological_process:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_biological_process
+      taxon_id: 9606
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_biological_process
@@ -1406,6 +1412,7 @@ uniprot_dbxref_cellular_component:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_cellular_component
+      taxon_id: 9606
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_cellular_component
@@ -1419,6 +1426,7 @@ uniprot_dbxref_molecular_function:
     args:
       filepath: ./samples/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_molecular_function
+      taxon_id: 9606
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_molecular_function

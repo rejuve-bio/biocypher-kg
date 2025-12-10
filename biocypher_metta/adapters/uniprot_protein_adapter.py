@@ -14,7 +14,7 @@ from Bio import SwissProt
 class UniprotProteinAdapter(Adapter):
     ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
 
-    def __init__(self, filepath, write_properties, add_provenance, label='protein', dbxref=None, mapping_file=None):
+    def __init__(self, filepath, write_properties, add_provenance,taxon_id, label='protein', dbxref=None, mapping_file=None):
         self.filepath = filepath
         self.dataset = 'UniProtKB_protein'
         self.label = label
