@@ -17,8 +17,8 @@ class GeneToSequenceOntologyAdapter(Adapter):
         rows = gene_so_table.get_rows()
         for row in rows:
             props = {}
-            source = row[0].lower()     #gene
-            target = row[3].lower().replace(':', '_')
+            source = row[0].upper()     #gene
+            target = row[3].upper().replace(':', '_')
             props['taxon_id'] = 7227
 
-            yield f'{source}', target, self.label, props
+            yield f'FlyBase:{source}', ('sequence_type', target), self.label, props

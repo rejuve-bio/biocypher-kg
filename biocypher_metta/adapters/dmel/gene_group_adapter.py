@@ -95,7 +95,7 @@ class GeneGroupAdapter(Adapter):
                 parents = []
                 genes_ids = []
                 #print(f'group: {group_id}\n{props}')
-                yield f'{group_id}', self.label, props
+                yield f'FlyBase:{group_id}', self.label, props
 
 
     def get_edges(self):
@@ -112,7 +112,7 @@ class GeneGroupAdapter(Adapter):
                 props['source_url'] = self.source_url            
             group_id = rows[i][0]   # target (group)
             if rows[i][5] != '':    # source (gene)
-                yield f'{rows[i][5]}', f'{group_id}', self.label, props
+                yield f'FlyBase:{rows[i][5]}', f'FlyBase:{group_id}', self.label, props
                 
 
     def __build_hgnc_dict(self) -> Dict[str, List[str]]:

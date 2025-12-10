@@ -62,7 +62,7 @@ class GeneGeneticAssociationAdapter(Adapter):
                 props['type'] = row[4]
                 props['reference'] = row[5]
                 props['taxon_id'] = 7227
-                yield f'{source}', f'{target}', self.label, props
+                yield f'FlyBase:{source}', f'FlyBase:{target}', self.label, props
             #
             elif len(source) > 1 and len(target) == 1:
                 target = target[0]
@@ -70,7 +70,7 @@ class GeneGeneticAssociationAdapter(Adapter):
                     props['type'] = row[4]
                     props['reference'] = row[5]
                     props['taxon_id'] = 7227
-                    yield f'{source_id}', f'{target}', self.label, props
+                    yield f'FlyBase:{source_id}', f'FlyBase:{target}', self.label, props
             #
             elif len(source) == 1 and len(target) > 1:
                 source = source[0]
@@ -78,7 +78,7 @@ class GeneGeneticAssociationAdapter(Adapter):
                     props['type'] = row[4]
                     props['reference'] = row[5]
                     props['taxon_id'] = 7227
-                    yield f'{source}', f'{target_id}', self.label, props
+                    yield f'FlyBase:{source}', f'FlyBase:{target_id}', self.label, props
             #
             elif len(source) > 1 and len(target) > 1:
                 for source_id in source:
@@ -86,4 +86,4 @@ class GeneGeneticAssociationAdapter(Adapter):
                         props['type'] = row[4]
                         props['reference'] = row[5]
                         props['taxon_id'] = 7227
-                        yield f'{source_id}', f'{target_id}', self.label, props
+                        yield f'FlyBase:{source_id}', f'FlyBase:{target_id}', self.label, props

@@ -69,4 +69,4 @@ class ParalogyAssociationAdapter(Adapter):
             except Exception as e:
                 print(f'\nDeffective ROW:\n{row}\nException: {e}')
                 continue
-            yield f'{source}', f'{target}', self.label, props
+            yield f'FlyBase:{source}', f'FlyBase:{target}', self.label, props

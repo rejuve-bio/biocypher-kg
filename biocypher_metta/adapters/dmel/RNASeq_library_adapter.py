@@ -104,12 +104,12 @@ class RnaseqLibraryAdapter(Adapter):
                         "name": row[8],         # Cluster_Name
                         "experiment_info": [row[2], row[3]],        # Clustering_Analysis_ID, Clustering_Analysis_Name
                         "tissue_info": [row[i] for i in [4,5,6] if row[i] != ''],    # Source_Tissue_Sex	Source_Tissue_Stage, Source_Tissue_Anatomy
-                        "cell_type_id": row[9],     # Cluster_Cell_Type_ID (Flybase ontology FBbt:#)
+                        "cell_type_id": row[9].replace(':', '_').upper(),     # Cluster_Cell_Type_ID (Flybase ontology FBbt:#)
                         "taxon_id": 7227,
                         "source": self.source,
                         "source_url": self.source_url
                     }
-                    yield f'{library_id}', self.label, props
+                    yield f'FlyBase:{library_id}', self.label, props
                 
                 del rows
                 gc.collect()
@@ -130,7 +130,7 @@ class RnaseqLibraryAdapter(Adapter):
                         "source": self.source,
                         "source_url": self.source_url
                     }
-                    yield f'{library_id}', self.label, props
+                    yield f'FlyBase:{library_id}', self.label, props
             elif "gene_rpkm_report_fb" in dmel_data_filepath:
                 self.version = expression_table.extract_date_string(dmel_data_filepath)
                 self.source = 'FLYBASE'
@@ -147,7 +147,7 @@ class RnaseqLibraryAdapter(Adapter):
                         "source": self.source,
                         "source_url": self.source_url
                     }
-                    yield f'{library_id}', self.label, props
+                    yield f'FlyBase:{library_id}', self.label, props
             
             # FCA2 gene expression:
             # The fca2 file contents were generated in the "scripts/get_flyatlas2_gene_data.py" script by method
@@ -176,7 +176,7 @@ class RnaseqLibraryAdapter(Adapter):
                         "source": self.source,
                         "source_url": self.source_url
                     }
-                    yield f'{library_id}', self.label, props
+                    yield f'FlyBase:{library_id}', self.label, props
 
             elif "afca" in dmel_data_filepath:
                 self.version = expression_table.extract_date_string(dmel_data_filepath)
@@ -195,7 +195,7 @@ class RnaseqLibraryAdapter(Adapter):
                         "source": self.source,
                         "source_url": self.source_url
                     }
-                    yield f'{library_id}', self.label, props
+                    yield f'AFCA:{library_id}', self.label, props
 
 
 

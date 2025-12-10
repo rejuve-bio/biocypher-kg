@@ -19,7 +19,6 @@ class FBDevelopmentOntologyAdapter(OntologyAdapter):
         return {
             'primary': 'http://purl.obolibrary.org/obo/FBdv_',
             'go': 'http://purl.obolibrary.org/obo/GO_',
-            # 'uberon': 'http://www.w3.org/2001/XMLSchema#string">UBERON:',
             'uberon_': 'http://purl.obolibrary.org/obo/UBERON_',
             # 'ro': '<owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/RO_',
             # 'bfo': '<owl:Class rdf:about="http://purl.obolibrary.org/obo/BFO_',

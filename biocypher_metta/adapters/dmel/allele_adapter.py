@@ -4,17 +4,6 @@
 #
 # Fly:
 # FB https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Alleles_.3C.3D.3E_Genes_.28fbal_to_fbgn_fb_.2A.tsv.29
-allele:
-  represented_as: node
-  input_label: allele
-  is_a: genomic variant
-  inherit_properties: true
-  properties:
-      gene_id: str
-      allele_symbol: str
-      taxon_id: int                        # 7227 for dmel / 9606 for hsa
-  description: >-
-      Different versions of the same variant (in a specific  locus) are called alleles[1, 2]. Most commonly used referring to genes.
 
 # FB table columns:
 #AlleleID	AlleleSymbol	GeneID	GeneSymbol
