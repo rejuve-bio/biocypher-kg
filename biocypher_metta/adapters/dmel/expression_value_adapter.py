@@ -57,6 +57,7 @@ Dmel_R6.58	FBgn0000003	7SLRNA:CR32864	FBlc0000085	modENCODE_mRNA-Seq_development
 
 '''
 
+from numpy.core.defchararray import upper
 import psycopg2
 import csv
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
@@ -93,8 +94,8 @@ class ExpressionValueAdapter(Adapter):
                 for row in rows:
                     props = {}
                     #source_ids = row[1].split('|')
-                    _source = ('gene', row[11])    # gene FBgn#
-                    _target = row[7]     # library FBlc = Cluster ID#
+                    _source = ('gene', f'FlyBase{row[11].upper()}')    # gene FBgn#
+                    _target = row[7].upper()     # library FBlc = Cluster ID#
 
                     props['value_and_description'] = [
                         ( row[13],        # Mean_Expression
@@ -109,7 +110,7 @@ class ExpressionValueAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-                    yield f'FlyBase:{_source}', f'FlyBase:{_target}', self.label, props
+                    yield _source, f'FlyBase:{_target}', self.label, props
                 
                 del rows
 
@@ -123,9 +124,8 @@ class ExpressionValueAdapter(Adapter):
                 rows = expression_table.get_rows()
                 for row in rows:
                     props = {}
-                    # source_ids = row[1].split('|')
-                    _source = ('gene', row[5])  # Gene_ID   FBgn#
-                    _target = row[3]    # Sample_ID  FBlc#
+                    _source = ('gene', f'FlyBase:{row[5].upper()}') # FBgn#
+                    _target = row[3].upper()    # Sample_ID  FBlc#
 
                     props['value_and_description'] = [
                         (row[8],        # Expression_Value
@@ -136,7 +136,7 @@ class ExpressionValueAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-                    yield f'FlyBase:{_source}', f'FlyBase:{_target}', self.label, props
+                    yield _source, f'FlyBase:{_target}', self.label, props
 
             elif "gene_rpkm_report_fb" in dmel_data_filepath:
                 self.source = 'FLYBASE'
@@ -147,8 +147,8 @@ class ExpressionValueAdapter(Adapter):
                 rows = expression_table.get_rows()
                 for row in rows:
                     props = {}
-                    _source = ('gene', row[1]) # FBgn#
-                    _target = row[5]  # RNASource_FBlc#
+                    _source = ('gene', f'FlyBase:{row[1].upper()}') # FBgn#
+                    _target = row[5].upper()  # RNASource_FBlc#
 
                     props['value_and_description'] = [
                         (row[7], # RPKM_value
@@ -171,7 +171,7 @@ class ExpressionValueAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-                    yield f'FlyBase:{_source}', f'FlyBase:{_target}', self.label, props
+                    yield _source, f'FlyBase:{_target}', self.label, props
 
             # FCA2 gene expression:
             # The fca2 file contents were generated in the "scripts/get_flyatlas2_gene_data.py" script by method
@@ -201,7 +201,7 @@ class ExpressionValueAdapter(Adapter):
                                 library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ") 
                         # target
                         library_id = library_data[1]
-                        _source = ('gene',row[0])
+                        _source = ('gene', f'FlyBase:{row[0].upper()}') # FBgn#
                         props['value_and_description'] = [
                             (
                                 row[3],         # Expression_Value,
@@ -221,7 +221,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield f'FlyBase:{_source}', f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', self.label, props
 
                 # fca2_fbgn_Mir_gene header:
                 # FBgene ID	      Tissue stage and sex	    Tissue	    TPM 	SD	Enrichment                
@@ -236,7 +236,7 @@ class ExpressionValueAdapter(Adapter):
                                 library_data = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
                             elif f'{row[1]}_{row[2]}' == "Adult Female_Whole body":
                                 library_data = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")                            
-                        _source = ('gene',f'{row[0]}')
+                        _source = ('gene',f'FlyBase:{row[0].upper()}')
                         # target
                         library_id = library_data[1]
                         props['value_and_description'] = [
@@ -258,7 +258,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield f'FlyBase:{_source}', f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', self.label, props
 
                 # fca2_fbgn_transcriptGene header:
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    FPKM	SD
@@ -275,7 +275,7 @@ class ExpressionValueAdapter(Adapter):
                         library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
                         # target
                         library_id = library_data[1]                        
-                        _source = ('transcript', row[3].split('/')[-1])
+                        _source = ('transcript', f"FlyBase:{row[3].upper()}") #.split('/')[-1].upper()}")
                         props['value_and_description'] = [
                             (
                                 row[4],         # Expression_Value
@@ -291,7 +291,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield f'FlyBase:{_source}', f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', self.label, props
 
                 # fca2_fbgn_Mir_transcript header:
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    TPM 	SD              
@@ -308,7 +308,7 @@ class ExpressionValueAdapter(Adapter):
 
                         # target
                         library_id = library_data[1]
-                        _source = ('transcript', row[3].split('/')[-1])
+                        _source = ('transcript', f"FlyBase:{row[3]}")  #.split('/')[-1].upper()}")
                         props['value_and_description'] = [
                             (
                                 row[4],         # Expression_Value
@@ -324,7 +324,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield f'FlyBase:{_source}', f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', self.label, props
 
             #afca_afca_annotation_group_by_mean header FORMAT:
             #FB gene symbol	cell_type1_5	cell_type1_30	cell_type1_50	cell_type1_70	cell_type2_5	cell_type2_30...
@@ -341,7 +341,7 @@ class ExpressionValueAdapter(Adapter):
                         if fbgn is None:
                             print(f'Gene {row[0]} is not in Flybase or is not a fresh Flybase record: EXCLUDED FROM ATOM SPACE...')
                             continue                        
-                    _source = ('gene', fbgn)                    
+                    _source = ('gene', f'FlyBase:{fbgn.upper()}')                    
                     for exp_value, library_id in zip(row[1:], libraries[1:]):
                         props['value_and_description'] = [
                             (
@@ -354,7 +354,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield f'FlyBase:{_source}', f'AFCA:{library_id}', self.label, props
+                        yield _source, f'AFCA:{library_id}', self.label, props
                         
 
 

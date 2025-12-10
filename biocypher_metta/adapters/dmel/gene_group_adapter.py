@@ -69,9 +69,9 @@ class GeneGroupAdapter(Adapter):
             group_symbol = rows[i][1]
             group_name = rows[i][2]
             if rows[i][3] != '' and rows[i][3] not in parents:       # holds only group id
-                parents.append(rows[i][3].lower())      # lower() should not be used...
+                parents.append(rows[i][3].upper())
             if rows[i][5] != '':
-                genes_ids.append(rows[i][5].lower())      # lower() should not be used...
+                genes_ids.append(rows[i][5].upper())   
             if (i < len(rows) - 1) and (group_id == rows[i + 1][0]):
                 continue
             else:
@@ -95,7 +95,7 @@ class GeneGroupAdapter(Adapter):
                 parents = []
                 genes_ids = []
                 #print(f'group: {group_id}\n{props}')
-                yield f'FlyBase:{group_id}', self.label, props
+                yield f'FlyBase:{group_id.upper()}', self.label, props
 
 
     def get_edges(self):
@@ -110,9 +110,9 @@ class GeneGroupAdapter(Adapter):
             if self.add_provenance:
                 props['source'] = self.source
                 props['source_url'] = self.source_url            
-            group_id = rows[i][0]   # target (group)
+            group_id = rows[i][0].upper()   # target (group)
             if rows[i][5] != '':    # source (gene)
-                yield f'FlyBase:{rows[i][5]}', f'FlyBase:{group_id}', self.label, props
+                yield f'FlyBase:{rows[i][5].upper()}', f'FlyBase:{group_id}', self.label, props
                 
 
     def __build_hgnc_dict(self) -> Dict[str, List[str]]:

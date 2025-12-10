@@ -3,19 +3,6 @@ The idea of this adapter is borrowed from GTExExpressionAdapter, but is specific
 (Fly Gross Anatomy Ontology)
 
 # For Fly this is used only to establish the relation. No value is held in the properties. 
-expressed in:
-  description: >-
-    holds between a gene and an ontology term in which it is expressed
-  is_a: expression
-  inherit_properties: true
-  represented_as: edge
-  input_label: expressed_in
-  source: gene
-  target: ontology term           # Holds instances of Fbbt, FBdv, FBcv or GO
-  properties:
-    score: float
-    p_value: float
-
 
 FB  data:
 https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Single_Cell_RNA-Seq_Gene_Expression_.28scRNA-Seq_gene_expression_fb_.2A.tsv.gz.29
@@ -67,9 +54,8 @@ class ExpressedInAdapter(Adapter):
         self.version = expression_table.extract_date_string(self.filepath)
         # To avoid duplicates
         expresseds: dict[str, list[str]] = {}   
-        go_subonto_mappings = os.path.join('aux_files/go_subontology_mapping.pkl')
-        with open(go_subonto_mappings, 'rb') as f:
-            go_subonto_mapping = pickle.load(f)
+        go_mapping_file = os.path.join('aux_files/go_subontology_mapping.pkl')
+        go_subonto_mapping = pickle.load(open(go_mapping_file, 'rb')) if go_mapping_file else None 
 
         # header:
         # Pub_ID	Pub_miniref	Clustering_Analysis_ID	Clustering_Analysis_Name	Source_Tissue_Sex	Source_Tissue_Stage
@@ -77,12 +63,14 @@ class ExpressedInAdapter(Adapter):
         rows = expression_table.get_rows()
         for row in rows:
             props = {}
-            #source_ids = row[1].split('|')
-            source = f'{row[11].lower()}'                    # gene FBgn#                        It should not be lowercased by force...
-            target = row[9].replace(':', '_').lower()   # Cluster_Cell_Type_ID  (FBbt#)     It should not be lowercased by force...
-            target_type = ExpressedInAdapter.ontologies.get(target.split('_')[0])
-            if isinstance(target_type, list):  #just for testing, remove later
-                target_type = target_type[0]
+            source = f'FlyBase:{row[11].upper()}'                    # gene FBgn#                      
+            target = row[9] #.replace(':', '_').upper()   # Cluster_Cell_Type_ID  (FBbt# or GO#)   
+            target_type = ExpressedInAdapter.ontologies.get(target.split(':')[0].lower())
+            # if isinstance(target_type, list):  #just for testing, remove later
+            #     target_type = target_type[0]
+            if target.startswith('GO'):
+                target_type = go_subonto_mapping.get(target)
+            target = target.replace(':', '_').upper()
             if source in expresseds:
                 cell_types = expresseds[source]
                 if target not in cell_types:
@@ -95,6 +83,6 @@ class ExpressedInAdapter(Adapter):
             if self.add_provenance:
                 props['source'] = self.source
                 props['source_url'] = self.source_url
-            yield source, (target_type,target), self.label, props
+            yield source, (target_type, f'FlyBase:{target}'), self.label, props
 
 
