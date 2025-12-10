@@ -14,7 +14,6 @@ class FBGrossAnatomyAdapter(OntologyAdapter):
             'primary': 'http://purl.obolibrary.org/obo/FBbt_',
             'go': 'http://purl.obolibrary.org/obo/GO_',
             'uberon': 'http://purl.obolibrary.org/obo/UBERON_',
-            # 'ro': '<http://purl.obolibrary.org/obo/RO_',
             'bfo': 'http://purl.obolibrary.org/obo/BFO_',
         }
     

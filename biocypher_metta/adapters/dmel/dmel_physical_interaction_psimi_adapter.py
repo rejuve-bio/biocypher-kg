@@ -28,51 +28,9 @@ Annotation(s) Interactor B	26
 Interaction Annotation(s)   27	
 Host Organism(s)	Interaction Parameters	Creation Date	Update Date	Checksum Interactor A	Checksum Interactor B	Interaction Checksum	Negative	Feature(s) Interactor A	Feature(s) Interactor B	Stoichiometry Interactor A	Stoichiometry Interactor B	Identification Method(s) Participant A	Identification Method(s) Participant B			,0\\
 
-Schemas
-
-# Schema for RNA-protein and protein-protein interactions (there are 3349 RNA-prot and RNA-RNA interactions in the FB_2024_05 FB release) and protein-protein a
-# Biocypher doesn't accept source AND targets as lists of types in the same schema
-# # ptp stands for "protein or transcript to protein"
-ptp physically interacts with:
-  is_a: expression
-  inherit_properties: true
-  represented_as: edge
-  input_label: ptp_physically_interacts_with
-  source: [protein, transcript]
-  target: protein
-  properties:
-    source_gene: gene       
-    target_gene: gene       
-    detection_method: mi    # Molecular Interaction Ontology
-    pubmed_ids: str[]
-    source_taxon_id: int
-    target_taxon_id: int
-    interaction_type: mi    # Molecular Interaction Ontology
-    interaction_comments: str
-    source_comments: str
-    target_comments: str    
-
-
-# Schema for protein-RNA and RNA-RNA interactions  (there are 3349 such interactions in the FB_2024_05 FB release)   physical interaction:
+# ptp stands for "protein or transcript to protein"
 # ptt stands for "protein or transcript to transcript"
-ptt physically interacts with:
-  is_a: expression
-  inherit_properties: true
-  represented_as: edge
-  input_label: ptt_physically_interacts_with
-  source: [protein, transcript]
-  target: transcript   
-  properties:
-    source_gene: gene       
-    target_gene: gene       
-    detection_method: mi    # Molecular Interaction Ontology
-    pubmed_ids: str[]
-    source_taxon_id: int
-    target_taxon_id: int
-    interaction_type: mi    # Molecular Interaction Ontology
-    interaction_comments: str
-    source_comments: str
-    target_comments: str    
+
 
 '''
 
@@ -97,21 +55,6 @@ class PhysicalInteractionAdapter(Adapter):
         super(PhysicalInteractionAdapter, self).__init__(write_properties, add_provenance)
 
 
-    # def get_nodes(self):
-    #     """
-    #     This is necessary to create nodes that were not created before the creation of edges among them.        
-    #     """
-    #     fb_psimi_table = FlybasePrecomputedTable(self.filepaths[0])
-    #     self.version = fb_psimi_table.extract_date_string(self.filepaths[0])
-    #     fb_psimi_table = self.pre_process(fb_psimi_table)
-        
-    #     #header:
-    #     #ID(s) Interactor A	ID(s) Interactor B	Alt ID(s) Interactor A	Alt ID(s) Interactor B	Alias(es) Interactor A	Alias(es) Interactor B	Interaction Detection Method(s)	Publication 1st Author(s)	Publication ID(s)	Taxid Interactor A	Taxid Interactor B	Interaction Type(s)	Source Database(s)	Interaction Identifier(s)	Confidence Value(s)	Expansion Method(s)	Biological Role(s) Interactor A	Biological Role(s) Interactor B	Experimental Role(s) Interactor A	Experimental Role(s) Interactor B	Type(s) Interactor A	Type(s) Interactor B	Xref(s) Interactor A	Xref(s) Interactor B	Interaction Xref(s)	Annotation(s) Interactor A	Annotation(s) Interactor B	Interaction Annotation(s)	Host Organism(s)	Interaction Parameters	Creation Date	Update Date	Checksum Interactor A	Checksum Interactor B	Interaction Checksum	Negative	Feature(s) Interactor A	Feature(s) Interactor B	Stoichiometry Interactor A	Stoichiometry Interactor B	Identification Method(s) Participant A	Identification Method(s) Participant B			,0\\
-    #     rows = fb_psimi_table.get_rows()
-
-    #     for row in rows:
-
-
     def get_edges(self):
         fb_psimi_table = FlybasePrecomputedTable(self.filepaths[0])
         self.version = fb_psimi_table.extract_date_string(self.filepaths[0])
@@ -121,20 +64,14 @@ class PhysicalInteractionAdapter(Adapter):
         #ID(s) Interactor A	ID(s) Interactor B	Alt ID(s) Interactor A	Alt ID(s) Interactor B	Alias(es) Interactor A	Alias(es) Interactor B	Interaction Detection Method(s)	Publication 1st Author(s)	Publication ID(s)	Taxid Interactor A	Taxid Interactor B	Interaction Type(s)	Source Database(s)	Interaction Identifier(s)	Confidence Value(s)	Expansion Method(s)	Biological Role(s) Interactor A	Biological Role(s) Interactor B	Experimental Role(s) Interactor A	Experimental Role(s) Interactor B	Type(s) Interactor A	Type(s) Interactor B	Xref(s) Interactor A	Xref(s) Interactor B	Interaction Xref(s)	Annotation(s) Interactor A	Annotation(s) Interactor B	Interaction Annotation(s)	Host Organism(s)	Interaction Parameters	Creation Date	Update Date	Checksum Interactor A	Checksum Interactor B	Interaction Checksum	Negative	Feature(s) Interactor A	Feature(s) Interactor B	Stoichiometry Interactor A	Stoichiometry Interactor B	Identification Method(s) Participant A	Identification Method(s) Participant B			,0\\
         rows = fb_psimi_table.get_rows()
 
-        # for k in self.fbgn_to_uniprot_dict:
-        #     print(f'{k}:\t {self.fbgn_to_uniprot_dict[k]}')
-        # for k in self.fbgn_to_fbtr_uniprot_dict:
-        #     print(f'{k}:\t {self.fbgn_to_fbtr_uniprot_dict[k]}')
         for row in rows:
             source_fbgn = row[0]
             target_fbgn = row[1]
             if source_fbgn not in self.fbgn_to_fbtr_uniprot_dict: # @todo get  from Flybase
                 print(f'(Source) gene {source_fbgn} has no transcript/protein in Flybase. Skipping it in this Fly BioAS version...')
-                # exit(9)
                 continue
             if target_fbgn not in self.fbgn_to_fbtr_uniprot_dict: # @todo get  from Flybase
                 print(f'(Target) gene {target_fbgn} has no transcript/protein in Flybase. Skipping it in this Fly BioAS version...')
-                # exit(9)
                 continue
 
             sources, targets = self.get_FB_ids(source_fbgn, target_fbgn, row)            
@@ -173,7 +110,7 @@ class PhysicalInteractionAdapter(Adapter):
             # Flybase doesn't informs which transcript or protein is interacting. So, use all...
             for source in source_ids:
                 for target in target_ids:                                        
-                    yield (sources[0], source), target, self.label, props                   
+                    yield (sources[0], f'FlyBase:{source}'), (targets[0], f'FlyBase:{target}'), self.label, props                   
                         
 
     def get_FB_ids(self, source_fbgn, target_fbgn, data_row):
@@ -198,8 +135,8 @@ class PhysicalInteractionAdapter(Adapter):
 
     def get_properties(self, row):
         properties = {}        
-        properties['source_gene'] = row[0].lower()
-        properties['target_gene'] = row[1].lower()
+        properties['source_gene'] = row[0].upper()
+        properties['target_gene'] = row[1].upper()
         properties['detection_method'] = row[6]
         properties['pubmed_ids'] = row[8]
         properties['source_taxon_id'] = row[9]
@@ -321,18 +258,14 @@ class PhysicalInteractionAdapter(Adapter):
         # but they pursui an uniprot id
 
         fbgn_to_fbtr_uniprot_dict = {}
-        # for fbgn in fbgn_to_fbtr_dict.keys():
         for fbgn in self.fbgn_to_uniprot_dict.keys():
             uniprot_list = self.fbgn_to_uniprot_dict[fbgn]          # if fbgn in self.fbgn_to_uniprot_dict else None
             fbtr_list = fbgn_to_fbtr_dict[fbgn] if fbgn in fbgn_to_fbtr_dict else None
-            # fbgn_to_fbtr_uniprot_dict[fbgn] = (fbgn_to_fbtr_dict[fbgn], uniprot_list)
             fbgn_to_fbtr_uniprot_dict[fbgn] = (fbtr_list, uniprot_list)
 
         for fbgn in fbgn_to_fbtr_dict.keys():
-        # for fbgn in self.fbgn_to_uniprot_dict.keys():
             uniprot_list = self.fbgn_to_uniprot_dict[fbgn] if fbgn in self.fbgn_to_uniprot_dict else None
             fbtr_list = fbgn_to_fbtr_dict[fbgn]
-            # fbgn_to_fbtr_uniprot_dict[fbgn] = (fbgn_to_fbtr_dict[fbgn], uniprot_list)
             fbgn_to_fbtr_uniprot_dict[fbgn] = (fbtr_list, uniprot_list)
             
         return fbgn_to_fbtr_uniprot_dict

@@ -87,4 +87,4 @@ class OrthologyAssociationAdapter(Adapter):
             props['source_organism'] = 'Drosophila melanogaster'
             props['target_organism'] = 'Homo sapiens'
 
-            yield f'{source}', f'{target}', self.label, props
+            yield f'FlyBase:{source}', f'Ensembl:{target}', self.label, props

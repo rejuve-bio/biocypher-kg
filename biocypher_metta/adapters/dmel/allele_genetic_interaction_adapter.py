@@ -2,29 +2,6 @@
 
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Genetic_interactions_.28allele_genetic_interactions_.2A.tsv.29
 
-  # In this first version, the interaction description ia stored in the node that is identified by a string that works
-  # like a "primary key": "allele_genetic_interaction_0", "allele_genetic_interaction_1", "allele_genetic_interaction_2",...
-  #
-  # TODO:
-  # In the next iteration, this class will extract any allele symbol occuring in an "interaction" text and will br created
-  # an edge from the "source allele" given by this node and the allele corresponding to  any allele symbol in the interaction text.
-allele genetic interaction:
-  description: >-
-    An allelic interaction is a controlled vocabulary (i.e. not free text) genetic interaction data associated with alleles.
-  #is_a: annotation
-  is_a: biological entity
-  #inherit_properties: true
-  represented_as: node
-  input_label: allele_genetic_interaction
-  #source: allele
-  #target: annotation                        # FB Controlled Vocabulary-based text
-  properties:
-    allele_id: str
-    interaction_text: str                    # FB Controlled Vocabulary-based text
-    source: str
-    source_url: str
-
-
 ##allele_symbol	allele_FBal#	interaction	FBrf#
 1038[1038]	FBal0189927	1038[1038] is an enhancer of haltere phenotype of vg[83b27]/vg[1]	FBrf0187637
 1038[1038]	FBal0189927	1038[1038] is an enhancer of visible phenotype of vg[83b27]/vg[1]	FBrf0187637
@@ -55,24 +32,6 @@ class AlleleGeneticInteractionAdapter(Adapter):
         self.source_url = 'https://flybase.org/'
 
         super(AlleleGeneticInteractionAdapter, self).__init__(write_properties, add_provenance)
-
-
-    # def get_nodes(self):
-    #     fb_AGI_table = FlybasePrecomputedTable(self.dmel_data_filepath)
-    #     self.version = fb_AGI_table.extract_date_string(self.dmel_data_filepath)
-    #     #header:
-    #     ##allele_symbol	allele_FBal#	interaction	FBrf#
-    #     rows = fb_AGI_table.get_rows()
-    #     id = -1
-    #     for row in rows:
-    #         id += 1
-    #         props = {}
-    #         props['allele_id'] = row[1]
-    #         props['interaction_text'] = row[2]
-    #         props['reference'] = row[3]
-    #         props['taxon_id'] = 7227
-    #         yield f'{self.label}_{id}', self.label, props
-    #     print('Finished allele interaction: \t\t\t\t\t\t\t\t\t\tget_nodes()')dmel_data_filepath
 
 
     def get_edges(self):
