@@ -1331,7 +1331,7 @@ uniprot_dbxref_bgee_gene:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_gene
       taxon_id: 9606
       dbxref: BGEE
@@ -1344,7 +1344,7 @@ uniprot_dbxref_ensembl_gene:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_gene
       taxon_id: 9606
       dbxref: ENSEMBL
@@ -1357,7 +1357,7 @@ uniprot_dbxref_ensembl_transcript:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_transcript
       taxon_id: 9606
       dbxref: ENSEMBL
@@ -1370,7 +1370,7 @@ uniprot_dbxref_ensembl_protein:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_protein
       taxon_id: 9606
       dbxref: ENSEMBL
@@ -1383,7 +1383,7 @@ uniprot_dbxref_string_protein:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_protein
       taxon_id: 9606
       dbxref: STRING
@@ -1396,7 +1396,7 @@ uniprot_dbxref_biological_process:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_biological_process
       taxon_id: 9606
       dbxref: GO
@@ -1410,7 +1410,7 @@ uniprot_dbxref_cellular_component:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_cellular_component
       taxon_id: 9606
       dbxref: GO
@@ -1424,7 +1424,7 @@ uniprot_dbxref_molecular_function:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/uniprot_sprot_human_sample.dat.gz
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       label: protein_has_xref_molecular_function
       taxon_id: 9606
       dbxref: GO
