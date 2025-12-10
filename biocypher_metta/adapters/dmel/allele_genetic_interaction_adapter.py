@@ -44,7 +44,6 @@ class AlleleGeneticInteractionAdapter(Adapter):
         for row in rows:
             id += 1
             props = {}            
-            # props['allele_genetic_interaction_id'] = f'allele_genetic_interaction_{id}'   # useless for now...
             props['interaction_description'] = row[2]
             if self.add_provenance:
                 props['source'] = self.source
@@ -52,10 +51,8 @@ class AlleleGeneticInteractionAdapter(Adapter):
             props['taxon_id'] = 7227
             source_allele = row[1]
             interacting_alleles = self.__extract_allele_ids(row, source_allele)
-            # print(f'allele: {row[1]}\nInteraction text:\n{row[2]}\nAlleles: {interacting_alleles}')            
             for allele in interacting_alleles:
               yield f'FlyBase:{source_allele}', f'FlyBase:{allele}', self.label, props
-        print('Finished allele interaction: \t\t\t\t\t\t\t\t\t\tget_edges()')
 
 
     def __extract_allele_ids(self, row: list[str], source_allele: str) -> list[str]:

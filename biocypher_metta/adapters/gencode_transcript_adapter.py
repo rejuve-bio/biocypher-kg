@@ -178,7 +178,7 @@ class GencodeTranscriptAdapter(Adapter):
                             if self.write_properties:
                                 transcript_type_val = info.get('transcript_type')
                                 props = {
-                                    'transcript_id': info['transcript_id'],
+                                    'transcript_id': info['transcript_id'].upper(),
                                     'transcript_name': info['transcript_name'],
                                     'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],                                
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
@@ -189,14 +189,7 @@ class GencodeTranscriptAdapter(Adapter):
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
-                        
-                            # if result['status'] == 'unknown':
-                            #     print(f"Unknown gene symbol: {result['original']}")
-                            # elif result['status'] == 'updated':
-                            #     print(f"Replaced gene symbol: {result['original']} -> {result['current']}")
-                            # elif result['status'] == 'ensembl_with_symbol' and result['original'] != result['current']:
-                            #     print(f"Ensembl symbol replaced: {result['original']} -> {result['current']}")
-                        
+
                             yield transcript_key, self.label, props
                 except Exception as e:
                     print(
@@ -220,6 +213,7 @@ class GencodeTranscriptAdapter(Adapter):
                 
                 # Skip if we don't want to keep this transcript
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
+                    not_processed += 1
                     continue
 
                 transcript_key = info['transcript_id'].split('.')[0]

@@ -137,12 +137,7 @@ class GencodeGeneAdapter(Adapter):
                     id = f"{id_prefix}:{raw_id}"
                     if gene_id.endswith('_PAR_Y'):
                         id = f"{id_prefix}:{raw_id}_PAR_Y"
-                    # if raw_id.startswith('ENSG'):
-                    #     if gene_id.endswith('_PAR_Y'):
-                    #         id = f"{raw_id}_PAR_Y"
-                    # else:
-                    #     continue  # Skip if not ENSEMBL ID
-                    
+
                     alias = alias_dict.get(raw_id)
                     if not alias:
                         hgnc_id = info.get('hgnc_id')
@@ -156,6 +151,7 @@ class GencodeGeneAdapter(Adapter):
                     gene_name = info.get('gene_name')
                     if not gene_name:
                         print(f"No gene name found for gene {gene_id}. Invalid record: {info}. Skipping it.")
+                        not_processed += 1
                         continue
                     result = self.hgnc_processor.process_identifier(gene_name)
                     
@@ -179,14 +175,6 @@ class GencodeGeneAdapter(Adapter):
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
-
-                            # Print message about unknown or replaced gene symbols
-                            # if result['status'] == 'unknown':
-                            #     print(f"Unknown gene symbol: {result['original']}")
-                            # elif result['status'] == 'updated':
-                            #     print(f"Replaced gene symbol: {result['original']} -> {result['current']}")
-                            # elif result['status'] == 'ensembl_with_symbol' and result['original'] != result['current']:
-                            #     print(f"Ensembl symbol replaced: {result['original']} -> {result['current']}")
 
                             yield id, self.label, props
                         not_processed += 1

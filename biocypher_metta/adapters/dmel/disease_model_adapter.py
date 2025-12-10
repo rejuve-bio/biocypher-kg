@@ -47,7 +47,7 @@ class DiseaseModelAdapter(Adapter):
 
 
     def get_nodes(self):
-        self.label = 'dmel_disease_model'
+        # self.label = 'dmel_disease_model'
         fb_gg_table = FlybasePrecomputedTable(self.dmel_filepath)
         self.version = fb_gg_table.extract_date_string(self.dmel_filepath)
         #header:
@@ -58,32 +58,39 @@ class DiseaseModelAdapter(Adapter):
             # if "Gene symbol" in row[1]:     # to skip header (columns' names)
             #     continue
             id += 1
-            props = {}            
-            props['gene'] = row[0]
-            #if row[2] != '':
-            props['gene_hgnc_id'] = row[2]
-            #if row[3] != '':
-            props['do_qualifier'] = row[3]
-            props['do_term_id'] = str(row[4]).replace(':', '_').lower()   # @todo Ids should be  kept in their original format in the atomspace, not lowercased...
-            #if row[5] != '':
-            props['do_term_name'] = row[5]
-            #if row[6] != '':
-            props['allele'] = row[6].lower()
-            #if row[8] != '':
-            props['ortholog_hgnc_id'] = row[8]
-            #if row[9] != '':
-            props['ortholog_hgnc_symbol'] = row[9]
-            #if row[10] != '':
-            ev_code, alleles = self.__extract_evcode_alleles(row[10])
+            props = {}      
+            if row[0] != ''      :
+                props['gene'] = row[0].upper()
+            else:
+                print(f'dmel_disease_model_adapter --- skipping record because there is no gene ID: {row}')
+                continue
+            if row[2] != '':
+                props['gene_hgnc_id'] = row[2]
+            if row[3] != '':
+                props['do_qualifier'] = row[3].upper()
+            if row[4] != '':                            # mandatory
+                props['do_term_id'] = str(row[4]).replace(':', '_').upper()
+            else:
+                continue
+            if row[5] != '':
+                props['do_term_name'] = row[5]
+            if row[6] != '':
+                props['allele'] = row[6].upper()
+            if row[8] != '':
+                props['ortholog_hgnc_id'] = row[8]
+            if row[9] != '':
+                props['ortholog_hgnc_symbol'] = row[9]
+            if row[10] != '':
+                ev_code, alleles = self.__extract_evcode_alleles(row[10])
             if ev_code != None:
                 props['evidence_code'] = ev_code
             if alleles != None:
-                props['interacting_alleles'] = alleles
+                props['interacting_alleles'] =  [allele.upper() for allele in alleles]
             props['ev_code_interact_alleles'] = row[10]
             props['reference_id'] = row[11]
             props['taxon_id'] = 7227
             #print(f'{props}')
-            yield f'RejuveBio:{self.label}_{id}', self.label, props
+            yield f'RejuveBio:DMEL_DISEASE_MODEL_{id}', self.label, props
 
     def get_edges(self):      
         #
@@ -100,14 +107,14 @@ class DiseaseModelAdapter(Adapter):
             props = {}            
             props['taxon_id'] = 7227
             if self.label == 'modelled_to_human_disease':
-                source = row[0]                        
+                source = row[0].upper()                        
                 #print(f'{props}')
-                yield f'FlyBase:{source}', f'RejuveBio:dmel_disease_model_{id}', self.label, props
+                yield f'FlyBase:{source}', f'RejuveBio:DMEL_DISEASE_MODEL_{id}', self.label, props
             elif self.label == 'modelled_to_do_term':
-                source = row[0]
-                target = str(row[4])   # @todo Ids should be  kept in their original format in the atomspace, not lowercased...
-                props['disease_model_id'] = f'dmel_disease_model_{id}'
-                yield f'FlyBase:{source}', f'{target}', self.label, props
+                source = row[0].upper()
+                target = str(row[4]).upper()  
+                props['disease_model_id'] = f'DMEL_DISEASE_MODEL{id}'
+                yield f'FlyBase:{source}', ('disease', target), self.label, props
 
 
     def __extract_evcode_alleles(self, input_string):

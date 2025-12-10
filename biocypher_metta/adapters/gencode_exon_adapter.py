@@ -116,15 +116,16 @@ class GencodeExonAdapter(Adapter):
                     # if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
                     #     continue
 
-                    gene_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['gene_id'].split('.')[0]}"
+                    gene_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['gene_id'].split('.')[0].upper()}"
                     if info['gene_id'].endswith('PAR_Y'):
                         gene_id = gene_id + '_PAR_Y'
                         
-                    transcript_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['transcript_id'].split('.')[0]}"
+                    transcript_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['transcript_id'].split('.')[0].upper()}"
                     if info['transcript_id'].endswith('_PAR_Y'):
                         transcript_id = transcript_id + '_PAR_Y'
                         
-                    exon_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['exon_id'].split('.')[0]}"
+                    # exon_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['exon_id'].split('.')[0].upper()}"
+                    exon_id = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['exon_id'].split('.')[0].upper()}"
                     # If the exon_id ends with _PAR_Y, we append it to the exon_id
                     if info['exon_id'].endswith('_PAR_Y'):
                         exon_id = exon_id + '_PAR_Y'
@@ -144,7 +145,7 @@ class GencodeExonAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'exon_number': int(info.get('exon_number', -1)),
-                                    'exon_id': exon_id,
+                                    'exon_id': f"{info['exon_id'].split('.')[0].upper()}", #f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['exon_id'].split('.')[0].upper()}",
                                 }
                                 
                                 if self.add_provenance:
