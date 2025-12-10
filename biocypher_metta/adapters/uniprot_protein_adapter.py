@@ -1,4 +1,5 @@
 import gzip
+import pickle
 import re
 import json
 import os
@@ -12,13 +13,18 @@ from Bio import SwissProt
 
 class UniprotProteinAdapter(Adapter):
     ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
-    
-    def __init__(self, filepath, write_properties, add_provenance, label='protein', dbxref=None):
+
+    def __init__(self, filepath, write_properties, add_provenance, label='protein', dbxref=None, mapping_file=None):
         self.filepath = filepath
         self.dataset = 'UniProtKB_protein'
         self.label = label
         self.dbxref = dbxref
-        self.source = "Uniprot"
+        self.go_subontology_mapping = pickle.load(open(mapping_file, 'rb')) if mapping_file else None 
+        
+        if self.dbxref == 'GO' and not self.go_subontology_mapping:
+            raise ValueError("GO subontology mapping file must be provided for GO dbxref edges.")
+        
+        self.source = "UniProt"
         self.source_url = "https://www.uniprot.org/"
         self.taxon_id = taxon_id
         
@@ -146,6 +152,15 @@ class UniprotProteinAdapter(Adapter):
                         if not self._matches_ensembl_label(syn):
                             continue
                         syn = syn.split('.')[0]  # Remove version for ENSEMBL IDs
+                    elif self.dbxref == "STRING":
+                        syn = "STRING:" + syn.split('.')[1]
+                    elif self.dbxref == "GO":
+                        prefix, id_local = syn.split(':',1)
+                        syn = id_local
+                        
+                        subontology = self.go_subontology_mapping.get(syn, None)
+                        if subontology not in self.label:
+                            continue
 
                     props = {}
                     if self.write_properties:

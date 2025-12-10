@@ -33,7 +33,7 @@ class UniprotAdapter(Adapter):
         self.dataset = label
         self.type = type
         self.label = label
-        self.source = "Uniprot"
+        self.source = "UniProt"
         self.source_url = "https://www.uniprot.org/"
         self.taxon_id = taxon_id
 
