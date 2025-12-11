@@ -41,23 +41,29 @@ nodes:
       end: int
 
 relationships:
-  transcribed from:
+  exon part_of gene:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
-    description: x is transcribed from y if and only if x is synthesized from template y
-    input_label: transcribed_from
-    source: transcript
+    description:
+      holds between parts and wholes (material entities or processes)
+      For example, a particular exon is part of a particular transcript or gene  
+    input_label: part_of_gene
+    output_label: part_of
+    source: exon
     target: gene
+
+  exon part_of transcript:
+    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+    description:
+      holds between parts and wholes (material entities or processes)
+      For example, a particular exon is part of a particular transcript or gene    
+    input_label: part_of_transcript
+    output_label: part_of
+    source: exon
+    target: transcript
 
   transcribes to:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
-    description: inverse of transcribed from
+    description: x transcribes to y if and only if y is synthesized from template x
     input_label: transcribes_to
     source: gene
     target: transcript
-
-  transcript to exon:
-    url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
-    description: An association between a transcript and its exons
-    input_label: includes
-    source: transcript
-    target: exon

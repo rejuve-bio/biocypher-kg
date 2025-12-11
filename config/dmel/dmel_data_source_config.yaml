@@ -1,5 +1,5 @@
 # ---
-flybase:
+flybase: 
   name: Flybase 2025_04
   url: 
     - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/allele_genetic_interactions_fb_2025_04.tsv.gz
@@ -24,7 +24,9 @@ flybase:
     - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/orthologs/dmel_paralogs_fb_2025_04.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_04.tsv.gz
     
-
+goa:
+  name: GO Annotation File (GAF)
+  url: http://geneontology.org/gene-associations/goa_human.gaf.gz
 
 gencode:
   name: GENCODE v54
@@ -45,6 +47,11 @@ reactome:
     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
 
+rna_central:
+  name: RNA Central
+  url:
+    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
 
 tflink:
   name: TFLink

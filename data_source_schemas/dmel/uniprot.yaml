@@ -3,7 +3,7 @@ description: Universal Protein Resource
 website: https://www.uniprot.org/
 nodes:
   protein:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: A protein product
     input_label: protein
     properties:
@@ -12,7 +12,7 @@ nodes:
 
 relationships:
   translates to:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       x (amino acid chain/polypeptide) is the ribosomal translation of y (transcript) if and only if a ribosome
       reads y (transcript) through a series of triplet codon-amino acid adaptor activities (GO:0030533)
@@ -20,16 +20,9 @@ relationships:
     input_label: translates_to
     source: transcript
     target: protein
-  
-  translation of:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
-    description: inverse of translates to
-    input_label: translation_of
-    source: protein
-    target: transcript
 
   protein has_xref gene:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       protein x has a cross-reference to gene y in an external database
     input_label: protein_has_xref_gene
@@ -40,7 +33,7 @@ relationships:
       dbxref: str
 
   protein has_xref transcript:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       protein x has a cross-reference to transcript y in an external database
     input_label: protein_has_xref_transcript
@@ -51,7 +44,7 @@ relationships:
       dbxref: str
 
   protein has_xref protein:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       protein x has a cross-reference to protein y in an external database
     input_label: protein_has_xref_protein
@@ -62,7 +55,7 @@ relationships:
       dbxref: str
 
   protein has_xref biological_process:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       protein x has a cross-reference to biological process y in an external database
     input_label: protein_has_xref_biological_process
@@ -74,7 +67,7 @@ relationships:
 
 
   protein has_xref molecular_function:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       protein x has a cross-reference to molecular function y in an external database
     input_label: protein_has_xref_molecular_function
@@ -85,7 +78,7 @@ relationships:
       dbxref: str
 
   protein has_xref cellular_component:
-    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
     description: >-
       protein x has a cross-reference to cellular component y in an external database
     input_label: protein_has_xref_cellular_component

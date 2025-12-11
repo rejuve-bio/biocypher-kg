@@ -1,3 +1,60 @@
+
+rna_central_non_coding_rna:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: ./samples/dmel/rna_central/sample_drosophila_melanogaster.BDGP6.46.bed.gz
+      rfam_filepath: ./samples/dmel/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      label: non_coding_rna
+      type: non_coding_rna
+      taxon_id: 9606
+  outdir: rna_central
+  nodes: True
+  edges: False
+
+rna_central_non_coding_rna_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: ./samples/dmel/rna_central/sample_drosophila_melanogaster.BDGP6.46.bed.gz
+      rfam_filepath: ./samples/dmel/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      type: biological process rna
+      label: biological_process_rna
+      taxon_id: 9606
+  outdir: rna_central
+  nodes: False
+  edges: True  
+
+rna_central_non_coding_rna_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: ./samples/dmel/rna_central/sample_drosophila_melanogaster.BDGP6.46.bed.gz
+      rfam_filepath: ./samples/dmel/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      type: molecular function rna
+      label: molecular_function_rna
+      taxon_id: 9606
+  outdir: rna_central
+  nodes: False
+  edges: True  
+
+rna_central_non_coding_rna_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: ./samples/dmel/rna_central/sample_drosophila_melanogaster.BDGP6.46.bed.gz
+      rfam_filepath: ./samples/dmel/rna_central/sample_rnacentral_rfam_annotations.tsv.gz
+      type: cellular component rna
+      label: cellular_component_rna
+      taxon_id: 9606
+  outdir: rna_central
+  nodes: False
+  edges: True   
+
 dmel_gene_group:
   adapter:
     module: biocypher_metta.adapters.dmel.gene_group_adapter

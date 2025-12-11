@@ -638,7 +638,6 @@ topld_sas:
    edges: True
 
 
-
 rna_central_non_coding_rna:
   adapter:
     module: biocypher_metta.adapters.rna_central_adapter
