@@ -2521,13 +2521,13 @@ gene in tad region:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-
 exon part_of gene:
-  is_a: related to at instance # corrected from "related to at instance"
+  is_a: part of
   mixins: [biolink:SequenceFeatureRelationship]   # https://biolink.github.io/biolink-model/SequenceFeatureRelationship/
   biolink_predicate: "biolink:part_of"            # https://biolink.github.io/biolink-model/part_of/
   description: >-                                 # https://biolink.github.io/biolink-model/SequenceFeatureRelationship/
-    Description: For example, a particular exon is part of a particular transcript or gene    
+      holds between parts and wholes (material entities or processes)
+      For example, a particular exon is part of a particular transcript or gene    
   represented_as: edge
   input_label: part_of_gene
   output_label: part_of
@@ -2552,11 +2552,12 @@ exon part_of gene:
     agent_type: "manual_agent"
 
 exon part_of transcript:
-  is_a: related to at instance # corrected from "related to at instance"
-  mixins: [biolink:ExonToTranscriptRelationship]
-  biolink_predicate: "biolink:has_part"
+  is_a: part of
+  mixins: [biolink:ExonToTranscriptRelationship] # https://biolink.github.io/biolink-model/ExonToTranscriptRelationship/ --> A transcript is formed from multiple exons
+  biolink_predicate: "biolink:part_of"
   description: >-
-    An association between an exon and its gene
+      holds between parts and wholes (material entities or processes)
+      For example, a particular exon is part of a particular transcript or gene    
   represented_as: edge
   input_label: part_of_transcript
   output_label: part_of
