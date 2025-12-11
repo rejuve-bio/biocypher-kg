@@ -12,7 +12,7 @@ nodes:
       chr: str
       start: int
       end: int
-      synonyms: str[]
+      synonym: str[]
   
   transcript:
     url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz

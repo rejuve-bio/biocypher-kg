@@ -129,7 +129,7 @@ ontology term:
     description: 
       type: str
       biolink: description
-    synonyms: 
+    synonym: 
       type: str[]
       biolink: synonym
     source: 
@@ -171,7 +171,7 @@ gene:
       biolink: name
     gene_type: 
       type: str
-    synonyms: 
+    synonym: 
       type: str[]
       biolink: synonym
   kgx_properties:
@@ -186,15 +186,12 @@ protein:
   biolink_category: "biolink:Protein"
   inherit_properties: true
   properties:
-    accessions: 
+    accession: 
       type: str[]
       biolink: xref
     protein_name:
       type: str
       biolink: name
-    synonyms: 
-      type: str[]
-      biolink: synonym
     source: 
       type: str
       biolink: knowledge_source
@@ -721,10 +718,6 @@ tad:
   inherit_properties: true
   kgx_properties:
     category: "biolink:GenomicEntity"
-  properties:
-    genes: 
-      type: str[]
-      biolink: has_gene_or_gene_product
 
 # ---
 # Associations
@@ -1659,7 +1652,7 @@ transcription factor to gene association:
   properties:
     evidence: str[]
     detection_method: str
-    databases: str[]
+    database: str[]
     evidence_type: str
 
 regulatory region to gene association:
@@ -2072,5 +2065,118 @@ exon part_of transcript:
   kgx_properties:
     subject_category: "biolink:Transcript"
     object_category: "biolink:Exon"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+has xref:
+  is_a: annotation
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:related_to"
+  represented_as: edge
+  input_label: has_xref
+  output_label: has_xref
+  source: biological entity
+  target: biological entity
+  kgx_properties:
+    subject_category: "biolink:NamedThing"
+    object_category: "biolink:NamedThing"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    xref_db:
+      type: str
+      biolink: knowledge_source
+
+
+protein has_xref gene:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_gene
+  output_label: has_xref
+  source: protein
+  target: gene
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:Gene"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+protein has_xref transcript:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_transcript
+  output_label: has_xref
+  source: protein
+  target: transcript
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:Transcript"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"  
+
+
+protein has_xref protein:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_protein
+  output_label: has_xref
+  source: protein
+  target: protein
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:Protein"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref biological_process:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_biological_process
+  output_label: has_xref
+  source: protein
+  target: biological process
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:BiologicalProcess"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref molecular_function:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_molecular_function
+  output_label: has_xref
+  source: protein
+  target: molecular function
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref cellular_component:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_cellular_component
+  output_label: has_xref
+  source: protein
+  target: cellular component
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"

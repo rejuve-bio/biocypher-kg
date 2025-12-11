@@ -7,9 +7,8 @@ nodes:
     description: A protein product
     input_label: protein
     properties:
-      accessions: str[]
+      accession: str[]
       protein_name: str
-      synonyms: str[]
 
 relationships:
   translates to:
@@ -28,3 +27,70 @@ relationships:
     input_label: translation_of
     source: protein
     target: transcript
+
+  protein has_xref gene:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: >-
+      protein x has a cross-reference to gene y in an external database
+    input_label: protein_has_xref_gene
+    output_label: has_xref
+    source: protein
+    target: gene
+    properties:
+      dbxref: str
+
+  protein has_xref transcript:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: >-
+      protein x has a cross-reference to transcript y in an external database
+    input_label: protein_has_xref_transcript
+    output_label: has_xref
+    source: protein
+    target: transcript
+    properties:
+      dbxref: str
+
+  protein has_xref protein:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: >-
+      protein x has a cross-reference to protein y in an external database
+    input_label: protein_has_xref_protein
+    output_label: has_xref
+    source: protein
+    target: protein
+    properties:
+      dbxref: str
+
+  protein has_xref biological_process:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: >-
+      protein x has a cross-reference to biological process y in an external database
+    input_label: protein_has_xref_biological_process
+    output_label: has_xref
+    source: protein
+    target: biological_process
+    properties:
+      dbxref: str
+
+
+  protein has_xref molecular_function:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: >-
+      protein x has a cross-reference to molecular function y in an external database
+    input_label: protein_has_xref_molecular_function
+    output_label: has_xref
+    source: protein
+    target: molecular_function
+    properties:
+      dbxref: str
+
+  protein has_xref cellular_component:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+    description: >-
+      protein x has a cross-reference to cellular component y in an external database
+    input_label: protein_has_xref_cellular_component
+    output_label: has_xref
+    source: protein
+    target: cellular_component
+    properties:
+      dbxref: str

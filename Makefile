@@ -59,14 +59,14 @@ run-interactive: check-uv
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
 	echo "Using writer type: $$WRITER_TYPE"; \
 	echo ""; \
-	read -p "📋 Write properties? (yes/no) [no]: " WRITE_PROPERTIES; \
-	WRITE_PROPERTIES=$${WRITE_PROPERTIES:-no}; \
-	if [ "$$WRITE_PROPERTIES" = "yes" ]; then \
-		WRITE_PROPERTIES_FLAG=""; \
-		echo "Properties will be written"; \
-	else \
+	read -p "📋 Write properties? (yes/no) [yes]: " WRITE_PROPERTIES; \
+	WRITE_PROPERTIES=$${WRITE_PROPERTIES:-yes}; \
+	if [ "$$WRITE_PROPERTIES" = "no" ]; then \
 		WRITE_PROPERTIES_FLAG="--no-write-properties"; \
 		echo "Properties will NOT be written"; \
+	else \
+		WRITE_PROPERTIES_FLAG=""; \
+		echo "Properties will be written"; \
 	fi; \
 	echo ""; \
 	read -p "🔗 Add provenance? (yes/no) [no]: " ADD_PROVENANCE; \

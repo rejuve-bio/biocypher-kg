@@ -10,7 +10,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   molecular function:
     url: http://purl.obolibrary.org/obo/go.owl
@@ -20,7 +20,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   cellular component:
     url: http://purl.obolibrary.org/obo/go.owl
@@ -30,7 +30,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   cl:
     url: http://purl.obolibrary.org/obo/cl.owl
@@ -40,7 +40,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   clo:
     url: http://purl.obolibrary.org/obo/clo.owl
@@ -50,7 +50,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   uberon:
     url: http://purl.obolibrary.org/obo/uberon.owl
@@ -60,7 +60,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   bto:
     url: http://purl.obolibrary.org/obo/bto.owl
@@ -70,7 +70,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   efo:
     url: http://purl.obolibrary.org/obo/efo.owl
@@ -80,7 +80,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
   
   hpo:
     url: http://purl.obolibrary.org/obo/hp.owl
@@ -90,7 +90,7 @@ nodes:
       id: str
       term_name: str
       description: str
-      synonyms: str[]
+      synonym: str[]
 
 relationships:
   biological process subclass of:

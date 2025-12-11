@@ -1,6 +1,7 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 import pathlib
 import os
+import re
 from biocypher._logger import logger
 import networkx as nx
 from collections import Counter, defaultdict
@@ -301,7 +302,8 @@ class MeTTaWriter(BaseWriter):
     def write_property(self, def_out, property):
         out_str = [def_out]
         for k, v in property.items():
-            if k in self.excluded_properties or v is None or v == "": continue
+            if k in self.excluded_properties or v is None or v == "": 
+                continue
             
             if k == 'biological_context':
                 try:
@@ -312,20 +314,24 @@ class MeTTaWriter(BaseWriter):
                     print(f"An error occurred while processing the biological context '{v}': {e}.")
                     continue
             elif isinstance(v, list):
-                prop = "("
-                for i, e in enumerate(v):
-                    if isinstance(e, tuple):
-                        tuple_prop = '('
-                        for el in e:
-                            tuple_prop += f'{self.check_property(el)} '
-                        tuple_prop = tuple_prop.rstrip()
-                        prop += tuple_prop + ')'
+                # Handle lists by decomposing into individual facts
+                for item in v:
+                    if isinstance(item, tuple):
+                        tuple_str = "("
+                        for el in item:
+                            tuple_str += f'{self.check_property(el)} '
+                        tuple_str = tuple_str.rstrip() + ")"
+                        out_str.append(f'({k} {def_out} {tuple_str})')
+                    elif isinstance(item, dict):
+                        # Handle list of dictionaries
+                        for sub_k, sub_v in item.items():
+                            if isinstance(sub_v, list):
+                                for sub_item in sub_v:
+                                    out_str.append(f'({sub_k} {def_out} {self.check_property(sub_item)})')
+                            else:
+                                out_str.append(f'({sub_k} {def_out} {self.check_property(sub_v)})')
                     else:
-                        prop += f'{self.check_property(e)}'
-                    if i != len(v) - 1: 
-                        prop += " "
-                prop += ")"
-                out_str.append(f'({k} {def_out} {prop})')
+                        out_str.append(f'({k} {def_out} {self.check_property(item)})')
             elif isinstance(v, dict):
                 prop = f"({k} {def_out})"
                 out_str.extend(self.write_property(prop, v))
@@ -335,17 +341,14 @@ class MeTTaWriter(BaseWriter):
 
     def check_property(self, prop):
         if isinstance(prop, str):
-            if "" in prop:
-                prop = prop.replace(" ", "_").strip("_")
-            if '->' in prop:
-                prop = prop.replace('->', '-\\>')
+            prop = prop.replace(" ", "_").strip("_")
+            prop = prop.replace("->", "-")
 
-            special_chars = ["(", ")"]
-            escape_char = "\\"
-            return "".join(escape_char + c if c in special_chars or c == escape_char else c for c in prop)
-        
+            # Keep only letters, numbers, underscores, colons, and hyphens
+            prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
+
         return str(prop)
-
+        
     def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []

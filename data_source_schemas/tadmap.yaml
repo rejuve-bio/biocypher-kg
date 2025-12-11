@@ -7,7 +7,6 @@ nodes:
     description: A region of the genome showing high internal interaction frequency
     input_label: tad
     properties:
-      genes: str[]
       chr: str
       start: int
       end: int

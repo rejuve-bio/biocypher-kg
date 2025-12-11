@@ -62,7 +62,7 @@ class CellOntologyAdapter(OntologyAdapter):
             if self.write_properties:
                 props['term_name'] = term_name
                 if synonyms:
-                    props['synonyms'] = synonyms
+                    props['synonym'] = synonyms
                 if alternative_ids:
                     props['alternative_ids'] = alternative_ids
 

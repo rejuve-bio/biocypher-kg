@@ -1,4 +1,5 @@
 import gzip
+import pickle
 import re
 import json
 import os
@@ -12,12 +13,18 @@ from Bio import SwissProt
 
 class UniprotProteinAdapter(Adapter):
     ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
-    
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id):
+
+    def __init__(self, filepath, write_properties, add_provenance,taxon_id, label='protein', dbxref=None, mapping_file=None):
         self.filepath = filepath
         self.dataset = 'UniProtKB_protein'
-        self.label = 'protein'
-        self.source = "Uniprot"
+        self.label = label
+        self.dbxref = dbxref
+        self.go_subontology_mapping = pickle.load(open(mapping_file, 'rb')) if mapping_file else None 
+        
+        if self.dbxref == 'GO' and not self.go_subontology_mapping:
+            raise ValueError("GO subontology mapping file must be provided for GO dbxref edges.")
+        
+        self.source = "UniProt"
         self.source_url = "https://www.uniprot.org/"
         self.taxon_id = taxon_id
         
@@ -65,7 +72,18 @@ class UniprotProteinAdapter(Adapter):
                         break
         
         return isoforms
-    
+
+    def _matches_ensembl_label(self, syn):
+        """Return True only if syn matches the label (gene, transcript, protein)."""
+        if "gene" in self.label and "ENSG" in syn:
+            return True
+        if "transcript" in self.label and "ENST" in syn:
+            return True
+        if "_protein" in self.label and "ENSP" in syn:
+            return True
+        return False
+
+
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
@@ -86,8 +104,6 @@ class UniprotProteinAdapter(Adapter):
                     if len(record.accessions) > 1:
                         base_props['accessions'] = record.accessions[1:]
                     
-                    if dbxrefs:
-                        base_props['synonyms'] = dbxrefs
                     
                     if self.add_provenance:
                         base_props['source'] = self.source
@@ -111,8 +127,6 @@ class UniprotProteinAdapter(Adapter):
                                     'isoform_name': isoform['name']
                                 }
                                 
-                                if dbxrefs:
-                                    isoform_props['synonyms'] = dbxrefs
                                 
                                 if self.add_provenance:
                                     isoform_props['source'] = self.source
@@ -120,3 +134,39 @@ class UniprotProteinAdapter(Adapter):
                             
                             yield isoform_id, self.label, isoform_props
                         break
+
+    def get_edges(self):
+        with gzip.open(self.filepath, 'rt') as input_file:
+            for record in SwissProt.parse(input_file):
+                dbxrefs = self.get_dbxrefs(record.cross_references)
+                base_id = f"UniProtKB:{record.accessions[0].upper()}"
+
+                for syn in dbxrefs:
+
+                    # Skip if not matching desired dbxref
+                    if not syn.startswith(self.dbxref):
+                        continue
+
+                    # ENSEMBL-specific filtering
+                    if self.dbxref == "ENSEMBL":
+                        if not self._matches_ensembl_label(syn):
+                            continue
+                        syn = syn.split('.')[0]  # Remove version for ENSEMBL IDs
+                    elif self.dbxref == "STRING":
+                        syn = "STRING:" + syn.split('.')[1]
+                    elif self.dbxref == "GO":
+                        prefix, id_local = syn.split(':',1)
+                        syn = id_local
+                        
+                        subontology = self.go_subontology_mapping.get(syn, None)
+                        if subontology not in self.label:
+                            continue
+
+                    props = {}
+                    if self.write_properties:
+                        props["dbxref"] = self.dbxref
+                        if self.add_provenance:
+                            props["source"] = self.source
+                            props["source_url"] = self.source_url
+
+                    yield base_id, syn, self.label, props
