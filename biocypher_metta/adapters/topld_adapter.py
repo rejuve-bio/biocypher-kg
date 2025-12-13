@@ -18,7 +18,7 @@ from biocypher._logger import logger
 class TopLDAdapter(Adapter):
     INDEX = {'SNP1': 0, 'SNP2': 1, 'R2': 4, 'Dprime': 5, '+/-corr': 6}
     def __init__(self, filepath, dbsnp_pos_map, chr,
-                 ancestry, write_properties, add_provenance,
+                 ancestry, label, write_properties, add_provenance,
                  start=None, end=None, cutoff=0.5):
         self.file_path = filepath
         self.dbsnp_pos_map = dbsnp_pos_map
@@ -27,7 +27,7 @@ class TopLDAdapter(Adapter):
         self.start = start
         self.end = end
         self.cutoff = cutoff
-        self.label = "in_ld_with"
+        self.label = label
         self.source = "TopLD"
         self.source_url = "http://topld.genetics.unc.edu/"
         super(TopLDAdapter, self).__init__(write_properties, add_provenance)

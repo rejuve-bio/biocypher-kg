@@ -19,7 +19,7 @@ class ABCAdapter(Adapter):
     Adapter for Activity-By-Contact (ABC) data from Fulco CP et.al 2019
     """
     def __init__(self, filepath, hgnc_to_ensembl_map, tissue_to_ontology_id_map,
-                 dbsnp_rsid_map, write_properties, add_provenance,
+                 dbsnp_rsid_map, label, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         self.file_path = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
@@ -28,7 +28,7 @@ class ABCAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = "activity_by_contact"
+        self.label = label
         self.source = "ABC"
         self.source_url = "https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz"
         super(ABCAdapter, self).__init__(write_properties, add_provenance)

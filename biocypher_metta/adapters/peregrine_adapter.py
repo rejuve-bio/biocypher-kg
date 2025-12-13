@@ -34,8 +34,8 @@ class PEREGRINEAdapter(Adapter):
 
     def __init__(self, enhancers_file, enhancer_gene_link, 
                  source_file, hgnc_ensembl_map, 
-                 tissue_ontology_map, write_properties, add_provenance, 
-                 type='enhancer', label='enhancer', delimiter='\t',
+                 tissue_ontology_map, write_properties, add_provenance, label,
+                 type='enhancer', delimiter='\t',
                  chr=None, start=None, end=None):
         
         self.enhancers_file = enhancers_file

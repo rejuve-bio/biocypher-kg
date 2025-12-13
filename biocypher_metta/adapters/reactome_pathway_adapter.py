@@ -16,12 +16,12 @@ from biocypher_metta.adapters import Adapter
 
 class ReactomePathwayAdapter(Adapter):
 
-    def __init__(self, filepath, pubmed_map_path, write_properties, add_provenance, taxon_id):
+    def __init__(self, filepath, pubmed_map_path, label, write_properties, add_provenance, taxon_id):
 
         self.filepath = filepath
         self.pubmed_map_path = pubmed_map_path
         self.load_pubmed_map()
-        self.label = 'pathway'
+        self.label = label
         self.dataset = 'pathway'
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"

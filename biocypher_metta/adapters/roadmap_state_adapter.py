@@ -16,7 +16,7 @@ COL_DICT = {'rsid': 0, 'dataset': 1, 'cell': 2, 'tissue': 3, 'datatype': 4}
 
 class RoadMapChromatinStateAdapter(Adapter):
     def __init__(self, filepath, cell_to_ontology_id_map, 
-                 dbsnp_rsid_map, write_properties, add_provenance,
+                 dbsnp_rsid_map, label, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         """
         :param filepath: path to the directory containing epigenomic data
@@ -35,7 +35,7 @@ class RoadMapChromatinStateAdapter(Adapter):
 
         self.source = "Roadmap Epigenomics Project"
         self.source_url = "https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz" # {0-9} indicates this dataset is split into 10 parts
-        self.label = "chromatin_state"
+        self.label = label
 
         super(RoadMapChromatinStateAdapter, self).__init__(write_properties, add_provenance)
 

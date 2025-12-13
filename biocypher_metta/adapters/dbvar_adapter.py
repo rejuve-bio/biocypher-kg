@@ -12,14 +12,14 @@ class DBVarVariantAdapter(Adapter):
     VARIANT_TYPES = {'<CNV>': 'copy number variation', '<DEL>': 'deletion', '<DUP>': 'duplication', '<INS>': 'insertion', '<INV>': 'inversion'}
 
     def __init__(self, filepath, write_properties, add_provenance, 
-                 label='structural_variant', delimiter='\t',
+                 label, delimiter='\t',
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.delimiter = delimiter
-        self.label = label
         self.chr = chr
         self.start = start
         self.end = end
+        self.label = label
 
         self.source = 'dbVar'
         self.version = ''

@@ -17,7 +17,7 @@ COL_DICT = {'rsid': 0, 'dataset': 1, 'cell': 2, 'tissue': 3, 'datatype': 4}
 
 class RoadMapDHSAdapter(Adapter):
     def __init__(self, filepath, cell_to_ontology_id_map, 
-                 dbsnp_rsid_map, write_properties, add_provenance,
+                 dbsnp_rsid_map, label, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         """
         :param filepath: path to the directory containing epigenomic data
@@ -35,7 +35,7 @@ class RoadMapDHSAdapter(Adapter):
 
         self.source = "Roadmap Epigenomics Project"
         self.source_url = "https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz" # {0-9} indicates this dataset is split into 10 parts
-        self.label = "in_dnase_I_hotspot"
+        self.label = label
 
         super(RoadMapDHSAdapter, self).__init__(write_properties, add_provenance)
 

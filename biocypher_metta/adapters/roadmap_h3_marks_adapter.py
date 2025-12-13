@@ -18,7 +18,7 @@ COL_DICT = {'rsid': 0, 'dataset': 1, 'cell': 2, 'tissue': 3, 'datatype': 4}
 class RoadMapH3MarkAdapter(Adapter):
 
     def __init__(self, filepath, cell_to_ontology_id_map, 
-                 dbsnp_rsid_map, write_properties, add_provenance,
+                 dbsnp_rsid_map, label, write_properties, add_provenance,
                  chr=None, start=None, end=None):
         """
         :param filepath: path to the directory containing epigenomic data
@@ -37,7 +37,7 @@ class RoadMapH3MarkAdapter(Adapter):
 
         self.source = 'Roadmap Epigenomics Project'
         self.source_url = "https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz" # {0-9} indicates this dataset is split into 10 parts
-        self.label = "histone_modification"
+        self.label = label
 
         super(RoadMapH3MarkAdapter, self).__init__(write_properties, add_provenance)
 

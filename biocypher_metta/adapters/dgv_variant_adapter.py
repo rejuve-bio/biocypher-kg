@@ -11,14 +11,14 @@ class DGVVariantAdapter(Adapter):
     INDEX = {'variant_accession': 0, 'chr': 1, 'coord_start': 2, 'coord_end': 3, 'type': 5, 'pubmedid': 7, 'genes': 17}
 
     def __init__(self, filepath, write_properties, add_provenance, 
-                 label='structural_variant', delimiter='\t',
+                 label, delimiter='\t',
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.delimiter = delimiter
-        self.label = label
         self.chr = chr
         self.start = start
         self.end = end
+        self.label = label
 
         self.source = 'dgv'
         self.version = ''

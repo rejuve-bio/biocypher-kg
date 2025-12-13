@@ -14,7 +14,7 @@ from collections import defaultdict
 class BgeeAdapter(Adapter):
     FIELD_INDEX = {'gene': 0, 'anatomical_entity': 2, 'developmental stage': 4, 'expression': 8, 'fdr': 10, 'expression_score': 11}
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label = 'expressed_in'):
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label):
         self.filepath = filepath
         self.label = label
         self.taxon_id = taxon_id
