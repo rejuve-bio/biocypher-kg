@@ -129,6 +129,9 @@ ontology term:
     description: 
       type: str
       biolink: description
+    alternative_ids:
+      type: str[]
+      biolink: synonym
     synonym: 
       type: str[]
       biolink: synonym
@@ -174,6 +177,10 @@ gene:
     synonym: 
       type: str[]
       biolink: synonym
+    old_gene_name:
+      type: str
+    taxon_id:
+      type: str
   kgx_properties:
       category: "biolink:Gene"
 
@@ -186,12 +193,14 @@ protein:
   biolink_category: "biolink:Protein"
   inherit_properties: true
   properties:
-    accession: 
+    accession:
       type: str[]
       biolink: xref
     protein_name:
       type: str
       biolink: name
+    is_canonical:
+      type: bool
     source: 
       type: str
       biolink: knowledge_source
@@ -217,6 +226,10 @@ transcript:
     transcript_name:
       type: str
       biolink: name
+    old_gene_name:
+      type: str
+    taxon_id:
+      type: str
     transcript_id: 
       type: str
       biolink: id
@@ -275,6 +288,10 @@ snp:
       type: str
     caf_alt: 
       type: str
+    raw_cadd_score:
+      type: float
+    phred_score:
+      type: float
   description: >-
     A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
 
@@ -378,6 +395,11 @@ promoter:
   inherit_properties: true
   kgx_properties:
     category: "biolink:RegulatoryRegion"
+  properties:
+    accession:
+      type: str
+    taxon_id:
+      type: str
 
 super_enhancer:
   represented_as: node
@@ -424,6 +446,8 @@ pathway:
     pathway_name: 
       type: str
       biolink: name
+    taxon_id:
+      type: str
     evidence: 
       type: str
       biolink: has_evidence
@@ -466,6 +490,9 @@ transcription binding site:
     A region of DNA where a transcription factor binds to regulate gene expression
   kgx_properties:
     category: "biolink:RegulatoryRegion"
+  properties:
+    taxon_id:
+      type: str
 
 # ---
 # ontologies
@@ -663,6 +690,8 @@ motif:
     tf_name: 
       type: str
       biolink: name
+    taxon_id:
+      type: str
     pwm_A: 
       type: float[]
     pwm_C: 
@@ -873,6 +902,9 @@ translates to:
   close_mappings:
     - RO:0002513
     - SIO:010082
+  properties:
+    taxon_id:
+      type: str
 
 translation of:
   is_a: expression
@@ -915,6 +947,8 @@ gene to gene coexpression association:
     score:  
       type: float
       biolink: has_quantitative_value
+    taxon_id:
+      type: str
 
 post translational interaction:
   is_a: expression
@@ -936,6 +970,8 @@ post translational interaction:
     interaction_type:
       type: str
     reactome_pathway:
+      type: str
+    taxon_id:
       type: str
 
 expressed in:
@@ -961,6 +997,10 @@ expressed in:
     p_value: 
       type: float
       biolink: has_quantitative_value
+    developmental_stage:
+      type: str
+    taxon_id:
+      type: str
 
 # ---
 # annotation
@@ -1028,6 +1068,9 @@ cl capable of:
     Represents the capability of a cell type (CL term) to carry out or be involved in a specific biological process.
   source: cell type
   target: biological process
+  properties:
+    rel_type:
+      type: str
 
 cl part of:
   is_a: part of
@@ -1045,6 +1088,9 @@ cl part of:
     Represents a part-whole relationship between a CL term and an UBERON term.
   source: cell type
   target: anatomy
+  properties:
+    rel_type:
+      type: str
 
 gene to pathway association:
   description: >-
@@ -1063,6 +1109,11 @@ gene to pathway association:
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    id:
+      type: str
+    taxon_id:
+      type: str
 
 parent pathway of:
   is_a: annotation
@@ -1079,6 +1130,11 @@ parent pathway of:
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    id:
+      type: str
+    taxon_id:
+      type: str
 
 child pathway of:
   is_a: annotation
@@ -1095,6 +1151,11 @@ child pathway of:
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    id:
+      type: str
+    taxon_id:
+      type: str
 
 bto subclass of:
   is_a: subclass of
@@ -1264,15 +1325,13 @@ pathway_to_biological_process:
     properties:
       pathway_name: str
       go_term_id: str
-      go_term_type: 
-        type: str
-        const: biological process
-      source: 
+      source:
         type: str
         biolink: knowledge_source
       source_url:
         type: str
-        biolink: source_web_page    
+        biolink: source_web_page
+      subontology: str
     kgx_properties:
       subject_category: "biolink:Pathway"
       object_category: "biolink:BiologicalProcess"
@@ -1357,6 +1416,9 @@ biological process gene product:
     object_category: "biolink:BiologicalProcess"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 molecular function gene product:
   is_a: go gene product
@@ -1372,6 +1434,9 @@ molecular function gene product:
     object_category: "biolink:MolecularActivity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 cellular component gene product:
   is_a: go gene product
@@ -1401,6 +1466,9 @@ cellular component gene product part of:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 cellular component gene product located in:
   is_a: cellular component gene product
@@ -1416,6 +1484,9 @@ cellular component gene product located in:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 go gene:
   is_a: annotation
@@ -1453,6 +1524,9 @@ biological process gene:
     object_category: "biolink:BiologicalProcess"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 molecular function gene:
   is_a: go gene
@@ -1468,6 +1542,9 @@ molecular function gene:
     object_category: "biolink:MolecularActivity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 cellular component gene:
   is_a: go gene
@@ -1497,6 +1574,9 @@ cellular component gene part of:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 cellular component gene located in:
   is_a: cellular component gene
@@ -1512,6 +1592,9 @@ cellular component gene located in:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
 
 biological process rna:
   is_a: annotation
@@ -1528,6 +1611,11 @@ biological process rna:
     object_category: "biolink:BiologicalProcess"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
+    rfam:
+      type: str
 
 molecular function rna:
   is_a: annotation
@@ -1544,6 +1632,11 @@ molecular function rna:
     object_category: "biolink:MolecularActivity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
+    rfam:
+      type: str
 
 cellular component rna:
   is_a: annotation
@@ -1560,6 +1653,11 @@ cellular component rna:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
+    rfam:
+      type: str
 
 # ---
 # regulatory association
@@ -1588,6 +1686,8 @@ enhancer to gene association:
     biological_context: 
       type: str
       biolink: has_biological_sequence
+    distance:
+      type: int
 
 promoter to gene association:
   description: >-
@@ -1612,6 +1712,8 @@ promoter to gene association:
     biological_context: 
       type: str
       biolink: has_biological_sequence
+    distance:
+      type: int
 
 super enhancer to gene association:
   description: >-
@@ -1654,6 +1756,8 @@ transcription factor to gene association:
     detection_method: str
     database: str[]
     evidence_type: str
+    taxon_id:
+      type: str
 
 regulatory region to gene association:
   description: >-
@@ -1916,6 +2020,8 @@ gene to transcription binding site association:
     source_url: 
       type: str
       biolink: source_web_page
+    taxon_id:
+      type: str
 
 gene in tad region:
   is_a: related to at instance level
@@ -2103,6 +2209,9 @@ protein has_xref gene:
     object_category: "biolink:Gene"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    dbxref:
+      type: str
 
 
 protein has_xref transcript:
@@ -2118,7 +2227,10 @@ protein has_xref transcript:
     subject_category: "biolink:Protein"
     object_category: "biolink:Transcript"
     knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"  
+    agent_type: "manual_agent"
+  properties:
+    dbxref:
+      type: str  
 
 
 protein has_xref protein:
@@ -2135,6 +2247,9 @@ protein has_xref protein:
     object_category: "biolink:Protein"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    dbxref:
+      type: str
 
 protein has_xref biological_process:
   is_a: has xref
@@ -2150,6 +2265,9 @@ protein has_xref biological_process:
     object_category: "biolink:BiologicalProcess"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    dbxref:
+      type: str
 
 protein has_xref molecular_function:
   is_a: has xref
@@ -2165,6 +2283,9 @@ protein has_xref molecular_function:
     object_category: "biolink:MolecularActivity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    dbxref:
+      type: str
 
 protein has_xref cellular_component:
   is_a: has xref
@@ -2180,3 +2301,6 @@ protein has_xref cellular_component:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+  properties:
+    dbxref:
+      type: str
