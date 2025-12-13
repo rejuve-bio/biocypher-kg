@@ -4,6 +4,7 @@ gencode_gene:
     cls: GencodeGeneAdapter
     args:
       filepath: ./samples/hsa/gencode_sample.gtf.gz
+      label: gene
       gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
       taxon_id: 9606
   outdir: gencode/gene
@@ -44,6 +45,7 @@ gencode_exon:
     cls: GencodeExonAdapter
     args:
       filepath: ./samples/hsa/gencode_sample.gtf.gz
+      label: exon
       target_type: exon
       taxon_id: 9606
   outdir: gencode/exon
@@ -82,6 +84,7 @@ uniprotkb_sprot:
     cls: UniprotProteinAdapter
     args:
       filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
+      label: protein
       taxon_id: 9606
   outdir: uniprot
   nodes: True
@@ -106,6 +109,7 @@ pathway:
     cls: ReactomePathwayAdapter
     args:
       filepath: ./samples/hsa/reactome/ReactomePathways.txt
+      label: pathway
       pubmed_map_path: ./samples/hsa/reactome/ReactionPMIDS.txt
       taxon_id: 9606
   outdir: reactome
@@ -131,6 +135,7 @@ pathway_to_biological_process:
     cls: ReactomePathwayGOAdapter
     args:
       filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
+      label: pathway_to_biological_process
       write_properties: true
       add_provenance: true
       taxon_id: 9606      
@@ -398,6 +403,7 @@ coexpression:
     cls: CoxpresdbAdapter
     args:
       filepath: ./samples/hsa/coxpressdb
+      label: coexpressed_with
       entrez_to_ensemble_path: ./aux_files/entrez_to_ensembl.pkl
       taxon_id: 9606
   outdir: coxpressdb
@@ -410,6 +416,7 @@ tflink:
     cls: TFLinkAdapter
     args:
       filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
+      label: tf_gene
       entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
       taxon_id: 9606
   outdir: tflink
@@ -422,9 +429,22 @@ string:
     cls: StringPPIAdapter
     args:
       filepath: ./samples/hsa/string_human_ppi_v12.0.txt.gz
+      label: interacts_with
       ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
       taxon_id: 9606
   outdir: string
+  nodes: False
+  edges: True
+
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: ./samples/reactome_homo_sapiens_interactions_tab_delimited_sample.txt.gz
+      label: interacts_with
+
+  outdir: reactome/ppi
   nodes: False
   edges: True
 
@@ -434,6 +454,7 @@ tadmap:
     cls: TADMapAdapter
     args:
       filepath: ./samples/hsa/tad_sample.csv
+      label: tad
       taxon_id: 9606
   outdir: tadmap
   nodes: True
@@ -457,6 +478,7 @@ gtex_eqtl:
     cls: GTExEQTLAdapter
     args:
       filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
+      label: gtex_variant_gene
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
 
   outdir: gtex/eqtl
@@ -482,6 +504,7 @@ hocomoco:
     cls: HoCoMoCoMotifAdapter
     args:
       filepath: ./samples/hsa/motifs
+      label: motif
       annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606      
@@ -495,6 +518,7 @@ roadmap_chromatin_state:
     cls: RoadMapChromatinStateAdapter
     args:
       filepath: ./samples/hsa/roadmap/chromatin_state
+      label: chromatin_state
       cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
@@ -508,6 +532,7 @@ roadmap_h3_mark:
     cls: RoadMapH3MarkAdapter
     args:
       filepath: ./samples/hsa/roadmap/h3_marks
+      label: histone_modification
       cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
@@ -521,6 +546,7 @@ roadmap_dhs:
     cls: RoadMapDHSAdapter
     args:
       filepath: ./samples/hsa/roadmap/dhs/erc2-DHS_sample.csv.gz
+      label: in_dnase_I_hotspot
       cell_to_ontology_id_map: ./aux_files/roadmap_ids_to_ontology.pkl
       dbsnp_rsid_map: None
 
@@ -534,6 +560,7 @@ abc:
     cls: ABCAdapter
     args:
       filepath: ./samples/hsa/abc.forgedb_sample.csv.gz
+      label: activity_by_contact
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       tissue_to_ontology_id_map: ./aux_files/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
@@ -548,6 +575,7 @@ cadd:
     cls: CADDAdapter
     args:
       filepath: ./samples/hsa/cadd.forgedb_sample.csv.gz
+      label: snp
       dbsnp_rsid_map: None # will be provided by import script
 
   outdir: cadd
@@ -560,6 +588,7 @@ refseq_closest_gene:
     cls: RefSeqClosestGeneAdapter
     args:
       filepath: ./samples/hsa/closest_gene.forgedb_sample.csv.gz
+      label: closest_gene
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsnp_rsid_map: None # will be provided by import script
 
@@ -573,6 +602,7 @@ topld_eur:
         cls: TopLDAdapter
         args:
             filepath: ./samples/hsa/topld/EUR/topld_eur_chr16_sample.csv.gz
+            label: in_ld_with
             chr: chr16
             ancestry: EUR
             dbsnp_pos_map: None # will be provided by import script
@@ -643,6 +673,7 @@ dgv_variant:
     cls: DGVVariantAdapter
     args:
       filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
+      label: structural_variant
 
   outdir: dgv
   nodes: True
@@ -654,6 +685,7 @@ epd_promoter:
     cls: EPDAdapter
     args:
       filepath: ./samples/hsa/Hs_EPDnew.bed.gz
+      label: promoter
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
   outdir: epd
@@ -680,6 +712,7 @@ dbvar_variant:
     cls: DBVarVariantAdapter
     args:
       filepath: ./samples/hsa/dbvar_sample.vcf.gz
+      label: structural_variant
 
   outdir: dbvar
   nodes: True
@@ -691,6 +724,7 @@ peregrine_enhancer:
     cls: PEREGRINEAdapter
     args:
       enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
+      label: enhancer
       enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
       source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
       hgnc_ensembl_map: ./aux_files/hgnc_ensembl_map.pkl
@@ -724,6 +758,7 @@ dbsuper_super_enhancer:
     cls: DBSuperAdapter
     args:
       filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      label: super_enhancer
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
 
@@ -752,6 +787,7 @@ dbsnp_snps:
     cls: DBSNPAdapter
     args:
       filepath: ./samples/hsa/dbsnp/dbsnp-sample-00-common_all.vcf.gz
+      label: snp
     
   outdir: dbsnp
   nodes: True
@@ -763,6 +799,7 @@ enhancer_atlas_enhancer:
     cls: EnhancerAtlasAdapter
     args:
       enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      label: enhancer
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       taxon_id: 9606  
@@ -779,7 +816,7 @@ enhancer_atlas_enhancer_regulates:
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
-      input_label: enhancer_gene
+      label: enhancer_gene
       taxon_id: 9606  
   outdir: enhancer_atlas
   nodes: False
@@ -1030,6 +1067,7 @@ polyphen2:
     cls: PolyPhen2Adapter
     args:
       filepath: ./samples/hsa/polyPhen2_sample.bed.gz
+      label: polyphen2_variant
   
   outdir: polyphen-2
   nodes: True
@@ -1041,6 +1079,7 @@ bgee_gene_expressed_in_anatomical_entity:
     cls: BgeeAdapter
     args:
       filepath: ./samples/hsa/Homo_sapiens_expr_sample.tsv.gz
+      label: expressed_in
       taxon_id: 9606      
   outdir: bgee
   nodes: False
@@ -1309,6 +1348,7 @@ encode_re2g:
     cls: ENCODERe2GAdapter
     args:
       filepath: ./samples/hsa/ENCODE_rE2G_K562.bed.gz
+      label: enhancer
       taxon_id: 9606
   outdir: encode_re2g
   nodes: True
