@@ -1,13 +1,14 @@
-name: Bgee
-description: Gene expression across species
-website: https://www.bgee.org/
+name: bgee
+website: https://www.bgee.org
 relationships:
   expressed in:
-    url: https://www.bgee.org/download/gene-expression-calls?id=9606
-    description: holds between a gene and an ontology term in which it is expressed
+    url: https://www.bgee.org/download/gene-expression-calls?id=
     input_label: expressed_in
+    description: holds between a gene and an ontology term in which it is expressed
     source: gene
-    target: ontology_term
+    target: ontology term
     properties:
-      score: float
+      developmental_stage: str
       p_value: float
+      score: float
+      taxon_id: str

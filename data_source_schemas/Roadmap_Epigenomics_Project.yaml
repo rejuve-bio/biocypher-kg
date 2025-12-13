@@ -1,0 +1,26 @@
+name: Roadmap Epigenomics Project
+website: https://forgedb.cancer.gov
+relationships:
+  chromatin state:
+    url: https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz
+    input_label: chromatin_state
+    source: snp
+    target: anatomy
+    properties:
+      state: str
+  histone modification:
+    url: https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz
+    input_label: histone_modification
+    description: A post-translational modification of histone proteins e.g methylation,
+      acetylation, phosphorylation
+    source: snp
+    target: anatomy
+    properties:
+      modification: str
+  dnase I hotspot:
+    url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
+    input_label: in_dnase_I_hotspot
+    description: A region of chromatin that is sensitive to cleavage by the enzyme
+      DNase I
+    source: snp
+    target: anatomy

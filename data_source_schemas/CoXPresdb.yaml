@@ -1,12 +1,13 @@
 name: CoXPresdb
-description: Comprehensive gene coexpression database
-website: https://coxpresdb.jp/
+website: https://coxpresdb.jp
 relationships:
-  coexpressed with:
+  gene to gene coexpression association:
     url: https://coxpresdb.jp/
-    description: Indicates that two genes are co-expressed, generally under the same conditions.
     input_label: coexpressed_with
+    description: Indicates that two genes are co-expressed, generally under the same
+      conditions.
     source: gene
     target: gene
     properties:
       score: float
+      taxon_id: str
