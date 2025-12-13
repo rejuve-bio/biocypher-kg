@@ -11,16 +11,34 @@ from collections import defaultdict
 # ENSG00000000003	"TSPAN6"	CL:0000083	"epithelial cell of pancreas"	UBERON:0000104	"life cycle"	any	wild-type	present	gold quality	0.005262469333648452	83.30	7.79e3
 # ENSG00000000003	"TSPAN6"	CL:0000089 ∩ UBERON:0000473	"male germ line stem cell (sensu Vertebrata) in testis"	UBERON:0000104	"life cycle"	male	wild-type	present	gold quality	5.212829496997609E-8	86.11	6.48e3
 
+
+
+# soutce url: for fly: # https://www.bgee.org/download/gene-expression-calls?id=7227
+# data file:
+# https://www.bgee.org/ftp/current/download/calls/expr_calls/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+# Gene ID	"Gene name"	Anatomical entity ID	"Anatomical entity name"	Developmental stage ID	"Developmental stage name"	Sex	Strain	Expression	Call quality	FDR	Expression score	Expression rank
+# FBgn0000003	7SLRNA:CR32864	UBERON:0000473	testis	FBdv:00007079	day 4 of adulthood (fruit fly)	male	Oregon-R	present	gold quality	3.21563472059612E-9	86.28	2.28e3
+# FBgn0000003	7SLRNA:CR32864	UBERON:0000473	testis	FBdv:00007079	day 4 of adulthood (fruit fly)	male	wild-type	present	gold quality	1.0E-14	93.63	1.06e3
+# FBgn0000003	7SLRNA:CR32864	UBERON:0000473	testis	UBERON:0000066	fully formed stage	male	Oregon-R	present	gold quality	7.17484535789564E-10	88.06	1.99e3
+# FBgn0000003	7SLRNA:CR32864	UBERON:0000922	embryo	FBdv:00004450	late extended germ band stage (fruit fly)	any	wild-type	present	gold quality	1.0E-14	99.98	4.50
+# FBgn0000003	7SLRNA:CR32864	UBERON:6003007	insect adult head	FBdv:00007095	day 20 of adulthood (fruit fly)	male	wild-type	present	gold quality	1.0E-14	87.71	2.04e3
+# FBgn0000008	a	CL:0000023	oocyte	UBERON:0000066	fully formed stage	female	yw	present	gold quality	0.000490828564953416	82.90	2.84e3
+# FBgn0000008	a	CL:0000025	egg cell	FBdv:00005287	unfertilized egg stage (fruit fly)	any	Oregon-R	present	gold quality	0.000490828564953416	76.25	3.95e3
+
 class BgeeAdapter(Adapter):
     FIELD_INDEX = {'gene': 0, 'anatomical_entity': 2, 'developmental stage': 4, 'expression': 8, 'fdr': 10, 'expression_score': 11}
+    PREFIXES = {
+        7227: 'FlyBase',
+        9606: 'ENSEMBL',
+    }
 
     def __init__(self, filepath, write_properties, add_provenance, taxon_id, label = 'expressed_in'):
         self.filepath = filepath
         self.label = label
         self.taxon_id = taxon_id
 
-        self.source = 'bgee'
-        self.source_url = f'https://www.bgee.org/download/gene-expression-calls?id={self.taxon_id}'
+        self.source = 'bgee' 
+        self.source_url = f"https://www.bgee.org/download/gene-expression-calls?id={self.taxon_id}"
         super(BgeeAdapter, self).__init__(write_properties, add_provenance)
     
     
@@ -37,13 +55,13 @@ class BgeeAdapter(Adapter):
                             continue
                         
                         #CURIE format for source ID (subject)
-                        source_id =f"ENSEMBL:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
+                        source_id =f"{BgeeAdapter.PREFIXES[self.taxon_id]}:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
                         # if ' ∩ ' in data[BgeeAdapter.FIELD_INDEX['anatomical_entity']]:
                         # to include all anatomical terms
                         anatomical_entities = self.split_by_intersection(data[BgeeAdapter.FIELD_INDEX['anatomical_entity']])
                         
                         for anatomical_entity in anatomical_entities:                            
-                            target_id = anatomical_entity
+                            target_id = anatomical_entity.replace(':', '_').upper()
                             score = float(data[BgeeAdapter.FIELD_INDEX['expression_score']])
                         # target_id = data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].split(' ∩ ')[0]
                         # score = float(data[BgeeAdapter.FIELD_INDEX['expression_score']])
@@ -52,7 +70,8 @@ class BgeeAdapter(Adapter):
                             props = {
                                 "score": score,
                                 "p_value": float(data[BgeeAdapter.FIELD_INDEX['fdr']]),
-                                "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']],
+                                "anatomical_entity": data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].replace(':', '_').upper(),      # should be removed because of the link.
+                                "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
                                 "taxon_id": f'{self.taxon_id}',
                             }
 
@@ -60,8 +79,7 @@ class BgeeAdapter(Adapter):
                                 props.update({
                                     "source": self.source,
                                     "source_url": self.source_url,                                
-                                })
-                        # elif self.label == 'expressed_in_developmental_stage':
+                                })                        
 
                             # Update edge if new score is higher
                             edge_key = (source_id, target_id)
@@ -70,10 +88,11 @@ class BgeeAdapter(Adapter):
 
             # Yield deduplicated edges
             for (source_id, target_id), edge_data in edge_dict.items():
-                yield source_id, target_id, self.label, edge_data["props"]
+                yield source_id, ('anatomy', target_id), self.label, edge_data["props"]
+                yield source_id, ('developmental_stage', edge_data['props'].get('developmental_stage')), self.label, edge_data["props"]
 
         except OSError as e:
-            raise RuntimeError(f"Error opening the file: {e}")
+            raise RuntimeError(f"Error opening the file: {https://www.bgee.org/download/gene-expression-calls?id=9606}")
 
     def split_by_intersection(self, s: str) -> list[str]:
         """

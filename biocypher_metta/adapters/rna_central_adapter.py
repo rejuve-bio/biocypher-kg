@@ -95,10 +95,10 @@ class RNACentralAdapter(Adapter):
             for line in reader:
                 rna_id, go_term, rfam = line
                 
-                if not rna_id.endswith('_9606'):
+                if not rna_id.endswith(f'_{self.taxon_id}'):
                     continue
                 #CURIE format for RNAcentral ID
-                rna_id =f"{rna_id.split('_')[0]}"
+                rna_id =f"RNACENTRAL:{rna_id.split('_')[0]}"
 
                 # Skip if subontology doesn't match
                 if self.subontology and self.subontology_mapping:

@@ -1,3 +1,13 @@
+bgee_gene_expressed_in_anatomical_entity:
+  adapter:
+    module: biocypher_metta.adapters.bgee_adapter
+    cls: BgeeAdapter
+    args:
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+      taxon_id: 7227
+  outdir: bgee
+  nodes: False
+  edges: True
 
 rna_central_non_coding_rna:
   adapter:
