@@ -7,6 +7,7 @@ nodes:
     properties:
       is_canonical: bool
       protein_name: str
+      accession: str[]
 relationships:
   translates to:
     url: https://www.uniprot.org/

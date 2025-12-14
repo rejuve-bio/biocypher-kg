@@ -339,11 +339,23 @@ class SchemaGenerator:
         self.adapter_cache[adapter_file] = result
         return result
 
-    def generate_all_schemas(self):
-        print(f"Analyzing adapters and generating schemas...")
+    def generate_all_schemas(self, filter_adapters: Optional[List[str]] = None, filter_modules: Optional[List[str]] = None, filter_sources: Optional[List[str]] = None):
+        if filter_adapters:
+            print(f"Analyzing specific adapters: {', '.join(filter_adapters)}")
+        elif filter_modules:
+            print(f"Analyzing adapters by module: {', '.join(filter_modules)}")
+        elif filter_sources:
+            print(f"Analyzing specific data sources: {', '.join(filter_sources)}")
+        else:
+            print(f"Analyzing adapters and generating schemas...")
+
         by_source = defaultdict(list)
 
         for adapter_name, config in self.adapter_config.items():
+            # Filter by adapter name if specified
+            if filter_adapters and adapter_name not in filter_adapters:
+                continue
+
             adapter_info = config.get('adapter', {})
             module = adapter_info.get('module', '')
             cls = adapter_info.get('cls', '')
@@ -351,18 +363,32 @@ class SchemaGenerator:
             if not module or not cls:
                 continue
 
-            adapter_file = module.split('.')[-1] + '.py'
+            # Filter by module name if specified
+            module_name = module.split('.')[-1]
+            if filter_modules and module_name not in filter_modules:
+                continue
+
+            adapter_file = module_name + '.py'
             adapter_data = self.analyze_adapter_file(adapter_file)
             if not adapter_data:
                 continue
 
             source_name = adapter_data['source_name']
+
+            # Filter by source name if specified
+            if filter_sources and source_name not in filter_sources:
+                continue
+
             by_source[source_name].append({
                 'adapter_name': adapter_name,
                 'adapter_file': adapter_file,
                 'config': config,
                 'adapter_data': adapter_data
             })
+
+        if not by_source:
+            print(f"\n⚠ No adapters matched the filter criteria")
+            return
 
         for source_name, adapters in sorted(by_source.items()):
             print(f"\nGenerating schema for: {source_name}")
@@ -375,15 +401,28 @@ class SchemaGenerator:
         source_urls = [a['adapter_data']['source_url'] for a in adapters if a['adapter_data']['source_url']]
         website = self.extract_base_url(source_urls[0]) if source_urls else ''
 
-        schema = {
-            'name': source_name,
-        }
+        # Check if output file already exists
+        output_filename = source_name.replace(' ', '_').replace('-', '_').replace('/', '_') + '.yaml'
+        output_path = self.output_dir / output_filename
 
-        if website:
-            schema['website'] = website
-
-        nodes = {}
-        relationships = {}
+        # Load existing schema if it exists
+        if output_path.exists():
+            with open(output_path, 'r') as f:
+                existing_schema = yaml.safe_load(f)
+            nodes = existing_schema.get('nodes', {})
+            relationships = existing_schema.get('relationships', {})
+            schema = {
+                'name': existing_schema.get('name', source_name),
+                'website': existing_schema.get('website', website)
+            }
+        else:
+            schema = {
+                'name': source_name,
+            }
+            if website:
+                schema['website'] = website
+            nodes = {}
+            relationships = {}
 
         for adapter_info in adapters:
             adapter_name = adapter_info['adapter_name']
@@ -428,17 +467,22 @@ class SchemaGenerator:
                 valid_props = self.get_valid_properties(label, node_props)
                 description = type_config.get('description', '')
 
+                # Add or update node
                 if type_name not in nodes:
                     nodes[type_name] = {
                         'url': adapter_source_url,
                         'input_label': label,
                     }
-
                     if description:
                         nodes[type_name]['description'] = description.strip()
-
                     if valid_props:
                         nodes[type_name]['properties'] = valid_props
+                else:
+                    # Merge properties if node already exists
+                    if valid_props:
+                        if 'properties' not in nodes[type_name]:
+                            nodes[type_name]['properties'] = {}
+                        nodes[type_name]['properties'].update(valid_props)
 
             # Process edges
             elif writes_edges and is_edge:
@@ -454,21 +498,26 @@ class SchemaGenerator:
                 source = type_config.get('source')
                 target = type_config.get('target')
 
+                # Add or update relationship
                 if type_name not in relationships:
                     relationships[type_name] = {
                         'url': adapter_source_url,
                         'input_label': label,
                     }
-
                     if description:
                         relationships[type_name]['description'] = description.strip()
-
                     if source:
                         relationships[type_name]['source'] = source
                     if target:
                         relationships[type_name]['target'] = target
                     if valid_props:
                         relationships[type_name]['properties'] = valid_props
+                else:
+                    # Merge properties if relationship already exists
+                    if valid_props:
+                        if 'properties' not in relationships[type_name]:
+                            relationships[type_name]['properties'] = {}
+                        relationships[type_name]['properties'].update(valid_props)
 
         if nodes:
             schema['nodes'] = nodes
@@ -476,9 +525,6 @@ class SchemaGenerator:
             schema['relationships'] = relationships
 
         if nodes or relationships:
-            output_filename = source_name.replace(' ', '_').replace('-', '_').replace('/', '_') + '.yaml'
-            output_path = self.output_dir / output_filename
-
             with open(output_path, 'w') as f:
                 yaml.dump(schema, f, Dumper=FlowStyleListDumper, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
@@ -499,6 +545,9 @@ def main():
     parser.add_argument('--adapter-config', required=True, help='Path to adapter configuration YAML file')
     parser.add_argument('--adapters-dir', required=True, help='Directory containing adapter Python files')
     parser.add_argument('--output-dir', required=True, help='Output directory for generated schema files')
+    parser.add_argument('--adapter', action='append', help='Generate schema only for specific adapter(s). Can be used multiple times.')
+    parser.add_argument('--module', action='append', help='Generate schema for all adapters using specific module(s). Example: candidate_cis_regulatory_promoter_adapter. Can be used multiple times.')
+    parser.add_argument('--source', action='append', help='Generate schema only for specific data source(s). Can be used multiple times.')
 
     args = parser.parse_args()
 
@@ -519,7 +568,11 @@ def main():
         args.output_dir
     )
 
-    generator.generate_all_schemas()
+    generator.generate_all_schemas(
+        filter_adapters=args.adapter,
+        filter_modules=args.module,
+        filter_sources=args.source
+    )
 
 
 if __name__ == '__main__':

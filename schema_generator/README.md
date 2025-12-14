@@ -18,12 +18,115 @@ This tool analyzes adapter Python files to extract metadata and properties, cros
 
 ## Usage
 
+### Generate All Schemas
+
 ```bash
 python schema_generator/generate_data_source_schemas.py \
   --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config_sample.yaml \
+  --adapter-config config/adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
   --output-dir data_source_schemas_generated
+```
+
+### Generate Schema for Specific Adapter(s)
+
+Filter by adapter config name (only generates schema for that specific config entry):
+
+```bash
+# Single adapter
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --adapter promoter_ccre
+
+# Multiple adapters
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --adapter promoter_ccre \
+  --adapter proximal_enhancer_ccre
+```
+
+### Generate Schema by Adapter Module (Recommended for Complete Schemas)
+
+Filter by Python adapter module (generates schema for ALL configs using that adapter class):
+
+```bash
+# Single module - includes all nodes and edges
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --module candidate_cis_regulatory_promoter_adapter
+
+# Multiple modules
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --module candidate_cis_regulatory_promoter_adapter \
+  --module uniprot_protein_adapter
+```
+
+**Note**: Use `--module` when you want a complete schema with all nodes AND edges from an adapter. The `--adapter` filter only includes the specific config entry, which may only have nodes or only edges.
+
+### Incremental Schema Generation
+
+The generator supports **incremental/append mode**. If a schema file already exists for a data source, new nodes and relationships will be merged with existing ones:
+
+```bash
+# Step 1: Generate schema for promoter adapter
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --module candidate_cis_regulatory_promoter_adapter
+
+# Result: ENCODE.yaml with 1 node (promoter) + 1 relationship
+
+# Step 2: Add enhancer adapter to existing ENCODE.yaml
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --module candidate_cis_regulatory_enhancer_adapter
+
+# Result: ENCODE.yaml now has 2 nodes (promoter, enhancer) + 2 relationships
+```
+
+**Merging behavior**:
+- New nodes are appended to the `nodes` section
+- New relationships are appended to the `relationships` section
+- If a node/relationship already exists, its properties are merged (not overwritten)
+- Existing entries remain in place
+
+### Generate Schema for Specific Data Source(s)
+
+```bash
+# Single data source
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --source "REACTOME"
+
+# Multiple data sources
+python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/schema_config.yaml \
+  --adapter-config config/adapters_config.yaml \
+  --adapters-dir biocypher_metta/adapters \
+  --output-dir data_source_schemas_generated \
+  --source "REACTOME" \
+  --source "UniProt"
 ```
 
 ### Arguments
@@ -32,6 +135,9 @@ python schema_generator/generate_data_source_schemas.py \
 - `--adapter-config`: Path to adapters configuration YAML file
 - `--adapters-dir`: Directory containing adapter Python files
 - `--output-dir`: Output directory for generated schema files
+- `--adapter`: (Optional) Generate schema only for specific adapter config name(s). Can be used multiple times.
+- `--module`: (Optional) Generate schema for all adapters using specific Python module(s). Recommended for complete schemas with all nodes and edges. Can be used multiple times.
+- `--source`: (Optional) Generate schema only for specific data source(s). Can be used multiple times.
 
 ## Output
 
