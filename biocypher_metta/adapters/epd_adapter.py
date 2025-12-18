@@ -28,8 +28,8 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 class EPDAdapter(Adapter):
     INDEX = {'chr' : 0, 'coord_start' : 1, 'coord_end' : 2, 'gene_id' : 3}
 
-    def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, taxon_id,
-                 type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None):
+    def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, taxon_id, label,
+                 type='promoter', delimiter=' ', chr=None, start=None, end=None):
         self.filepath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.type = type

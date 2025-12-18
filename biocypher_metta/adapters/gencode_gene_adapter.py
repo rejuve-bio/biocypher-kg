@@ -45,14 +45,14 @@ class GencodeGeneAdapter(Adapter):
                     'transcript_id', 'transcript_type', 'transcript_name', 'hgnc_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, taxon_id, filepath, 
+    def __init__(self, write_properties, add_provenance, taxon_id, filepath, label,
                  gene_alias_file_path, chr=None, start=None, end=None):
 
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'gene'
+        self.label = label
         self.taxon_id = taxon_id
         self.dataset = 'gencode_gene'
         self.gene_alias_file_path = gene_alias_file_path

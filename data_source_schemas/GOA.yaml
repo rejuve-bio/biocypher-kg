@@ -1,0 +1,83 @@
+name: GOA
+website: http://geneontology.org
+relationships:
+  biological process gene product:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: biological_process_gene_product
+    source: protein
+    target: biological process
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  molecular function gene product:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: molecular_function_gene_product
+    source: protein
+    target: molecular function
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  cellular component gene product part of:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: cellular_component_gene_product_part_of
+    source: protein
+    target: cellular component
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  cellular component gene product located in:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: cellular_component_gene_product_located_in
+    source: protein
+    target: cellular component
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  biological process gene:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: biological_process_gene
+    source: gene
+    target: biological process
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  molecular function gene:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: molecular_function_gene
+    source: gene
+    target: molecular function
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  cellular component gene part of:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: cellular_component_gene_part_of
+    source: gene
+    target: cellular component
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str
+  cellular component gene located in:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: cellular_component_gene_located_in
+    source: gene
+    target: cellular component
+    properties:
+      qualifier: str
+      evidence: str
+      db_reference: str
+      taxon_id: str

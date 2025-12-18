@@ -17,7 +17,7 @@ from biocypher_metta.adapters.helpers import to_float
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
 class StringPPIAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id,
+    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id, label,
                  write_properties, add_provenance):
         """
         Constructs StringPPI adapter that returns edges between proteins
@@ -29,7 +29,7 @@ class StringPPIAdapter(Adapter):
         with open(ensembl_to_uniprot_map, "rb") as f:
             self.ensembl2uniprot = pickle.load(f)
 
-        self.label = "interacts_with"
+        self.label = label
         self.source = "STRING"
         self.source_url = "https://string-db.org/"
         self.version = "v12.0"

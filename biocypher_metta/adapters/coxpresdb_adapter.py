@@ -25,15 +25,15 @@ import os
 class CoxpresdbAdapter(Adapter):
 
     def __init__(self, filepath, entrez_to_ensemble_path,
-                 write_properties, add_provenance, taxon_id):  
+                 write_properties, add_provenance, taxon_id, label):  
 
         self.file_path = filepath
         self.entrez_to_ensemble_path = entrez_to_ensemble_path
         self.dataset = 'coxpresdb'
-        self.label = 'coexpressed_with'
         self.source = 'CoXPresdb'
         self.source_url = 'https://coxpresdb.jp/'
         self.version = 'v8'
+        self.label = label 
         self.taxon_id = taxon_id
         assert os.path.isdir(self.file_path), "coxpresdb file path is not a directory"
         super(CoxpresdbAdapter, self).__init__(write_properties, add_provenance)

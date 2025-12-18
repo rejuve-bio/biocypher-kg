@@ -1,0 +1,16 @@
+name: dgv
+website: http://dgv.tcag.ca
+nodes:
+  structural variant:
+    url: http://dgv.tcag.ca/dgv/app/downloads
+    input_label: structural_variant
+    description: A structural variant is a larger scale genomic alteration that affects
+      the structure of chromosomes, such as deletions, duplications, inversions, and
+      translocations.
+    properties:
+      variant_accession: str
+      start: int
+      end: int
+      evidence: str
+      chr: str
+      variant_type: str

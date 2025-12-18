@@ -5,7 +5,8 @@ gencode_gene:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
-      taxon_id: 9606      # multi-species version needs this
+      taxon_id: 9606  # multi-species version needs this
+      label: gene
   outdir: gencode/gene
   nodes: True
   edges: False
@@ -18,7 +19,7 @@ gencode_transcripts:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcript
       label: transcript
-      taxon_id: 9606      # multi-species version needs this
+      taxon_id: 9606 # multi-species version needs this
   outdir: gencode/transcript
   nodes: True
   edges: False
@@ -31,7 +32,7 @@ transcribes_to:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcribes to
       label: transcribes_to
-      taxon_id: 9606      # multi-species version needs this
+      taxon_id: 9606 # multi-species version needs this
   outdir: gencode/gene
   nodes: False
   edges: True
@@ -42,8 +43,9 @@ gencode_exon:
     cls: GencodeExonAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
-      target_type: exon   # it could be anything here
-      taxon_id: 9606      # multi-species version needs this
+      target_type: exon
+      taxon_id: 9606 # it could be anything here
+      label: exon # multi-species version needs this
   outdir: gencode/exon
   nodes: True
   edges: False
@@ -56,7 +58,7 @@ exon_part_of_transcript: # replaces transcript_includes_exon
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       label: part_of_transcript
       target_type: transcript
-      taxon_id: 9606      
+      taxon_id: 9606
   outdir: gencode/exon
   nodes: False
   edges: True
@@ -69,7 +71,7 @@ exon_part_of_gene:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       label: part_of_gene
       target_type: gene
-      taxon_id: 9606      
+      taxon_id: 9606
   outdir: gencode/exon
   nodes: False
   edges: True
@@ -80,7 +82,8 @@ uniprotkb_sprot:
     cls: UniprotProteinAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
-      taxon_id: 9606      # multi-species version needs this
+      taxon_id: 9606  # multi-species version needs this
+      label: protein
   outdir: uniprot
   nodes: True
   edges: False
@@ -93,11 +96,10 @@ uniprotkb_sprot_translates_to:
       filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       type: translates to
       label: translates_to
-      taxon_id: 9606      # multi-species version needs this
+      taxon_id: 9606 # multi-species version needs this
   outdir: uniprot
   nodes: False
   edges: True
-
 
 pathway:
   adapter:
@@ -107,6 +109,7 @@ pathway:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/ReactomePathways.txt
       pubmed_map_path: /mnt/hdd_2/abdu/biocypher_data/reactome/ReactionPMIDS.txt
       taxon_id: 9606
+      label: pathway
   outdir: reactome
   nodes: True
   edges: False
@@ -154,14 +157,15 @@ pathway_to_biological_process:
     cls: ReactomePathwayGOAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Pathways2GoTerms_human.txt
-      write_properties: true
-      add_provenance: true
+      write_properties: True
+      add_provenance: True
       subontology: biological_process
       mapping_file: aux_files/go_subontology_mapping.pkl
-      taxon_id: 9606      
+      taxon_id: 9606
+      label: pathway_to_biological_process
   outdir: reactome/biological_process
-  nodes: false
-  edges: true
+  nodes: False
+  edges: True
 
 # The following adapters for Molecular Function and Cellular Component are commented out
 # because the current dataset only contains Biological Process edges.
@@ -180,8 +184,8 @@ pathway_to_biological_process:
 #       mapping_file: aux_files/go_subontology_mapping.pkl
 #       taxon_id: 9606
 #   outdir: reactome/molecular_function
-#   nodes: false
-#   edges: true
+#   nodes: False
+#   edges: True
 
 # pathway_to_cellular_component:
 #   adapter:
@@ -194,15 +198,14 @@ pathway_to_biological_process:
 #       subontology: cellular_component  
 #       mapping_file: aux_files/go_subontology_mapping.pkl
 #   outdir: reactome/cellular_component
-#   nodes: false
-#   edges: true
-
+#   nodes: False
+#   edges: True
 go_biological_process:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
     cls: GeneOntologyAdapter
     args:
-      ontology: 'go'
+      ontology: go
       type: node
       label: biological_process
       dry_run: False
@@ -237,7 +240,6 @@ go_molecular_function:
       dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
-
   outdir: gene_ontology/molecular_function
   nodes: True
   edges: False
@@ -252,7 +254,6 @@ go_molecular_function_subclass_of:
       label: molecular_function_subclass_of
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-
   outdir: gene_ontology/molecular_function
   nodes: False
   edges: True
@@ -268,7 +269,6 @@ go_cellular_component:
       dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
-
   outdir: gene_ontology/cellular_component
   nodes: True
   edges: False
@@ -283,7 +283,6 @@ go_cellular_component_subclass_of:
       label: cellular_component_subclass_of
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-
   outdir: gene_ontology/cellular_component
   nodes: False
   edges: True
@@ -396,6 +395,7 @@ coexpression:
       filepath: /mnt/hdd_2/abdu/biocypher_data/coxpressdb
       entrez_to_ensemble_path: ./aux_files/entrez_to_ensembl.pkl
       taxon_id: 9606
+      label: coexpressed_with
   outdir: coxpressdb
   nodes: False
   edges: True
@@ -408,6 +408,7 @@ tflink:
       filepath: /mnt/hdd_2/abdu/biocypher_data/tflink/tflink_homo_sapiens_interactions.tsv.gz
       entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
       taxon_id: 9606
+      label: tf_gene
   outdir: tflink
   nodes: False
   edges: True
@@ -420,6 +421,7 @@ string:
       filepath: /mnt/hdd_2/abdu/biocypher_data/string/string_human_ppi_v12.0.txt.gz
       ensembl_to_uniprot_map: ./aux_files/string_ensembl_uniprot_map.pkl
       taxon_id: 9606
+      label: interacts_with
   outdir: string
   nodes: False
   edges: True
@@ -430,7 +432,7 @@ reactome_ppi:
     cls: ReactomePPIAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/reactome_homo_sapiens_interactions_tab_delimited.txt.gz
-
+      label: interacts_with
   outdir: reactome/ppi
   nodes: False
   edges: True
@@ -442,6 +444,7 @@ tadmap:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/tadmap/TADMap_geneset_hs.csv
       taxon_id: 9606
+      label: tad
   outdir: tadmap
   nodes: True
   edges: False
@@ -465,7 +468,7 @@ gtex_eqtl:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gtex/eqtl/gtex.forgedb.csv.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
-
+      label: gtex_variant_gene
   outdir: gtex/eqtl
   nodes: False
   edges: True
@@ -478,7 +481,6 @@ gtex_expression:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gtex/eqtl/gtex.forgedb.csv.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
       label: expressed_in
-
   outdir: gtex/expression
   nodes: False
   edges: True
@@ -492,6 +494,7 @@ hocomoco:
       annotation_file: /mnt/hdd_2/abdu/biocypher_data/hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
+      label: motif
   outdir: hocomoco
   nodes: True
   edges: False
@@ -507,6 +510,7 @@ roadmap_chromatin_state:
       chr: chr16
       start: 53000000
       end: 56000000
+      label: chromatin_state
   outdir: roadmap/chromatin_state
   nodes: False
   edges: True
@@ -522,6 +526,7 @@ roadmap_h3_mark:
       chr: chr16
       start: 53000000
       end: 56000000
+      label: histone_modification
   outdir: roadmap/h3_mark
   nodes: False
   edges: True
@@ -537,6 +542,7 @@ roadmap_dhs:
       chr: chr16
       start: 53000000
       end: 56000000
+      label: in_dnase_I_hotspot
   outdir: roadmap/dhs
   nodes: False
   edges: True
@@ -551,7 +557,7 @@ abc:
       tissue_to_ontology_id_map: ./aux_files/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
       chr: chr16
-
+      label: activity_by_contact
   outdir: abc
   nodes: False
   edges: True
@@ -564,7 +570,7 @@ cadd:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/cadd.forgedb.csv.gz
       dbsnp_rsid_map: None # will be provided by import script
       chr: chr16
-
+      label: snp
   outdir: cadd
   nodes: True
   edges: False
@@ -577,43 +583,41 @@ refseq_closest_gene:
       filepath: /mnt/hdd_2/abdu/biocypher_data/forgedb/closest_gene.forgedb.csv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsnp_rsid_map: None # will be provided by import script
-
+      label: closest_gene
   outdir: refseq
   nodes: False
   edges: True
 
 # There is no adapter config for topld SAMPLE data
 topld_afr:
-   adapter:
-       module: biocypher_metta.adapters.topld_adapter
-       cls: TopLDAdapter
-       args:
-           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
-           ancestry: AFR
-           dbsnp_pos_map: None # will be provided by import script
-           chr: chr16
-           start: 53000000
-           end:  56000000
-
-   outdir: top_ld/afr
-   nodes: False
-   edges: True
+  adapter:
+    module: biocypher_metta.adapters.topld_adapter
+    cls: TopLDAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
+      ancestry: AFR
+      dbsnp_pos_map: None
+      chr: chr16
+      start: 53000000
+      end: 56000000
+  outdir: top_ld/afr
+  nodes: False
+  edges: True
 
 topld_eas:
-   adapter:
-       module: biocypher_metta.adapters.topld_adapter
-       cls: TopLDAdapter
-       args:
-           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-           ancestry: EAS
-           dbsnp_pos_map: None # will be provided by import script
-           chr: chr16
-           start: 53000000
-           end:  56000000
-
-   outdir: top_ld/EAS
-   nodes: False
-   edges: True
+  adapter:
+    module: biocypher_metta.adapters.topld_adapter
+    cls: TopLDAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      ancestry: EAS
+      dbsnp_pos_map: None # will be provided by import script
+      chr: chr16
+      start: 53000000
+      end: 56000000
+  outdir: top_ld/EAS
+  nodes: False
+  edges: True
 
 topld_eur:
   adapter:
@@ -626,26 +630,25 @@ topld_eur:
       chr: chr16
       start: 53000000
       end: 56000000
-
+      label: in_ld_with
   outdir: top_ld/EUR
   nodes: False
   edges: True
 
 topld_sas:
-   adapter:
-       module: biocypher_metta.adapters.topld_adapter
-       cls: TopLDAdapter
-       args:
-           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-           ancestry: SAS
-           dbsnp_pos_map: None # will be provided by import script
-           chr: chr16
-           start: 53000000
-           end:  56000000
-
-   outdir: top_ld/SAS
-   nodes: False
-   edges: True
+  adapter:
+    module: biocypher_metta.adapters.topld_adapter
+    cls: TopLDAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      ancestry: SAS
+      dbsnp_pos_map: None # will be provided by import script
+      chr: chr16
+      start: 53000000
+      end: 56000000
+  outdir: top_ld/SAS
+  nodes: False
+  edges: True
 
 rna_central_non_coding_rna:
   adapter:
@@ -673,7 +676,7 @@ rna_central_non_coding_rna_biological_process:
       taxon_id: 9606
   outdir: rna_central
   nodes: False
-  edges: True  
+  edges: True
 
 rna_central_non_coding_rna_molecular_function:
   adapter:
@@ -687,7 +690,7 @@ rna_central_non_coding_rna_molecular_function:
       taxon_id: 9606
   outdir: rna_central
   nodes: False
-  edges: True  
+  edges: True
 
 rna_central_non_coding_rna_cellular_component:
   adapter:
@@ -701,7 +704,7 @@ rna_central_non_coding_rna_cellular_component:
       taxon_id: 9606
   outdir: rna_central
   nodes: False
-  edges: True   
+  edges: True
 
 dgv_variant:
   adapter:
@@ -709,7 +712,7 @@ dgv_variant:
     cls: DGVVariantAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
-
+      label: structural_variant
   outdir: dgv
   nodes: True
   edges: False
@@ -722,6 +725,7 @@ epd_promoter:
       filepath: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       taxon_id: 9606
+      label: promoter
   outdir: epd
   nodes: True
   edges: False
@@ -746,7 +750,7 @@ dbvar_variant:
     cls: DBVarVariantAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
-
+      label: structural_variant
   outdir: dbvar
   nodes: True
   edges: False
@@ -761,7 +765,7 @@ peregrine_enhancer:
       source_file: /mnt/hdd_2/abdu/biocypher_data/peregrine/PEREGRINEenhancersources.gz
       hgnc_ensembl_map: ./aux_files/hgnc_ensembl_map.pkl
       tissue_ontology_map: ./aux_files/peregrine_tissues_to_ontology_map.pkl
-
+      label: enhancer
   outdir: peregrine
   nodes: True
   edges: False
@@ -778,7 +782,6 @@ peregrine_enhancer_regulates:
       tissue_ontology_map: ./aux_files/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
       label: enhancer_gene
-
   outdir: peregrine
   nodes: False
   edges: True
@@ -791,7 +794,7 @@ dbsuper_super_enhancer:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz
       hgnc_to_ensembl_map: ./aux_files/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
-
+      label: super_enhancer
   outdir: dbsuper
   nodes: True
   edges: False
@@ -806,7 +809,6 @@ dbsuper_super_enhancer_regulates_gene:
       dbsuper_tissues_map: ./aux_files/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
       label: super_enhancer_gene
-
   outdir: dbsuper
   nodes: False
   edges: True
@@ -817,7 +819,7 @@ dbsnp_snps:
     cls: DBSNPAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dbsnp/00-common_all.vcf.gz
-
+      label: snp
   outdir: dbsnp
   nodes: True
   edges: False
@@ -830,7 +832,8 @@ enhancer_atlas_enhancer:
       enhancer_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/hs.bed.gz
       enhancer_gene_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
-      taxon_id: 9606  
+      taxon_id: 9606
+      label: enhancer
   outdir: enhancer_atlas
   nodes: True
   edges: False
@@ -845,7 +848,8 @@ enhancer_atlas_enhancer_regulates:
       tissue_to_ontology_filepath: ./aux_files/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
       input_label: enhancer_gene
-      taxon_id: 9606  
+      taxon_id: 9606
+      label: enhancer_gene
   outdir: enhancer_atlas
   nodes: False
   edges: True
@@ -855,7 +859,7 @@ uberon:
     module: biocypher_metta.adapters.uberon_adapter
     cls: UberonAdapter
     args:
-      ontology: "uberon"
+      ontology: uberon
       type: node
       dry_run: False
       add_description: False
@@ -1001,8 +1005,7 @@ efo_subclass_of:
   outdir: experimental_factor_ontology
   nodes: False
   edges: True
-
-# BTO is not linked to any other type...
+#BTO is not linked to any other type...
 
 # brenda_tissue_ontology:
 #   adapter:
@@ -1031,13 +1034,12 @@ efo_subclass_of:
 #   outdir: brenda_tissue_ontology
 #   nodes: False
 #   edges: True
-
 human_phenotype_ontology:
   adapter:
     module: biocypher_metta.adapters.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
     args:
-      ontology: 'hpo'
+      ontology: "hpo"
       type: node
       dry_run: False
       add_description: False
@@ -1051,7 +1053,7 @@ hpo_subclass_of:
     module: biocypher_metta.adapters.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
     args:
-      ontology: 'hpo'
+      ontology: "hpo"
       label: hpo_subclass_of
       type: edge
       dry_run: False
@@ -1065,7 +1067,7 @@ chebi_ontology:
     module: biocypher_metta.adapters.chebi_ontology_adapter
     cls: ChEBIAdapter
     args:
-      ontology: 'chebi'
+      ontology: "chebi"
       type: node
       dry_run: True
       add_description: False
@@ -1079,7 +1081,7 @@ chebi_chebi_subclass_of:
     module: biocypher_metta.adapters.chebi_ontology_adapter
     cls: ChEBIAdapter
     args:
-      ontology: 'chebi'
+      ontology: "chebi"
       label: chebi_subclass_of
       type: edge
       dry_run: True
@@ -1094,7 +1096,7 @@ polyphen2:
     cls: PolyPhen2Adapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/polyphen2/dbNsfpPolyPhen2.bed.gz
-
+      label: polyphen2_variant
   outdir: polyphen-2
   nodes: True
   edges: False
@@ -1105,7 +1107,8 @@ bgee_gene_expressed_in_anatomical_entity:
     cls: BgeeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
-      taxon_id: 9606        
+      taxon_id: 9606
+      label: expressed_in
   outdir: bgee
   nodes: False
   edges: True
@@ -1118,7 +1121,7 @@ transcription_factor_binding_site:
       filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/EncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: tfbs
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: tfbs
   nodes: True
   edges: False
@@ -1131,7 +1134,7 @@ gene_tfbs_association:
       filepath: /mnt/hdd_2/abdu/biocypher_data/tfbs/EncRegTfbsClustered.csv.gz
       hgnc_to_ensembl: ./aux_files/hgnc_to_ensembl.pkl
       label: gene_tfbs
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: tfbs
   nodes: False
   edges: True
@@ -1177,7 +1180,7 @@ proximal_enhancer_ccre:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: enhancer
       element_filter: proximal
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/enhancer_ccre/proximal
   nodes: True
   edges: False
@@ -1190,7 +1193,7 @@ proximal_enhancer_ccre_associates_with_gene:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-All.tsv.gz
       label: enhancer_gene
       element_filter: proximal
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/enhancer_ccre/proximal
   nodes: False
   edges: True
@@ -1203,7 +1206,7 @@ proximal_enhancer_ccre_associates_with_gene_coding_only:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: enhancer_gene
       element_filter: proximal
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/enhancer_ccre/proximal/coding_only
   nodes: False
   edges: True
@@ -1216,7 +1219,7 @@ distal_enhancer_ccre:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: enhancer
       element_filter: distal
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/enhancer_ccre/distal
   nodes: True
   edges: False
@@ -1229,7 +1232,7 @@ distal_enhancer_ccre_associates_with_gene:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-All.tsv.gz
       label: enhancer_gene
       element_filter: distal
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/enhancer_ccre/distal
   nodes: False
   edges: True
@@ -1242,10 +1245,24 @@ distal_enhancer_ccre_associates_with_gene_coding_only:
       filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       label: enhancer_gene
       element_filter: distal
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/enhancer_ccre/distal/coding_only
   nodes: False
   edges: True
+
+promoter_ccre:
+  adapter:
+    module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
+    cls: PromotercCREAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-All.tsv.gz
+      label: promoter
+      eqtl_filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
+      gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
+      taxon_id: 9606
+  outdir: ccre/promoter_ccre
+  nodes: True
+  edges: False
 
 promoter_ccre_associates_with_gene_nearest_gene:
   adapter:
@@ -1257,7 +1274,7 @@ promoter_ccre_associates_with_gene_nearest_gene:
       label: promoter_gene
       eqtl_filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/promoter_ccre
   nodes: False
   edges: True
@@ -1272,7 +1289,7 @@ promoter_ccre_associates_with_gene_nearest_gene_coding_only:
       edge_type: nearest
       eqtl_filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/promoter_ccre/coding_only
   nodes: False
   edges: True
@@ -1287,7 +1304,7 @@ promoter_ccre_associates_with_gene_eqtl:
       edge_type: eqtl
       eqtl_filepath: /mnt/hdd_2/abdu/biocypher_data/cCRE/sample-V4-hg38.Gene-Links.eQTLs.txt.gz
       gtex_tissue_ontology_map: ./aux_files/gtex_tissues_to_ontology_map.pkl
-      taxon_id: 9606        
+      taxon_id: 9606
   outdir: ccre/promoter_ccre/eqtl
   nodes: False
   edges: True
@@ -1298,7 +1315,7 @@ encode_re2g:
     cls: ENCODERe2GAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
-
+      label: enhancer
   outdir: encode_re2g
   nodes: True
   edges: False
@@ -1310,11 +1327,9 @@ encode_re2g_gene_associates:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
       label: enhancer_gene
-
   outdir: encode_re2g
   nodes: False
   edges: True
-
 
 uniprot_dbxref_bgee_gene:
   adapter:
@@ -1363,7 +1378,6 @@ uniprot_dbxref_ensembl_protein:
   outdir: uniprot/protein_has_xref_protein
   nodes: False
   edges: True
-
 
 uniprot_dbxref_string_protein:
   adapter:

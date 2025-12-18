@@ -18,15 +18,15 @@ class CADDAdapter(Adapter):
     Adapter for CADD data
     """
     def __init__(self, filepath, dbsnp_rsid_map,
-                 write_properties, add_provenance,  
+                 write_properties, add_provenance, label,
                  chr=None, start=None, end=None):
         self.file_path = filepath
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
         self.end = end
+        self.label = label
 
-        self.label = "snp"
         self.source = "CADD"
         self.source_url = "https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz"
 

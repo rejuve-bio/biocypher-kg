@@ -1,0 +1,21 @@
+name: dbSuper
+website: https://asntech.org
+nodes:
+  super_enhancer:
+    url: https://asntech.org/dbsuper/download.php
+    input_label: super_enhancer
+    properties:
+      start: int
+      end: int
+      biological_context: str
+      se_id: str
+      chr: str
+relationships:
+  super enhancer to gene association:
+    url: https://asntech.org/dbsuper/download.php
+    input_label: super_enhancer_gene
+    description: An association between a super enhancer and a gene
+    source: super enhancer
+    target: gene
+    properties:
+      biological_context: str

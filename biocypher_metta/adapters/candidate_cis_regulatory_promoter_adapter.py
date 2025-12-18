@@ -17,12 +17,12 @@ from biocypher_metta.adapters import Adapter
 
 class PromotercCREAdapter(Adapter):
     def __init__(
-        self, filepath, eqtl_filepath, taxon_id, gtex_tissue_ontology_map=None, write_properties=True, add_provenance=True, label="promoter", edge_type=None):
+        self, filepath, eqtl_filepath, taxon_id,label, gtex_tissue_ontology_map=None, write_properties=True, add_provenance=True, edge_type=None):
         self.filepath = filepath
         self.eqtl_filepath = eqtl_filepath
         self.gtex_tissue_ontology_map = gtex_tissue_ontology_map
-        self.label = label
         self.taxon_id = taxon_id
+        self.label = label
         self.source = "ENCODE"
         self.source_url = "https://screen.wenglab.org/downloads"
         

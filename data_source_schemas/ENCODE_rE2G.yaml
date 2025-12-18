@@ -1,0 +1,19 @@
+name: ENCODE-rE2G
+website: https://www.encodeproject.org
+nodes:
+  enhancer:
+    url: https://www.encodeproject.org/
+    input_label: enhancer
+    properties:
+      start: int
+      end: int
+      chr: str
+relationships:
+  enhancer to gene association:
+    url: https://www.encodeproject.org/
+    input_label: enhancer_gene
+    description: An association between an enhancer and a gene
+    source: enhancer
+    target: gene
+    properties:
+      score: float
