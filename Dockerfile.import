@@ -1,0 +1,14 @@
+FROM biocypher/base:1.2.0  
+
+USER root  
+
+# Install Neo4j Python driver
+RUN pip install neo4j  
+
+# Copy import scripts
+COPY scripts/import.sh /scripts/import.sh
+COPY scripts/neo4j_loader.py /scripts/neo4j_loader.py
+RUN chmod +x /scripts/import.sh
+
+# Set working directory
+WORKDIR /scripts
