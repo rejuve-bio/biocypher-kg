@@ -172,3 +172,5 @@ ontology_dataset_cache/
 
 output/
 output_cli/
+output_fly/
+output_human/

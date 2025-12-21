@@ -344,9 +344,17 @@ class MeTTaWriter(BaseWriter):
             prop = prop.replace(" ", "_").strip("_")
             prop = prop.replace("->", "-")
 
-            # Keep only letters, numbers, underscores, colons, and hyphens
-            prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
-
+            is_url = False
+            if len(prop) > 10:  #min url length
+                is_url = (
+                    prop.startswith(('http://', 'https://', 'ftp://', 'ftps://')) or
+                    (prop.startswith('www.') and '.' in prop[4:] and '.' in prop.split('.')[-1])
+                )
+            
+            if is_url:
+                prop = re.sub(r"[^a-zA-Z0-9_:\./\?=&%#@+-]", "", prop)
+            else:
+                prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop) #original sanitization
         return str(prop)
         
     def normalize_text(self, label, replace_char="_", lowercase=True):
