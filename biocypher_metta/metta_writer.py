@@ -366,7 +366,7 @@ class MeTTaWriter(BaseWriter):
     #         # Keep only letters, numbers, underscores, colons, and hyphens
     #         prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
 
-        return str(prop)
+    #     return str(prop)
         
     def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
