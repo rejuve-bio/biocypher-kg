@@ -27,7 +27,7 @@ import gzip
 class TFLinkAdapter(Adapter):
     INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
 
-    def __init__(self, filepath, entrez_to_ensemble_map,
+    def __init__(self, filepath, entrez_to_ensemble_map, label,
                  write_properties, add_provenance, taxon_id):
         """
         Constructs TFLink adapter that returns edges between TFs and their target gene
@@ -40,7 +40,7 @@ class TFLinkAdapter(Adapter):
         with open(entrez_to_ensemble_map, "rb") as f:
             self.entrez2ensemble = pickle.load(f)
 
-        self.label = "tf_gene"
+        self.label = label
         self.source = "TFLink"
         self.source_url = "tflink.net"
         self.taxon_id = taxon_id

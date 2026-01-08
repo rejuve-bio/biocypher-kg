@@ -9,13 +9,13 @@ from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 
 class DBSNPAdapter(Adapter):
     INDEX = {'chr': 0, 'pos': 1, 'id': 2, 'ref': 3, 'alt': 4, 'info': 7}
-    def __init__(self, filepath, write_properties, add_provenance,
+    def __init__(self, filepath, write_properties, add_provenance, label,
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'snp'
+        self.label = label
 
         self.source = 'dbSNP'
         self.version = '2.0'

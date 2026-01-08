@@ -21,7 +21,7 @@ class GTExEQTLAdapter(Adapter):
     # 1-based coordinate system
 
     def __init__(self, filepath, gtex_tissue_ontology_map,
-                 write_properties, add_provenance, 
+                 write_properties, add_provenance, label,
                  tissue_names=None, chr=None, start=None, end=None):
         """
         :type filepath: str
@@ -41,7 +41,7 @@ class GTExEQTLAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = 'gtex_variant_gene'
+        self.label = label
         self.source = 'GTEx'
         # self.source_url = 'https://www.gtexportal.org/home/datasets'
         self.source_url = 'https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz'

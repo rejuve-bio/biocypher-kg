@@ -828,6 +828,7 @@ tflink:
         args:
           filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv.gz
           entrez_to_ensemble_map: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
+          label: tf_gene
           taxon_id: 7227
     outdir: tflink
     nodes: False

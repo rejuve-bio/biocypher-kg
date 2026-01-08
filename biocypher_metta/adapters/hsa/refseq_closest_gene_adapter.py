@@ -17,7 +17,7 @@ class RefSeqClosestGeneAdapter(Adapter):
     """
     Adapter for RefSeq Closest Gene data
     """
-    def __init__(self, filepath, hgnc_to_ensembl_map, dbsnp_rsid_map,
+    def __init__(self, filepath, hgnc_to_ensembl_map, dbsnp_rsid_map, label,
                  write_properties, add_provenance,
                  chr=None, start=None, end=None):
         self.file_path = filepath
@@ -27,7 +27,7 @@ class RefSeqClosestGeneAdapter(Adapter):
         self.end = end
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
 
-        self.label = "closest_gene"
+        self.label = label
         self.source = "RefSeq Closest Gene"
         self.source_url = "https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz"
 

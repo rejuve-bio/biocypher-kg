@@ -59,13 +59,13 @@ class FavorAdapter(Adapter):
 
     WRITE_THRESHOLD = 1000000
 
-    def __init__(self, write_properties, add_provenance, 
+    def __init__(self, write_properties, add_provenance, label,
                  filepath=None, chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = "sequence_variant"
+        self.label = label
         self.source = "FAVOR"
         self.source_url = "http://favor.genohub.org/"
 

@@ -24,13 +24,13 @@ import os
 
 class CoxpresdbAdapter(Adapter):
 
-    def __init__(self, filepath, entrez_to_ensemble_path,
+    def __init__(self, filepath, entrez_to_ensemble_path, label,
                  write_properties, add_provenance, taxon_id):  
 
         self.file_path = filepath
         self.entrez_to_ensemble_path = entrez_to_ensemble_path
         self.dataset = 'coxpresdb'
-        self.label = 'coexpressed_with'
+        self.label = label
         self.source = 'CoXPresdb'
         self.source_url = 'https://coxpresdb.jp/'
         self.version = 'v8'

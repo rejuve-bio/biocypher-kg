@@ -25,7 +25,7 @@ from biocypher_metta.adapters import Adapter
 # https://hocomoco11.autosome.org/downloads_v11_mouse
 
 class HoCoMoCoMotifAdapter(Adapter):
-    def __init__(self, filepath, annotation_file, hgnc_to_ensembl_map,
+    def __init__(self, filepath, annotation_file, hgnc_to_ensembl_map, label,
                  write_properties, add_provenance, taxon_id):
 
         self.filepath = filepath
@@ -33,7 +33,7 @@ class HoCoMoCoMotifAdapter(Adapter):
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.model_tf_path = annotation_file
         self.taxon_id = taxon_id
-        self.label = 'motif'
+        self.label = label
         self.source = 'HOCOMOCOv11'
         self.source_url = 'https://hocomoco11.autosome.org/downloads_v11'
 
