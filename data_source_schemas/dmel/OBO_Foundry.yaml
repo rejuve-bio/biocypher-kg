@@ -1,0 +1,93 @@
+name: OBO Foundry
+website: http://www.obofoundry.org
+nodes:
+  biological process:
+    url: http://www.obofoundry.org/
+    input_label: biological_process
+    properties:
+      term_name: str
+      description: str
+  molecular function:
+    url: http://www.obofoundry.org/
+    input_label: molecular_function
+    properties:
+      term_name: str
+      description: str
+  cellular component:
+    url: http://www.obofoundry.org/
+    input_label: cellular_component
+    properties:
+      term_name: str
+      description: str
+  sequence type:
+    url: http://www.obofoundry.org/
+    input_label: sequence_type
+    properties:
+      term_name: str
+      description: str
+  disease:
+    url: http://www.obofoundry.org/
+    input_label: disease
+    properties:
+      term_name: str
+      description: str
+  developmental stage:
+    url: http://www.obofoundry.org/
+    input_label: developmental_stage
+  anatomy:
+    url: http://www.obofoundry.org/
+    input_label: anatomy
+  phenotype:
+    url: http://www.obofoundry.org/
+    input_label: phenotype
+relationships:
+  biological process subclass:
+    url: http://www.obofoundry.org/
+    input_label: biological_process_subclass_of
+    source: biological process
+    target: biological process
+    properties:
+      rel_type: str
+  molecular function subclass:
+    url: http://www.obofoundry.org/
+    input_label: molecular_function_subclass_of
+    source: molecular function
+    target: molecular_function
+    properties:
+      rel_type: str
+  cellular component subclass:
+    url: http://www.obofoundry.org/
+    input_label: cellular_component_subclass_of
+    source: cellular_component
+    target: cellular_component
+    properties:
+      rel_type: str
+  so subclass of:
+    url: http://www.obofoundry.org/
+    input_label: so_subclass_of
+    source: sequence type
+    target: sequence type
+    properties:
+      rel_type: str
+  do subclass of:
+    url: http://www.obofoundry.org/
+    input_label: do_subclass_of
+    source: disease
+    target: disease
+    properties:
+      rel_type: str
+  FBdv subclass of:
+    url: http://www.obofoundry.org/
+    input_label: FBdv_subclass_of
+    source: developmental stage
+    target: developmental stage
+  FBbt subclass of:
+    url: http://www.obofoundry.org/
+    input_label: FBbt_subclass_of
+    source: anatomy
+    target: anatomy
+  FBcv subclass of:
+    url: http://www.obofoundry.org/
+    input_label: FBcv_subclass_of
+    source: phenotype
+    target: phenotype

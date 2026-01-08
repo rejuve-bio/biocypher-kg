@@ -21,7 +21,6 @@ class Neo4jCSVWriter(BaseWriter):
 
         self.label_is_ontology = self._build_label_types_map()
         self.type_hierarchy = self._type_hierarchy()
-        print(self.label_is_ontology)
 
         self.create_edge_types()
         self._node_writers = {}

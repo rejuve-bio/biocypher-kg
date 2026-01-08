@@ -1,0 +1,43 @@
+name: Gaf
+website: http://geneontology.org
+relationships:
+  biological process gene product:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: biological_process_gene_product
+    source: biolink:GeneOrGeneProduct
+    target: biological process
+    properties:
+      evidence: str
+      qualifier: str
+      db_reference: str
+      taxon_id: int
+  molecular function gene product:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: molecular_function_gene_product
+    source: protein
+    target: molecular function
+    properties:
+      evidence: str
+      qualifier: str
+      db_reference: str
+      taxon_id: int
+  cellular component gene product part of:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: cellular_component_gene_product_part_of
+    source: protein
+    target: cellular component
+    properties:
+      evidence: str
+      qualifier: str
+      db_reference: str
+      taxon_id: int
+  cellular component gene product located in:
+    url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+    input_label: cellular_component_gene_product_located_in
+    source: protein
+    target: cellular component
+    properties:
+      evidence: str
+      qualifier: str
+      db_reference: str
+      taxon_id: int

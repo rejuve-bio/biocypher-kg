@@ -1,0 +1,20 @@
+name: TADMap
+website: https://cb.csail.mit.edu
+nodes:
+  tad:
+    url: https://cb.csail.mit.edu/cb/tadmap/
+    input_label: tad
+    properties:
+      end: int
+      start: int
+      taxon_id: int
+      chr: str
+relationships:
+  gene in tad region:
+    url: https://cb.csail.mit.edu/cb/tadmap/
+    input_label: in_tad_region
+    description: holds between a tad and a gene that is in the tad region
+    source: gene
+    target: tad
+    properties:
+      taxon_id: int

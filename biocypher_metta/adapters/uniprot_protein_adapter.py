@@ -106,10 +106,17 @@ class UniprotProteinAdapter(Adapter):
 
 
                     if self.add_provenance:
+<<<<<<< HEAD
+                        base_props['source'] = self.source
+                        base_props['source_url'] = self.source_url
+                
+                yield f'UniProtKB:{base_id}', self.label, base_props
+=======
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
                 yield base_id, self.label, props
+>>>>>>> main
                 
                 for comment in record.comments:
                     if 'ALTERNATIVE PRODUCTS:' in comment:
@@ -129,10 +136,17 @@ class UniprotProteinAdapter(Adapter):
 
 
                                 if self.add_provenance:
+<<<<<<< HEAD
+                                    isoform_props['source'] = self.source
+                                    isoform_props['source_url'] = self.source_url
+                            
+                            yield f'UniProtKB:{isoform_id}', self.label, isoform_props
+=======
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
 
                             yield isoform_id, self.label, props
+>>>>>>> main
                         break
 
     def get_edges(self):
@@ -142,7 +156,6 @@ class UniprotProteinAdapter(Adapter):
                 base_id = f"UniProtKB:{record.accessions[0].upper()}"
 
                 for syn in dbxrefs:
-
                     # Skip if not matching desired dbxref
                     if not syn.startswith(self.dbxref):
                         continue
@@ -158,15 +171,13 @@ class UniprotProteinAdapter(Adapter):
                         prefix, id_local = syn.split(':',1)
                         syn = id_local
                         
-                        subontology = self.go_subontology_mapping.get(syn, None)
+                        subontology = self.go_subontology_mapping.get(syn, None)   
                         if subontology not in self.label:
                             continue
-
                     props = {}
                     if self.write_properties:
                         props["dbxref"] = self.dbxref
                         if self.add_provenance:
                             props["source"] = self.source
                             props["source_url"] = self.source_url
-
                     yield base_id, syn, self.label, props

@@ -149,11 +149,6 @@ class GenotypePhenotypeAdapter(Adapter):
                 id += 1
                 props = {}
                 props['phenotype_ontology_id'] = row[3].replace(':', '_').upper()   # onto: fbbt or fbcv  
-                # props['genotype_phenotype_id'] = f'genotype_phenotype_{id}'
-                # props['qualifier_ids'] = []
-                # if row[5] != '':
-                #     props['qualifier_ids'] = [ name.replace(':', '_').lower() for name in row[5].split('|') ]
-                # print(f"PHENOTYPE: {props['qualifier_ids']}")
                 props['reference'] = f'http://flybase.org/reports/{row[6]}.htm'
                 props['taxon_id'] = 7227
                 if self.add_provenance:
@@ -236,8 +231,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 if row[5] != '':    # more ontology terms
                     props['qualifier_term_ids'] = [ name.replace(':', '_').upper() for name in row[5].split('|') ]
 
-                # if go's subontology is 'cellular_component', 'characterized_by' edge label seems 
-                # to be not the best name: use inheres_in (from PATO)
+                # if go's subontology is 'cellular_component', 'characterized_by' edge label seems not to be the best name: use inheres_in (from PATO)
                 ontology_type = None
                 if phenotype_ontology_id.lower().startswith('go'):
                     sub_onto_go = self.go_subontology(phenotype_ontology_id)
@@ -247,35 +241,29 @@ class GenotypePhenotypeAdapter(Adapter):
 
                 if ontology_type is None:
                     ontology_type = self.ontologies_id_mapping[phenotype_ontology_id.split(':')[0].lower()]
-                # print(f'characterized_by: RejuveBio:phenotype_set{id}, {(ontology_type, phenotype_ontology_id)}, {self.label}, {props}')                    
+                
                 yield f'RejuveBio:phenotype_set{id}', (ontology_type, phenotype_ontology_id.replace(':', '_').upper()), self.label, props    
                 
                 if row[5] != '':                         # more ontology terms          
                     terms_ids = [ t_id for t_id in row[5].split('|') ]      #multiple ontology ids
-                    # print(f'{terms_ids}')
                     for term_id in terms_ids:
-                        # if go's subontology is 'cellular_component', 'characterized_by' edge label seems 
-                        # to be not the best name: use inheres_in (from PATO)
+                        # if go's subontology is 'cellular_component', 'characterized_by' edge label seems not to be the best name: use inheres_in (from PATO)
                         ontology_type = None
                         if term_id.lower().startswith('go'):
                             sub_onto_go = self.go_subontology(term_id)
                             if sub_onto_go == 'cellular_component':
-                                # print(f'chracterized_by: RejuveBio:phenotype_set{id}, {(sub_onto_go, term_id)}, inheres_in, {props}')                    
                                 yield f'RejuveBio:phenotype_set{id}', (sub_onto_go, term_id.replace(':', '_').upper()), 'inheres_in', props    # this is not the best solution because it will create a different type of edge but it works for now :/
                                 continue
                             ontology_type = sub_onto_go
 
                         if ontology_type is None:
                             ontology_type = self.ontologies_id_mapping[term_id.split(':')[0].lower()]
-                        # print(f'characterized_by: RejuveBio:phenotype_set{id}, {(ontology_type, term_id)}, {self.label}, {props}')                    
                         yield f'RejuveBio:phenotype_set{id}', (ontology_type, term_id.replace(':', '_').upper()), self.label, props    
         elif self.label == 'inheres_in':
             id = -1
             for row in rows:
                 id += 1
                 phenotype_ontology_id = row[3]  
-                # if go's subontology is 'cellular_component', 'characterized_by' edge label seems 
-                # to be not the best name: use inheres_in (from PATO)
                 ontology_type = None
                 if phenotype_ontology_id.lower().startswith('go'):
                     sub_onto_go = self.go_subontology(phenotype_ontology_id)
@@ -298,7 +286,6 @@ class GenotypePhenotypeAdapter(Adapter):
                         props['source_url'] = self.source_url                
                     if row[5] != '':
                         props['qualifier_term_ids'] = [ name.replace(':', '_').upper() for name in row[5].split('|') ]    # useless.
-                    # print(f'inheres_in: RejuveBio:phenotype_set{id}, {(ontology_type, phenotype_ontology_id)}, {self.label}, {props}')   
                     yield f'RejuveBio:phenotype_set{id}', (ontology_type, phenotype_ontology_id.replace(':', '_').upper()), self.label, props 
 
                     if row[5] != '':                         # more ontology terms          
@@ -308,14 +295,11 @@ class GenotypePhenotypeAdapter(Adapter):
                             if term_id.lower().startswith('go'):
                                 sub_onto_go = self.go_subontology(term_id)
                                 if sub_onto_go == 'cellular_component':
-                                    # print(f'inheres_in: RejuveBio:phenotype_set{id}, {(sub_onto_go, term_id)}, {self.label}, {props}')   
                                     yield f'RejuveBio:phenotype_set{id}', (sub_onto_go, term_id.replace(':', '_').upper()), self.label, props    
                                 else:        # this is not the best solution because it will create a different type of edge but it works for now :/
-                                    # print(f'inheres_in: RejuveBio:phenotype_set{id}, {(sub_onto_go, term_id)}, characterized_by, {props}')   
                                     yield f'RejuveBio:phenotype_set{id}', (sub_onto_go, term_id.replace(':', '_').upper()), 'characterized_by', props    
                             else:
                                 ontology_type = self.ontologies_id_mapping[term_id.split(':')[0].lower()]
-                                # print(f'inheres_in: RejuveBio:phenotype_set{id}, {(ontology_type, term_id)}, characterized_by, {props}')   
                                 yield f'RejuveBio:phenotype_set{id}', (ontology_type, term_id.replace(':', '_').upper()), 'characterized_by', props    
 
 

@@ -68,10 +68,10 @@ class PhysicalInteractionAdapter(Adapter):
             source_fbgn = row[0]
             target_fbgn = row[1]
             if source_fbgn not in self.fbgn_to_fbtr_uniprot_dict: # @todo get  from Flybase
-                print(f'(Source) gene {source_fbgn} has no transcript/protein in Flybase. Skipping it in this Fly BioAS version...')
+                # print(f'(Source) gene {source_fbgn} has no transcript/protein in Flybase. Skipping it in this Fly BioAS version...')
                 continue
             if target_fbgn not in self.fbgn_to_fbtr_uniprot_dict: # @todo get  from Flybase
-                print(f'(Target) gene {target_fbgn} has no transcript/protein in Flybase. Skipping it in this Fly BioAS version...')
+                # print(f'(Target) gene {target_fbgn} has no transcript/protein in Flybase. Skipping it in this Fly BioAS version...')
                 continue
 
             sources, targets = self.get_FB_ids(source_fbgn, target_fbgn, row)            
@@ -96,15 +96,19 @@ class PhysicalInteractionAdapter(Adapter):
                 target_ids = targets[1][1]
             if source_ids is None:
                 if sources[1][0] is None:
-                    print(f'Source transcripts for {source_fbgn} not available yet...')
+                    # print(f'Source transcripts for {source_fbgn} not available yet...')
+                    pass
                 if sources[1][1] is None:
-                    print(f'Source uniprot ids for {source_fbgn} not available yet...')
+                    # print(f'Source uniprot ids for {source_fbgn} not available yet...')
+                    pass
                 continue
             if target_ids is None:
                 if targets[1][0] is None:
-                    print(f'Target transcripts for {target_fbgn} not available yet...')
+                    # print(f'Target transcripts for {target_fbgn} not available yet...')
+                    pass
                 if targets[1][1] is None:
-                    print(f'Target uniprot ids for {target_fbgn} not available yet...')                
+                    # print(f'Target uniprot ids for {target_fbgn} not available yet...')                
+                    pass
                 continue
 
             # Flybase doesn't informs which transcript or protein is interacting. So, use all...

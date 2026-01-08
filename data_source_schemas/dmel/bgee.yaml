@@ -1,0 +1,13 @@
+name: Bgee
+website: https://www.bgee.org/
+relationships:
+  expressed in:
+    url: https://www.bgee.org/download/gene-expression-calls?id=7227
+    description: holds between a gene and an ontology term in which it is expressed
+    input_label: expressed_in
+    source: gene
+    target: ontology_term
+    properties:
+      score: float
+      p_value: float
+      taxon_id: int

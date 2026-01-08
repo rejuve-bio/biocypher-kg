@@ -76,7 +76,7 @@ def parse_schema(bcy):
 def setup_class(request):
     try:
         bcy = BioCypher(
-            schema_config_path='config/schema_config.yaml',
+            schema_config_path='config/hsa/hsa_schema_config.yaml',
             biocypher_config_path='config/biocypher_config.yaml'
         )
         node_labels, edges_schema = parse_schema(bcy) 

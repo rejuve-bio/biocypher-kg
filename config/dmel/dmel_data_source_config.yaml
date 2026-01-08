@@ -1,30 +1,35 @@
 # ---
-flybase:
-  name: Flybase 2025_04
+bgee:
+  name: Bgee Expression Data
+  url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+flybase: 
+  name: Flybase 2025_05
   url: 
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/allele_genetic_interactions_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/fbal_to_fbgn_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/alleles/genotype_phenotype_data_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/best_gene_summary_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_genetic_interactions_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_group_data_fb_2025_04.tsv.gz    
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_groups_HGNC_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/gene_rpkm_report_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/high-throughput_gene_expression_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/metabolic_pathway_group_data_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/physical_interactions_mitab_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/genes/signaling_pathway_group_data_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/human_disease/disease_model_annotations_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/orthologs/dmel_paralogs_fb_2025_04.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_04/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_04.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/alleles/allele_genetic_interactions_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/alleles/fbal_to_fbgn_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/alleles/genotype_phenotype_data_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/best_gene_summary_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_genetic_interactions_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_group_data_fb_2025_05.tsv.gz    
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_groups_HGNC_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_rpkm_report_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/high-throughput_gene_expression_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/metabolic_pathway_group_data_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/physical_interactions_mitab_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/signaling_pathway_group_data_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/human_disease/disease_model_annotations_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/orthologs/dmel_paralogs_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
     
-
+goa:
+  name: GO Annotation File (GAF)
+  url: http://geneontology.org/gene-associations/goa_human.gaf.gz
 
 gencode:
   name: GENCODE v54
@@ -45,6 +50,11 @@ reactome:
     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
 
+rna_central:
+  name: RNA Central
+  url:
+    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
 
 tflink:
   name: TFLink

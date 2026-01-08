@@ -89,7 +89,6 @@ class DiseaseModelAdapter(Adapter):
             props['ev_code_interact_alleles'] = row[10]
             props['reference_id'] = row[11]
             props['taxon_id'] = 7227
-            #print(f'{props}')
             yield f'RejuveBio:DMEL_DISEASE_MODEL_{id}', self.label, props
 
     def get_edges(self):      
@@ -108,7 +107,6 @@ class DiseaseModelAdapter(Adapter):
             props['taxon_id'] = 7227
             if self.label == 'modelled_to_human_disease':
                 source = row[0].upper()                        
-                #print(f'{props}')
                 yield f'FlyBase:{source}', f'RejuveBio:DMEL_DISEASE_MODEL_{id}', self.label, props
             elif self.label == 'modelled_to_do_term':
                 source = row[0].upper()

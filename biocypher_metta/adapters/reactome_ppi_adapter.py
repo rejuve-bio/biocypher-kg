@@ -11,15 +11,15 @@ import gzip
 # uniprotkb:P06727	ENST00000357780|ENSP00000350425|ENSG00000110244	-	uniprotkb:P06727	ENST00000357780|ENSP00000350425|ENSG00000110244	-	physical association	reactome:R-HSA-976889	15146166
 
 class ReactomePPIAdapter(Adapter):
-    def __init__(self, filepath, write_properties, add_provenance, label,
+    def __init__(self, filepath, write_properties, add_provenance, label, taxon_id,
                  include_self_interactions=True):
         
         self.filepath = filepath
         self.include_self_interactions = include_self_interactions
-        
+        self.taxon_id = taxon_id
         self.label = label
-        self.source = "REACTOME"
-        self.source_url = "https://reactome.org"
+        self.source = "Reactome"
+        self.source_url = "https://reactome.org/"
         
         self.seen_interactions = set()
         
@@ -93,6 +93,7 @@ class ReactomePPIAdapter(Adapter):
                 _props = {
                     "interaction_type": interaction_type,
                     "reactome_pathway": pathway_id,
+                    "taxon_id": self.taxon_id,
                 }
                 
                 if self.add_provenance:

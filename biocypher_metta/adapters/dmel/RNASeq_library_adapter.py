@@ -216,8 +216,6 @@ class RnaseqLibraryAdapter(Adapter):
         mir_cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'microRNA-Seq_TPM_FlyAtlas2_%';")
         #mir_cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'microRNA-Seq%';")
         mir_results = mir_cur.fetchall()
-        # print(mir_results)
-        # print(len(mir_results))
         
         with open(file_path, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter='\t')
@@ -225,20 +223,15 @@ class RnaseqLibraryAdapter(Adapter):
             # Tissue stage and sex	    _gene file tissue	    _transcriptGene file tissue	    FB_tissue
             for row in reader:
                 for result in results:
-                    # print(f'reg: {result[-1]}')
-                    # print(f"tiss: {row['FB_tissue'].replace(' ', '_')}")
                     if row['Tissue stage and sex'] == 'Larval':
                         tss = "L3"
                     else:
                         tss = row['Tissue stage and sex']
-                    # print(f"prob_: {tss}_{row['_gene file tissue']}")
-                    # print(f"ends: {tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}")
                     if result[-1].endswith(f"{tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}"):
                         library_name = result[-1] if result else None
                         library_uniquename = result[0] if result else None
                         gene_key = f"{row['Tissue stage and sex']}_{row['_gene file tissue']}"                        
                         gene_value = (row['FB_tissue'], library_uniquename, library_name)
-                        #print(f"gk: {gene_key}|||{gene_value}")
                         # Add the value to the tissue_library_dict
                         if gene_key not in gene_tissue_library_dict:
                             gene_tissue_library_dict[gene_key] = gene_value
@@ -251,21 +244,15 @@ class RnaseqLibraryAdapter(Adapter):
                             transcript_tissue_library_dict[transcript_key] = transcript_value
                         break
                 for result in mir_results:
-                    # print(f'mir: {result[-1]}')
-                    # print(f"tiss: {row['FB_tissue'].replace(' ', '_')}")
                     if row['Tissue stage and sex'] == 'Larval':
                         tss = "L3"
                     else:
                         tss = row['Tissue stage and sex']
-                    # print(f"prob_: {tss}_{row['_gene file tissue']}")
-                    # print(f"ends: {tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}")
                     if result[-1].endswith(f"{tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}"):
                         library_name = result[-1] if result else None
                         library_uniquename = result[0] if result else None
                         gene_key = f"microRNA_{row['Tissue stage and sex']}_{row['_gene file tissue']}"
-                        # print(f"gk: {gene_key}")#microRNA_Larval_Garland cells
                         gene_value = (row['FB_tissue'], library_uniquename, library_name)
-                        #print(f"gk: {gene_key}///{gene_value}")
 
                         # Add the value to the tissue_library_dict
                         if gene_key not in gene_tissue_library_dict:
