@@ -594,33 +594,33 @@ refseq_closest_gene:
 
 # There is no adapter config for topld SAMPLE data
 topld_afr:
-   adapter:
-       module: biocypher_metta.adapters.hsa.topld_adapter
-       cls: TopLDAdapter
-       args:
-           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
-           ancestry: AFR
-           dbsnp_pos_map: None # will be provided by import script
-           chr: chr16
-           start: 53000000
-           end:  56000000
-
+  adapter:
+    module: biocypher_metta.adapters.hsa.topld_adapter
+    cls: TopLDAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
+      ancestry: AFR
+      dbsnp_pos_map: None # will be provided by import script
+      chr: chr16
+      start: 53000000
+      end:  56000000
+      label: in_linkage_disequilibrium_with
    outdir: top_ld/afr
    nodes: False
    edges: True
 
 topld_eas:
-   adapter:
-       module: biocypher_metta.adapters.hsa.topld_adapter
-       cls: TopLDAdapter
-       args:
-           filepath: /mnt/hdd_2/abdu/biocypher_data/topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-           ancestry: EAS
-           dbsnp_pos_map: None # will be provided by import script
-           chr: chr16
-           start: 53000000
-           end:  56000000
-
+  adapter:
+    module: biocypher_metta.adapters.hsa.topld_adapter
+    cls: TopLDAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      ancestry: EAS
+      dbsnp_pos_map: None # will be provided by import script
+      chr: chr16
+      start: 53000000
+      end:  56000000
+      label: in_linkage_disequilibrium_with
    outdir: top_ld/EAS
    nodes: False
    edges: True
@@ -636,7 +636,7 @@ topld_eur:
       chr: chr16
       start: 53000000
       end: 56000000
-
+      label: in_linkage_disequilibrium_with
   outdir: top_ld/EUR
   nodes: False
   edges: True
@@ -652,7 +652,7 @@ topld_sas:
            chr: chr16
            start: 53000000
            end:  56000000
-
+           label: in_linkage_disequilibrium_with
    outdir: top_ld/SAS
    nodes: False
    edges: True

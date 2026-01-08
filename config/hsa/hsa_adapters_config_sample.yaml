@@ -599,6 +599,7 @@ topld_eur:
             chr: chr16
             ancestry: EUR
             dbsnp_pos_map: None # will be provided by import script
+            label: in_linkage_disequilibrium_with
     outdir: top_ld/EUR
     nodes: False
     edges: True
