@@ -1,0 +1,144 @@
+name: OBO Foundry
+website: http://www.obofoundry.org
+nodes:
+  biological process:
+    url: http://www.obofoundry.org/
+    input_label: biological_process
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  molecular function:
+    url: http://www.obofoundry.org/
+    input_label: molecular_function
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  cellular component:
+    url: http://www.obofoundry.org/
+    input_label: cellular_component
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  anatomy:
+    url: http://www.obofoundry.org/
+    input_label: anatomy
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  cell line:
+    url: http://www.obofoundry.org/
+    input_label: cell_line
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  cell type:
+    url: http://www.obofoundry.org/
+    input_label: cell_type
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  experimental factor:
+    url: http://www.obofoundry.org/
+    input_label: experimental_factor
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  tissue:
+    url: http://www.obofoundry.org/
+    input_label: tissue
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+  chemical substance:
+    url: http://www.obofoundry.org/
+    input_label: chemical_substance
+    properties:
+      description: str
+      synonym: str[]
+      term_name: str
+relationships:
+  biological process subclass:
+    url: http://www.obofoundry.org/
+    input_label: biological_process_subclass_of
+    source: biological process
+    target: biological process
+    properties:
+      rel_type: str
+  molecular function subclass:
+    url: http://www.obofoundry.org/
+    input_label: molecular_function_subclass_of
+    source: molecular function
+    target: molecular function
+    properties:
+      rel_type: str
+  cellular component subclass:
+    url: http://www.obofoundry.org/
+    input_label: cellular_component_subclass_of
+    source: cellular component
+    target: cellular component
+    properties:
+      rel_type: str
+  uberon subclass of:
+    url: http://www.obofoundry.org/
+    input_label: uberon_subclass_of
+    source: anatomy
+    target: anatomy
+    properties:
+      rel_type: str
+  clo subclass of:
+    url: http://www.obofoundry.org/
+    input_label: clo_subclass_of
+    source: cell line
+    target: cell line
+    properties:
+      rel_type: str
+  cl subclass of:
+    url: http://www.obofoundry.org/
+    input_label: cl_subclass_of
+    source: cell type
+    target: cell type
+    properties:
+      rel_type: str
+  cl capable of:
+    url: http://www.obofoundry.org/
+    input_label: cl_capable_of
+    description: Represents the capability of a cell type (CL term) to carry out or
+      be involved in a specific biological process.
+    source: cell type
+    target: biological process
+  cl part of:
+    url: http://www.obofoundry.org/
+    input_label: cl_part_of
+    description: Represents a part-whole relationship between a CL term and an UBERON
+      term.
+    source: cell type
+    target: anatomy
+  efo subclass of:
+    url: http://www.obofoundry.org/
+    input_label: efo_subclass_of
+    source: experimental factor
+    target: experimental factor
+    properties:
+      rel_type: str
+  bto subclass of:
+    url: http://www.obofoundry.org/
+    input_label: bto_subclass_of
+    source: tissue
+    target: tissue
+    properties:
+      rel_type: str
+  chebi subclass of:
+    url: http://www.obofoundry.org/
+    input_label: chebi_subclass_of
+    source: chemical substance
+    target: chemical substance
+    properties:
+      rel_type: str

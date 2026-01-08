@@ -13,12 +13,14 @@ translation_condition_map = {
     9606: lambda item, entry_name: bool(item[0].startswith('Ensembl') and 'ENST' in item[1] and entry_name.endswith("HUMAN")),
 }
 
-
-
 class UniprotAdapter(Adapter):
     
     ALLOWED_TYPES = ['translates to', 'translation of']
     ALLOWED_LABELS = ['translates_to', 'translation_of']
+    CURIE_PREFIX = {
+        7227: 'FlyBase',
+        9606: 'ENSEMBL'
+    }
 
     # added "taxon_id" to the 'protein' schema
     def __init__(self, filepath, type, label,
@@ -49,11 +51,10 @@ class UniprotAdapter(Adapter):
                 if self.type == 'translates to':
                     # dbxrefs = record.dbxrefs
                     dbxrefs = record.cross_references
-                    for item in dbxrefs:
-                        # if item.startswith('Ensembl') and 'ENST' in item:                    
+                    for item in dbxrefs:                 
                         if translation_conditions_hold(item, record.entry_name):
                             try:
-                                ensg_id = "ENSEMBL:" + item[1].split(':')[-1].split('.')[0]  # Added ENSEMBL prefix
+                                ensg_id = f"{UniprotAdapter.CURIE_PREFIX[self.taxon_id]}:" + item[1].split(':')[-1].split('.')[0]  # Added ENSEMBL prefix
                                 uniprot_id = "UniProtKB:" + record.accessions[0].upper()  #record.id.upper()  # Added UniProtKB prefix
                                 _source = ensg_id
                                 _target = uniprot_id
@@ -65,6 +66,5 @@ class UniprotAdapter(Adapter):
                                 yield _source, _target, self.label, _props
 
                             except :
-                                print(
-                                    f'fail to process for edge translates to: {record.entry_name} / {item[0]} / {item[1]}')
+                                print(f'UniprotAdapter::--> fail to process for edge translates to: {record.entry_name} / {item[0]} / {item[1]}')
                                 pass

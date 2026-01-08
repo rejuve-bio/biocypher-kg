@@ -50,7 +50,7 @@ class GTExExpressionAdapter(Adapter):
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         #CURIE ID Format
                         _source = f"ENSEMBL:{gene_id}"
-                        _target = f"UBERON:{ontology}"
+                        _target = ('anatomy', f"{ontology}")    # includes ontology node type
                         _props = {
                             'p_value': to_float(row[self.index["p_value"]]),
                         }

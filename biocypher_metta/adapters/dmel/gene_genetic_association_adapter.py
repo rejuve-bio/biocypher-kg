@@ -33,9 +33,9 @@ from biocypher._logger import logger
 
 class GeneGeneticAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'gene_genetic_association'):
         self.dmel_data_filepath = dmel_data_filepath
-        self.label = 'gene_genetic_association'
+        self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
 

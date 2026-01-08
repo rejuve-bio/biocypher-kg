@@ -27,7 +27,7 @@ from collections import defaultdict
 
 class BgeeAdapter(Adapter):
     FIELD_INDEX = {'gene': 0, 'anatomical_entity': 2, 'developmental stage': 4, 'expression': 8, 'fdr': 10, 'expression_score': 11}
-    PREFIXES = {
+    CURIE_PREFIX = {
         7227: 'FlyBase',
         9606: 'ENSEMBL',
     }
@@ -55,7 +55,7 @@ class BgeeAdapter(Adapter):
                             continue
                         
                         #CURIE format for source ID (subject)
-                        source_id =f"{BgeeAdapter.PREFIXES[self.taxon_id]}:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
+                        source_id =f"{BgeeAdapter.CURIE_PREFIX[self.taxon_id]}:{data[BgeeAdapter.FIELD_INDEX['gene']]}"
                         # if ' ∩ ' in data[BgeeAdapter.FIELD_INDEX['anatomical_entity']]:
                         # to include all anatomical terms
                         anatomical_entities = self.split_by_intersection(data[BgeeAdapter.FIELD_INDEX['anatomical_entity']])
@@ -70,8 +70,8 @@ class BgeeAdapter(Adapter):
                             props = {
                                 "score": score,
                                 "p_value": float(data[BgeeAdapter.FIELD_INDEX['fdr']]),
-                                "anatomical_entity": data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].replace(':', '_').upper(),      # should be removed because of the link.
-                                "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
+                                # "anatomical_entity": data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].replace(':', '_').upper(),      # should be removed because of the link.
+                                # "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
                                 "taxon_id": f'{self.taxon_id}',
                             }
 

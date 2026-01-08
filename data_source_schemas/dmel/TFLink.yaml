@@ -1,10 +1,10 @@
 name: TFLink
-description: Transcription Factor Links
 website: http://tflink.net/
 relationships:
   transcription factor to gene association:
     url: http://tflink.net/
-    description: An regulatory association between a transcription factor and its target gene
+    description: An regulatory association between a transcription factor and its
+      target gene
     input_label: tf_gene
     output_label: regulates
     source: gene
@@ -14,3 +14,4 @@ relationships:
       detection_method: str
       database: str[]
       evidence_type: str
+      taxon_id: int

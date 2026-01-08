@@ -43,7 +43,7 @@ class TADMapAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
-
+        self.taxon_id = taxon_id
         self.label = label
 
         super(TADMapAdapter, self).__init__(write_properties, add_provenance)
@@ -69,7 +69,8 @@ class TADMapAdapter(Adapter):
                         _props = {
                             'chr': chr,
                             'start': int(start),
-                            'end': int(end)
+                            'end': int(end),
+                            'taxon_id': self.taxon_id,
                         }
                         if self.add_provenance:
                             _props['source'] = self.source
@@ -100,6 +101,7 @@ class TADMapAdapter(Adapter):
                     _id = f"SO:{build_regulatory_region_id(chr, start, end)}"  # Use SO: prefix
                     _props = {}
                     for gene in genes:
+                        _props['taxon_id'] = self.taxon_id
                         if self.write_properties and self.add_provenance:
                             _props['source'] = self.source
                             _props['source_url'] = self.source_url

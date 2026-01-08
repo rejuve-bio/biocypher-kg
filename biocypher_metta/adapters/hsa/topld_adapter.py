@@ -27,7 +27,7 @@ class TopLDAdapter(Adapter):
         self.start = start
         self.end = end
         self.cutoff = cutoff
-        self.label = "in_ld_with"
+        self.label = "in_linkage_desquilibrium_with"
         self.source = "TopLD"
         self.source_url = "http://topld.genetics.unc.edu/"
         super(TopLDAdapter, self).__init__(write_properties, add_provenance)

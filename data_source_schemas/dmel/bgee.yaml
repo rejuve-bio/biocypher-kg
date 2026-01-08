@@ -1,5 +1,4 @@
 name: Bgee
-description: Gene expression across species
 website: https://www.bgee.org/
 relationships:
   expressed in:
@@ -11,3 +10,4 @@ relationships:
     properties:
       score: float
       p_value: float
+      taxon_id: int

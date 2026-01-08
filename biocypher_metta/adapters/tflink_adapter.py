@@ -48,7 +48,6 @@ class TFLinkAdapter(Adapter):
         super(TFLinkAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
-        print(self.taxon_id)
         with gzip.open(self.filepath, 'rt') as fp:
             table = csv.reader(fp, delimiter="\t", quotechar='"')
             for row in table:

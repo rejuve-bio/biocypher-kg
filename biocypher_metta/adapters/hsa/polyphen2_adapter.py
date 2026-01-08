@@ -1,6 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
-from .helpers import to_float, check_genomic_location, build_variant_id
+from biocypher_metta.adapters.helpers import to_float, check_genomic_location, build_variant_id
 
 # sample data from the dataset
 # chr    start   end     ref  num_alt  A   A_score_hdiv  A_pred_hdiv  A_score_hvar  A_pred_hvar  C   C_score_hdiv  C_pred_hdiv  C_score_hvar  C_pred_hvar  G   G_score_hdiv  G_pred_hdiv  G_score_hvar  G_pred_hvar  T   T_score_hdiv  T_pred_hdiv  T_score_hvar  T_pred_hvar

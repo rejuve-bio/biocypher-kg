@@ -1,5 +1,4 @@
 name: Bgee
-description: Gene expression across species
 website: https://www.bgee.org/
 relationships:
   expressed in:

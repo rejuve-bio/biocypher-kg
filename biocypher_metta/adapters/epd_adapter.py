@@ -18,6 +18,12 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # Fly data:
 # https://epd.expasy.org/ftp/epdnew/D_melanogaster/
 
+# chr2L 7456 7516 CG11023_1 900 + 7505 7516
+# chr2L 18617 18677 l(2)gl_1 900 - 18617 18628
+# chr2L 25167 25227 Ir21a_1 900 - 25167 25178
+# chr2L 59231 59291 Cda5_1 900 - 59231 59242
+
+
 # Mouse data:
 # https://epd.expasy.org/ftp/epdnew/M_musculus/ 
 
@@ -27,6 +33,11 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 
 class EPDAdapter(Adapter):
     INDEX = {'chr' : 0, 'coord_start' : 1, 'coord_end' : 2, 'gene_id' : 3}
+
+    CURIE_PREFIX = {
+        7227: 'FlyBase',
+        9606: 'ENSEMBL'
+    }
 
     def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, taxon_id,
                  type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None):
@@ -85,8 +96,10 @@ class EPDAdapter(Adapter):
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
-                ensembl_gene_id = self.hgnc_to_ensembl_map.get(gene_id.upper(), None)
-                ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
+                if self.taxon_id == 7227:
+                    p()
+                elif self.taxon_id == 9606:
+                    ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
                 if ensembl_gene_id is None:
                     continue
                 

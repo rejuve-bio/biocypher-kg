@@ -79,8 +79,8 @@ class GencodeExonAdapter(Adapter):
         self.taxon_id = taxon_id
         self.dataset = 'gencode_exon'
         self.source = 'GENCODE'
-        self.version = 'v44'
-        self.source_url = 'https://www.gencodegenes.org/human/'
+        self.version = 'v49'                                # this should be exttracted from the file
+        self.source_url = 'https://www.gencodegenes.org/'
 
         super(GencodeExonAdapter, self).__init__(write_properties, add_provenance)
 
@@ -154,8 +154,7 @@ class GencodeExonAdapter(Adapter):
                             yield exon_id, self.label, props
 
                     except Exception as e:
-                        print(
-                            f'Failed to process for label to load: {self.label}, type to load: exon, data: {line}')
+                        print(f'Failed to process for label to load: {self.label}, type to load: exon, data: {line}')
                         print(f'Error: {str(e)}')
 
     def get_edges(self):
@@ -192,6 +191,5 @@ class GencodeExonAdapter(Adapter):
                     _target = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{target_id}"                    
                     yield _source, _target, self.label, _props
                 except Exception as e:
-                    print(
-                        f'Failed to process for label to load: {self.label}, type to load: exon, data: {line}')
+                    print(f'Failed to process for label to load: {self.label}, type to load: exon, data: {line}')
                     print(f'Error: {str(e)}')

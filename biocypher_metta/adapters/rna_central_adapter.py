@@ -19,7 +19,7 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 
 # Fly data:
 # https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
-# http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+# http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz                   #  <---:::  FOR ALL SPECIES
 
 # ID mappings:
 # https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/
@@ -58,8 +58,9 @@ class RNACentralAdapter(Adapter):
 
         # Load subontology mapping
         if os.path.exists(mapping_file):
-            with open(mapping_file, 'rb') as f:
-                self.subontology_mapping = pickle.load(f)
+            # with open(mapping_file, 'rb') as f:
+            #     self.subontology_mapping = pickle.load(f)
+            self.subontology_mapping = pickle.load(open(mapping_file, 'rb')) if mapping_file else None 
 
         self.seen_edges = set()
 
@@ -94,7 +95,7 @@ class RNACentralAdapter(Adapter):
             reader = csv.reader(input, delimiter='\t')
             for line in reader:
                 rna_id, go_term, rfam = line
-                
+                # 'URS0000000001', 'RF00177', '109.4', '3.3e-33', '2', '200', '29', '230', 'Bacterial small subunit ribosomal RNA']
                 if not rna_id.endswith(f'_{self.taxon_id}'):
                     continue
                 #CURIE format for RNAcentral ID

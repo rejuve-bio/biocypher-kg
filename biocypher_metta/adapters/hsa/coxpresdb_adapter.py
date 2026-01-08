@@ -3,7 +3,7 @@ from biocypher_metta.adapters import Adapter
 import pickle
 import os
 
-# All organism data can be acessed from:
+# All organisms data can be acessed from:
 # https://coxpresdb.jp/download/
 
 # Human data:

@@ -5,7 +5,7 @@ relationships:
   topld in linkage disequilibrium with:
     url: http://topld.genetics.unc.edu/
     description: holds between two sequence variants, the presence of which are correlated in a population
-    input_label: in_ld_with
+    input_label: in_linkage_desquilibrium_with
     source: snp
     target: snp
     properties:
