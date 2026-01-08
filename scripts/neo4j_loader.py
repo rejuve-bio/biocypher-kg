@@ -132,13 +132,17 @@ def get_neo4j_credentials():
     sys.exit(1)
 
 def process_output_directory(output_dir):
+    output_path = Path(output_dir)
     query_dirs = []
-    for path in Path(output_dir).rglob("*"):
-        if path.is_dir() and (
-            list(path.glob("nodes_*.cypher")) or 
-            list(path.glob("edges_*.cypher"))
-        ):
+
+    has_top_level = list(output_path.glob("nodes_*.cypher")) or list(output_path.glob("edges_*.cypher"))
+    if has_top_level:
+        query_dirs.append(output_path)
+
+    for path in output_path.rglob("*"):
+        if path.is_dir() and (list(path.glob("nodes_*.cypher")) or list(path.glob("edges_*.cypher"))):
             query_dirs.append(path)
+
     return query_dirs
 
 def main():

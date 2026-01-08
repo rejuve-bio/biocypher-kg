@@ -338,16 +338,35 @@ class MeTTaWriter(BaseWriter):
             else:
                 out_str.append(f'({k} {def_out} {self.check_property(v)})')
         return out_str
-
+    
     def check_property(self, prop):
-        if isinstance(prop, str):
-            prop = prop.replace(" ", "_").strip("_")
-            prop = prop.replace("->", "-")
+        if not isinstance(prop, str):
+            return str(prop)
 
-            # Keep only letters, numbers, underscores, colons, and hyphens
-            prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
+        raw = prop.strip()
 
-        return str(prop)
+        # to detect urls and treat them as data than symbols
+        if (
+            raw.startswith(("http://", "https://", "ftp://", "ftps://")) or
+            (raw.startswith("www.") and "." in raw[4:])
+        ):
+            return raw
+
+        prop = raw.replace(" ", "_").strip("_")
+        prop = prop.replace("->", "-")
+        prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
+
+        return prop
+
+    # def check_property(self, prop):
+    #     if isinstance(prop, str):
+    #         prop = prop.replace(" ", "_").strip("_")
+    #         prop = prop.replace("->", "-")
+
+    #         # Keep only letters, numbers, underscores, colons, and hyphens
+    #         prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
+
+    #     return str(prop)
         
     def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):

@@ -32,7 +32,7 @@ def build_default_fly_command() -> List[str]:
     return [
         "python3", str(PROJECT_ROOT / "create_knowledge_graph.py"),
         "--output-dir", str(PROJECT_ROOT / "output_fly"),
-        "--adapters-config", str(PROJECT_ROOT / "config/dmel_adapters_config_sample.yaml"),
+        "--adapters-config", str(PROJECT_ROOT / "config/dmel/dmel_adapters_config_sample.yaml"),
         "--dbsnp-rsids", str(PROJECT_ROOT / "aux_files/sample_dbsnp_rsids.pkl"),
         "--dbsnp-pos", str(PROJECT_ROOT / "aux_files/sample_dbsnp_pos.pkl"),
         "--writer-type", "neo4j", "--no-add-provenance"
