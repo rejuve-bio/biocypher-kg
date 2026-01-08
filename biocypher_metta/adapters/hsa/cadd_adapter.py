@@ -25,6 +25,7 @@ class CADDAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
+        self.label = label
 
         self.label = label
         self.source = "CADD"

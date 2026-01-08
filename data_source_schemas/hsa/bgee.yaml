@@ -1,12 +1,23 @@
+<<<<<<< HEAD:data_source_schemas/hsa/bgee.yaml
 name: Bgee
 website: https://www.bgee.org/
+=======
+name: bgee
+website: https://www.bgee.org
+>>>>>>> main:data_source_schemas/bgee.yaml
 relationships:
   expressed in:
-    url: https://www.bgee.org/download/gene-expression-calls?id=9606
-    description: holds between a gene and an ontology term in which it is expressed
+    url: https://www.bgee.org/download/gene-expression-calls?id=
     input_label: expressed_in
+    description: holds between a gene and an ontology term in which it is expressed
     source: gene
-    target: ontology_term
+    target: ontology term
     properties:
-      score: float
+      developmental_stage: str
       p_value: float
+      score: float
+<<<<<<< HEAD:data_source_schemas/hsa/bgee.yaml
+      p_value: float
+=======
+      taxon_id: str
+>>>>>>> main:data_source_schemas/bgee.yaml

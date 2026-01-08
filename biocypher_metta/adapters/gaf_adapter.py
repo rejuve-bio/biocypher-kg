@@ -58,7 +58,7 @@ class GAFAdapter(Adapter):
 
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, gaf_source = 'GOA', gaf_type='human', 
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, gaf_type='human', 
                  label=None, mapping_file='aux_files/go_subontology_mapping.pkl', hgnc_to_ensembl_map=None):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
@@ -69,7 +69,7 @@ class GAFAdapter(Adapter):
         self.type = gaf_type
         self.label = label
         self.hgnc_to_ensembl_map = None if hgnc_to_ensembl_map == None else pickle.load(open(hgnc_to_ensembl_map, 'rb'))
-        self.source = gaf_source
+        self.source = 'GOA'
         self.source_url = GAFAdapter.SOURCES[gaf_type]
         self.taxon_id = taxon_id
 

@@ -34,6 +34,7 @@ class CoxpresdbAdapter(Adapter):
         self.source = 'CoXPresdb'
         self.source_url = 'https://coxpresdb.jp/'
         self.version = 'v8'
+        self.label = label 
         self.taxon_id = taxon_id
         assert os.path.isdir(self.file_path), "coxpresdb file path is not a directory"
         super(CoxpresdbAdapter, self).__init__(write_properties, add_provenance)

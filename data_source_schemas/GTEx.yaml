@@ -1,0 +1,22 @@
+name: GTEx
+website: https://forgedb.cancer.gov
+relationships:
+  gtex variant to gene expression association:
+    url: https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz
+    input_label: gtex_variant_gene
+    description: An association between a variant and expression of a gene (i.e. e-QTL)
+    source: snp
+    target: gene
+    properties:
+      p_value: str
+      maf: str
+      biological_context: str
+      slope: str
+  expressed in:
+    url: https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz
+    input_label: expressed_in
+    description: holds between a gene and an ontology term in which it is expressed
+    source: gene
+    target: ontology term
+    properties:
+      p_value: float

@@ -48,8 +48,10 @@ def find_config_files(organism: str = None) -> Dict[str, str]:
     files = {
         "Human - Sample Adapters": str(config_dir / "adapters_config_sample.yaml"),
         "Human - Full Adapters": str(config_dir / "adapters_config.yml"),
-        "Fly - Sample Adapters": str(config_dir / "dmel_adapters_config_sample.yaml"),
-        "Fly - Full Adapters": str(config_dir / "dmel_adapters_config.yml"),
+        "Fly - Sample Adapters": str(config_dir / "dmel" / "dmel_adapters_config_sample.yaml"),
+        "Fly - Full Adapters": str(config_dir / "dmel" / "dmel_adapters_config.yaml"),
+        # "Fly - Sample Adapters": str(config_dir / "dmel_adapters_config_sample.yaml"),
+        # "Fly - Full Adapters": str(config_dir / "dmel_adapters_config.yml"),
         "Biocypher Config": str(config_dir / "biocypher_config.yml"),
         "Docker Config": str(config_dir / "biocypher_docker_config.yml"),
         "Data Source Config": str(config_dir / "data_source_config.yml"),

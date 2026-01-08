@@ -68,7 +68,7 @@ class GencodeExonAdapter(Adapter):
         'Ensembl_canonical'
     }
 
-    def __init__(self, write_properties, add_provenance, target_type, taxon_id, label = 'exon', filepath=None,
+    def __init__(self, write_properties, add_provenance, target_type, taxon_id, label, filepath=None,
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr

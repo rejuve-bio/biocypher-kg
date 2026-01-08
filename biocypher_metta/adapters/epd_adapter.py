@@ -97,7 +97,7 @@ class EPDAdapter(Adapter):
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
                 if self.taxon_id == 7227:
-                    p()
+                    pass
                 elif self.taxon_id == 9606:
                     ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
                 if ensembl_gene_id is None:

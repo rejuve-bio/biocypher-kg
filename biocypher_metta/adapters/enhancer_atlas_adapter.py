@@ -34,8 +34,8 @@ class EnhancerAtlasAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'snp': 7}
 
     def __init__(self, enhancer_filepath, enhancer_gene_filepath, tissue_to_ontology_filepath, 
-                 write_properties, add_provenance, taxon_id,
-                 type='enhancer', input_label='enhancer',
+                 write_properties, add_provenance, taxon_id, label,
+                 type='enhancer',
                  chr=None, start=None, end=None):
         self.enhancer_filepath = enhancer_filepath
         self.enhancer_gene_filepath = enhancer_gene_filepath
@@ -43,7 +43,7 @@ class EnhancerAtlasAdapter(Adapter):
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = input_label
+        self.label = label
         self.type = type
         self.taxon_id = taxon_id
 

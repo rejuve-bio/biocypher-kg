@@ -22,7 +22,7 @@ class ReactomePathwayAdapter(Adapter):
         self.pubmed_map_path = pubmed_map_path
         self.load_pubmed_map()
         self.label = label
-        self.dataset = label
+        self.dataset = 'pathway'
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
         self.taxon_id = taxon_id

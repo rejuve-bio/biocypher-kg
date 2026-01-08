@@ -14,7 +14,7 @@ from Bio import SwissProt
 class UniprotProteinAdapter(Adapter):
     ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label='protein', dbxref=None, mapping_file=None):
+    def __init__(self, filepath, write_properties, add_provenance,taxon_id, label, dbxref=None, mapping_file=None):
         self.filepath = filepath
         self.dataset = 'UniProtKB_protein'
         self.label = label
@@ -93,23 +93,30 @@ class UniprotProteinAdapter(Adapter):
                 dbxrefs = self.get_dbxrefs(record.cross_references)
                 
                 base_id = record.accessions[0].upper()
-                base_props = {}
-                
+                props = {}
+
                 if self.write_properties:
-                    base_props = {
+                    props = {
                         'protein_name': record.entry_name.split('_')[0],
                         'is_canonical': True
                     }
-                    
+
                     if len(record.accessions) > 1:
-                        base_props['accessions'] = record.accessions[1:]
-                    
-                    
+                        props['accessions'] = record.accessions[1:]
+
+
                     if self.add_provenance:
+<<<<<<< HEAD
                         base_props['source'] = self.source
                         base_props['source_url'] = self.source_url
                 
                 yield f'UniProtKB:{base_id}', self.label, base_props
+=======
+                        props['source'] = self.source
+                        props['source_url'] = self.source_url
+
+                yield base_id, self.label, props
+>>>>>>> main
                 
                 for comment in record.comments:
                     if 'ALTERNATIVE PRODUCTS:' in comment:
@@ -117,22 +124,29 @@ class UniprotProteinAdapter(Adapter):
                         
                         for isoform in isoforms:
                             isoform_id = isoform['id'].upper()
-                            isoform_props = {}
-                            
+                            props = {}
+
                             if self.write_properties:
-                                isoform_props = {
+                                props = {
                                     'protein_name': record.entry_name.split('_')[0],
                                     'is_isoform': True,
                                     'canonical_accession': record.accessions[0],
                                     'isoform_name': isoform['name']
                                 }
-                                
-                                
+
+
                                 if self.add_provenance:
+<<<<<<< HEAD
                                     isoform_props['source'] = self.source
                                     isoform_props['source_url'] = self.source_url
                             
                             yield f'UniProtKB:{isoform_id}', self.label, isoform_props
+=======
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+
+                            yield isoform_id, self.label, props
+>>>>>>> main
                         break
 
     def get_edges(self):

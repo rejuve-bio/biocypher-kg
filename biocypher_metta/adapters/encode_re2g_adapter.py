@@ -13,7 +13,7 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 
 
 class ENCODERe2GAdapter(Adapter):
-    def __init__(self, filepath, taxon_id, write_properties, add_provenance, label='enhancer',
+    def __init__(self, filepath, taxon_id, write_properties, add_provenance, label,
                  chr=None, start=None, end=None):
         self.filepath = filepath
         self.chr = chr

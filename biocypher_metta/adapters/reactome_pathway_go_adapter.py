@@ -21,14 +21,16 @@ class ReactomePathwayGOAdapter(Adapter):
     def __init__(self, filepath, write_properties, add_provenance, label, taxon_id,
                  subontology, mapping_file='aux_files/go_subontology_mapping.pkl'):
         super().__init__(write_properties, add_provenance)
-        
+
         if subontology not in ['biological_process', 'molecular_function', 'cellular_component']:
             raise ValueError("Invalid subontology specified")
-            
+
         self.filepath = filepath
         self.label = label
         self.taxon_id = taxon_id
         self.subontology = subontology
+        # Use provided label or generate from subontology
+        self.label = label if label else f"pathway_to_{subontology}"
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
         self.skip_first_line = True
@@ -86,7 +88,7 @@ class ReactomePathwayGOAdapter(Adapter):
                 # Only yield edges that match the specified subontology
                 yield (
                     f"{pathway_id}",  # source
-                    full_go_term,           # target
-                    f"pathway_to_{go_type}", # label
+                    full_go_term,     # target
+                    self.label,       # label from config or default
                     properties
                 )

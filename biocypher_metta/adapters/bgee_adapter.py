@@ -32,7 +32,7 @@ class BgeeAdapter(Adapter):
         9606: 'ENSEMBL',
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label = 'expressed_in'):
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label):
         self.filepath = filepath
         self.label = label
         self.taxon_id = taxon_id

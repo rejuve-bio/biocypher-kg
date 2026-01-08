@@ -17,8 +17,8 @@ from biocypher_metta.adapters.helpers import to_float
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
 class StringPPIAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id,
-                 write_properties, add_provenance, label):
+    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id, label,
+                 write_properties, add_provenance):
         """
         Constructs StringPPI adapter that returns edges between proteins
         :param filepath: Path to the TSV file downloaded from String

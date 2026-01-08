@@ -15,19 +15,19 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 class DBSuperAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'se_id': 3, 'gene_id': 4, 'cell_name': 5}
 
-    def __init__(self, filepath, hgnc_to_ensembl_map, dbsuper_tissues_map,
+    def __init__(self, filepath, hgnc_to_ensembl_map, dbsuper_tissues_map, label,
                  write_properties, add_provenance, 
-                 type='super enhancer', label='super_enhancer', delimiter='\t',
+                 type='super enhancer', delimiter='\t',
                  chr=None, start=None, end=None):
         self.filePath = filepath
         self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
         self.dbsuper_tissues_map = pickle.load(open(dbsuper_tissues_map, 'rb'))
         self.type = type
-        self.label = label
         self.delimiter = delimiter
         self.chr = chr
         self.start = start
         self.end = end
+        self.label = label
 
         self.source = 'dbSuper'
         self.version = ''

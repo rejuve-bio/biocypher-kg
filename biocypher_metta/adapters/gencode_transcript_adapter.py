@@ -76,7 +76,7 @@ class GencodeTranscriptAdapter(Adapter):
     }
 
     def __init__(self, write_properties, add_provenance, taxon_id, filepath=None, 
-                 type='transcript', label='transcript', 
+                 type='transcript', label=None, 
                  chr=None, start=None, end=None):
         if label not in GencodeTranscriptAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +

@@ -23,7 +23,7 @@ class TADMapAdapter(Adapter):
     """
     INDEX = {'loc_info': 0, 'genes': 1, 'chr': 1, 'start': 2, 'end': 3}
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label="tad",
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label,
                  chr=None, start=None, end=None):
         """
         :type filepath: str
