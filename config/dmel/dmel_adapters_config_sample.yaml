@@ -287,7 +287,7 @@ orthology_adapter:
         cls: OrthologyAssociationAdapter
         args:
           dmel_data_filepath: ./samples/dmel/flybase/dmel_human_orthologs_disease_fb_2024_02.tsv.gz
-          hsa_hgnc_to_ensemble_map: ./aux_files/hsa/hgnc_ensembl_map.pkl
+          hsa_hgnc_to_ensemble_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
     outdir: orthologs
     nodes: False
     edges: True
