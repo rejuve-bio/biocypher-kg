@@ -5,6 +5,7 @@ bgee_gene_expressed_in_anatomical_entity:
     cls: BgeeAdapter
     args:
       filepath: ./samples/dmel/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+      label: expressed_in
       taxon_id: 7227      
   outdir: bgee
   nodes: False
@@ -507,6 +508,7 @@ gencode_gene:
       filepath: ./samples/dmel/gencode_Drosophila_melanogaster.BDGP6.46.60.chr.gtf.gz
       gene_alias_file_path: ./aux_files/dmel/Drosophila_melanogaster.gene_info.gz
       # summaries_filepath: ./samples/dmel/flybase/best_gene_summary_fb_2024_02.tsv.gz
+      label: gene
       taxon_id: 7227
   outdir: gencode/gene
   nodes: True
@@ -545,6 +547,7 @@ gencode_exon:
     cls: GencodeExonAdapter
     args:
       filepath: ./samples/dmel/gencode_Drosophila_melanogaster.BDGP6.46.60.chr.gtf.gz
+      label: exon
       target_type: None
       taxon_id: 7227
   outdir: gencode/exon
@@ -635,6 +638,7 @@ uniprotkb_sprot:
     cls: UniprotProteinAdapter
     args:
       filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      label: protein
       taxon_id: 7227
   outdir: uniprot
   nodes: True

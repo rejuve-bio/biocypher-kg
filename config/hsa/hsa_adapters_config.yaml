@@ -5,6 +5,7 @@ gencode_gene:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       gene_alias_file_path: ./aux_files/hsa/Homo_sapiens.gene_info.gz
+      label: gene
       taxon_id: 9606      # multi-species version needs this
   outdir: gencode/gene
   nodes: True
@@ -43,6 +44,7 @@ gencode_exon:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       target_type: exon   # it could be anything here
+      label: exon
       taxon_id: 9606      # multi-species version needs this
   outdir: gencode/exon
   nodes: True
@@ -80,6 +82,7 @@ uniprotkb_sprot:
     cls: UniprotProteinAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein
       taxon_id: 9606      # multi-species version needs this
   outdir: uniprot
   nodes: True
@@ -447,6 +450,7 @@ tadmap:
     cls: TADMapAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/tadmap/TADMap_geneset_hs.csv
+      label: tad
       taxon_id: 9606
   outdir: tadmap
   nodes: True
@@ -719,7 +723,7 @@ dgv_variant:
     cls: DGVVariantAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
-
+      label: structural_variant
   outdir: dgv
   nodes: True
   edges: False
@@ -731,6 +735,7 @@ epd_promoter:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
       hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
+      label: promoter
       taxon_id: 9606
   outdir: epd
   nodes: True
@@ -756,7 +761,7 @@ dbvar_variant:
     cls: DBVarVariantAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
-
+      label: structural_variant
   outdir: dbvar
   nodes: True
   edges: False
@@ -771,7 +776,7 @@ peregrine_enhancer:
       source_file: /mnt/hdd_2/abdu/biocypher_data/peregrine/PEREGRINEenhancersources.gz
       hgnc_ensembl_map: ./aux_files/hsa/hgnc_ensembl_map.pkl
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
-
+      label: enhancer
   outdir: peregrine
   nodes: True
   edges: False
@@ -801,6 +806,7 @@ dbsuper_super_enhancer:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz
       hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_to_ensembl.pkl
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
+      label: super_enhancer      
   outdir: dbsuper
   nodes: True
   edges: False
@@ -838,6 +844,7 @@ enhancer_atlas_enhancer:
       enhancer_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/hs.bed.gz
       enhancer_gene_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      label: enhancer
       taxon_id: 9606  
   outdir: enhancer_atlas
   nodes: True
@@ -852,7 +859,7 @@ enhancer_atlas_enhancer_regulates:
       enhancer_gene_filepath: /mnt/hdd_2/abdu/biocypher_data/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
-      input_label: enhancer_gene
+      label: enhancer_gene
       taxon_id: 9606  
   outdir: enhancer_atlas
   nodes: False
@@ -1100,7 +1107,7 @@ polyphen2:
     cls: PolyPhen2Adapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/polyphen2/dbNsfpPolyPhen2.bed.gz
-
+      label: polyphen2_variant
   outdir: polyphen-2
   nodes: True
   edges: False
@@ -1111,6 +1118,7 @@ bgee_gene_expressed_in_anatomical_entity:
     cls: BgeeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+      label: expressed_in
       taxon_id: 9606        
   outdir: bgee
   nodes: False
@@ -1304,7 +1312,8 @@ encode_re2g:
     cls: ENCODERe2GAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
-
+      label: enhancer
+      taxon_id: 9606
   outdir: encode_re2g
   nodes: True
   edges: False
@@ -1316,7 +1325,7 @@ encode_re2g_gene_associates:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
       label: enhancer_gene
-
+      taxon_id: 9606
   outdir: encode_re2g
   nodes: False
   edges: True

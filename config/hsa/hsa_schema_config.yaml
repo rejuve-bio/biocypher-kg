@@ -1766,7 +1766,7 @@ topld in linkage disequilibrium with:
     holds between two sequence variants, the presence of which are correlated
     in a population
   represented_as: edge
-  input_label: in_linkage_desquilibrium_with
+  input_label: in_linkage_disequilibrium_with
   source: snp
   target: snp
   kgx_properties:

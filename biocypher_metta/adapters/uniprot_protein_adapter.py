@@ -106,17 +106,10 @@ class UniprotProteinAdapter(Adapter):
 
 
                     if self.add_provenance:
-<<<<<<< HEAD
-                        base_props['source'] = self.source
-                        base_props['source_url'] = self.source_url
-                
-                yield f'UniProtKB:{base_id}', self.label, base_props
-=======
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
                 yield base_id, self.label, props
->>>>>>> main
                 
                 for comment in record.comments:
                     if 'ALTERNATIVE PRODUCTS:' in comment:
@@ -136,17 +129,10 @@ class UniprotProteinAdapter(Adapter):
 
 
                                 if self.add_provenance:
-<<<<<<< HEAD
-                                    isoform_props['source'] = self.source
-                                    isoform_props['source_url'] = self.source_url
-                            
-                            yield f'UniProtKB:{isoform_id}', self.label, isoform_props
-=======
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
 
                             yield isoform_id, self.label, props
->>>>>>> main
                         break
 
     def get_edges(self):
