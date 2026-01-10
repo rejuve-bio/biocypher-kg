@@ -208,7 +208,7 @@ R-HSA-69656	Cyclin A:Cdk2-associated events at S phase entry	GO:0045740
 R-HSA-1614603	Cysteine formation from homocysteine	GO:0019346
 R-HSA-9707564	Cytoprotection by HMOX1	GO:0034599
 R-HSA-2564830	Cytosolic iron-sulfur cluster assembly	GO:0016226
-R-HSA-1834949	Cytosolic sensors of pathogen-associated DNA 	GO:0032481
+R-HSA-1834949	Cytosolic sensors of pathogen-associated DNA	GO:0032481
 R-HSA-156584	Cytosolic sulfonation of small molecules	GO:0050427
 R-HSA-73893	DNA Damage Bypass	GO:0019985
 R-HSA-5696394	DNA Damage Recognition in GG-NER	GO:0000715
@@ -542,7 +542,7 @@ R-HSA-9637628	Modulation by Mtb of host immune system	GO:0052031
 R-HSA-947581	Molybdenum cofactor biosynthesis	GO:0032324
 R-HSA-1222449	Mtb iron assimilation by chelation	GO:0033214
 R-HSA-975871	MyD88 cascade initiated on plasma membrane	GO:0002755
-R-HSA-166166	MyD88-independent TLR4 cascade 	GO:0002756
+R-HSA-166166	MyD88-independent TLR4 cascade	GO:0002756
 R-HSA-166058	MyD88:MAL(TIRAP) cascade initiated on plasma membrane	GO:0002755
 R-HSA-525793	Myogenesis	GO:0051149
 R-HSA-532668	N-glycan trimming in the ER and Calnexin/Calreticulin cycle	GO:0006457
@@ -643,7 +643,7 @@ R-HSA-8964043	Plasma lipoprotein clearance	GO:0034381
 R-HSA-8963899	Plasma lipoprotein remodeling	GO:0034369
 R-HSA-75896	Plasmalogen biosynthesis	GO:0008611
 R-HSA-76002	Platelet activation, signaling and aggregation	GO:0030168
-R-HSA-114608	Platelet degranulation 	GO:0002576
+R-HSA-114608	Platelet degranulation	GO:0002576
 R-HSA-156711	Polo-like kinase mediated events	GO:0051726
 R-HSA-5250913	Positive epigenetic regulation of rRNA expression	GO:0045815
 R-HSA-389977	Post-chaperonin tubulin folding pathway	GO:0007023
@@ -869,7 +869,7 @@ R-HSA-5668541	TNFR2 non-canonical NF-kB pathway	GO:0033209
 R-HSA-6791312	TP53 Regulates Transcription of Cell Cycle Genes	GO:0030330
 R-HSA-5633008	TP53 Regulates Transcription of Cell Death Genes	GO:0042981
 R-HSA-937072	TRAF6-mediated induction of TAK1 complex within TLR4 complex	GO:0007249
-R-HSA-937061	TRIF (TICAM1)-mediated TLR4 signaling 	GO:0035666
+R-HSA-937061	TRIF (TICAM1)-mediated TLR4 signaling	GO:0035666
 R-HSA-187042	TRKA activation by NGF	GO:0048011
 R-HSA-3295583	TRP channels	GO:0070588
 R-HSA-9033500	TYSND1 cleaves peroxisomal proteins	GO:0016485

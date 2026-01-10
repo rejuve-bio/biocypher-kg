@@ -31,6 +31,15 @@ def configuration_workflow(organism: str) -> Optional[Dict[str, Union[str, List[
         if adapters:
             selected_adapters = checkbox("Select adapters to include:", choices=adapters, instruction="(Space to select, Enter to confirm)").unsafe_ask()
             if selected_adapters: selections["--include-adapters"] = selected_adapters
+
+    # Schema config is required by create_knowledge_graph.py
+    while True:
+        schema_options = {k: v for k, v in config_files.items() if "Schema Config" in k}
+        result = get_file_selection("Select schema config:", schema_options, allow_multiple=False, allow_custom=True)
+        if result is None:
+            continue
+        selections["--schema-config"] = result
+        break
     
     while True:
         result = get_file_selection("Select dbSNP rsIDs file:", aux_files, allow_multiple=False, allow_custom=True)
@@ -51,6 +60,7 @@ def build_command_from_selections(selections: Dict[str, Union[str, List[str]]]) 
     cmd = ["python3", str(PROJECT_ROOT / "create_knowledge_graph.py")]
     cmd.extend(["--output-dir", selections["--output-dir"]])
     cmd.extend(["--adapters-config", selections["--adapters-config"]])
+    cmd.extend(["--schema-config", selections["--schema-config"]])
     if "--include-adapters" in selections:
         for adapter in selections["--include-adapters"]: cmd.extend(["--include-adapters", adapter])
     cmd.extend(["--dbsnp-rsids", selections["--dbsnp-rsids"]])
