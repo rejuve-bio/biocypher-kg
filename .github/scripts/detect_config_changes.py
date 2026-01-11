@@ -12,7 +12,7 @@ def detect_config_changes():
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
     previous_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD^'], text=True).strip()
     
-    filename = 'config/adapters_config_sample.yaml'
+    filename = 'config/hsa/hsa_adapters_config_sample.yaml'
     
     current_content = get_file_content(current_commit, filename)
     previous_content = get_file_content(previous_commit, filename)
