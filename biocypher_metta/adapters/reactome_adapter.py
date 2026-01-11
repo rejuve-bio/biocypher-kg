@@ -58,8 +58,9 @@ class ReactomeAdapter(Adapter):
         if ensembl_uniprot_map_path:
             try:
                 import pickle
-                with open(ensembl_uniprot_map_path, 'rb') as f:
-                    self.ensembl_uniprot_map = pickle.load(f)
+                # with open(ensembl_uniprot_map_path, 'rb') as f:
+                #     self.ensembl_uniprot_map = pickle.load(f)
+                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb')) if ensembl_uniprot_map_path else None 
                 print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
             except Exception as e:
                 print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
@@ -84,7 +85,7 @@ class ReactomeAdapter(Adapter):
             if self.write_properties and self.add_provenance:
                 base_props['source'] = self.source
                 base_props['source_url'] = self.source_url
-
+            not_mapped_no_processing = 0
             for line in input_file:
                 data = line.strip().split('\t')
 
@@ -124,17 +125,19 @@ class ReactomeAdapter(Adapter):
                         elif self.taxon_id == 7227 and organism_pathway_prefix == 'R-DME':
                             # print(f'path: {organism_pathway_prefix} // {pathway_id}')
                             # source_type = self._get_entity_type(entity_id)
-                            if entity_id.startswith('FBpp'):
+                            if entity_id.lower().startswith('fbpp'):
                                 uniprot_id = self.ensembl_uniprot_map.get(entity_id)
                                 if uniprot_id is None:
                                     # print(f'{entity_id} not found in Ensembl-to-UniProt map.')
                                     uniprot_id = self.get_uniprot_id_from_FB(connection, entity_id)
                                     if uniprot_id is None:
                                         print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
+                                        not_mapped_no_processing += 1
                                         continue
-                                curie_entity_id = f'Flybase:{uniprot_id}'
-                            else:
-                                curie_entity_id = f'Flybase:{entity_id}'
+                                curie_entity_id = f'UniProtKB:{uniprot_id}'
+                            else:                                
+                                curie_entity_id = f'FlyBase:{entity_id}'
+                            # print(f'ID for protein: {curie_entity_id}, entity: {entity_id}, type {source_type} of dmel.\tReactome {pathway_id}')
                             source = (source_type, curie_entity_id)
                             # target = pathway_id
                             # Mandatory property for KGXWriter
@@ -178,6 +181,7 @@ class ReactomeAdapter(Adapter):
                         else:  # 'child_pathway_of'
                             source, target = child, parent
                         yield source, target, self.label, props
+            print(f'Entities not mapped to Uniprot IDs: {not_mapped_no_processing}')
 
 
     def _get_entity_type(self, entity_id):
@@ -188,96 +192,6 @@ class ReactomeAdapter(Adapter):
             return "protein"
         else:
             return "transcript"
-
-
-    # def _get_source_type_and_id(self, ensembl_id):
-    #     # Remove version number if present (e.g., ENSG00000000419.14 -> ENSG00000000419)
-    #     clean_id = ensembl_id.split('.')[0]
-        
-    #     if clean_id.startswith(("FBgn", "ENSG")):
-    #         return 'gene', f"{clean_id}"
-    #     elif clean_id.startswith(('FBtr', 'ENST')):
-    #         return 'transcript', f"{clean_id}"
-    #     elif clean_id.startswith(('FBpp', 'ENSP')):
-    #         # Skip protein entries if no UniProt mapping is available
-    #         if self.ensembl_uniprot_map and clean_id in self.ensembl_uniprot_map:
-    #             uniprot_id = self.ensembl_uniprot_map[clean_id]
-    #             return 'protein', f"{uniprot_id}"
-    #         else:
-    #             return None
-    #     else:
-    #         return None
-
-
-
-
-    # def get_edges(self):
-    #     organism_taxon_map = {
-    #         'R-DME': 7227,  # Drosophila melanogaster (dmel)
-    #         'R-HSA': 9606,  # Homo sapiens (hsa)
-    #         # Add more organisms here as needed
-    #         'R-MMU': 10090,   # Mus musculus (mmu)
-    #         'R-RNO': 10116,   # Rattus norvegicus
-    #     }
-
-    #     if self.taxon_id == 7227:
-    #         connection = self.connect_to_flybase()
-
-    #     with open(self.filepath) as input:
-    #         _props = {}
-    #         if self.write_properties and self.add_provenance:
-    #             _props['source'] = self.source
-    #             _props['source_url'] = self.source_url
-                
-    #         for line in input:
-    #             if self.label == 'genes_pathways':
-    #                 data = line.strip().split('\t')
-    #                 pathway_id = data[1]
-                    
-    #                 # Only process human pathways (R-HSA prefix) and add REACT prefix
-    #                 if self.taxon_id == 9606 and pathway_id.startswith('R-HSA'):
-    #                     ensembl_id = data[0]
-    #                     result = self._get_source_type_and_id(ensembl_id)
-                        
-    #                     # Skip if not a human Ensembl ID or protein without UniProt mapping
-    #                     if result is None:
-    #                         continue
-                            
-    #                     source_type, source_id = result
-    #                     target_id = f"{pathway_id}"  
-                        
-    #                 # Drosophila only
-    #                 elif self.taxon_id == 7227 and pathway_id.startswith('R-DME'):
-    #                     source_type = self._get_source_type_and_id(entity_id)
-    #                     if entity_id.startswith('FBpp'):
-    #                         uniprot_id = self.ensembl_uniprot_map.get(entity_id)
-    #                         if uniprot_id is None:
-    #                             print(f'{entity_id} not found in Ensembl-to-UniProt map.')
-    #                             uniprot_id = self.get_uniprot_id_from_FB(connection, entity_id)
-    #                             if uniprot_id is None:
-    #                                 print(
-    #                                     f'No UniProt ID for protein {entity_id}. '
-    #                                     f'Reactome {pathway_id} will not be linked.'
-    #                                 )
-    #                                 continue
-    #                         entity_id = uniprot_id
-    #                     source = (source_type, entity_id)
-    #                     target = pathway_id
-    #                     yield source, target, self.label, props
-                                            
-    #                 yield (source_type, source_id), target_id, self.label, _props
-
-    #             else:
-    #                 # Handle pathway-pathway relationships
-    #                 parent, child = line.strip().split('\t')
-    #                 if parent.startswith('R-HSA') and child.startswith('R-HSA'):
-    #                     parent_prefixed = f"{parent}"
-    #                     child_prefixed = f"{child}"
-                        
-    #                     if self.label == 'parent_pathway_of':
-    #                         yield parent_prefixed, child_prefixed, self.label, _props
-    #                     elif self.label == 'child_pathway_of':
-    #                         yield child_prefixed, parent_prefixed, self.label, _props
 
     def connect_to_flybase(self):
         """Establish a connection to the FlyBase PostgreSQL database."""

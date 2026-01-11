@@ -41,9 +41,9 @@ from biocypher._logger import logger
 
 class ParalogyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'paralogs_genes'):
         self.dmel_data_filepath = dmel_data_filepath
-        self.label = 'paralogs_genes'
+        self.label = label
         self.type = 'paralogy association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'

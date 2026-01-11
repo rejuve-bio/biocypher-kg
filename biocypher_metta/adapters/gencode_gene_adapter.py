@@ -57,14 +57,18 @@ class GencodeGeneAdapter(Adapter):
         self.dataset = 'gencode_gene'
         self.gene_alias_file_path = gene_alias_file_path
         self.source = 'GENCODE'
-        self.version = 'v44'
-        self.source_url = 'https://www.gencodegenes.org/human/'
+        self.version = 'v49'                                # file name:  gencode.v49.annotation.gtf.gz
+        version = str(filepath).split('/')[-1]
+        version = version.split('.')[1]
+        if version.startswith('v'):
+            self.version = version
+        self.source_url = 'https://www.gencodegenes.org/'
         
         self.hgnc_processor = HGNCSymbolProcessor()
         self.hgnc_processor.update_hgnc_data()
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
-
+ 
 
     def parse_info_metadata(self, info):
         parsed_info = {}
@@ -91,7 +95,7 @@ class GencodeGeneAdapter(Adapter):
                         hgnc = ref[5:]
                     if ref.startswith('Ensembl:'):
                         ensembl = ref[8:]
-                    if ref.startswith('FLYBASE:'):
+                    if ref.upper().startswith('FLYBASE:'):
                         flybase = ref[8:]
                 if ensembl or hgnc or flybase:
                     complete_synonyms = []
@@ -121,6 +125,7 @@ class GencodeGeneAdapter(Adapter):
     def get_nodes(self):
         alias_dict = self.get_gene_alias()
         not_processed = 0
+        processed_records = 0
         with gzip.open(self.filepath, 'rt') as input:
             for line in input:
                 if line.startswith('#'):
@@ -150,11 +155,18 @@ class GencodeGeneAdapter(Adapter):
                     
                     gene_name = info.get('gene_name')
                     if not gene_name:
-                        print(f"No gene name found for gene {gene_id}. Invalid record: {info}. Skipping it.")
+                        # print(f"No gene name found for gene {gene_id}. Invalid record: {info}. Skipping it.")
                         not_processed += 1
                         continue
-                    result = self.hgnc_processor.process_identifier(gene_name)
-                    
+
+                    if self.taxon_id == 9606:       # human
+                        result = self.hgnc_processor.process_identifier(gene_name)
+                    elif self.taxon_id == 7227:     # fly  I'll change this soon  --> TODO: fly and other organisms don't have HGNC IDs
+                        result = {
+                            'status': 'current',
+                            'original': gene_name,
+                            'current': gene_name
+                        }                    
                     props = {}
                     try:
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
@@ -162,8 +174,6 @@ class GencodeGeneAdapter(Adapter):
                                 gene_type_val = info.get('gene_type')
                                 props = {
                                     'gene_type': gene_type_val if gene_type_val is not None else info['gene_biotype'],
-                                    # props = {
-                                    # 'gene_type': info['gene_type'] if info['gene_type'] else info['gene_biotype'],
                                     'chr': chr if chr else 'unknown',
                                     'start': start if start else 'unknown',
                                     'end': end if end else 'unknown',
@@ -175,10 +185,11 @@ class GencodeGeneAdapter(Adapter):
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
-
+                            processed_records += 1
                             yield id, self.label, props
-                        not_processed += 1
+                        else:
+                            not_processed += 1
                     except Exception as e:
                         print(f'Failed to process line: {line}\nError: {str(e)}')
                         not_processed += 1
-        print(f"Not processed records: {not_processed}")
+        print(f"Not processed records: {not_processed} out of {processed_records} genes included in the BioAS.")

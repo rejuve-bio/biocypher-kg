@@ -4,6 +4,7 @@ import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, to_float
 
+# There are data for CEL, DMEL MMU, RNO & others, but the site is frequently unavailable :-()
 # Human data:
 # https://enhanceratlas.org/downloadv2.php
 

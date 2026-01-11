@@ -1,0 +1,54 @@
+name: GENCODE
+website: https://www.gencodegenes.org
+nodes:
+  gene:
+    url: https://www.gencodegenes.org/
+    input_label: gene
+    properties:
+      start: int
+      end: int
+      chr: str
+      gene_type: str
+      gene_name: str
+  transcript:
+    url: https://www.gencodegenes.org/
+    input_label: transcript
+    description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
+    properties:
+      transcript_name: str
+      transcript_id: str
+      transcript_type: str
+      gene_name: str
+  exon:
+    url: https://www.gencodegenes.org/
+    input_label: exon
+    properties:
+      exon_id: str
+      gene_id: str
+      exon_number: int
+      start: int
+      end: int
+      chr: str
+      transcript_id: str
+relationships:
+  transcribes to:
+    url: https://www.gencodegenes.org/
+    input_label: transcribes_to
+    description: x transcribes to y if and only if y is synthesized from template
+      x
+    source: gene
+    target: transcript
+  exon part_of transcript:
+    url: https://www.gencodegenes.org/
+    input_label: part_of_transcript
+    description: holds between parts and wholes (material entities or processes) For
+      example, a particular exon is part of a particular transcript or gene
+    source: exon
+    target: transcript
+  exon part_of gene:
+    url: https://www.gencodegenes.org/
+    input_label: part_of_gene
+    description: holds between parts and wholes (material entities or processes) For
+      example, a particular exon is part of a particular transcript or gene
+    source: exon
+    target: gene

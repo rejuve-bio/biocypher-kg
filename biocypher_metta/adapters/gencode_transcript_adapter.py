@@ -154,7 +154,7 @@ class GencodeTranscriptAdapter(Adapter):
 
                 gene_name = info.get('gene_name')
                 if not gene_name:
-                    print(f"No gene name found for transcript {info['transcript_id']}. Record: {info}.\nGene name will be 'unkown'")
+                    # print(f"No gene name found for transcript {info['transcript_id']}. Record: {info}.\nGene name will be 'unkown'")
                     result = {'status': 'unknown', 'original': 'unknown', 'current': 'unknown'}
                 else:
                     result = self.hgnc_processor.process_identifier(gene_name)
@@ -192,8 +192,7 @@ class GencodeTranscriptAdapter(Adapter):
 
                             yield transcript_key, self.label, props
                 except Exception as e:
-                    print(
-                        f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                    print(f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
                     print(f'Error: {str(e)}')
                     not_processed += 1
         print(f"Not processed records: {not_processed}")
@@ -237,8 +236,7 @@ class GencodeTranscriptAdapter(Adapter):
                         yield _source, _target, self.label, _props
 
                 except Exception as e:
-                    print(
-                        f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                    print(f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
                     print(f'Error: {str(e)}')
                     not_processed += 1
         print(f"Not processed records: {not_processed}")

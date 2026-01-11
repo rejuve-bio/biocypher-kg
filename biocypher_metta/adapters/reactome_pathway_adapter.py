@@ -16,7 +16,7 @@ from biocypher_metta.adapters import Adapter
 
 class ReactomePathwayAdapter(Adapter):
 
-    def __init__(self, filepath, pubmed_map_path, label, write_properties, add_provenance, taxon_id):
+    def __init__(self, filepath, pubmed_map_path, write_properties, add_provenance, label, taxon_id):
 
         self.filepath = filepath
         self.pubmed_map_path = pubmed_map_path

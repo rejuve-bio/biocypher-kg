@@ -1,0 +1,30 @@
+name: ENCODE
+website: https://genome.ucsc.edu
+nodes:
+  transcription binding site:
+    url: https://genome.ucsc.edu/cgi-bin/hgTables
+    input_label: tfbs
+    description: A region of DNA where a transcription factor binds to regulate gene
+      expression
+    properties:
+      end: int
+      start: int
+      taxon_id: int
+      chr: str
+relationships:
+  gene to transcription binding site association:
+    url: https://genome.ucsc.edu/cgi-bin/hgTables
+    input_label: gene_tfbs
+    description: An association between a transcription factor and its binding site
+    source: gene
+    target: tfbs
+    properties:
+      score: float
+  promoter to gene association:
+    url: https://screen.wenglab.org/downloads
+    input_label: promoter_gene
+    description: An association between a promoter and a gene
+    source: promoter
+    target: gene
+    properties:
+      biological_context: str

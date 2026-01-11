@@ -44,9 +44,9 @@ import pickle
 
 class OrthologyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map, label = 'orthologs_genes'):
         self.dmel_data_filepath = dmel_data_filepath
-        self.label = 'orthologs_genes'
+        self.label = label
         self.type = 'orthology association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'

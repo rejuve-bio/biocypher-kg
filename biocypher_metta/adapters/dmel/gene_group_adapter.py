@@ -94,7 +94,6 @@ class GeneGroupAdapter(Adapter):
                     props['source_url'] = self.source_url
                 parents = []
                 genes_ids = []
-                #print(f'group: {group_id}\n{props}')
                 yield f'FlyBase:{group_id.upper()}', self.label, props
 
 

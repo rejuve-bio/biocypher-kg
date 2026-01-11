@@ -3,9 +3,9 @@ roadmap:
   name: Roadmap Epigenomics Project
   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
 
-gencode:
+gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
   name: GENCODE v49
-  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz
+  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz       
 
 uniprot:
   name: UniProtKB/Swiss-Prot
@@ -111,10 +111,10 @@ gwas:
   url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2025/09/30/gwas-catalog-associations_ontology-annotated.tsv*
 enhancer_atlas:
   name: EnhancerAtlas
-  url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   #  http://www.enhanceratlas.org/ is not accessible...
-fabian:
-  name: Fabian
-  url: https://fabian.bioinf.mpi-inf.mpg.de/downloads/human_grch38.tar.gz
+  url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   #  http://www.enhanceratlas.org/ is not accessible most of the time...
+# fabian:
+#   name: Fabian
+#   url: https://fabian.bioinf.mpi-inf.mpg.de/downloads/human_grch38.tar.gz
 
 brenda_tissue_ontology:
   name: BRENDA Tissue Ontology

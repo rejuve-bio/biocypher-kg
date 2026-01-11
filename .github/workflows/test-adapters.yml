@@ -192,15 +192,15 @@ jobs:
 
           if [ "$MAIN_SCRIPT_CHANGED" == "true" ] || [ "$ALL_FILES_USED" == "true" ]; then
             echo "Running all adapters with all writers due to main script change or all files being used"
-            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/adapters_config_sample.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/adapters_config_sample.yaml --dbsnp-rsids aux_files/hsa/ensembl_id_to_hgnc_symbol.pkl --dbsnp-pos aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl --writer-type $CURRENT_WRITER
           elif [ -n "$CHANGED_WRITERS" ]; then
             if [[ $CHANGED_WRITERS == *"$CURRENT_WRITER"* ]] || [ "$CHANGED_WRITERS" == "$ALL_WRITERS" ]; then
               echo "Running all adapters with changed writer: $CURRENT_WRITER"
-              uv run python create_knowledge_graph.py --output-dir output --adapters-config config/adapters_config_sample.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+              uv run python create_knowledge_graph.py --output-dir output --adapters-config config/adapters_config_sample.yaml --dbsnp-rsids aux_files/hsa/ensembl_id_to_hgnc_symbol.pkl --dbsnp-pos aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl --writer-type $CURRENT_WRITER
             else
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"
-                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/hsa/ensembl_id_to_hgnc_symbol.pkl --dbsnp-pos aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl --writer-type $CURRENT_WRITER
 
               else
                 echo "Skipping unchanged writer: $CURRENT_WRITER"
@@ -208,7 +208,7 @@ jobs:
             fi
           elif [ -n "$CHANGED_ADAPTERS" ] || [ "$CONFIG_CHANGED" == "true" ]; then
             echo "Running changed adapters or config with writer: $CURRENT_WRITER"
-            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/ensembl_to_hgnc.pkl --dbsnp-pos aux_files/hgnc_to_ensembl.pkl --writer-type $CURRENT_WRITER
+            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/hsa/ensembl_id_to_hgnc_symbol.pkl --dbsnp-pos aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl --writer-type $CURRENT_WRITER
           else
             echo "No relevant changes detected for this writer. Skipping."
           fi

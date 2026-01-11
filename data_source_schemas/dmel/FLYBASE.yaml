@@ -1,0 +1,252 @@
+name: FLYBASE
+website: https://flybase.org
+nodes:
+  gene group:
+    url: https://flybase.org/
+    input_label: gene_group
+    properties:
+      group_name: str
+      genes: str[]
+      group_symbol: str
+      taxon_id: int
+      HGNC_family_ID: str[]
+      parent_groups: str[]
+  signaling pathway gene group:
+    url: https://flybase.org/
+    input_label: signaling_pathway_gene_group
+    properties:
+      group_name: str
+      genes: str[]
+      group_symbol: str
+      taxon_id: int
+      HGNC_family_ID: str[]
+      parent_groups: str[]
+  metabolic pathway gene group:
+    url: https://flybase.org/
+    input_label: metabolic_pathway_gene_group
+    properties:
+      group_name: str
+      genes: str[]
+      group_symbol: str
+      taxon_id: int
+      HGNC_family_ID: str[]
+      parent_groups: str[]
+  dmel disease model:
+    url: https://flybase.org/
+    input_label: dmel_disease_model
+    properties:
+      do_term_name: str
+      do_qualifier: str
+      allele: str
+      do_term_id: str
+      ev_code_interact_alleles: str
+      evidence_code: str
+      gene: str
+      ortholog_hgnc_symbol: str
+      ortholog_hgnc_id: str
+      interacting_alleles: str[]
+      taxon_id: int
+  genotype:
+    url: https://flybase.org/
+    input_label: genotype
+    properties:
+      reference: str
+      genotype_ids: str
+      genotype_symbols: str
+      taxon_id: int
+  phenotype_set:
+    url: https://flybase.org/
+    input_label: phenotype_set
+    properties:
+      phenotype_ontology_id: str
+      taxon_id: int
+  allele:
+    url: https://flybase.org/
+    input_label: allele
+    description: Different versions of the same variant (in a specific  locus) are
+      called alleles[1, 2]. Most commonly used referring to genes.
+    properties:
+      allele_symbol: str
+      taxon_id: int
+relationships:
+  gene to group association:
+    url: https://flybase.org/
+    input_label: grouped_into
+    description: 'An association between a gene and a group of genes: genes are grouped
+      into gene groups based on shared characteristics, such as sequence, biological
+      function, or participation in a biological process'
+    source: gene
+    target: gene group
+    properties:
+      taxon_id: int
+  gene to signaling pathway group association:
+    url: https://flybase.org/
+    input_label: signaling_pathway_grouped_into
+    description: 'An association between a gene and a group of genes: genes are grouped
+      into gene groups based on shared characteristics, such as sequence, biological
+      function, or participation in a biological process'
+    source: gene
+    target: signaling pathway gene group
+    properties:
+      taxon_id: int
+  gene to metabolic pathway group association:
+    url: https://flybase.org/
+    input_label: metabolic_pathway_grouped_into
+    description: 'An association between a gene and a group of genes: genes are grouped
+      into gene groups based on shared characteristics, such as sequence, biological
+      function, or participation in a biological process'
+    source: gene
+    target: metabolic pathway gene group
+    properties:
+      taxon_id: int
+  modelled to human disease:
+    url: https://flybase.org/
+    input_label: modelled_to_human_disease
+    source: gene
+    target: dmel disease model
+    properties:
+      taxon_id: int
+  modelled to do term:
+    url: https://flybase.org/
+    input_label: modelled_to_do_term
+    source: gene
+    target: disease
+    properties:
+      disease_model_id: str
+      taxon_id: int
+  allele to phenotype_set:
+    url: https://flybase.org/
+    input_label: involved_in
+    source: allele
+    target: phenotype_set
+    properties:
+      doi: str
+      miniref: str
+      pmid_ref: str
+      fb_ref: str
+      taxon_id: int
+  phenotype_set to genotype:
+    url: https://flybase.org/
+    input_label: genetically_informed_by
+    source: phenotype_set
+    target: genotype
+    properties:
+      doi: str
+      miniref: str
+      pmid_ref: str
+      fb_ref: str
+      taxon_id: int
+  phenotype_set to ontology:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: ontology term
+    properties:
+      taxon_id: int
+  phenotype_set to cellular component:
+    url: https://flybase.org/
+    input_label: inheres_in
+    source: phenotype_set
+    target: cellular component
+    properties:
+      taxon_id: int
+  ptp physically interacts with:
+    url: https://flybase.org/
+    input_label: ptp_physically_interacts_with
+    source: biolink:GeneOrGeneProduct
+    target: protein
+    properties:
+      source_comments: str
+      interaction_comments: str
+      interaction_type: molecular_interaction
+      target_comments: str
+      source_taxon_id: int
+      target_taxon_id: int
+      detection_method: str
+      target_gene: str
+      pubmed_ids: str[]
+      source_gene: str
+  ptt physically interacts with:
+    url: https://flybase.org/
+    input_label: ptt_physically_interacts_with
+    source: biolink:GeneOrGeneProduct
+    target: transcript
+    properties:
+      source_comments: str
+      interaction_comments: str
+      interaction_type: str
+      target_comments: str
+      source_taxon_id: int
+      target_taxon_id: int
+      detection_method: str
+      target_gene: str
+      pubmed_ids: str[]
+      source_gene: str
+  orthology association:
+    url: https://flybase.org/
+    input_label: orthologs_genes
+    description: 'Non-directional association between two genes indicating that there
+      is an orthology relation among them:  “Historical homology that involves genes
+      that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)"'
+    source: gene
+    target: gene
+    properties:
+      hsa_hgnc_id: str
+      source_organism: str
+      hsa_omim_phenotype_ids_names: str
+      target_organism: str
+      DIOPT_score: int
+      hsa_omim_phenotype_ids: str
+      hsa_omim_id: str
+  paralogy association:
+    url: https://flybase.org/
+    input_label: paralogs_genes
+    source: gene
+    target: gene
+    properties:
+      source_symbol: str
+      DIOPT_score: int
+      target_symbol: str
+      taxon_id: int
+  allele to gene association:
+    url: https://flybase.org/
+    input_label: variant_of
+    source: allele
+    target: gene
+    properties:
+      taxon_id: str
+  gene genetic association:
+    url: https://flybase.org/
+    input_label: gene_genetic_association
+    description: An association between a gene and another gene, i.e., a gene-level
+      genetic interactions in FlyBase. This data is computed from the allele-level
+      genetic interaction data captured by FlyBase curators.
+    source: gene
+    target: gene
+    properties:
+      reference: str
+      taxon_id: int
+      type: str
+  allele to allele genetic interaction:
+    url: https://flybase.org/
+    input_label: allele_to_allele_genetic_interaction
+    source: allele
+    target: allele
+    properties:
+      taxon_id: int
+      interaction_description: str
+  expressed in:
+    url: https://flybase.org/
+    input_label: expressed_in
+    description: holds between a gene and an ontology term in which it is expressed
+    source: gene
+    target: ontology term
+    properties:
+      taxon_id: int
+  gene to sequence type:
+    url: https://flybase.org/
+    input_label: sequence_classified_as
+    source: gene
+    target: sequence type
+    properties:
+      taxon_id: str
