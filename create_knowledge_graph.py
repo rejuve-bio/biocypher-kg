@@ -9,14 +9,14 @@ from biocypher import BioCypher
 from biocypher_metta.metta_writer import *
 from biocypher_metta.prolog_writer import PrologWriter
 from biocypher_metta.neo4j_csv_writer import *
-# from biocypher_metta.kgx_writer import *
+from biocypher_metta.kgx_writer import *
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
 import typer
 import re
 import yaml
-import importlib  #for reflection
+import importlib  # for reflection
 from typing_extensions import Annotated
 import pickle
 import json
@@ -27,6 +27,25 @@ from biocypher_cli.modules.sample_preparation import check_and_prepare_samples
 
 
 app = typer.Typer()
+
+
+# Load species configuration from YAML
+def load_species_config(config_path: str = "config/species_config.yaml") -> dict:
+    """Load species configuration from YAML file."""
+    try:
+        with open(config_path, "r") as fp:
+            species_config = yaml.safe_load(fp)
+            logger.info(f"Loaded species configuration from {config_path}")
+            return species_config
+    except FileNotFoundError:
+        logger.error(f"Species config file not found: {config_path}")
+        logger.error("Please create config/species_config.yaml with species configurations")
+        raise typer.Exit(1)
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing species config file: {config_path}")
+        logger.error(e)
+        raise typer.Exit(1)
+
 
 # Function to choose the writer class based on user input
 # Added schema_config_path parameter
@@ -57,14 +76,13 @@ def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path):
             schema_config=str(schema_config_path), 
                                biocypher_config="config/biocypher_config.yaml",
                                output_dir=output_dir)
-
+    
     elif writer_type.lower() == 'networkx':
         return NetworkXWriter(
             schema_config=str(schema_config_path), 
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir
         )
-
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
 
@@ -128,6 +146,7 @@ def preprocess_schema(schema_config_path: Path):
 
     return edge_node_types
 
+
 def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir):
     graph_info = {
         'node_count': sum(nodes_count.values()),
@@ -188,6 +207,7 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     graph_info['data_size'] = f"{total_size_gb:.2f} GB"
 
     return graph_info
+
 
 def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, write_properties, add_provenance, schema_dict):
     nodes_count = Counter()
@@ -263,15 +283,60 @@ def process_adapters(adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, writer, wr
 
 # Run build
 @app.command()
-def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, dir_okay=True)], 
-         adapters_config: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_rsids: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         dbsnp_pos: Annotated[Path, typer.Option(exists=True, file_okay=True, dir_okay=False)],
-         # NEW: Added schema_config as a mandatory CLI option
-         schema_config: Annotated[Path, typer.Option(
-             exists=True, file_okay=True, dir_okay=False,
-             help="Path to the schema config YAML file (required)."
-         )],
+def main(
+    # Species selection options 
+    species: Optional[str] = typer.Option(
+        None,
+        help="Species to generate KG for: hsa, dmel, cel, mmo, rno, or 'all'"
+    ),
+    dataset: str = typer.Option(
+        "full",
+        help="Dataset size: 'sample' or 'full' (default: full)"
+    ),
+    species_config_path: str = typer.Option(
+        "config/species_config.yaml",
+        help="Path to species configuration YAML file"
+    ),
+    
+    # Output directory 
+    output_dir: Optional[Path] = typer.Option(
+        None,
+        file_okay=False, 
+        dir_okay=True,
+        help="Output directory (required)"
+    ),
+    
+    # Manual mode only parameters
+    adapters_config: Optional[Path] = typer.Option(
+        None,
+        exists=True, 
+        file_okay=True, 
+        dir_okay=False,
+        help="Adapters config path (manual mode only)"
+    ),
+    dbsnp_rsids: Optional[Path] = typer.Option(
+        None,
+        exists=True, 
+        file_okay=True, 
+        dir_okay=False,
+        help="dbSNP rsids file (manual mode only)"
+    ),
+    dbsnp_pos: Optional[Path] = typer.Option(
+        None,
+        exists=True, 
+        file_okay=True, 
+        dir_okay=False,
+        help="dbSNP positions file (manual mode only)"
+    ),
+    schema_config: Optional[Path] = typer.Option(
+        None,
+        exists=True, 
+        file_okay=True, 
+        dir_okay=False,
+        help="Schema config path (manual mode only)"
+    ),
+    
+    # Common options
          writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx,KGX"),
          write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
@@ -289,9 +354,164 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
+    Two modes:
+    1. Species mode: Use --species, --dataset, and --output-dir flags
+       Example: --species hsa --dataset sample --output-dir output_hsa
+    
+    2. Manual mode: Specify all paths manually (backward compatible)
+       Example: --output-dir output_neo4j --adapters-config config/...
     """
-
-    # Start biocypher
+    
+    # Determine which mode we're in
+    manual_mode = all([adapters_config, dbsnp_rsids, dbsnp_pos, schema_config])
+    species_mode = species is not None
+    
+    if not manual_mode and not species_mode:
+        logger.error("You must either:")
+        logger.error("  1. Use --species flag with --output-dir (e.g., --species hsa --dataset sample --output-dir output_hsa)")
+        logger.error("  2. Provide all manual parameters (--output-dir, --adapters-config, --dbsnp-rsids, --dbsnp-pos, --schema-config)")
+        raise typer.Exit(1)
+    
+    # Validate that output_dir is provided
+    if output_dir is None:
+        logger.error("--output-dir is required")
+        raise typer.Exit(1)
+    
+    # Handle species mode
+    if species_mode:
+        # Load species configuration
+        SPECIES_CONFIG = load_species_config(species_config_path)
+        
+        if species.lower() == 'all':
+            logger.info("Generating KG for all species")
+            logger.info(f"Base output directory: {output_dir}")
+            logger.info("Species-specific subdirectories will be created")
+            available_species = list(SPECIES_CONFIG.keys())
+            
+            for sp in available_species:
+                if dataset not in SPECIES_CONFIG[sp]:
+                    logger.warning(f"Dataset '{dataset}' not available for species '{sp}', skipping...")
+                    continue
+                
+                # Create species-specific subdirectory
+                sp_output_dir = output_dir / sp
+                logger.info(f"\n{'='*60}")
+                logger.info(f"Processing {sp} - {dataset}")
+                logger.info(f"Output: {sp_output_dir}")
+                logger.info(f"{'='*60}\n")
+                
+                sp_output_dir.mkdir(parents=True, exist_ok=True)
+                
+                config = SPECIES_CONFIG[sp][dataset]
+                
+                # Convert config paths to Path objects
+                sp_adapters_config = Path(config['adapters_config'])
+                sp_dbsnp_rsids = Path(config['dbsnp_rsids'])
+                sp_dbsnp_pos = Path(config['dbsnp_pos'])
+                sp_schema_config = Path(config['schema_config'])
+                
+                # Process this species
+                logger.info(f"Loading dbsnp rsids map for {sp}")
+                sp_dbsnp_rsids_dict = pickle.load(open(sp_dbsnp_rsids, 'rb'))
+                logger.info(f"Loading dbsnp pos map for {sp}")
+                sp_dbsnp_pos_dict = pickle.load(open(sp_dbsnp_pos, 'rb'))
+                
+                bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
+                logger.info(f"Using {writer_type} writer for {sp}")
+                
+                if writer_type == 'parquet':
+                    bc.buffer_size = buffer_size
+                    bc.overwrite = overwrite
+                
+                schema_dict = preprocess_schema(sp_schema_config)
+                
+                with open(sp_adapters_config, "r") as fp:
+                    try:
+                        sp_adapters_dict = yaml.safe_load(fp)
+                    except yaml.YAMLError as e:
+                        logger.error(f"Error loading adapter config for {sp}")
+                        logger.error(e)
+                        continue
+                
+                # Filter adapters if specific ones are requested
+                if include_adapters:
+                    original_count = len(sp_adapters_dict)
+                    include_lower = [a.lower() for a in include_adapters]
+                    sp_adapters_dict = {
+                        k: v for k, v in sp_adapters_dict.items()
+                        if k.lower() in include_lower
+                    }
+                    if not sp_adapters_dict:
+                        available = "\n".join(f" - {a}" for a in sp_adapters_dict.keys())
+                        logger.error(f"No matching adapters found for {sp}. Available adapters:\n{available}")
+                        continue
+                    logger.info(f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}")
+                
+                # Run adapters for this species
+                nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+                    sp_adapters_dict, sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict, bc, 
+                    write_properties, add_provenance, schema_dict
+                )
+                
+                if writer_type == 'networkx':
+                    bc.write_graph()
+                    logger.info(f"NetworkX graph saved for {sp}")
+                
+                if hasattr(bc, 'finalize'):
+                    bc.finalize()
+                
+                # Gather graph info for this species
+                graph_info = gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, sp_output_dir)
+                
+                for dataset_name in datasets_dict:
+                    datasets_dict[dataset_name]["nodes"] = list(datasets_dict[dataset_name]["nodes"])
+                    datasets_dict[dataset_name]["edges"] = list(datasets_dict[dataset_name]["edges"])
+                    graph_info['datasets'].append(datasets_dict[dataset_name])
+                
+                graph_info["dataset_count"] = len(graph_info['datasets'])
+                
+                # Write graph info to JSON
+                graph_info_json = json.dumps(graph_info, indent=2)
+                file_path = f"{sp_output_dir}/graph_info.json"
+                with open(file_path, "w") as f:
+                    f.write(graph_info_json)
+                
+                logger.info(f"Done with {sp}")
+                logger.info(f"Total nodes processed for {sp}: {sum(nodes_count.values())}")
+                logger.info(f"Total edges processed for {sp}: {sum(edges_count.values())}")
+            
+            logger.info("\n" + "="*60)
+            logger.info("All species processed successfully!")
+            logger.info("="*60)
+            return  
+        else:
+            # Single species
+            if species not in SPECIES_CONFIG:
+                logger.error(f"Unknown species: {species}")
+                logger.error(f"Available: {', '.join(SPECIES_CONFIG.keys())}")
+                raise typer.Exit(1)
+            
+            if dataset not in SPECIES_CONFIG[species]:
+                logger.error(f"Dataset '{dataset}' not available for species '{species}'")
+                logger.error(f"Available datasets: {', '.join(SPECIES_CONFIG[species].keys())}")
+                raise typer.Exit(1)
+            
+            config = SPECIES_CONFIG[species][dataset]
+            logger.info(f"Generating KG for {species} using {dataset} dataset")
+            logger.info(f"Output directory: {output_dir}")
+            logger.info(f"Write properties: {write_properties}")
+            logger.info(f"Add provenance: {add_provenance}")
+            
+            # Create output directory if it doesn't exist
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Convert config paths to Path objects
+            adapters_config = Path(config['adapters_config'])
+            dbsnp_rsids = Path(config['dbsnp_rsids'])
+            dbsnp_pos = Path(config['dbsnp_pos'])
+            schema_config = Path(config['schema_config'])
+    
+    # run the actual processing (same for both manual and species mode)
     logger.info("Loading dbsnp rsids map")
     dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
     logger.info("Loading dbsnp pos map")
@@ -423,5 +643,3 @@ def main(output_dir: Annotated[Path, typer.Option(exists=True, file_okay=False, 
 
 if __name__ == "__main__":
     app()
-
-

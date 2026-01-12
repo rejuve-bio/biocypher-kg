@@ -15,7 +15,11 @@ class HumanPhenotypeOntologyAdapter(OntologyAdapter):
 
     def get_uri_prefixes(self):
         return {
-            'primary': 'http://purl.obolibrary.org/obo/HP_'
+            'primary': 'http://purl.obolibrary.org/obo/HP_',
+            'cl': 'http://purl.obolibrary.org/obo/CL_',
+            'go': 'http://purl.obolibrary.org/obo/GO_',
+            'uberon': 'http://purl.obolibrary.org/obo/UBERON_',
+            'chebi': 'http://purl.obolibrary.org/obo/CHEBI_',
         }
 
     def get_nodes(self):
