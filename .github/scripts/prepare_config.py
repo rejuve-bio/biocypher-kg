@@ -2,7 +2,7 @@ import sys
 import yaml
 
 def prepare_config(changed_adapters, config_changed, changed_config_items):
-    with open('config/adapters_config_sample.yaml', 'r') as f:
+    with open('config/hsa/hsa_adapters_config_sample.yaml', 'r') as f:
         full_config = yaml.safe_load(f)
     
     test_config = {}
