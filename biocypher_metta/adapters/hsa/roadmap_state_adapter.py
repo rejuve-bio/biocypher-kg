@@ -69,11 +69,11 @@ class RoadMapChromatinStateAdapter(Adapter):
                             continue
                         cell_id = row[self.COL_DICT['cell']].split()[0]
                         biological_context = self.cell_to_ontology_id_map.get(cell_id, [None])[-1]
+                        if biological_context == None:
+                            print(f"{cell_id} not found in ontology map. Skipping it...")
+                            continue
                         if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                            _props = {}
-                            if biological_context == None:
-                                # print(f"{row[self.COL_DICT['cell']]} not found in ontology map skipping...")
-                                continue                            
+                            _props = {}                         
                             _source = _id
                             prefix = biological_context.split('_')[0]
                             _target = (self.ONTOLOGIES_PREFIX_TO_TYPE[prefix], biological_context)
@@ -82,7 +82,7 @@ class RoadMapChromatinStateAdapter(Adapter):
                             tissue = row[self.COL_DICT['tissue']]
                             tissue_id = self.tissue_to_ontology_id_map.get(tissue, None)
                             if tissue_id == None:
-                                # print(f"{tissue} not found in ontology map. Skipping it...")
+                                print(f"{tissue} not found in ontology map. Skipping it...")
                                 continue
                             
                             tissue_type = self.ONTOLOGIES_PREFIX_TO_TYPE[tissue_id.split('_')[0]]

@@ -609,9 +609,9 @@ topld_afr:
       start: 53000000
       end:  56000000
       label: in_linkage_disequilibrium_with
-   outdir: top_ld/afr
-   nodes: False
-   edges: True
+  outdir: top_ld/afr
+  nodes: False
+  edges: True
 
 topld_eas:
   adapter:
@@ -625,9 +625,9 @@ topld_eas:
       start: 53000000
       end:  56000000
       label: in_linkage_disequilibrium_with
-   outdir: top_ld/EAS
-   nodes: False
-   edges: True
+  outdir: top_ld/EAS
+  nodes: False
+  edges: True
 
 topld_eur:
   adapter:
@@ -793,7 +793,6 @@ peregrine_enhancer_regulates:
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
       label: enhancer_gene
-
   outdir: peregrine
   nodes: False
   edges: True

@@ -69,7 +69,7 @@ class RoadMapH3MarkAdapter(Adapter):
                         cell_id = row[self.COL_DICT['cell']].split()[0]
                         biological_context = self.cell_to_ontology_id_map.get(cell_id, [None])[-1]
                         if biological_context == None:
-                            # print(f"{row[self.COL_DICT['cell']]} not found in ontology map. Skipping it...")
+                            print(f"{row[self.COL_DICT['cell']]} not found in ontology map. Skipping it...")
                             continue
 
                         if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):                        
@@ -81,7 +81,7 @@ class RoadMapH3MarkAdapter(Adapter):
                             tissue = row[self.COL_DICT['tissue']]
                             tissue_id = self.tissue_to_ontology_id_map.get(tissue, None)
                             if tissue_id == None:
-                                # print(f"{tissue} not found in ontology map. Skipping it...")
+                                print(f"{tissue} not found in ontology map. Skipping it...")
                                 continue
                             
                             tissue_type = self.ONTOLOGIES_PREFIX_TO_TYPE[tissue_id.split('_')[0]]
