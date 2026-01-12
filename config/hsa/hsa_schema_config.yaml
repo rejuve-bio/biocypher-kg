@@ -682,7 +682,7 @@ tad:
 
 #parent types
 expression:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:related_to"
   represented_as: edge
   input_label: expression
@@ -723,7 +723,7 @@ annotation:
       biolink: source_web_page
 
 regulatory association:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:related_to"
   represented_as: edge
   input_label: regulatory_association
@@ -1637,7 +1637,7 @@ gtex variant to gene expression association:
   aliases: ["eQTL", "e-QTL"]
   description: >-
     An association between a variant and expression of a gene (i.e. e-QTL)
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:VariantToGeneExpressionAssociation]
   biolink_predicate: "biolink:correlated_with"
   represented_as: edge
@@ -1660,7 +1660,7 @@ gtex variant to gene expression association:
     source_url: str
 
 closest gene to variant association:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:VariantToGeneAssociation]
   biolink_predicate: "biolink:associated_with" 
   description: >-
@@ -1760,7 +1760,7 @@ in gene to variant association:
       biolink: has_quantitative_value
 
 topld in linkage disequilibrium with:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:in_linkage_disequilibrium_with"
   description:
     holds between two sequence variants, the presence of which are correlated
@@ -1791,7 +1791,7 @@ topld in linkage disequilibrium with:
       biolink: source_web_page
 
 lower resolution structure:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenomicSequenceLocalization]
   biolink_predicate: "biolink:has_part"
   description: >-
@@ -1807,7 +1807,7 @@ lower resolution structure:
     agent_type: "manual_agent"
 
 located on chain:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenomicSequenceLocalization]
   biolink_predicate: "biolink:part_of"
   description: >-
@@ -1823,7 +1823,7 @@ located on chain:
     agent_type: "manual_agent"
 
 transcription factor to snp association:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:affects"
   description: holds between a transcription factor and a snp if the snp occurs in a transcription factor binding site (tfbs)
   represented_as: edge
@@ -1875,7 +1875,7 @@ gene to transcription binding site association:
       biolink: source_web_page
 
 gene in tad region:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:located_in"
   description: holds between a tad and a gene that is in the tad region
   represented_as: edge
@@ -1919,7 +1919,7 @@ activity by contact:
       biolink: has_biological_sequence
 
 chromatin state:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]
   biolink_predicate: "biolink:has_phenotype" 
   represented_as: edge
@@ -1937,7 +1937,7 @@ chromatin state:
       biolink: phenotypic_state
 
 dnase I hotspot:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]
   biolink_predicate: "biolink:has_phenotype" 
   description: >-
@@ -1953,7 +1953,7 @@ dnase I hotspot:
     agent_type: "manual_agent"
 
 histone modification:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]
   biolink_predicate: "biolink:has_phenotype"
   description: >-
@@ -2143,3 +2143,58 @@ protein has_xref cellular_component:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+
+
+gene to phenotype association:
+  description: >-
+    An association between a gene and a phenotype (HPO term).
+  is_a: association
+  mixins: [biolink:GeneToPhenotypicFeatureAssociation]
+  biolink_predicate: "biolink:has_phenotype"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_phenotype
+  output_label: has_phenotype
+  source: gene
+  target: phenotype
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:PhenotypicFeature"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    phenotype_name:
+      type: str
+    frequency:
+      type: str
+    disease_id:
+      type: str
+
+
+gene to disease association:
+  description: >-
+    An association between a gene and a disease identifier (e.g., OMIM, ORPHA).
+  is_a: association
+  mixins: [biolink:GeneToDiseaseAssociation]
+  biolink_predicate: "biolink:associated_with"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_disease
+  output_label: associated_with
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    association_type:
+      type: str
+    source_ref:
+      type: str
