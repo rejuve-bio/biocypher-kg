@@ -1,0 +1,48 @@
+{
+  "node_count": 0,
+  "edge_count": 33414,
+  "dataset_count": 1,
+  "data_size": "0.01 GB",
+  "top_entities": [],
+  "top_connections": [
+    {
+      "name": "associated_with",
+      "count": 33414
+    }
+  ],
+  "frequent_relationships": [
+    {
+      "entities": [
+        "promoter",
+        "gene"
+      ],
+      "count": 33414
+    }
+  ],
+  "schema": {
+    "nodes": [],
+    "edges": [
+      {
+        "data": {
+          "source": "promoter",
+          "target": "gene",
+          "possible_connections": [
+            "associated_with"
+          ]
+        }
+      }
+    ]
+  },
+  "datasets": [
+    {
+      "name": "EPD",
+      "version": "006",
+      "url": "https://epd.expasy.org/ftp/epdnew/D_melanogaster/",
+      "nodes": [],
+      "edges": [
+        "associated_with"
+      ],
+      "imported_on": "2026-01-16"
+    }
+  ]
+}
