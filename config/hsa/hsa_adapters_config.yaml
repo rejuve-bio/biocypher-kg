@@ -800,6 +800,35 @@ peregrine_enhancer_regulates:
   nodes: False
   edges: True
 
+feature_sv_overlap:
+  adapter:
+    module: biocypher_metta.adapters.feature_variant_overlap_adapter
+    cls: FeatureVariantOverlapAdapter
+    args:
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+          label: gene
+          type: gtf
+        - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+          label: non_coding_rna
+          type: bed
+        - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+          label: promoter
+          type: bed
+      sv_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+          label: structural_variant
+          type: txt
+        - path: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+          label: structural_variant
+          type: vcf
+      write_properties: True
+      add_provenance: True
+      taxon_id: 9606
+  outdir: feature_sv_overlap
+  nodes: False
+  edges: True
+
 dbsuper_super_enhancer:
   adapter:
     module: biocypher_metta.adapters.hsa.dbsuper_adapter
