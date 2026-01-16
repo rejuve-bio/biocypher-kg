@@ -1432,3 +1432,15 @@ uniprot_dbxref_molecular_function:
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
+
+uniprot_chebi_relationships:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein
+      dbxref: CHEBI
+  outdir: uniprot/chebi_relationships
+  nodes: False
+  edges: True

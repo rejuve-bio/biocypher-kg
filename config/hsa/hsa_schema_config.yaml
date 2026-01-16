@@ -2050,6 +2050,10 @@ has xref:
     xref_db:
       type: str
       biolink: knowledge_source
+    evidence:
+      type: str[]
+      biolink: has_evidence
+
 
 
 protein has_xref gene:
@@ -2141,5 +2145,69 @@ protein has_xref cellular_component:
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:CellularComponent"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref catalytic_activity:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_catalytic_activity
+  output_label: has_xref
+  source: protein
+  target: chemical substance
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref cofactor:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_cofactor
+  output_label: has_xref
+  source: protein
+  target: chemical substance
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref binding_site_ligand:
+  is_a: has xref
+  biolink_predicate: "biolink:related_to"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_binding_site_ligand
+  output_label: has_xref
+  source: protein
+  target: chemical substance
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+chemical_substance part_of chemical_substance:
+  is_a: association
+  biolink_predicate: "biolink:related_to"
+  represented_as: edge
+  input_label: chemical_substance_part_of_chemical_substance
+  output_label: part_of
+  source: chemical substance
+  target: chemical substance
+  properties:
+    evidence:
+      type: str[]
+      biolink: has_evidence
+  kgx_properties:
+
+    subject_category: "biolink:ChemicalEntity"
+    object_category: "biolink:ChemicalEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
