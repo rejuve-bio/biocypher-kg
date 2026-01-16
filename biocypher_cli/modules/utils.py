@@ -46,8 +46,8 @@ class PythonClassValidator(Validator):
 def find_config_files(organism: str = None) -> Dict[str, str]:
     config_dir = PROJECT_ROOT / "config"
     files = {
-        "Human - Sample Adapters": str(config_dir / "adapters_config_sample.yaml"),
-        "Human - Full Adapters": str(config_dir / "adapters_config.yml"),
+        "Human - Sample Adapters": str(config_dir / "hsa" / "hsa_adapters_config_sample.yaml"),
+        "Human - Full Adapters": str(config_dir / "hsa" / "hsa_adapters_config.yaml"),
         "Fly - Sample Adapters": str(config_dir / "dmel" / "dmel_adapters_config_sample.yaml"),
         "Fly - Full Adapters": str(config_dir / "dmel" / "dmel_adapters_config.yaml"),
         # "Fly - Sample Adapters": str(config_dir / "dmel_adapters_config_sample.yaml"),
@@ -66,11 +66,12 @@ def find_config_files(organism: str = None) -> Dict[str, str]:
 def find_aux_files(organism: str = None) -> Dict[str, str]:
     aux_dir = PROJECT_ROOT / "aux_files"
     files = {
-        "Human - Tissues Ontology Map": str(aux_dir / "abc_tissues_to_ontology_map.pkl"),
-        "Human - Gene Mapping": str(aux_dir / "gene_mapping.pkl"),
-        "Human - Variant Data": str(aux_dir / "variant_data.pkl"),
-        "Fly - dbSNP rsIDs": str(aux_dir / "sample_dbsnp_rsids.pkl"),
-        "Fly - dbSNP Positions": str(aux_dir / "sample_dbsnp_pos.pkl"),
+        "Human - Tissues Ontology Map": str(aux_dir / "hsa" / "abc_tissues_to_ontology_map.pkl"),
+        "Human - Gene Mapping": str(aux_dir / "hsa" / "hgnc_symbol_to_ensembl_id_map.pkl"),
+        "Human - dbSNP rsIDs": str(aux_dir / "hsa" / "sample_dbsnp_rsids.pkl"),
+        "Human - dbSNP Positions": str(aux_dir / "hsa" / "sample_dbsnp_pos.pkl"),
+        "Fly - dbSNP rsIDs": str(aux_dir / "hsa" / "sample_dbsnp_rsids.pkl"),
+        "Fly - dbSNP Positions": str(aux_dir / "hsa" / "sample_dbsnp_pos.pkl"),
     }
     if organism == "human":
         return {k: v for k, v in files.items() if k.startswith("Human")}
