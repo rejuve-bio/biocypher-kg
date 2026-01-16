@@ -74,9 +74,10 @@ def parse_schema(bcy):
 
 @pytest.fixture(scope="session")
 def setup_class(request):
+    schema_config_path = request.config.getoption("--schema-config")
     try:
         bcy = BioCypher(
-            schema_config_path='config/hsa/hsa_schema_config.yaml',
+            schema_config_path=schema_config_path,
             biocypher_config_path='config/biocypher_config.yaml'
         )
         node_labels, edges_schema = parse_schema(bcy) 
