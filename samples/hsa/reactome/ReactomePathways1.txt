@@ -1,0 +1,100 @@
+R-HSA-164843	2-LTR circle formation	Homo sapiens
+R-HSA-9909438	3-Methylcrotonyl-CoA carboxylase deficiency	Homo sapiens
+R-HSA-9916722	3-hydroxyisobutyryl-CoA hydrolase deficiency	Homo sapiens
+R-HSA-9914274	3-methylglutaconic aciduria	Homo sapiens
+R-HSA-73843	5-Phosphoribose 1-diphosphate biosynthesis	Homo sapiens
+R-HSA-5619084	ABC transporter disorders	Homo sapiens
+R-HSA-1369062	ABC transporters in lipid homeostasis	Homo sapiens
+R-HSA-382556	ABC-family proteins mediated transport	Homo sapiens
+R-HSA-9033807	ABO blood group biosynthesis	Homo sapiens
+R-HSA-9660821	ADORA2B mediated anti-inflammatory cytokines production	Homo sapiens
+R-HSA-418592	ADP signalling through P2Y purinoceptor 1	Homo sapiens
+R-HSA-392170	ADP signalling through P2Y purinoceptor 12	Homo sapiens
+R-HSA-198323	AKT phosphorylates targets in the cytosol	Homo sapiens
+R-HSA-198693	AKT phosphorylates targets in the nucleus	Homo sapiens
+R-HSA-211163	AKT-mediated inactivation of FOXO1A	Homo sapiens
+R-HSA-9700645	ALK mutants bind TKIs	Homo sapiens
+R-HSA-112122	ALKBH2 mediated reversal of alkylation damage	Homo sapiens
+R-HSA-112126	ALKBH3 mediated reversal of alkylation damage	Homo sapiens
+R-HSA-163680	AMPK inhibits chREBP transcriptional activation activity	Homo sapiens
+R-HSA-9931269	AMPK-induced ERAD and lysosome mediated degradation of PD-L1(CD274)	Homo sapiens
+R-HSA-5467333	APC truncation mutants are not K63 polyubiquitinated	Homo sapiens
+R-HSA-5467337	APC truncation mutants have impaired AXIN binding	Homo sapiens
+R-HSA-179409	APC-Cdc20 mediated degradation of Nek2A	Homo sapiens
+R-HSA-174143	APC/C-mediated degradation of cell cycle proteins	Homo sapiens
+R-HSA-174048	APC/C:Cdc20 mediated degradation of Cyclin B	Homo sapiens
+R-HSA-174154	APC/C:Cdc20 mediated degradation of Securin	Homo sapiens
+R-HSA-176409	APC/C:Cdc20 mediated degradation of mitotic proteins	Homo sapiens
+R-HSA-174178	APC/C:Cdh1 mediated degradation of Cdc20 and other APC/C:Cdh1 targeted proteins in late mitosis/early G1	Homo sapiens
+R-HSA-179419	APC:Cdc20 mediated degradation of cell cycle proteins prior to satisfation of the cell cycle checkpoint	Homo sapiens
+R-HSA-5649702	APEX1-Independent Resolution of AP Sites via the Single Nucleotide Replacement Pathway	Homo sapiens
+R-HSA-180689	APOBEC3G mediated resistance to HIV-1 infection	Homo sapiens
+R-HSA-9956514	ARG1 variants cause hyperargininemia	Homo sapiens
+R-HSA-5624958	ARL13B-mediated ciliary trafficking of INPP5E	Homo sapiens
+R-HSA-170984	ARMS-mediated activation	Homo sapiens
+R-HSA-9956529	ASL variants cause argininosuccinate aciduria	Homo sapiens
+R-HSA-9717264	ASP-3026-resistant ALK mutants	Homo sapiens
+R-HSA-9956520	ASS1 variants cause citrullinemia	Homo sapiens
+R-HSA-380994	ATF4 activates genes in response to endoplasmic reticulum  stress	Homo sapiens
+R-HSA-381183	ATF6 (ATF6-alpha) activates chaperone genes	Homo sapiens
+R-HSA-381033	ATF6 (ATF6-alpha) activates chaperones	Homo sapiens
+R-HSA-8874177	ATF6B (ATF6-beta) activates chaperones	Homo sapiens
+R-HSA-1296025	ATP sensitive Potassium channels	Homo sapiens
+R-HSA-9932444	ATP-dependent chromatin remodelers	Homo sapiens
+R-HSA-450408	AUF1 (hnRNP D0) binds and destabilizes mRNA	Homo sapiens
+R-HSA-8854518	AURKA Activation by TPX2	Homo sapiens
+R-HSA-5467340	AXIN missense mutants destabilize the destruction complex	Homo sapiens
+R-HSA-2161522	Abacavir ADME	Homo sapiens
+R-HSA-2161541	Abacavir metabolism	Homo sapiens
+R-HSA-2161517	Abacavir transmembrane transport	Homo sapiens
+R-HSA-73930	Abasic sugar-phosphate removal via the single-nucleotide replacement pathway	Homo sapiens
+R-HSA-9659787	Aberrant regulation of mitotic G1/S transition in cancer due to RB1 defects	Homo sapiens
+R-HSA-9687139	Aberrant regulation of mitotic cell cycle due to RB1 defects	Homo sapiens
+R-HSA-9687136	Aberrant regulation of mitotic exit in cancer due to RB1 defects	Homo sapiens
+R-HSA-2978092	Abnormal conversion of 2-oxoglutarate to 2-hydroxyglutarate	Homo sapiens
+R-HSA-167242	Abortive elongation of HIV-1 transcript in the absence of Tat	Homo sapiens
+R-HSA-156582	Acetylation	Homo sapiens
+R-HSA-264642	Acetylcholine Neurotransmitter Release Cycle	Homo sapiens
+R-HSA-181431	Acetylcholine binding and downstream events	Homo sapiens
+R-HSA-9667769	Acetylcholine inhibits contraction of outer hair cells	Homo sapiens
+R-HSA-399997	Acetylcholine regulates insulin secretion	Homo sapiens
+R-HSA-1300645	Acrosome Reaction and Sperm:Oocyte Membrane Binding	Homo sapiens
+R-HSA-9638771	Action of antimicrobials	Homo sapiens
+R-HSA-9638737	Action of antimicrobials and antimicrobial resistance	Homo sapiens
+R-HSA-2122948	Activated NOTCH1 Transmits Signal to the Nucleus	Homo sapiens
+R-HSA-9032845	Activated NTRK2 signals through CDK5	Homo sapiens
+R-HSA-9028731	Activated NTRK2 signals through FRS2 and FRS3	Homo sapiens
+R-HSA-9032500	Activated NTRK2 signals through FYN	Homo sapiens
+R-HSA-9028335	Activated NTRK2 signals through PI3K	Homo sapiens
+R-HSA-9026527	Activated NTRK2 signals through PLCG1	Homo sapiens
+R-HSA-9026519	Activated NTRK2 signals through RAS	Homo sapiens
+R-HSA-9603381	Activated NTRK3 signals through PI3K	Homo sapiens
+R-HSA-9034793	Activated NTRK3 signals through PLCG1	Homo sapiens
+R-HSA-9034864	Activated NTRK3 signals through RAS	Homo sapiens
+R-HSA-5625886	Activated PKN1 stimulates transcription of AR (androgen receptor) regulated genes KLK2 and KLK3	Homo sapiens
+R-HSA-2033519	Activated point mutants of FGFR2	Homo sapiens
+R-HSA-111452	Activation and oligomerization of BAK protein	Homo sapiens
+R-HSA-165158	Activation of AKT2	Homo sapiens
+R-HSA-399710	Activation of AMPA receptors	Homo sapiens
+R-HSA-9619483	Activation of AMPK downstream of NMDARs	Homo sapiens
+R-HSA-176814	Activation of APC/C and APC/C:Cdc20 mediated degradation of mitotic proteins	Homo sapiens
+R-HSA-176187	Activation of ATR in response to replication stress	Homo sapiens
+R-HSA-111447	Activation of BAD and translocation to mitochondria 	Homo sapiens
+R-HSA-114452	Activation of BH3-only proteins	Homo sapiens
+R-HSA-111446	Activation of BIM and translocation to mitochondria 	Homo sapiens
+R-HSA-139910	Activation of BMF and translocation to mitochondria	Homo sapiens
+R-HSA-174577	Activation of C3 and C5	Homo sapiens
+R-HSA-451308	Activation of Ca-permeable Kainate Receptor	Homo sapiens
+R-HSA-1296041	Activation of G protein gated Potassium channels	Homo sapiens
+R-HSA-991365	Activation of GABAB receptors	Homo sapiens
+R-HSA-5619507	Activation of HOX genes during differentiation	Homo sapiens
+R-HSA-936964	Activation of IRF3, IRF7 mediated by TBK1, IKKε (IKBKE)	Homo sapiens
+R-HSA-1592389	Activation of Matrix Metalloproteinases	Homo sapiens
+R-HSA-1169091	Activation of NF-kappaB in B cells	Homo sapiens
+R-HSA-2980767	Activation of NIMA Kinases NEK9, NEK6, NEK7	Homo sapiens
+R-HSA-442755	Activation of NMDA receptors and postsynaptic events	Homo sapiens
+R-HSA-111448	Activation of NOXA and translocation to mitochondria	Homo sapiens
+R-HSA-451307	Activation of Na-permeable kainate receptors	Homo sapiens
+R-HSA-2151209	Activation of PPARGC1A (PGC-1alpha) by phosphorylation	Homo sapiens
+R-HSA-139915	Activation of PUMA and translocation to mitochondria	Homo sapiens
+R-HSA-428540	Activation of RAC1	Homo sapiens

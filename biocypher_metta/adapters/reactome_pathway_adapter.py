@@ -30,11 +30,17 @@ class ReactomePathwayAdapter(Adapter):
     
     def load_pubmed_map(self):
         self.pubmed_map = {}
-        with open(self.pubmed_map_path, "r") as f:
-            reader = csv.reader(f, delimiter="\t")
-            for row in reader:
-                pathway_id, pubmed_id = row[0], row[0]
-                self.pubmed_map[pathway_id] = pubmed_id
+        try:
+            with open(self.pubmed_map_path, "r") as f:
+                reader = csv.reader(f, delimiter="\t")
+                for row in reader:
+                    if len(row) >= 1:
+                        pathway_id = row[0]
+                        pubmed_id = row[0] if len(row) < 2 else row[1]
+                        self.pubmed_map[pathway_id] = pubmed_id
+        except Exception as e:
+            # If loading fails, just use empty map
+            pass
 
 
     def get_nodes(self):
@@ -52,7 +58,7 @@ class ReactomePathwayAdapter(Adapter):
                             pubmed_id = self.pubmed_map.get(id, None)
                             if pubmed_id is not None:
                                 pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
-                                props['evidence'] = pubmed_url,
+                                props['evidence'] = pubmed_url
                             
                             if self.add_provenance:
                                 props['source'] = self.source

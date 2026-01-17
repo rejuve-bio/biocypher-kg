@@ -62,7 +62,7 @@ def build_command_from_selections(selections: Dict[str, Union[str, List[str]]]) 
     cmd.extend(["--adapters-config", selections["--adapters-config"]])
     cmd.extend(["--schema-config", selections["--schema-config"]])
     if "--include-adapters" in selections:
-        for adapter in selections["--include-adapters"]: cmd.extend(["--include-adapters", adapter])
+        cmd.extend(["--include-adapters", ",".join(selections["--include-adapters"])])
     cmd.extend(["--dbsnp-rsids", selections["--dbsnp-rsids"]])
     cmd.extend(["--dbsnp-pos", selections["--dbsnp-pos"]])
     cmd.extend(["--writer-type", selections["--writer-type"]])

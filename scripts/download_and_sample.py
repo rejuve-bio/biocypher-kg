@@ -21,6 +21,7 @@ import mimetypes
 import zipfile
 import time
 import socket
+import re
 from dataclasses import dataclass, field
 from http.client import RemoteDisconnected
 from urllib.error import URLError
@@ -32,8 +33,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-# Local import after sys.path adjustment (this script is often executed as
-# `python scripts/download_and_sample.py`, where sys.path[0] is `scripts/`).
 try:
     from biocypher_cli.modules.normalization import normalize_file_format
 except Exception:
@@ -54,6 +53,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--timeout", type=float, default=float(os.environ.get("BIOCYPHER_DOWNLOAD_TIMEOUT", "30")), help="Network timeout in seconds for HTTP(S) downloads")
     p.add_argument("--no-header", action="store_true", help="Treat input as headerless; sample first N lines")
     p.add_argument("--delimiter", default="\t", help="Field delimiter (unused for sampling but retained for clarity)")
+    p.add_argument("--filter", help="Only include lines containing this substring (case-sensitive)")
     return p.parse_args()
 
 
@@ -190,7 +190,7 @@ class FileTypeHandler:
     download_full: bool = False
 
 
-def _sample_vcf(lines_iter: Iterator[str], limit: int, _no_header: bool = False) -> Iterator[str]:
+def _sample_vcf(lines_iter: Iterator[str], limit: int, _no_header: bool = False, filter_str: str = None) -> Iterator[str]:
     """Sample VCF file: collect headers, then sample data lines."""
     headers: List[str] = []
     data_sampled = 0
@@ -202,6 +202,8 @@ def _sample_vcf(lines_iter: Iterator[str], limit: int, _no_header: bool = False)
             if headers:
                 yield from headers
                 headers = []
+            if filter_str and filter_str not in line:
+                continue
             if data_sampled < limit:
                 yield line
                 data_sampled += 1
@@ -215,23 +217,57 @@ def _sample_vcf(lines_iter: Iterator[str], limit: int, _no_header: bool = False)
         data_sampled += 1
 
 
-def _sample_default(lines_iter: Iterator[str], limit: int, no_header: bool) -> Iterator[str]:
-    """Default sampling: optional header, then limit data lines."""
+def _sample_default(lines_iter: Iterator[str], limit: int, no_header: bool, filter_str: str = None) -> Iterator[str]:
+    """Default sampling: optional header, then limit data lines, optionally filtered."""
+    def _looks_like_header(line: str) -> bool:
+        s = (line or "").strip()
+        if not s:
+            return False
+        if s.startswith("#"):
+            return True
+        # Heuristic: headers almost never contain URLs.
+        if "http://" in s or "https://" in s:
+            return False
+
+        # If most fields are alpha-ish and we don't see long digit runs,
+        # this is likely a column header.
+        cols = s.split("\t")
+        if len(cols) <= 1:
+            return True
+        alphaish = 0
+        has_long_digits = False
+        for c in cols:
+            c = c.strip()
+            if re.search(r"\d{4,}", c):
+                has_long_digits = True
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_ \-]*", c or ""):
+                alphaish += 1
+        return (alphaish / max(len(cols), 1)) >= 0.6 and not has_long_digits
+
+    data_count = 0
+
     if not no_header:
         try:
-            header = next(lines_iter)
-            yield header
+            first = next(lines_iter)
         except StopIteration:
             return
-    data_count = 0
+        if _looks_like_header(first):
+            yield first
+        else:
+            # Treat as first data line (subject to filter).
+            if (not filter_str) or (filter_str in first):
+                yield first
+                data_count = 1
     for line in lines_iter:
+        if filter_str and filter_str not in line:
+            continue
         if data_count >= limit:
             break
         yield line
         data_count += 1
 
 
-def _sample_uniprot(lines_iter: Iterator[str], limit: int, _no_header: bool = False) -> Iterator[str]:
+def _sample_uniprot(lines_iter: Iterator[str], limit: int, _no_header: bool = False, filter_str: str = None) -> Iterator[str]:
     return sample_uniprot_records(lines_iter, limit)
 
 
@@ -241,7 +277,6 @@ FILE_TYPE_HANDLERS: Dict[str, FileTypeHandler] = {
         detector=is_uniprot_file,
         sampler=_sample_uniprot,
         post_processors=[ensure_file_terminator],
-        # Stream from HTTP and stop once we have enough complete records.
         download_full=False,
     ),
     "default": FileTypeHandler(detector=lambda _p: True, sampler=_sample_default),
@@ -303,7 +338,7 @@ def iter_lines(path: Path) -> Iterator[str]:
             yield line
 
 
-def sample_local_file(local_path: Path, out_path: Path, limit: int, no_header: bool) -> Tuple[int, Path]:
+def sample_local_file(local_path: Path, out_path: Path, limit: int, no_header: bool, filter_str: str = None) -> Tuple[int, Path]:
     target_path = _resolve_out_path(out_path, local_path.name or "sample.out")
     file_type = detect_file_type(str(local_path))
     handler = get_file_handler(file_type)
@@ -311,7 +346,7 @@ def sample_local_file(local_path: Path, out_path: Path, limit: int, no_header: b
     data_rows = 0
     with open_maybe_gzip(target_path, "wt") as out:
         lines = iter_lines(local_path)
-        for line in handler.sampler(lines, limit, no_header):
+        for line in handler.sampler(lines, limit, no_header, filter_str):
             out.write(line)
             data_rows += 1 
     _post_process_and_normalize(target_path, handler)
@@ -319,20 +354,19 @@ def sample_local_file(local_path: Path, out_path: Path, limit: int, no_header: b
     return data_rows, target_path
 
 
-def stream_sample_http(src: str, out_path: Path, limit: int, no_header: bool, timeout: float) -> Tuple[int, Path]:
+def stream_sample_http(src: str, out_path: Path, limit: int, no_header: bool, timeout: float, filter_str: str = None) -> Tuple[int, Path]:
     parsed = urlparse(src)
     assert parsed.scheme in {"http", "https"}
 
     file_type = detect_file_type(src)
     handler = get_file_handler(file_type)
 
-    # For files that need full download before sampling (e.g., UniProt with record boundaries)
     if handler.download_full:
         with tempfile.NamedTemporaryFile(delete=False, suffix='.dat.gz') as tmp_file:
             tmp_gz_path = Path(tmp_file.name)
             with _urlopen_with_retry(src, timeout=timeout) as resp:
                 shutil.copyfileobj(resp, tmp_file)
-        # Decompress to temp .dat file
+
         tmp_dat_path = tmp_gz_path.with_suffix('.dat')
         with gzip.open(tmp_gz_path, 'rb') as gz_f, open(tmp_dat_path, 'wb') as dat_f:
             shutil.copyfileobj(gz_f, dat_f)
@@ -359,7 +393,6 @@ def stream_sample_http(src: str, out_path: Path, limit: int, no_header: bool, ti
                     # skip directories
                     if name.endswith("/"):
                         continue
-                    # pick the first file; format filter kept for readability
                     suffix = Path(name).suffix.lower()
                     if suffix in {".txt", ".tsv", ".csv", ".gtf", ".gff", ".gff3", ".bed"} or True:
                         candidate = name
@@ -369,22 +402,20 @@ def stream_sample_http(src: str, out_path: Path, limit: int, no_header: bool, ti
                     print("No suitable file found inside ZIP archive.")
                     return 0, out_path
 
-                # When output is a directory, drop the archive member name there
                 target_path = _resolve_out_path(out_path, Path(candidate).name)
 
                 with zf.open(candidate) as member:
-                    # If the member is gzipped inside the zip, handle that
                     if Path(candidate).suffix.lower() == ".gz":
                         with gzip.GzipFile(fileobj=io.BytesIO(member.read())) as gf:
                             reader = io.TextIOWrapper(gf, encoding="utf-8", errors="replace")
                             with open_maybe_gzip(target_path, "wt") as out:
-                                for line in handler.sampler(reader, limit, no_header):
+                                for line in handler.sampler(reader, limit, no_header, filter_str):
                                     out.write(line)
                                     data_rows += 1
                     else:
                         reader = io.TextIOWrapper(member, encoding="utf-8", errors="replace")
                         with open_maybe_gzip(target_path, "wt") as out:
-                            for line in handler.sampler(reader, limit, no_header):
+                            for line in handler.sampler(reader, limit, no_header, filter_str):
                                 out.write(line)
                                 data_rows += 1
 
@@ -436,7 +467,6 @@ def stream_sample_http(src: str, out_path: Path, limit: int, no_header: bool, ti
                 f"URL did not return a data file (got HTML). URL: {src}"
             )
 
-        # Decide gzip vs plain based on magic/headers rather than just the URL suffix.
         use_gzip = looks_gzip or (isinstance(content_type, str) and "gzip" in content_type.lower())
         if is_gz and not looks_gzip:
             # Some servers mislabel; allow plain text fallback when it's not HTML.
@@ -448,7 +478,7 @@ def stream_sample_http(src: str, out_path: Path, limit: int, no_header: bool, ti
             reader = io.TextIOWrapper(raw, encoding="utf-8", errors="replace")
 
         with open_maybe_gzip(target_path, "wt") as out:
-            for line in handler.sampler(reader, limit, no_header):
+            for line in handler.sampler(reader, limit, no_header, filter_str):
                 out.write(line)
                 data_rows += 1  # Approximate count
 
@@ -538,10 +568,10 @@ def main() -> None:
     else:
         try:
             if parsed.scheme in {"http", "https"}:
-                data_rows, target_path = stream_sample_http(args.input, out_path, args.limit, args.no_header, timeout=args.timeout)
+                data_rows, target_path = stream_sample_http(args.input, out_path, args.limit, args.no_header, timeout=args.timeout, filter_str=args.filter)
                 print(f"Wrote {data_rows} rows to {target_path}")
             else:
-                data_rows, target_path = sample_local_file(Path(args.input), out_path, args.limit, args.no_header)
+                data_rows, target_path = sample_local_file(Path(args.input), out_path, args.limit, args.no_header, filter_str=args.filter)
                 print(f"Wrote {data_rows} rows to {target_path}")
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
