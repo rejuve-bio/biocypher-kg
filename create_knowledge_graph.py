@@ -14,6 +14,7 @@ from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
 import typer
+import re
 import yaml
 import importlib  # for reflection
 from typing_extensions import Annotated
@@ -21,6 +22,8 @@ import pickle
 import json
 from collections import Counter, defaultdict
 from typing import Union, List, Optional
+
+from biocypher_cli.modules.sample_preparation import check_and_prepare_samples
 
 
 app = typer.Typer()
@@ -339,11 +342,15 @@ def main(
          add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
          buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
          overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
-         include_adapters: Optional[List[str]] = typer.Option(
-              None,
-              help="Specific adapters to include (space-separated, default: all)",
-              case_sensitive=False,
-          )):
+         include_adapters: Optional[str] = typer.Option(
+             None,
+             help=(
+                 "Adapters to include (default: all). Pass a single "
+                 "comma/space-separated string. Examples: "
+                 "--include-adapters a,b  OR  --include-adapters 'a b'"
+             ),
+             case_sensitive=False,
+         )):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
@@ -529,20 +536,78 @@ def main(
             logger.error("Error while trying to load adapter config")
             logger.error(e)
 
+    available_adapters = list(adapters_dict.keys())
+
     # Filter adapters if specific ones are requested
     if include_adapters:
-         original_count = len(adapters_dict)
-         include_lower = [a.lower() for a in include_adapters]
-         adapters_dict = {
-             k: v for k, v in adapters_dict.items()
-             if k.lower() in include_lower
-         }
-         if not adapters_dict:
-             available = "\n".join(f" - {a}" for a in adapters_dict.keys())
-             logger.error(f"No matching adapters found. Available adapters:\n{available}")
-             raise typer.Exit(1)
-             
-         logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
+        original_count = len(adapters_dict)
+
+        # Split the comma/space-separated string into tokens
+        include_tokens = [t.strip() for t in re.split(r"[\s,]+", include_adapters) if t.strip()]
+
+        include_lower = {a.lower() for a in include_tokens}
+        adapters_dict = {
+            k: v for k, v in adapters_dict.items()
+            if k.lower() in include_lower
+        }
+
+        if not adapters_dict:
+            available = "\n".join(f" - {a}" for a in available_adapters)
+            logger.error(
+                "No matching adapters found for --include-adapters. "
+                f"Available adapters:\n{available}"
+            )
+            raise typer.Exit(1)
+
+        logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
+
+    def _missing_inputs_for_selected_adapters() -> List[Path]:
+        missing: List[Path] = []
+        project_root = Path(__file__).resolve().parent
+
+        for _name, conf in (adapters_dict.items() if isinstance(adapters_dict, dict) else []):
+            args = {}
+            try:
+                args = conf.get("adapter", {}).get("args", {}) or {}
+            except Exception:
+                args = {}
+
+            for key, val in args.items():
+                if not isinstance(val, str):
+                    continue
+                key_l = str(key).lower()
+                if "file" not in key_l and "path" not in key_l and "samples" not in val:
+                    continue
+
+                out_path = Path(val)
+                if not out_path.is_absolute():
+                    out_path = project_root / out_path
+
+                if not out_path.exists():
+                    missing.append(out_path)
+
+        return missing
+
+    missing_inputs = _missing_inputs_for_selected_adapters()
+    if missing_inputs:
+        logger.info(
+            "Some adapter input files are missing; running sample preparation to download/sample them. "
+            "(This mirrors the BioCypher CLI behavior.)"
+        )
+        created, skipped = check_and_prepare_samples(
+            str(adapters_config),
+            selected_adapters=list(adapters_dict.keys()),
+            return_skipped=True,
+        )
+        if skipped:
+            logger.error(f"Sample preparation skipped adapters: {', '.join(skipped)}")
+            raise typer.Exit(1)
+
+        still_missing = _missing_inputs_for_selected_adapters()
+        if still_missing:
+            missing_str = "\n".join(f" - {p}" for p in still_missing)
+            logger.error(f"Missing required input files after sample preparation:\n{missing_str}")
+            raise typer.Exit(1)
     # Run adapters
     nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
         adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc, write_properties, add_provenance, schema_dict

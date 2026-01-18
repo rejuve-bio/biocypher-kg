@@ -1,5 +1,3 @@
-NSDART00000193986	R-DRE-199991	https://reactome.org/PathwayBrowser/#/R-DRE-199991	Membrane Trafficking	IEA	Danio rerio
-ENSDART00000193986	R-DRE-5653656	https://reactome.org/PathwayBrowser/#/R-DRE-5653656	Vesicle-mediated transport	IEA	Danio rerio
 ENSG00000000419	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
 ENSG00000000419	R-HSA-163125	https://reactome.org/PathwayBrowser/#/R-HSA-163125	Post-translational modification: synthesis of GPI-anchored proteins	TAS	Homo sapiens
 ENSG00000000419	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
@@ -12,22 +10,28 @@ ENSG00000000419	R-HSA-4717374	https://reactome.org/PathwayBrowser/#/R-HSA-471737
 ENSG00000000419	R-HSA-4719360	https://reactome.org/PathwayBrowser/#/R-HSA-4719360	Defective DPM3 causes DPM3-CDG	TAS	Homo sapiens
 ENSG00000000419	R-HSA-4719377	https://reactome.org/PathwayBrowser/#/R-HSA-4719377	Defective DPM2 causes DPM2-CDG	TAS	Homo sapiens
 ENSG00000000419	R-HSA-5609975	https://reactome.org/PathwayBrowser/#/R-HSA-5609975	Diseases associated with glycosylation precursor biosynthesis	TAS	Homo sapiens
+ENSG00000000419	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
 ENSG00000000419	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
 ENSG00000000419	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-163125	https://reactome.org/PathwayBrowser/#/R-HSA-163125	Post-translational modification: synthesis of GPI-anchored proteins	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-3781865	https://reactome.org/PathwayBrowser/#/R-HSA-3781865	Diseases of glycosylation	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-446193	https://reactome.org/PathwayBrowser/#/R-HSA-446193	Biosynthesis of the N-glycan precursor (dolichol lipid-linked oligosaccharide, LLO) and transfer to a nascent protein	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-446219	https://reactome.org/PathwayBrowser/#/R-HSA-446219	Synthesis of substrates in N-glycan biosythesis	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-4717374	https://reactome.org/PathwayBrowser/#/R-HSA-4717374	Defective DPM1 causes DPM1-CDG	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-4719360	https://reactome.org/PathwayBrowser/#/R-HSA-4719360	Defective DPM3 causes DPM3-CDG	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-4719377	https://reactome.org/PathwayBrowser/#/R-HSA-4719377	Defective DPM2 causes DPM2-CDG	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-5609975	https://reactome.org/PathwayBrowser/#/R-HSA-5609975	Diseases associated with glycosylation precursor biosynthesis	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
-ENSG00000000419.14	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000000419	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	TAS	Homo sapiens
+ENSG00000000419	R-HSA-9839923	https://reactome.org/PathwayBrowser/#/R-HSA-9839923	Dengue Virus Infection	TAS	Homo sapiens
+ENSG00000000419	R-HSA-9918432	https://reactome.org/PathwayBrowser/#/R-HSA-9918432	Maturation of DENV proteins	TAS	Homo sapiens
+ENSG00000000419	R-HSA-9918487	https://reactome.org/PathwayBrowser/#/R-HSA-9918487	Dengue Virus Genome Translation and Replication	TAS	Homo sapiens
+ENSG00000000460	R-HSA-1474165	https://reactome.org/PathwayBrowser/#/R-HSA-1474165	Reproduction	TAS	Homo sapiens
+ENSG00000000460	R-HSA-1500620	https://reactome.org/PathwayBrowser/#/R-HSA-1500620	Meiosis	TAS	Homo sapiens
+ENSG00000000460	R-HSA-1640170	https://reactome.org/PathwayBrowser/#/R-HSA-1640170	Cell Cycle	TAS	Homo sapiens
+ENSG00000000460	R-HSA-2500257	https://reactome.org/PathwayBrowser/#/R-HSA-2500257	Resolution of Sister Chromatid Cohesion	TAS	Homo sapiens
+ENSG00000000460	R-HSA-5685942	https://reactome.org/PathwayBrowser/#/R-HSA-5685942	HDR through Homologous Recombination (HRR)	TAS	Homo sapiens
+ENSG00000000460	R-HSA-5693532	https://reactome.org/PathwayBrowser/#/R-HSA-5693532	DNA Double-Strand Break Repair	TAS	Homo sapiens
+ENSG00000000460	R-HSA-5693537	https://reactome.org/PathwayBrowser/#/R-HSA-5693537	Resolution of D-Loop Structures	TAS	Homo sapiens
+ENSG00000000460	R-HSA-5693538	https://reactome.org/PathwayBrowser/#/R-HSA-5693538	Homology Directed Repair	TAS	Homo sapiens
+ENSG00000000460	R-HSA-5693567	https://reactome.org/PathwayBrowser/#/R-HSA-5693567	HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)	TAS	Homo sapiens
+ENSG00000000460	R-HSA-5693568	https://reactome.org/PathwayBrowser/#/R-HSA-5693568	Resolution of D-loop Structures through Holliday Junction Intermediates	TAS	Homo sapiens
+ENSG00000000460	R-HSA-68877	https://reactome.org/PathwayBrowser/#/R-HSA-68877	Mitotic Prometaphase	TAS	Homo sapiens
+ENSG00000000460	R-HSA-68886	https://reactome.org/PathwayBrowser/#/R-HSA-68886	M Phase	TAS	Homo sapiens
+ENSG00000000460	R-HSA-69278	https://reactome.org/PathwayBrowser/#/R-HSA-69278	Cell Cycle, Mitotic	TAS	Homo sapiens
+ENSG00000000460	R-HSA-73894	https://reactome.org/PathwayBrowser/#/R-HSA-73894	DNA Repair	TAS	Homo sapiens
+ENSG00000000460	R-HSA-912446	https://reactome.org/PathwayBrowser/#/R-HSA-912446	Meiotic recombination	TAS	Homo sapiens
 ENSG00000000938	R-HSA-109582	https://reactome.org/PathwayBrowser/#/R-HSA-109582	Hemostasis	TAS	Homo sapiens
 ENSG00000000938	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
 ENSG00000000938	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
@@ -35,3 +39,962 @@ ENSG00000000938	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	
 ENSG00000000938	R-HSA-2029480	https://reactome.org/PathwayBrowser/#/R-HSA-2029480	Fcgamma receptor (FCGR) dependent phagocytosis	TAS	Homo sapiens
 ENSG00000000938	R-HSA-2029481	https://reactome.org/PathwayBrowser/#/R-HSA-2029481	FCGR activation	TAS	Homo sapiens
 ENSG00000000938	R-HSA-418346	https://reactome.org/PathwayBrowser/#/R-HSA-418346	Platelet homeostasis	TAS	Homo sapiens
+ENSG00000000938	R-HSA-432142	https://reactome.org/PathwayBrowser/#/R-HSA-432142	Platelet sensitization by LDL	TAS	Homo sapiens
+ENSG00000000938	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000000938	R-HSA-6798695	https://reactome.org/PathwayBrowser/#/R-HSA-6798695	Neutrophil degranulation	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9658195	https://reactome.org/PathwayBrowser/#/R-HSA-9658195	Leishmania infection	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9662851	https://reactome.org/PathwayBrowser/#/R-HSA-9662851	Anti-inflammatory response favouring Leishmania parasite infection	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9664323	https://reactome.org/PathwayBrowser/#/R-HSA-9664323	FCGR3A-mediated IL10 synthesis	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9664407	https://reactome.org/PathwayBrowser/#/R-HSA-9664407	Parasite infection	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9664417	https://reactome.org/PathwayBrowser/#/R-HSA-9664417	Leishmania phagocytosis	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9664422	https://reactome.org/PathwayBrowser/#/R-HSA-9664422	FCGR3A-mediated phagocytosis	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9664433	https://reactome.org/PathwayBrowser/#/R-HSA-9664433	Leishmania parasite growth and survival	TAS	Homo sapiens
+ENSG00000000938	R-HSA-9824443	https://reactome.org/PathwayBrowser/#/R-HSA-9824443	Parasitic Infection Pathways	TAS	Homo sapiens
+ENSG00000000971	R-HSA-166658	https://reactome.org/PathwayBrowser/#/R-HSA-166658	Complement cascade	TAS	Homo sapiens
+ENSG00000000971	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000000971	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000000971	R-HSA-977606	https://reactome.org/PathwayBrowser/#/R-HSA-977606	Regulation of Complement cascade	TAS	Homo sapiens
+ENSG00000001036	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000001036	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000001036	R-HSA-381426	https://reactome.org/PathwayBrowser/#/R-HSA-381426	Regulation of Insulin-like Growth Factor (IGF) transport and uptake by Insulin-like Growth Factor Binding Proteins (IGFBPs)	TAS	Homo sapiens
+ENSG00000001036	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000001036	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000001036	R-HSA-6798695	https://reactome.org/PathwayBrowser/#/R-HSA-6798695	Neutrophil degranulation	TAS	Homo sapiens
+ENSG00000001036	R-HSA-8957275	https://reactome.org/PathwayBrowser/#/R-HSA-8957275	Post-translational protein phosphorylation	TAS	Homo sapiens
+ENSG00000001084	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000001084	R-HSA-156580	https://reactome.org/PathwayBrowser/#/R-HSA-156580	Phase II - Conjugation of compounds	TAS	Homo sapiens
+ENSG00000001084	R-HSA-156590	https://reactome.org/PathwayBrowser/#/R-HSA-156590	Glutathione conjugation	TAS	Homo sapiens
+ENSG00000001084	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000001084	R-HSA-174403	https://reactome.org/PathwayBrowser/#/R-HSA-174403	Glutathione synthesis and recycling	TAS	Homo sapiens
+ENSG00000001084	R-HSA-211859	https://reactome.org/PathwayBrowser/#/R-HSA-211859	Biological oxidations	TAS	Homo sapiens
+ENSG00000001084	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	TAS	Homo sapiens
+ENSG00000001084	R-HSA-5578999	https://reactome.org/PathwayBrowser/#/R-HSA-5578999	Defective GCLC causes HAGGSD	TAS	Homo sapiens
+ENSG00000001084	R-HSA-5579029	https://reactome.org/PathwayBrowser/#/R-HSA-5579029	Metabolic disorders of biological oxidation enzymes	TAS	Homo sapiens
+ENSG00000001084	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
+ENSG00000001084	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	TAS	Homo sapiens
+ENSG00000001084	R-HSA-9711123	https://reactome.org/PathwayBrowser/#/R-HSA-9711123	Cellular response to chemical stress	TAS	Homo sapiens
+ENSG00000001084	R-HSA-9755511	https://reactome.org/PathwayBrowser/#/R-HSA-9755511	KEAP1-NFE2L2 pathway	TAS	Homo sapiens
+ENSG00000001084	R-HSA-9759194	https://reactome.org/PathwayBrowser/#/R-HSA-9759194	Nuclear events mediated by NFE2L2	TAS	Homo sapiens
+ENSG00000001084	R-HSA-9818027	https://reactome.org/PathwayBrowser/#/R-HSA-9818027	NFE2L2 regulating anti-oxidant/detoxification enzymes	TAS	Homo sapiens
+ENSG00000001167	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000001167	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	IEA	Homo sapiens
+ENSG00000001167	R-HSA-1655829	https://reactome.org/PathwayBrowser/#/R-HSA-1655829	Regulation of cholesterol biosynthesis by SREBP (SREBF)	TAS	Homo sapiens
+ENSG00000001167	R-HSA-1655829	https://reactome.org/PathwayBrowser/#/R-HSA-1655829	Regulation of cholesterol biosynthesis by SREBP (SREBF)	IEA	Homo sapiens
+ENSG00000001167	R-HSA-1989781	https://reactome.org/PathwayBrowser/#/R-HSA-1989781	PPARA activates gene expression	TAS	Homo sapiens
+ENSG00000001167	R-HSA-212436	https://reactome.org/PathwayBrowser/#/R-HSA-212436	Generic Transcription Pathway	IEA	Homo sapiens
+ENSG00000001167	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	TAS	Homo sapiens
+ENSG00000001167	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	IEA	Homo sapiens
+ENSG00000001167	R-HSA-2426168	https://reactome.org/PathwayBrowser/#/R-HSA-2426168	Activation of gene expression by SREBF (SREBP)	TAS	Homo sapiens
+ENSG00000001167	R-HSA-2426168	https://reactome.org/PathwayBrowser/#/R-HSA-2426168	Activation of gene expression by SREBF (SREBP)	IEA	Homo sapiens
+ENSG00000001167	R-HSA-380994	https://reactome.org/PathwayBrowser/#/R-HSA-380994	ATF4 activates genes in response to endoplasmic reticulum  stress	IEA	Homo sapiens
+ENSG00000001167	R-HSA-381033	https://reactome.org/PathwayBrowser/#/R-HSA-381033	ATF6 (ATF6-alpha) activates chaperones	TAS	Homo sapiens
+ENSG00000001167	R-HSA-381033	https://reactome.org/PathwayBrowser/#/R-HSA-381033	ATF6 (ATF6-alpha) activates chaperones	IEA	Homo sapiens
+ENSG00000001167	R-HSA-381042	https://reactome.org/PathwayBrowser/#/R-HSA-381042	PERK regulates gene expression	IEA	Homo sapiens
+ENSG00000001167	R-HSA-381119	https://reactome.org/PathwayBrowser/#/R-HSA-381119	Unfolded Protein Response (UPR)	TAS	Homo sapiens
+ENSG00000001167	R-HSA-381119	https://reactome.org/PathwayBrowser/#/R-HSA-381119	Unfolded Protein Response (UPR)	IEA	Homo sapiens
+ENSG00000001167	R-HSA-381183	https://reactome.org/PathwayBrowser/#/R-HSA-381183	ATF6 (ATF6-alpha) activates chaperone genes	TAS	Homo sapiens
+ENSG00000001167	R-HSA-381183	https://reactome.org/PathwayBrowser/#/R-HSA-381183	ATF6 (ATF6-alpha) activates chaperone genes	IEA	Homo sapiens
+ENSG00000001167	R-HSA-400206	https://reactome.org/PathwayBrowser/#/R-HSA-400206	Regulation of lipid metabolism by PPARalpha	TAS	Homo sapiens
+ENSG00000001167	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSG00000001167	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	IEA	Homo sapiens
+ENSG00000001167	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	IEA	Homo sapiens
+ENSG00000001167	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	IEA	Homo sapiens
+ENSG00000001167	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	TAS	Homo sapiens
+ENSG00000001167	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	IEA	Homo sapiens
+ENSG00000001167	R-HSA-8957322	https://reactome.org/PathwayBrowser/#/R-HSA-8957322	Metabolism of steroids	TAS	Homo sapiens
+ENSG00000001167	R-HSA-8957322	https://reactome.org/PathwayBrowser/#/R-HSA-8957322	Metabolism of steroids	IEA	Homo sapiens
+ENSG00000001167	R-HSA-9614085	https://reactome.org/PathwayBrowser/#/R-HSA-9614085	FOXO-mediated transcription	IEA	Homo sapiens
+ENSG00000001167	R-HSA-9614657	https://reactome.org/PathwayBrowser/#/R-HSA-9614657	FOXO-mediated transcription of cell death genes	IEA	Homo sapiens
+ENSG00000001461	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000001461	R-HSA-5223345	https://reactome.org/PathwayBrowser/#/R-HSA-5223345	Miscellaneous transport and binding events	TAS	Homo sapiens
+ENSG00000001497	R-HSA-6791226	https://reactome.org/PathwayBrowser/#/R-HSA-6791226	Major pathway of rRNA processing in the nucleolus and cytosol	TAS	Homo sapiens
+ENSG00000001497	R-HSA-72312	https://reactome.org/PathwayBrowser/#/R-HSA-72312	rRNA processing	TAS	Homo sapiens
+ENSG00000001497	R-HSA-8868773	https://reactome.org/PathwayBrowser/#/R-HSA-8868773	rRNA processing in the nucleus and cytosol	TAS	Homo sapiens
+ENSG00000001497	R-HSA-8953854	https://reactome.org/PathwayBrowser/#/R-HSA-8953854	Metabolism of RNA	TAS	Homo sapiens
+ENSG00000001561	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000001561	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000001561	R-HSA-6798695	https://reactome.org/PathwayBrowser/#/R-HSA-6798695	Neutrophil degranulation	TAS	Homo sapiens
+ENSG00000001626	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	TAS	Homo sapiens
+ENSG00000001626	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000001626	R-HSA-1632852	https://reactome.org/PathwayBrowser/#/R-HSA-1632852	Macroautophagy	TAS	Homo sapiens
+ENSG00000001626	R-HSA-1632852	https://reactome.org/PathwayBrowser/#/R-HSA-1632852	Macroautophagy	IEA	Homo sapiens
+ENSG00000001626	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000001626	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000001626	R-HSA-195258	https://reactome.org/PathwayBrowser/#/R-HSA-195258	RHO GTPase Effectors	TAS	Homo sapiens
+ENSG00000001626	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSG00000001626	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000001626	R-HSA-382556	https://reactome.org/PathwayBrowser/#/R-HSA-382556	ABC-family proteins mediated transport	TAS	Homo sapiens
+ENSG00000001626	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5619084	https://reactome.org/PathwayBrowser/#/R-HSA-5619084	ABC transporter disorders	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5619115	https://reactome.org/PathwayBrowser/#/R-HSA-5619115	Disorders of transmembrane transporters	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5627083	https://reactome.org/PathwayBrowser/#/R-HSA-5627083	RHO GTPases regulate CFTR trafficking	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5678895	https://reactome.org/PathwayBrowser/#/R-HSA-5678895	Defective CFTR causes cystic fibrosis	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5688426	https://reactome.org/PathwayBrowser/#/R-HSA-5688426	Deubiquitination	TAS	Homo sapiens
+ENSG00000001626	R-HSA-5689880	https://reactome.org/PathwayBrowser/#/R-HSA-5689880	Ub-specific processing proteases	TAS	Homo sapiens
+ENSG00000001626	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000001626	R-HSA-8856825	https://reactome.org/PathwayBrowser/#/R-HSA-8856825	Cargo recognition for clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSG00000001626	R-HSA-8856828	https://reactome.org/PathwayBrowser/#/R-HSA-8856828	Clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9012999	https://reactome.org/PathwayBrowser/#/R-HSA-9012999	RHO GTPase cycle	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9013406	https://reactome.org/PathwayBrowser/#/R-HSA-9013406	RHOQ GTPase cycle	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9612973	https://reactome.org/PathwayBrowser/#/R-HSA-9612973	Autophagy	IEA	Homo sapiens
+ENSG00000001626	R-HSA-9612973	https://reactome.org/PathwayBrowser/#/R-HSA-9612973	Autophagy	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9613829	https://reactome.org/PathwayBrowser/#/R-HSA-9613829	Chaperone Mediated Autophagy	IEA	Homo sapiens
+ENSG00000001626	R-HSA-9615710	https://reactome.org/PathwayBrowser/#/R-HSA-9615710	Late endosomal microautophagy	IEA	Homo sapiens
+ENSG00000001626	R-HSA-9646399	https://reactome.org/PathwayBrowser/#/R-HSA-9646399	Aggrephagy	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9646399	https://reactome.org/PathwayBrowser/#/R-HSA-9646399	Aggrephagy	IEA	Homo sapiens
+ENSG00000001626	R-HSA-9663891	https://reactome.org/PathwayBrowser/#/R-HSA-9663891	Selective autophagy	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9663891	https://reactome.org/PathwayBrowser/#/R-HSA-9663891	Selective autophagy	IEA	Homo sapiens
+ENSG00000001626	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9734767	https://reactome.org/PathwayBrowser/#/R-HSA-9734767	Developmental Cell Lineages	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9820448	https://reactome.org/PathwayBrowser/#/R-HSA-9820448	Developmental Cell Lineages of the Exocrine Pancreas	TAS	Homo sapiens
+ENSG00000001626	R-HSA-9925563	https://reactome.org/PathwayBrowser/#/R-HSA-9925563	Developmental Lineage of Pancreatic Ductal Cells	TAS	Homo sapiens
+ENSG00000001630	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	TAS	Homo sapiens
+ENSG00000001630	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000001630	R-HSA-1655829	https://reactome.org/PathwayBrowser/#/R-HSA-1655829	Regulation of cholesterol biosynthesis by SREBP (SREBF)	TAS	Homo sapiens
+ENSG00000001630	R-HSA-191273	https://reactome.org/PathwayBrowser/#/R-HSA-191273	Cholesterol biosynthesis	TAS	Homo sapiens
+ENSG00000001630	R-HSA-211859	https://reactome.org/PathwayBrowser/#/R-HSA-211859	Biological oxidations	TAS	Homo sapiens
+ENSG00000001630	R-HSA-211897	https://reactome.org/PathwayBrowser/#/R-HSA-211897	Cytochrome P450 - arranged by substrate type	TAS	Homo sapiens
+ENSG00000001630	R-HSA-211945	https://reactome.org/PathwayBrowser/#/R-HSA-211945	Phase I - Functionalization of compounds	TAS	Homo sapiens
+ENSG00000001630	R-HSA-211976	https://reactome.org/PathwayBrowser/#/R-HSA-211976	Endogenous sterols	TAS	Homo sapiens
+ENSG00000001630	R-HSA-2426168	https://reactome.org/PathwayBrowser/#/R-HSA-2426168	Activation of gene expression by SREBF (SREBP)	TAS	Homo sapiens
+ENSG00000001630	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSG00000001630	R-HSA-6807047	https://reactome.org/PathwayBrowser/#/R-HSA-6807047	Cholesterol biosynthesis via desmosterol (Bloch pathway)	TAS	Homo sapiens
+ENSG00000001630	R-HSA-6807062	https://reactome.org/PathwayBrowser/#/R-HSA-6807062	Zymostenol biosynthesis via lathosterol (Kandutsch-Russell pathway)	TAS	Homo sapiens
+ENSG00000001630	R-HSA-8957322	https://reactome.org/PathwayBrowser/#/R-HSA-8957322	Metabolism of steroids	TAS	Homo sapiens
+ENSG00000001630	R-HSA-9619665	https://reactome.org/PathwayBrowser/#/R-HSA-9619665	EGR2 and SOX10-mediated initiation of Schwann cell myelination	TAS	Homo sapiens
+ENSG00000001630	R-HSA-9675108	https://reactome.org/PathwayBrowser/#/R-HSA-9675108	Nervous system development	TAS	Homo sapiens
+ENSG00000002016	R-HSA-2990846	https://reactome.org/PathwayBrowser/#/R-HSA-2990846	SUMOylation	TAS	Homo sapiens
+ENSG00000002016	R-HSA-3108214	https://reactome.org/PathwayBrowser/#/R-HSA-3108214	SUMOylation of DNA damage response and repair proteins	TAS	Homo sapiens
+ENSG00000002016	R-HSA-3108232	https://reactome.org/PathwayBrowser/#/R-HSA-3108232	SUMO E3 ligases SUMOylate target proteins	TAS	Homo sapiens
+ENSG00000002016	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000002016	R-HSA-5685938	https://reactome.org/PathwayBrowser/#/R-HSA-5685938	HDR through Single Strand Annealing (SSA)	TAS	Homo sapiens
+ENSG00000002016	R-HSA-5685939	https://reactome.org/PathwayBrowser/#/R-HSA-5685939	HDR through MMEJ (alt-NHEJ)	TAS	Homo sapiens
+ENSG00000002016	R-HSA-5693532	https://reactome.org/PathwayBrowser/#/R-HSA-5693532	DNA Double-Strand Break Repair	TAS	Homo sapiens
+ENSG00000002016	R-HSA-5693538	https://reactome.org/PathwayBrowser/#/R-HSA-5693538	Homology Directed Repair	TAS	Homo sapiens
+ENSG00000002016	R-HSA-5693567	https://reactome.org/PathwayBrowser/#/R-HSA-5693567	HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)	TAS	Homo sapiens
+ENSG00000002016	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000002016	R-HSA-73894	https://reactome.org/PathwayBrowser/#/R-HSA-73894	DNA Repair	TAS	Homo sapiens
+ENSG00000002330	R-HSA-109581	https://reactome.org/PathwayBrowser/#/R-HSA-109581	Apoptosis	TAS	Homo sapiens
+ENSG00000002330	R-HSA-109581	https://reactome.org/PathwayBrowser/#/R-HSA-109581	Apoptosis	IEA	Homo sapiens
+ENSG00000002330	R-HSA-109606	https://reactome.org/PathwayBrowser/#/R-HSA-109606	Intrinsic Pathway for Apoptosis	TAS	Homo sapiens
+ENSG00000002330	R-HSA-109606	https://reactome.org/PathwayBrowser/#/R-HSA-109606	Intrinsic Pathway for Apoptosis	IEA	Homo sapiens
+ENSG00000002330	R-HSA-111447	https://reactome.org/PathwayBrowser/#/R-HSA-111447	Activation of BAD and translocation to mitochondria	TAS	Homo sapiens
+ENSG00000002330	R-HSA-111447	https://reactome.org/PathwayBrowser/#/R-HSA-111447	Activation of BAD and translocation to mitochondria	IEA	Homo sapiens
+ENSG00000002330	R-HSA-111453	https://reactome.org/PathwayBrowser/#/R-HSA-111453	BH3-only proteins associate with and inactivate anti-apoptotic BCL-2 members	TAS	Homo sapiens
+ENSG00000002330	R-HSA-114452	https://reactome.org/PathwayBrowser/#/R-HSA-114452	Activation of BH3-only proteins	TAS	Homo sapiens
+ENSG00000002330	R-HSA-114452	https://reactome.org/PathwayBrowser/#/R-HSA-114452	Activation of BH3-only proteins	IEA	Homo sapiens
+ENSG00000002330	R-HSA-1257604	https://reactome.org/PathwayBrowser/#/R-HSA-1257604	PIP3 activates AKT signaling	IEA	Homo sapiens
+ENSG00000002330	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000002330	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	IEA	Homo sapiens
+ENSG00000002330	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000002330	R-HSA-193648	https://reactome.org/PathwayBrowser/#/R-HSA-193648	NRAGE signals death through JNK	TAS	Homo sapiens
+ENSG00000002330	R-HSA-193704	https://reactome.org/PathwayBrowser/#/R-HSA-193704	p75 NTR receptor-mediated signalling	TAS	Homo sapiens
+ENSG00000002330	R-HSA-198323	https://reactome.org/PathwayBrowser/#/R-HSA-198323	AKT phosphorylates targets in the cytosol	IEA	Homo sapiens
+ENSG00000002330	R-HSA-204998	https://reactome.org/PathwayBrowser/#/R-HSA-204998	Cell death signalling via NRAGE, NRIF and NADE	TAS	Homo sapiens
+ENSG00000002330	R-HSA-2219528	https://reactome.org/PathwayBrowser/#/R-HSA-2219528	PI3K/AKT Signaling in Cancer	TAS	Homo sapiens
+ENSG00000002330	R-HSA-5357801	https://reactome.org/PathwayBrowser/#/R-HSA-5357801	Programmed Cell Death	TAS	Homo sapiens
+ENSG00000002330	R-HSA-5357801	https://reactome.org/PathwayBrowser/#/R-HSA-5357801	Programmed Cell Death	IEA	Homo sapiens
+ENSG00000002330	R-HSA-5663202	https://reactome.org/PathwayBrowser/#/R-HSA-5663202	Diseases of signal transduction by growth factor receptors and second messengers	TAS	Homo sapiens
+ENSG00000002330	R-HSA-5674400	https://reactome.org/PathwayBrowser/#/R-HSA-5674400	Constitutive Signaling by AKT1 E17K in Cancer	TAS	Homo sapiens
+ENSG00000002330	R-HSA-73887	https://reactome.org/PathwayBrowser/#/R-HSA-73887	Death Receptor Signaling	TAS	Homo sapiens
+ENSG00000002330	R-HSA-9006925	https://reactome.org/PathwayBrowser/#/R-HSA-9006925	Intracellular signaling by second messengers	IEA	Homo sapiens
+ENSG00000002586	R-HSA-109582	https://reactome.org/PathwayBrowser/#/R-HSA-109582	Hemostasis	IEA	Homo sapiens
+ENSG00000002586	R-HSA-1280218	https://reactome.org/PathwayBrowser/#/R-HSA-1280218	Adaptive Immune System	TAS	Homo sapiens
+ENSG00000002586	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000002586	R-HSA-198933	https://reactome.org/PathwayBrowser/#/R-HSA-198933	Immunoregulatory interactions between a Lymphoid and a non-Lymphoid cell	TAS	Homo sapiens
+ENSG00000002586	R-HSA-202733	https://reactome.org/PathwayBrowser/#/R-HSA-202733	Cell surface interactions at the vascular wall	IEA	Homo sapiens
+ENSG00000002587	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000002587	R-HSA-1630316	https://reactome.org/PathwayBrowser/#/R-HSA-1630316	Glycosaminoglycan metabolism	TAS	Homo sapiens
+ENSG00000002587	R-HSA-1638091	https://reactome.org/PathwayBrowser/#/R-HSA-1638091	Heparan sulfate/heparin (HS-GAG) metabolism	TAS	Homo sapiens
+ENSG00000002587	R-HSA-2022928	https://reactome.org/PathwayBrowser/#/R-HSA-2022928	HS-GAG biosynthesis	TAS	Homo sapiens
+ENSG00000002587	R-HSA-71387	https://reactome.org/PathwayBrowser/#/R-HSA-71387	Metabolism of carbohydrates and carbohydrate derivatives	TAS	Homo sapiens
+ENSG00000002726	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000002726	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000002726	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000002726	R-HSA-211859	https://reactome.org/PathwayBrowser/#/R-HSA-211859	Biological oxidations	TAS	Homo sapiens
+ENSG00000002726	R-HSA-211945	https://reactome.org/PathwayBrowser/#/R-HSA-211945	Phase I - Functionalization of compounds	TAS	Homo sapiens
+ENSG00000002726	R-HSA-6798695	https://reactome.org/PathwayBrowser/#/R-HSA-6798695	Neutrophil degranulation	TAS	Homo sapiens
+ENSG00000002745	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000002745	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	IEA	Homo sapiens
+ENSG00000002745	R-HSA-195721	https://reactome.org/PathwayBrowser/#/R-HSA-195721	Signaling by WNT	TAS	Homo sapiens
+ENSG00000002745	R-HSA-195721	https://reactome.org/PathwayBrowser/#/R-HSA-195721	Signaling by WNT	IEA	Homo sapiens
+ENSG00000002745	R-HSA-3238698	https://reactome.org/PathwayBrowser/#/R-HSA-3238698	WNT ligand biogenesis and trafficking	TAS	Homo sapiens
+ENSG00000002745	R-HSA-3238698	https://reactome.org/PathwayBrowser/#/R-HSA-3238698	WNT ligand biogenesis and trafficking	IEA	Homo sapiens
+ENSG00000002745	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	IEA	Homo sapiens
+ENSG00000002745	R-HSA-373080	https://reactome.org/PathwayBrowser/#/R-HSA-373080	Class B/2 (Secretin family receptors)	IEA	Homo sapiens
+ENSG00000002745	R-HSA-500792	https://reactome.org/PathwayBrowser/#/R-HSA-500792	GPCR ligand binding	IEA	Homo sapiens
+ENSG00000002746	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000002746	R-HSA-195721	https://reactome.org/PathwayBrowser/#/R-HSA-195721	Signaling by WNT	TAS	Homo sapiens
+ENSG00000002746	R-HSA-201681	https://reactome.org/PathwayBrowser/#/R-HSA-201681	TCF dependent signaling in response to WNT	TAS	Homo sapiens
+ENSG00000002746	R-HSA-4641258	https://reactome.org/PathwayBrowser/#/R-HSA-4641258	Degradation of DVL	TAS	Homo sapiens
+ENSG00000002822	R-HSA-141424	https://reactome.org/PathwayBrowser/#/R-HSA-141424	Amplification of signal from the kinetochores	TAS	Homo sapiens
+ENSG00000002822	R-HSA-141444	https://reactome.org/PathwayBrowser/#/R-HSA-141444	Amplification  of signal from unattached  kinetochores via a MAD2  inhibitory signal	TAS	Homo sapiens
+ENSG00000002822	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000002822	R-HSA-1640170	https://reactome.org/PathwayBrowser/#/R-HSA-1640170	Cell Cycle	TAS	Homo sapiens
+ENSG00000002822	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000002822	R-HSA-195258	https://reactome.org/PathwayBrowser/#/R-HSA-195258	RHO GTPase Effectors	TAS	Homo sapiens
+ENSG00000002822	R-HSA-2467813	https://reactome.org/PathwayBrowser/#/R-HSA-2467813	Separation of Sister Chromatids	TAS	Homo sapiens
+ENSG00000002822	R-HSA-2500257	https://reactome.org/PathwayBrowser/#/R-HSA-2500257	Resolution of Sister Chromatid Cohesion	TAS	Homo sapiens
+ENSG00000002822	R-HSA-2555396	https://reactome.org/PathwayBrowser/#/R-HSA-2555396	Mitotic Metaphase and Anaphase	TAS	Homo sapiens
+ENSG00000002822	R-HSA-5663220	https://reactome.org/PathwayBrowser/#/R-HSA-5663220	RHO GTPases Activate Formins	TAS	Homo sapiens
+ENSG00000002822	R-HSA-68877	https://reactome.org/PathwayBrowser/#/R-HSA-68877	Mitotic Prometaphase	TAS	Homo sapiens
+ENSG00000002822	R-HSA-68882	https://reactome.org/PathwayBrowser/#/R-HSA-68882	Mitotic Anaphase	TAS	Homo sapiens
+ENSG00000002822	R-HSA-68886	https://reactome.org/PathwayBrowser/#/R-HSA-68886	M Phase	TAS	Homo sapiens
+ENSG00000002822	R-HSA-69278	https://reactome.org/PathwayBrowser/#/R-HSA-69278	Cell Cycle, Mitotic	TAS	Homo sapiens
+ENSG00000002822	R-HSA-69618	https://reactome.org/PathwayBrowser/#/R-HSA-69618	Mitotic Spindle Checkpoint	TAS	Homo sapiens
+ENSG00000002822	R-HSA-69620	https://reactome.org/PathwayBrowser/#/R-HSA-69620	Cell Cycle Checkpoints	TAS	Homo sapiens
+ENSG00000002822	R-HSA-9648025	https://reactome.org/PathwayBrowser/#/R-HSA-9648025	EML4 and NUDC in mitotic spindle formation	TAS	Homo sapiens
+ENSG00000002822	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000003056	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000003056	R-HSA-1660662	https://reactome.org/PathwayBrowser/#/R-HSA-1660662	Glycosphingolipid metabolism	TAS	Homo sapiens
+ENSG00000003056	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSG00000003056	R-HSA-199992	https://reactome.org/PathwayBrowser/#/R-HSA-199992	trans-Golgi Network Vesicle Budding	TAS	Homo sapiens
+ENSG00000003056	R-HSA-428157	https://reactome.org/PathwayBrowser/#/R-HSA-428157	Sphingolipid metabolism	TAS	Homo sapiens
+ENSG00000003056	R-HSA-432720	https://reactome.org/PathwayBrowser/#/R-HSA-432720	Lysosome Vesicle Biogenesis	TAS	Homo sapiens
+ENSG00000003056	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSG00000003056	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSG00000003056	R-HSA-6811440	https://reactome.org/PathwayBrowser/#/R-HSA-6811440	Retrograde transport at the Trans-Golgi-Network	TAS	Homo sapiens
+ENSG00000003056	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENSG00000003056	R-HSA-8856825	https://reactome.org/PathwayBrowser/#/R-HSA-8856825	Cargo recognition for clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSG00000003056	R-HSA-8856828	https://reactome.org/PathwayBrowser/#/R-HSA-8856828	Clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSG00000003056	R-HSA-9840310	https://reactome.org/PathwayBrowser/#/R-HSA-9840310	Glycosphingolipid catabolism	TAS	Homo sapiens
+ENSG00000003096	R-HSA-1280218	https://reactome.org/PathwayBrowser/#/R-HSA-1280218	Adaptive Immune System	TAS	Homo sapiens
+ENSG00000003096	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000003096	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000003096	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000003096	R-HSA-8951664	https://reactome.org/PathwayBrowser/#/R-HSA-8951664	Neddylation	TAS	Homo sapiens
+ENSG00000003096	R-HSA-983168	https://reactome.org/PathwayBrowser/#/R-HSA-983168	Antigen processing: Ubiquitination & Proteasome degradation	TAS	Homo sapiens
+ENSG00000003096	R-HSA-983169	https://reactome.org/PathwayBrowser/#/R-HSA-983169	Class I MHC mediated antigen processing & presentation	TAS	Homo sapiens
+ENSG00000003137	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000003137	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000003137	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000003137	R-HSA-211859	https://reactome.org/PathwayBrowser/#/R-HSA-211859	Biological oxidations	TAS	Homo sapiens
+ENSG00000003137	R-HSA-211897	https://reactome.org/PathwayBrowser/#/R-HSA-211897	Cytochrome P450 - arranged by substrate type	TAS	Homo sapiens
+ENSG00000003137	R-HSA-211916	https://reactome.org/PathwayBrowser/#/R-HSA-211916	Vitamins	TAS	Homo sapiens
+ENSG00000003137	R-HSA-211945	https://reactome.org/PathwayBrowser/#/R-HSA-211945	Phase I - Functionalization of compounds	TAS	Homo sapiens
+ENSG00000003137	R-HSA-5362517	https://reactome.org/PathwayBrowser/#/R-HSA-5362517	Signaling by Retinoic Acid	TAS	Homo sapiens
+ENSG00000003137	R-HSA-5365859	https://reactome.org/PathwayBrowser/#/R-HSA-5365859	RA biosynthesis pathway	TAS	Homo sapiens
+ENSG00000003137	R-HSA-5579015	https://reactome.org/PathwayBrowser/#/R-HSA-5579015	Defective CYP26B1 causes RHFCA	TAS	Homo sapiens
+ENSG00000003137	R-HSA-5579029	https://reactome.org/PathwayBrowser/#/R-HSA-5579029	Metabolic disorders of biological oxidation enzymes	TAS	Homo sapiens
+ENSG00000003137	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
+ENSG00000003137	R-HSA-9006931	https://reactome.org/PathwayBrowser/#/R-HSA-9006931	Signaling by Nuclear Receptors	TAS	Homo sapiens
+ENSG00000003393	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000003393	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000003393	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSG00000003393	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSG00000003393	R-HSA-8876198	https://reactome.org/PathwayBrowser/#/R-HSA-8876198	RAB GEFs exchange GTP for GDP on RABs	TAS	Homo sapiens
+ENSG00000003393	R-HSA-9007101	https://reactome.org/PathwayBrowser/#/R-HSA-9007101	Rab regulation of trafficking	TAS	Homo sapiens
+ENSG00000003393	R-HSA-9012999	https://reactome.org/PathwayBrowser/#/R-HSA-9012999	RHO GTPase cycle	TAS	Homo sapiens
+ENSG00000003393	R-HSA-9013149	https://reactome.org/PathwayBrowser/#/R-HSA-9013149	RAC1 GTPase cycle	TAS	Homo sapiens
+ENSG00000003393	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000003400	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000003400	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000003400	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000003400	R-HSA-168928	https://reactome.org/PathwayBrowser/#/R-HSA-168928	DDX58/IFIH1-mediated induction of interferon-alpha/beta	TAS	Homo sapiens
+ENSG00000003400	R-HSA-212436	https://reactome.org/PathwayBrowser/#/R-HSA-212436	Generic Transcription Pathway	TAS	Homo sapiens
+ENSG00000003400	R-HSA-3700989	https://reactome.org/PathwayBrowser/#/R-HSA-3700989	Transcriptional Regulation by TP53	TAS	Homo sapiens
+ENSG00000003400	R-HSA-5633008	https://reactome.org/PathwayBrowser/#/R-HSA-5633008	TP53 Regulates Transcription of Cell Death Genes	TAS	Homo sapiens
+ENSG00000003400	R-HSA-6803207	https://reactome.org/PathwayBrowser/#/R-HSA-6803207	TP53 Regulates Transcription of Caspase Activators and Caspases	TAS	Homo sapiens
+ENSG00000003400	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	TAS	Homo sapiens
+ENSG00000003400	R-HSA-73887	https://reactome.org/PathwayBrowser/#/R-HSA-73887	Death Receptor Signaling	TAS	Homo sapiens
+ENSG00000003400	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	TAS	Homo sapiens
+ENSG00000003400	R-HSA-75157	https://reactome.org/PathwayBrowser/#/R-HSA-75157	FasL/ CD95L signaling	TAS	Homo sapiens
+ENSG00000003400	R-HSA-75158	https://reactome.org/PathwayBrowser/#/R-HSA-75158	TRAIL  signaling	TAS	Homo sapiens
+ENSG00000003400	R-HSA-933543	https://reactome.org/PathwayBrowser/#/R-HSA-933543	NF-kB activation through FADD/RIP-1 pathway mediated by caspase-8 and -10	TAS	Homo sapiens
+ENSG00000003402	R-HSA-109581	https://reactome.org/PathwayBrowser/#/R-HSA-109581	Apoptosis	TAS	Homo sapiens
+ENSG00000003402	R-HSA-140534	https://reactome.org/PathwayBrowser/#/R-HSA-140534	Caspase activation via Death Receptors in the presence of ligand	TAS	Homo sapiens
+ENSG00000003402	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000003402	R-HSA-3371378	https://reactome.org/PathwayBrowser/#/R-HSA-3371378	Regulation by c-FLIP	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5213460	https://reactome.org/PathwayBrowser/#/R-HSA-5213460	RIPK1-mediated regulated necrosis	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5218859	https://reactome.org/PathwayBrowser/#/R-HSA-5218859	Regulated Necrosis	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5218900	https://reactome.org/PathwayBrowser/#/R-HSA-5218900	CASP8 activity is inhibited	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5357769	https://reactome.org/PathwayBrowser/#/R-HSA-5357769	Caspase activation via extrinsic apoptotic signalling pathway	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5357801	https://reactome.org/PathwayBrowser/#/R-HSA-5357801	Programmed Cell Death	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5357905	https://reactome.org/PathwayBrowser/#/R-HSA-5357905	Regulation of TNFR1 signaling	TAS	Homo sapiens
+ENSG00000003402	R-HSA-5675482	https://reactome.org/PathwayBrowser/#/R-HSA-5675482	Regulation of necroptotic cell death	TAS	Homo sapiens
+ENSG00000003402	R-HSA-69416	https://reactome.org/PathwayBrowser/#/R-HSA-69416	Dimerization of procaspase-8	TAS	Homo sapiens
+ENSG00000003402	R-HSA-73887	https://reactome.org/PathwayBrowser/#/R-HSA-73887	Death Receptor Signaling	TAS	Homo sapiens
+ENSG00000003402	R-HSA-75158	https://reactome.org/PathwayBrowser/#/R-HSA-75158	TRAIL  signaling	TAS	Homo sapiens
+ENSG00000003402	R-HSA-75893	https://reactome.org/PathwayBrowser/#/R-HSA-75893	TNF signaling	TAS	Homo sapiens
+ENSG00000003436	R-HSA-109582	https://reactome.org/PathwayBrowser/#/R-HSA-109582	Hemostasis	TAS	Homo sapiens
+ENSG00000003436	R-HSA-140834	https://reactome.org/PathwayBrowser/#/R-HSA-140834	Extrinsic Pathway of Fibrin Clot Formation	TAS	Homo sapiens
+ENSG00000003436	R-HSA-140877	https://reactome.org/PathwayBrowser/#/R-HSA-140877	Formation of Fibrin Clot (Clotting Cascade)	TAS	Homo sapiens
+ENSG00000003509	R-HSA-1428517	https://reactome.org/PathwayBrowser/#/R-HSA-1428517	Aerobic respiration and respiratory electron transport	TAS	Homo sapiens
+ENSG00000003509	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000003509	R-HSA-611105	https://reactome.org/PathwayBrowser/#/R-HSA-611105	Respiratory electron transport	TAS	Homo sapiens
+ENSG00000003509	R-HSA-6799198	https://reactome.org/PathwayBrowser/#/R-HSA-6799198	Complex I biogenesis	TAS	Homo sapiens
+ENSG00000003756	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000003756	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000003756	R-HSA-72163	https://reactome.org/PathwayBrowser/#/R-HSA-72163	mRNA Splicing - Major Pathway	TAS	Homo sapiens
+ENSG00000003756	R-HSA-72172	https://reactome.org/PathwayBrowser/#/R-HSA-72172	mRNA Splicing	TAS	Homo sapiens
+ENSG00000003756	R-HSA-72187	https://reactome.org/PathwayBrowser/#/R-HSA-72187	mRNA 3'-end processing	TAS	Homo sapiens
+ENSG00000003756	R-HSA-72203	https://reactome.org/PathwayBrowser/#/R-HSA-72203	Processing of Capped Intron-Containing Pre-mRNA	TAS	Homo sapiens
+ENSG00000003756	R-HSA-8953854	https://reactome.org/PathwayBrowser/#/R-HSA-8953854	Metabolism of RNA	TAS	Homo sapiens
+ENSG00000003756	R-HSA-9770562	https://reactome.org/PathwayBrowser/#/R-HSA-9770562	mRNA Polyadenylation	TAS	Homo sapiens
+ENSG00000003756	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	TAS	Homo sapiens
+ENSG00000003756	R-HSA-9839923	https://reactome.org/PathwayBrowser/#/R-HSA-9839923	Dengue Virus Infection	TAS	Homo sapiens
+ENSG00000003756	R-HSA-9918481	https://reactome.org/PathwayBrowser/#/R-HSA-9918481	Dengue Virus-Host Interactions	TAS	Homo sapiens
+ENSG00000003987	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000003987	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	IEA	Homo sapiens
+ENSG00000003987	R-HSA-1483249	https://reactome.org/PathwayBrowser/#/R-HSA-1483249	Inositol phosphate metabolism	IEA	Homo sapiens
+ENSG00000003987	R-HSA-1483255	https://reactome.org/PathwayBrowser/#/R-HSA-1483255	PI Metabolism	TAS	Homo sapiens
+ENSG00000003987	R-HSA-1483255	https://reactome.org/PathwayBrowser/#/R-HSA-1483255	PI Metabolism	IEA	Homo sapiens
+ENSG00000003987	R-HSA-1483257	https://reactome.org/PathwayBrowser/#/R-HSA-1483257	Phospholipid metabolism	TAS	Homo sapiens
+ENSG00000003987	R-HSA-1483257	https://reactome.org/PathwayBrowser/#/R-HSA-1483257	Phospholipid metabolism	IEA	Homo sapiens
+ENSG00000003987	R-HSA-1660517	https://reactome.org/PathwayBrowser/#/R-HSA-1660517	Synthesis of PIPs at the late endosome membrane	TAS	Homo sapiens
+ENSG00000003987	R-HSA-1660517	https://reactome.org/PathwayBrowser/#/R-HSA-1660517	Synthesis of PIPs at the late endosome membrane	IEA	Homo sapiens
+ENSG00000003987	R-HSA-1855183	https://reactome.org/PathwayBrowser/#/R-HSA-1855183	Synthesis of IP2, IP, and Ins in the cytosol	IEA	Homo sapiens
+ENSG00000003987	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSG00000003987	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	IEA	Homo sapiens
+ENSG00000003989	R-HSA-352230	https://reactome.org/PathwayBrowser/#/R-HSA-352230	Amino acid transport across the plasma membrane	TAS	Homo sapiens
+ENSG00000003989	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000003989	R-HSA-425407	https://reactome.org/PathwayBrowser/#/R-HSA-425407	SLC-mediated transmembrane transport	TAS	Homo sapiens
+ENSG00000003989	R-HSA-9958863	https://reactome.org/PathwayBrowser/#/R-HSA-9958863	SLC-mediated transport of amino acids	TAS	Homo sapiens
+ENSG00000004059	R-HSA-199977	https://reactome.org/PathwayBrowser/#/R-HSA-199977	ER to Golgi Anterograde Transport	TAS	Homo sapiens
+ENSG00000004059	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSG00000004059	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000004059	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
+ENSG00000004059	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSG00000004059	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000004059	R-HSA-6807878	https://reactome.org/PathwayBrowser/#/R-HSA-6807878	COPI-mediated anterograde transport	TAS	Homo sapiens
+ENSG00000004059	R-HSA-6811434	https://reactome.org/PathwayBrowser/#/R-HSA-6811434	COPI-dependent Golgi-to-ER retrograde traffic	TAS	Homo sapiens
+ENSG00000004059	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENSG00000004059	R-HSA-8856688	https://reactome.org/PathwayBrowser/#/R-HSA-8856688	Golgi-to-ER retrograde transport	TAS	Homo sapiens
+ENSG00000004059	R-HSA-948021	https://reactome.org/PathwayBrowser/#/R-HSA-948021	Transport to the Golgi and subsequent modification	TAS	Homo sapiens
+ENSG00000004139	R-HSA-166016	https://reactome.org/PathwayBrowser/#/R-HSA-166016	Toll Like Receptor 4 (TLR4) Cascade	TAS	Homo sapiens
+ENSG00000004139	R-HSA-166166	https://reactome.org/PathwayBrowser/#/R-HSA-166166	MyD88-independent TLR4 cascade	TAS	Homo sapiens
+ENSG00000004139	R-HSA-168164	https://reactome.org/PathwayBrowser/#/R-HSA-168164	Toll Like Receptor 3 (TLR3) Cascade	TAS	Homo sapiens
+ENSG00000004139	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000004139	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000004139	R-HSA-168898	https://reactome.org/PathwayBrowser/#/R-HSA-168898	Toll-like Receptor Cascades	TAS	Homo sapiens
+ENSG00000004139	R-HSA-936964	https://reactome.org/PathwayBrowser/#/R-HSA-936964	Activation of IRF3, IRF7 mediated by TBK1, IKKε (IKBKE)	TAS	Homo sapiens
+ENSG00000004139	R-HSA-937041	https://reactome.org/PathwayBrowser/#/R-HSA-937041	IKK complex recruitment mediated by RIP1	TAS	Homo sapiens
+ENSG00000004139	R-HSA-937061	https://reactome.org/PathwayBrowser/#/R-HSA-937061	TRIF (TICAM1)-mediated TLR4 signaling	TAS	Homo sapiens
+ENSG00000004139	R-HSA-937072	https://reactome.org/PathwayBrowser/#/R-HSA-937072	TRAF6-mediated induction of TAK1 complex within TLR4 complex	TAS	Homo sapiens
+ENSG00000004399	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	TAS	Homo sapiens
+ENSG00000004399	R-HSA-157118	https://reactome.org/PathwayBrowser/#/R-HSA-157118	Signaling by NOTCH	TAS	Homo sapiens
+ENSG00000004399	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004399	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000004399	R-HSA-373755	https://reactome.org/PathwayBrowser/#/R-HSA-373755	Semaphorin interactions	TAS	Homo sapiens
+ENSG00000004399	R-HSA-416700	https://reactome.org/PathwayBrowser/#/R-HSA-416700	Other semaphorin interactions	TAS	Homo sapiens
+ENSG00000004399	R-HSA-422475	https://reactome.org/PathwayBrowser/#/R-HSA-422475	Axon guidance	TAS	Homo sapiens
+ENSG00000004399	R-HSA-9012852	https://reactome.org/PathwayBrowser/#/R-HSA-9012852	Signaling by NOTCH3	TAS	Homo sapiens
+ENSG00000004399	R-HSA-9012999	https://reactome.org/PathwayBrowser/#/R-HSA-9012999	RHO GTPase cycle	TAS	Homo sapiens
+ENSG00000004399	R-HSA-9013508	https://reactome.org/PathwayBrowser/#/R-HSA-9013508	NOTCH3 Intracellular Domain Regulates Transcription	TAS	Homo sapiens
+ENSG00000004399	R-HSA-9675108	https://reactome.org/PathwayBrowser/#/R-HSA-9675108	Nervous system development	TAS	Homo sapiens
+ENSG00000004399	R-HSA-9696270	https://reactome.org/PathwayBrowser/#/R-HSA-9696270	RND2 GTPase cycle	TAS	Homo sapiens
+ENSG00000004399	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000004455	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000004455	R-HSA-15869	https://reactome.org/PathwayBrowser/#/R-HSA-15869	Metabolism of nucleotides	TAS	Homo sapiens
+ENSG00000004455	R-HSA-499943	https://reactome.org/PathwayBrowser/#/R-HSA-499943	Interconversion of nucleotide di- and triphosphates	TAS	Homo sapiens
+ENSG00000004468	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000004468	R-HSA-196807	https://reactome.org/PathwayBrowser/#/R-HSA-196807	Nicotinate metabolism	TAS	Homo sapiens
+ENSG00000004468	R-HSA-196849	https://reactome.org/PathwayBrowser/#/R-HSA-196849	Metabolism of water-soluble vitamins and cofactors	TAS	Homo sapiens
+ENSG00000004468	R-HSA-196854	https://reactome.org/PathwayBrowser/#/R-HSA-196854	Metabolism of vitamins and cofactors	TAS	Homo sapiens
+ENSG00000004478	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004478	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000004478	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	TAS	Homo sapiens
+ENSG00000004478	R-HSA-3371453	https://reactome.org/PathwayBrowser/#/R-HSA-3371453	Regulation of HSF1-mediated heat shock response	TAS	Homo sapiens
+ENSG00000004478	R-HSA-3371497	https://reactome.org/PathwayBrowser/#/R-HSA-3371497	HSP90 chaperone cycle for steroid hormone receptors (SHR) in the presence of ligand	TAS	Homo sapiens
+ENSG00000004478	R-HSA-3371511	https://reactome.org/PathwayBrowser/#/R-HSA-3371511	HSF1 activation	TAS	Homo sapiens
+ENSG00000004478	R-HSA-3371556	https://reactome.org/PathwayBrowser/#/R-HSA-3371556	Cellular response to heat stress	TAS	Homo sapiens
+ENSG00000004478	R-HSA-3371568	https://reactome.org/PathwayBrowser/#/R-HSA-3371568	Attenuation phase	TAS	Homo sapiens
+ENSG00000004478	R-HSA-3371571	https://reactome.org/PathwayBrowser/#/R-HSA-3371571	HSF1-dependent transactivation	TAS	Homo sapiens
+ENSG00000004478	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000004478	R-HSA-8939211	https://reactome.org/PathwayBrowser/#/R-HSA-8939211	ESR-mediated signaling	TAS	Homo sapiens
+ENSG00000004478	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	TAS	Homo sapiens
+ENSG00000004478	R-HSA-9006931	https://reactome.org/PathwayBrowser/#/R-HSA-9006931	Signaling by Nuclear Receptors	TAS	Homo sapiens
+ENSG00000004478	R-HSA-9018519	https://reactome.org/PathwayBrowser/#/R-HSA-9018519	Estrogen-dependent gene expression	TAS	Homo sapiens
+ENSG00000004478	R-HSA-9679191	https://reactome.org/PathwayBrowser/#/R-HSA-9679191	Potential therapeutics for SARS	TAS	Homo sapiens
+ENSG00000004478	R-HSA-9679506	https://reactome.org/PathwayBrowser/#/R-HSA-9679506	SARS-CoV Infections	TAS	Homo sapiens
+ENSG00000004478	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	TAS	Homo sapiens
+ENSG00000004487	R-HSA-109582	https://reactome.org/PathwayBrowser/#/R-HSA-109582	Hemostasis	TAS	Homo sapiens
+ENSG00000004487	R-HSA-1257604	https://reactome.org/PathwayBrowser/#/R-HSA-1257604	PIP3 activates AKT signaling	IEA	Homo sapiens
+ENSG00000004487	R-HSA-1500931	https://reactome.org/PathwayBrowser/#/R-HSA-1500931	Cell-Cell communication	TAS	Homo sapiens
+ENSG00000004487	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	IEA	Homo sapiens
+ENSG00000004487	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004487	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000004487	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000004487	R-HSA-195258	https://reactome.org/PathwayBrowser/#/R-HSA-195258	RHO GTPase Effectors	TAS	Homo sapiens
+ENSG00000004487	R-HSA-3214815	https://reactome.org/PathwayBrowser/#/R-HSA-3214815	HDACs deacetylate histones	TAS	Homo sapiens
+ENSG00000004487	R-HSA-3214842	https://reactome.org/PathwayBrowser/#/R-HSA-3214842	HDMs demethylate histones	TAS	Homo sapiens
+ENSG00000004487	R-HSA-3247509	https://reactome.org/PathwayBrowser/#/R-HSA-3247509	Chromatin modifying enzymes	TAS	Homo sapiens
+ENSG00000004487	R-HSA-418990	https://reactome.org/PathwayBrowser/#/R-HSA-418990	Adherens junctions interactions	TAS	Homo sapiens
+ENSG00000004487	R-HSA-421270	https://reactome.org/PathwayBrowser/#/R-HSA-421270	Cell-cell junction organization	TAS	Homo sapiens
+ENSG00000004487	R-HSA-446728	https://reactome.org/PathwayBrowser/#/R-HSA-446728	Cell junction organization	TAS	Homo sapiens
+ENSG00000004487	R-HSA-4839726	https://reactome.org/PathwayBrowser/#/R-HSA-4839726	Chromatin organization	TAS	Homo sapiens
+ENSG00000004487	R-HSA-5625740	https://reactome.org/PathwayBrowser/#/R-HSA-5625740	RHO GTPases activate PKNs	TAS	Homo sapiens
+ENSG00000004487	R-HSA-5625886	https://reactome.org/PathwayBrowser/#/R-HSA-5625886	Activated PKN1 stimulates transcription of AR (androgen receptor) regulated genes KLK2 and KLK3	TAS	Homo sapiens
+ENSG00000004487	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000004487	R-HSA-6807070	https://reactome.org/PathwayBrowser/#/R-HSA-6807070	PTEN Regulation	IEA	Homo sapiens
+ENSG00000004487	R-HSA-8939211	https://reactome.org/PathwayBrowser/#/R-HSA-8939211	ESR-mediated signaling	TAS	Homo sapiens
+ENSG00000004487	R-HSA-8943724	https://reactome.org/PathwayBrowser/#/R-HSA-8943724	Regulation of PTEN gene transcription	IEA	Homo sapiens
+ENSG00000004487	R-HSA-9006925	https://reactome.org/PathwayBrowser/#/R-HSA-9006925	Intracellular signaling by second messengers	IEA	Homo sapiens
+ENSG00000004487	R-HSA-9006931	https://reactome.org/PathwayBrowser/#/R-HSA-9006931	Signaling by Nuclear Receptors	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9018519	https://reactome.org/PathwayBrowser/#/R-HSA-9018519	Estrogen-dependent gene expression	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9024446	https://reactome.org/PathwayBrowser/#/R-HSA-9024446	NR1H2 and NR1H3-mediated signaling	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9029569	https://reactome.org/PathwayBrowser/#/R-HSA-9029569	NR1H3 & NR1H2 regulate gene expression linked to cholesterol transport and efflux	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9679191	https://reactome.org/PathwayBrowser/#/R-HSA-9679191	Potential therapeutics for SARS	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9679506	https://reactome.org/PathwayBrowser/#/R-HSA-9679506	SARS-CoV Infections	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9759476	https://reactome.org/PathwayBrowser/#/R-HSA-9759476	Regulation of Homotypic Cell-Cell Adhesion	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9764265	https://reactome.org/PathwayBrowser/#/R-HSA-9764265	Regulation of CDH1 Expression and Function	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9764274	https://reactome.org/PathwayBrowser/#/R-HSA-9764274	Regulation of Expression and Function of Type I Classical Cadherins	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9764560	https://reactome.org/PathwayBrowser/#/R-HSA-9764560	Regulation of CDH1 Gene Transcription	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9764725	https://reactome.org/PathwayBrowser/#/R-HSA-9764725	Negative Regulation of CDH1 Gene Transcription	TAS	Homo sapiens
+ENSG00000004487	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	TAS	Homo sapiens
+ENSG00000004487	R-HSA-983231	https://reactome.org/PathwayBrowser/#/R-HSA-983231	Factors involved in megakaryocyte development and platelet production	TAS	Homo sapiens
+ENSG00000004660	R-HSA-111885	https://reactome.org/PathwayBrowser/#/R-HSA-111885	Opioid Signalling	TAS	Homo sapiens
+ENSG00000004660	R-HSA-111885	https://reactome.org/PathwayBrowser/#/R-HSA-111885	Opioid Signalling	IEA	Homo sapiens
+ENSG00000004660	R-HSA-111932	https://reactome.org/PathwayBrowser/#/R-HSA-111932	CaMK IV-mediated phosphorylation of CREB	TAS	Homo sapiens
+ENSG00000004660	R-HSA-111932	https://reactome.org/PathwayBrowser/#/R-HSA-111932	CaMK IV-mediated phosphorylation of CREB	IEA	Homo sapiens
+ENSG00000004660	R-HSA-111933	https://reactome.org/PathwayBrowser/#/R-HSA-111933	Calmodulin induced events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-111933	https://reactome.org/PathwayBrowser/#/R-HSA-111933	Calmodulin induced events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-111996	https://reactome.org/PathwayBrowser/#/R-HSA-111996	Ca-dependent events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-111996	https://reactome.org/PathwayBrowser/#/R-HSA-111996	Ca-dependent events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-111997	https://reactome.org/PathwayBrowser/#/R-HSA-111997	CaM pathway	TAS	Homo sapiens
+ENSG00000004660	R-HSA-111997	https://reactome.org/PathwayBrowser/#/R-HSA-111997	CaM pathway	IEA	Homo sapiens
+ENSG00000004660	R-HSA-112040	https://reactome.org/PathwayBrowser/#/R-HSA-112040	G-protein mediated events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-112040	https://reactome.org/PathwayBrowser/#/R-HSA-112040	G-protein mediated events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-112043	https://reactome.org/PathwayBrowser/#/R-HSA-112043	PLC beta mediated events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-112043	https://reactome.org/PathwayBrowser/#/R-HSA-112043	PLC beta mediated events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-112314	https://reactome.org/PathwayBrowser/#/R-HSA-112314	Neurotransmitter receptors and postsynaptic signal transmission	TAS	Homo sapiens
+ENSG00000004660	R-HSA-112314	https://reactome.org/PathwayBrowser/#/R-HSA-112314	Neurotransmitter receptors and postsynaptic signal transmission	IEA	Homo sapiens
+ENSG00000004660	R-HSA-112315	https://reactome.org/PathwayBrowser/#/R-HSA-112315	Transmission across Chemical Synapses	TAS	Homo sapiens
+ENSG00000004660	R-HSA-112315	https://reactome.org/PathwayBrowser/#/R-HSA-112315	Transmission across Chemical Synapses	IEA	Homo sapiens
+ENSG00000004660	R-HSA-112316	https://reactome.org/PathwayBrowser/#/R-HSA-112316	Neuronal System	TAS	Homo sapiens
+ENSG00000004660	R-HSA-112316	https://reactome.org/PathwayBrowser/#/R-HSA-112316	Neuronal System	IEA	Homo sapiens
+ENSG00000004660	R-HSA-1489509	https://reactome.org/PathwayBrowser/#/R-HSA-1489509	DAG and IP3 signaling	TAS	Homo sapiens
+ENSG00000004660	R-HSA-1489509	https://reactome.org/PathwayBrowser/#/R-HSA-1489509	DAG and IP3 signaling	IEA	Homo sapiens
+ENSG00000004660	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004660	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	IEA	Homo sapiens
+ENSG00000004660	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	TAS	Homo sapiens
+ENSG00000004660	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	IEA	Homo sapiens
+ENSG00000004660	R-HSA-388396	https://reactome.org/PathwayBrowser/#/R-HSA-388396	GPCR downstream signalling	TAS	Homo sapiens
+ENSG00000004660	R-HSA-388396	https://reactome.org/PathwayBrowser/#/R-HSA-388396	GPCR downstream signalling	IEA	Homo sapiens
+ENSG00000004660	R-HSA-418594	https://reactome.org/PathwayBrowser/#/R-HSA-418594	G alpha (i) signalling events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-418594	https://reactome.org/PathwayBrowser/#/R-HSA-418594	G alpha (i) signalling events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-438064	https://reactome.org/PathwayBrowser/#/R-HSA-438064	Post NMDA receptor activation events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-438064	https://reactome.org/PathwayBrowser/#/R-HSA-438064	Post NMDA receptor activation events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-442729	https://reactome.org/PathwayBrowser/#/R-HSA-442729	CREB1 phosphorylation through the activation of CaMKII/CaMKK/CaMKIV cascasde	TAS	Homo sapiens
+ENSG00000004660	R-HSA-442729	https://reactome.org/PathwayBrowser/#/R-HSA-442729	CREB1 phosphorylation through the activation of CaMKII/CaMKK/CaMKIV cascasde	IEA	Homo sapiens
+ENSG00000004660	R-HSA-442755	https://reactome.org/PathwayBrowser/#/R-HSA-442755	Activation of NMDA receptors and postsynaptic events	TAS	Homo sapiens
+ENSG00000004660	R-HSA-442755	https://reactome.org/PathwayBrowser/#/R-HSA-442755	Activation of NMDA receptors and postsynaptic events	IEA	Homo sapiens
+ENSG00000004660	R-HSA-9006925	https://reactome.org/PathwayBrowser/#/R-HSA-9006925	Intracellular signaling by second messengers	TAS	Homo sapiens
+ENSG00000004660	R-HSA-9006925	https://reactome.org/PathwayBrowser/#/R-HSA-9006925	Intracellular signaling by second messengers	IEA	Homo sapiens
+ENSG00000004660	R-HSA-9619229	https://reactome.org/PathwayBrowser/#/R-HSA-9619229	Activation of RAC1 downstream of NMDARs	TAS	Homo sapiens
+ENSG00000004660	R-HSA-9619229	https://reactome.org/PathwayBrowser/#/R-HSA-9619229	Activation of RAC1 downstream of NMDARs	IEA	Homo sapiens
+ENSG00000004777	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004777	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000004777	R-HSA-9012999	https://reactome.org/PathwayBrowser/#/R-HSA-9012999	RHO GTPase cycle	TAS	Homo sapiens
+ENSG00000004777	R-HSA-9013148	https://reactome.org/PathwayBrowser/#/R-HSA-9013148	CDC42 GTPase cycle	TAS	Homo sapiens
+ENSG00000004777	R-HSA-9013149	https://reactome.org/PathwayBrowser/#/R-HSA-9013149	RAC1 GTPase cycle	TAS	Homo sapiens
+ENSG00000004777	R-HSA-9013406	https://reactome.org/PathwayBrowser/#/R-HSA-9013406	RHOQ GTPase cycle	TAS	Homo sapiens
+ENSG00000004777	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000004779	R-HSA-1428517	https://reactome.org/PathwayBrowser/#/R-HSA-1428517	Aerobic respiration and respiratory electron transport	TAS	Homo sapiens
+ENSG00000004779	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000004779	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000004779	R-HSA-5368287	https://reactome.org/PathwayBrowser/#/R-HSA-5368287	Mitochondrial translation	TAS	Homo sapiens
+ENSG00000004779	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSG00000004779	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000004779	R-HSA-611105	https://reactome.org/PathwayBrowser/#/R-HSA-611105	Respiratory electron transport	TAS	Homo sapiens
+ENSG00000004779	R-HSA-6799198	https://reactome.org/PathwayBrowser/#/R-HSA-6799198	Complex I biogenesis	TAS	Homo sapiens
+ENSG00000004779	R-HSA-72766	https://reactome.org/PathwayBrowser/#/R-HSA-72766	Translation	TAS	Homo sapiens
+ENSG00000004779	R-HSA-77289	https://reactome.org/PathwayBrowser/#/R-HSA-77289	Mitochondrial Fatty Acid Beta-Oxidation	TAS	Homo sapiens
+ENSG00000004779	R-HSA-8978868	https://reactome.org/PathwayBrowser/#/R-HSA-8978868	Fatty acid metabolism	TAS	Homo sapiens
+ENSG00000004779	R-HSA-9857492	https://reactome.org/PathwayBrowser/#/R-HSA-9857492	Protein lipoylation	TAS	Homo sapiens
+ENSG00000004779	R-HSA-9937383	https://reactome.org/PathwayBrowser/#/R-HSA-9937383	Mitochondrial ribosome-associated quality control	TAS	Homo sapiens
+ENSG00000004799	R-HSA-1428517	https://reactome.org/PathwayBrowser/#/R-HSA-1428517	Aerobic respiration and respiratory electron transport	TAS	Homo sapiens
+ENSG00000004799	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000004799	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004799	R-HSA-204174	https://reactome.org/PathwayBrowser/#/R-HSA-204174	Regulation of pyruvate dehydrogenase (PDH) complex	TAS	Homo sapiens
+ENSG00000004799	R-HSA-212165	https://reactome.org/PathwayBrowser/#/R-HSA-212165	Epigenetic regulation of gene expression	IEA	Homo sapiens
+ENSG00000004799	R-HSA-212165	https://reactome.org/PathwayBrowser/#/R-HSA-212165	Epigenetic regulation of gene expression	TAS	Homo sapiens
+ENSG00000004799	R-HSA-5362517	https://reactome.org/PathwayBrowser/#/R-HSA-5362517	Signaling by Retinoic Acid	TAS	Homo sapiens
+ENSG00000004799	R-HSA-70268	https://reactome.org/PathwayBrowser/#/R-HSA-70268	Pyruvate metabolism	TAS	Homo sapiens
+ENSG00000004799	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	IEA	Homo sapiens
+ENSG00000004799	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	TAS	Homo sapiens
+ENSG00000004799	R-HSA-9006931	https://reactome.org/PathwayBrowser/#/R-HSA-9006931	Signaling by Nuclear Receptors	TAS	Homo sapiens
+ENSG00000004799	R-HSA-9818564	https://reactome.org/PathwayBrowser/#/R-HSA-9818564	Epigenetic regulation of gene expression by MLL3 and MLL4 complexes	IEA	Homo sapiens
+ENSG00000004799	R-HSA-9818564	https://reactome.org/PathwayBrowser/#/R-HSA-9818564	Epigenetic regulation of gene expression by MLL3 and MLL4 complexes	TAS	Homo sapiens
+ENSG00000004799	R-HSA-9841922	https://reactome.org/PathwayBrowser/#/R-HSA-9841922	MLL4 and MLL3 complexes regulate expression of PPARG target genes in adipogenesis and hepatic steatosis	IEA	Homo sapiens
+ENSG00000004799	R-HSA-9841922	https://reactome.org/PathwayBrowser/#/R-HSA-9841922	MLL4 and MLL3 complexes regulate expression of PPARG target genes in adipogenesis and hepatic steatosis	TAS	Homo sapiens
+ENSG00000004799	R-HSA-9851695	https://reactome.org/PathwayBrowser/#/R-HSA-9851695	Epigenetic regulation of adipogenesis genes by MLL3 and MLL4 complexes	IEA	Homo sapiens
+ENSG00000004799	R-HSA-9851695	https://reactome.org/PathwayBrowser/#/R-HSA-9851695	Epigenetic regulation of adipogenesis genes by MLL3 and MLL4 complexes	TAS	Homo sapiens
+ENSG00000004799	R-HSA-9861718	https://reactome.org/PathwayBrowser/#/R-HSA-9861718	Regulation of pyruvate metabolism	TAS	Homo sapiens
+ENSG00000004799	R-HSA-9917777	https://reactome.org/PathwayBrowser/#/R-HSA-9917777	Epigenetic regulation by WDR5-containing histone modifying complexes	IEA	Homo sapiens
+ENSG00000004799	R-HSA-9917777	https://reactome.org/PathwayBrowser/#/R-HSA-9917777	Epigenetic regulation by WDR5-containing histone modifying complexes	TAS	Homo sapiens
+ENSG00000004809	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000004809	R-HSA-425407	https://reactome.org/PathwayBrowser/#/R-HSA-425407	SLC-mediated transmembrane transport	TAS	Homo sapiens
+ENSG00000004809	R-HSA-549127	https://reactome.org/PathwayBrowser/#/R-HSA-549127	SLC-mediated transport of organic cations	TAS	Homo sapiens
+ENSG00000004846	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000004846	R-HSA-382556	https://reactome.org/PathwayBrowser/#/R-HSA-382556	ABC-family proteins mediated transport	TAS	Homo sapiens
+ENSG00000004864	R-HSA-1268020	https://reactome.org/PathwayBrowser/#/R-HSA-1268020	Mitochondrial protein import	IEA	Homo sapiens
+ENSG00000004864	R-HSA-1428517	https://reactome.org/PathwayBrowser/#/R-HSA-1428517	Aerobic respiration and respiratory electron transport	TAS	Homo sapiens
+ENSG00000004864	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000004864	R-HSA-611105	https://reactome.org/PathwayBrowser/#/R-HSA-611105	Respiratory electron transport	TAS	Homo sapiens
+ENSG00000004864	R-HSA-71291	https://reactome.org/PathwayBrowser/#/R-HSA-71291	Metabolism of amino acids and derivatives	TAS	Homo sapiens
+ENSG00000004864	R-HSA-8963693	https://reactome.org/PathwayBrowser/#/R-HSA-8963693	Aspartate and asparagine metabolism	TAS	Homo sapiens
+ENSG00000004864	R-HSA-9609507	https://reactome.org/PathwayBrowser/#/R-HSA-9609507	Protein localization	IEA	Homo sapiens
+ENSG00000004864	R-HSA-9856872	https://reactome.org/PathwayBrowser/#/R-HSA-9856872	Malate-aspartate shuttle	TAS	Homo sapiens
+ENSG00000004897	R-HSA-1280218	https://reactome.org/PathwayBrowser/#/R-HSA-1280218	Adaptive Immune System	TAS	Homo sapiens
+ENSG00000004897	R-HSA-141405	https://reactome.org/PathwayBrowser/#/R-HSA-141405	Inhibition of the proteolytic activity of APC/C required for the onset of anaphase by mitotic spindle checkpoint components	TAS	Homo sapiens
+ENSG00000004897	R-HSA-141430	https://reactome.org/PathwayBrowser/#/R-HSA-141430	Inactivation of APC/C via direct inhibition of the APC/C complex	TAS	Homo sapiens
+ENSG00000004897	R-HSA-1640170	https://reactome.org/PathwayBrowser/#/R-HSA-1640170	Cell Cycle	TAS	Homo sapiens
+ENSG00000004897	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000004897	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000004897	R-HSA-174048	https://reactome.org/PathwayBrowser/#/R-HSA-174048	APC/C:Cdc20 mediated degradation of Cyclin B	TAS	Homo sapiens
+ENSG00000004897	R-HSA-174084	https://reactome.org/PathwayBrowser/#/R-HSA-174084	Autodegradation of Cdh1 by Cdh1:APC/C	TAS	Homo sapiens
+ENSG00000004897	R-HSA-174143	https://reactome.org/PathwayBrowser/#/R-HSA-174143	APC/C-mediated degradation of cell cycle proteins	TAS	Homo sapiens
+ENSG00000004897	R-HSA-174154	https://reactome.org/PathwayBrowser/#/R-HSA-174154	APC/C:Cdc20 mediated degradation of Securin	TAS	Homo sapiens
+ENSG00000004897	R-HSA-174178	https://reactome.org/PathwayBrowser/#/R-HSA-174178	APC/C:Cdh1 mediated degradation of Cdc20 and other APC/C:Cdh1 targeted proteins in late mitosis/early G1	TAS	Homo sapiens
+ENSG00000004897	R-HSA-174184	https://reactome.org/PathwayBrowser/#/R-HSA-174184	Cdc20:Phospho-APC/C mediated degradation of Cyclin A	TAS	Homo sapiens
+ENSG00000004897	R-HSA-176407	https://reactome.org/PathwayBrowser/#/R-HSA-176407	Conversion from APC/C:Cdc20 to APC/C:Cdh1 in late anaphase	TAS	Homo sapiens
+ENSG00000004897	R-HSA-176408	https://reactome.org/PathwayBrowser/#/R-HSA-176408	Regulation of APC/C activators between G1/S and early anaphase	TAS	Homo sapiens
+ENSG00000004897	R-HSA-176409	https://reactome.org/PathwayBrowser/#/R-HSA-176409	APC/C:Cdc20 mediated degradation of mitotic proteins	TAS	Homo sapiens
+ENSG00000004897	R-HSA-176412	https://reactome.org/PathwayBrowser/#/R-HSA-176412	Phosphorylation of the APC/C	TAS	Homo sapiens
+ENSG00000004897	R-HSA-176814	https://reactome.org/PathwayBrowser/#/R-HSA-176814	Activation of APC/C and APC/C:Cdc20 mediated degradation of mitotic proteins	TAS	Homo sapiens
+ENSG00000004897	R-HSA-179409	https://reactome.org/PathwayBrowser/#/R-HSA-179409	APC-Cdc20 mediated degradation of Nek2A	TAS	Homo sapiens
+ENSG00000004897	R-HSA-179419	https://reactome.org/PathwayBrowser/#/R-HSA-179419	APC:Cdc20 mediated degradation of cell cycle proteins prior to satisfation of the cell cycle checkpoint	TAS	Homo sapiens
+ENSG00000004897	R-HSA-212436	https://reactome.org/PathwayBrowser/#/R-HSA-212436	Generic Transcription Pathway	TAS	Homo sapiens
+ENSG00000004897	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	TAS	Homo sapiens
+ENSG00000004897	R-HSA-2467813	https://reactome.org/PathwayBrowser/#/R-HSA-2467813	Separation of Sister Chromatids	TAS	Homo sapiens
+ENSG00000004897	R-HSA-2555396	https://reactome.org/PathwayBrowser/#/R-HSA-2555396	Mitotic Metaphase and Anaphase	TAS	Homo sapiens
+ENSG00000004897	R-HSA-2559582	https://reactome.org/PathwayBrowser/#/R-HSA-2559582	Senescence-Associated Secretory Phenotype (SASP)	TAS	Homo sapiens
+ENSG00000004897	R-HSA-2559583	https://reactome.org/PathwayBrowser/#/R-HSA-2559583	Cellular Senescence	TAS	Homo sapiens
+ENSG00000004897	R-HSA-453276	https://reactome.org/PathwayBrowser/#/R-HSA-453276	Regulation of mitotic cell cycle	TAS	Homo sapiens
+ENSG00000004897	R-HSA-68867	https://reactome.org/PathwayBrowser/#/R-HSA-68867	Assembly of the pre-replicative complex	TAS	Homo sapiens
+ENSG00000004897	R-HSA-68882	https://reactome.org/PathwayBrowser/#/R-HSA-68882	Mitotic Anaphase	TAS	Homo sapiens
+ENSG00000004897	R-HSA-68886	https://reactome.org/PathwayBrowser/#/R-HSA-68886	M Phase	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69002	https://reactome.org/PathwayBrowser/#/R-HSA-69002	DNA Replication Pre-Initiation	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69017	https://reactome.org/PathwayBrowser/#/R-HSA-69017	CDK-mediated phosphorylation and removal of Cdc6	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69052	https://reactome.org/PathwayBrowser/#/R-HSA-69052	Switching of origins to a post-replicative state	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69239	https://reactome.org/PathwayBrowser/#/R-HSA-69239	Synthesis of DNA	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69242	https://reactome.org/PathwayBrowser/#/R-HSA-69242	S Phase	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69278	https://reactome.org/PathwayBrowser/#/R-HSA-69278	Cell Cycle, Mitotic	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69306	https://reactome.org/PathwayBrowser/#/R-HSA-69306	DNA Replication	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69618	https://reactome.org/PathwayBrowser/#/R-HSA-69618	Mitotic Spindle Checkpoint	TAS	Homo sapiens
+ENSG00000004897	R-HSA-69620	https://reactome.org/PathwayBrowser/#/R-HSA-69620	Cell Cycle Checkpoints	TAS	Homo sapiens
+ENSG00000004897	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	TAS	Homo sapiens
+ENSG00000004897	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	TAS	Homo sapiens
+ENSG00000004897	R-HSA-8853884	https://reactome.org/PathwayBrowser/#/R-HSA-8853884	Transcriptional Regulation by VENTX	TAS	Homo sapiens
+ENSG00000004897	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	TAS	Homo sapiens
+ENSG00000004897	R-HSA-9675126	https://reactome.org/PathwayBrowser/#/R-HSA-9675126	Diseases of mitotic cell cycle	TAS	Homo sapiens
+ENSG00000004897	R-HSA-9687136	https://reactome.org/PathwayBrowser/#/R-HSA-9687136	Aberrant regulation of mitotic exit in cancer due to RB1 defects	TAS	Homo sapiens
+ENSG00000004897	R-HSA-9687139	https://reactome.org/PathwayBrowser/#/R-HSA-9687139	Aberrant regulation of mitotic cell cycle due to RB1 defects	TAS	Homo sapiens
+ENSG00000004897	R-HSA-983168	https://reactome.org/PathwayBrowser/#/R-HSA-983168	Antigen processing: Ubiquitination & Proteasome degradation	TAS	Homo sapiens
+ENSG00000004897	R-HSA-983169	https://reactome.org/PathwayBrowser/#/R-HSA-983169	Class I MHC mediated antigen processing & presentation	TAS	Homo sapiens
+ENSG00000004939	R-HSA-1237044	https://reactome.org/PathwayBrowser/#/R-HSA-1237044	Erythrocytes take up carbon dioxide and release oxygen	TAS	Homo sapiens
+ENSG00000004939	R-HSA-1247673	https://reactome.org/PathwayBrowser/#/R-HSA-1247673	Erythrocytes take up oxygen and release carbon dioxide	TAS	Homo sapiens
+ENSG00000004939	R-HSA-1480926	https://reactome.org/PathwayBrowser/#/R-HSA-1480926	O2/CO2 exchange in erythrocytes	TAS	Homo sapiens
+ENSG00000004939	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000004939	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000004939	R-HSA-425381	https://reactome.org/PathwayBrowser/#/R-HSA-425381	Bicarbonate transporters	TAS	Homo sapiens
+ENSG00000004939	R-HSA-425407	https://reactome.org/PathwayBrowser/#/R-HSA-425407	SLC-mediated transmembrane transport	TAS	Homo sapiens
+ENSG00000004939	R-HSA-5619050	https://reactome.org/PathwayBrowser/#/R-HSA-5619050	Defective SLC4A1 causes hereditary spherocytosis type 4 (HSP4),  distal renal tubular acidosis (dRTA) and dRTA with hemolytic anemia (dRTA-HA)	TAS	Homo sapiens
+ENSG00000004939	R-HSA-5619102	https://reactome.org/PathwayBrowser/#/R-HSA-5619102	SLC transporter disorders	TAS	Homo sapiens
+ENSG00000004939	R-HSA-5619115	https://reactome.org/PathwayBrowser/#/R-HSA-5619115	Disorders of transmembrane transporters	TAS	Homo sapiens
+ENSG00000004939	R-HSA-9958790	https://reactome.org/PathwayBrowser/#/R-HSA-9958790	SLC-mediated transport of inorganic anions	TAS	Homo sapiens
+ENSG00000004948	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004948	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	TAS	Homo sapiens
+ENSG00000004948	R-HSA-373080	https://reactome.org/PathwayBrowser/#/R-HSA-373080	Class B/2 (Secretin family receptors)	TAS	Homo sapiens
+ENSG00000004948	R-HSA-388396	https://reactome.org/PathwayBrowser/#/R-HSA-388396	GPCR downstream signalling	TAS	Homo sapiens
+ENSG00000004948	R-HSA-418555	https://reactome.org/PathwayBrowser/#/R-HSA-418555	G alpha (s) signalling events	TAS	Homo sapiens
+ENSG00000004948	R-HSA-419812	https://reactome.org/PathwayBrowser/#/R-HSA-419812	Calcitonin-like ligand receptors	TAS	Homo sapiens
+ENSG00000004948	R-HSA-500792	https://reactome.org/PathwayBrowser/#/R-HSA-500792	GPCR ligand binding	TAS	Homo sapiens
+ENSG00000004961	R-HSA-1428517	https://reactome.org/PathwayBrowser/#/R-HSA-1428517	Aerobic respiration and respiratory electron transport	TAS	Homo sapiens
+ENSG00000004961	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000004961	R-HSA-611105	https://reactome.org/PathwayBrowser/#/R-HSA-611105	Respiratory electron transport	TAS	Homo sapiens
+ENSG00000004975	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000004975	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	IEA	Homo sapiens
+ENSG00000004975	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	IEA	Homo sapiens
+ENSG00000004975	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000004975	R-HSA-194315	https://reactome.org/PathwayBrowser/#/R-HSA-194315	Signaling by Rho GTPases	TAS	Homo sapiens
+ENSG00000004975	R-HSA-195258	https://reactome.org/PathwayBrowser/#/R-HSA-195258	RHO GTPase Effectors	TAS	Homo sapiens
+ENSG00000004975	R-HSA-195721	https://reactome.org/PathwayBrowser/#/R-HSA-195721	Signaling by WNT	TAS	Homo sapiens
+ENSG00000004975	R-HSA-195721	https://reactome.org/PathwayBrowser/#/R-HSA-195721	Signaling by WNT	IEA	Homo sapiens
+ENSG00000004975	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSG00000004975	R-HSA-201681	https://reactome.org/PathwayBrowser/#/R-HSA-201681	TCF dependent signaling in response to WNT	TAS	Homo sapiens
+ENSG00000004975	R-HSA-201681	https://reactome.org/PathwayBrowser/#/R-HSA-201681	TCF dependent signaling in response to WNT	IEA	Homo sapiens
+ENSG00000004975	R-HSA-201688	https://reactome.org/PathwayBrowser/#/R-HSA-201688	WNT mediated activation of DVL	TAS	Homo sapiens
+ENSG00000004975	R-HSA-2028269	https://reactome.org/PathwayBrowser/#/R-HSA-2028269	Signaling by Hippo	TAS	Homo sapiens
+ENSG00000004975	R-HSA-3858494	https://reactome.org/PathwayBrowser/#/R-HSA-3858494	Beta-catenin independent WNT signaling	TAS	Homo sapiens
+ENSG00000004975	R-HSA-3858494	https://reactome.org/PathwayBrowser/#/R-HSA-3858494	Beta-catenin independent WNT signaling	IEA	Homo sapiens
+ENSG00000004975	R-HSA-4086400	https://reactome.org/PathwayBrowser/#/R-HSA-4086400	PCP/CE pathway	TAS	Homo sapiens
+ENSG00000004975	R-HSA-4086400	https://reactome.org/PathwayBrowser/#/R-HSA-4086400	PCP/CE pathway	IEA	Homo sapiens
+ENSG00000004975	R-HSA-4608870	https://reactome.org/PathwayBrowser/#/R-HSA-4608870	Asymmetric localization of PCP proteins	TAS	Homo sapiens
+ENSG00000004975	R-HSA-4641258	https://reactome.org/PathwayBrowser/#/R-HSA-4641258	Degradation of DVL	TAS	Homo sapiens
+ENSG00000004975	R-HSA-4641262	https://reactome.org/PathwayBrowser/#/R-HSA-4641262	Disassembly of the destruction complex and recruitment of AXIN to the membrane	TAS	Homo sapiens
+ENSG00000004975	R-HSA-4641262	https://reactome.org/PathwayBrowser/#/R-HSA-4641262	Disassembly of the destruction complex and recruitment of AXIN to the membrane	IEA	Homo sapiens
+ENSG00000004975	R-HSA-5099900	https://reactome.org/PathwayBrowser/#/R-HSA-5099900	WNT5A-dependent internalization of FZD4	TAS	Homo sapiens
+ENSG00000004975	R-HSA-5368598	https://reactome.org/PathwayBrowser/#/R-HSA-5368598	Negative regulation of TCF-dependent signaling by DVL-interacting proteins	IEA	Homo sapiens
+ENSG00000004975	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSG00000004975	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	IEA	Homo sapiens
+ENSG00000004975	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000004975	R-HSA-5663220	https://reactome.org/PathwayBrowser/#/R-HSA-5663220	RHO GTPases Activate Formins	TAS	Homo sapiens
+ENSG00000004975	R-HSA-8856825	https://reactome.org/PathwayBrowser/#/R-HSA-8856825	Cargo recognition for clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSG00000004975	R-HSA-8856828	https://reactome.org/PathwayBrowser/#/R-HSA-8856828	Clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSG00000004975	R-HSA-9658195	https://reactome.org/PathwayBrowser/#/R-HSA-9658195	Leishmania infection	IEA	Homo sapiens
+ENSG00000004975	R-HSA-9658195	https://reactome.org/PathwayBrowser/#/R-HSA-9658195	Leishmania infection	TAS	Homo sapiens
+ENSG00000004975	R-HSA-9664420	https://reactome.org/PathwayBrowser/#/R-HSA-9664420	Killing mechanisms	IEA	Homo sapiens
+ENSG00000004975	R-HSA-9664420	https://reactome.org/PathwayBrowser/#/R-HSA-9664420	Killing mechanisms	TAS	Homo sapiens
+ENSG00000004975	R-HSA-9673324	https://reactome.org/PathwayBrowser/#/R-HSA-9673324	WNT5:FZD7-mediated leishmania damping	IEA	Homo sapiens
+ENSG00000004975	R-HSA-9673324	https://reactome.org/PathwayBrowser/#/R-HSA-9673324	WNT5:FZD7-mediated leishmania damping	TAS	Homo sapiens
+ENSG00000004975	R-HSA-9716542	https://reactome.org/PathwayBrowser/#/R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	TAS	Homo sapiens
+ENSG00000004975	R-HSA-9824443	https://reactome.org/PathwayBrowser/#/R-HSA-9824443	Parasitic Infection Pathways	IEA	Homo sapiens
+ENSG00000004975	R-HSA-9824443	https://reactome.org/PathwayBrowser/#/R-HSA-9824443	Parasitic Infection Pathways	TAS	Homo sapiens
+ENSG00000005007	R-HSA-8953854	https://reactome.org/PathwayBrowser/#/R-HSA-8953854	Metabolism of RNA	TAS	Homo sapiens
+ENSG00000005007	R-HSA-927802	https://reactome.org/PathwayBrowser/#/R-HSA-927802	Nonsense-Mediated Decay (NMD)	TAS	Homo sapiens
+ENSG00000005007	R-HSA-975956	https://reactome.org/PathwayBrowser/#/R-HSA-975956	Nonsense Mediated Decay (NMD) independent of the Exon Junction Complex (EJC)	TAS	Homo sapiens
+ENSG00000005007	R-HSA-975957	https://reactome.org/PathwayBrowser/#/R-HSA-975957	Nonsense Mediated Decay (NMD) enhanced by the Exon Junction Complex (EJC)	TAS	Homo sapiens
+ENSG00000005020	R-HSA-1500931	https://reactome.org/PathwayBrowser/#/R-HSA-1500931	Cell-Cell communication	TAS	Homo sapiens
+ENSG00000005020	R-HSA-391160	https://reactome.org/PathwayBrowser/#/R-HSA-391160	Signal regulatory protein family interactions	TAS	Homo sapiens
+ENSG00000005022	R-HSA-162906	https://reactome.org/PathwayBrowser/#/R-HSA-162906	HIV Infection	TAS	Homo sapiens
+ENSG00000005022	R-HSA-162909	https://reactome.org/PathwayBrowser/#/R-HSA-162909	Host Interactions of HIV factors	TAS	Homo sapiens
+ENSG00000005022	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000005022	R-HSA-176033	https://reactome.org/PathwayBrowser/#/R-HSA-176033	Interactions of Vpr with host cellular proteins	TAS	Homo sapiens
+ENSG00000005022	R-HSA-180897	https://reactome.org/PathwayBrowser/#/R-HSA-180897	Vpr-mediated induction of apoptosis by mitochondrial outer membrane permeabilization	TAS	Homo sapiens
+ENSG00000005022	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000005022	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000005022	R-HSA-425397	https://reactome.org/PathwayBrowser/#/R-HSA-425397	Transport of vitamins, nucleosides, and related molecules	TAS	Homo sapiens
+ENSG00000005022	R-HSA-425407	https://reactome.org/PathwayBrowser/#/R-HSA-425407	SLC-mediated transmembrane transport	TAS	Homo sapiens
+ENSG00000005022	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000005022	R-HSA-83936	https://reactome.org/PathwayBrowser/#/R-HSA-83936	Transport of nucleosides and free purine and pyrimidine bases across the plasma membrane	TAS	Homo sapiens
+ENSG00000005022	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	TAS	Homo sapiens
+ENSG00000005022	R-HSA-9837999	https://reactome.org/PathwayBrowser/#/R-HSA-9837999	Mitochondrial protein degradation	TAS	Homo sapiens
+ENSG00000005059	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000005059	R-HSA-8949215	https://reactome.org/PathwayBrowser/#/R-HSA-8949215	Mitochondrial calcium ion transport	TAS	Homo sapiens
+ENSG00000005059	R-HSA-8949664	https://reactome.org/PathwayBrowser/#/R-HSA-8949664	Processing of SMDT1	TAS	Homo sapiens
+ENSG00000005073	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	IEA	Homo sapiens
+ENSG00000005073	R-HSA-9830369	https://reactome.org/PathwayBrowser/#/R-HSA-9830369	Kidney development	IEA	Homo sapiens
+ENSG00000005073	R-HSA-9830674	https://reactome.org/PathwayBrowser/#/R-HSA-9830674	Formation of the ureteric bud	IEA	Homo sapiens
+ENSG00000005075	R-HSA-112382	https://reactome.org/PathwayBrowser/#/R-HSA-112382	Formation of RNA Pol II elongation complex	TAS	Homo sapiens
+ENSG00000005075	R-HSA-113418	https://reactome.org/PathwayBrowser/#/R-HSA-113418	Formation of the Early Elongation Complex	TAS	Homo sapiens
+ENSG00000005075	R-HSA-1226099	https://reactome.org/PathwayBrowser/#/R-HSA-1226099	Signaling by FGFR in disease	IEA	Homo sapiens
+ENSG00000005075	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	IEA	Homo sapiens
+ENSG00000005075	R-HSA-157579	https://reactome.org/PathwayBrowser/#/R-HSA-157579	Telomere Maintenance	TAS	Homo sapiens
+ENSG00000005075	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000005075	R-HSA-162587	https://reactome.org/PathwayBrowser/#/R-HSA-162587	HIV Life Cycle	IEA	Homo sapiens
+ENSG00000005075	R-HSA-162587	https://reactome.org/PathwayBrowser/#/R-HSA-162587	HIV Life Cycle	TAS	Homo sapiens
+ENSG00000005075	R-HSA-162599	https://reactome.org/PathwayBrowser/#/R-HSA-162599	Late Phase of HIV Life Cycle	IEA	Homo sapiens
+ENSG00000005075	R-HSA-162599	https://reactome.org/PathwayBrowser/#/R-HSA-162599	Late Phase of HIV Life Cycle	TAS	Homo sapiens
+ENSG00000005075	R-HSA-162906	https://reactome.org/PathwayBrowser/#/R-HSA-162906	HIV Infection	IEA	Homo sapiens
+ENSG00000005075	R-HSA-162906	https://reactome.org/PathwayBrowser/#/R-HSA-162906	HIV Infection	TAS	Homo sapiens
+ENSG00000005075	R-HSA-1640170	https://reactome.org/PathwayBrowser/#/R-HSA-1640170	Cell Cycle	TAS	Homo sapiens
+ENSG00000005075	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000005075	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167152	https://reactome.org/PathwayBrowser/#/R-HSA-167152	Formation of HIV elongation complex in the absence of HIV Tat	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167158	https://reactome.org/PathwayBrowser/#/R-HSA-167158	Formation of the HIV-1 Early Elongation Complex	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167160	https://reactome.org/PathwayBrowser/#/R-HSA-167160	RNA Pol II CTD phosphorylation and interaction with CE during HIV infection	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167161	https://reactome.org/PathwayBrowser/#/R-HSA-167161	HIV Transcription Initiation	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167162	https://reactome.org/PathwayBrowser/#/R-HSA-167162	RNA Polymerase II HIV Promoter Escape	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167169	https://reactome.org/PathwayBrowser/#/R-HSA-167169	HIV Transcription Elongation	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167169	https://reactome.org/PathwayBrowser/#/R-HSA-167169	HIV Transcription Elongation	TAS	Homo sapiens
+ENSG00000005075	R-HSA-167172	https://reactome.org/PathwayBrowser/#/R-HSA-167172	Transcription of the HIV genome	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167172	https://reactome.org/PathwayBrowser/#/R-HSA-167172	Transcription of the HIV genome	TAS	Homo sapiens
+ENSG00000005075	R-HSA-167200	https://reactome.org/PathwayBrowser/#/R-HSA-167200	Formation of HIV-1 elongation complex containing HIV-1 Tat	TAS	Homo sapiens
+ENSG00000005075	R-HSA-167200	https://reactome.org/PathwayBrowser/#/R-HSA-167200	Formation of HIV-1 elongation complex containing HIV-1 Tat	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167238	https://reactome.org/PathwayBrowser/#/R-HSA-167238	Pausing and recovery of Tat-mediated HIV elongation	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167242	https://reactome.org/PathwayBrowser/#/R-HSA-167242	Abortive elongation of HIV-1 transcript in the absence of Tat	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167243	https://reactome.org/PathwayBrowser/#/R-HSA-167243	Tat-mediated HIV elongation arrest and recovery	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167246	https://reactome.org/PathwayBrowser/#/R-HSA-167246	Tat-mediated elongation of the HIV-1 transcript	TAS	Homo sapiens
+ENSG00000005075	R-HSA-167246	https://reactome.org/PathwayBrowser/#/R-HSA-167246	Tat-mediated elongation of the HIV-1 transcript	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167287	https://reactome.org/PathwayBrowser/#/R-HSA-167287	HIV elongation arrest and recovery	IEA	Homo sapiens
+ENSG00000005075	R-HSA-167290	https://reactome.org/PathwayBrowser/#/R-HSA-167290	Pausing and recovery of HIV elongation	IEA	Homo sapiens
+ENSG00000005075	R-HSA-168255	https://reactome.org/PathwayBrowser/#/R-HSA-168255	Influenza Infection	TAS	Homo sapiens
+ENSG00000005075	R-HSA-168273	https://reactome.org/PathwayBrowser/#/R-HSA-168273	Influenza Viral RNA Transcription and Replication	TAS	Homo sapiens
+ENSG00000005075	R-HSA-168325	https://reactome.org/PathwayBrowser/#/R-HSA-168325	Viral Messenger RNA Synthesis	TAS	Homo sapiens
+ENSG00000005075	R-HSA-1839126	https://reactome.org/PathwayBrowser/#/R-HSA-1839126	FGFR2 mutant receptor activation	IEA	Homo sapiens
+ENSG00000005075	R-HSA-190236	https://reactome.org/PathwayBrowser/#/R-HSA-190236	Signaling by FGFR	TAS	Homo sapiens
+ENSG00000005075	R-HSA-203927	https://reactome.org/PathwayBrowser/#/R-HSA-203927	MicroRNA (miRNA) biogenesis	TAS	Homo sapiens
+ENSG00000005075	R-HSA-211000	https://reactome.org/PathwayBrowser/#/R-HSA-211000	Gene Silencing by RNA	TAS	Homo sapiens
+ENSG00000005075	R-HSA-211000	https://reactome.org/PathwayBrowser/#/R-HSA-211000	Gene Silencing by RNA	IEA	Homo sapiens
+ENSG00000005075	R-HSA-212436	https://reactome.org/PathwayBrowser/#/R-HSA-212436	Generic Transcription Pathway	TAS	Homo sapiens
+ENSG00000005075	R-HSA-3700989	https://reactome.org/PathwayBrowser/#/R-HSA-3700989	Transcriptional Regulation by TP53	TAS	Homo sapiens
+ENSG00000005075	R-HSA-5578749	https://reactome.org/PathwayBrowser/#/R-HSA-5578749	Transcriptional regulation by small RNAs	TAS	Homo sapiens
+ENSG00000005075	R-HSA-5601884	https://reactome.org/PathwayBrowser/#/R-HSA-5601884	PIWI-interacting RNA (piRNA) biogenesis	IEA	Homo sapiens
+ENSG00000005075	R-HSA-5617472	https://reactome.org/PathwayBrowser/#/R-HSA-5617472	Activation of anterior HOX genes in hindbrain development during early embryogenesis	IEA	Homo sapiens
+ENSG00000005075	R-HSA-5619507	https://reactome.org/PathwayBrowser/#/R-HSA-5619507	Activation of HOX genes during differentiation	IEA	Homo sapiens
+ENSG00000005075	R-HSA-5654738	https://reactome.org/PathwayBrowser/#/R-HSA-5654738	Signaling by FGFR2	TAS	Homo sapiens
+ENSG00000005075	R-HSA-5655253	https://reactome.org/PathwayBrowser/#/R-HSA-5655253	Signaling by FGFR2 in disease	IEA	Homo sapiens
+ENSG00000005075	R-HSA-5663202	https://reactome.org/PathwayBrowser/#/R-HSA-5663202	Diseases of signal transduction by growth factor receptors and second messengers	IEA	Homo sapiens
+ENSG00000005075	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000005075	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	IEA	Homo sapiens
+ENSG00000005075	R-HSA-5696398	https://reactome.org/PathwayBrowser/#/R-HSA-5696398	Nucleotide Excision Repair	TAS	Homo sapiens
+ENSG00000005075	R-HSA-674695	https://reactome.org/PathwayBrowser/#/R-HSA-674695	RNA Polymerase II Pre-transcription Events	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6781823	https://reactome.org/PathwayBrowser/#/R-HSA-6781823	Formation of TC-NER Pre-Incision Complex	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6781827	https://reactome.org/PathwayBrowser/#/R-HSA-6781827	Transcription-Coupled Nucleotide Excision Repair (TC-NER)	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6782135	https://reactome.org/PathwayBrowser/#/R-HSA-6782135	Dual incision in TC-NER	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6782210	https://reactome.org/PathwayBrowser/#/R-HSA-6782210	Gap-filling DNA repair synthesis and ligation in TC-NER	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6796648	https://reactome.org/PathwayBrowser/#/R-HSA-6796648	TP53 Regulates Transcription of DNA Repair Genes	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6803529	https://reactome.org/PathwayBrowser/#/R-HSA-6803529	FGFR2 alternative splicing	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6807505	https://reactome.org/PathwayBrowser/#/R-HSA-6807505	RNA polymerase II transcribes snRNA genes	TAS	Homo sapiens
+ENSG00000005075	R-HSA-6807505	https://reactome.org/PathwayBrowser/#/R-HSA-6807505	RNA polymerase II transcribes snRNA genes	IEA	Homo sapiens
+ENSG00000005075	R-HSA-72086	https://reactome.org/PathwayBrowser/#/R-HSA-72086	mRNA Capping	TAS	Homo sapiens
+ENSG00000005075	R-HSA-72163	https://reactome.org/PathwayBrowser/#/R-HSA-72163	mRNA Splicing - Major Pathway	TAS	Homo sapiens
+ENSG00000005075	R-HSA-72165	https://reactome.org/PathwayBrowser/#/R-HSA-72165	mRNA Splicing - Minor Pathway	TAS	Homo sapiens
+ENSG00000005075	R-HSA-72172	https://reactome.org/PathwayBrowser/#/R-HSA-72172	mRNA Splicing	TAS	Homo sapiens
+ENSG00000005075	R-HSA-72187	https://reactome.org/PathwayBrowser/#/R-HSA-72187	mRNA 3'-end processing	TAS	Homo sapiens
+ENSG00000005075	R-HSA-72203	https://reactome.org/PathwayBrowser/#/R-HSA-72203	Processing of Capped Intron-Containing Pre-mRNA	TAS	Homo sapiens
+ENSG00000005075	R-HSA-73776	https://reactome.org/PathwayBrowser/#/R-HSA-73776	RNA Polymerase II Promoter Escape	TAS	Homo sapiens
+ENSG00000005075	R-HSA-73779	https://reactome.org/PathwayBrowser/#/R-HSA-73779	RNA Polymerase II Transcription Pre-Initiation And Promoter Opening	TAS	Homo sapiens
+ENSG00000005075	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	TAS	Homo sapiens
+ENSG00000005075	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	IEA	Homo sapiens
+ENSG00000005075	R-HSA-73886	https://reactome.org/PathwayBrowser/#/R-HSA-73886	Chromosome Maintenance	TAS	Homo sapiens
+ENSG00000005075	R-HSA-73894	https://reactome.org/PathwayBrowser/#/R-HSA-73894	DNA Repair	TAS	Homo sapiens
+ENSG00000005075	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	TAS	Homo sapiens
+ENSG00000005075	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	IEA	Homo sapiens
+ENSG00000005075	R-HSA-75953	https://reactome.org/PathwayBrowser/#/R-HSA-75953	RNA Polymerase II Transcription Initiation	TAS	Homo sapiens
+ENSG00000005075	R-HSA-75955	https://reactome.org/PathwayBrowser/#/R-HSA-75955	RNA Polymerase II Transcription Elongation	TAS	Homo sapiens
+ENSG00000005075	R-HSA-76042	https://reactome.org/PathwayBrowser/#/R-HSA-76042	RNA Polymerase II Transcription Initiation And Promoter Clearance	TAS	Homo sapiens
+ENSG00000005075	R-HSA-77075	https://reactome.org/PathwayBrowser/#/R-HSA-77075	RNA Pol II CTD phosphorylation and interaction with CE	TAS	Homo sapiens
+ENSG00000005075	R-HSA-8851708	https://reactome.org/PathwayBrowser/#/R-HSA-8851708	Signaling by FGFR2 IIIa TM	IEA	Homo sapiens
+ENSG00000005075	R-HSA-8939211	https://reactome.org/PathwayBrowser/#/R-HSA-8939211	ESR-mediated signaling	TAS	Homo sapiens
+ENSG00000005075	R-HSA-8953854	https://reactome.org/PathwayBrowser/#/R-HSA-8953854	Metabolism of RNA	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9006931	https://reactome.org/PathwayBrowser/#/R-HSA-9006931	Signaling by Nuclear Receptors	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9006934	https://reactome.org/PathwayBrowser/#/R-HSA-9006934	Signaling by Receptor Tyrosine Kinases	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9018519	https://reactome.org/PathwayBrowser/#/R-HSA-9018519	Estrogen-dependent gene expression	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9670095	https://reactome.org/PathwayBrowser/#/R-HSA-9670095	Inhibition of DNA recombination at telomere	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9770562	https://reactome.org/PathwayBrowser/#/R-HSA-9770562	mRNA Polyadenylation	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9824446	https://reactome.org/PathwayBrowser/#/R-HSA-9824446	Viral Infection Pathways	IEA	Homo sapiens
+ENSG00000005075	R-HSA-9839923	https://reactome.org/PathwayBrowser/#/R-HSA-9839923	Dengue Virus Infection	TAS	Homo sapiens
+ENSG00000005075	R-HSA-9918481	https://reactome.org/PathwayBrowser/#/R-HSA-9918481	Dengue Virus-Host Interactions	TAS	Homo sapiens
+ENSG00000005108	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000005108	R-HSA-3781865	https://reactome.org/PathwayBrowser/#/R-HSA-3781865	Diseases of glycosylation	TAS	Homo sapiens
+ENSG00000005108	R-HSA-3906995	https://reactome.org/PathwayBrowser/#/R-HSA-3906995	Diseases associated with O-glycosylation of proteins	TAS	Homo sapiens
+ENSG00000005108	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000005108	R-HSA-5083635	https://reactome.org/PathwayBrowser/#/R-HSA-5083635	Defective B3GALTL causes PpS	TAS	Homo sapiens
+ENSG00000005108	R-HSA-5173105	https://reactome.org/PathwayBrowser/#/R-HSA-5173105	O-linked glycosylation	TAS	Homo sapiens
+ENSG00000005108	R-HSA-5173214	https://reactome.org/PathwayBrowser/#/R-HSA-5173214	O-glycosylation of TSR domain-containing proteins	TAS	Homo sapiens
+ENSG00000005108	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
+ENSG00000005108	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000005156	R-HSA-110381	https://reactome.org/PathwayBrowser/#/R-HSA-110381	Resolution of AP sites via the single-nucleotide replacement pathway	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5649702	https://reactome.org/PathwayBrowser/#/R-HSA-5649702	APEX1-Independent Resolution of AP Sites via the Single Nucleotide Replacement Pathway	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5685939	https://reactome.org/PathwayBrowser/#/R-HSA-5685939	HDR through MMEJ (alt-NHEJ)	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5693532	https://reactome.org/PathwayBrowser/#/R-HSA-5693532	DNA Double-Strand Break Repair	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5693538	https://reactome.org/PathwayBrowser/#/R-HSA-5693538	Homology Directed Repair	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5696397	https://reactome.org/PathwayBrowser/#/R-HSA-5696397	Gap-filling DNA repair synthesis and ligation in GG-NER	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5696398	https://reactome.org/PathwayBrowser/#/R-HSA-5696398	Nucleotide Excision Repair	TAS	Homo sapiens
+ENSG00000005156	R-HSA-5696399	https://reactome.org/PathwayBrowser/#/R-HSA-5696399	Global Genome Nucleotide Excision Repair (GG-NER)	TAS	Homo sapiens
+ENSG00000005156	R-HSA-6781827	https://reactome.org/PathwayBrowser/#/R-HSA-6781827	Transcription-Coupled Nucleotide Excision Repair (TC-NER)	TAS	Homo sapiens
+ENSG00000005156	R-HSA-6782210	https://reactome.org/PathwayBrowser/#/R-HSA-6782210	Gap-filling DNA repair synthesis and ligation in TC-NER	TAS	Homo sapiens
+ENSG00000005156	R-HSA-69306	https://reactome.org/PathwayBrowser/#/R-HSA-69306	DNA Replication	TAS	Homo sapiens
+ENSG00000005156	R-HSA-73884	https://reactome.org/PathwayBrowser/#/R-HSA-73884	Base Excision Repair	TAS	Homo sapiens
+ENSG00000005156	R-HSA-73894	https://reactome.org/PathwayBrowser/#/R-HSA-73894	DNA Repair	TAS	Homo sapiens
+ENSG00000005156	R-HSA-73933	https://reactome.org/PathwayBrowser/#/R-HSA-73933	Resolution of Abasic Sites (AP sites)	TAS	Homo sapiens
+ENSG00000005156	R-HSA-9913635	https://reactome.org/PathwayBrowser/#/R-HSA-9913635	Strand-asynchronous mitochondrial DNA replication	TAS	Homo sapiens
+ENSG00000005187	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	IEA	Homo sapiens
+ENSG00000005187	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	IEA	Homo sapiens
+ENSG00000005187	R-HSA-77286	https://reactome.org/PathwayBrowser/#/R-HSA-77286	mitochondrial fatty acid beta-oxidation of saturated fatty acids	IEA	Homo sapiens
+ENSG00000005187	R-HSA-77289	https://reactome.org/PathwayBrowser/#/R-HSA-77289	Mitochondrial Fatty Acid Beta-Oxidation	IEA	Homo sapiens
+ENSG00000005187	R-HSA-77352	https://reactome.org/PathwayBrowser/#/R-HSA-77352	Beta oxidation of butanoyl-CoA to acetyl-CoA	IEA	Homo sapiens
+ENSG00000005187	R-HSA-8978868	https://reactome.org/PathwayBrowser/#/R-HSA-8978868	Fatty acid metabolism	IEA	Homo sapiens
+ENSG00000005194	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	IEA	Homo sapiens
+ENSG00000005194	R-HSA-2564830	https://reactome.org/PathwayBrowser/#/R-HSA-2564830	Cytosolic iron-sulfur cluster assembly	IEA	Homo sapiens
+ENSG00000005206	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000005206	R-HSA-5357905	https://reactome.org/PathwayBrowser/#/R-HSA-5357905	Regulation of TNFR1 signaling	TAS	Homo sapiens
+ENSG00000005206	R-HSA-73887	https://reactome.org/PathwayBrowser/#/R-HSA-73887	Death Receptor Signaling	TAS	Homo sapiens
+ENSG00000005206	R-HSA-75893	https://reactome.org/PathwayBrowser/#/R-HSA-75893	TNF signaling	TAS	Homo sapiens
+ENSG00000005243	R-HSA-199977	https://reactome.org/PathwayBrowser/#/R-HSA-199977	ER to Golgi Anterograde Transport	TAS	Homo sapiens
+ENSG00000005243	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSG00000005243	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000005243	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
+ENSG00000005243	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSG00000005243	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000005243	R-HSA-6807878	https://reactome.org/PathwayBrowser/#/R-HSA-6807878	COPI-mediated anterograde transport	TAS	Homo sapiens
+ENSG00000005243	R-HSA-6811434	https://reactome.org/PathwayBrowser/#/R-HSA-6811434	COPI-dependent Golgi-to-ER retrograde traffic	TAS	Homo sapiens
+ENSG00000005243	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENSG00000005243	R-HSA-8856688	https://reactome.org/PathwayBrowser/#/R-HSA-8856688	Golgi-to-ER retrograde transport	TAS	Homo sapiens
+ENSG00000005243	R-HSA-948021	https://reactome.org/PathwayBrowser/#/R-HSA-948021	Transport to the Golgi and subsequent modification	TAS	Homo sapiens
+ENSG00000005249	R-HSA-109582	https://reactome.org/PathwayBrowser/#/R-HSA-109582	Hemostasis	TAS	Homo sapiens
+ENSG00000005249	R-HSA-111885	https://reactome.org/PathwayBrowser/#/R-HSA-111885	Opioid Signalling	TAS	Homo sapiens
+ENSG00000005249	R-HSA-111931	https://reactome.org/PathwayBrowser/#/R-HSA-111931	PKA-mediated phosphorylation of CREB	TAS	Homo sapiens
+ENSG00000005249	R-HSA-111933	https://reactome.org/PathwayBrowser/#/R-HSA-111933	Calmodulin induced events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-111996	https://reactome.org/PathwayBrowser/#/R-HSA-111996	Ca-dependent events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-111997	https://reactome.org/PathwayBrowser/#/R-HSA-111997	CaM pathway	TAS	Homo sapiens
+ENSG00000005249	R-HSA-112040	https://reactome.org/PathwayBrowser/#/R-HSA-112040	G-protein mediated events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-112043	https://reactome.org/PathwayBrowser/#/R-HSA-112043	PLC beta mediated events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-112314	https://reactome.org/PathwayBrowser/#/R-HSA-112314	Neurotransmitter receptors and postsynaptic signal transmission	TAS	Homo sapiens
+ENSG00000005249	R-HSA-112315	https://reactome.org/PathwayBrowser/#/R-HSA-112315	Transmission across Chemical Synapses	TAS	Homo sapiens
+ENSG00000005249	R-HSA-112316	https://reactome.org/PathwayBrowser/#/R-HSA-112316	Neuronal System	TAS	Homo sapiens
+ENSG00000005249	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000005249	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	IEA	Homo sapiens
+ENSG00000005249	R-HSA-1489509	https://reactome.org/PathwayBrowser/#/R-HSA-1489509	DAG and IP3 signaling	TAS	Homo sapiens
+ENSG00000005249	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000005249	R-HSA-163359	https://reactome.org/PathwayBrowser/#/R-HSA-163359	Glucagon signaling in metabolic regulation	TAS	Homo sapiens
+ENSG00000005249	R-HSA-163615	https://reactome.org/PathwayBrowser/#/R-HSA-163615	PKA activation	TAS	Homo sapiens
+ENSG00000005249	R-HSA-163685	https://reactome.org/PathwayBrowser/#/R-HSA-163685	Integration of energy metabolism	TAS	Homo sapiens
+ENSG00000005249	R-HSA-163685	https://reactome.org/PathwayBrowser/#/R-HSA-163685	Integration of energy metabolism	IEA	Homo sapiens
+ENSG00000005249	R-HSA-1640170	https://reactome.org/PathwayBrowser/#/R-HSA-1640170	Cell Cycle	TAS	Homo sapiens
+ENSG00000005249	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000005249	R-HSA-164378	https://reactome.org/PathwayBrowser/#/R-HSA-164378	PKA activation in glucagon signalling	TAS	Homo sapiens
+ENSG00000005249	R-HSA-180024	https://reactome.org/PathwayBrowser/#/R-HSA-180024	DARPP-32 events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-1852241	https://reactome.org/PathwayBrowser/#/R-HSA-1852241	Organelle biogenesis and maintenance	TAS	Homo sapiens
+ENSG00000005249	R-HSA-2565942	https://reactome.org/PathwayBrowser/#/R-HSA-2565942	Regulation of PLK1 Activity at G2/M Transition	TAS	Homo sapiens
+ENSG00000005249	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	TAS	Homo sapiens
+ENSG00000005249	R-HSA-380259	https://reactome.org/PathwayBrowser/#/R-HSA-380259	Loss of Nlp from mitotic centrosomes	TAS	Homo sapiens
+ENSG00000005249	R-HSA-380270	https://reactome.org/PathwayBrowser/#/R-HSA-380270	Recruitment of mitotic centrosome proteins and complexes	TAS	Homo sapiens
+ENSG00000005249	R-HSA-380284	https://reactome.org/PathwayBrowser/#/R-HSA-380284	Loss of proteins required for interphase microtubule organization from the centrosome	TAS	Homo sapiens
+ENSG00000005249	R-HSA-380287	https://reactome.org/PathwayBrowser/#/R-HSA-380287	Centrosome maturation	TAS	Homo sapiens
+ENSG00000005249	R-HSA-380320	https://reactome.org/PathwayBrowser/#/R-HSA-380320	Recruitment of NuMA to mitotic centrosomes	TAS	Homo sapiens
+ENSG00000005249	R-HSA-381676	https://reactome.org/PathwayBrowser/#/R-HSA-381676	Glucagon-like Peptide-1 (GLP1) regulates insulin secretion	IEA	Homo sapiens
+ENSG00000005249	R-HSA-382551	https://reactome.org/PathwayBrowser/#/R-HSA-382551	Transport of small molecules	TAS	Homo sapiens
+ENSG00000005249	R-HSA-388396	https://reactome.org/PathwayBrowser/#/R-HSA-388396	GPCR downstream signalling	TAS	Homo sapiens
+ENSG00000005249	R-HSA-418555	https://reactome.org/PathwayBrowser/#/R-HSA-418555	G alpha (s) signalling events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-418594	https://reactome.org/PathwayBrowser/#/R-HSA-418594	G alpha (i) signalling events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-422356	https://reactome.org/PathwayBrowser/#/R-HSA-422356	Regulation of insulin secretion	IEA	Homo sapiens
+ENSG00000005249	R-HSA-432040	https://reactome.org/PathwayBrowser/#/R-HSA-432040	Vasopressin regulates renal water homeostasis via Aquaporins	TAS	Homo sapiens
+ENSG00000005249	R-HSA-438064	https://reactome.org/PathwayBrowser/#/R-HSA-438064	Post NMDA receptor activation events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-442720	https://reactome.org/PathwayBrowser/#/R-HSA-442720	CREB1 phosphorylation through the activation of Adenylate Cyclase	TAS	Homo sapiens
+ENSG00000005249	R-HSA-442755	https://reactome.org/PathwayBrowser/#/R-HSA-442755	Activation of NMDA receptors and postsynaptic events	TAS	Homo sapiens
+ENSG00000005249	R-HSA-445717	https://reactome.org/PathwayBrowser/#/R-HSA-445717	Aquaporin-mediated transport	TAS	Homo sapiens
+ENSG00000005249	R-HSA-453274	https://reactome.org/PathwayBrowser/#/R-HSA-453274	Mitotic G2-G2/M phases	TAS	Homo sapiens
+ENSG00000005249	R-HSA-5358351	https://reactome.org/PathwayBrowser/#/R-HSA-5358351	Signaling by Hedgehog	TAS	Homo sapiens
+ENSG00000005249	R-HSA-5610787	https://reactome.org/PathwayBrowser/#/R-HSA-5610787	Hedgehog 'off' state	TAS	Homo sapiens
+ENSG00000005249	R-HSA-5617833	https://reactome.org/PathwayBrowser/#/R-HSA-5617833	Cilium Assembly	TAS	Homo sapiens
+ENSG00000005249	R-HSA-5620912	https://reactome.org/PathwayBrowser/#/R-HSA-5620912	Anchoring of the basal body to the plasma membrane	TAS	Homo sapiens
+ENSG00000005249	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000005249	R-HSA-68877	https://reactome.org/PathwayBrowser/#/R-HSA-68877	Mitotic Prometaphase	TAS	Homo sapiens
+ENSG00000005249	R-HSA-68886	https://reactome.org/PathwayBrowser/#/R-HSA-68886	M Phase	TAS	Homo sapiens
+ENSG00000005249	R-HSA-69275	https://reactome.org/PathwayBrowser/#/R-HSA-69275	G2/M Transition	TAS	Homo sapiens
+ENSG00000005249	R-HSA-69278	https://reactome.org/PathwayBrowser/#/R-HSA-69278	Cell Cycle, Mitotic	TAS	Homo sapiens
+ENSG00000005249	R-HSA-8854518	https://reactome.org/PathwayBrowser/#/R-HSA-8854518	AURKA Activation by TPX2	TAS	Homo sapiens
+ENSG00000005249	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9006925	https://reactome.org/PathwayBrowser/#/R-HSA-9006925	Intracellular signaling by second messengers	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9634597	https://reactome.org/PathwayBrowser/#/R-HSA-9634597	GPER1 signaling	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9658195	https://reactome.org/PathwayBrowser/#/R-HSA-9658195	Leishmania infection	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9660821	https://reactome.org/PathwayBrowser/#/R-HSA-9660821	ADORA2B mediated anti-inflammatory cytokines production	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9662851	https://reactome.org/PathwayBrowser/#/R-HSA-9662851	Anti-inflammatory response favouring Leishmania parasite infection	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9664323	https://reactome.org/PathwayBrowser/#/R-HSA-9664323	FCGR3A-mediated IL10 synthesis	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9664433	https://reactome.org/PathwayBrowser/#/R-HSA-9664433	Leishmania parasite growth and survival	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9824443	https://reactome.org/PathwayBrowser/#/R-HSA-9824443	Parasitic Infection Pathways	TAS	Homo sapiens
+ENSG00000005249	R-HSA-983231	https://reactome.org/PathwayBrowser/#/R-HSA-983231	Factors involved in megakaryocyte development and platelet production	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9855142	https://reactome.org/PathwayBrowser/#/R-HSA-9855142	Cellular responses to mechanical stimuli	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9856530	https://reactome.org/PathwayBrowser/#/R-HSA-9856530	High laminar flow shear stress activates signaling by PIEZO1 and PECAM1:CDH5:KDR in endothelial cells	TAS	Homo sapiens
+ENSG00000005249	R-HSA-9860931	https://reactome.org/PathwayBrowser/#/R-HSA-9860931	Response of endothelial cells to shear stress	TAS	Homo sapiens
+ENSG00000005302	R-HSA-3214847	https://reactome.org/PathwayBrowser/#/R-HSA-3214847	HATs acetylate histones	TAS	Homo sapiens
+ENSG00000005302	R-HSA-3247509	https://reactome.org/PathwayBrowser/#/R-HSA-3247509	Chromatin modifying enzymes	TAS	Homo sapiens
+ENSG00000005302	R-HSA-4839726	https://reactome.org/PathwayBrowser/#/R-HSA-4839726	Chromatin organization	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1234158	https://reactome.org/PathwayBrowser/#/R-HSA-1234158	Regulation of gene expression by Hypoxia-inducible Factor	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1234174	https://reactome.org/PathwayBrowser/#/R-HSA-1234174	Cellular response to hypoxia	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1266738	https://reactome.org/PathwayBrowser/#/R-HSA-1266738	Developmental Biology	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1280218	https://reactome.org/PathwayBrowser/#/R-HSA-1280218	Adaptive Immune System	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1368108	https://reactome.org/PathwayBrowser/#/R-HSA-1368108	BMAL1:CLOCK,NPAS2 activates circadian expression	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	IEA	Homo sapiens
+ENSG00000005339	R-HSA-157118	https://reactome.org/PathwayBrowser/#/R-HSA-157118	Signaling by NOTCH	IEA	Homo sapiens
+ENSG00000005339	R-HSA-157118	https://reactome.org/PathwayBrowser/#/R-HSA-157118	Signaling by NOTCH	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1592230	https://reactome.org/PathwayBrowser/#/R-HSA-1592230	Mitochondrial biogenesis	TAS	Homo sapiens
+ENSG00000005339	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+ENSG00000005339	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1655829	https://reactome.org/PathwayBrowser/#/R-HSA-1655829	Regulation of cholesterol biosynthesis by SREBP (SREBF)	TAS	Homo sapiens
+ENSG00000005339	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000005339	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000005339	R-HSA-168928	https://reactome.org/PathwayBrowser/#/R-HSA-168928	DDX58/IFIH1-mediated induction of interferon-alpha/beta	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1834949	https://reactome.org/PathwayBrowser/#/R-HSA-1834949	Cytosolic sensors of pathogen-associated DNA	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1852241	https://reactome.org/PathwayBrowser/#/R-HSA-1852241	Organelle biogenesis and maintenance	TAS	Homo sapiens
+ENSG00000005339	R-HSA-186712	https://reactome.org/PathwayBrowser/#/R-HSA-186712	Regulation of beta-cell development	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1912408	https://reactome.org/PathwayBrowser/#/R-HSA-1912408	Pre-NOTCH Transcription and Translation	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1912408	https://reactome.org/PathwayBrowser/#/R-HSA-1912408	Pre-NOTCH Transcription and Translation	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1912422	https://reactome.org/PathwayBrowser/#/R-HSA-1912422	Pre-NOTCH Expression and Processing	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1912422	https://reactome.org/PathwayBrowser/#/R-HSA-1912422	Pre-NOTCH Expression and Processing	TAS	Homo sapiens
+ENSG00000005339	R-HSA-195721	https://reactome.org/PathwayBrowser/#/R-HSA-195721	Signaling by WNT	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1980143	https://reactome.org/PathwayBrowser/#/R-HSA-1980143	Signaling by NOTCH1	IEA	Homo sapiens
+ENSG00000005339	R-HSA-1980143	https://reactome.org/PathwayBrowser/#/R-HSA-1980143	Signaling by NOTCH1	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1989781	https://reactome.org/PathwayBrowser/#/R-HSA-1989781	PPARA activates gene expression	TAS	Homo sapiens
+ENSG00000005339	R-HSA-1989781	https://reactome.org/PathwayBrowser/#/R-HSA-1989781	PPARA activates gene expression	IEA	Homo sapiens
+ENSG00000005339	R-HSA-201681	https://reactome.org/PathwayBrowser/#/R-HSA-201681	TCF dependent signaling in response to WNT	TAS	Homo sapiens
+ENSG00000005339	R-HSA-201722	https://reactome.org/PathwayBrowser/#/R-HSA-201722	Formation of the beta-catenin:TCF transactivating complex	TAS	Homo sapiens
+ENSG00000005339	R-HSA-210744	https://reactome.org/PathwayBrowser/#/R-HSA-210744	Regulation of gene expression in late stage (branching morphogenesis) pancreatic bud precursor cells	IEA	Homo sapiens
+ENSG00000005339	R-HSA-212165	https://reactome.org/PathwayBrowser/#/R-HSA-212165	Epigenetic regulation of gene expression	TAS	Homo sapiens
+ENSG00000005339	R-HSA-212165	https://reactome.org/PathwayBrowser/#/R-HSA-212165	Epigenetic regulation of gene expression	IEA	Homo sapiens
+ENSG00000005339	R-HSA-2122947	https://reactome.org/PathwayBrowser/#/R-HSA-2122947	NOTCH1 Intracellular Domain Regulates Transcription	IEA	Homo sapiens
+ENSG00000005339	R-HSA-2122947	https://reactome.org/PathwayBrowser/#/R-HSA-2122947	NOTCH1 Intracellular Domain Regulates Transcription	TAS	Homo sapiens
+ENSG00000005339	R-HSA-212436	https://reactome.org/PathwayBrowser/#/R-HSA-212436	Generic Transcription Pathway	IEA	Homo sapiens
+ENSG00000005339	R-HSA-212436	https://reactome.org/PathwayBrowser/#/R-HSA-212436	Generic Transcription Pathway	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2151201	https://reactome.org/PathwayBrowser/#/R-HSA-2151201	Transcriptional activation of mitochondrial biogenesis	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2262752	https://reactome.org/PathwayBrowser/#/R-HSA-2262752	Cellular responses to stress	IEA	Homo sapiens
+ENSG00000005339	R-HSA-2426168	https://reactome.org/PathwayBrowser/#/R-HSA-2426168	Activation of gene expression by SREBF (SREBP)	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2644602	https://reactome.org/PathwayBrowser/#/R-HSA-2644602	Signaling by NOTCH1 PEST Domain Mutants in Cancer	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2644603	https://reactome.org/PathwayBrowser/#/R-HSA-2644603	Signaling by NOTCH1 in Cancer	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2644606	https://reactome.org/PathwayBrowser/#/R-HSA-2644606	Constitutive Signaling by NOTCH1 PEST Domain Mutants	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2894858	https://reactome.org/PathwayBrowser/#/R-HSA-2894858	Signaling by NOTCH1 HD+PEST Domain Mutants in Cancer	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2894862	https://reactome.org/PathwayBrowser/#/R-HSA-2894862	Constitutive Signaling by NOTCH1 HD+PEST Domain Mutants	TAS	Homo sapiens
+ENSG00000005339	R-HSA-2990846	https://reactome.org/PathwayBrowser/#/R-HSA-2990846	SUMOylation	IEA	Homo sapiens
+ENSG00000005339	R-HSA-3108232	https://reactome.org/PathwayBrowser/#/R-HSA-3108232	SUMO E3 ligases SUMOylate target proteins	IEA	Homo sapiens
+ENSG00000005339	R-HSA-3134973	https://reactome.org/PathwayBrowser/#/R-HSA-3134973	LRR FLII-interacting protein 1 (LRRFIP1) activates type I IFN production	TAS	Homo sapiens
+ENSG00000005339	R-HSA-3214847	https://reactome.org/PathwayBrowser/#/R-HSA-3214847	HATs acetylate histones	IEA	Homo sapiens
+ENSG00000005339	R-HSA-3247509	https://reactome.org/PathwayBrowser/#/R-HSA-3247509	Chromatin modifying enzymes	IEA	Homo sapiens
+ENSG00000005339	R-HSA-3371556	https://reactome.org/PathwayBrowser/#/R-HSA-3371556	Cellular response to heat stress	TAS	Homo sapiens
+ENSG00000005339	R-HSA-3371568	https://reactome.org/PathwayBrowser/#/R-HSA-3371568	Attenuation phase	TAS	Homo sapiens
+ENSG00000005339	R-HSA-3371571	https://reactome.org/PathwayBrowser/#/R-HSA-3371571	HSF1-dependent transactivation	TAS	Homo sapiens
+ENSG00000005339	R-HSA-350054	https://reactome.org/PathwayBrowser/#/R-HSA-350054	Notch-HLH transcription pathway	TAS	Homo sapiens
+ENSG00000005339	R-HSA-3700989	https://reactome.org/PathwayBrowser/#/R-HSA-3700989	Transcriptional Regulation by TP53	TAS	Homo sapiens
+ENSG00000005339	R-HSA-381340	https://reactome.org/PathwayBrowser/#/R-HSA-381340	Transcriptional regulation of white adipocyte differentiation	TAS	Homo sapiens
+ENSG00000005339	R-HSA-381340	https://reactome.org/PathwayBrowser/#/R-HSA-381340	Transcriptional regulation of white adipocyte differentiation	IEA	Homo sapiens
+ENSG00000005339	R-HSA-388841	https://reactome.org/PathwayBrowser/#/R-HSA-388841	Regulation of T cell activation by CD28 family	TAS	Homo sapiens
+ENSG00000005339	R-HSA-3899300	https://reactome.org/PathwayBrowser/#/R-HSA-3899300	SUMOylation of transcription cofactors	IEA	Homo sapiens
+ENSG00000005339	R-HSA-389948	https://reactome.org/PathwayBrowser/#/R-HSA-389948	Co-inhibition by PD-1	TAS	Homo sapiens
+ENSG00000005339	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	IEA	Homo sapiens
+ENSG00000005339	R-HSA-400206	https://reactome.org/PathwayBrowser/#/R-HSA-400206	Regulation of lipid metabolism by PPARalpha	TAS	Homo sapiens
+ENSG00000005339	R-HSA-400206	https://reactome.org/PathwayBrowser/#/R-HSA-400206	Regulation of lipid metabolism by PPARalpha	IEA	Homo sapiens
+ENSG00000005339	R-HSA-4839726	https://reactome.org/PathwayBrowser/#/R-HSA-4839726	Chromatin organization	IEA	Homo sapiens
+ENSG00000005339	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSG00000005339	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	IEA	Homo sapiens
+ENSG00000005339	R-HSA-5617472	https://reactome.org/PathwayBrowser/#/R-HSA-5617472	Activation of anterior HOX genes in hindbrain development during early embryogenesis	IEA	Homo sapiens
+ENSG00000005339	R-HSA-5619507	https://reactome.org/PathwayBrowser/#/R-HSA-5619507	Activation of HOX genes during differentiation	IEA	Homo sapiens
+ENSG00000005339	R-HSA-5621481	https://reactome.org/PathwayBrowser/#/R-HSA-5621481	C-type lectin receptors (CLRs)	TAS	Homo sapiens
+ENSG00000005339	R-HSA-5621575	https://reactome.org/PathwayBrowser/#/R-HSA-5621575	CD209 (DC-SIGN) signaling	TAS	Homo sapiens
+ENSG00000005339	R-HSA-5633008	https://reactome.org/PathwayBrowser/#/R-HSA-5633008	TP53 Regulates Transcription of Cell Death Genes	TAS	Homo sapiens
+ENSG00000005339	R-HSA-5663202	https://reactome.org/PathwayBrowser/#/R-HSA-5663202	Diseases of signal transduction by growth factor receptors and second messengers	TAS	Homo sapiens
+ENSG00000005339	R-HSA-5663205	https://reactome.org/PathwayBrowser/#/R-HSA-5663205	Infectious disease	TAS	Homo sapiens
+ENSG00000005339	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	IEA	Homo sapiens
+ENSG00000005339	R-HSA-6803204	https://reactome.org/PathwayBrowser/#/R-HSA-6803204	TP53 Regulates Transcription of Genes Involved in Cytochrome C Release	TAS	Homo sapiens
+ENSG00000005339	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	IEA	Homo sapiens
+ENSG00000005339	R-HSA-73857	https://reactome.org/PathwayBrowser/#/R-HSA-73857	RNA Polymerase II Transcription	TAS	Homo sapiens
+ENSG00000005339	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	IEA	Homo sapiens
+ENSG00000005339	R-HSA-74160	https://reactome.org/PathwayBrowser/#/R-HSA-74160	Gene expression (Transcription)	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8864260	https://reactome.org/PathwayBrowser/#/R-HSA-8864260	Transcriptional regulation by the AP-2 (TFAP2) family of transcription factors	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8866907	https://reactome.org/PathwayBrowser/#/R-HSA-8866907	Activation of the TFAP2 (AP-2) family of transcription factors	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8878159	https://reactome.org/PathwayBrowser/#/R-HSA-8878159	Transcriptional regulation by RUNX3	IEA	Homo sapiens
+ENSG00000005339	R-HSA-8878159	https://reactome.org/PathwayBrowser/#/R-HSA-8878159	Transcriptional regulation by RUNX3	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8878171	https://reactome.org/PathwayBrowser/#/R-HSA-8878171	Transcriptional regulation by RUNX1	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8939211	https://reactome.org/PathwayBrowser/#/R-HSA-8939211	ESR-mediated signaling	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8939246	https://reactome.org/PathwayBrowser/#/R-HSA-8939246	RUNX1 regulates transcription of genes involved in differentiation of myeloid cells	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8941856	https://reactome.org/PathwayBrowser/#/R-HSA-8941856	RUNX3 regulates NOTCH signaling	IEA	Homo sapiens
+ENSG00000005339	R-HSA-8941856	https://reactome.org/PathwayBrowser/#/R-HSA-8941856	RUNX3 regulates NOTCH signaling	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	TAS	Homo sapiens
+ENSG00000005339	R-HSA-8953897	https://reactome.org/PathwayBrowser/#/R-HSA-8953897	Cellular responses to stimuli	IEA	Homo sapiens
+ENSG00000005339	R-HSA-8957322	https://reactome.org/PathwayBrowser/#/R-HSA-8957322	Metabolism of steroids	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9006931	https://reactome.org/PathwayBrowser/#/R-HSA-9006931	Signaling by Nuclear Receptors	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9012852	https://reactome.org/PathwayBrowser/#/R-HSA-9012852	Signaling by NOTCH3	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9012852	https://reactome.org/PathwayBrowser/#/R-HSA-9012852	Signaling by NOTCH3	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9013508	https://reactome.org/PathwayBrowser/#/R-HSA-9013508	NOTCH3 Intracellular Domain Regulates Transcription	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9013508	https://reactome.org/PathwayBrowser/#/R-HSA-9013508	NOTCH3 Intracellular Domain Regulates Transcription	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9013694	https://reactome.org/PathwayBrowser/#/R-HSA-9013694	Signaling by NOTCH4	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9013695	https://reactome.org/PathwayBrowser/#/R-HSA-9013695	NOTCH4 Intracellular Domain Regulates Transcription	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9018519	https://reactome.org/PathwayBrowser/#/R-HSA-9018519	Estrogen-dependent gene expression	TAS	Homo sapiens
+ENSG00000005339	R-HSA-918233	https://reactome.org/PathwayBrowser/#/R-HSA-918233	TRAF3-dependent IRF activation pathway	TAS	Homo sapiens
+ENSG00000005339	R-HSA-933541	https://reactome.org/PathwayBrowser/#/R-HSA-933541	TRAF6 mediated IRF7 activation	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9614085	https://reactome.org/PathwayBrowser/#/R-HSA-9614085	FOXO-mediated transcription	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9614085	https://reactome.org/PathwayBrowser/#/R-HSA-9614085	FOXO-mediated transcription	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9614657	https://reactome.org/PathwayBrowser/#/R-HSA-9614657	FOXO-mediated transcription of cell death genes	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9617629	https://reactome.org/PathwayBrowser/#/R-HSA-9617629	Regulation of FOXO transcriptional activity by acetylation	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9617629	https://reactome.org/PathwayBrowser/#/R-HSA-9617629	Regulation of FOXO transcriptional activity by acetylation	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9634815	https://reactome.org/PathwayBrowser/#/R-HSA-9634815	Transcriptional Regulation by NPAS4	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9679506	https://reactome.org/PathwayBrowser/#/R-HSA-9679506	SARS-CoV Infections	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9694516	https://reactome.org/PathwayBrowser/#/R-HSA-9694516	SARS-CoV-2 Infection	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9705671	https://reactome.org/PathwayBrowser/#/R-HSA-9705671	SARS-CoV-2 activates/modulates innate and adaptive immune responses	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9705683	https://reactome.org/PathwayBrowser/#/R-HSA-9705683	SARS-CoV-2-host interactions	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9707564	https://reactome.org/PathwayBrowser/#/R-HSA-9707564	Cytoprotection by HMOX1	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9707616	https://reactome.org/PathwayBrowser/#/R-HSA-9707616	Heme signaling	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9711123	https://reactome.org/PathwayBrowser/#/R-HSA-9711123	Cellular response to chemical stress	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9711123	https://reactome.org/PathwayBrowser/#/R-HSA-9711123	Cellular response to chemical stress	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9730414	https://reactome.org/PathwayBrowser/#/R-HSA-9730414	MITF-M-regulated melanocyte development	TAS	Homo sapiens
+ENSG00000005339	R-HSA-9730414	https://reactome.org/PathwayBrowser/#/R-HSA-9730414	MITF-M-regulated melanocyte development	IEA	Homo sapiens
+ENSG00000005339	R-HSA-9755511	https://reactome.org/PathwayBrowser/#/R-HSA-9755511	KEAP1-NFE2L2 pathway	TAS	Homo sapiens
