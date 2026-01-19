@@ -658,10 +658,10 @@ uniprotkb_sprot_translates_to:
   edges: True
 
 
-pathway:
+reactome_pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomePathwayAdapter
+    cls: ReactomeAdapter
     args:
       filepath: ./samples/dmel/reactome/ReactomePathways.txt
       pubmed_map_path: ./samples/dmel/reactome/ReactionPMIDS.txt
@@ -672,11 +672,10 @@ pathway:
   edges: False
 
 
-# for all organisms set taxon_id to None
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeAdapter
+    cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/dmel/reactome/Ensembl2Reactome_All_Levels_sample.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
@@ -689,7 +688,7 @@ genes_pathways:
 parent_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeAdapter
+    cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/dmel/reactome/ReactomePathwaysRelation.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
@@ -702,7 +701,7 @@ parent_pathway_of:
 child_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeAdapter
+    cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/dmel/reactome/ReactomePathwaysRelation.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl

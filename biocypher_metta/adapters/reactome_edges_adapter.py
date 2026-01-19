@@ -65,7 +65,6 @@ class ReactomeEdgesAdapter(Adapter):
             except Exception as e:
                 print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
                 self.ensembl_uniprot_map = {}
-
         super(ReactomeEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
@@ -92,11 +91,12 @@ class ReactomeEdgesAdapter(Adapter):
                 if self.label == 'genes_pathways':
                     entity_id, pathway_id = data[0], data[1]
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
-                    
+                    pathway_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
                     if organism_pathway_prefix in organism_taxon_map:
                         taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()
+                        props['pathway_url'] = pathway_url
                         props['taxon_id'] = f'{taxon}'
 
                         source_type = self._get_entity_type(entity_id)

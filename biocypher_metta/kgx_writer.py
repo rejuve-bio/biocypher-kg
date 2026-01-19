@@ -397,7 +397,7 @@ class KGXWriter(BaseWriter):
         """Write edges in KGX CSV format and generate matching Cypher.
 
         Handles list-valued source/target types from the schema and adapters
-        that emit typed IDs as (type, id) tuples (e.g. ReactomeAdapter,
+        that emit typed IDs as (type, id) tuples (e.g. Roadmap adapters,
         GAFAdapter). For each concrete (edge_label, source_type, target_type)
         combination, one CSV and one Cypher file are produced.
         """
