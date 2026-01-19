@@ -105,7 +105,7 @@ uniprotkb_sprot_translates_to:
 
 pathway:
   adapter:
-    module: biocypher_metta.adapters.reactome_pathway_adapter
+    module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomePathwayAdapter
     args:
       filepath: ./samples/hsa/reactome/ReactomePathways.txt
@@ -118,7 +118,7 @@ pathway:
 
 genes_pathways:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeAdapter
     args:
       filepath: ./samples/hsa/reactome/Ensembl2Reactome_All_Levels_sample.txt
@@ -196,7 +196,7 @@ pathway_to_biological_process:
 
 parent_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeAdapter
     args:
       filepath: ./samples/hsa/reactome/ReactomePathwaysRelation.txt
@@ -208,7 +208,7 @@ parent_pathway_of:
 
 child_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeAdapter
     args:
       filepath: ./samples/hsa/reactome/ReactomePathwaysRelation.txt
