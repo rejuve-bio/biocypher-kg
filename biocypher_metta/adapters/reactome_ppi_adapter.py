@@ -21,8 +21,7 @@ class ReactomePPIAdapter(Adapter):
         self.source = "Reactome"
         self.source_url = "https://reactome.org/"
         
-        self.seen_interactions = set()
-        
+        self.seen_interactions = set()        
         super(ReactomePPIAdapter, self).__init__(write_properties, add_provenance)
 
     def _extract_reactome_pathway(self, context):

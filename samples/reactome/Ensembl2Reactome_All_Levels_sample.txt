@@ -1,0 +1,187 @@
+NSDART00000193986	R-DRE-199991	https://reactome.org/PathwayBrowser/#/R-DRE-199991	Membrane Trafficking	IEA	Danio rerio
+ENSDART00000193986	R-DRE-5653656	https://reactome.org/PathwayBrowser/#/R-DRE-5653656	Vesicle-mediated transport	IEA	Danio rerio
+ENSG00000000419	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
+ENSG00000000419	R-HSA-163125	https://reactome.org/PathwayBrowser/#/R-HSA-163125	Post-translational modification: synthesis of GPI-anchored proteins	TAS	Homo sapiens
+ENSG00000000419	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000000419	R-HSA-3781865	https://reactome.org/PathwayBrowser/#/R-HSA-3781865	Diseases of glycosylation	TAS	Homo sapiens
+ENSG00000000419	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000000419	R-HSA-446193	https://reactome.org/PathwayBrowser/#/R-HSA-446193	Biosynthesis of the N-glycan precursor (dolichol lipid-linked oligosaccharide, LLO) and transfer to a nascent protein	TAS	Homo sapiens
+ENSG00000000419	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
+ENSG00000000419	R-HSA-446219	https://reactome.org/PathwayBrowser/#/R-HSA-446219	Synthesis of substrates in N-glycan biosythesis	TAS	Homo sapiens
+ENSG00000000419	R-HSA-4717374	https://reactome.org/PathwayBrowser/#/R-HSA-4717374	Defective DPM1 causes DPM1-CDG	TAS	Homo sapiens
+ENSG00000000419	R-HSA-4719360	https://reactome.org/PathwayBrowser/#/R-HSA-4719360	Defective DPM3 causes DPM3-CDG	TAS	Homo sapiens
+ENSG00000000419	R-HSA-4719377	https://reactome.org/PathwayBrowser/#/R-HSA-4719377	Defective DPM2 causes DPM2-CDG	TAS	Homo sapiens
+ENSG00000000419	R-HSA-5609975	https://reactome.org/PathwayBrowser/#/R-HSA-5609975	Diseases associated with glycosylation precursor biosynthesis	TAS	Homo sapiens
+ENSG00000000419	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
+ENSG00000000419	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-163125	https://reactome.org/PathwayBrowser/#/R-HSA-163125	Post-translational modification: synthesis of GPI-anchored proteins	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-3781865	https://reactome.org/PathwayBrowser/#/R-HSA-3781865	Diseases of glycosylation	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-446193	https://reactome.org/PathwayBrowser/#/R-HSA-446193	Biosynthesis of the N-glycan precursor (dolichol lipid-linked oligosaccharide, LLO) and transfer to a nascent protein	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-446219	https://reactome.org/PathwayBrowser/#/R-HSA-446219	Synthesis of substrates in N-glycan biosythesis	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-4717374	https://reactome.org/PathwayBrowser/#/R-HSA-4717374	Defective DPM1 causes DPM1-CDG	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-4719360	https://reactome.org/PathwayBrowser/#/R-HSA-4719360	Defective DPM3 causes DPM3-CDG	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-4719377	https://reactome.org/PathwayBrowser/#/R-HSA-4719377	Defective DPM2 causes DPM2-CDG	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-5609975	https://reactome.org/PathwayBrowser/#/R-HSA-5609975	Diseases associated with glycosylation precursor biosynthesis	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-5668914	https://reactome.org/PathwayBrowser/#/R-HSA-5668914	Diseases of metabolism	TAS	Homo sapiens
+ENSG00000000419.14	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSG00000000938	R-HSA-109582	https://reactome.org/PathwayBrowser/#/R-HSA-109582	Hemostasis	TAS	Homo sapiens
+ENSG00000000938	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
+ENSG00000000938	R-HSA-168249	https://reactome.org/PathwayBrowser/#/R-HSA-168249	Innate Immune System	TAS	Homo sapiens
+ENSG00000000938	R-HSA-168256	https://reactome.org/PathwayBrowser/#/R-HSA-168256	Immune System	TAS	Homo sapiens
+ENSG00000000938	R-HSA-2029480	https://reactome.org/PathwayBrowser/#/R-HSA-2029480	Fcgamma receptor (FCGR) dependent phagocytosis	TAS	Homo sapiens
+ENSG00000000938	R-HSA-2029481	https://reactome.org/PathwayBrowser/#/R-HSA-2029481	FCGR activation	TAS	Homo sapiens
+ENSG00000000938	R-HSA-418346	https://reactome.org/PathwayBrowser/#/R-HSA-418346	Platelet homeostasis	TAS	Homo sapiens
+FBgn0000008	R-DME-1280218	https://reactome.org/PathwayBrowser/#/R-DME-1280218	Adaptive Immune System	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-983168	https://reactome.org/PathwayBrowser/#/R-DME-983168	Antigen processing: Ubiquitination & Proteasome degradation	IEA	Drosophila melanogaster
+FBgn0000008	R-DME-983169	https://reactome.org/PathwayBrowser/#/R-DME-983169	Class I MHC mediated antigen processing & presentation	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-1266738	https://reactome.org/PathwayBrowser/#/R-DME-1266738	Developmental Biology	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-162582	https://reactome.org/PathwayBrowser/#/R-DME-162582	Signal Transduction	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-1640170	https://reactome.org/PathwayBrowser/#/R-DME-1640170	Cell Cycle	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-168249	https://reactome.org/PathwayBrowser/#/R-DME-168249	Innate Immune System	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-194315	https://reactome.org/PathwayBrowser/#/R-DME-194315	Signaling by Rho GTPases	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-195258	https://reactome.org/PathwayBrowser/#/R-DME-195258	RHO GTPase Effectors	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-2029480	https://reactome.org/PathwayBrowser/#/R-DME-2029480	Fcgamma receptor (FCGR) dependent phagocytosis	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-2029482	https://reactome.org/PathwayBrowser/#/R-DME-2029482	Regulation of actin dynamics for phagocytic cup formation	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-212165	https://reactome.org/PathwayBrowser/#/R-DME-212165	Epigenetic regulation of gene expression	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-376176	https://reactome.org/PathwayBrowser/#/R-DME-376176	Signaling by ROBO receptors	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-422475	https://reactome.org/PathwayBrowser/#/R-DME-422475	Axon guidance	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-428890	https://reactome.org/PathwayBrowser/#/R-DME-428890	Role of ABL in ROBO-SLIT signaling	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-453279	https://reactome.org/PathwayBrowser/#/R-DME-453279	Mitotic G1 phase and G1/S transition	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-525793	https://reactome.org/PathwayBrowser/#/R-DME-525793	Myogenesis	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5663213	https://reactome.org/PathwayBrowser/#/R-DME-5663213	RHO GTPases Activate WASPs and WAVEs	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5693532	https://reactome.org/PathwayBrowser/#/R-DME-5693532	DNA Double-Strand Break Repair	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5693565	https://reactome.org/PathwayBrowser/#/R-DME-5693565	Recruitment and ATM-mediated phosphorylation of repair and signaling proteins at DNA double strand breaks	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-5693606	https://reactome.org/PathwayBrowser/#/R-DME-5693606	DNA Double Strand Break Response	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-69231	https://reactome.org/PathwayBrowser/#/R-DME-69231	Cyclin D associated events in G1	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-69236	https://reactome.org/PathwayBrowser/#/R-DME-69236	G1 Phase	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-69278	https://reactome.org/PathwayBrowser/#/R-DME-69278	Cell Cycle, Mitotic	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-73894	https://reactome.org/PathwayBrowser/#/R-DME-73894	DNA Repair	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-74160	https://reactome.org/PathwayBrowser/#/R-DME-74160	Gene expression (Transcription)	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-8953897	https://reactome.org/PathwayBrowser/#/R-DME-8953897	Cellular responses to stimuli	IEA	Drosophila melanogaster
+FBgn0000017	R-DME-9012999	https://reactome.org/PathwayBrowser/#/R-DME-9012999	RHO GTPase cycle	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-1169410	https://reactome.org/PathwayBrowser/#/R-DME-1169410	Antiviral mechanism by IFN-stimulated genes	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-1257604	https://reactome.org/PathwayBrowser/#/R-DME-1257604	PIP3 activates AKT signaling	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-1280215	https://reactome.org/PathwayBrowser/#/R-DME-1280215	Cytokine Signaling in Immune system	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-1280218	https://reactome.org/PathwayBrowser/#/R-DME-1280218	Adaptive Immune System	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-1295596	https://reactome.org/PathwayBrowser/#/R-DME-1295596	Spry regulation of FGF signaling	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-162582	https://reactome.org/PathwayBrowser/#/R-DME-162582	Signal Transduction	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-1640170	https://reactome.org/PathwayBrowser/#/R-DME-1640170	Cell Cycle	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-166016	https://reactome.org/PathwayBrowser/#/R-DME-166016	Toll Like Receptor 4 (TLR4) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-166058	https://reactome.org/PathwayBrowser/#/R-DME-166058	MyD88:MAL(TIRAP) cascade initiated on plasma membrane	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-166166	https://reactome.org/PathwayBrowser/#/R-DME-166166	MyD88-independent TLR4 cascade 	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-166520	https://reactome.org/PathwayBrowser/#/R-DME-166520	Signaling by NTRKs	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168138	https://reactome.org/PathwayBrowser/#/R-DME-168138	Toll Like Receptor 9 (TLR9) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168142	https://reactome.org/PathwayBrowser/#/R-DME-168142	Toll Like Receptor 10 (TLR10) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168164	https://reactome.org/PathwayBrowser/#/R-DME-168164	Toll Like Receptor 3 (TLR3) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168176	https://reactome.org/PathwayBrowser/#/R-DME-168176	Toll Like Receptor 5 (TLR5) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168179	https://reactome.org/PathwayBrowser/#/R-DME-168179	Toll Like Receptor TLR1:TLR2 Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168181	https://reactome.org/PathwayBrowser/#/R-DME-168181	Toll Like Receptor 7/8 (TLR7/8) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168188	https://reactome.org/PathwayBrowser/#/R-DME-168188	Toll Like Receptor TLR6:TLR2 Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168249	https://reactome.org/PathwayBrowser/#/R-DME-168249	Innate Immune System	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-168898	https://reactome.org/PathwayBrowser/#/R-DME-168898	Toll-like Receptor Cascades	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-181438	https://reactome.org/PathwayBrowser/#/R-DME-181438	Toll Like Receptor 2 (TLR2) Cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-187037	https://reactome.org/PathwayBrowser/#/R-DME-187037	Signaling by NTRK1 (TRKA)	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-190236	https://reactome.org/PathwayBrowser/#/R-DME-190236	Signaling by FGFR	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-195253	https://reactome.org/PathwayBrowser/#/R-DME-195253	Degradation of beta-catenin by the destruction complex	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-195721	https://reactome.org/PathwayBrowser/#/R-DME-195721	Signaling by WNT	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-196299	https://reactome.org/PathwayBrowser/#/R-DME-196299	Beta-catenin phosphorylation cascade	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-198725	https://reactome.org/PathwayBrowser/#/R-DME-198725	Nuclear Events (kinase and transcription factor activation)	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-198753	https://reactome.org/PathwayBrowser/#/R-DME-198753	ERK/MAPK targets	IEA	Drosophila melanogaster
+FBtr0005088	R-DME-199418	https://reactome.org/PathwayBrowser/#/R-DME-199418	Negative regulation of the PI3K/AKT network	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-168249	https://reactome.org/PathwayBrowser/#/R-DME-168249	Innate Immune System	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-168256	https://reactome.org/PathwayBrowser/#/R-DME-168256	Immune System	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-2022377	https://reactome.org/PathwayBrowser/#/R-DME-2022377	Metabolism of Angiotensinogen to Angiotensins	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-2980736	https://reactome.org/PathwayBrowser/#/R-DME-2980736	Peptide hormone metabolism	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-392499	https://reactome.org/PathwayBrowser/#/R-DME-392499	Metabolism of proteins	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-397014	https://reactome.org/PathwayBrowser/#/R-DME-397014	Muscle contraction	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-5576891	https://reactome.org/PathwayBrowser/#/R-DME-5576891	Cardiac conduction	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-5578768	https://reactome.org/PathwayBrowser/#/R-DME-5578768	Physiological factors	IEA	Drosophila melanogaster
+FBpp0070000	R-DME-6798695	https://reactome.org/PathwayBrowser/#/R-DME-6798695	Neutrophil degranulation	IEA	Drosophila melanogaster
+FBpp0070006	R-DME-392499	https://reactome.org/PathwayBrowser/#/R-DME-392499	Metabolism of proteins	IEA	Drosophila melanogaster
+FBpp0070006	R-DME-9033241	https://reactome.org/PathwayBrowser/#/R-DME-9033241	Peroxisomal protein import	IEA	Drosophila melanogaster
+FBpp0070006	R-DME-9609507	https://reactome.org/PathwayBrowser/#/R-DME-9609507	Protein localization	IEA	Drosophila melanogaster
+FBpp0070006	R-DME-9837999	https://reactome.org/PathwayBrowser/#/R-DME-9837999	Mitochondrial protein degradation	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-199991	https://reactome.org/PathwayBrowser/#/R-DME-199991	Membrane Trafficking	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-392499	https://reactome.org/PathwayBrowser/#/R-DME-392499	Metabolism of proteins	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-5653656	https://reactome.org/PathwayBrowser/#/R-DME-5653656	Vesicle-mediated transport	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-597592	https://reactome.org/PathwayBrowser/#/R-DME-597592	Post-translational protein modification	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-8854214	https://reactome.org/PathwayBrowser/#/R-DME-8854214	TBC/RABGAPs	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-8873719	https://reactome.org/PathwayBrowser/#/R-DME-8873719	RAB geranylgeranylation	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-8876198	https://reactome.org/PathwayBrowser/#/R-DME-8876198	RAB GEFs exchange GTP for GDP on RABs	IEA	Drosophila melanogaster
+FBpp0070027	R-DME-9007101	https://reactome.org/PathwayBrowser/#/R-DME-9007101	Rab regulation of trafficking	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-1266738	https://reactome.org/PathwayBrowser/#/R-DME-1266738	Developmental Biology	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-1500931	https://reactome.org/PathwayBrowser/#/R-DME-1500931	Cell-Cell communication	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-162582	https://reactome.org/PathwayBrowser/#/R-DME-162582	Signal Transduction	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-194138	https://reactome.org/PathwayBrowser/#/R-DME-194138	Signaling by VEGF	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-418990	https://reactome.org/PathwayBrowser/#/R-DME-418990	Adherens junctions interactions	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-421270	https://reactome.org/PathwayBrowser/#/R-DME-421270	Cell-cell junction organization	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-4420097	https://reactome.org/PathwayBrowser/#/R-DME-4420097	VEGFA-VEGFR2 Pathway	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-446728	https://reactome.org/PathwayBrowser/#/R-DME-446728	Cell junction organization	IEA	Drosophila melanogaster
+FBpp0070037	R-DME-5218920	https://reactome.org/PathwayBrowser/#/R-DME-5218920	VEGFR2 mediated vascular permeability	IEA	Drosophila melanogaster
+ENST00000000233	R-HSA-199977	https://reactome.org/PathwayBrowser/#/R-HSA-199977	ER to Golgi Anterograde Transport	TAS	Homo sapiens
+ENST00000000233	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENST00000000233	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENST00000000233	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
+ENST00000000233	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENST00000000233	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENST00000000233	R-HSA-6807878	https://reactome.org/PathwayBrowser/#/R-HSA-6807878	COPI-mediated anterograde transport	TAS	Homo sapiens
+ENST00000000233	R-HSA-6811434	https://reactome.org/PathwayBrowser/#/R-HSA-6811434	COPI-dependent Golgi-to-ER retrograde traffic	TAS	Homo sapiens
+ENST00000000233	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENST00000000233	R-HSA-8856688	https://reactome.org/PathwayBrowser/#/R-HSA-8856688	Golgi-to-ER retrograde transport	TAS	Homo sapiens
+ENST00000000233	R-HSA-948021	https://reactome.org/PathwayBrowser/#/R-HSA-948021	Transport to the Golgi and subsequent modification	TAS	Homo sapiens
+ENST00000000412	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENST00000000412	R-HSA-1660662	https://reactome.org/PathwayBrowser/#/R-HSA-1660662	Glycosphingolipid metabolism	TAS	Homo sapiens
+ENST00000000412	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENST00000000412	R-HSA-199992	https://reactome.org/PathwayBrowser/#/R-HSA-199992	trans-Golgi Network Vesicle Budding	TAS	Homo sapiens
+ENST00000000412	R-HSA-428157	https://reactome.org/PathwayBrowser/#/R-HSA-428157	Sphingolipid metabolism	TAS	Homo sapiens
+ENST00000000412	R-HSA-432720	https://reactome.org/PathwayBrowser/#/R-HSA-432720	Lysosome Vesicle Biogenesis	TAS	Homo sapiens
+ENST00000000412	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENST00000000412	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENST00000000412	R-HSA-6811440	https://reactome.org/PathwayBrowser/#/R-HSA-6811440	Retrograde transport at the Trans-Golgi-Network	TAS	Homo sapiens
+ENST00000000412	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENST00000000412	R-HSA-8856825	https://reactome.org/PathwayBrowser/#/R-HSA-8856825	Cargo recognition for clathrin-mediated endocytosis	TAS	Homo sapiens
+ENST00000000412	R-HSA-8856828	https://reactome.org/PathwayBrowser/#/R-HSA-8856828	Clathrin-mediated endocytosis	TAS	Homo sapiens
+ENST00000000412	R-HSA-9840310	https://reactome.org/PathwayBrowser/#/R-HSA-9840310	Glycosphingolipid catabolism	TAS	Homo sapiens
+ENST00000000442	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENST00000000442	R-HSA-1592230	https://reactome.org/PathwayBrowser/#/R-HSA-1592230	Mitochondrial biogenesis	TAS	Homo sapiens
+ENST00000000442	R-HSA-1592230	https://reactome.org/PathwayBrowser/#/R-HSA-1592230	Mitochondrial biogenesis	IEA	Homo sapiens
+ENST00000000442	R-HSA-1852241	https://reactome.org/PathwayBrowser/#/R-HSA-1852241	Organelle biogenesis and maintenance	TAS	Homo sapiens
+ENST00000000442	R-HSA-1852241	https://reactome.org/PathwayBrowser/#/R-HSA-1852241	Organelle biogenesis and maintenance	IEA	Homo sapiens
+ENST00000000442	R-HSA-1989781	https://reactome.org/PathwayBrowser/#/R-HSA-1989781	PPARA activates gene expression	TAS	Homo sapiens
+ENSP00000000233	R-HSA-199977	https://reactome.org/PathwayBrowser/#/R-HSA-199977	ER to Golgi Anterograde Transport	TAS	Homo sapiens
+ENSP00000000233	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSP00000000233	R-HSA-392499	https://reactome.org/PathwayBrowser/#/R-HSA-392499	Metabolism of proteins	TAS	Homo sapiens
+ENSP00000000233	R-HSA-446203	https://reactome.org/PathwayBrowser/#/R-HSA-446203	Asparagine N-linked glycosylation	TAS	Homo sapiens
+ENSP00000000233	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSP00000000233	R-HSA-597592	https://reactome.org/PathwayBrowser/#/R-HSA-597592	Post-translational protein modification	TAS	Homo sapiens
+ENSP00000000233	R-HSA-6807878	https://reactome.org/PathwayBrowser/#/R-HSA-6807878	COPI-mediated anterograde transport	TAS	Homo sapiens
+ENSP00000000233	R-HSA-6811434	https://reactome.org/PathwayBrowser/#/R-HSA-6811434	COPI-dependent Golgi-to-ER retrograde traffic	TAS	Homo sapiens
+ENSP00000000233	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENSP00000000233	R-HSA-8856688	https://reactome.org/PathwayBrowser/#/R-HSA-8856688	Golgi-to-ER retrograde transport	TAS	Homo sapiens
+ENSP00000000233	R-HSA-948021	https://reactome.org/PathwayBrowser/#/R-HSA-948021	Transport to the Golgi and subsequent modification	TAS	Homo sapiens
+ENSP00000000412	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSP00000000412	R-HSA-1660662	https://reactome.org/PathwayBrowser/#/R-HSA-1660662	Glycosphingolipid metabolism	TAS	Homo sapiens
+ENSP00000000412	R-HSA-199991	https://reactome.org/PathwayBrowser/#/R-HSA-199991	Membrane Trafficking	TAS	Homo sapiens
+ENSP00000000412	R-HSA-199992	https://reactome.org/PathwayBrowser/#/R-HSA-199992	trans-Golgi Network Vesicle Budding	TAS	Homo sapiens
+ENSP00000000412	R-HSA-428157	https://reactome.org/PathwayBrowser/#/R-HSA-428157	Sphingolipid metabolism	TAS	Homo sapiens
+ENSP00000000412	R-HSA-432720	https://reactome.org/PathwayBrowser/#/R-HSA-432720	Lysosome Vesicle Biogenesis	TAS	Homo sapiens
+ENSP00000000412	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+ENSP00000000412	R-HSA-5653656	https://reactome.org/PathwayBrowser/#/R-HSA-5653656	Vesicle-mediated transport	TAS	Homo sapiens
+ENSP00000000412	R-HSA-6811440	https://reactome.org/PathwayBrowser/#/R-HSA-6811440	Retrograde transport at the Trans-Golgi-Network	TAS	Homo sapiens
+ENSP00000000412	R-HSA-6811442	https://reactome.org/PathwayBrowser/#/R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	TAS	Homo sapiens
+ENSP00000000412	R-HSA-8856825	https://reactome.org/PathwayBrowser/#/R-HSA-8856825	Cargo recognition for clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSP00000000412	R-HSA-8856828	https://reactome.org/PathwayBrowser/#/R-HSA-8856828	Clathrin-mediated endocytosis	TAS	Homo sapiens
+ENSP00000000412	R-HSA-9840310	https://reactome.org/PathwayBrowser/#/R-HSA-9840310	Glycosphingolipid catabolism	TAS	Homo sapiens
+ENSP00000000442	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+ENSP00000000442	R-HSA-1592230	https://reactome.org/PathwayBrowser/#/R-HSA-1592230	Mitochondrial biogenesis	TAS	Homo sapiens
+ENSP00000000442	R-HSA-1592230	https://reactome.org/PathwayBrowser/#/R-HSA-1592230	Mitochondrial biogenesis	IEA	Homo sapiens
+ENSP00000000442	R-HSA-1852241	https://reactome.org/PathwayBrowser/#/R-HSA-1852241	Organelle biogenesis and maintenance	TAS	Homo sapiens
+ENSP00000000442	R-HSA-1852241	https://reactome.org/PathwayBrowser/#/R-HSA-1852241	Organelle biogenesis and maintenance	IEA	Homo sapiens
+ENSP00000000442	R-HSA-1989781	https://reactome.org/PathwayBrowser/#/R-HSA-1989781	PPARA activates gene expression	TAS	Homo sapiens
