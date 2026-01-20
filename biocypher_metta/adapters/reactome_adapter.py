@@ -6,7 +6,7 @@ import csv
 from biocypher_metta.adapters import Adapter
 import psycopg2
 
-# Example pathway input file:
+# Example ***pathway*** input file:
 # R-GGA-199992	trans-Golgi Network Vesicle Budding	Gallus gallus
 # R-HSA-164843	2-LTR circle formation	Homo sapiens
 # R-HSA-73843	5-Phosphoribose 1-diphosphate biosynthesis	Homo sapiens
