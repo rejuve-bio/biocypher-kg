@@ -115,6 +115,19 @@ pathway:
   nodes: True
   edges: False
 
+reactome_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
+      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
+      label: reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: True
+  edges: False
+
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -127,6 +140,21 @@ genes_pathways:
   outdir: reactome
   nodes: False
   edges: True
+
+
+gene_ogep_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
+      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      label: gene_ogep_reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
 
 parent_pathway_of:
   adapter:

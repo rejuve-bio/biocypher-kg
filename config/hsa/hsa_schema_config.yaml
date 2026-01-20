@@ -429,8 +429,6 @@ non_coding_rna:
 
 pathway:
   is_a: biological process
-  mixins: [biolink:Pathway]
-  biolink_category: "biolink:Pathway"
   exact_mappings:
     - PW:0000001
     - WIKIDATA:Q4915012
@@ -439,22 +437,64 @@ pathway:
     - GO:0007165
   represented_as: node
   input_label: pathway
-  kgx_properties:
-    category: "biolink:Pathway"
+  mixins: [biolink:Pathway]
+  biolink_category: "biolink:Pathway"
   properties:
-    pathway_name: 
+    pathway_name:
       type: str
       biolink: name
-    evidence: 
+    pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
+    evidence:
       type: str
       biolink: has_evidence
-    source: 
+    source:
       type: str
       biolink: knowledge_source
-    source_url: 
+    source_url:
       type: str
       biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: str
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: "biolink:Pathway"
 
+reaction:
+  is_a: molecular function
+  narrow_mappings:
+    - GO:0003674
+  represented_as: node
+  input_label: reaction
+  mixins: [biolink:MolecularActivity]
+  biolink_category: "biolink:MolecularActivity"
+  properties:
+    reaction_name:
+      type: str
+      biolink: name
+    reaction_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
+    evidence:
+      type: str
+      biolink: has_evidence
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: str
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: "biolink:MolecularActivity"
+  
 regulatory region:
   represented_as: node
   input_label: regulatory_region
@@ -1015,8 +1055,29 @@ gene to pathway association:
   output_label: participates_in
   source: [gene, transcript, protein]
   target: pathway
+  pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+    type: str
+    biolink: source_record_urls
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"  
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+gene to reaction association:
+  description: >-
+    An interaction between a gene or a gene product (gogp) and a molecular activity.
+  is_a: annotation
+  mixins: [biolink:GeneOrGeneProductOrGeneFamilyToBiologicalProcessOrActivityAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_ogep_reaction
+  output_label: involved_in 
+  source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
+  target: reaction
+  kgx_properties:
+    subject_category: "biolink:GeneOrGeneProduct"
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"

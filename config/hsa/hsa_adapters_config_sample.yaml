@@ -103,14 +103,27 @@ uniprotkb_sprot_translates_to:
   nodes: False
   edges: True
 
-pathway:
+reactome_pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: ./samples/hsa/reactome/ReactomePathways.txt
-      pubmed_map_path: ./samples/hsa/reactome/ReactionPMIDS.txt
+      filepath: ./samples/reactome/ReactomePathways.txt
+      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
       label: pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: True
+  edges: False
+
+reactome_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
+      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
+      label: reaction
       taxon_id: 9606
   outdir: reactome
   nodes: True
@@ -121,7 +134,7 @@ genes_pathways:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: ./samples/hsa/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
       ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
       label: genes_pathways
       taxon_id: 9606
@@ -129,26 +142,61 @@ genes_pathways:
   nodes: False
   edges: True
 
+gene_ogep_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      label: gene_ogep_reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+parent_pathway_of:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      label: parent_pathway_of
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+child_pathway_of:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
+      label: child_pathway_of
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
 
 reactome_ppi:
   adapter:
     module: biocypher_metta.adapters.reactome_ppi_adapter
     cls: ReactomePPIAdapter
     args:
-      filepath: ./samples/hsa/reactome/reactome_homo_sapiens_interactions_tab_delimited_sample.txt.gz
+      filepath: ./samples/reactome/reactome_homo_sapiens_interactions_tab_delimited_sample.txt.gz
       label: interacts_with
       taxon_id: 9606
   outdir: reactome/ppi
   nodes: False
   edges: True
 
-
 pathway_to_biological_process:
   adapter:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
     args:
-      filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
+      filepath: ./samples/reactome/Pathways2GoTerms_human.txt
       write_properties: true
       add_provenance: true
       label: pathway_to_biological_process
@@ -169,7 +217,7 @@ pathway_to_biological_process:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
 #     cls: ReactomePathwayGOAdapter
 #     args:
-#       filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
 #       write_properties: true
 #       add_provenance: true
 #       subontology: molecular_function
@@ -184,7 +232,7 @@ pathway_to_biological_process:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter
 #     cls: ReactomePathwayGOAdapter
 #     args:
-#       filepath: ./samples/hsa/reactome/Pathways2GoTerms_human.txt
+#       filepath: ./samples/reactome/Pathways2GoTerms_human.txt
 #       write_properties: true
 #       add_provenance: true
 #       subontology: cellular_component  
@@ -193,30 +241,6 @@ pathway_to_biological_process:
 #   outdir: reactome/cellular_component
 #   nodes: false
 #   edges: true
-
-parent_pathway_of:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: ./samples/hsa/reactome/ReactomePathwaysRelation.txt
-      label: parent_pathway_of
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-child_pathway_of:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: ./samples/hsa/reactome/ReactomePathwaysRelation.txt
-      label: child_pathway_of
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
 
 go_biological_process:
   adapter:
