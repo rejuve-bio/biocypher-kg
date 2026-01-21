@@ -29,7 +29,7 @@ from biocypher_metta.adapters import Adapter
 
 class ReactomeEdgesAdapter(Adapter):
 
-    ALLOWED_LABELS = ['genes_pathways',
+    ALLOWED_LABELS = ['genes_pathways', 'gene_ogep_reaction',
                       'parent_pathway_of', 'child_pathway_of']
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
@@ -65,12 +65,12 @@ class ReactomeEdgesAdapter(Adapter):
             except Exception as e:
                 print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
                 self.ensembl_uniprot_map = {}
-
         super(ReactomeEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
         organism_taxon_map = {
             'R-DME': 7227,  # Drosophila melanogaster (dmel)
+            'R-NUL': 7227,  # some reactions of Drosophila melanogaster (dmel)
             'R-HSA': 9606,  # Homo sapiens (hsa)
             # Add more organisms here as needed
             'R-MMU': 10090,   # Mus musculus (mmu)
@@ -89,14 +89,19 @@ class ReactomeEdgesAdapter(Adapter):
             for line in input_file:
                 data = line.strip().split('\t')
 
-                if self.label == 'genes_pathways':
+                if self.label == 'genes_pathways' or self.label == 'gene_ogep_reaction':
                     entity_id, pathway_id = data[0], data[1]
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
-                    
+                    pathway_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
                     if organism_pathway_prefix in organism_taxon_map:
                         taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()
+                        if self.label == 'genes_pathways':
+                            props['pathway_url'] = data[2].replace("PathwayBrowser/#", "content/detail")
+                        else:
+                            props['reaction_url'] = data[2].replace("PathwayBrowser/#", "content/detail")                        
+                        props['evidence'] = data[4]
                         props['taxon_id'] = f'{taxon}'
 
                         source_type = self._get_entity_type(entity_id)
@@ -122,7 +127,7 @@ class ReactomeEdgesAdapter(Adapter):
                             yield source, pathway_id, self.label, props
 
                         # Drosophila only
-                        elif self.taxon_id == 7227 and organism_pathway_prefix == 'R-DME':
+                        elif self.taxon_id == 7227 and (organism_pathway_prefix == 'R-DME' or organism_pathway_prefix == 'R-NUL'):
                             # print(f'path: {organism_pathway_prefix} // {pathway_id}')
                             # source_type = self._get_entity_type(entity_id)
                             if entity_id.lower().startswith('fbpp'):
@@ -182,7 +187,6 @@ class ReactomeEdgesAdapter(Adapter):
                             source, target = child, parent
                         yield source, target, self.label, props
             print(f'Entities not mapped to Uniprot IDs: {not_mapped_no_processing}')
-
 
     def _get_entity_type(self, entity_id):
         """Return the entity type based on its identifier prefix."""
