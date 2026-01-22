@@ -658,28 +658,38 @@ uniprotkb_sprot_translates_to:
   nodes: False
   edges: True
 
-
-pathway:
+reactome_pathway:
   adapter:
-    module: biocypher_metta.adapters.reactome_pathway_adapter
-    cls: ReactomePathwayAdapter
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
     args:
-      filepath: ./samples/dmel/reactome/ReactomePathways.txt
-      pubmed_map_path: ./samples/dmel/reactome/ReactionPMIDS.txt
+      filepath: ./samples/reactome/ReactomePathways.txt
+      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
       label: pathway
       taxon_id: 7227
   outdir: reactome
   nodes: True
   edges: False
 
-
-# for all organisms set taxon_id to None
-genes_pathways:
+reactome_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: ./samples/dmel/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt 
+      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
+      label: reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: True
+  edges: False
+
+genes_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: genes_pathways
       taxon_id: 7227
@@ -687,12 +697,25 @@ genes_pathways:
   nodes: False
   edges: True
 
+gene_ogep_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      label: gene_ogep_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
 parent_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomeAdapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
     args:
-      filepath: ./samples/dmel/reactome/ReactomePathwaysRelation.txt
+      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: parent_pathway_of
       taxon_id: 7227
@@ -702,10 +725,10 @@ parent_pathway_of:
 
 child_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomeAdapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
     args:
-      filepath: ./samples/dmel/reactome/ReactomePathwaysRelation.txt
+      filepath: ./samples/reactome/ReactomePathwaysRelation.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: child_pathway_of
       taxon_id: 7227
@@ -1021,34 +1044,33 @@ uniprot_dbxref_molecular_function:
   nodes: False
   edges: True
 
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chemical_substance
+  nodes: True
+  edges: False
 
-# chebi_ontology:
-#   adapter:
-#     module: biocypher_metta.adapters.chebi_ontology_adapter
-#     cls: ChEBIAdapter
-#     args:
-#       ontology: 'chebi'
-#       type: node
-#       dry_run: False
-#       add_description: False
-#       cache_dir: ./ontology_dataset_cache
-#   outdir: chemical_substance
-#   nodes: True
-#   edges: False
-
-# chebi_chebi_subclass_of:
-#   adapter:
-#     module: biocypher_metta.adapters.chebi_ontology_adapter
-#     cls: ChEBIAdapter
-#     args:
-#       ontology: 'chebi'
-#       label: chebi_subclass_of
-#       type: edge
-#       dry_run: False
-#       cache_dir: ./ontology_dataset_cache
-#   outdir: chemical_substance
-#   nodes: False
-#   edges: True
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chemical_substance
+  nodes: False
+  edges: True
 
   
 

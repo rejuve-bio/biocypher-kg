@@ -2,6 +2,15 @@
 bgee:
   name: Bgee Expression Data
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+
+coxpressdb:
+  name: Coxpress DB
+  url: https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
+
+enhancer_atlas:
+  name: EnhancerAtlas
+  url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   
+
 flybase: 
   name: Flybase 2025_05
   url: 
@@ -12,7 +21,7 @@ flybase:
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_05.tsv.gz
+    # - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_05.tsv.gz  nao existe!!!!!!!!!!!!!!
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_genetic_interactions_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_group_data_fb_2025_05.tsv.gz    
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_groups_HGNC_fb_2025_05.tsv.gz
@@ -28,8 +37,8 @@ flybase:
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
     
 goa:
-  name: GO Annotation File (GAF)
-  url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+  name: GO Annotation File (GAF) from Flybase
+  url: https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/go/gene_association.fb.gz
 
 gencode:
   name: GENCODE v54
@@ -48,6 +57,7 @@ reactome:
     - https://reactome.org/download/current/ReactomePathways.txt
     - https://reactome.org/download/current/ReactomePathwaysRelation.txt
     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
 
 rna_central:
@@ -66,12 +76,11 @@ string:
   url: https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
 
 
-
-# epd:
-#   name: Eukaryotic Promoter Database
-#   url:
-#     - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
-#     # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/
-#     - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
+epd:
+  name: Eukaryotic Promoter Database
+  url:
+    - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
+    # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/
+    - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
 
 

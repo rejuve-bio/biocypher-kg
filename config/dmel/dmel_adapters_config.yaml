@@ -639,8 +639,8 @@ gaf_cellular_component_gene_product_located_in:
 
 pathway:
   adapter:
-    module: biocypher_metta.adapters.reactome_pathway_adapter
-    cls: ReactomePathwayAdapter
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
     args:
       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/reactome/ReactomePathways.txt
       pubmed_map_path: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/reactome/ReactionPMIDS.txt
@@ -650,10 +650,23 @@ pathway:
   nodes: True
   edges: False
 
-genes_pathways:
+reactome_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
+      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
+      label: reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: True
+  edges: False
+
+genes_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/reactome/Ensembl2Reactome_All_Levels.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
@@ -663,10 +676,23 @@ genes_pathways:
   nodes: False
   edges: True
 
+gene_ogep_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
+      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      label: gene_ogep_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
 parent_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomeAdapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/reactome/ReactomePathwaysRelation.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
@@ -678,8 +704,8 @@ parent_pathway_of:
 
 child_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
-    cls: ReactomeAdapter
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/reactome/ReactomePathwaysRelation.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl

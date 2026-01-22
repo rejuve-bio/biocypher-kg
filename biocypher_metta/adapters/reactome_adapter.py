@@ -1,261 +1,133 @@
-# 2025/09: started changes to handle multiple species data.
-
-import psycopg2
+#import requests
+from requests.adapters import HTTPAdapter, Retry
+from requests.exceptions import JSONDecodeError
+from tqdm import tqdm
+import csv
 from biocypher_metta.adapters import Adapter
+import psycopg2
 
-# Data file for genes_pathways: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
-# data format:
-# Source database identifier, e.g. UniProt, ENSEMBL, NCBI Gene or ChEBI identifier
-# Reactome Pathway Stable identifier
-# URL
-# Event (Pathway or Reaction) Name
-# Evidence Code
-# Species
+# Example ***pathway*** input file:
+# R-GGA-199992	trans-Golgi Network Vesicle Budding	Gallus gallus
+# R-HSA-164843	2-LTR circle formation	Homo sapiens
+# R-HSA-73843	5-Phosphoribose 1-diphosphate biosynthesis	Homo sapiens
+# R-HSA-1971475	A tetrasaccharide linker sequence is required for GAG synthesis	Homo sapiens
+# R-HSA-5619084	ABC transporter disorders	Homo sapiens
 
-# Example file:
-# ENSDART00000193986	R-DRE-5653656	https://reactome.org/PathwayBrowser/#/R-DRE-5653656	Vesicle-mediated transport	IEA	Danio rerio
-# ENSG00000000419	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
-# ENSG00000000419	R-HSA-163125	https://reactome.org/PathwayBrowser/#/R-HSA-163125	Post-translational modification: synthesis of GPI-anchored proteins	TAS	Homo sapiens
-# ENSG00000000419	R-HSA-1643685	https://reactome.org/PathwayBrowser/#/R-HSA-1643685	Disease	TAS	Homo sapiens
-# ENSG00000000419.14	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
-
-# Data file for parent_pathway_of and child_pathway_of: https://reactome.org/download/current/ReactomePathwaysRelation.txt
-# example file:
-# R-BTA-109581	R-BTA-109606
-# R-BTA-109581	R-BTA-169911
-# R-BTA-109581	R-BTA-5357769
-# R-BTA-109581	R-BTA-75153
-# R-BTA-109582	R-BTA-140877
 
 class ReactomeAdapter(Adapter):
 
-    ALLOWED_LABELS = ['genes_pathways',
-                      'parent_pathway_of', 'child_pathway_of']
+    def __init__(self, filepath, pubmed_map_path, write_properties, add_provenance, label, taxon_id):
 
-    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
-        """
-        Added taxon_id parameter to handle multiple species data.
-
-        If taxon_id is None, all pathways defined in organism_taxon_map
-        will be translated into Atom space. Otherwise, only data for
-        the specified species will be processed.
-        """        
-
-        if label not in ReactomeAdapter.ALLOWED_LABELS:
-            raise ValueError('Invalid label. Allowed values: ' +
-                             ', '.join(ReactomeAdapter.ALLOWED_LABELS))
         self.filepath = filepath
-        self.dataset = label
+        self.pubmed_map_path = pubmed_map_path
+        self.load_pubmed_map()
         self.label = label
+        # self.dataset = 'pathway'
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
-        self.fbpp_to_uniprot = {}               # dict to map FBpp to UniProt ids and to avoid remote connections during runtime
         self.taxon_id = taxon_id
-
-
-        # Load the Ensembl to UniProt mapping if provided
-        self.ensembl_uniprot_map = {}
-        if ensembl_uniprot_map_path:
-            try:
-                import pickle
-                # with open(ensembl_uniprot_map_path, 'rb') as f:
-                #     self.ensembl_uniprot_map = pickle.load(f)
-                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb')) if ensembl_uniprot_map_path else None 
-                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
-            except Exception as e:
-                print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
-                self.ensembl_uniprot_map = {}
-
         super(ReactomeAdapter, self).__init__(write_properties, add_provenance)
-
-    def get_edges(self):
-        organism_taxon_map = {
-            'R-DME': 7227,  # Drosophila melanogaster (dmel)
-            'R-HSA': 9606,  # Homo sapiens (hsa)
-            # Add more organisms here as needed
-            'R-MMU': 10090,   # Mus musculus (mmu)
-            'R-RNO': 10116,   # Rattus norvegicus
-        }
-
-        if self.taxon_id == 7227:
-            connection = self.connect_to_flybase()
-
-        with open(self.filepath) as input_file:
-            base_props = {}
-            if self.write_properties and self.add_provenance:
-                base_props['source'] = self.source
-                base_props['source_url'] = self.source_url
-            not_mapped_no_processing = 0
-            for line in input_file:
-                data = line.strip().split('\t')
-
-                if self.label == 'genes_pathways':
-                    entity_id, pathway_id = data[0], data[1]
-                    organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
-                    
-                    pathway_id = f'{pathway_id}'
-                    if organism_pathway_prefix in organism_taxon_map:
-                        taxon = organism_taxon_map[organism_pathway_prefix]
-                        props = base_props.copy()
-                        props['taxon_id'] = f'{taxon}'
-
-                        source_type = self._get_entity_type(entity_id)
-
-                        # All organisms in organism_taxon_map
-                        # NOT FINISHED! DO NOT USE THIS for now!...
-                        if self.taxon_id is None:
-                            # source_type = self._get_entity_type(entity_id)
-                            # if prefix == 'R-HSA':
-                            entity_id = entity_id.split('.')[0]
-                            if self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
-                                if entity_id.startswith('ENSP'):
-                                    curie_entity_id = f'{self.ensembl_uniprot_map[entity_id]}'
-                                else:
-                                    curie_entity_id = f'{entity_id}'
-                            else:
-                                    # print(f"No UniProt mapping for {entity_id}")
-                                    continue
-                            source = (source_type, curie_entity_id)
-                            # target = pathway_id
-                            # Mandatory property for KGXWriter
-                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
-                            yield source, pathway_id, self.label, props
-
-                        # Drosophila only
-                        elif self.taxon_id == 7227 and organism_pathway_prefix == 'R-DME':
-                            # print(f'path: {organism_pathway_prefix} // {pathway_id}')
-                            # source_type = self._get_entity_type(entity_id)
-                            if entity_id.lower().startswith('fbpp'):
-                                uniprot_id = self.ensembl_uniprot_map.get(entity_id)
-                                if uniprot_id is None:
-                                    # print(f'{entity_id} not found in Ensembl-to-UniProt map.')
-                                    uniprot_id = self.get_uniprot_id_from_FB(connection, entity_id)
-                                    if uniprot_id is None:
-                                        print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
-                                        not_mapped_no_processing += 1
-                                        continue
-                                curie_entity_id = f'UniProtKB:{uniprot_id}'
-                            else:                                
-                                curie_entity_id = f'FlyBase:{entity_id}'
-                            # print(f'ID for protein: {curie_entity_id}, entity: {entity_id}, type {source_type} of dmel.\tReactome {pathway_id}')
-                            source = (source_type, curie_entity_id)
-                            # target = pathway_id
-                            # Mandatory property for KGXWriter
-                            props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
-                            yield source, pathway_id, self.label, props
-                        # Human only
-                        elif self.taxon_id == 9606 and organism_pathway_prefix == 'R-HSA':
-                            # source_type = self._get_entity_type(entity_id)
-                            # Remove version number if present (e.g., ENSG00000000419.14 -> ENSG00000000419)
-                            entity_id = entity_id.split('.')[0]
+    
+    def get_nodes(self):
+        if self.label == 'pathway':
+            with open(self.filepath) as input:
+                for line in input:
+                    id, name, species = line.strip().split('\t')                
+                    pathway_id = f"{id}"
+                    # if self.taxon_id == None:           # this could be used to load pathway for all available species
+                    if self.taxon_id == 9606:
+                        if species == 'Homo sapiens':
+                            props = {}
+                            if self.write_properties:
+                                props['pathway_name'] = name
                             
-                            if entity_id.startswith(("ENSG", "ENST")):
-                                curie_entity_id = f"Ensembl:{entity_id}"
-                            else:
-                                # Skip protein entries if no UniProt mapping is available
-                                if self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
-                                    entity_id = self.ensembl_uniprot_map[entity_id]
-                                    curie_entity_id = f"{entity_id}"                                    
-                                else:
-                                    # print(f"No UniProt mapping for {entity_id} of H. sapiens")
-                                    continue
+                                pubmed_id = self.pubmed_map.get(id, None)
+                                if pubmed_id is not None:
+                                    pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
+                                    props['evidence'] = pubmed_url,
+                                
+                                if self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+                                    props['taxon_id'] = f'{self.taxon_id}'
+                            yield pathway_id, self.label, props
+                    elif self.taxon_id == 7227:           
+                        if species == 'Drosophila melanogaster':
+                            props = {}
+                            if self.write_properties:
+                                props['pathway_name'] = name                        
+                                pubmed_id = self.pubmed_map.get(id, None)
+                                if pubmed_id is not None:
+                                    pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
+                                    props['evidence'] = pubmed_url,
+                                
+                                if self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+                                    props['taxon_id'] = f'{self.taxon_id}'
 
-                            source = (source_type, curie_entity_id)
-                            # target = pathway_id
-                            # Mandatory property for KGXWriter
-                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
-                            # print(f"reactome: {props['id']}")
-                            yield source, pathway_id, self.label, props
-                else:
-                    # Handle pathway-pathway relationships
-                    parent, child = data[0], data[1]
-                    organism_pathway_prefix = parent[:5]
-                    if organism_pathway_prefix in organism_taxon_map:
-                        parent = f'{parent}'
-                        child = f'{child}'
-                        taxon = organism_taxon_map[organism_pathway_prefix]
-                        props = base_props.copy()
-                        props['taxon_id'] = taxon
-                        if self.label == 'parent_pathway_of':
-                            source, target = parent, child
-                        else:  # 'child_pathway_of'
-                            source, target = child, parent
-                        yield source, target, self.label, props
-            print(f'Entities not mapped to Uniprot IDs: {not_mapped_no_processing}')
+                            yield pathway_id, self.label, props
+        elif self.label == 'reaction':
+            organism_taxon_map = {
+                'R-DME': 7227,  # Drosophila melanogaster (dmel)
+                'R-HSA': 9606,  # Homo sapiens (hsa)
+                # Add more organisms here as needed
+                'R-MMU': 10090,   # Mus musculus (mmu)
+                'R-RNO': 10116,   # Rattus norvegicus
+            }   
+            # nodes = set()   
+            with open(self.filepath) as input_file:
+                base_props = {}
+                if self.write_properties and self.add_provenance:
+                    base_props['source'] = self.source
+                    base_props['source_url'] = self.source_url
+                for line in input_file:
+                    data = line.strip().split('\t')   
+                    yield from self._get_reaction_nodes(data, organism_taxon_map, base_props)
+
+    def load_pubmed_map(self):
+        self.pubmed_map = {}
+        with open(self.pubmed_map_path, "r") as f:
+            reader = csv.reader(f, delimiter="\t")
+            for row in reader:
+                pathway_id, pubmed_id = row[0], row[0]
+                self.pubmed_map[pathway_id] = pubmed_id
 
 
-    def _get_entity_type(self, entity_id):
-        """Return the entity type based on its identifier prefix."""
-        if entity_id.startswith(("FBgn", "ENSG")):
-            return "gene"
-        elif entity_id.startswith(("FBpp", "ENSP")):
-            return "protein"
-        else:
-            return "transcript"
+    def _get_reaction_nodes(self, data, organism_taxon_map, base_props):
+        # organism_taxon_map = {
+        #     'R-DME': 7227,  # Drosophila melanogaster (dmel)
+        #     'R-HSA': 9606,  # Homo sapiens (hsa)
+        #     # Add more organisms here as needed
+        #     'R-MMU': 10090,   # Mus musculus (mmu)
+        #     'R-RNO': 10116,   # Rattus norvegicus
+        # }   
+        # # nodes = set()   
+        # with open(self.filepath) as input_file:
+        #     base_props = {}
+        #     if self.write_properties and self.add_provenance:
+        #         base_props['source'] = self.source
+        #         base_props['source_url'] = self.source_url
+        #     for line in input_file:
+        #         data = line.strip().split('\t')                
+        reaction_id = data[1]
+        organism_pathway_prefix = reaction_id[:5]  # e.g., 'R-DME', 'R-HSA'
+        
+        reaction_id = f'{reaction_id}'
+        if organism_pathway_prefix in organism_taxon_map:
+            if self.taxon_id == organism_taxon_map[organism_pathway_prefix]:
+                props = base_props.copy()
+                props['evidence'] = data[4]
+                props['reaction_url'] = data[2].replace("PathwayBrowser/#", "content/detail")
+                props['taxon_id'] = f'{self.taxon_id}'
+                yield reaction_id, self.label, props
+        elif organism_pathway_prefix == 'R-NUL':
+            # Drosophila only
+            props = base_props.copy()
+            props['evidence'] = data[4]
+            props['reaction_url'] = data[2].replace("PathwayBrowser/#", "content/detail")
+            props['taxon_id'] = f'{self.taxon_id}'
+            if self.taxon_id == 7227 and data[5] == 'Drosophila melanogaster' and data[0].startswith('FB'):
+                yield reaction_id, self.label, props
 
-    def connect_to_flybase(self):
-        """Establish a connection to the FlyBase PostgreSQL database."""
-        try:
-            conn = psycopg2.connect(
-                host="chado.flybase.org",
-                database="flybase",
-                user="flybase",
-                password="flybase" 
-            )
-            print("Connection to FlyBase established successfully!")
-            return conn
-        except Exception as e:
-            print(f"Error connecting to FlyBase: {e}")
-            return None
 
-    def get_uniprot_id_from_FB(self, conn, polypeptide_id):
-        """
-        Retrieve the UniProt ID for a given polypeptide from FlyBase.
-        Caches results in fbpp_to_uniprot to avoid repeated queries.
-        """
-        # Check if we already have this UniProt ID cached
-        if polypeptide_id in self.fbpp_to_uniprot:
-            return self.fbpp_to_uniprot[polypeptide_id]
-
-        try:
-            cursor = conn.cursor()
-            # First, get the feature_id (pp_id) for this uniquename (polypeptide_id)
-            cursor.execute("""
-                SELECT feature_id AS pp_id
-                FROM feature
-                WHERE is_obsolete = FALSE
-                  AND is_analysis = FALSE
-                  AND uniquename = %s;
-            """, (polypeptide_id,))
-            result = cursor.fetchone()
-
-            if result is None:
-                print(f"No feature_id found for uniquename: {polypeptide_id}")
-                return None
-            pp_id = result[0]
-
-            # Next, fetch the UniProt accession(s) for that feature_id
-            cursor.execute("""
-                SELECT DISTINCT accession
-                FROM feature_dbxref fdbx
-                JOIN dbxref dbx ON dbx.dbxref_id = fdbx.dbxref_id
-                JOIN db ON db.db_id = dbx.db_id
-                WHERE fdbx.is_current = TRUE
-                  AND db.name IN ('UniProt/Swiss-Prot', 'UniProt/TrEMBL')
-                  AND fdbx.feature_id = %s;
-            """, (pp_id,))
-            uniprot_ids = cursor.fetchall()
-
-            if uniprot_ids:
-                # Cache and return the first UniProt ID found
-                self.fbpp_to_uniprot[polypeptide_id] = uniprot_ids[0][0]
-                return uniprot_ids[0][0]
-            else:
-                return None
-
-        except Exception as e:
-            print(f"Error executing query: {e}")
-            return None
-
-        finally:
-            cursor.close()

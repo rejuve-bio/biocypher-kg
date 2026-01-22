@@ -1,3 +1,47 @@
+
+# import sys
+# import os
+
+# CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..'))
+
+# if PROJECT_ROOT not in sys.path:
+#     sys.path.insert(0, PROJECT_ROOT)
+
+# import typer
+# from pathlib import Path
+# from typing_extensions import Annotated
+# from download_manager import DownloadManager
+# import logging
+
+# logging.basicConfig(level=logging.INFO)
+# app = typer.Typer()
+
+# @app.command()
+# def download_data(
+#     output_dir: Annotated[Path, typer.Option(exists=False, file_okay=False, dir_okay=True)],
+#     config_file: str = "config/dmel/dmel_data_source_config.yaml",
+#     source: str = None
+# ):
+#     """Download data sources"""
+#     try:
+#         manager = DownloadManager(config_file, output_dir)
+#         if source:
+#             manager.download_source(source)
+#         else:
+#             manager.download_all()
+#     except Exception as e:
+#         logging.error(f"Download failed: {str(e)}")
+#         raise
+
+# if __name__ == "__main__":
+#     app()
+
+
+
+
+
+
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 # Author Saulo A. P. Pinto <saulo@singularitynet.io> (dmel stuff)
 import typer
@@ -304,15 +348,13 @@ def download_data(output_dir: Annotated[pathlib.Path, typer.Option(exists=False,
             config = yaml.safe_load(f)
             pathlib.Path(output_dir).mkdir(exist_ok=True, parents=True)
             download_flybase(output_dir, config["flybase"])
-            # download_gencode(output_dir, config["gencode"])       # this must be called with tflink because tflink needs Drosophila_melanogaster.gene_info.gz that is downloaded with gencode data
-            
-            # uniprot_data_filename = download_uniprot(output_dir, config["uniprot"])
-            # dmel_uniprot_data_filename = save_uniprot_dmel_data(uniprot_data_filename)
-            # create_ensembl_to_uniprot_dict(dmel_uniprot_data_filename, 'aux_files/dmel/string_ensembl_uniprot_map.pkl')
-            # download_reactome(output_dir, config["reactome"])
-
-            # download_tflink_and_gencode(output_dir, config["tflink"], config["gencode"])            
-            # download_string(output_dir, config["string"])
+            uniprot_data_filename = download_uniprot(output_dir, config["uniprot"])
+            dmel_uniprot_data_filename = save_uniprot_dmel_data(uniprot_data_filename)
+            create_ensembl_to_uniprot_dict(dmel_uniprot_data_filename, 'aux_files/dmel/string_ensembl_uniprot_map.pkl')
+            download_reactome(output_dir, config["reactome"])
+            download_tflink_and_gencode(output_dir, config["tflink"], config["gencode"])            
+            download_string(output_dir, config["string"])
+            downlo
 
         except yaml.YAMLError as exc:
             print(f"Error parsing config file: {exc}")
