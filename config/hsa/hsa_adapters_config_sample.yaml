@@ -118,8 +118,8 @@ reactome_pathway:
 
 reactome_reaction:
   adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
     args:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
       pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
