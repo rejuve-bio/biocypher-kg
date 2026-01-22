@@ -2310,7 +2310,7 @@ gene to phenotype association:
   inherit_properties: true
   represented_as: edge
   input_label: gene_phenotype
-  output_label: has_phenotype
+  output_label: involved_in #has_phenotype
   source: gene
   target: phenotype
   kgx_properties:

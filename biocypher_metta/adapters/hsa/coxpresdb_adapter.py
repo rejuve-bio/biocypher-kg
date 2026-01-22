@@ -10,10 +10,19 @@ import os
 # https://coxpresdb.jp/download/Hsa-r.c6-0/coex/Hsa-r.v22-05.G16651-S235187.combat_pca.subagging.z.d.zip
 # There is 16651 files. The file name is entrez gene id. The total genes annotated are 16651, one gene per file, each file contain logit score of other 16650 genes.
 # There are two fields in each row: entrez gene id and logit score
+        # entrez_to_ensembl.pkl (for hsa) is generated using this file:
+        # Homo_sapiens.gene_info.gz file: https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
+        # every gene has ensembl id in gencode file, every gene has hgnc id if available.
+        # every gene has entrez gene id in gene_info file, every gene has ensembl id or hgcn id if available
 
 # Fly data:
 # https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
+# There are 12208 files. The file name is ENTREZ gene id. The total genes annotated are 12208, one gene per file, each file contain logit score of other 12208 genes.
+# There are two fields in each row: entrez gene id and logit score
 
+# entrez_to_ensembl.pkl (for dmel) is generated using this provisory script: scripts/dmel_create_entrez_to_ensembl_map.py file:
+# Drosophila melanogaster gene info from NCBI: https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
+# every gene has entrez gene id in gene_info file, every gene has ensembl ID in the dbXrefs column
 
 # Mouse data:
 
@@ -28,7 +37,7 @@ class CoxpresdbAdapter(Adapter):
                  write_properties, add_provenance, taxon_id):  
 
         self.file_path = filepath
-        self.entrez_to_ensemble_path = entrez_to_ensemble_path
+        self.entrez_to_ensemble_dict_path = entrez_to_ensemble_path
         self.dataset = 'coxpresdb'
         self.label = label
         self.source = 'CoXPresdb'
@@ -48,7 +57,7 @@ class CoxpresdbAdapter(Adapter):
 
         gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f))]
 
-        with open(self.entrez_to_ensemble_path, 'rb') as f:
+        with open(self.entrez_to_ensemble_dict_path, 'rb') as f:
             entrez_ensembl_dict = pickle.load(f)
         for gene_id in gene_ids:
             gene_file_path = os.path.join(self.file_path, gene_id)

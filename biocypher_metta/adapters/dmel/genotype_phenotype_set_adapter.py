@@ -16,76 +16,12 @@ import sys
 # of phenotypes ids. Of course, we could create a link from Gene to Phenotype (like Monarch) because of the natural
 # relationship between a gene and its alleles.
 
-################################   Schemata translated in this adapter  ################################
-
 # From the site above:
 # For cases where the genotype contains more than one component, then the components are separated as follows (columns 1 and 2):
 #  * Homozygous or transheterozygous combinations of classical/insertional alleles at a single locus are separated by a '/'.
 #  * Hemizygous combinations affecting a single locus (classical/insertional allele over a deficiency for that locus) are separated by a '/'.
 #  * Heterozygosity for a classical/insertional allele or aberration is represented by '/+'.
 #  * In all other cases, other genotype components (e.g. drivers, transgenic alleles) are separated by a space.
-
-genotype:
-  represented_as: node
-  input_label: genotype
-  is_a: biological entity
-  properties:
-    genotype_ids: str           # string composed of one or more allele id(s) (FBal#)
-    genotype_symbols: str       # string composed of one or more allele symbol(s)
-    reference: str              # FBrf# literature ref id
-    taxon_id: int               # 7227 for dmel / 9606 for hsa
-
-
-phenotype:
-  represented_as: node
-  input_label: phenotype
-  is_a: biological entity
-  properties:
-    phenotype_ontology_id: ontology term    
-    qualifier_ids: ontology term[]         # zero or more FBcv# and/or FBdv# to add information to the phenotype.
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
-
-
-phenotype to genotype:
-  represented_as: edge
-  input_label: genetically_informed_by
-  is_a: annotation
-  source: phenotype
-  target: genotype
-  properties:
-    miniref: str
-    fb_ref: str                     # FBrf#
-    pmid_ref: str
-    pmcid_ref: str
-    doi: str
-    # genotype_phenotype_id: genotype phenotype   # FB source of 'full' data record.
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
-
-phenotype to ontology:
-  represented_as: edge
-  input_label: characterized_by
-  is_a: annotation
-  source: phenotype
-  target: ontology term       # zero or more FBcv# and/or FBdv# to add information to the phenotype.
-  properties:
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
-
-    
-allele to phenotype:
-  represented_as: edge
-  input_label: involved_in
-  is_a: annotation
-  source: allele
-  target: phenotype
-  properties:
-    miniref: str
-    fb_ref: str                     # FBrf#
-    pmid_ref: str
-    pmcid_ref: str
-    doi: str
-    # genotype_phenotype_id: genotype phenotype   # FB source of 'full' data record.
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa 
-
 
 
 #genotype_symbols	genotype_FBids	phenotype_name	phenotype_id	qualifier_names	qualifier_ids	reference
