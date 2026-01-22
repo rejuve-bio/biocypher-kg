@@ -637,6 +637,19 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
+coexpression:
+  adapter:
+    module: biocypher_metta.adapters.hsa.coxpresdb_adapter
+    cls: CoxpresdbAdapter
+    args:
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/coxpresdb/dmel #may not be exact file path
+      entrez_to_ensemble_path: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
+      label: coexpressed_with
+      taxon_id: 7227
+  outdir: coxpressdb
+  nodes: False
+  edges: True
+
 pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter

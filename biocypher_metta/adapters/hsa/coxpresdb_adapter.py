@@ -69,9 +69,12 @@ class CoxpresdbAdapter(Adapter):
                         (co_entrez_id, score) = line.strip().split()
                         co_ensembl_id = entrez_ensembl_dict.get(co_entrez_id)
                         if co_ensembl_id:
-                            _id = entrez_id + '_' + co_entrez_id + '_' + self.label
-                            source = f"ENSEMBL:{ensembl_id}"
-                            target = f"ENSEMBL:{co_ensembl_id}"
+                            if self.taxon_id == 7227:
+                                source = f"FlyBase:{ensembl_id}"
+                                target = f"FlyBase:{co_ensembl_id}"
+                            else:
+                                source = f"ENSEMBL:{ensembl_id}"
+                                target = f"ENSEMBL:{co_ensembl_id}"
                             _props = {'taxon_id': f'{self.taxon_id}'}
                             if self.write_properties:
                                 _props['score'] = float(score)
