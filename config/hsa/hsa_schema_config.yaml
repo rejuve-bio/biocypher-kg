@@ -2205,8 +2205,6 @@ protein has_xref cellular_component:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-
-
 gene to phenotype association:
   description: >-
     An association between a gene and a phenotype (HPO term).
@@ -2216,7 +2214,7 @@ gene to phenotype association:
   inherit_properties: true
   represented_as: edge
   input_label: gene_phenotype
-  output_label: has_phenotype
+  output_label: involved_in #has_phenotype
   source: gene
   target: phenotype
   kgx_properties:
