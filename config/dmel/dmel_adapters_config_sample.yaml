@@ -631,6 +631,18 @@ gaf_cellular_component_gene_product_located_in:
   outdir: gaf
   nodes: False
   edges: True
+coexpression:
+  adapter:
+    module: biocypher_metta.adapters.hsa.coxpresdb_adapter
+    cls: CoxpresdbAdapter
+    args:
+      filepath: ./samples/dmel/coxpressdb
+      entrez_to_ensemble_path: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
+      label: coexpressed_with
+      taxon_id: 7227
+  outdir: coxpressdb
+  nodes: False
+  edges: True
 
 uniprotkb_sprot:
   adapter:

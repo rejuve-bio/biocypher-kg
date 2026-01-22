@@ -42,6 +42,7 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           uv run pytest test/test.py \
             --adapters-config=./config/hsa/hsa_adapters_config_sample.yaml \
+            --schema-config=./config/hsa/hsa_schema_config.yaml \
             --dbsnp-rsids=./aux_files/hsa/sample_dbsnp_rsids.pkl \
             --dbsnp-pos=./aux_files/hsa/sample_dbsnp_pos.pkl \
             -v -s
