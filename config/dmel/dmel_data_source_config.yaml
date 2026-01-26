@@ -21,8 +21,9 @@ flybase:
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz
-    # - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_05.tsv.gz  nao existe!!!!!!!!!!!!!!
+    # - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_05.tsv.gz  <---::: It doesn't exist anymore!!!!!!!!!!!!!!
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_genetic_interactions_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/go/gene_association.fb.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_group_data_fb_2025_05.tsv.gz    
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_groups_HGNC_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_rpkm_report_fb_2025_05.tsv.gz
@@ -36,9 +37,9 @@ flybase:
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/orthologs/dmel_paralogs_fb_2025_05.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
     
-goa:
-  name: GO Annotation File (GAF) from Flybase
-  url: https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/go/gene_association.fb.gz
+# goa:
+#   name: GO Annotation File (GAF) is gotten from Flybase
+#   url: https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/go/gene_association.fb.gz
 
 gencode:
   name: GENCODE v54

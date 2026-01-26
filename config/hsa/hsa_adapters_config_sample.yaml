@@ -121,7 +121,7 @@ reactome_reaction:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt   # there is no file like ReactomePathways.txt for reactions in the Reactome portal (www.reactome.org)
       pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
       label: reaction
       taxon_id: 9606

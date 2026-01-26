@@ -3,7 +3,7 @@ bgee_gene_expressed_in_anatomical_entity:
     module: biocypher_metta.adapters.bgee_adapter
     cls: BgeeAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
       taxon_id: 7227
   outdir: bgee
   nodes: False
@@ -14,11 +14,11 @@ rna_central_non_coding_rna:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
       rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       label: non_coding_rna
       type: non_coding_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: True
   edges: False
@@ -28,11 +28,11 @@ rna_central_non_coding_rna_biological_process:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
       rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: False
   edges: True  
@@ -42,11 +42,11 @@ rna_central_non_coding_rna_molecular_function:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
       rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: False
   edges: True
@@ -56,11 +56,11 @@ rna_central_non_coding_rna_cellular_component:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/rna_central/drosophila_melanogaster.BDGP6.46.bed.gz
       rfam_filepath: /mnt/hdd_2/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: False
   edges: True   
@@ -71,8 +71,8 @@ dmel_gene_group:
     cls: GeneGroupAdapter
     args:
       label: gene_group
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_group_data_fb_2025_03.tsv.gz
-      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_group_data_fb_2025_05.tsv.gz
+      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_05.tsv.gz
   outdir: flybase/gene_groups
   nodes: True
   edges: False
@@ -83,8 +83,8 @@ dmel_gene_to_gene_group:
     cls: GeneGroupAdapter
     args:
       label: grouped_into
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_group_data_fb_2025_03.tsv.gz
-      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_group_data_fb_2025_05.tsv.gz
+      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_05.tsv.gz
   outdir: flybase/gene_groups
   nodes: False
   edges: True
@@ -95,8 +95,8 @@ dmel_signaling_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: signaling_pathway_gene_group
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/signaling_pathway_group_data_fb_2025_03.tsv.gz
-      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/signaling_pathway_group_data_fb_2025_05.tsv.gz
+      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_05.tsv.gz
   outdir: flybase/pathway_gene_groups
   nodes: True
   edges: False
@@ -107,8 +107,8 @@ dmel_gene_to_signaling_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: signaling_pathway_grouped_into
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/signaling_pathway_group_data_fb_2025_03.tsv.gz
-      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/signaling_pathway_group_data_fb_2025_05.tsv.gz
+      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_05.tsv.gz
   outdir: flybase/pathway_gene_groups
   nodes: False
   edges: True
@@ -119,8 +119,8 @@ dmel_metabolic_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: metabolic_pathway_gene_group
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/metabolic_pathway_group_data_fb_2025_03.tsv.gz
-      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/metabolic_pathway_group_data_fb_2025_05.tsv.gz
+      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_05.tsv.gz
   outdir: flybase/pathway_gene_groups
   nodes: True
   edges: False
@@ -131,8 +131,8 @@ dmel_gene_to_metabolic_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: metabolic_pathway_grouped_into
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/metabolic_pathway_group_data_fb_2025_03.tsv.gz
-      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/metabolic_pathway_group_data_fb_2025_05.tsv.gz
+      dmel_groups_hgnc_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_groups_HGNC_fb_2025_05.tsv.gz
   outdir: flybase/pathway_gene_groups
   nodes: False
   edges: True
@@ -144,7 +144,7 @@ dmel_disease_model:
     cls: DiseaseModelAdapter
     args:
       label: dmel_disease_model
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/disease_model_annotations_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/disease_model_annotations_fb_2025_05.tsv.gz
   outdir: flybase/disease_model
   nodes: True
   edges: False
@@ -156,7 +156,7 @@ dmel_gene_to_disease_model:
     cls: DiseaseModelAdapter
     args:
        label: modelled_to_human_disease
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/disease_model_annotations_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/disease_model_annotations_fb_2025_05.tsv.gz
   outdir: flybase/disease_model
   nodes: False
   edges: True
@@ -167,7 +167,7 @@ dmel_gene_to_do_term:
     cls: DiseaseModelAdapter
     args:
        label: modelled_to_do_term
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/disease_model_annotations_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/disease_model_annotations_fb_2025_05.tsv.gz
   outdir: flybase/disease_model
   nodes: False
   edges: True
@@ -178,8 +178,8 @@ dmel_genotype:
     cls: GenotypePhenotypeAdapter
     args:
        label: genotype
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_03.tsv.gz
-       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_05.tsv.gz
+       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
   outdir: flybase/genotype_phenotype_set
   nodes: True
   edges: False
@@ -190,8 +190,8 @@ dmel_phenotype_set:
     cls: GenotypePhenotypeAdapter
     args:
       label: phenotype_set
-      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_03.tsv.gz
-      dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_03.tsv.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_05.tsv.gz
+      dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
   outdir: flybase/genotype_phenotype_set
   nodes: True
   edges: False
@@ -202,8 +202,8 @@ dmel_allele_to_phenotype_set:
     cls: GenotypePhenotypeAdapter
     args:
        label: involved_in
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_03.tsv.gz
-       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_05.tsv.gz
+       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -216,8 +216,8 @@ dmel_phenotype_set_to_genotype:
     cls: GenotypePhenotypeAdapter
     args:
        label: genetically_informed_by
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_03.tsv.gz
-       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_05.tsv.gz
+       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -229,8 +229,8 @@ dmel_phenotype_set_to_ontology:
     cls: GenotypePhenotypeAdapter
     args:
        label: characterized_by
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_03.tsv.gz
-       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_05.tsv.gz
+       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -241,8 +241,8 @@ dmel_phenotype_set_to_cellular_component:
     cls: GenotypePhenotypeAdapter
     args:
        label: inheres_in
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_03.tsv.gz
-       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/genotype_phenotype_data_fb_2025_05.tsv.gz
+       dmel_fbrf_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -256,9 +256,9 @@ dmel_ptp_physical_interaction:
     args:
       #  dmel_ensembl_to_uniprot_map: ./aux_files/dmel_string_ensembl_uniprot_map.pkl
        filepaths: [
-          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/physical_interactions_mitab_fb_2025_03.tsv.gz,
-          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
-          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_uniprot_fb_2025_03.tsv.gz
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/physical_interactions_mitab_fb_2025_05.tsv.gz,
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz,
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_uniprot_fb_2025_05.tsv.gz
        ]
        label: ptp_physically_interacts_with
   outdir: flybase/mi_interactions
@@ -273,9 +273,9 @@ dmel_ptt_physical_interaction:
     args:
       #  dmel_ensembl_to_uniprot_map: ./aux_files/dmel_string_ensembl_uniprot_map.pkl
        filepaths: [
-          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/physical_interactions_mitab_fb_2025_03.tsv.gz,
-          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
-          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_uniprot_fb_2025_03.tsv.gz
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/physical_interactions_mitab_fb_2025_05.tsv.gz,
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz,
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_uniprot_fb_2025_05.tsv.gz
        ]
        label: ptt_physically_interacts_with  
   outdir: flybase/mi_interactions
@@ -288,7 +288,7 @@ orthology_adapter:
         module: biocypher_metta.adapters.dmel.orthology_adapter
         cls: OrthologyAssociationAdapter
         args:
-          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_human_orthologs_disease_fb_2025_03.tsv.gz
+          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_human_orthologs_disease_fb_2025_05.tsv.gz
           hsa_hgnc_to_ensemble_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
     outdir: orthologs
     nodes: False
@@ -300,7 +300,7 @@ paralogy_adapter:
         module: biocypher_metta.adapters.dmel.paralogy_adapter
         cls: ParalogyAssociationAdapter
         args:
-          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_paralogs_fb_2025_03.tsv.gz
+          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_paralogs_fb_2025_05.tsv.gz
     outdir: paralogs
     nodes: False
     edges: True
@@ -311,7 +311,7 @@ allele:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbal_to_fbgn_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbal_to_fbgn_fb_2025_05.tsv.gz
        label: allele
   outdir: allele
   nodes: True
@@ -323,7 +323,7 @@ dmel_allele_to_gene:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
-       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbal_to_fbgn_fb_2025_03.tsv.gz
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbal_to_fbgn_fb_2025_05.tsv.gz
        label: variant_of
   outdir: allele
   nodes: False
@@ -335,7 +335,7 @@ dmel_gene_genetic_adapter:
         module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter
         cls: GeneGeneticAssociationAdapter
         args:
-          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_genetic_interactions_fb_2025_03.tsv.gz
+          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_genetic_interactions_fb_2025_05.tsv.gz
     outdir: flybase/gene_genetic
     nodes: False
     edges: True
@@ -347,8 +347,8 @@ dmel_allele_to_allele_genetic_interaction_adapter:
         cls: AlleleGeneticInteractionAdapter
         args:
           label: allele_to_allele_genetic_interaction
-          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/allele_genetic_interactions_fb_2025_03.tsv.gz
-          dmel_fbal_to_fbgn_file: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbal_to_fbgn_fb_2025_03.tsv.gz
+          dmel_data_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/allele_genetic_interactions_fb_2025_05.tsv.gz
+          dmel_fbal_to_fbgn_file: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbal_to_fbgn_fb_2025_05.tsv.gz
     outdir: flybase/allele_genetic
     nodes: False
     edges: True
@@ -359,7 +359,7 @@ dmel_expressed_in:
     module: biocypher_metta.adapters.dmel.expressed_in_adapter
     cls: ExpressedInAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz
+      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_05.tsv.gz
   outdir: expressed_in
   nodes: False
   edges: True
@@ -369,7 +369,7 @@ dmel_gene_to_sequence_ontology:
     module: biocypher_metta.adapters.dmel.gene_so_adapter
     cls: GeneToSequenceOntologyAdapter
     args:
-       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_gene_sequence_ontology_annotations_fb_2025_03.tsv.gz
+       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_gene_sequence_ontology_annotations_fb_2025_05.tsv.gz
   outdir: so_classified_as
   nodes: False
   edges: True
@@ -381,9 +381,9 @@ dmel_gene_to_sequence_ontology:
 #     cls: RnaseqLibraryAdapter
 #     args:
 #       filepaths: [
-#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_03.tsv.gz,
+#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_05.tsv.gz,
+#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_05.tsv.gz,
+#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_05.tsv.gz,
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_gene_output.tsv.gz,
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
@@ -401,9 +401,9 @@ dmel_gene_to_sequence_ontology:
 #     cls: ExpressionValueAdapter
 #     args:
 #       data_filepaths: [
-#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_03.tsv.gz,
+#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_05.tsv.gz,
+#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_05.tsv.gz,
+#                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_05.tsv.gz,
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_gene_output.tsv.gz,
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
@@ -411,7 +411,7 @@ dmel_gene_to_sequence_ontology:
 #                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/afca/afca_afca_annotation_group_by_mean.tsv.gz,
 #       ]      
 #       aux_filepaths: [
-#                         /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
+#                         /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz,
 #       ]      
 #   outdir: rnaseq
 #   nodes: False
@@ -509,7 +509,7 @@ gencode_gene:
     args:
       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       gene_alias_file_path: ./aux_files/dmel/Drosophila_melanogaster.gene_info.gz
-      # summaries_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/best_gene_summary_fb_2025_03.tsv.gz
+      # summaries_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/best_gene_summary_fb_2025_05.tsv.gz
       label: gene
       taxon_id: 7227
   outdir: gencode/gene
