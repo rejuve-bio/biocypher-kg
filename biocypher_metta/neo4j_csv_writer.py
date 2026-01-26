@@ -105,7 +105,10 @@ class Neo4jCSVWriter(BaseWriter):
             value = str(value).translate(self.translation_table)
         elif value_type is str:
             value = value.translate(self.translation_table)
-
+            # Strip CURIE prefixes from property values
+            if ':' in value and not value.startswith('http'):
+                _, local_part = value.split(':', 1)
+                value = local_part.strip()
         
         return value
     def normalize_text(self, label, replace_char="_", lowercase=True):
@@ -131,8 +134,8 @@ class Neo4jCSVWriter(BaseWriter):
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                clean_local = local_id.strip().replace(' ', '_').upper()
-                return clean_local
+                # For non-ontology terms, return the local ID part without prefix
+                return local_id.strip().replace(' ', '_').upper()
 
         return prev_id.strip().replace(' ', '_').upper()
 
