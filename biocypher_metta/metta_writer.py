@@ -137,16 +137,22 @@ class MeTTaWriter(BaseWriter):
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
 
-    def preprocess_id(self, prev_id, preserve_prefix=False):
+    def preprocess_id(self, prev_id, label=None):
+        """
+        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        """
         prev_id = str(prev_id)
+        
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            if preserve_prefix:
+            
+            if label and self._is_ontology_label(label):
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                clean_local = local_id.strip().replace(' ', '_').upper()
-                return clean_local
+                # For non-ontology terms, just return the local ID part without prefix
+                return local_id.strip().replace(' ', '_').upper()
+        
         return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
@@ -192,8 +198,8 @@ class MeTTaWriter(BaseWriter):
         # Determine if this is an ontology term label
         label_to_check = label.split(".")[1] if "." in label else label
         is_ontology = self._is_ontology_label(label_to_check)
-        # Preserve prefix only for ontology terms
-        id = self.preprocess_id(str(id), preserve_prefix=is_ontology)
+        # Pass label for ontology-aware processing
+        id = self.preprocess_id(str(id), label=label_to_check if is_ontology else None)
         if "." in label:
             label = label.split(".")[1]
         def_out = f"({self.normalize_text(label)} {id})"
@@ -233,15 +239,14 @@ class MeTTaWriter(BaseWriter):
 
         if isinstance(source_id, tuple):
             source_type = source_id[0]
-            preserve_source_prefix = self._is_ontology_label(source_type)
-            source_id_processed = self.preprocess_id(str(source_id[1]), preserve_prefix=preserve_source_prefix)
+            # Pass label for ontology-aware processing
+            source_id_processed = self.preprocess_id(str(source_id[1]), label=source_type)
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
                     if source_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
                 else:
-                    # if source_type != valid_source_types:
                     if source_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
@@ -253,20 +258,19 @@ class MeTTaWriter(BaseWriter):
                     source_type = source_type_info
             else:
                 source_type = "unknown"
-            preserve_source_prefix = self._is_ontology_label(source_type)
-            source_id_processed = self.preprocess_id(str(source_id), preserve_prefix=preserve_source_prefix)
+            # Pass label for ontology-aware processing
+            source_id_processed = self.preprocess_id(str(source_id), label=source_type)
 
         if isinstance(target_id, tuple):
             target_type = target_id[0]
-            preserve_target_prefix = self._is_ontology_label(target_type)
-            target_id_processed = self.preprocess_id(str(target_id[1]), preserve_prefix=preserve_target_prefix)
+            # Pass label for ontology-aware processing
+            target_id_processed = self.preprocess_id(str(target_id[1]), label=target_type)
             if label in self.edge_node_types:
                 valid_target_types = self.edge_node_types[label]["target"]
                 if isinstance(valid_target_types, list):
                     if target_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
                 else:
-                    # if target_type != valid_target_types:
                     if target_type not in self.type_hierarchy:
                         raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
@@ -278,8 +282,8 @@ class MeTTaWriter(BaseWriter):
                     target_type = target_type_info
             else:
                 target_type = "unknown"
-            preserve_target_prefix = self._is_ontology_label(target_type)
-            target_id_processed = self.preprocess_id(str(target_id), preserve_prefix=preserve_target_prefix)
+            # Pass label for ontology-aware processing
+            target_id_processed = self.preprocess_id(str(target_id), label=target_type)
 
         output_label = None
         if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
@@ -351,6 +355,11 @@ class MeTTaWriter(BaseWriter):
             (raw.startswith("www.") and "." in raw[4:])
         ):
             return raw
+
+        # Strip CURIE prefixes from property values
+        if ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
+            _, local_part = raw.split(':', 1)
+            raw = local_part.strip()
 
         prop = raw.replace(" ", "_").strip("_")
         prop = prop.replace("->", "-")
