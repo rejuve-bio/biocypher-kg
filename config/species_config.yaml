@@ -3,47 +3,15 @@
 # Note: output_dir is NOT included here - users specify it via --output-dir flag
 
 
-hsa:
+dmel_net_act:
   sample:
-    adapters_config: config/hsa/hsa_adapters_config_sample.yaml
-    schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
-    dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl
-  full:
-    adapters_config: config/hsa/hsa_adapters_config.yaml
-    schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
-    dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl
-
-dmel:
-  sample:
-    adapters_config: config/dmel/dmel_adapters_config_sample.yaml
+    adapters_config: config/dmel/net_act_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
     dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
     dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl
   full:
-    adapters_config: config/dmel/dmel_adapters_config.yaml
+    adapters_config: config/dmel/net_act_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_rsids: aux_files/hsa/dbsnp_rsids.pkl #dbsnp_risids.pkl and dbsnp_pos.pkl not found under aux_files/dmel
-    dbsnp_pos: aux_files/hsa/dbsnp_pos.pkl
+    dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
+    dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl
 
-cel:
-  full:
-    adapters_config: config/cel/cel_adapters_config.yaml
-    schema_config: config/cel/cel_schema_config.yaml
-    dbsnp_rsids: aux_files/dbsnp_rsids.pkl
-    dbsnp_pos: aux_files/dbsnp_pos.pkl
-
-mmo:
-  full:
-    adapters_config: config/mmo/mmo_adapters_config.yaml
-    schema_config: config/mmo/mmo_schema_config.yaml
-    dbsnp_rsids: aux_files/dbsnp_rsids.pkl
-    dbsnp_pos: aux_files/dbsnp_pos.pkl
-
-rno:
-  full:
-    adapters_config: config/rno/rno_adapters_config.yaml
-    schema_config: config/rno/rno_schema_config.yaml
-    dbsnp_rsids: aux_files/dbsnp_rsids.pkl
-    dbsnp_pos: aux_files/dbsnp_pos.pkl

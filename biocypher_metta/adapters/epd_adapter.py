@@ -23,9 +23,12 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr2L 25167 25227 Ir21a_1 900 - 25167 25178
 # chr2L 59231 59291 Cda5_1 900 - 59231 59242
 
+# CEL data:
+# 
 
 # Mouse data:
 # https://epd.expasy.org/ftp/epdnew/M_musculus/ 
+
 
 # Rat data:
 # https://epd.expasy.org/ftp/epdnew/R_norvegicus/

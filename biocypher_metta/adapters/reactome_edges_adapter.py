@@ -76,7 +76,6 @@ class ReactomeEdgesAdapter(Adapter):
             'R-MMU': 10090,   # Mus musculus (mmu)
             'R-RNO': 10116,   # Rattus norvegicus
         }
-
         if self.taxon_id == 7227:
             connection = self.connect_to_flybase()
 
@@ -89,18 +88,18 @@ class ReactomeEdgesAdapter(Adapter):
             for line in input_file:
                 data = line.strip().split('\t')
 
-                if self.label == 'genes_pathways' or self.label == 'gene_ogep_reaction':
+                if self.label == 'genes_pathways' or self.label == 'gene_ogep_reaction':        # ogep = or gene product
                     entity_id, pathway_id = data[0], data[1]
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
-                    pathway_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
+                    an_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
                     if organism_pathway_prefix in organism_taxon_map:
                         taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()
                         if self.label == 'genes_pathways':
-                            props['pathway_url'] = data[2].replace("PathwayBrowser/#", "content/detail")
+                            props['pathway_url'] = an_url
                         else:
-                            props['reaction_url'] = data[2].replace("PathwayBrowser/#", "content/detail")                        
+                            props['reaction_url'] = an_url                        
                         props['evidence'] = data[4]
                         props['taxon_id'] = f'{taxon}'
 
@@ -109,8 +108,6 @@ class ReactomeEdgesAdapter(Adapter):
                         # All organisms in organism_taxon_map
                         # NOT FINISHED! DO NOT USE THIS for now!...
                         if self.taxon_id is None:
-                            # source_type = self._get_entity_type(entity_id)
-                            # if prefix == 'R-HSA':
                             entity_id = entity_id.split('.')[0]
                             if self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
                                 if entity_id.startswith('ENSP'):
@@ -128,8 +125,6 @@ class ReactomeEdgesAdapter(Adapter):
 
                         # Drosophila only
                         elif self.taxon_id == 7227 and (organism_pathway_prefix == 'R-DME' or organism_pathway_prefix == 'R-NUL'):
-                            # print(f'path: {organism_pathway_prefix} // {pathway_id}')
-                            # source_type = self._get_entity_type(entity_id)
                             if entity_id.lower().startswith('fbpp'):
                                 uniprot_id = self.ensembl_uniprot_map.get(entity_id)
                                 if uniprot_id is None:
@@ -194,8 +189,10 @@ class ReactomeEdgesAdapter(Adapter):
             return "gene"
         elif entity_id.startswith(("FBpp", "ENSP")):
             return "protein"
-        else:
+        elif entity_id.startswith(("FBtr", "ENST")):
             return "transcript"
+        else:
+            return None
 
     def connect_to_flybase(self):
         """Establish a connection to the FlyBase PostgreSQL database."""

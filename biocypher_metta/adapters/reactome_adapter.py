@@ -94,22 +94,7 @@ class ReactomeAdapter(Adapter):
                 self.pubmed_map[pathway_id] = pubmed_id
 
 
-    def _get_reaction_nodes(self, data, organism_taxon_map, base_props):
-        # organism_taxon_map = {
-        #     'R-DME': 7227,  # Drosophila melanogaster (dmel)
-        #     'R-HSA': 9606,  # Homo sapiens (hsa)
-        #     # Add more organisms here as needed
-        #     'R-MMU': 10090,   # Mus musculus (mmu)
-        #     'R-RNO': 10116,   # Rattus norvegicus
-        # }   
-        # # nodes = set()   
-        # with open(self.filepath) as input_file:
-        #     base_props = {}
-        #     if self.write_properties and self.add_provenance:
-        #         base_props['source'] = self.source
-        #         base_props['source_url'] = self.source_url
-        #     for line in input_file:
-        #         data = line.strip().split('\t')                
+    def _get_reaction_nodes(self, data, organism_taxon_map, base_props):               
         reaction_id = data[1]
         organism_pathway_prefix = reaction_id[:5]  # e.g., 'R-DME', 'R-HSA'
         
