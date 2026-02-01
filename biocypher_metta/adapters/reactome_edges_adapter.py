@@ -12,6 +12,17 @@ from biocypher_metta.adapters import Adapter
 # Evidence Code
 # Species
 
+# Source file for gene_or_gene_product_reaction:
+# https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
+# Excerpt:
+# 2RSSE.1b.1	R-CEL-8981637	https://reactome.org/PathwayBrowser/#/R-CEL-8981637	RHOA GAPs stimulate RHOA GTPase activity	IEA	Caenorhabditis elegans
+# 2RSSE.1b.1	R-CEL-9013144	https://reactome.org/PathwayBrowser/#/R-CEL-9013144	RAC1 GAPs stimulate RAC1 GTPase activity	IEA	Caenorhabditis elegans
+# ENSBTAG00000007186.6	R-BTA-9693125	https://reactome.org/PathwayBrowser/#/R-BTA-9693125	RHOF binds effectors at the plasma membrane	IEA	Bos taurus
+# ENSBTAG00000007186.6	R-BTA-9693282	https://reactome.org/PathwayBrowser/#/R-BTA-9693282	RHOF GAPs stimulate RHOF GTPase activity	IEA	Bos taurus
+# ENSBTAG00000007189	R-BTA-110316	https://reactome.org/PathwayBrowser/#/R-BTA-110316	POLH binds monoUb:K164-PCNA at damaged TT-CPD-DNA template	IEA	Bos taurus
+
+# Source file for genes_pathways:
+# https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
 # Example file:
 # ENSDART00000193986	R-DRE-5653656	https://reactome.org/PathwayBrowser/#/R-DRE-5653656	Vesicle-mediated transport	IEA	Danio rerio
 # ENSG00000000419	R-HSA-162699	https://reactome.org/PathwayBrowser/#/R-HSA-162699	Synthesis of dolichyl-phosphate mannose	TAS	Homo sapiens
@@ -29,7 +40,7 @@ from biocypher_metta.adapters import Adapter
 
 class ReactomeEdgesAdapter(Adapter):
 
-    ALLOWED_LABELS = ['genes_pathways', 'gene_ogep_reaction',
+    ALLOWED_LABELS = ['genes_pathways', 'gene_or_gene_product_reaction',
                       'parent_pathway_of', 'child_pathway_of']
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
@@ -51,6 +62,8 @@ class ReactomeEdgesAdapter(Adapter):
         self.source_url = "https://reactome.org"
         self.fbpp_to_uniprot = {}               # dict to map FBpp to UniProt ids and to avoid remote connections during runtime
         self.taxon_id = taxon_id
+        if self.taxon_id == 7227:
+            self.connection = self.connect_to_flybase()
 
 
         # Load the Ensembl to UniProt mapping if provided
@@ -76,20 +89,18 @@ class ReactomeEdgesAdapter(Adapter):
             'R-MMU': 10090,   # Mus musculus (mmu)
             'R-RNO': 10116,   # Rattus norvegicus
         }
-        if self.taxon_id == 7227:
-            connection = self.connect_to_flybase()
-
         with open(self.filepath) as input_file:
             base_props = {}
             if self.write_properties and self.add_provenance:
                 base_props['source'] = self.source
                 base_props['source_url'] = self.source_url
             not_mapped_no_processing = 0
+            total_in_species_records = 0
             for line in input_file:
                 data = line.strip().split('\t')
 
-                if self.label == 'genes_pathways' or self.label == 'gene_ogep_reaction':        # ogep = or gene product
-                    entity_id, pathway_id = data[0], data[1]
+                if self.label == 'genes_pathways' or self.label == 'gene_or_gene_product_reaction':        # ogep = or gene product
+                    entity_id, pathway_id = data[0].strip(), data[1].strip()
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
                     an_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
@@ -103,8 +114,12 @@ class ReactomeEdgesAdapter(Adapter):
                         props['evidence'] = data[4]
                         props['taxon_id'] = f'{taxon}'
 
+                        total_in_species_records += 1
                         source_type = self._get_entity_type(entity_id)
-
+                        if source_type is None:
+                            print(f'Invalid type for entity {entity_id}.\nRecord: {data}')
+                            not_mapped_no_processing += 1
+                            continue                        
                         # All organisms in organism_taxon_map
                         # NOT FINISHED! DO NOT USE THIS for now!...
                         if self.taxon_id is None:
@@ -116,6 +131,7 @@ class ReactomeEdgesAdapter(Adapter):
                                     curie_entity_id = f'{entity_id}'
                             else:
                                     # print(f"No UniProt mapping for {entity_id}")
+                                    not_mapped_no_processing += 1
                                     continue
                             source = (source_type, curie_entity_id)
                             # target = pathway_id
@@ -129,7 +145,8 @@ class ReactomeEdgesAdapter(Adapter):
                                 uniprot_id = self.ensembl_uniprot_map.get(entity_id)
                                 if uniprot_id is None:
                                     # print(f'{entity_id} not found in Ensembl-to-UniProt map.')
-                                    uniprot_id = self.get_uniprot_id_from_FB(connection, entity_id)
+                                    
+                                    uniprot_id = self.get_uniprot_id_from_FB(self.connection, entity_id)
                                     if uniprot_id is None:
                                         print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
                                         not_mapped_no_processing += 1
@@ -154,10 +171,11 @@ class ReactomeEdgesAdapter(Adapter):
                             else:
                                 # Skip protein entries if no UniProt mapping is available
                                 if self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
-                                    entity_id = self.ensembl_uniprot_map[entity_id]
+                                    entity_id = self.ensembl_uniprot_map.get(entity_id)
                                     curie_entity_id = f"{entity_id}"                                    
                                 else:
-                                    # print(f"No UniProt mapping for {entity_id} of H. sapiens")
+                                    print(f"No UniProt mapping for {entity_id} of H. sapiens.\nRecord: {data}")
+                                    not_mapped_no_processing += 1
                                     continue
 
                             source = (source_type, curie_entity_id)
@@ -181,8 +199,9 @@ class ReactomeEdgesAdapter(Adapter):
                         else:  # 'child_pathway_of'
                             source, target = child, parent
                         yield source, target, self.label, props
-            print(f'Entities not mapped to Uniprot IDs: {not_mapped_no_processing}')
+            print(f'Entities not mapped to Uniprot IDs: {not_mapped_no_processing} out of {total_in_species_records}')
 
+    # @todo, I (Saulo) need to change this to make easier to new species.
     def _get_entity_type(self, entity_id):
         """Return the entity type based on its identifier prefix."""
         if entity_id.startswith(("FBgn", "ENSG")):
@@ -203,7 +222,7 @@ class ReactomeEdgesAdapter(Adapter):
                 user="flybase",
                 password="flybase" 
             )
-            print("Connection to FlyBase established successfully!")
+            # print("Connection to FlyBase established successfully!")
             return conn
         except Exception as e:
             print(f"Error connecting to FlyBase: {e}")

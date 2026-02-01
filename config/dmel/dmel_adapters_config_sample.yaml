@@ -689,21 +689,21 @@ genes_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: genes_pathways
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-gene_ogep_reaction:
+gene_or_gene_product_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
       ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
-      label: gene_ogep_reaction
+      label: gene_or_gene_product_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -715,7 +715,7 @@ parent_pathway_of:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ReactomePathwaysRelation.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: parent_pathway_of
       taxon_id: 7227
   outdir: reactome
@@ -728,7 +728,7 @@ child_pathway_of:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ReactomePathwaysRelation.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: child_pathway_of
       taxon_id: 7227
   outdir: reactome
@@ -742,7 +742,7 @@ string:
     cls: StringPPIAdapter
     args:
       filepath: ./samples/dmel/string_7227.protein.links.v12.0.txt.gz
-      ensembl_to_uniprot_map: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
+      ensembl_to_uniprot_map: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: interacts_with
       taxon_id: 7227
   outdir: string
@@ -1053,7 +1053,7 @@ chebi_ontology:
       dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
-  outdir: chemical_substance
+  outdir: small_molecule
   nodes: True
   edges: False
 
@@ -1067,6 +1067,6 @@ chebi_chebi_subclass_of:
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-  outdir: chemical_substance
+  outdir: small_molecule
   nodes: False
   edges: True

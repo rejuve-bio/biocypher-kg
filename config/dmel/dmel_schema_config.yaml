@@ -752,11 +752,11 @@ disease:
   kgx_properties:
     category: "biolink:Disease"
 
-chemical substance:
+small molecule:
   is_a: ontology term
   represented_as: node
-  input_label: chemical_substance
-  # output_label: chemical_substance
+  input_label: small_molecule
+  # output_label: small_molecule
   mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
@@ -1577,7 +1577,7 @@ gene to reaction association:
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
-  input_label: gene_ogep_reaction
+  input_label: gene_or_gene_product_reaction
   output_label: involved_in 
   source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
   target: reaction
@@ -2356,8 +2356,8 @@ chebi subclass of:
   input_label: chebi_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: chemical substance
-  target: chemical substance
+  source: small molecule
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:ChemicalEntity"
     object_category: "biolink:ChemicalEntity"
