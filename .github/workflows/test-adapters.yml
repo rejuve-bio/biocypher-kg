@@ -196,7 +196,7 @@ jobs:
           elif [ -n "$CHANGED_WRITERS" ]; then
             if [[ $CHANGED_WRITERS == *"$CURRENT_WRITER"* ]] || [ "$CHANGED_WRITERS" == "$ALL_WRITERS" ]; then
               echo "Running all adapters with changed writer: $CURRENT_WRITER"
-              uv run python create_knowledge_graph.py --output-dir output --adapters-config config/hsa/hsa_hsa_adapters_config_sample.yaml --schema-config config/hsa/hsa_schema_config.yaml --dbsnp-rsids aux_files/hsa/ensembl_id_to_hgnc_symbol.pkl --dbsnp-pos aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl --writer-type $CURRENT_WRITER
+              uv run python create_knowledge_graph.py --output-dir output --adapters-config config/hsa/hsa_adapters_config_sample.yaml --schema-config config/hsa/hsa_schema_config.yaml --dbsnp-rsids aux_files/hsa/ensembl_id_to_hgnc_symbol.pkl --dbsnp-pos aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl --writer-type $CURRENT_WRITER
             else
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"

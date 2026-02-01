@@ -142,14 +142,14 @@ genes_pathways:
   nodes: False
   edges: True
 
-gene_ogep_reaction:
+gene_or_gene_product_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
       ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
-      label: gene_ogep_reaction
+      label: gene_or_gene_product_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
