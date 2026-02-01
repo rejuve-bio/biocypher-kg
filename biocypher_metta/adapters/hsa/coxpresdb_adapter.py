@@ -24,6 +24,8 @@ import os
 # Drosophila melanogaster gene info from NCBI: https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
 # every gene has entrez gene id in gene_info file, every gene has ensembl ID in the dbXrefs column
 
+# CEL data
+
 # Mouse data:
 
 
@@ -55,7 +57,8 @@ class CoxpresdbAdapter(Adapter):
         # every gene has ensembl id in gencode file, every gene has hgnc id if available.
         # every gene has entrez gene id in gene_info file, every gene has ensembl id or hgcn id if available
 
-        gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f))]
+        # gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f))]
+        gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f)) and f.isdigit()]
 
         with open(self.entrez_to_ensemble_dict_path, 'rb') as f:
             entrez_ensembl_dict = pickle.load(f)
