@@ -1064,11 +1064,11 @@ gene to pathway association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+
 gene to reaction association:
   description: >-
-    An interaction between a gene or a gene product (gogp) and a molecular activity.
+    An interaction between a gene or a gene product (gogp) and a reaction (Reactome).
   is_a: annotation
-  mixins: [biolink:GeneOrGeneProductOrGeneFamilyToBiologicalProcessOrActivityAssociation]
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
@@ -1078,6 +1078,43 @@ gene to reaction association:
   target: reaction
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+small molecule to reaction association:
+  description: >-
+    An interaction between a small molecule (ChEBI) and a reaction (Reactome).
+  is_a: annotation
+  mixins: [biolink:MolecularActivityToPathwayAssociation]  # ???  provisory
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: small_molecule_to_reaction
+  output_label: participates_in 
+  source: small molecule
+  target: reaction
+  kgx_properties:
+    subject_category: "biolink:SmallMolecule"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+small molecule to pathway association:
+  description: >-
+    An interaction between a small molecule (ChEBI) and a pathway (Reactome).
+  is_a: annotation
+  mixins: [biolink:MolecularActivityToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: small_molecule_to_pathway
+  output_label: participates_in 
+  source: small molecule
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:SmallMolecule"
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
