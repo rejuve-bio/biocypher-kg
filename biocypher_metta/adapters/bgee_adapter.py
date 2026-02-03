@@ -71,7 +71,7 @@ class BgeeAdapter(Adapter):
                                 "score": score,
                                 "p_value": float(data[BgeeAdapter.FIELD_INDEX['fdr']]),
                                 # "anatomical_entity": data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].replace(':', '_').upper(),      # should be removed because of the link.
-                                # "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
+                                "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
                                 "taxon_id": f'{self.taxon_id}',
                             }
 

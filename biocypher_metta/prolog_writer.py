@@ -42,6 +42,8 @@ class PrologWriter(BaseWriter):
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
+        if not prev_id:
+            return str(prev_id)
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
             prefix = prefix.upper()
