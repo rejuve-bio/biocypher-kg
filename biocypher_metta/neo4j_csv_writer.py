@@ -88,12 +88,22 @@ class Neo4jCSVWriter(BaseWriter):
                 
                     output_label = v.get("output_label", label)
 
-                    if '.' not in k:
+                    if label not in self.edge_node_types:
                         self.edge_node_types[label] = {
-                            "source": source_type_normalized, 
-                            "target": target_type_normalized,
+                            "source": set(source_type_normalized) if isinstance(source_type_normalized, list) else {source_type_normalized}, 
+                            "target": set(target_type_normalized) if isinstance(target_type_normalized, list) else {target_type_normalized},
                             "output_label": output_label
                         }
+                    else:
+                        if isinstance(source_type_normalized, list):
+                            self.edge_node_types[label]["source"].update(source_type_normalized)
+                        else:
+                            self.edge_node_types[label]["source"].add(source_type_normalized)
+                        
+                        if isinstance(target_type_normalized, list):
+                            self.edge_node_types[label]["target"].update(target_type_normalized)
+                        else:
+                            self.edge_node_types[label]["target"].add(target_type_normalized)
 
 
     def preprocess_value(self, value, key=None):
@@ -259,15 +269,13 @@ class Neo4jCSVWriter(BaseWriter):
                     source_id = source_id[1]
                 else:
                     source_type_info = edge_info.get("source")
-                    source_type = source_type_info[0] if isinstance(source_type_info, list) else source_type_info
+                    # Use the first one as default if multiple allowed
+                    source_type = list(source_type_info)[0] if source_type_info else None
 
-                valid_source_types = edge_info.get("source")
+                valid_source_types = edge_info.get("source", set())
                 allowed_source_types = set()
-                if isinstance(valid_source_types, list):
-                    for vt in valid_source_types:
-                        allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
-                else:
-                    allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+                for vt in valid_source_types:
+                    allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
 
                 if source_type not in allowed_source_types:
                     raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
@@ -277,15 +285,13 @@ class Neo4jCSVWriter(BaseWriter):
                     target_id = target_id[1]
                 else:
                     target_type_info = edge_info.get("target")
-                    target_type = target_type_info[0] if isinstance(target_type_info, list) else target_type_info
+                    # Use the first one as default if multiple allowed
+                    target_type = list(target_type_info)[0] if target_type_info else None
 
-                valid_target_types = edge_info.get("target")
+                valid_target_types = edge_info.get("target", set())
                 allowed_target_types = set()
-                if isinstance(valid_target_types, list):
-                    for vt in valid_target_types:
-                        allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
-                else:
-                    allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+                for vt in valid_target_types:
+                    allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
 
                 if target_type not in allowed_target_types:
                     raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")

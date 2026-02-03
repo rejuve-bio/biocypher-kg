@@ -70,14 +70,19 @@ class KGXWriter(BaseWriter):
                     output_label = v.get("output_label", label)
 
                     # Store the full list of source/target types
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type,
-                        "target": target_type,
-                        "output_label": output_label.lower()
-                    }
+                    label_lower = label.lower()
+                    if label_lower not in self.edge_node_types:
+                        self.edge_node_types[label_lower] = {
+                            "source": set(source_type),
+                            "target": set(target_type),
+                            "output_label": output_label.lower()
+                        }
+                    else:
+                        self.edge_node_types[label_lower]["source"].update(source_type)
+                        self.edge_node_types[label_lower]["target"].update(target_type)
 
                     # Keep full edge config for KGX properties
-                    self.edge_configs[label.lower()] = v
+                    self.edge_configs[label_lower] = v
 
     def create_node_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -420,10 +425,21 @@ class KGXWriter(BaseWriter):
 
                 source_types = edge_info.get("source", [])
                 target_types = edge_info.get("target", [])
-                if not isinstance(source_types, list):
+                
+                # Convert sets or single values to list for iteration
+                if isinstance(source_types, (set, list)):
+                    source_types = list(source_types)
+                elif source_types:
                     source_types = [source_types]
-                if not isinstance(target_types, list):
+                else:
+                    source_types = []
+                    
+                if isinstance(target_types, (set, list)):
+                    target_types = list(target_types)
+                elif target_types:
                     target_types = [target_types]
+                else:
+                    target_types = []
 
                 edge_label = edge_info.get("output_label", normalized_label)
                 kgx_props = edge_config.get("kgx_properties", {})

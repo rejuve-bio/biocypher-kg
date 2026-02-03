@@ -23,7 +23,6 @@ class NetworkXWriter(BaseWriter):
 
         for k, v in schema.items():
             if v["represented_as"] == "edge":
-                edge_type = self.convert_input_labels(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
 
@@ -36,12 +35,12 @@ class NetworkXWriter(BaseWriter):
                     if isinstance(source_type, list):
                         processed_source = [self.convert_input_labels(st).lower() for st in source_type]
                     else:
-                        processed_source = self.convert_input_labels(source_type).lower()
+                        processed_source = [self.convert_input_labels(source_type).lower()]
                     
                     if isinstance(target_type, list):
                         processed_target = [self.convert_input_labels(tt).lower() for tt in target_type]
                     else:
-                        processed_target = self.convert_input_labels(target_type).lower()
+                        processed_target = [self.convert_input_labels(target_type).lower()]
                     
                     output_label = v.get("output_label", label)
                     if isinstance(output_label, list):
@@ -49,11 +48,16 @@ class NetworkXWriter(BaseWriter):
                     else:
                         processed_output_label = self.convert_input_labels(output_label).lower() if output_label else None
 
-                    self.edge_node_types[label.lower()] = {
-                        "source": processed_source,
-                        "target": processed_target,
-                        "output_label": processed_output_label
-                    }
+                    label_lower = label.lower()
+                    if label_lower not in self.edge_node_types:
+                        self.edge_node_types[label_lower] = {
+                            "source": set(processed_source),
+                            "target": set(processed_target),
+                            "output_label": processed_output_label
+                        }
+                    else:
+                        self.edge_node_types[label_lower]["source"].update(processed_source)
+                        self.edge_node_types[label_lower]["target"].update(processed_target)
 
     def convert_input_labels(self, label):
         if isinstance(label, list):
@@ -185,11 +189,8 @@ class NetworkXWriter(BaseWriter):
                 # Validate source
                 valid_source_types = edge_info.get("source")
                 allowed_source_types = set()
-                if isinstance(valid_source_types, list):
-                    for vt in valid_source_types:
-                        allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
-                else:
-                    allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+                for vt in valid_source_types:
+                    allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
                 
                 if source_type not in allowed_source_types:
                     raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
@@ -197,11 +198,8 @@ class NetworkXWriter(BaseWriter):
                 # Validate target
                 valid_target_types = edge_info.get("target")
                 allowed_target_types = set()
-                if isinstance(valid_target_types, list):
-                    for vt in valid_target_types:
-                        allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
-                else:
-                    allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+                for tt in valid_target_types:
+                    allowed_target_types.update(self.type_hierarchy.get(tt, {tt}))
                 
                 if target_type not in allowed_target_types:
                     raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")
