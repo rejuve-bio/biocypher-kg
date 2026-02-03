@@ -1,8 +1,14 @@
 import sys
 import yaml
+import os
 
-def prepare_config(changed_adapters, config_changed, changed_config_items):
-    with open('config/hsa/hsa_adapters_config_sample.yaml', 'r') as f:
+def prepare_config(changed_adapters, config_changed, changed_config_items, species='hsa'):
+    config_path = f'config/{species}/{species}_adapters_config_sample.yaml'
+    if not os.path.exists(config_path):
+        print(f"Warning: Config path {config_path} not found. Falling back to hsa.")
+        config_path = 'config/hsa/hsa_adapters_config_sample.yaml'
+
+    with open(config_path, 'r') as f:
         full_config = yaml.safe_load(f)
     
     test_config = {}
@@ -30,4 +36,5 @@ if __name__ == "__main__":
     changed_adapters = sys.argv[1] if len(sys.argv) > 1 else ""
     config_changed = sys.argv[2] if len(sys.argv) > 2 else "false"
     changed_config_items = sys.argv[3] if len(sys.argv) > 3 else ""
-    prepare_config(changed_adapters, config_changed, changed_config_items)
+    species = sys.argv[4] if len(sys.argv) > 4 else "hsa"
+    prepare_config(changed_adapters, config_changed, changed_config_items, species)

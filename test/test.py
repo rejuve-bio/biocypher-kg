@@ -98,7 +98,13 @@ def setup_class(request):
     else:
         logging.warning("--dbsnp-rsids not provided, skipping dbsnp rsids map loading")
         dbsnp_rsids_dict = None
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+    
+    if dbsnp_pos:
+        logging.info("Loading dbsnp pos map")
+        dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+    else:
+        logging.warning("--dbsnp-pos not provided, skipping dbsnp pos map loading")
+        dbsnp_pos_dict = None
    
     # Load adapters config
     with open(adapters_config_path, 'r') as f:

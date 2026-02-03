@@ -7,6 +7,7 @@ on:
       - "biocypher_metta/adapters/**"
       - "biocypher_metta/*.py"
       - "config/hsa/hsa_adapters_config_sample.yaml"
+      - "config/dmel/dmel_adapters_config_sample.yaml"
       - "create_knowledge_graph.py"
   pull_request:
     branches: ["main"]
@@ -26,6 +27,7 @@ jobs:
       changes_detected: ${{ steps.get-changes.outputs.changes_detected }}
       config_changed: ${{ steps.get-changes.outputs.config_changed }}
       changed_config_items: ${{ steps.get-changes.outputs.changed_config_items }}
+      detected_species: ${{ steps.get-changes.outputs.detected_species }}
       main_script_changed: ${{ steps.get-changes.outputs.main_script_changed }}
       all_files_used: ${{ steps.get-changes.outputs.all_files_used }}
 
@@ -77,16 +79,22 @@ jobs:
           fi
           echo "main_script_changed=$MAIN_SCRIPT_CHANGED" >> $GITHUB_OUTPUT
 
-          CONFIG_CHANGED=false
-          CHANGED_CONFIG_ITEMS=""
           if echo "$CHANGED_FILES" | grep -q "config/hsa/hsa_adapters_config_sample.yaml"; then
             CONFIG_CHANGED=true
-            echo "Changes detected in sample config"
-            python .github/scripts/detect_config_changes.py
+            DETECTED_SPECIES="hsa"
+            echo "Changes detected in hsa sample config"
+            python .github/scripts/detect_config_changes.py "$DETECTED_SPECIES"
+            CHANGED_CONFIG_ITEMS=$(cat .github/changed_config_items.txt)
+          elif echo "$CHANGED_FILES" | grep -q "config/dmel/dmel_adapters_config_sample.yaml"; then
+            CONFIG_CHANGED=true
+            DETECTED_SPECIES="dmel"
+            echo "Changes detected in dmel sample config"
+            python .github/scripts/detect_config_changes.py "$DETECTED_SPECIES"
             CHANGED_CONFIG_ITEMS=$(cat .github/changed_config_items.txt)
           fi
           echo "config_changed=$CONFIG_CHANGED" >> $GITHUB_OUTPUT
           echo "changed_config_items=$CHANGED_CONFIG_ITEMS" >> $GITHUB_OUTPUT
+          echo "detected_species=$DETECTED_SPECIES" >> $GITHUB_OUTPUT
 
           CHANGES_DETECTED=false
           if [ -n "$ADAPTERS" ] || [ -n "$WRITERS" ] || [ -n "$CHANGED_CONFIG_ITEMS" ] || [ "$MAIN_SCRIPT_CHANGED" = true ] || [ "$ALL_FILES_USED" = true ]; then
@@ -111,11 +119,12 @@ jobs:
       - name: Prepare config
         run: |
           if [ -n "${{ needs.determine_changes.outputs.changed_adapters }}" ] || [ "${{ needs.determine_changes.outputs.config_changed }}" == "true" ]; then
-            echo "Preparing test config for changed adapters or config"
-            python .github/scripts/prepare_config.py "${{ needs.determine_changes.outputs.changed_adapters }}" "${{ needs.determine_changes.outputs.config_changed }}" "${{ needs.determine_changes.outputs.changed_config_items }}"
+            echo "Preparing test config for changed adapters or config for species: ${{ needs.determine_changes.outputs.detected_species }}"
+            python .github/scripts/prepare_config.py "${{ needs.determine_changes.outputs.changed_adapters }}" "${{ needs.determine_changes.outputs.config_changed }}" "${{ needs.determine_changes.outputs.changed_config_items }}" "${{ needs.determine_changes.outputs.detected_species }}"
           else
-            echo "No adapter changes detected. Using sample config."
-            cp config/hsa/hsa_adapters_config_sample.yaml config/test_config.yaml
+            echo "No adapter changes detected. Using sample config for species: ${{ needs.determine_changes.outputs.detected_species }}."
+            SPECIES="${{ needs.determine_changes.outputs.detected_species }}"
+            cp config/$SPECIES/${SPECIES}_adapters_config_sample.yaml config/test_config.yaml
           fi
       - uses: actions/upload-artifact@v4
         with:
