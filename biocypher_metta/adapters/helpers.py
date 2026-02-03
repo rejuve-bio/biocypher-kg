@@ -6,10 +6,42 @@ from liftover import get_lifter
 import hgvs.dataproviders.uta
 from hgvs.easy import parser
 from hgvs.extras.babelfish import Babelfish
+import time
+import random
+import functools
 
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
 
+def retry_connection(max_retries=5, base_delay=1, max_delay=30):
+    # exponential backoff
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            retries = 0
+            while retries < max_retries:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    retries += 1
+                    if retries == max_retries:
+                        print(f"Failed after {max_retries} retries: {e}")
+                        raise
+                    
+                    # Exponential backoff with jitter
+                    delay = min(max_delay, base_delay * (2 ** retries))
+                    jitter = random.uniform(0, 0.1 * delay)
+                    sleep_time = delay + jitter
+                    
+                    print(f"Connection failed ({e}). Retrying in {sleep_time:.2f} seconds...")
+                    time.sleep(sleep_time)
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@retry_connection()
+def get_hdp_connection():
+    return hgvs.dataproviders.uta.connect()
 
 def assembly_check(id_builder):
     def wrapper(*args, **kwargs):
@@ -44,7 +76,7 @@ def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
     # translate hgvs naming to vcf format e.g. NC_000003.12:g.183917980C>T -> 3_183917980_C_T
     if validate:  # use tools from hgvs, which corrects ref allele if it's wrong
         # got connection timed out error occasionally, could add a retry function
-        hdp = hgvs.dataproviders.uta.connect()
+        hdp = get_hdp_connection()
         babelfish38 = Babelfish(hdp, assembly_name=assembly)
         try:
             chr, pos_start, ref, alt, type = babelfish38.hgvs_to_vcf(
