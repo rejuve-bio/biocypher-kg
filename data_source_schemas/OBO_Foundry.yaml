@@ -65,9 +65,9 @@ nodes:
       alternative_ids: str[]
       term_name: str
       synonym: str[]
-  chemical substance:
+  small molecule:
     url: http://www.obofoundry.org/
-    input_label: chemical_substance
+    input_label: small_molecule
     properties:
       description: str
       alternative_ids: str[]
@@ -151,7 +151,7 @@ relationships:
   chebi subclass of:
     url: http://www.obofoundry.org/
     input_label: chebi_subclass_of
-    source: chemical substance
-    target: chemical substance
+    source: small molecule
+    target: small molecule
     properties:
       rel_type: str
