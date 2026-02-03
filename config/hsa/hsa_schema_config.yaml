@@ -601,7 +601,7 @@ disease:
 chemical substance:
   is_a: ontology term
   represented_as: node
-  input_label: chemical_substance
+  input_label: small_molecule
   mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
