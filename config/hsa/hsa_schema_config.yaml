@@ -1072,7 +1072,7 @@ gene to reaction association:
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
-  input_label: gene_ogep_reaction
+  input_label: gene_or_gene_product_reaction
   output_label: involved_in 
   source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
   target: reaction

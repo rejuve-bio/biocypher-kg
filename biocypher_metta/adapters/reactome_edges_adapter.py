@@ -29,7 +29,7 @@ from biocypher_metta.adapters import Adapter
 
 class ReactomeEdgesAdapter(Adapter):
 
-    ALLOWED_LABELS = ['genes_pathways', 'gene_ogep_reaction',
+    ALLOWED_LABELS = ['genes_pathways', 'gene_or_gene_product_reaction',
                       'parent_pathway_of', 'child_pathway_of']
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
@@ -89,7 +89,7 @@ class ReactomeEdgesAdapter(Adapter):
             for line in input_file:
                 data = line.strip().split('\t')
 
-                if self.label == 'genes_pathways' or self.label == 'gene_ogep_reaction':
+                if self.label == 'genes_pathways' or self.label == 'gene_or_gene_product_reaction':
                     entity_id, pathway_id = data[0], data[1]
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
                     pathway_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
