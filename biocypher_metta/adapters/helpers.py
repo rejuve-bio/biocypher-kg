@@ -39,9 +39,14 @@ def retry_connection(max_retries=5, base_delay=1, max_delay=30):
         return wrapper
     return decorator
 
+_hdp = None
+
 @retry_connection()
 def get_hdp_connection():
-    return hgvs.dataproviders.uta.connect()
+    global _hdp
+    if _hdp is None:
+        _hdp = hgvs.dataproviders.uta.connect()
+    return _hdp
 
 def assembly_check(id_builder):
     def wrapper(*args, **kwargs):
