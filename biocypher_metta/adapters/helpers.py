@@ -26,7 +26,7 @@ def retry_connection(max_retries=5, base_delay=1, max_delay=30):
                     retries += 1
                     if retries == max_retries:
                         print(f"Failed after {max_retries} retries: {e}")
-                        raise
+                        return None
                     
                     # Exponential backoff with jitter
                     delay = min(max_delay, base_delay * (2 ** retries))
@@ -81,13 +81,13 @@ def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
     # translate hgvs naming to vcf format e.g. NC_000003.12:g.183917980C>T -> 3_183917980_C_T
     if validate:  # use tools from hgvs, which corrects ref allele if it's wrong
         # got connection timed out error occasionally, could add a retry function
-        hdp = get_hdp_connection()
-        babelfish38 = Babelfish(hdp, assembly_name=assembly)
         try:
+            hdp = get_hdp_connection()
+            babelfish38 = Babelfish(hdp, assembly_name=assembly)
             chr, pos_start, ref, alt, type = babelfish38.hgvs_to_vcf(
                 parser.parse(hgvs_id))
         except Exception as e:
-            print(e)
+            print(f"HGVS Check failed: {e}")
             return None
 
         if type == 'sub' or type == 'delins':
