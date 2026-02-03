@@ -45,16 +45,20 @@ class BaseWriter(ABC):
 
     def _type_hierarchy(self):
         # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
+        # to not use ontologies names but the ontologies types if their IDs occur in edge's source/target
+        ontology_terms = frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', 'biological_process', 'molecular_function', 'cellular_component', 'chemical_substance', 'chemical_entity', 'compound'})
+        
+        gene_products = frozenset({'gene', 'transcript', 'protein', 'biolink:geneorgeneproduct', 'biolink_geneorgeneproduct'})
+        
         return {
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein', 'biolink:geneorgeneproduct', 'biolink_geneorgeneproduct'}),
-            'biolink_geneorgeneproduct': frozenset({'gene', 'transcript', 'protein', 'biolink:geneorgeneproduct', 'biolink_geneorgeneproduct'}),
+            'biolink:geneorgeneproduct': gene_products,
+            'biolink_geneorgeneproduct': gene_products,
             'gene': frozenset({'gene'}),
             'transcript': frozenset({'transcript'}),
             'protein': frozenset({'protein'}),
             
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
+            'ontology_term': ontology_terms,
+            'anatomy': frozenset({'anatomy', 'cell_type', 'cell_line', 'tissue'}),
             'developmental_stage': frozenset({'developmental_stage'}),
             'cell_type': frozenset({'cell_type'}),
             'cell_line': frozenset({'cell_line'}),
@@ -62,9 +66,16 @@ class BaseWriter(ABC):
             'phenotype': frozenset({'phenotype'}),
             'disease': frozenset({'disease'}),
             'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
+            'small_molecule': frozenset({'small_molecule', 'chemical_substance', 'chemical_entity', 'compound'}),
+            'chemical_substance': frozenset({'small_molecule', 'chemical_substance', 'chemical_entity', 'compound'}),
+            'chemical_entity': frozenset({'small_molecule', 'chemical_substance', 'chemical_entity', 'compound'}),
+            'biological_process': frozenset({'biological_process', 'ontology_term'}),
+            'molecular_function': frozenset({'molecular_function', 'ontology_term'}),
+            'cellular_component': frozenset({'cellular_component', 'ontology_term'}),
+            'tissue': frozenset({'tissue', 'cell_type', 'cell_line'}),
+
+            # Top level parents for robustness
+            'biological_entity': ontology_terms.union(gene_products).union({'biological_entity', 'genomic_variant', 'snp', 'structural_variant', 'sequence_variant'}),
+            'named_thing': ontology_terms.union(gene_products).union({'named_thing', 'biological_entity', 'genomic_variant', 'snp', 'structural_variant', 'sequence_variant', 'pathway', 'reaction'}),
+            'genomic_variant': frozenset({'genomic_variant', 'snp', 'structural_variant', 'sequence_variant', 'polyphen2_variant'}),
         }

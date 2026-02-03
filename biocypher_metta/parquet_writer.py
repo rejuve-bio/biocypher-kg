@@ -346,7 +346,18 @@ class ParquetWriter(BaseWriter):
 
                     # Generate edges for all source/target type combinations
                     for src_type in source_types:
+                        # Validate source type against hierarchy
+                        allowed_source_types = set()
+                        allowed_source_types.update(self.type_hierarchy.get(src_type, {src_type}))
+                        
+                        # Inferred type check below will handle 'gene'/'transcript'/'protein'
+                        # but we still need to validate that the inferred type is allowed.
+                        
                         for tgt_type in target_types:
+                            # Validate target type against hierarchy
+                            allowed_target_types = set()
+                            allowed_target_types.update(self.type_hierarchy.get(tgt_type, {tgt_type}))
+
                             src_type_final = src_type
                             tgt_type_final = tgt_type
 
@@ -356,10 +367,17 @@ class ParquetWriter(BaseWriter):
                                 inferred = resolve_bio_type_from_id(clean_source)
                                 if inferred:
                                     src_type_final = inferred
-                            if isinstance(tgt_type, str) and tgt_type.lower() in ("ontology_term", "gene", "transcript", "protein"):
-                                inferred = resolve_bio_type_from_id(clean_target)
                                 if inferred:
                                     tgt_type_final = inferred
+
+                            # Final validation of the (possibly inferred) types
+                            if src_type_final not in allowed_source_types:
+                                logger.debug(f"Source type '{src_type_final}' not allowed for '{label}'. Allowed: {allowed_source_types}")
+                                continue
+                            
+                            if tgt_type_final not in allowed_target_types:
+                                logger.debug(f"Target type '{tgt_type_final}' not allowed for '{label}'. Allowed: {allowed_target_types}")
+                                continue
 
                             edge_label = edge_info.get("output_label", label)
 

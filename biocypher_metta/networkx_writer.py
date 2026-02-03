@@ -178,6 +178,34 @@ class NetworkXWriter(BaseWriter):
                 target_clean = self._preprocess_id(target_id)
                 _, target_type = self._get_edge_type_info(label, source_id, target_id)
             
+            # Type validation using hierarchy
+            if label in self.edge_node_types:
+                edge_info = self.edge_node_types[label]
+                
+                # Validate source
+                valid_source_types = edge_info.get("source")
+                allowed_source_types = set()
+                if isinstance(valid_source_types, list):
+                    for vt in valid_source_types:
+                        allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
+                else:
+                    allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+                
+                if source_type not in allowed_source_types:
+                    raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
+                
+                # Validate target
+                valid_target_types = edge_info.get("target")
+                allowed_target_types = set()
+                if isinstance(valid_target_types, list):
+                    for vt in valid_target_types:
+                        allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
+                else:
+                    allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+                
+                if target_type not in allowed_target_types:
+                    raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")
+            
             if edges_skipped < 5: 
                 if source_clean not in self.node_mapping or target_clean not in self.node_mapping:
                     logger.info(f"DEBUG - Edge ID mismatch for edge type '{label}':")
