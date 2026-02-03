@@ -110,46 +110,48 @@ class PrologWriter(BaseWriter):
         if isinstance(source_id, tuple):
             source_type = source_id[0]
             source_id_processed = self.preprocess_id(source_id[1])
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in valid_source_types:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    if source_type != valid_source_types:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             source_id_processed = self.preprocess_id(source_id)
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
-                if isinstance(source_type_info, list):
-                    source_type = source_type_info[0]  
-                else:
-                    source_type = source_type_info
+                source_type = source_type_info[0] if isinstance(source_type_info, list) else source_type_info
             else:
                 source_type = "unknown"
+
+        if label in self.edge_node_types:
+            valid_source_types = self.edge_node_types[label]["source"]
+            allowed_source_types = set()
+            if isinstance(valid_source_types, list):
+                for vt in valid_source_types:
+                    allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
+            else:
+                allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+            
+            if source_type not in allowed_source_types:
+                raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
 
         if isinstance(target_id, tuple):
             target_type = target_id[0]
             target_id_processed = self.preprocess_id(target_id[1])
-            if label in self.edge_node_types:
-                valid_target_types = self.edge_node_types[label]["target"]
-                if isinstance(valid_target_types, list):
-                    if target_type not in valid_target_types:
-                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
-                else:
-                    if target_type != valid_target_types:
-                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             target_id_processed = self.preprocess_id(target_id)
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
-                if isinstance(target_type_info, list):
-                    target_type = target_type_info[0]  
-                else:
-                    target_type = target_type_info
+                target_type = target_type_info[0] if isinstance(target_type_info, list) else target_type_info
             else:
                 target_type = "unknown"
+
+        if label in self.edge_node_types:
+            valid_target_types = self.edge_node_types[label]["target"]
+            allowed_target_types = set()
+            if isinstance(valid_target_types, list):
+                for vt in valid_target_types:
+                    allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
+            else:
+                allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+            
+            if target_type not in allowed_target_types:
+                raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")
 
         output_label = None
         if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:

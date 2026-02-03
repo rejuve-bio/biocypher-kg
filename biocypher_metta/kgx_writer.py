@@ -446,9 +446,13 @@ class KGXWriter(BaseWriter):
                         src_id_for_clean = typed_source_id
                         tgt_id_for_clean = typed_target_id
 
-                        # If adapter provides explicit types, require them to match schema combo
+                        # If adapter provides explicit types, require them to match allowed schema types
                         if has_typed_source:
-                            if src_type.lower() != typed_source_type.lower():
+                            allowed_source_types = set()
+                            for st in source_types:
+                                allowed_source_types.update(self.type_hierarchy.get(st, {st}))
+                            
+                            if typed_source_type.lower() not in allowed_source_types:
                                 continue
                             src_type_final = typed_source_type
                         else:
@@ -457,7 +461,11 @@ class KGXWriter(BaseWriter):
                                 src_type_final = self._resolve_gene_transcript_protein(src_id_for_clean)
 
                         if has_typed_target:
-                            if tgt_type.lower() != typed_target_type.lower():
+                            allowed_target_types = set()
+                            for tt in target_types:
+                                allowed_target_types.update(self.type_hierarchy.get(tt, {tt}))
+                                
+                            if typed_target_type.lower() not in allowed_target_types:
                                 continue
                             tgt_type_final = typed_target_type
                         else:

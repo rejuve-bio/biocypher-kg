@@ -20,7 +20,6 @@ class Neo4jCSVWriter(BaseWriter):
         })
 
         self.label_is_ontology = self._build_label_types_map()
-        self.type_hierarchy = self._type_hierarchy()
 
         self.create_edge_types()
         self._node_writers = {}
@@ -236,30 +235,7 @@ class Neo4jCSVWriter(BaseWriter):
         return node_freq, self._node_headers
 
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'chemical_substance', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'chemical_substance': frozenset({'chemical_substance'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
+
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
@@ -280,35 +256,39 @@ class Neo4jCSVWriter(BaseWriter):
                 
                 if isinstance(source_id, tuple):
                     source_type = source_id[0]
-                    if isinstance(edge_info["source"], list):
-                        if source_type not in edge_info["source"]:
-                            raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
-                    else:
-                        # if source_type != edge_info["source"]:
-                        if source_type not in self.type_hierarchy:
-                            raise TypeError(f"Type '{source_type}' must be '{edge_info['source']}'")
                     source_id = source_id[1]
                 else:
-                    if isinstance(edge_info["source"], list):
-                        source_type = edge_info["source"][0]
-                    else:
-                        source_type = edge_info["source"]
+                    source_type_info = edge_info.get("source")
+                    source_type = source_type_info[0] if isinstance(source_type_info, list) else source_type_info
+
+                valid_source_types = edge_info.get("source")
+                allowed_source_types = set()
+                if isinstance(valid_source_types, list):
+                    for vt in valid_source_types:
+                        allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
+                else:
+                    allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+
+                if source_type not in allowed_source_types:
+                    raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
 
                 if isinstance(target_id, tuple):
                     target_type = target_id[0]
-                    if isinstance(edge_info["target"], list):
-                        if target_type not in edge_info["target"]:
-                            raise TypeError(f"Type '{target_type}' must be one of {edge_info['target']}")
-                    else:
-                        # if target_type != edge_info["target"]:
-                        if target_type not in self.type_hierarchy:
-                            raise TypeError(f"Type '{target_type}' must be '{edge_info['target']}'")
                     target_id = target_id[1]
                 else:
-                    if isinstance(edge_info["target"], list):
-                        target_type = edge_info["target"][0]
-                    else:
-                        target_type = edge_info["target"]
+                    target_type_info = edge_info.get("target")
+                    target_type = target_type_info[0] if isinstance(target_type_info, list) else target_type_info
+
+                valid_target_types = edge_info.get("target")
+                allowed_target_types = set()
+                if isinstance(valid_target_types, list):
+                    for vt in valid_target_types:
+                        allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
+                else:
+                    allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+
+                if target_type not in allowed_target_types:
+                    raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")
 
                 if source_type == "ontology_term" and not isinstance(source_id, tuple):
                     source_type = self.preprocess_id(source_id, label=source_type).split('_')[0]

@@ -21,7 +21,6 @@ class MeTTaWriter(BaseWriter):
         self.label_is_ontology = self._build_label_types_map()
         self.create_type_hierarchy()
         self.excluded_properties = []
-        self.type_hierarchy = self._type_hierarchy()
 
     def _build_label_types_map(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -200,31 +199,6 @@ class MeTTaWriter(BaseWriter):
         return self.write_property(def_out, properties)
 
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
-
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         source_id_processed = source_id
@@ -233,53 +207,49 @@ class MeTTaWriter(BaseWriter):
 
         if isinstance(source_id, tuple):
             source_type = source_id[0]
-            preserve_source_prefix = self._is_ontology_label(source_type)
-            source_id_processed = self.preprocess_id(str(source_id[1]), preserve_prefix=preserve_source_prefix)
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    # if source_type != valid_source_types:
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+            source_id_processed = self.preprocess_id(str(source_id[1]), preserve_prefix=self._is_ontology_label(source_type))
         else:
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
-                if isinstance(source_type_info, list):
-                    source_type = source_type_info[0]
-                else:
-                    source_type = source_type_info
+                source_type = source_type_info[0] if isinstance(source_type_info, list) else source_type_info
             else:
                 source_type = "unknown"
-            preserve_source_prefix = self._is_ontology_label(source_type)
-            source_id_processed = self.preprocess_id(str(source_id), preserve_prefix=preserve_source_prefix)
+            source_id_processed = self.preprocess_id(str(source_id), preserve_prefix=self._is_ontology_label(source_type))
+
+        if label in self.edge_node_types:
+            valid_source_types = self.edge_node_types[label]["source"]
+            allowed_source_types = set()
+            if isinstance(valid_source_types, list):
+                for vt in valid_source_types:
+                    allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
+            else:
+                allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+            
+            if source_type not in allowed_source_types:
+                raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
 
         if isinstance(target_id, tuple):
             target_type = target_id[0]
-            preserve_target_prefix = self._is_ontology_label(target_type)
-            target_id_processed = self.preprocess_id(str(target_id[1]), preserve_prefix=preserve_target_prefix)
-            if label in self.edge_node_types:
-                valid_target_types = self.edge_node_types[label]["target"]
-                if isinstance(valid_target_types, list):
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
-                else:
-                    # if target_type != valid_target_types:
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
+            target_id_processed = self.preprocess_id(str(target_id[1]), preserve_prefix=self._is_ontology_label(target_type))
         else:
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
-                if isinstance(target_type_info, list):
-                    target_type = target_type_info[0]
-                else:
-                    target_type = target_type_info
+                target_type = target_type_info[0] if isinstance(target_type_info, list) else target_type_info
             else:
                 target_type = "unknown"
-            preserve_target_prefix = self._is_ontology_label(target_type)
-            target_id_processed = self.preprocess_id(str(target_id), preserve_prefix=preserve_target_prefix)
+            target_id_processed = self.preprocess_id(str(target_id), preserve_prefix=self._is_ontology_label(target_type))
+
+        if label in self.edge_node_types:
+            valid_target_types = self.edge_node_types[label]["target"]
+            allowed_target_types = set()
+            if isinstance(valid_target_types, list):
+                for vt in valid_target_types:
+                    allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
+            else:
+                allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+            
+            if target_type not in allowed_target_types:
+                raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")
 
         output_label = None
         if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:

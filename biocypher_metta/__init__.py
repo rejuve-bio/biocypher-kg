@@ -15,6 +15,7 @@ class BaseWriter(ABC):
         if not os.path.exists(output_dir):
             self.output_path.mkdir(parents=True)
         self.ontology = self.bcy._get_ontology()
+        self.type_hierarchy = self._type_hierarchy()
 
         self.node_freq = Counter()
         self.node_props = defaultdict(set)
@@ -41,3 +42,29 @@ class BaseWriter(ABC):
         self.node_freq.clear()
         self.node_props.clear()
         self.edge_freq.clear()
+
+    def _type_hierarchy(self):
+        # to use Biolink-compatible schema
+        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
+        return {
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein', 'biolink:geneorgeneproduct', 'biolink_geneorgeneproduct'}),
+            'biolink_geneorgeneproduct': frozenset({'gene', 'transcript', 'protein', 'biolink:geneorgeneproduct', 'biolink_geneorgeneproduct'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+            
+            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
+            'anatomy': frozenset({'anatomy'}),
+            'developmental_stage': frozenset({'developmental_stage'}),
+            'cell_type': frozenset({'cell_type'}),
+            'cell_line': frozenset({'cell_line'}),
+            'experimental_factor': frozenset({'experimental_factor'}),
+            'phenotype': frozenset({'phenotype'}),
+            'disease': frozenset({'disease'}),
+            'sequence_type': frozenset({'sequence_type'}),
+            'small_molecule': frozenset({'small_molecule'}),
+            'biological_process': frozenset({'biological_process'}),
+            'molecular_function': frozenset({'molecular_function'}),
+            'cellular_component': frozenset({'cellular_component'}),
+            'tissue': frozenset({'tissue'}),
+        }
