@@ -85,12 +85,12 @@ class MeTTaWriter(BaseWriter):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         
         def edge_data_constructor(edge_type, source_types, target_types, label):
-            if isinstance(source_types, list):
+            if isinstance(source_types, (list, set)):
                 source_str = ' '.join([st.upper() for st in source_types])
             else:
                 source_str = source_types.upper()
                 
-            if isinstance(target_types, list):
+            if isinstance(target_types, (list, set)):
                 target_str = ' '.join([tt.upper() for tt in target_types])
             else:
                 target_str = target_types.upper()
@@ -113,15 +113,24 @@ class MeTTaWriter(BaseWriter):
             
                     output_label = v.get("output_label", None)
 
-                    if '.' not in k:
-                        out_str = edge_data_constructor(edge_type, source_type_normalized, target_type_normalized, label)
-                        file.write(out_str + "\n")
-                
+                    if label not in self.edge_node_types:
                         self.edge_node_types[label] = {
-                            "source": source_type_normalized, 
-                            "target": target_type_normalized,
-                            "output_label": output_label
+                            "source": {source_type_normalized} if isinstance(source_type_normalized, str) else set(source_type_normalized), 
+                            "target": {target_type_normalized} if isinstance(target_type_normalized, str) else set(target_type_normalized),
+                            "output_label": output_label,
+                            "edge_type": edge_type
                         }
+                    else:
+                        if isinstance(source_type_normalized, (list, set)):
+                            self.edge_node_types[label]["source"].update(source_type_normalized)
+                        else:
+                            self.edge_node_types[label]["source"].add(source_type_normalized)
+                        
+                        if isinstance(target_type_normalized, (list, set)):
+                            self.edge_node_types[label]["target"].update(target_type_normalized)
+                        else:
+                            self.edge_node_types[label]["target"].add(target_type_normalized)
+
 
             elif v["represented_as"] == "node":
                 label = self.normalize_text(v["input_label"])
@@ -135,6 +144,11 @@ class MeTTaWriter(BaseWriter):
                 for l in labels_to_process:
                     out_str = node_data_constructor(node_type, l)
                     file.write(out_str + "\n")
+
+        # Write constructors after merging
+        for label, info in self.edge_node_types.items():
+            out_str = edge_data_constructor(info["edge_type"], info["source"], info["target"], label)
+            file.write(out_str + "\n")
 
     def preprocess_id(self, prev_id, preserve_prefix=False):
         prev_id = str(prev_id)
@@ -211,7 +225,7 @@ class MeTTaWriter(BaseWriter):
         else:
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
-                source_type = source_type_info[0] if isinstance(source_type_info, list) else source_type_info
+                source_type = list(source_type_info)[0] if source_type_info else "unknown"
             else:
                 source_type = "unknown"
             source_id_processed = self.preprocess_id(str(source_id), preserve_prefix=self._is_ontology_label(source_type))
@@ -219,11 +233,8 @@ class MeTTaWriter(BaseWriter):
         if label in self.edge_node_types:
             valid_source_types = self.edge_node_types[label]["source"]
             allowed_source_types = set()
-            if isinstance(valid_source_types, list):
-                for vt in valid_source_types:
-                    allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
-            else:
-                allowed_source_types.update(self.type_hierarchy.get(valid_source_types, {valid_source_types}))
+            for vt in valid_source_types:
+                allowed_source_types.update(self.type_hierarchy.get(vt, {vt}))
             
             if source_type not in allowed_source_types:
                 raise TypeError(f"Type '{source_type}' for source of '{label}' must be one of {allowed_source_types}")
@@ -234,7 +245,7 @@ class MeTTaWriter(BaseWriter):
         else:
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
-                target_type = target_type_info[0] if isinstance(target_type_info, list) else target_type_info
+                target_type = list(target_type_info)[0] if target_type_info else "unknown"
             else:
                 target_type = "unknown"
             target_id_processed = self.preprocess_id(str(target_id), preserve_prefix=self._is_ontology_label(target_type))
@@ -242,11 +253,8 @@ class MeTTaWriter(BaseWriter):
         if label in self.edge_node_types:
             valid_target_types = self.edge_node_types[label]["target"]
             allowed_target_types = set()
-            if isinstance(valid_target_types, list):
-                for vt in valid_target_types:
-                    allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
-            else:
-                allowed_target_types.update(self.type_hierarchy.get(valid_target_types, {valid_target_types}))
+            for vt in valid_target_types:
+                allowed_target_types.update(self.type_hierarchy.get(vt, {vt}))
             
             if target_type not in allowed_target_types:
                 raise TypeError(f"Type '{target_type}' for target of '{label}' must be one of {allowed_target_types}")

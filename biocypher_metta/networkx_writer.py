@@ -94,13 +94,13 @@ class NetworkXWriter(BaseWriter):
         source_type_info = edge_info.get("source", "unknown")
         target_type_info = edge_info.get("target", "unknown")
         
-        if isinstance(source_type_info, list):
-            source_type = source_type_info[0] if source_type_info else "unknown"
+        if isinstance(source_type_info, (list, set)):
+            source_type = list(source_type_info)[0] if source_type_info else "unknown"
         else:
             source_type = source_type_info
             
-        if isinstance(target_type_info, list):
-            target_type = target_type_info[0] if target_type_info else "unknown"
+        if isinstance(target_type_info, (list, set)):
+            target_type = list(target_type_info)[0] if target_type_info else "unknown"
         else:
             target_type = target_type_info
             
