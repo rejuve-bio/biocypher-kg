@@ -51,7 +51,7 @@ from biocypher_metta.adapters import Adapter
 class ReactomeEdgesAdapter(Adapter):
 
     ALLOWED_LABELS = ['genes_pathways', 'gene_or_gene_product_reaction',
-                      'small_molecule_to_pathway', 'small_molecule_to_reaction'
+                      'small_molecule_to_pathway', 'small_molecule_to_reaction',    
                       'parent_pathway_of', 'child_pathway_of']
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
@@ -154,7 +154,7 @@ class ReactomeEdgesAdapter(Adapter):
                             source = (source_type, curie_entity_id)
                             # target = pathway_id
                             # Mandatory property for KGXWriter
-                            props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
+                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
                             yield source, pathway_id, self.label, props
                         # Human only
                         elif self.taxon_id == 9606 and (organism_pathway_prefix == 'R-HSA'  or organism_pathway_prefix == 'R-NUL'):
@@ -175,7 +175,6 @@ class ReactomeEdgesAdapter(Adapter):
                                     print(f"No UniProt mapping for {entity_id} of H. sapiens.\nRecord: {data}")
                                     not_mapped_no_processing += 1
                                     continue
-
                             source = (source_type, curie_entity_id)
                             # target = pathway_id
                             # Mandatory property for KGXWriter
@@ -186,10 +185,12 @@ class ReactomeEdgesAdapter(Adapter):
                     # Handle pathway-pathway relationships
                     parent, child = data[0], data[1]
                     organism_pathway_prefix = parent[:5]
+                    taxon = organism_taxon_map.get(organism_pathway_prefix)
+                    if self.taxon_id != taxon:
+                        continue
                     if organism_pathway_prefix in organism_taxon_map:
                         parent = f'{parent}'
-                        child = f'{child}'
-                        # taxon = organism_taxon_map[organism_pathway_prefix]
+                        child = f'{child}'                        
                         props = base_props.copy()
                         props['taxon_id'] = self.taxon_id
                         if self.label == 'parent_pathway_of':
