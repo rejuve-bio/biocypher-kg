@@ -10,6 +10,8 @@ import time
 import random
 import functools
 
+from contextlib import contextmanager
+
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
 
@@ -39,14 +41,26 @@ def retry_connection(max_retries=5, base_delay=1, max_delay=30):
         return wrapper
     return decorator
 
-_hdp = None
+
+@retry_connection()
+def _raw_connect():
+    return hgvs.dataproviders.uta.connect()
+
+#context managed connection
+@contextmanager
+def uta_connection():
+    conn = _raw_connect()
+    try:
+        yield conn
+    finally:
+        if conn:
+            conn.close()
+
 
 @retry_connection()
 def get_hdp_connection():
-    global _hdp
-    if _hdp is None:
-        _hdp = hgvs.dataproviders.uta.connect()
-    return _hdp
+    return hgvs.dataproviders.uta.connect()
+
 
 def assembly_check(id_builder):
     def wrapper(*args, **kwargs):
@@ -62,64 +76,57 @@ def assembly_check(id_builder):
 
     return wrapper
 
-
+#id string
 @assembly_check
 def build_variant_id(chr, pos_first_ref_base, ref_seq, alt_seq, assembly='GRCh38'):
-    # pos_first_ref_base: 1-based position
-    key = '{}_{}_{}_{}_{}'.format(str(chr).lower(), pos_first_ref_base, ref_seq, alt_seq, assembly)
-    # return hashlib.sha256(key.encode()).hexdigest()
+    key = f"{str(chr).lower()}_{pos_first_ref_base}_{ref_seq}_{alt_seq}_{assembly}"
     return key
+
 
 @assembly_check
 def build_regulatory_region_id(chr, pos_start, pos_end, assembly='GRCh38'):
-    # return '{}_{}_{}_{}_{}'.format(class_name, chr, pos_start, pos_end, assembly)
-    return '{}_{}_{}_{}'.format(chr, pos_start, pos_end, assembly)
+    return f"{chr}_{pos_start}_{pos_end}_{assembly}"
+
+#cache the conversion
+@functools.lru_cache(maxsize=10000)
+def _hgvs_to_vcf_cached(hgvs_id, assembly):
+    with uta_connection() as hdp:
+        babelfish = Babelfish(hdp, assembly_name=assembly)
+        return babelfish.hgvs_to_vcf(parser.parse(hgvs_id))
 
 
 @assembly_check
 def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
-    # translate hgvs naming to vcf format e.g. NC_000003.12:g.183917980C>T -> 3_183917980_C_T
-    if validate:  # use tools from hgvs, which corrects ref allele if it's wrong
-        # got connection timed out error occasionally, could add a retry function
+    if validate:
         try:
-            hdp = get_hdp_connection()
-            babelfish38 = Babelfish(hdp, assembly_name=assembly)
-            chr, pos_start, ref, alt, type = babelfish38.hgvs_to_vcf(
-                parser.parse(hgvs_id))
-        except Exception as e:
-            print(f"HGVS Check failed: {e}")
-            return None
-
-        if type == 'sub' or type == 'delins':
-            return build_variant_id(chr, pos_start + 1, ref[1:], alt[1:])
-        else:
-            return build_variant_id(chr, pos_start, ref, alt)
-
-    # if no need to validate/query ref allele (e.g. single position substitutions) -> use regex match is quicker
-    else:
-        if hgvs_id.startswith('NC_'):
-            chr = int(hgvs_id.split('.')[0].split('_')[1])
-            if chr < 23:
-                chr = str(chr)
-            elif chr == 23:
-                chr = 'X'
-            elif chr == 24:
-                chr = 'Y'
+            chr, pos_start, ref, alt, var_type = _hgvs_to_vcf_cached(hgvs_id, assembly)
+            
+            if var_type in ('sub', 'delins'):
+                return build_variant_id(chr, pos_start + 1, ref[1:], alt[1:])
             else:
-                print('Error: unsupported chromosome name.')
-                return None
-
-            pos_start = hgvs_id.split('.')[2].split('>')[0][:-1]
-            if pos_start.isnumeric():
-                ref = hgvs_id.split('.')[2].split('>')[0][-1]
-                alt = hgvs_id.split('.')[2].split('>')[1]
                 return build_variant_id(chr, pos_start, ref, alt)
-            else:
-                print('Error: wrong hgvs format.')
-                return None
-        else:
-            print('Error: wrong hgvs format.')
+        except Exception as e:
+            print(f"HGVS validation failed: {e}")
             return None
+
+    # Fast path (no DB)
+    if not hgvs_id.startswith('NC_'):
+        print('Error: wrong hgvs format.')
+        return None
+
+    try:
+        chr_num_str = hgvs_id.split('.')[0].split('_')[1]
+        chr_num = int(chr_num_str)
+        chr = str(chr_num) if chr_num < 23 else 'X' if chr_num == 23 else 'Y'
+        
+        pos_ref, alt = hgvs_id.split('.')[2].split('>')
+        pos_start = pos_ref[:-1]
+        ref = pos_ref[-1]
+
+        return build_variant_id(chr, pos_start, ref, alt)
+    except Exception:
+        print('Error: wrong hgvs format.')
+        return None
 
 
 # Arangodb converts a number to string if it can't be represented in signed 64-bit
