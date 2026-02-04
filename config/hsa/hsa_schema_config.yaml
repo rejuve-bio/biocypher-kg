@@ -1078,7 +1078,7 @@ gene to reaction association:
   target: reaction
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"
-    object_category: "biolink:Pathway"
+    object_category: "biolink:MolecularActivity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
@@ -1249,7 +1249,7 @@ chebi subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: chebi_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: small molecule
   target: small molecule
@@ -1314,6 +1314,7 @@ pathway_to_biological_process:
     target: biological process
     represented_as: edge
     input_label: pathway_to_biological_process
+    output_label: equivalent_to
     description: >-
       An association between a pathway and a biological process, indicating that the pathway is involved in the process.
     properties:

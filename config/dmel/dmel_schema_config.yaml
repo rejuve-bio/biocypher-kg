@@ -1550,30 +1550,29 @@ cl part of:
 
 gene to pathway association:
   description: >-
-    An interaction between a gene or gene product (gogp) and a biological process or pathway.
+    An interaction between a gene or gene product and a biological process or pathway.
   is_a: annotation
   mixins: [biolink:GeneToPathwayAssociation]
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
-  output_label: involved_in 
-  source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
+  output_label: participates_in
+  source: [gene, transcript, protein]
   target: pathway
   pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
-      type: str
-      biolink: source_record_urls
+    type: str
+    biolink: source_record_urls
   kgx_properties:
-    subject_category: "biolink:GeneOrGeneProduct"
+    subject_category: "biolink:GeneOrGeneProduct"  
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
 gene to reaction association:
   description: >-
-    An interaction between a gene or a gene product (gogp) and a molecular activity.
+    An interaction between a gene or a gene product (gogp) and a reaction (Reactome).
   is_a: annotation
-  mixins: [biolink:GeneOrGeneProductOrGeneFamilyToBiologicalProcessOrActivityAssociation]
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
@@ -1583,6 +1582,42 @@ gene to reaction association:
   target: reaction
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+small molecule to reaction association:
+  description: >-
+    An interaction between a small molecule (ChEBI) and a reaction (Reactome).
+  is_a: annotation
+  mixins: [biolink:MolecularActivityToPathwayAssociation]  # ???  provisory
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: small_molecule_to_reaction
+  output_label: participates_in 
+  source: small molecule
+  target: reaction
+  kgx_properties:
+    subject_category: "biolink:SmallMolecule"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+small molecule to pathway association:
+  description: >-
+    An interaction between a small molecule (ChEBI) and a pathway (Reactome).
+  is_a: annotation
+  mixins: [biolink:MolecularActivityToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: small_molecule_to_pathway
+  output_label: participates_in 
+  source: small molecule
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:SmallMolecule"
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
@@ -2354,7 +2389,7 @@ chebi subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: chebi_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: small molecule
   target: small molecule

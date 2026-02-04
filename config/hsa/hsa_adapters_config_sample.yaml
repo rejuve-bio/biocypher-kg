@@ -279,7 +279,6 @@ go_biological_process:
       dry_run: True
       add_description: False
       cache_dir: ./ontology_dataset_cache
-
   outdir: gene_ontology/biological_process
   nodes: True
   edges: False
@@ -294,7 +293,6 @@ go_biological_process_subclass_of:
       label: biological_process_subclass_of
       dry_run: True
       cache_dir: ./ontology_dataset_cache
-
   outdir: gene_ontology/biological_process
   nodes: False
   edges: True

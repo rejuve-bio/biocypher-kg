@@ -254,7 +254,6 @@ dmel_ptp_physical_interaction:
     module: biocypher_metta.adapters.dmel.dmel_physical_interaction_psimi_adapter
     cls: PhysicalInteractionAdapter
     args:
-      #  dmel_ensembl_to_uniprot_map: ./aux_files/dmel_string_ensembl_to_uniprot_map.pkl
        filepaths: [
           /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/physical_interactions_mitab_fb_2025_03.tsv.gz,
           /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
@@ -271,7 +270,6 @@ dmel_ptt_physical_interaction:
     module: biocypher_metta.adapters.dmel.dmel_physical_interaction_psimi_adapter
     cls: PhysicalInteractionAdapter
     args:
-      #  dmel_ensembl_to_uniprot_map: ./aux_files/dmel_string_ensembl_to_uniprot_map.pkl
        filepaths: [
           /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/physical_interactions_mitab_fb_2025_03.tsv.gz,
           /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
@@ -375,47 +373,47 @@ dmel_gene_to_sequence_ontology:
   edges: True
 
 
-# RNASeq_library:
-#   adapter:
-#     module: biocypher_metta.adapters.dmel.RNASeq_library_adapter
-#     cls: RnaseqLibraryAdapter
-#     args:
-#       filepaths: [
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_gene_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/afca/afca_afca_annotation_group_by_mean.tsv.gz,
-#       ]
-#   outdir: rnaseq
-#   nodes: True
-#   edges: False
+RNASeq_library:
+  adapter:
+    module: biocypher_metta.adapters.dmel.RNASeq_library_adapter
+    cls: RnaseqLibraryAdapter
+    args:
+      filepaths: [
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_03.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_03.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_gene_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/afca/afca_afca_annotation_group_by_mean.tsv.gz,
+      ]
+  outdir: rnaseq
+  nodes: True
+  edges: False
 
-# #   too much waste of space...
-# expression_value:
-#   adapter:
-#     module: biocypher_metta.adapters.dmel.expression_value_adapter
-#     cls: ExpressionValueAdapter
-#     args:
-#       data_filepaths: [
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_03.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_gene_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
-#                              /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/afca/afca_afca_annotation_group_by_mean.tsv.gz,
-#       ]      
-#       aux_filepaths: [
-#                         /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
-#       ]      
-#   outdir: rnaseq
-#   nodes: False
-#   edges: True
+# too much waste of space with this representation...
+expression_value:
+  adapter:
+    module: biocypher_metta.adapters.dmel.expression_value_adapter
+    cls: ExpressionValueAdapter
+    args:
+      data_filepaths: [
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/scRNA-Seq_gene_expression_fb_2025_03.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/high-throughput_gene_expression_fb_2025_03.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/gene_rpkm_report_fb_2025_03.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_gene_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
+                             /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/afca/afca_afca_annotation_group_by_mean.tsv.gz,
+      ]      
+      aux_filepaths: [
+                        /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/fbgn_fbtr_fbpp_expanded_fb_2025_03.tsv.gz,
+      ]      
+  outdir: rnaseq
+  nodes: False
+  edges: True
 
 FB_development_ontology:
   adapter:
@@ -509,7 +507,6 @@ gencode_gene:
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       gene_alias_file_path: ./aux_files/dmel/Drosophila_melanogaster.gene_info.gz
-      # summaries_filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/best_gene_summary_fb_2025_03.tsv.gz
       label: gene
       taxon_id: 7227
   outdir: gencode/gene
@@ -682,8 +679,34 @@ gene_or_gene_product_reaction:
     cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
       label: gene_or_gene_product_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2Reactome_All_Levels.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
+      label: small_molecule_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2ReactomeReactions.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      label: small_molecule_to_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -1058,31 +1081,30 @@ disease_do_subclass_of:
   nodes: False
   edges: True
 
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: small_molecule
+  nodes: True
+  edges: False
 
-# # chebi_ontology:
-# #   adapter:
-# #     module: biocypher_metta.adapters.chebi_ontology_adapter
-# #     cls: ChEBIAdapter
-# #     args:
-# #       ontology: 'chebi'
-# #       type: node
-# #       dry_run: False
-# #       add_description: False
-# #       cache_dir: ./ontology_dataset_cache
-# #   outdir: small_molecule
-# #   nodes: True
-# #   edges: False
-
-# # chebi_chebi_subclass_of:
-# #   adapter:
-# #     module: biocypher_metta.adapters.chebi_ontology_adapter
-# #     cls: ChEBIAdapter
-# #     args:
-# #       ontology: 'chebi'
-# #       label: chebi_subclass_of
-# #       type: edge
-# #       dry_run: False
-# #       cache_dir: ./ontology_dataset_cache
-# #   outdir: small_molecule
-# #   nodes: False
-# #   edges: True
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: small_molecule
+  nodes: False
+  edges: True

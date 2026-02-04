@@ -709,6 +709,32 @@ gene_or_gene_product_reaction:
   nodes: False
   edges: True
 
+chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      label: small_molecule_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      label: small_molecule_to_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
 parent_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -734,7 +760,6 @@ child_pathway_of:
   outdir: reactome
   nodes: False
   edges: True
-
 
 string:
   adapter:
