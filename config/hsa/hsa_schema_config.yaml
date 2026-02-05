@@ -449,6 +449,9 @@ pathway:
     evidence:
       type: str
       biolink: has_evidence
+    pubmed_url:        
+      type: str
+      biolink: source_record_urls            
     source:
       type: str
       biolink: knowledge_source
@@ -481,6 +484,9 @@ reaction:
     evidence:
       type: str
       biolink: has_evidence
+    pubmed_url:        
+      type: str
+      biolink: source_record_urls      
     source:
       type: str
       biolink: knowledge_source

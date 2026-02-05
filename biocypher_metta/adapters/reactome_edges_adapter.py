@@ -51,7 +51,8 @@ from biocypher_metta.adapters import Adapter
 class ReactomeEdgesAdapter(Adapter):
 
     ALLOWED_LABELS = ['genes_pathways', 'gene_or_gene_product_reaction',
-                      'small_molecule_to_pathway', 'small_molecule_to_reaction',    
+                      'small_molecule_to_pathway', 'small_molecule_to_reaction', 
+                      'reaction_to_pathway',   
                       'parent_pathway_of', 'child_pathway_of']
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
