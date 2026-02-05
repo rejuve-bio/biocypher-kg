@@ -12,13 +12,14 @@ class DGVVariantAdapter(Adapter):
 
     def __init__(self, filepath, write_properties, add_provenance, 
                  label, delimiter='\t',
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None, feature_files=None):
         self.filepath = filepath
         self.delimiter = delimiter
         self.chr = chr
         self.start = start
         self.end = end
         self.label = label
+        self.feature_files = feature_files
 
         self.source = 'dgv'
         self.version = ''
@@ -57,3 +58,97 @@ class DGVVariantAdapter(Adapter):
 
 
                 yield region_id, self.label, props
+
+    def get_edges(self):
+        if not self.feature_files:
+            return
+            
+        svs = {}
+        for sv_id, chr, start, end, label in self._parse_dgv(self.filepath):
+            if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                continue
+            if chr not in svs: svs[chr] = []
+            svs[chr].append({'id': sv_id, 'start': start, 'end': end, 'label': label})
+            
+        for feat_config in self.feature_files:
+            path = feat_config['path']
+            label = feat_config['label']
+            file_type = feat_config['type']
+            
+            if file_type == 'gtf':
+                iterator = self._parse_gtf(path)
+            elif file_type == 'bed':
+                iterator = self._parse_bed(path)
+            else:
+                continue
+                
+            for feat_id, chr, start, end in iterator:
+                if chr in svs:
+                    for sv in svs[chr]:
+                        if self._check_overlap(start, end, sv['start'], sv['end']):
+                            props = {
+                                'overlap_start': max(start, sv['start']),
+                                'overlap_end': min(end, sv['end'])
+                            }
+                            if self.add_provenance:
+                                props['source'] = 'Overlap calculation'
+                            
+                            yield feat_id, sv['id'], "feature_located_in_structural_variant", props
+                            yield sv['id'], feat_id, "structural_variant_located_in_feature", props
+
+    def _parse_dgv(self, path):
+        with gzip.open(path, 'rt') as f:
+            next(f)
+            for line in f:
+                data = line.strip().split(self.delimiter)
+                chr = 'chr' + data[DGVVariantAdapter.INDEX['chr']]
+                start = int(data[DGVVariantAdapter.INDEX['coord_start']]) + 1 
+                end = int(data[DGVVariantAdapter.INDEX['coord_end']])
+                
+                #Reconstruct ID
+                region_id = f"SO:0001059_{build_regulatory_region_id(chr, start, end)}"
+                
+                yield region_id, chr, start, end, self.label
+
+    def _check_overlap(self, s1, e1, s2, e2):
+        return max(s1, s2) <= min(e1, e2)
+
+    def _parse_gtf(self, path):
+        import re
+        with gzip.open(path, 'rt') as f:
+            for line in f:
+                if line.startswith('#'): continue
+                parts = line.split('\t')
+                if parts[2] not in ['gene', 'transcript', 'exon']: continue
+                chr = parts[0]
+                if not chr.startswith('chr'): chr = 'chr' + chr
+                start = int(parts[3])
+                end = int(parts[4])
+                
+                if parts[2] == 'gene':
+                    match = re.search(r'gene_id "(ENSH?G\d+)"', parts[8])
+                    if match: yield f"ENSEMBL:{match.group(1)}", chr, start, end
+                elif parts[2] == 'transcript':
+                    match = re.search(r'transcript_id "(ENSH?T\d+)"', parts[8])
+                    if match: yield f"ENSEMBL:{match.group(1)}", chr, start, end
+                elif parts[2] == 'exon':
+                    match = re.search(r'exon_id "(ENSH?E\d+)"', parts[8])
+                    if match: yield f"ENSEMBL:{match.group(1)}", chr, start, end
+
+    def _parse_bed(self, path):
+        import csv
+        with gzip.open(path, 'rt') as f:
+            reader = csv.reader(f, delimiter='\t')
+            for row in reader:
+                if not row: continue
+                chr = row[0]
+                if not chr.startswith('chr'): chr = 'chr' + chr
+                start = int(row[1]) + 1 
+                end = int(row[2])
+                feat_id = row[3].split('_')[0]
+                
+                if 'URS' in feat_id:
+                    feat_id = f"RNACENTRAL:{feat_id}"
+                elif row[3].count('_') > 0: 
+                    feat_id = f"SO:{row[0]}_{start}_{end}_GRCh38" 
+                yield feat_id, chr, start, end
