@@ -20,7 +20,6 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # https://genome.ucsc.edu/cgi-bin/hgTables
 # https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=3241963311_PXFznahXAF0Pp2ztG4CHHXaXxaxD&clade=insect&org=0&db=0&hgta_group=genes&hgta_track=knownGene&hgta_table=knownGene&hgta_regionType=genome&position=&hgta_outputType=primaryTable&hgta_outFileName=
 
-
  
 # Mouse data:
 # https://genome.ucsc.edu/cgi-bin/hgTables

@@ -54,6 +54,7 @@ class OntologyAdapter(Adapter):
         self.uri_prefixes = self.get_uri_prefixes()
 
         super(OntologyAdapter, self).__init__(write_properties, add_provenance)
+        
     @abstractmethod
     def get_ontology_source(self):
         """

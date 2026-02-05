@@ -2,7 +2,6 @@ import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
 # Human data:
 # https://epd.expasy.org/ftp/epdnew/H_sapiens/
@@ -23,9 +22,12 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr2L 25167 25227 Ir21a_1 900 - 25167 25178
 # chr2L 59231 59291 Cda5_1 900 - 59231 59242
 
+# CEL data:
+# 
 
 # Mouse data:
 # https://epd.expasy.org/ftp/epdnew/M_musculus/ 
+
 
 # Rat data:
 # https://epd.expasy.org/ftp/epdnew/R_norvegicus/
@@ -52,7 +54,10 @@ class EPDAdapter(Adapter):
         self.taxon_id = taxon_id
         self.source = 'EPD'
         self.version = '006'
-        self.source_url = 'https://epd.expasy.org/ftp/epdnew/H_sapiens/'
+        if self.taxon_id == 7227:
+            self.source_url = 'https://epd.expasy.org/ftp/epdnew/D_melanogaster/'
+        else:
+            self.source_url = 'https://epd.expasy.org/ftp/epdnew/H_sapiens/'
 
         super(EPDAdapter, self).__init__(write_properties, add_provenance)
 
@@ -60,6 +65,8 @@ class EPDAdapter(Adapter):
         """
         Build a node for each promoter in the EPD BED file
         """
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+
         with gzip.open(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             for line in reader:
@@ -88,6 +95,8 @@ class EPDAdapter(Adapter):
         """
         Build an edge for each promoter-gene interaction in the EPD BED file.
         """
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+
         with gzip.open(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             not_found_symbols = 0
@@ -97,7 +106,8 @@ class EPDAdapter(Adapter):
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
                 if self.taxon_id == 7227:
-                    pass
+                    fbgn = self.hgnc_to_ensembl_map.get(gene_id, None)
+                    ensembl_gene_id = f"FlyBase:{fbgn}" if fbgn else None
                 elif self.taxon_id == 9606:
                     ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
                 if ensembl_gene_id is None:
@@ -122,4 +132,11 @@ class EPDAdapter(Adapter):
 
                     yield promoter_id, ensembl_gene_id, self.label, props
             # print(f"not found symbols: {not_found_symbols}")
+                    props = {}
+                    if self.write_properties:
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
 
+                    yield promoter_id, ensembl_gene_id, self.label, props
+            # print(f"not found symbols: {not_found_symbols}")

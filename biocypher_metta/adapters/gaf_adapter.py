@@ -58,8 +58,8 @@ class GAFAdapter(Adapter):
 
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, gaf_type='human', 
-                 label=None, mapping_file='aux_files/go_subontology_mapping.pkl', hgnc_to_ensembl_map=None):
+    def __init__(self, filepath, write_properties, add_provenance, label, taxon_id, gaf_type='human', 
+                 mapping_file='aux_files/go_subontology_mapping.pkl', hgnc_to_ensembl_map=None):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
                              ', '.join(GAFAdapter.SOURCES.keys()))
