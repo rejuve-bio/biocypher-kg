@@ -5,9 +5,9 @@ nodes:
     url: https://epd.expasy.org/ftp/epdnew/H_sapiens/
     input_label: promoter
     properties:
+      taxon_id: int
       end: int
       start: int
-      taxon_id: int
       chr: str
 relationships:
   promoter to gene association:

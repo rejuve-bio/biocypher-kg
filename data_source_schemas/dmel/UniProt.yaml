@@ -4,6 +4,9 @@ nodes:
   protein:
     url: https://www.uniprot.org/
     input_label: protein
+    properties:
+      accessions: str[]
+      protein_name: str
 relationships:
   translates to:
     url: https://www.uniprot.org/

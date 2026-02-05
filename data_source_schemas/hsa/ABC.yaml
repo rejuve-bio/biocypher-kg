@@ -9,5 +9,5 @@ relationships:
     source: snp
     target: gene
     properties:
-      score: float
       biological_context: str
+      score: float
