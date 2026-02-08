@@ -2143,3 +2143,30 @@ protein has_xref cellular_component:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+feature located_in structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:located_in"
+  represented_as: edge
+  input_label: feature_located_in_structural_variant
+  output_label: located_in
+  source: biological entity
+  target: structural variant
+  kgx_properties:
+    subject_category: "biolink:GenomicEntity"
+    object_category: "biolink:SequenceVariant"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+structural_variant located_in feature:
+  is_a: association
+  biolink_predicate: "biolink:located_in"
+  represented_as: edge
+  input_label: structural_variant_located_in_feature
+  output_label: located_in
+  source: structural variant
+  target: biological entity
+  kgx_properties:
+    subject_category: "biolink:SequenceVariant"
+    object_category: "biolink:GenomicEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
