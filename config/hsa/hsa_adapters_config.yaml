@@ -727,6 +727,17 @@ dgv_variant:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
       label: structural_variant
+  outdir: dgv
+  nodes: True
+  edges: False
+
+dgv_variant_overlap_edges:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
+    cls: DGVVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+      label: structural_variant
       feature_files:
         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
           label: gene
@@ -738,7 +749,7 @@ dgv_variant:
           label: promoter
           type: bed
   outdir: dgv
-  nodes: True
+  nodes: False
   edges: True
 
 epd_promoter:
@@ -775,6 +786,17 @@ dbvar_variant:
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
       label: structural_variant
+  outdir: dbvar
+  nodes: True
+  edges: False
+
+dbvar_variant_overlap_edges:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dbvar_adapter
+    cls: DBVarVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+      label: structural_variant
       feature_files:
         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
           label: gene
@@ -786,7 +808,7 @@ dbvar_variant:
           label: promoter
           type: bed
   outdir: dbvar
-  nodes: True
+  nodes: False
   edges: True
 
 peregrine_enhancer:

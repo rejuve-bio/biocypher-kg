@@ -61,7 +61,7 @@ class DGVVariantAdapter(Adapter):
 
     def get_edges(self):
         if not self.feature_files:
-            return
+            raise FileNotFoundError("Feature files for overlap calculation not provided in configuration.")
             
         svs = {}
         for sv_id, chr, start, end, label in self._parse_dgv(self.filepath):
@@ -114,7 +114,6 @@ class DGVVariantAdapter(Adapter):
         return max(s1, s2) <= min(e1, e2)
 
     def _parse_gtf(self, path):
-        import re
         with gzip.open(path, 'rt') as f:
             for line in f:
                 if line.startswith('#'): continue
@@ -125,15 +124,24 @@ class DGVVariantAdapter(Adapter):
                 start = int(parts[3])
                 end = int(parts[4])
                 
-                if parts[2] == 'gene':
-                    match = re.search(r'gene_id "(ENSH?G\d+)"', parts[8])
-                    if match: yield f"ENSEMBL:{match.group(1)}", chr, start, end
-                elif parts[2] == 'transcript':
-                    match = re.search(r'transcript_id "(ENSH?T\d+)"', parts[8])
-                    if match: yield f"ENSEMBL:{match.group(1)}", chr, start, end
-                elif parts[2] == 'exon':
-                    match = re.search(r'exon_id "(ENSH?E\d+)"', parts[8])
-                    if match: yield f"ENSEMBL:{match.group(1)}", chr, start, end
+                info_parts = parts[8].strip().split(';')
+                info = {}
+                for part in info_parts:
+                    if not part.strip(): continue
+                    key_value = part.strip().split(' ')
+                    if len(key_value) == 2:
+                        key, value = key_value
+                        info[key] = value.replace('"', '')
+                
+                if parts[2] == 'gene' and 'gene_id' in info:
+                    gene_id = info['gene_id'].split('.')[0]
+                    yield f"ENSEMBL:{gene_id}", chr, start, end
+                elif parts[2] == 'transcript' and 'transcript_id' in info:
+                    transcript_id = info['transcript_id'].split('.')[0]
+                    yield f"ENSEMBL:{transcript_id}", chr, start, end
+                elif parts[2] == 'exon' and 'exon_id' in info:
+                    exon_id = info['exon_id'].split('.')[0]
+                    yield f"ENSEMBL:{exon_id}", chr, start, end
 
     def _parse_bed(self, path):
         import csv
