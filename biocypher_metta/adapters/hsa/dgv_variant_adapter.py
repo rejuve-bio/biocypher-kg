@@ -120,42 +120,52 @@ class DGVVariantAdapter(Adapter):
 
     def _parse_gtf(self, path):
         with gzip.open(path, 'rt') as f:
-            for line in f:
-                if line.startswith('#'): continue
-                parts = line.split('\t')
-                if parts[2] not in ['gene', 'transcript', 'exon']: continue
-                chr = parts[0]
-                if not chr.startswith('chr'): chr = 'chr' + chr
-                start = int(parts[3])
-                end = int(parts[4])
-                
-                info_parts = parts[8].strip().split(';')
-                info = {}
-                for part in info_parts:
-                    if not part.strip(): continue
-                    key_value = part.strip().split(' ', 1)
-                    if len(key_value) >= 2:
-                        key, value = key_value[0], key_value[1]
-                        info[key] = value.strip().replace('"', '')
-                
-                if parts[2] == 'gene' and 'gene_id' in info:
-                    gene_id = info['gene_id'].split('.')[0]
-                    feat_id = f"ENSEMBL:{gene_id}"
-                    if info['gene_id'].endswith('_PAR_Y'):
-                        feat_id += '_PAR_Y'
-                    yield feat_id, chr, start, end
-                elif parts[2] == 'transcript' and 'transcript_id' in info:
-                    transcript_id = info['transcript_id'].split('.')[0]
-                    feat_id = f"ENSEMBL:{transcript_id}"
-                    if info['transcript_id'].endswith('_PAR_Y'):
-                        feat_id += '_PAR_Y'
-                    yield feat_id, chr, start, end
-                elif parts[2] == 'exon' and 'exon_id' in info:
-                    exon_id = info['exon_id'].split('.')[0]
-                    feat_id = f"ENSEMBL:{exon_id}"
-                    if info['exon_id'].endswith('_PAR_Y'):
-                        feat_id += '_PAR_Y'
-                    yield feat_id, chr, start, end
+            for line_num, line in enumerate(f, 1):
+                try:
+                    if line.startswith('#'): continue
+                    parts = line.strip().split('\t')
+                    
+                    # GTF files must have exactly 9 tab-separated columns
+                    if len(parts) < 9:
+                        continue
+                    
+                    if parts[2] not in ['gene', 'transcript', 'exon']: continue
+                    chr = parts[0]
+                    if not chr.startswith('chr'): chr = 'chr' + chr
+                    start = int(parts[3])
+                    end = int(parts[4])
+                    
+                    info_parts = parts[8].strip().split(';')
+                    info = {}
+                    for part in info_parts:
+                        if not part.strip(): continue
+                        key_value = part.strip().split(' ', 1)  # maxsplit=1 to handle values with spaces
+                        if len(key_value) >= 2:
+                            key, value = key_value[0], key_value[1]
+                            info[key] = value.strip().replace('"', '')
+                    
+                    if parts[2] == 'gene' and 'gene_id' in info:
+                        gene_id = info['gene_id'].split('.')[0] if '.' in info['gene_id'] else info['gene_id']
+                        feat_id = f"ENSEMBL:{gene_id}"
+                        if info['gene_id'].endswith('_PAR_Y'):
+                            feat_id += '_PAR_Y'
+                        yield feat_id, chr, start, end
+                    elif parts[2] == 'transcript' and 'transcript_id' in info:
+                        transcript_id = info['transcript_id'].split('.')[0] if '.' in info['transcript_id'] else info['transcript_id']
+                        feat_id = f"ENSEMBL:{transcript_id}"
+                        if info['transcript_id'].endswith('_PAR_Y'):
+                            feat_id += '_PAR_Y'
+                        yield feat_id, chr, start, end
+                    elif parts[2] == 'exon' and 'exon_id' in info:
+                        exon_id = info['exon_id'].split('.')[0] if '.' in info['exon_id'] else info['exon_id']
+                        feat_id = f"ENSEMBL:{exon_id}"
+                        if info['exon_id'].endswith('_PAR_Y'):
+                            feat_id += '_PAR_Y'
+                        yield feat_id, chr, start, end
+                except Exception as e:
+                    # Skip malformed lines but log the error
+                    print(f"Warning: Skipping malformed GTF line {line_num} in {path}: {str(e)[:100]}")
+                    continue
 
     def _parse_bed(self, path, delimiter, label):
         import csv
