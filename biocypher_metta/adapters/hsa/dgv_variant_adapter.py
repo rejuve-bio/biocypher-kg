@@ -133,10 +133,10 @@ class DGVVariantAdapter(Adapter):
                 info = {}
                 for part in info_parts:
                     if not part.strip(): continue
-                    key_value = part.strip().split(' ')
-                    if len(key_value) == 2:
-                        key, value = key_value
-                        info[key] = value.replace('"', '')
+                    key_value = part.strip().split(' ', 1)
+                    if len(key_value) >= 2:
+                        key, value = key_value[0], key_value[1]
+                        info[key] = value.strip().replace('"', '')
                 
                 if parts[2] == 'gene' and 'gene_id' in info:
                     gene_id = info['gene_id'].split('.')[0]
