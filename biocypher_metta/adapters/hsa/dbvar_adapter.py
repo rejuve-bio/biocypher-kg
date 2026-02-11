@@ -80,11 +80,12 @@ class DBVarVariantAdapter(Adapter):
             path = feat_config['path']
             label = feat_config['label']
             file_type = feat_config['type']
+            delimiter = feat_config.get('delimiter', '\t')
             
             if file_type == 'gtf':
                 iterator = self._parse_gtf(path)
             elif file_type == 'bed':
-                iterator = self._parse_bed(path)
+                iterator = self._parse_bed(path, delimiter, label)
             else:
                 continue
                 
@@ -99,8 +100,12 @@ class DBVarVariantAdapter(Adapter):
                             if self.add_provenance:
                                 props['source'] = 'Overlap calculation'
                             
-                            yield feat_id, sv['id'], "feature_located_in_structural_variant", props
-                            yield sv['id'], feat_id, "structural_variant_located_in_feature", props
+                            # Dynamic granular labels
+                            feat_to_sv_label = f"{label}_located_in_structural_variant"
+                            sv_to_feat_label = f"structural_variant_located_in_{label}"
+                            
+                            yield feat_id, sv['id'], feat_to_sv_label, props
+                            yield sv['id'], feat_id, sv_to_feat_label, props
 
     def _parse_vcf(self, path):
         import re
@@ -151,28 +156,47 @@ class DBVarVariantAdapter(Adapter):
                 
                 if parts[2] == 'gene' and 'gene_id' in info:
                     gene_id = info['gene_id'].split('.')[0]
-                    yield f"ENSEMBL:{gene_id}", chr, start, end
+                    feat_id = f"ENSEMBL:{gene_id}"
+                    if info['gene_id'].endswith('_PAR_Y'):
+                        feat_id += '_PAR_Y'
+                    yield feat_id, chr, start, end
                 elif parts[2] == 'transcript' and 'transcript_id' in info:
                     transcript_id = info['transcript_id'].split('.')[0]
-                    yield f"ENSEMBL:{transcript_id}", chr, start, end
+                    feat_id = f"ENSEMBL:{transcript_id}"
+                    if info['transcript_id'].endswith('_PAR_Y'):
+                        feat_id += '_PAR_Y'
+                    yield feat_id, chr, start, end
                 elif parts[2] == 'exon' and 'exon_id' in info:
                     exon_id = info['exon_id'].split('.')[0]
-                    yield f"ENSEMBL:{exon_id}", chr, start, end
+                    feat_id = f"ENSEMBL:{exon_id}"
+                    if info['exon_id'].endswith('_PAR_Y'):
+                        feat_id += '_PAR_Y'
+                    yield feat_id, chr, start, end
 
-    def _parse_bed(self, path):
+    def _parse_bed(self, path, delimiter, label):
         import csv
         with gzip.open(path, 'rt') as f:
-            reader = csv.reader(f, delimiter='\t')
+            # EPD uses multiple spaces as delimiter sometimes, handle it robustly
+            if delimiter == ' ':
+                reader = (line.split() for line in f if not line.startswith('#'))
+            else:
+                reader = csv.reader(f, delimiter=delimiter)
+                
             for row in reader:
-                if not row: continue
-                chr = row[0]
-                if not chr.startswith('chr'): chr = 'chr' + chr
+                if not row or row[0].startswith('#'): continue
+                chr_raw = row[0]
+                chr = 'chr' + chr_raw if not chr_raw.startswith('chr') else chr_raw
                 start = int(row[1]) + 1 
                 end = int(row[2])
-                feat_id = row[3].split('_')[0]
                 
-                if 'URS' in feat_id:
-                    feat_id = f"RNACENTRAL:{feat_id}"
-                elif row[3].count('_') > 0: 
-                    feat_id = f"SO:{row[0]}_{start}_{end}_GRCh38" 
+                if label == 'promoter':
+                    # EPD ID logic: build_regulatory_region_id matches EPDAdapter
+                    feat_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
+                elif label == 'non_coding_rna':
+                    # RNAcentral ID logic: split on underscore. 
+                    # Official adapter DOES NOT add RNACENTRAL: prefix in get_nodes
+                    feat_id = row[3].split('_')[0]
+                else:
+                    feat_id = row[3]
+                    
                 yield feat_id, chr, start, end

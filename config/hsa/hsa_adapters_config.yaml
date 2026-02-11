@@ -731,7 +731,7 @@ dgv_variant:
   nodes: True
   edges: False
 
-dgv_variant_overlap_edges:
+dgv_variant_gene_overlap:
   adapter:
     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
     cls: DGVVariantAdapter
@@ -742,12 +742,37 @@ dgv_variant_overlap_edges:
         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
           label: gene
           type: gtf
+  outdir: dgv
+  nodes: False
+  edges: True
+
+dgv_variant_ncrna_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
+    cls: DGVVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+      label: structural_variant
+      feature_files:
         - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
           label: non_coding_rna
           type: bed
+  outdir: dgv
+  nodes: False
+  edges: True
+
+dgv_variant_promoter_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
+    cls: DGVVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+      label: structural_variant
+      feature_files:
         - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
           label: promoter
           type: bed
+          delimiter: ' '
   outdir: dgv
   nodes: False
   edges: True
@@ -790,7 +815,7 @@ dbvar_variant:
   nodes: True
   edges: False
 
-dbvar_variant_overlap_edges:
+dbvar_variant_gene_overlap:
   adapter:
     module: biocypher_metta.adapters.hsa.dbvar_adapter
     cls: DBVarVariantAdapter
@@ -801,12 +826,37 @@ dbvar_variant_overlap_edges:
         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
           label: gene
           type: gtf
+  outdir: dbvar
+  nodes: False
+  edges: True
+
+dbvar_variant_ncrna_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dbvar_adapter
+    cls: DBVarVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+      label: structural_variant
+      feature_files:
         - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
           label: non_coding_rna
           type: bed
+  outdir: dbvar
+  nodes: False
+  edges: True
+
+dbvar_variant_promoter_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dbvar_adapter
+    cls: DBVarVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+      label: structural_variant
+      feature_files:
         - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
           label: promoter
           type: bed
+          delimiter: ' '
   outdir: dbvar
   nodes: False
   edges: True
