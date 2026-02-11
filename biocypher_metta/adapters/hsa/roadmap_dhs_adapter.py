@@ -56,10 +56,10 @@ class RoadMapDHSAdapter(Adapter):
                     chr = self.dbsnp_rsid_map.get(_id, {}).get("chr", None) 
                     pos = self.dbsnp_rsid_map.get(_id, {}).get("pos", None)
                     if chr == None:
-                        print(f"chr is None for {_id}. Skipping it {_id}...")
+                        print(f"roadmap_dhs: chr is None for {_id}. Skipping it {_id}...")
                         continue
                     if pos == None:
-                        print(f"pos is None for {_id}. Skipping it {_id}...")
+                        print(f"roadmap_dhs: pos is None for {_id}. Skipping it {_id}...")
                         continue                    
                     #tissue = row[COL_DICT['tissue']].replace('"', '').replace("'", '')
                     cell_id = row[self.COL_DICT['cell']].split()[0]

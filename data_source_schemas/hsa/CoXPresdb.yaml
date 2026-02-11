@@ -10,4 +10,3 @@ relationships:
     target: gene
     properties:
       score: float
-      taxon_id: str

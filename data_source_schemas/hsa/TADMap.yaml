@@ -5,9 +5,9 @@ nodes:
     url: https://cb.csail.mit.edu/cb/tadmap/
     input_label: tad
     properties:
+      taxon_id: int
       end: int
       start: int
-      taxon_id: int
       chr: str
 relationships:
   gene in tad region:

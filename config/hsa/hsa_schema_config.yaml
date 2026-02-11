@@ -429,8 +429,6 @@ non_coding_rna:
 
 pathway:
   is_a: biological process
-  mixins: [biolink:Pathway]
-  biolink_category: "biolink:Pathway"
   exact_mappings:
     - PW:0000001
     - WIKIDATA:Q4915012
@@ -439,22 +437,64 @@ pathway:
     - GO:0007165
   represented_as: node
   input_label: pathway
-  kgx_properties:
-    category: "biolink:Pathway"
+  mixins: [biolink:Pathway]
+  biolink_category: "biolink:Pathway"
   properties:
-    pathway_name: 
+    pathway_name:
       type: str
       biolink: name
-    evidence: 
+    pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
+    evidence:
       type: str
       biolink: has_evidence
-    source: 
+    source:
       type: str
       biolink: knowledge_source
-    source_url: 
+    source_url:
       type: str
       biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: str
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: "biolink:Pathway"
 
+reaction:
+  is_a: molecular function
+  narrow_mappings:
+    - GO:0003674
+  represented_as: node
+  input_label: reaction
+  mixins: [biolink:MolecularActivity]
+  biolink_category: "biolink:MolecularActivity"
+  properties:
+    reaction_name:
+      type: str
+      biolink: name
+    reaction_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
+    evidence:
+      type: str
+      biolink: has_evidence
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: str
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: "biolink:MolecularActivity"
+  
 regulatory region:
   represented_as: node
   input_label: regulatory_region
@@ -558,10 +598,10 @@ disease:
     category: "biolink:Disease"
 
 #chebi
-chemical substance:
+small molecule:
   is_a: ontology term
   represented_as: node
-  input_label: chemical_substance
+  input_label: small_molecule
   mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
@@ -682,7 +722,7 @@ tad:
 
 #parent types
 expression:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:related_to"
   represented_as: edge
   input_label: expression
@@ -723,7 +763,7 @@ annotation:
       biolink: source_web_page
 
 regulatory association:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:related_to"
   represented_as: edge
   input_label: regulatory_association
@@ -1015,8 +1055,29 @@ gene to pathway association:
   output_label: participates_in
   source: [gene, transcript, protein]
   target: pathway
+  pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+    type: str
+    biolink: source_record_urls
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"  
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+gene to reaction association:
+  description: >-
+    An interaction between a gene or a gene product (gogp) and a molecular activity.
+  is_a: annotation
+  mixins: [biolink:GeneOrGeneProductOrGeneFamilyToBiologicalProcessOrActivityAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_or_gene_product_reaction
+  output_label: involved_in 
+  source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
+  target: reaction
+  kgx_properties:
+    subject_category: "biolink:GeneOrGeneProduct"
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
@@ -1153,8 +1214,8 @@ chebi subclass of:
   input_label: chebi_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: chemical substance
-  target: chemical substance
+  source: small molecule
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:ChemicalEntity"
     object_category: "biolink:ChemicalEntity"
@@ -1637,7 +1698,7 @@ gtex variant to gene expression association:
   aliases: ["eQTL", "e-QTL"]
   description: >-
     An association between a variant and expression of a gene (i.e. e-QTL)
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:VariantToGeneExpressionAssociation]
   biolink_predicate: "biolink:correlated_with"
   represented_as: edge
@@ -1660,7 +1721,7 @@ gtex variant to gene expression association:
     source_url: str
 
 closest gene to variant association:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:VariantToGeneAssociation]
   biolink_predicate: "biolink:associated_with" 
   description: >-
@@ -1760,7 +1821,7 @@ in gene to variant association:
       biolink: has_quantitative_value
 
 topld in linkage disequilibrium with:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:in_linkage_disequilibrium_with"
   description:
     holds between two sequence variants, the presence of which are correlated
@@ -1791,7 +1852,7 @@ topld in linkage disequilibrium with:
       biolink: source_web_page
 
 lower resolution structure:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenomicSequenceLocalization]
   biolink_predicate: "biolink:has_part"
   description: >-
@@ -1807,7 +1868,7 @@ lower resolution structure:
     agent_type: "manual_agent"
 
 located on chain:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenomicSequenceLocalization]
   biolink_predicate: "biolink:part_of"
   description: >-
@@ -1823,7 +1884,7 @@ located on chain:
     agent_type: "manual_agent"
 
 transcription factor to snp association:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:affects"
   description: holds between a transcription factor and a snp if the snp occurs in a transcription factor binding site (tfbs)
   represented_as: edge
@@ -1875,7 +1936,7 @@ gene to transcription binding site association:
       biolink: source_web_page
 
 gene in tad region:
-  is_a: related to at instance level
+  is_a: association
   biolink_predicate: "biolink:located_in"
   description: holds between a tad and a gene that is in the tad region
   represented_as: edge
@@ -1919,7 +1980,7 @@ activity by contact:
       biolink: has_biological_sequence
 
 chromatin state:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]
   biolink_predicate: "biolink:has_phenotype" 
   represented_as: edge
@@ -1937,7 +1998,7 @@ chromatin state:
       biolink: phenotypic_state
 
 dnase I hotspot:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]
   biolink_predicate: "biolink:has_phenotype" 
   description: >-
@@ -1953,7 +2014,7 @@ dnase I hotspot:
     agent_type: "manual_agent"
 
 histone modification:
-  is_a: related to at instance level
+  is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]
   biolink_predicate: "biolink:has_phenotype"
   description: >-
@@ -2143,6 +2204,59 @@ protein has_xref cellular_component:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+gene to phenotype association:
+  description: >-
+    An association between a gene and a phenotype (HPO term).
+  is_a: association
+  mixins: [biolink:GeneToPhenotypicFeatureAssociation]
+  biolink_predicate: "biolink:has_phenotype"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_phenotype
+  output_label: involved_in #has_phenotype
+  source: gene
+  target: phenotype
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:PhenotypicFeature"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    phenotype_name:
+      type: str
+    frequency:
+      type: str
+    disease_id:
+      type: str
+
+
+gene to disease association:
+  description: >-
+    An association between a gene and a disease identifier (e.g., OMIM, ORPHA).
+  is_a: association
+  mixins: [biolink:GeneToDiseaseAssociation]
+  biolink_predicate: "biolink:associated_with"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_disease
+  output_label: associated_with
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    association_type:
+      type: str
+    source_ref:
+      type: str
 gene located_in structural_variant:
   is_a: association
   biolink_predicate: "biolink:located_in"

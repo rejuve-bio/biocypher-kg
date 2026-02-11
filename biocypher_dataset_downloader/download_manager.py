@@ -118,6 +118,7 @@ class DownloadManager:
         
         logger.info(f"Downloading from GCS: {bucket_name}/{path}")
         blob.download_to_filename(filepath)
+        
     def _handle_roadmap_download(self, config: dict, save_dir: Path):
         """Special handler for roadmap downloads"""
         root_url = config['url']

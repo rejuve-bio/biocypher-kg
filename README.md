@@ -156,9 +156,10 @@ The project template is structured as follows:
 │   └── schema_config.yaml
 │
 │ # Downloading data
-├── downloader/
+├── biocypher_dataset_downloader/
     ├── __init__.py
-    ├── download_data.py
+    ├── dmel_download_data.py
+    ├── hsa_download_data.py
     ├── download_manager.py
     ├── protocols/
         ├── __init__.py

@@ -5,10 +5,10 @@ nodes:
     url: https://rnacentral.org/downloads
     input_label: non_coding_rna
     properties:
-      end: int
-      rna_type: str
-      start: int
       taxon_id: int
+      rna_type: str
+      end: int
+      start: int
       chr: str
 relationships:
   biological process rna:

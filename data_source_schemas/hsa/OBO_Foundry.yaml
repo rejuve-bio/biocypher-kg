@@ -5,65 +5,70 @@ nodes:
     url: http://www.obofoundry.org/
     input_label: biological_process
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   molecular function:
     url: http://www.obofoundry.org/
     input_label: molecular_function
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   cellular component:
     url: http://www.obofoundry.org/
     input_label: cellular_component
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   anatomy:
     url: http://www.obofoundry.org/
     input_label: anatomy
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   cell line:
     url: http://www.obofoundry.org/
     input_label: cell_line
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   cell type:
     url: http://www.obofoundry.org/
     input_label: cell_type
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   experimental factor:
     url: http://www.obofoundry.org/
     input_label: experimental_factor
     properties:
-      description: str
       synonym: str[]
       term_name: str
+      description: str
   tissue:
     url: http://www.obofoundry.org/
     input_label: tissue
     properties:
-      description: str
       synonym: str[]
       term_name: str
-  chemical substance:
+      description: str
+  small molecule:
     url: http://www.obofoundry.org/
-    input_label: chemical_substance
+    input_label: small_molecule
+    properties:
+      synonym: str[]
+      term_name: str
+      description: str
+  phenotype:
+    url: http://www.obofoundry.org/
+    input_label: phenotype
     properties:
       description: str
-      synonym: str[]
-      term_name: str
 relationships:
   biological process subclass:
     url: http://www.obofoundry.org/
@@ -138,7 +143,12 @@ relationships:
   chebi subclass of:
     url: http://www.obofoundry.org/
     input_label: chebi_subclass_of
-    source: chemical substance
-    target: chemical substance
+    source: small molecule
+    target: small molecule
     properties:
       rel_type: str
+  hpo subclass of:
+    url: http://www.obofoundry.org/
+    input_label: hpo_subclass_of
+    source: phenotype
+    target: phenotype

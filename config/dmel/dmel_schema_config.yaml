@@ -487,6 +487,9 @@ pathway:
     pathway_name:
       type: str
       biolink: name
+    pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
     evidence:
       type: str
       biolink: has_evidence
@@ -503,6 +506,38 @@ pathway:
       range: biolink:OrganismTaxon
   kgx_properties:
     category: "biolink:Pathway"
+
+reaction:
+  is_a: molecular function
+  narrow_mappings:
+    - GO:0003674
+  represented_as: node
+  input_label: reaction
+  mixins: [biolink:MolecularActivity]
+  biolink_category: "biolink:MolecularActivity"
+  properties:
+    reaction_name:
+      type: str
+      biolink: name
+    reaction_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
+    evidence:
+      type: str
+      biolink: has_evidence
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: str
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: "biolink:MolecularActivity"
 
 regulatory region:
   represented_as: node
@@ -717,11 +752,11 @@ disease:
   kgx_properties:
     category: "biolink:Disease"
 
-chemical substance:
+small molecule:
   is_a: ontology term
   represented_as: node
-  input_label: chemical_substance
-  # output_label: chemical_substance
+  input_label: small_molecule
+  # output_label: small_molecule
   mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
@@ -1515,16 +1550,37 @@ cl part of:
 
 gene to pathway association:
   description: >-
-    An interaction between a gene or gene product and a biological process or pathway.
+    An interaction between a gene or gene product (gogp) and a biological process or pathway.
   is_a: annotation
   mixins: [biolink:GeneToPathwayAssociation]
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
-  output_label: involved_in # output_label from dmel.yaml
+  output_label: involved_in 
   source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
   target: pathway
+  pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
+      type: str
+      biolink: source_record_urls
+  kgx_properties:
+    subject_category: "biolink:GeneOrGeneProduct"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+gene to reaction association:
+  description: >-
+    An interaction between a gene or a gene product (gogp) and a molecular activity.
+  is_a: annotation
+  mixins: [biolink:GeneOrGeneProductOrGeneFamilyToBiologicalProcessOrActivityAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_or_gene_product_reaction
+  output_label: involved_in 
+  source: biolink:GeneOrGeneProduct     #  [gene, protein, transcript] 
+  target: reaction
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"
     object_category: "biolink:Pathway"
@@ -2300,8 +2356,8 @@ chebi subclass of:
   input_label: chebi_subclass_of
   output_label: subclass_of
   biolink_predicate: "biolink:subclass_of"
-  source: chemical substance
-  target: chemical substance
+  source: small molecule
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:ChemicalEntity"
     object_category: "biolink:ChemicalEntity"

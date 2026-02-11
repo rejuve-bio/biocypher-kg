@@ -1,10 +1,5 @@
-<<<<<<< HEAD:data_source_schemas/hsa/bgee.yaml
-name: Bgee
-website: https://www.bgee.org/
-=======
 name: bgee
 website: https://www.bgee.org
->>>>>>> main:data_source_schemas/bgee.yaml
 relationships:
   expressed in:
     url: https://www.bgee.org/download/gene-expression-calls?id=
@@ -13,11 +8,5 @@ relationships:
     source: gene
     target: ontology term
     properties:
-      developmental_stage: str
       p_value: float
       score: float
-<<<<<<< HEAD:data_source_schemas/hsa/bgee.yaml
-      p_value: float
-=======
-      taxon_id: str
->>>>>>> main:data_source_schemas/bgee.yaml
