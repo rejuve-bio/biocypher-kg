@@ -87,14 +87,13 @@ genomic variant:
 
 epigenomic feature:
   represented_as: node
-  is_a: position entity
+  is_a: position entity     # epigenomic entity has no position in the  genome... :/
   mixins: [biolink:EpigenomicEntity]
   biolink_category: "biolink:EpigenomicEntity"
   inherit_properties: true
   input_label: epigenomic_feature
   description: >-
     A region of the genome that is associated with epigenetic modifications
-
   properties:
     biological_context: 
       type: str
@@ -1140,6 +1139,39 @@ parent pathway of:
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+reaction to pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  description: >-
+    holds between a reaction and a pathway
+  represented_as: edge
+  input_label: reaction_to_pathway
+  output_label: part_of
+  source: reaction
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:MolecularActivity"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+# input role protein to reaction association:
+#   is_a: annotation
+#   biolink_predicate: "biolink:part_of"
+#   inherit_properties: true
+#   description: >-
+#     holds between a protein playing an input role in a reaction and a pathway
+#   represented_as: edge
+#   input_label: enables
+#   source: protein
+#   target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+#   kgx_properties:
+    # subject_category: "biolink:Protein"
+    # object_category: "biolink:MolecularActivity"
+    # knowledge_level: "knowledge_assertion"
+    # agent_type: "manual_agent"
 
 child pathway of:
   is_a: annotation

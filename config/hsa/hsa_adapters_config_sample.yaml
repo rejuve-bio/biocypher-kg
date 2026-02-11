@@ -129,6 +129,18 @@ reactome_reaction:
   nodes: True
   edges: False
 
+reactome_reaction_to_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter

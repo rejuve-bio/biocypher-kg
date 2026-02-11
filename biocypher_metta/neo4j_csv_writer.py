@@ -108,9 +108,9 @@ class Neo4jCSVWriter(BaseWriter):
             # Strip CURIE prefixes from property values
             if ':' in value and not value.startswith('http'):
                 _, local_part = value.split(':', 1)
-                value = local_part.strip()
-        
+                value = local_part.strip()        
         return value
+
     def normalize_text(self, label, replace_char="_", lowercase=True):
         if isinstance(label, list):
             labels = []
@@ -240,7 +240,7 @@ class Neo4jCSVWriter(BaseWriter):
 
 
     def _type_hierarchy(self):
-        # to use Biolink-compatible schema
+        # to use Biolink-compatible schema super types
         # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
         return {
             'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
