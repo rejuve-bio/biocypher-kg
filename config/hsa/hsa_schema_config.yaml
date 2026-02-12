@@ -2257,56 +2257,56 @@ gene to disease association:
       type: str
     source_ref:
       type: str
-gene located_in structural_variant:
+gene overlaps structural_variant:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: gene_located_in_structural_variant
-  output_label: located_in
+  input_label: gene_overlaps_structural_variant
+  output_label: overlaps
   source: gene
   target: structural variant
 
-structural_variant located_in gene:
+structural_variant overlaps gene:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: structural_variant_located_in_gene
-  output_label: located_in
+  input_label: structural_variant_overlaps_gene
+  output_label: overlaps
   source: structural variant
   target: gene
 
-non_coding_rna located_in structural_variant:
+non_coding_rna overlaps structural_variant:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: non_coding_rna_located_in_structural_variant
-  output_label: located_in
+  input_label: non_coding_rna_overlaps_structural_variant
+  output_label: overlaps
   source: non_coding_rna
   target: structural variant
 
-structural_variant located_in non_coding_rna:
+structural_variant overlaps non_coding_rna:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: structural_variant_located_in_non_coding_rna
-  output_label: located_in
+  input_label: structural_variant_overlaps_non_coding_rna
+  output_label: overlaps
   source: structural variant
   target: non_coding_rna
 
-promoter located_in structural_variant:
+promoter overlaps structural_variant:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: promoter_located_in_structural_variant
-  output_label: located_in
+  input_label: promoter_overlaps_structural_variant
+  output_label: overlaps
   source: promoter
   target: structural variant
 
-structural_variant located_in promoter:
+structural_variant overlaps promoter:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: structural_variant_located_in_promoter
-  output_label: located_in
+  input_label: structural_variant_overlaps_promoter
+  output_label: overlaps
   source: structural variant
   target: promoter

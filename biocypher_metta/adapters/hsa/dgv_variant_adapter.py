@@ -95,8 +95,8 @@ class DGVVariantAdapter(Adapter):
                                 props['source'] = 'Overlap calculation'
                             
                             # Dynamic granular labels
-                            feat_to_sv_label = f"{label}_located_in_structural_variant"
-                            sv_to_feat_label = f"structural_variant_located_in_{label}"
+                            feat_to_sv_label = f"{label}_overlaps_structural_variant"
+                            sv_to_feat_label = f"structural_variant_overlaps_{label}"
                             
                             yield feat_id, sv['id'], feat_to_sv_label, props
                             yield sv['id'], feat_id, sv_to_feat_label, props

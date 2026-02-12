@@ -2364,12 +2364,12 @@ chebi subclass of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-feature located_in structural_variant:
+feature overlaps structural_variant:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: feature_located_in_structural_variant
-  output_label: located_in
+  input_label: feature_overlaps_structural_variant
+  output_label: overlaps
   source: biological entity
   target: structural variant
   kgx_properties:
@@ -2378,12 +2378,12 @@ feature located_in structural_variant:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-structural_variant located_in feature:
+structural_variant overlaps feature:
   is_a: association
-  biolink_predicate: "biolink:located_in"
+  biolink_predicate: "biolink:overlaps"
   represented_as: edge
-  input_label: structural_variant_located_in_feature
-  output_label: located_in
+  input_label: structural_variant_overlaps_feature
+  output_label: overlaps
   source: structural variant
   target: biological entity
   kgx_properties:
