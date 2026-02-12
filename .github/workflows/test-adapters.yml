@@ -115,6 +115,7 @@ jobs:
             python .github/scripts/prepare_config.py "${{ needs.determine_changes.outputs.changed_adapters }}" "${{ needs.determine_changes.outputs.config_changed }}" "${{ needs.determine_changes.outputs.changed_config_items }}"
           else
             echo "No adapter changes detected. Using sample config."
+            echo '!include hsa/hsa_adapters_config_sample.yaml' > config/test_config.yaml
           fi
       - uses: actions/upload-artifact@v4
         with:
@@ -199,7 +200,7 @@ jobs:
             else
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"
-                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --dbsnp-rsids aux_files/hsa/sample_dbsnp_rsids.pkl --dbsnp-pos aux_files/hsa/sample_dbsnp_pos.pkl --species hsa --dataset sample --writer-type $CURRENT_WRITER
+                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --dbsnp-rsids aux_files/hsa/sample_dbsnp_rsids.pkl --dbsnp-pos aux_files/hsa/sample_dbsnp_pos.pkl --writer-type $CURRENT_WRITER
 
               else
                 echo "Skipping unchanged writer: $CURRENT_WRITER"
