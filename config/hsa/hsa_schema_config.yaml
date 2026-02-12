@@ -2257,3 +2257,56 @@ gene to disease association:
       type: str
     source_ref:
       type: str
+gene overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: gene_overlaps_structural_variant
+  output_label: overlaps
+  source: gene
+  target: structural variant
+
+structural_variant overlaps gene:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_gene
+  output_label: overlaps
+  source: structural variant
+  target: gene
+
+non_coding_rna overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: non_coding_rna_overlaps_structural_variant
+  output_label: overlaps
+  source: non_coding_rna
+  target: structural variant
+
+structural_variant overlaps non_coding_rna:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_non_coding_rna
+  output_label: overlaps
+  source: structural variant
+  target: non_coding_rna
+
+promoter overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: promoter_overlaps_structural_variant
+  output_label: overlaps
+  source: promoter
+  target: structural variant
+
+structural_variant overlaps promoter:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_promoter
+  output_label: overlaps
+  source: structural variant
+  target: promoter

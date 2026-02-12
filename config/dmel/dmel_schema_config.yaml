@@ -2364,6 +2364,34 @@ chebi subclass of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+feature overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: feature_overlaps_structural_variant
+  output_label: overlaps
+  source: biological entity
+  target: structural variant
+  kgx_properties:
+    subject_category: "biolink:GenomicEntity"
+    object_category: "biolink:SequenceVariant"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+structural_variant overlaps feature:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_feature
+  output_label: overlaps
+  source: structural variant
+  target: biological entity
+  kgx_properties:
+    subject_category: "biolink:SequenceVariant"
+    object_category: "biolink:GenomicEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
 
 # ---
 # regulatory association (edges)
