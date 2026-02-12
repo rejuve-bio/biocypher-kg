@@ -42,6 +42,8 @@ class PrologWriter(BaseWriter):
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
+        if prev_id is None:
+            return None
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
             prefix = prefix.upper()
@@ -110,16 +112,28 @@ class PrologWriter(BaseWriter):
         if isinstance(source_id, tuple):
             source_type = source_id[0]
             source_id_processed = self.preprocess_id(source_id[1])
+            if source_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because source ID is None")
+                return []
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
                     if source_type not in valid_source_types:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
+                        logger.warning(
+                            f"Edge '{label}': coercing source type '{source_type}' to '{valid_source_types[0]}'"
+                        )
+                        source_type = valid_source_types[0]
                 else:
                     if source_type != valid_source_types:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+                        logger.warning(
+                            f"Edge '{label}': coercing source type '{source_type}' to '{valid_source_types}'"
+                        )
+                        source_type = valid_source_types
         else:
             source_id_processed = self.preprocess_id(source_id)
+            if source_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because source ID is None")
+                return []
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
                 if isinstance(source_type_info, list):
@@ -132,16 +146,28 @@ class PrologWriter(BaseWriter):
         if isinstance(target_id, tuple):
             target_type = target_id[0]
             target_id_processed = self.preprocess_id(target_id[1])
+            if target_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because target ID is None")
+                return []
             if label in self.edge_node_types:
                 valid_target_types = self.edge_node_types[label]["target"]
                 if isinstance(valid_target_types, list):
                     if target_type not in valid_target_types:
-                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
+                        logger.warning(
+                            f"Edge '{label}': coercing target type '{target_type}' to '{valid_target_types[0]}'"
+                        )
+                        target_type = valid_target_types[0]
                 else:
                     if target_type != valid_target_types:
-                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
+                        logger.warning(
+                            f"Edge '{label}': coercing target type '{target_type}' to '{valid_target_types}'"
+                        )
+                        target_type = valid_target_types
         else:
             target_id_processed = self.preprocess_id(target_id)
+            if target_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because target ID is None")
+                return []
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
                 if isinstance(target_type_info, list):
