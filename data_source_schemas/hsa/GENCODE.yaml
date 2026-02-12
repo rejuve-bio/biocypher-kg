@@ -5,32 +5,32 @@ nodes:
     url: https://www.gencodegenes.org/
     input_label: gene
     properties:
-      chr: str
-      end: int
-      gene_name: str
       synonym: str[]
+      end: int
       gene_type: str
       start: int
+      gene_name: str
+      chr: str
   transcript:
     url: https://www.gencodegenes.org/
     input_label: transcript
     description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
     properties:
       transcript_type: str
+      transcript_name: str
       gene_name: str
       transcript_id: str
-      transcript_name: str
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon
     properties:
-      end: int
       gene_id: str
-      transcript_id: str
       exon_id: str
+      end: int
       start: int
-      chr: str
       exon_number: int
+      chr: str
+      transcript_id: str
 relationships:
   transcribes to:
     url: https://www.gencodegenes.org/

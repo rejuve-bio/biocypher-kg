@@ -1,31 +1,15 @@
 name: TFLink
-<<<<<<< HEAD:data_source_schemas/dmel/TFLink.yaml
-website: http://tflink.net/
-relationships:
-  transcription factor to gene association:
-    url: http://tflink.net/
-    description: An regulatory association between a transcription factor and its
-      target gene
-=======
 website: tflink.net
 relationships:
   transcription factor to gene association:
     url: tflink.net
->>>>>>> main:data_source_schemas/TFLink.yaml
     input_label: tf_gene
     description: An regulatory association between a transcription factor and its
       target gene
     source: gene
     target: gene
     properties:
-      evidence_type: str
-      detection_method: str
-<<<<<<< HEAD:data_source_schemas/dmel/TFLink.yaml
-      database: str[]
-      evidence_type: str
+      evidence: str[]
       taxon_id: int
-=======
-      evidence: str
-      database: str
-      taxon_id: str
->>>>>>> main:data_source_schemas/TFLink.yaml
+      detection_method: str
+      evidence_type: str

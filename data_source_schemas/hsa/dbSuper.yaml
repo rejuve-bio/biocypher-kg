@@ -5,11 +5,11 @@ nodes:
     url: https://asntech.org/dbsuper/download.php
     input_label: super_enhancer
     properties:
-      start: int
       end: int
       biological_context: str
-      se_id: str
+      start: int
       chr: str
+      se_id: str
 relationships:
   super enhancer to gene association:
     url: https://asntech.org/dbsuper/download.php

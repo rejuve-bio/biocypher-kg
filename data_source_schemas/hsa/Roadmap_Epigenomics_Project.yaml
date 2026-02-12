@@ -15,8 +15,6 @@ relationships:
       acetylation, phosphorylation
     source: snp
     target: anatomy
-    properties:
-      modification: str
   dnase I hotspot:
     url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
     input_label: in_dnase_I_hotspot
