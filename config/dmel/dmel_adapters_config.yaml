@@ -18,7 +18,7 @@ rna_central_non_coding_rna:
       rfam_filepath: /mnt/hdd_1/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       label: non_coding_rna
       type: non_coding_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: True
   edges: False
@@ -32,7 +32,7 @@ rna_central_non_coding_rna_biological_process:
       rfam_filepath: /mnt/hdd_1/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: False
   edges: True  
@@ -46,7 +46,7 @@ rna_central_non_coding_rna_molecular_function:
       rfam_filepath: /mnt/hdd_1/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: False
   edges: True
@@ -60,7 +60,7 @@ rna_central_non_coding_rna_cellular_component:
       rfam_filepath: /mnt/hdd_1/abdu/biocypher_data/rna_central/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: rna_central
   nodes: False
   edges: True   
@@ -659,6 +659,78 @@ reactome_reaction:
   outdir: reactome
   nodes: True
   edges: False
+
+reactome_reaction_to_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_input_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_output_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_catalyst_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_negative_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_positive_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
 
 genes_pathways:
   adapter:

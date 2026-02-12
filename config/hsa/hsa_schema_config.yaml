@@ -1124,22 +1124,6 @@ small molecule to pathway association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-parent pathway of:
-  is_a: annotation
-  biolink_predicate: "biolink:has_part"
-  inherit_properties: true
-  description: >-
-    holds between two pathways where the domain class is a parent pathway of the range class
-  represented_as: edge
-  input_label: parent_pathway_of
-  source: pathway
-  target: pathway
-  kgx_properties:
-    subject_category: "biolink:Pathway"
-    object_category: "biolink:Pathway"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
 reaction to pathway association:
   is_a: annotation
   biolink_predicate: "biolink:part_of"
@@ -1157,22 +1141,104 @@ reaction to pathway association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-# input role protein to reaction association:
-#   is_a: annotation
-#   biolink_predicate: "biolink:part_of"
-#   inherit_properties: true
-#   description: >-
-#     holds between a protein playing an input role in a reaction and a pathway
-#   represented_as: edge
-#   input_label: enables
-#   source: protein
-#   target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
-#   kgx_properties:
-    # subject_category: "biolink:Protein"
-    # object_category: "biolink:MolecularActivity"
-    # knowledge_level: "knowledge_assertion"
-    # agent_type: "manual_agent"
+input role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:is_input_of"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: enables
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
 
+output role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:produced_by"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: produced_by
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+catalyst protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:regulates"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: regulates
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+negative role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:regulates"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: negatively_regulates
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+positive role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:regulates"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: positively_regulates
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+parent pathway of:
+  is_a: annotation
+  biolink_predicate: "biolink:has_part"
+  inherit_properties: true
+  description: >-
+    holds between two pathways where the domain class is a parent pathway of the range class
+  represented_as: edge
+  input_label: parent_pathway_of
+  source: pathway
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:Pathway"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+    
 child pathway of:
   is_a: annotation
   biolink_predicate: "biolink:part_of"

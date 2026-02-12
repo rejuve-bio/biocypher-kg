@@ -240,9 +240,12 @@ class Neo4jCSVWriter(BaseWriter):
 
 
     def _type_hierarchy(self):
-        # to use Biolink-compatible schema super types
+        # to use Biolink-compatible schema
         # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
         return {
+            'biolink:Biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
+            'pathway': frozenset({'pathway'}),
+            'reaction': frozenset({'reaction'}),
             'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
             'gene': frozenset({'gene'}),
             'transcript': frozenset({'transcript'}),

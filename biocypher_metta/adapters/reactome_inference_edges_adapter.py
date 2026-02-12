@@ -68,10 +68,9 @@ from biocypher_metta.adapters import Adapter
 # R-HSA-1059683	R-HSA-1067651	IL6:IL6R-2 binds IL6ST:JAK1, JAK2, (TYK2)	P05231	[input, output, negative]
 # R-HSA-1059683	R-HSA-1067667	IL6 binds IL6R	P08887	[input, output, negative]
 
-class ReactomeEdgesAdapter(Adapter):
+class ReactomeInferenceEdgesAdapter(Adapter):
 
-    ALLOWED_LABELS = ['protein_regulates_reaction_or_pathway'   ,
-                       'protein_enables_reaction_or_pathway', 'protein_produced_by_reaction_or_pathway']
+    ALLOWED_LABELS = ['enables', 'produced_by', 'regulates', 'negatively_regulates', 'positively_regulates']
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
         """
@@ -81,9 +80,9 @@ class ReactomeEdgesAdapter(Adapter):
         will be translated into Atom space. Otherwise, only data for
         the specified species will be processed.
         """        
-        if label not in ReactomeEdgesAdapter.ALLOWED_LABELS:
+        if label not in ReactomeInferenceEdgesAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +
-                             ', '.join(ReactomeEdgesAdapter.ALLOWED_LABELS))
+                             ', '.join(ReactomeInferenceEdgesAdapter.ALLOWED_LABELS))
         self.filepath = filepath
         self.dataset = label
         self.label = label
@@ -91,7 +90,7 @@ class ReactomeEdgesAdapter(Adapter):
         self.source_url = "https://reactome.org"
         self.fbpp_to_uniprot = {}               # dict to map FBpp to UniProt ids and to avoid remote connections during runtime
         self.taxon_id = taxon_id
-        super(ReactomeEdgesAdapter, self).__init__(write_properties, add_provenance)
+        super(ReactomeInferenceEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
         organism_taxon_map = {
@@ -120,7 +119,7 @@ class ReactomeEdgesAdapter(Adapter):
             for line in input_file:
                 data = line.strip().split('\t')
 
-                if self.label == 'protein_regulates_reaction_or_pathway':
+                if self.label in self.ALLOWED_LABELS:
                     pathway_id = data[0].strip()
                     reaction_id = data[1].strip()
                     uniprot_id = data[3].strip()   
@@ -140,7 +139,7 @@ class ReactomeEdgesAdapter(Adapter):
                         total_in_species_records += 1
                         continue
                     total_in_species_records += 1
-                    protein_roles = protein_roles.replace('[', '').replace(']', '').replace(' ', '').split()
+                    protein_roles = protein_roles.replace('[', '').replace(']', '').replace(' ', '').split(',')
                     for protein_role in protein_roles:
                         label = roles_to_label_map[protein_role]
                         edges_key = f'{uniprot_id}_{protein_role}_{pathway_id}'  
