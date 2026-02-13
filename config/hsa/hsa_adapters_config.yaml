@@ -1044,6 +1044,20 @@ clo_subclass_of:
   nodes: False
   edges: True
 
+cell_line_is_a_cell_type:
+  adapter:
+    module: biocypher_metta.adapters.cell_line_ontology_adapter
+    cls: CellLineOntologyAdapter
+    args:
+      ontology: "clo"
+      label: cell_line_is_a_cell_type
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_line_ontology
+  nodes: False
+  edges: True
+
 cell_ontology:
   adapter:
     module: biocypher_metta.adapters.cell_ontology_adapter
@@ -1093,6 +1107,20 @@ cl_part_of:
     args:
       ontology: "cl"
       label: cl_part_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cell_type_part_of_tissue:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cell_type_part_of_tissue
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
@@ -1161,6 +1189,20 @@ bto_subclass_of:
     args:
       ontology: "bto"
       label: bto_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
+
+tissue_part_of_anatomy:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: "bto"
+      label: tissue_part_of_anatomy
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
