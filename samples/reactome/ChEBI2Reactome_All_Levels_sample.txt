@@ -1,0 +1,100 @@
+10033	R-DME-1430728	https://reactome.org/PathwayBrowser/#/R-DME-1430728	Metabolism	IEA	Drosophila melanogaster
+10033	R-DME-196854	https://reactome.org/PathwayBrowser/#/R-DME-196854	Metabolism of vitamins and cofactors	IEA	Drosophila melanogaster
+10033	R-DME-6806664	https://reactome.org/PathwayBrowser/#/R-DME-6806664	Metabolism of vitamin K	IEA	Drosophila melanogaster
+10033	R-DME-6806667	https://reactome.org/PathwayBrowser/#/R-DME-6806667	Metabolism of fat-soluble vitamins	IEA	Drosophila melanogaster
+10036	R-DME-1430728	https://reactome.org/PathwayBrowser/#/R-DME-1430728	Metabolism	IEA	Drosophila melanogaster
+10036	R-DME-2142753	https://reactome.org/PathwayBrowser/#/R-DME-2142753	Arachidonate metabolism	IEA	Drosophila melanogaster
+10036	R-DME-556833	https://reactome.org/PathwayBrowser/#/R-DME-556833	Metabolism of lipids	IEA	Drosophila melanogaster
+10036	R-DME-8848584	https://reactome.org/PathwayBrowser/#/R-DME-8848584	Wax and plasmalogen biosynthesis	IEA	Drosophila melanogaster
+10036	R-DME-8978868	https://reactome.org/PathwayBrowser/#/R-DME-8978868	Fatty acid metabolism	IEA	Drosophila melanogaster
+10036	R-DME-9640463	https://reactome.org/PathwayBrowser/#/R-DME-9640463	Wax biosynthesis	IEA	Drosophila melanogaster
+10055	R-DME-162582	https://reactome.org/PathwayBrowser/#/R-DME-162582	Signal Transduction	IEA	Drosophila melanogaster
+10055	R-DME-372790	https://reactome.org/PathwayBrowser/#/R-DME-372790	Signaling by GPCR	IEA	Drosophila melanogaster
+10055	R-DME-373076	https://reactome.org/PathwayBrowser/#/R-DME-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Drosophila melanogaster
+10055	R-DME-375280	https://reactome.org/PathwayBrowser/#/R-DME-375280	Amine ligand-binding receptors	IEA	Drosophila melanogaster
+10055	R-DME-390696	https://reactome.org/PathwayBrowser/#/R-DME-390696	Adrenoceptors	IEA	Drosophila melanogaster
+10055	R-DME-500792	https://reactome.org/PathwayBrowser/#/R-DME-500792	GPCR ligand binding	IEA	Drosophila melanogaster
+10093	R-DME-162582	https://reactome.org/PathwayBrowser/#/R-DME-162582	Signal Transduction	IEA	Drosophila melanogaster
+10093	R-DME-372790	https://reactome.org/PathwayBrowser/#/R-DME-372790	Signaling by GPCR	IEA	Drosophila melanogaster
+10093	R-DME-373076	https://reactome.org/PathwayBrowser/#/R-DME-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Drosophila melanogaster
+10093	R-DME-375280	https://reactome.org/PathwayBrowser/#/R-DME-375280	Amine ligand-binding receptors	IEA	Drosophila melanogaster
+10033	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+10033	R-HSA-196854	https://reactome.org/PathwayBrowser/#/R-HSA-196854	Metabolism of vitamins and cofactors	TAS	Homo sapiens
+10033	R-HSA-6806664	https://reactome.org/PathwayBrowser/#/R-HSA-6806664	Metabolism of vitamin K	TAS	Homo sapiens
+10033	R-HSA-6806667	https://reactome.org/PathwayBrowser/#/R-HSA-6806667	Metabolism of fat-soluble vitamins	TAS	Homo sapiens
+10036	R-HSA-1430728	https://reactome.org/PathwayBrowser/#/R-HSA-1430728	Metabolism	TAS	Homo sapiens
+10036	R-HSA-2142753	https://reactome.org/PathwayBrowser/#/R-HSA-2142753	Arachidonate metabolism	TAS	Homo sapiens
+10036	R-HSA-556833	https://reactome.org/PathwayBrowser/#/R-HSA-556833	Metabolism of lipids	TAS	Homo sapiens
+10036	R-HSA-8848584	https://reactome.org/PathwayBrowser/#/R-HSA-8848584	Wax and plasmalogen biosynthesis	TAS	Homo sapiens
+10036	R-HSA-8978868	https://reactome.org/PathwayBrowser/#/R-HSA-8978868	Fatty acid metabolism	TAS	Homo sapiens
+10036	R-HSA-9640463	https://reactome.org/PathwayBrowser/#/R-HSA-9640463	Wax biosynthesis	TAS	Homo sapiens
+10055	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+10055	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	TAS	Homo sapiens
+10055	R-HSA-373076	https://reactome.org/PathwayBrowser/#/R-HSA-373076	Class A/1 (Rhodopsin-like receptors)	TAS	Homo sapiens
+10055	R-HSA-375280	https://reactome.org/PathwayBrowser/#/R-HSA-375280	Amine ligand-binding receptors	TAS	Homo sapiens
+10055	R-HSA-390696	https://reactome.org/PathwayBrowser/#/R-HSA-390696	Adrenoceptors	TAS	Homo sapiens
+10055	R-HSA-500792	https://reactome.org/PathwayBrowser/#/R-HSA-500792	GPCR ligand binding	TAS	Homo sapiens
+10093	R-HSA-162582	https://reactome.org/PathwayBrowser/#/R-HSA-162582	Signal Transduction	TAS	Homo sapiens
+10093	R-HSA-372790	https://reactome.org/PathwayBrowser/#/R-HSA-372790	Signaling by GPCR	TAS	Homo sapiens
+10093	R-HSA-373076	https://reactome.org/PathwayBrowser/#/R-HSA-373076	Class A/1 (Rhodopsin-like receptors)	TAS	Homo sapiens
+10093	R-HSA-375280	https://reactome.org/PathwayBrowser/#/R-HSA-375280	Amine ligand-binding receptors	TAS	Homo sapiens
+10093	R-CEL-162582	https://reactome.org/PathwayBrowser/#/R-CEL-162582	Signal Transduction	IEA	Caenorhabditis elegans
+10093	R-CEL-372790	https://reactome.org/PathwayBrowser/#/R-CEL-372790	Signaling by GPCR	IEA	Caenorhabditis elegans
+10093	R-CEL-373076	https://reactome.org/PathwayBrowser/#/R-CEL-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Caenorhabditis elegans
+10093	R-CEL-375280	https://reactome.org/PathwayBrowser/#/R-CEL-375280	Amine ligand-binding receptors	IEA	Caenorhabditis elegans
+10093	R-CEL-390666	https://reactome.org/PathwayBrowser/#/R-CEL-390666	Serotonin receptors	IEA	Caenorhabditis elegans
+10093	R-CEL-500792	https://reactome.org/PathwayBrowser/#/R-CEL-500792	GPCR ligand binding	IEA	Caenorhabditis elegans
+10093	R-CEL-9709957	https://reactome.org/PathwayBrowser/#/R-CEL-9709957	Sensory Perception	IEA	Caenorhabditis elegans
+10093	R-CEL-9717189	https://reactome.org/PathwayBrowser/#/R-CEL-9717189	Sensory perception of taste	IEA	Caenorhabditis elegans
+10093	R-CEL-9717207	https://reactome.org/PathwayBrowser/#/R-CEL-9717207	Sensory perception of sweet, bitter, and umami (glutamate) taste	IEA	Caenorhabditis elegans
+10100	R-CEL-162582	https://reactome.org/PathwayBrowser/#/R-CEL-162582	Signal Transduction	IEA	Caenorhabditis elegans
+10100	R-CEL-372790	https://reactome.org/PathwayBrowser/#/R-CEL-372790	Signaling by GPCR	IEA	Caenorhabditis elegans
+10100	R-CEL-373076	https://reactome.org/PathwayBrowser/#/R-CEL-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Caenorhabditis elegans
+10100	R-CEL-391903	https://reactome.org/PathwayBrowser/#/R-CEL-391903	Eicosanoid ligand-binding receptors	IEA	Caenorhabditis elegans
+10100	R-CEL-391906	https://reactome.org/PathwayBrowser/#/R-CEL-391906	Leukotriene receptors	IEA	Caenorhabditis elegans
+10100	R-CEL-500792	https://reactome.org/PathwayBrowser/#/R-CEL-500792	GPCR ligand binding	IEA	Caenorhabditis elegans
+101085	R-CEL-1237044	https://reactome.org/PathwayBrowser/#/R-CEL-1237044	Erythrocytes take up carbon dioxide and release oxygen	IEA	Caenorhabditis elegans
+101085	R-CEL-1480926	https://reactome.org/PathwayBrowser/#/R-CEL-1480926	O2/CO2 exchange in erythrocytes	IEA	Caenorhabditis elegans
+101085	R-CEL-382551	https://reactome.org/PathwayBrowser/#/R-CEL-382551	Transport of small molecules	IEA	Caenorhabditis elegans
+101096	R-CEL-1237044	https://reactome.org/PathwayBrowser/#/R-CEL-1237044	Erythrocytes take up carbon dioxide and release oxygen	IEA	Caenorhabditis elegans
+101096	R-CEL-1480926	https://reactome.org/PathwayBrowser/#/R-CEL-1480926	O2/CO2 exchange in erythrocytes	IEA	Caenorhabditis elegans
+10033	R-MMU-1430728	https://reactome.org/PathwayBrowser/#/R-MMU-1430728	Metabolism	IEA	Mus musculus
+10033	R-MMU-196854	https://reactome.org/PathwayBrowser/#/R-MMU-196854	Metabolism of vitamins and cofactors	IEA	Mus musculus
+10033	R-MMU-6806664	https://reactome.org/PathwayBrowser/#/R-MMU-6806664	Metabolism of vitamin K	IEA	Mus musculus
+10033	R-MMU-6806667	https://reactome.org/PathwayBrowser/#/R-MMU-6806667	Metabolism of fat-soluble vitamins	IEA	Mus musculus
+10036	R-MMU-1430728	https://reactome.org/PathwayBrowser/#/R-MMU-1430728	Metabolism	IEA	Mus musculus
+10036	R-MMU-2142753	https://reactome.org/PathwayBrowser/#/R-MMU-2142753	Arachidonate metabolism	IEA	Mus musculus
+10036	R-MMU-556833	https://reactome.org/PathwayBrowser/#/R-MMU-556833	Metabolism of lipids	IEA	Mus musculus
+10036	R-MMU-8848584	https://reactome.org/PathwayBrowser/#/R-MMU-8848584	Wax and plasmalogen biosynthesis	IEA	Mus musculus
+10036	R-MMU-8978868	https://reactome.org/PathwayBrowser/#/R-MMU-8978868	Fatty acid metabolism	IEA	Mus musculus
+10036	R-MMU-9640463	https://reactome.org/PathwayBrowser/#/R-MMU-9640463	Wax biosynthesis	IEA	Mus musculus
+10055	R-MMU-162582	https://reactome.org/PathwayBrowser/#/R-MMU-162582	Signal Transduction	IEA	Mus musculus
+10055	R-MMU-372790	https://reactome.org/PathwayBrowser/#/R-MMU-372790	Signaling by GPCR	IEA	Mus musculus
+10055	R-MMU-373076	https://reactome.org/PathwayBrowser/#/R-MMU-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Mus musculus
+10055	R-MMU-375280	https://reactome.org/PathwayBrowser/#/R-MMU-375280	Amine ligand-binding receptors	IEA	Mus musculus
+10055	R-MMU-390696	https://reactome.org/PathwayBrowser/#/R-MMU-390696	Adrenoceptors	IEA	Mus musculus
+10055	R-MMU-500792	https://reactome.org/PathwayBrowser/#/R-MMU-500792	GPCR ligand binding	IEA	Mus musculus
+10093	R-MMU-162582	https://reactome.org/PathwayBrowser/#/R-MMU-162582	Signal Transduction	IEA	Mus musculus
+10093	R-MMU-372790	https://reactome.org/PathwayBrowser/#/R-MMU-372790	Signaling by GPCR	IEA	Mus musculus
+10093	R-MMU-373076	https://reactome.org/PathwayBrowser/#/R-MMU-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Mus musculus
+10093	R-MMU-375280	https://reactome.org/PathwayBrowser/#/R-MMU-375280	Amine ligand-binding receptors	IEA	Mus musculus
+10033	R-RNO-1430728	https://reactome.org/PathwayBrowser/#/R-RNO-1430728	Metabolism	IEA	Rattus norvegicus
+10033	R-RNO-196854	https://reactome.org/PathwayBrowser/#/R-RNO-196854	Metabolism of vitamins and cofactors	IEA	Rattus norvegicus
+10033	R-RNO-6806664	https://reactome.org/PathwayBrowser/#/R-RNO-6806664	Metabolism of vitamin K	IEA	Rattus norvegicus
+10033	R-RNO-6806667	https://reactome.org/PathwayBrowser/#/R-RNO-6806667	Metabolism of fat-soluble vitamins	IEA	Rattus norvegicus
+10036	R-RNO-1430728	https://reactome.org/PathwayBrowser/#/R-RNO-1430728	Metabolism	IEA	Rattus norvegicus
+10036	R-RNO-2142753	https://reactome.org/PathwayBrowser/#/R-RNO-2142753	Arachidonate metabolism	IEA	Rattus norvegicus
+10036	R-RNO-556833	https://reactome.org/PathwayBrowser/#/R-RNO-556833	Metabolism of lipids	IEA	Rattus norvegicus
+10036	R-RNO-8848584	https://reactome.org/PathwayBrowser/#/R-RNO-8848584	Wax and plasmalogen biosynthesis	IEA	Rattus norvegicus
+10036	R-RNO-8978868	https://reactome.org/PathwayBrowser/#/R-RNO-8978868	Fatty acid metabolism	IEA	Rattus norvegicus
+10036	R-RNO-9640463	https://reactome.org/PathwayBrowser/#/R-RNO-9640463	Wax biosynthesis	IEA	Rattus norvegicus
+10055	R-RNO-162582	https://reactome.org/PathwayBrowser/#/R-RNO-162582	Signal Transduction	IEA	Rattus norvegicus
+10055	R-RNO-372790	https://reactome.org/PathwayBrowser/#/R-RNO-372790	Signaling by GPCR	IEA	Rattus norvegicus
+10055	R-RNO-373076	https://reactome.org/PathwayBrowser/#/R-RNO-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Rattus norvegicus
+10055	R-RNO-375280	https://reactome.org/PathwayBrowser/#/R-RNO-375280	Amine ligand-binding receptors	IEA	Rattus norvegicus
+10055	R-RNO-390696	https://reactome.org/PathwayBrowser/#/R-RNO-390696	Adrenoceptors	IEA	Rattus norvegicus
+10055	R-RNO-500792	https://reactome.org/PathwayBrowser/#/R-RNO-500792	GPCR ligand binding	IEA	Rattus norvegicus
+10093	R-RNO-162582	https://reactome.org/PathwayBrowser/#/R-RNO-162582	Signal Transduction	IEA	Rattus norvegicus
+10093	R-RNO-372790	https://reactome.org/PathwayBrowser/#/R-RNO-372790	Signaling by GPCR	IEA	Rattus norvegicus
+10093	R-RNO-373076	https://reactome.org/PathwayBrowser/#/R-RNO-373076	Class A/1 (Rhodopsin-like receptors)	IEA	Rattus norvegicus
+10093	R-RNO-375280	https://reactome.org/PathwayBrowser/#/R-RNO-375280	Amine ligand-binding receptors	IEA	Rattus norvegicus

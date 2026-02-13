@@ -1,0 +1,130 @@
+10033	R-DME-159790	https://reactome.org/PathwayBrowser/#/R-DME-159790	VKORC1 reduces vitamin K epoxide to MK4 (vitamin K hydroquinone)	IEA	Drosophila melanogaster
+10033	R-DME-9026967	https://reactome.org/PathwayBrowser/#/R-DME-9026967	VKORC1 inhibitors binds VKORC1 dimer	IEA	Drosophila melanogaster
+10036	R-DME-5696424	https://reactome.org/PathwayBrowser/#/R-DME-5696424	AWAT1 transfers acyl group from acyl-CoA to ARACOH, forming wax esters	IEA	Drosophila melanogaster
+10055	R-DME-390674	https://reactome.org/PathwayBrowser/#/R-DME-390674	ADRB1 bind ADR,NAd	IEA	Drosophila melanogaster
+10055	R-DME-9611721	https://reactome.org/PathwayBrowser/#/R-DME-9611721	β1-agonists bind ADRB1	IEA	Drosophila melanogaster
+10093	R-DME-9648268	https://reactome.org/PathwayBrowser/#/R-DME-9648268	HTR1A binds HTR1A antagonists	IEA	Drosophila melanogaster
+10100	R-DME-9684627	https://reactome.org/PathwayBrowser/#/R-DME-9684627	CYSLTR1 binds CYSLTR1 antagonists	IEA	Drosophila melanogaster
+10100	R-DME-9690439	https://reactome.org/PathwayBrowser/#/R-DME-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	IEA	Drosophila melanogaster
+101085	R-DME-9707419	https://reactome.org/PathwayBrowser/#/R-DME-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Drosophila melanogaster
+101096	R-DME-9707419	https://reactome.org/PathwayBrowser/#/R-DME-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Drosophila melanogaster
+10119	R-DME-9654054	https://reactome.org/PathwayBrowser/#/R-DME-9654054	DRD2 antagonist drugs bind to DRD2	IEA	Drosophila melanogaster
+10119	R-DME-9693478	https://reactome.org/PathwayBrowser/#/R-DME-9693478	HTR1A binds HTR1A agonists	IEA	Drosophila melanogaster
+10124	R-DME-9693478	https://reactome.org/PathwayBrowser/#/R-DME-9693478	HTR1A binds HTR1A agonists	IEA	Drosophila melanogaster
+10127	R-DME-9707419	https://reactome.org/PathwayBrowser/#/R-DME-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Drosophila melanogaster
+101278	R-DME-9614031	https://reactome.org/PathwayBrowser/#/R-DME-9614031	Class IV antihypertensives bind LTCC multimer	IEA	Drosophila melanogaster
+103932	R-DME-9614031	https://reactome.org/PathwayBrowser/#/R-DME-9614031	Class IV antihypertensives bind LTCC multimer	IEA	Drosophila melanogaster
+104023	R-DME-9684627	https://reactome.org/PathwayBrowser/#/R-DME-9684627	CYSLTR1 binds CYSLTR1 antagonists	IEA	Drosophila melanogaster
+104023	R-DME-9690439	https://reactome.org/PathwayBrowser/#/R-DME-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	IEA	Drosophila melanogaster
+10454	R-DME-9654054	https://reactome.org/PathwayBrowser/#/R-DME-9654054	DRD2 antagonist drugs bind to DRD2	IEA	Drosophila melanogaster
+104872	R-DME-9708275	https://reactome.org/PathwayBrowser/#/R-DME-9708275	PDE4A binds PDE4A inhibitors	IEA	Drosophila melanogaster
+10033	R-HSA-159790	https://reactome.org/PathwayBrowser/#/R-HSA-159790	VKORC1 reduces vitamin K epoxide to MK4 (vitamin K hydroquinone)	TAS	Homo sapiens
+10033	R-HSA-9026967	https://reactome.org/PathwayBrowser/#/R-HSA-9026967	VKORC1 inhibitors binds VKORC1 dimer	TAS	Homo sapiens
+10036	R-HSA-5696424	https://reactome.org/PathwayBrowser/#/R-HSA-5696424	AWAT1 transfers acyl group from acyl-CoA to ARACOH, forming wax esters	TAS	Homo sapiens
+10055	R-HSA-390674	https://reactome.org/PathwayBrowser/#/R-HSA-390674	ADRB1 bind ADR,NAd	TAS	Homo sapiens
+10055	R-HSA-9611721	https://reactome.org/PathwayBrowser/#/R-HSA-9611721	β1-agonists bind ADRB1	TAS	Homo sapiens
+10093	R-HSA-3296233	https://reactome.org/PathwayBrowser/#/R-HSA-3296233	T2Rs bind bitter-tasting compounds	TAS	Homo sapiens
+10093	R-HSA-380073	https://reactome.org/PathwayBrowser/#/R-HSA-380073	Liganded Gi-activating GPCR acts as a GEF for Gi	TAS	Homo sapiens
+10093	R-HSA-749454	https://reactome.org/PathwayBrowser/#/R-HSA-749454	The Ligand:GPCR:Gi complex dissociates	TAS	Homo sapiens
+10093	R-HSA-749456	https://reactome.org/PathwayBrowser/#/R-HSA-749456	Liganded Gi-activating GPCRs bind inactive heterotrimeric G-protein Gi	TAS	Homo sapiens
+10093	R-HSA-9648268	https://reactome.org/PathwayBrowser/#/R-HSA-9648268	HTR1A binds HTR1A antagonists	TAS	Homo sapiens
+10093	R-HSA-9728747	https://reactome.org/PathwayBrowser/#/R-HSA-9728747	GNAT3 exchanges GDP for GTP in TAS2R:bitter compound:GNAT3:GDP:GNB1,3:GNG13	IEA	Homo sapiens
+10093	R-HSA-9728748	https://reactome.org/PathwayBrowser/#/R-HSA-9728748	Bitter compound binds bitter taste receptor (TAS2R)	TAS	Homo sapiens
+10093	R-HSA-9728752	https://reactome.org/PathwayBrowser/#/R-HSA-9728752	TAS2R:bitter compound:GNAT3:GTP:GNB1,3:GNG13 dissociates yielding	IEA	Homo sapiens
+10100	R-HSA-9684627	https://reactome.org/PathwayBrowser/#/R-HSA-9684627	CYSLTR1 binds CYSLTR1 antagonists	TAS	Homo sapiens
+10100	R-HSA-9690439	https://reactome.org/PathwayBrowser/#/R-HSA-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	TAS	Homo sapiens
+101085	R-HSA-9707419	https://reactome.org/PathwayBrowser/#/R-HSA-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	TAS	Homo sapiens
+101096	R-HSA-9707419	https://reactome.org/PathwayBrowser/#/R-HSA-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	TAS	Homo sapiens
+10112	R-HSA-9707186	https://reactome.org/PathwayBrowser/#/R-HSA-9707186	ALOX5 binds ALOX5 inhibitors	TAS	Homo sapiens
+10119	R-HSA-9654054	https://reactome.org/PathwayBrowser/#/R-HSA-9654054	DRD2 antagonist drugs bind to DRD2	TAS	Homo sapiens
+10119	R-HSA-9692539	https://reactome.org/PathwayBrowser/#/R-HSA-9692539	HRH1 binds HRH1 inverse agonists	TAS	Homo sapiens
+15377	R-NUL-2167872	https://reactome.org/PathwayBrowser/#/R-NUL-2167872	PP1CC dephosphorylates TGFBR1	TAS	Homo sapiens
+15377	R-NUL-2179313	https://reactome.org/PathwayBrowser/#/R-NUL-2179313	Uchl5 deubiquitinates TGFBR1	TAS	Homo sapiens
+15377	R-NUL-9023165	https://reactome.org/PathwayBrowser/#/R-NUL-9023165	Pcsk1 (rat) cleaves human proinsulin to yield Insulin(25-56) and Insulin(57-110)	TAS	Homo sapiens
+15377	R-NUL-9023166	https://reactome.org/PathwayBrowser/#/R-NUL-9023166	Carboxypeptidase E (rat Carboxypeptidase H) cleaves Insulin(25-56) to yield Insulin(25-54)	TAS	Homo sapiens
+15377	R-NUL-9023180	https://reactome.org/PathwayBrowser/#/R-NUL-9023180	Pcsk2 (rat) cleaves human Insulin(57-110) to yield Insulin(90-110) and C-peptide (Insulin(57-89))	TAS	Homo sapiens
+16670	R-NUL-997411	https://reactome.org/PathwayBrowser/#/R-NUL-997411	AGER binds rat ERK1/2	TAS	Homo sapiens
+17552	R-NUL-428715	https://reactome.org/PathwayBrowser/#/R-NUL-428715	Activated human P2Y purinoceptor 1 binds mouse G-protein Gq	TAS	Homo sapiens
+18420	R-NUL-350485	https://reactome.org/PathwayBrowser/#/R-NUL-350485	RhoA:GTP binds to activated Daam1	TAS	Homo sapiens
+28815	R-NUL-8853328	https://reactome.org/PathwayBrowser/#/R-NUL-8853328	Mouse FGFR2 IIIa TM binds FGF1,2 and full-length receptors	TAS	Homo sapiens
+29105	R-NUL-1251988	https://reactome.org/PathwayBrowser/#/R-NUL-1251988	Cleavage of P-ERBB4jmA isoforms by Adam17	TAS	Homo sapiens
+10093	R-CEL-9648268	https://reactome.org/PathwayBrowser/#/R-CEL-9648268	HTR1A binds HTR1A antagonists	IEA	Caenorhabditis elegans
+10093	R-CEL-9728748	https://reactome.org/PathwayBrowser/#/R-CEL-9728748	Bitter compound binds bitter taste receptor (TAS2R)	IEA	Caenorhabditis elegans
+10100	R-CEL-9684627	https://reactome.org/PathwayBrowser/#/R-CEL-9684627	CYSLTR1 binds CYSLTR1 antagonists	IEA	Caenorhabditis elegans
+10100	R-CEL-9690439	https://reactome.org/PathwayBrowser/#/R-CEL-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	IEA	Caenorhabditis elegans
+101085	R-CEL-9707419	https://reactome.org/PathwayBrowser/#/R-CEL-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Caenorhabditis elegans
+101096	R-CEL-9707419	https://reactome.org/PathwayBrowser/#/R-CEL-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Caenorhabditis elegans
+10119	R-CEL-9654054	https://reactome.org/PathwayBrowser/#/R-CEL-9654054	DRD2 antagonist drugs bind to DRD2	IEA	Caenorhabditis elegans
+10119	R-CEL-9693478	https://reactome.org/PathwayBrowser/#/R-CEL-9693478	HTR1A binds HTR1A agonists	IEA	Caenorhabditis elegans
+10124	R-CEL-9693478	https://reactome.org/PathwayBrowser/#/R-CEL-9693478	HTR1A binds HTR1A agonists	IEA	Caenorhabditis elegans
+10127	R-CEL-9707419	https://reactome.org/PathwayBrowser/#/R-CEL-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Caenorhabditis elegans
+101278	R-CEL-9614031	https://reactome.org/PathwayBrowser/#/R-CEL-9614031	Class IV antihypertensives bind LTCC multimer	IEA	Caenorhabditis elegans
+103854	R-CEL-390641	https://reactome.org/PathwayBrowser/#/R-CEL-390641	ADRA1A,B,D bind ADR,NAd	IEA	Caenorhabditis elegans
+103854	R-CEL-9623384	https://reactome.org/PathwayBrowser/#/R-CEL-9623384	α1-agonists bind ADRA1A,B,D	IEA	Caenorhabditis elegans
+103932	R-CEL-9614031	https://reactome.org/PathwayBrowser/#/R-CEL-9614031	Class IV antihypertensives bind LTCC multimer	IEA	Caenorhabditis elegans
+104023	R-CEL-9684627	https://reactome.org/PathwayBrowser/#/R-CEL-9684627	CYSLTR1 binds CYSLTR1 antagonists	IEA	Caenorhabditis elegans
+104023	R-CEL-9690439	https://reactome.org/PathwayBrowser/#/R-CEL-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	IEA	Caenorhabditis elegans
+10454	R-CEL-9654054	https://reactome.org/PathwayBrowser/#/R-CEL-9654054	DRD2 antagonist drugs bind to DRD2	IEA	Caenorhabditis elegans
+104872	R-CEL-9708275	https://reactome.org/PathwayBrowser/#/R-CEL-9708275	PDE4A binds PDE4A inhibitors	IEA	Caenorhabditis elegans
+10545	R-CEL-917805	https://reactome.org/PathwayBrowser/#/R-CEL-917805	CYBRD1:Heme reduces Fe3+ to Fe2+	IEA	Caenorhabditis elegans
+10650	R-CEL-9693478	https://reactome.org/PathwayBrowser/#/R-CEL-9693478	HTR1A binds HTR1A agonists	IEA	Caenorhabditis elegans
+15377	R-NUL-9034341	https://reactome.org/PathwayBrowser/#/R-NUL-9034341	Tysnd1 cleaves Acox1	TAS	Mus musculus
+16708	R-NUL-9635966	https://reactome.org/PathwayBrowser/#/R-NUL-9635966	Mutyh cleaves adenine mispaired with 8-oxoguanine	TAS	Mus musculus
+16991	R-NUL-9606338	https://reactome.org/PathwayBrowser/#/R-NUL-9606338	Defective Mutyh mutants do not cleave adenine mispaired with 8-oxoguanine	TAS	Mus musculus
+16991	R-NUL-9635966	https://reactome.org/PathwayBrowser/#/R-NUL-9635966	Mutyh cleaves adenine mispaired with 8-oxoguanine	TAS	Mus musculus
+29101	R-NUL-8951809	https://reactome.org/PathwayBrowser/#/R-NUL-8951809	Slc8a3 (NCX3) exchanges sodium (cytosol) for calcium (mitochondrial intermembrane space)	TAS	Mus musculus
+29105	R-NUL-2063915	https://reactome.org/PathwayBrowser/#/R-NUL-2063915	ADAM17 cleaves Notch1 at S2	TAS	Mus musculus
+29105	R-NUL-209162	https://reactome.org/PathwayBrowser/#/R-NUL-209162	Murine ADAM10 cleaves Notch at the S2 site producing transmembrane spanning NEXT and ligand-bound NECD	TAS	Mus musculus
+29108	R-NUL-209162	https://reactome.org/PathwayBrowser/#/R-NUL-209162	Murine ADAM10 cleaves Notch at the S2 site producing transmembrane spanning NEXT and ligand-bound NECD	TAS	Mus musculus
+29108	R-NUL-8951809	https://reactome.org/PathwayBrowser/#/R-NUL-8951809	Slc8a3 (NCX3) exchanges sodium (cytosol) for calcium (mitochondrial intermembrane space)	TAS	Mus musculus
+30616	R-NUL-1675886	https://reactome.org/PathwayBrowser/#/R-NUL-1675886	PI3P is phosphorylated to PI(3,5)P2 by Pikfyve at the early endosome membrane	TAS	Mus musculus
+10033	R-MMU-159790	https://reactome.org/PathwayBrowser/#/R-MMU-159790	VKORC1 reduces vitamin K epoxide to MK4 (vitamin K hydroquinone)	IEA	Mus musculus
+10033	R-MMU-9026967	https://reactome.org/PathwayBrowser/#/R-MMU-9026967	VKORC1 inhibitors binds VKORC1 dimer	IEA	Mus musculus
+10036	R-MMU-5696424	https://reactome.org/PathwayBrowser/#/R-MMU-5696424	AWAT1 transfers acyl group from acyl-CoA to ARACOH, forming wax esters	IEA	Mus musculus
+10055	R-MMU-390674	https://reactome.org/PathwayBrowser/#/R-MMU-390674	ADRB1 bind ADR,NAd	IEA	Mus musculus
+10055	R-MMU-9611721	https://reactome.org/PathwayBrowser/#/R-MMU-9611721	β1-agonists bind ADRB1	IEA	Mus musculus
+10093	R-MMU-3296233	https://reactome.org/PathwayBrowser/#/R-MMU-3296233	T2Rs bind bitter-tasting compounds	IEA	Mus musculus
+10093	R-MMU-380073	https://reactome.org/PathwayBrowser/#/R-MMU-380073	Liganded Gi-activating GPCR acts as a GEF for Gi	IEA	Mus musculus
+10093	R-MMU-749454	https://reactome.org/PathwayBrowser/#/R-MMU-749454	The Ligand:GPCR:Gi complex dissociates	IEA	Mus musculus
+10093	R-MMU-749456	https://reactome.org/PathwayBrowser/#/R-MMU-749456	Liganded Gi-activating GPCRs bind inactive heterotrimeric G-protein Gi	IEA	Mus musculus
+10093	R-MMU-9648268	https://reactome.org/PathwayBrowser/#/R-MMU-9648268	HTR1A binds HTR1A antagonists	IEA	Mus musculus
+10093	R-MMU-9728748	https://reactome.org/PathwayBrowser/#/R-MMU-9728748	Bitter compound binds bitter taste receptor (TAS2R)	IEA	Mus musculus
+10100	R-MMU-9684627	https://reactome.org/PathwayBrowser/#/R-MMU-9684627	CYSLTR1 binds CYSLTR1 antagonists	IEA	Mus musculus
+10100	R-MMU-9690439	https://reactome.org/PathwayBrowser/#/R-MMU-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	IEA	Mus musculus
+101085	R-MMU-9707419	https://reactome.org/PathwayBrowser/#/R-MMU-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Mus musculus
+101096	R-MMU-9707419	https://reactome.org/PathwayBrowser/#/R-MMU-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Mus musculus
+10112	R-MMU-9707186	https://reactome.org/PathwayBrowser/#/R-MMU-9707186	ALOX5 binds ALOX5 inhibitors	IEA	Mus musculus
+10119	R-MMU-9654054	https://reactome.org/PathwayBrowser/#/R-MMU-9654054	DRD2 antagonist drugs bind to DRD2	IEA	Mus musculus
+10119	R-MMU-9692539	https://reactome.org/PathwayBrowser/#/R-MMU-9692539	HRH1 binds HRH1 inverse agonists	IEA	Mus musculus
+10119	R-MMU-9693478	https://reactome.org/PathwayBrowser/#/R-MMU-9693478	HTR1A binds HTR1A agonists	IEA	Mus musculus
+10124	R-MMU-9693478	https://reactome.org/PathwayBrowser/#/R-MMU-9693478	HTR1A binds HTR1A agonists	IEA	Mus musculus
+10033	R-RNO-159790	https://reactome.org/PathwayBrowser/#/R-RNO-159790	VKORC1 reduces vitamin K epoxide to MK4 (vitamin K hydroquinone)	IEA	Rattus norvegicus
+10033	R-RNO-9026967	https://reactome.org/PathwayBrowser/#/R-RNO-9026967	VKORC1 inhibitors binds VKORC1 dimer	IEA	Rattus norvegicus
+10036	R-RNO-5696424	https://reactome.org/PathwayBrowser/#/R-RNO-5696424	AWAT1 transfers acyl group from acyl-CoA to ARACOH, forming wax esters	IEA	Rattus norvegicus
+10055	R-RNO-390674	https://reactome.org/PathwayBrowser/#/R-RNO-390674	ADRB1 bind ADR,NAd	IEA	Rattus norvegicus
+10055	R-RNO-9611721	https://reactome.org/PathwayBrowser/#/R-RNO-9611721	β1-agonists bind ADRB1	IEA	Rattus norvegicus
+10093	R-RNO-3296233	https://reactome.org/PathwayBrowser/#/R-RNO-3296233	T2Rs bind bitter-tasting compounds	IEA	Rattus norvegicus
+10093	R-RNO-380073	https://reactome.org/PathwayBrowser/#/R-RNO-380073	Liganded Gi-activating GPCR acts as a GEF for Gi	IEA	Rattus norvegicus
+10093	R-RNO-9648268	https://reactome.org/PathwayBrowser/#/R-RNO-9648268	HTR1A binds HTR1A antagonists	IEA	Rattus norvegicus
+10093	R-RNO-9728748	https://reactome.org/PathwayBrowser/#/R-RNO-9728748	Bitter compound binds bitter taste receptor (TAS2R)	IEA	Rattus norvegicus
+10100	R-RNO-9684627	https://reactome.org/PathwayBrowser/#/R-RNO-9684627	CYSLTR1 binds CYSLTR1 antagonists	IEA	Rattus norvegicus
+10100	R-RNO-9690439	https://reactome.org/PathwayBrowser/#/R-RNO-9690439	CYSLTR1 binds LTC4,LTD4,LTE4	IEA	Rattus norvegicus
+101085	R-RNO-9707419	https://reactome.org/PathwayBrowser/#/R-RNO-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Rattus norvegicus
+101096	R-RNO-9707419	https://reactome.org/PathwayBrowser/#/R-RNO-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Rattus norvegicus
+10112	R-RNO-9707186	https://reactome.org/PathwayBrowser/#/R-RNO-9707186	ALOX5 binds ALOX5 inhibitors	IEA	Rattus norvegicus
+10119	R-RNO-9654054	https://reactome.org/PathwayBrowser/#/R-RNO-9654054	DRD2 antagonist drugs bind to DRD2	IEA	Rattus norvegicus
+10119	R-RNO-9692539	https://reactome.org/PathwayBrowser/#/R-RNO-9692539	HRH1 binds HRH1 inverse agonists	IEA	Rattus norvegicus
+10119	R-RNO-9693478	https://reactome.org/PathwayBrowser/#/R-RNO-9693478	HTR1A binds HTR1A agonists	IEA	Rattus norvegicus
+10124	R-RNO-9693478	https://reactome.org/PathwayBrowser/#/R-RNO-9693478	HTR1A binds HTR1A agonists	IEA	Rattus norvegicus
+10127	R-RNO-9707419	https://reactome.org/PathwayBrowser/#/R-RNO-9707419	CA1:Zn2+,CA2:Zn2+ bind CA inhibitors	IEA	Rattus norvegicus
+101278	R-RNO-9614031	https://reactome.org/PathwayBrowser/#/R-RNO-9614031	Class IV antihypertensives bind LTCC multimer	IEA	Rattus norvegicus
+29108	R-NUL-9617449	https://reactome.org/PathwayBrowser/#/R-NUL-9617449	Rasgrf1 promotes activation of HRAS	TAS	Rattus norvegicus
+29108	R-NUL-9619488	https://reactome.org/PathwayBrowser/#/R-NUL-9619488	Camkk2 phosphorylates AMPK	TAS	Rattus norvegicus
+30616	R-NUL-9615367	https://reactome.org/PathwayBrowser/#/R-NUL-9615367	Prkaca phosphorylates Creb1	TAS	Rattus norvegicus
+30616	R-NUL-9619488	https://reactome.org/PathwayBrowser/#/R-NUL-9619488	Camkk2 phosphorylates AMPK	TAS	Rattus norvegicus
+30616	R-NUL-9619534	https://reactome.org/PathwayBrowser/#/R-NUL-9619534	AMPK phosphorylates Mapt	TAS	Rattus norvegicus
+37565	R-NUL-428519	https://reactome.org/PathwayBrowser/#/R-NUL-428519	Inactivation of Cdc42	TAS	Rattus norvegicus
+37565	R-NUL-442561	https://reactome.org/PathwayBrowser/#/R-NUL-442561	WASP/N-WASP activate the Arp2/3 complex	TAS	Rattus norvegicus
+37565	R-NUL-9616949	https://reactome.org/PathwayBrowser/#/R-NUL-9616949	Ntrk3 activates Ras	TAS	Rattus norvegicus
+37565	R-NUL-9617449	https://reactome.org/PathwayBrowser/#/R-NUL-9617449	Rasgrf1 promotes activation of HRAS	TAS	Rattus norvegicus
+43474	R-NUL-428519	https://reactome.org/PathwayBrowser/#/R-NUL-428519	Inactivation of Cdc42	TAS	Rattus norvegicus

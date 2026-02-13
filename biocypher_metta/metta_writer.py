@@ -210,6 +210,9 @@ class MeTTaWriter(BaseWriter):
         # to use Biolink-compatible schema
         # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
         return {
+            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
+            'pathway': frozenset({'pathway'}),
+            'reaction': frozenset({'reaction'}),
             'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
             'gene': frozenset({'gene'}),
             'transcript': frozenset({'transcript'}),

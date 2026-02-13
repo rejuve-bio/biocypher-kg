@@ -128,6 +128,78 @@ reactome_reaction:
   nodes: True
   edges: False
 
+reactome_reaction_to_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_input_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_output_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_catalyst_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_negative_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_positive_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -155,6 +227,31 @@ gene_or_gene_product_reaction:
   nodes: False
   edges: True
 
+chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2Reactome_All_Levels.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
+      label: small_molecule_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2ReactomeReactions.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_uniprot_map.pkl
+      label: small_molecule_to_reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
 
 parent_pathway_of:
   adapter:
@@ -1203,7 +1300,7 @@ chebi_ontology:
     args:
       ontology: 'chebi'
       type: node
-      dry_run: True
+      dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
   outdir: chebi
@@ -1218,7 +1315,7 @@ chebi_chebi_subclass_of:
       ontology: 'chebi'
       label: chebi_subclass_of
       type: edge
-      dry_run: True
+      dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: chebi
   nodes: False
