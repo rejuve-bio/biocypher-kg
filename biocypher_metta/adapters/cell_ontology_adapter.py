@@ -1,5 +1,6 @@
 import rdflib
 from rdflib.namespace import RDF, RDFS, OWL
+from pathlib import Path
 from biocypher_metta.adapters.ontologies_adapter import OntologyAdapter
 
 class CellOntologyAdapter(OntologyAdapter):
@@ -90,13 +91,18 @@ class CellOntologyAdapter(OntologyAdapter):
         predicates = {
             'cl_subclass_of': RDFS.subClassOf,
             'cl_capable_of': self.CAPABLE_OF,
-            'cl_part_of': self.PART_OF
+            'cl_part_of': self.PART_OF,
+            'cell_type_part_of_tissue': self.PART_OF,
         }
 
         if self.label not in predicates:
             return
 
         predicate = predicates[self.label]
+
+        uberon_to_bto = None
+        if self.label == 'cell_type_part_of_tissue':
+            uberon_to_bto = self._build_uberon_to_bto_map()
 
         edge_count = 0
         for subject in self.graph.subjects(RDF.type, OWL.Class):
@@ -108,7 +114,7 @@ class CellOntologyAdapter(OntologyAdapter):
 
             objects_to_process = []
 
-            if self.label in ['cl_part_of', 'cl_capable_of']:
+            if self.label in ['cl_part_of', 'cl_capable_of', 'cell_type_part_of_tissue']:
                 for _, subclass_restriction in self.graph.predicate_objects(subject, RDFS.subClassOf):
                     if isinstance(subclass_restriction, rdflib.term.BNode):
                         resolved = self.resolve_object(subclass_restriction, predicate)
@@ -131,6 +137,30 @@ class CellOntologyAdapter(OntologyAdapter):
                     continue
 
                 from_node_key = self.to_key(subject)
+
+                if self.label == 'cell_type_part_of_tissue':
+                    uberon_key = self.to_key(object_or_restriction)
+                    if not uberon_key or not uberon_to_bto:
+                        continue
+                    bto_targets = uberon_to_bto.get(uberon_key)
+                    if not bto_targets:
+                        continue
+
+                    for bto_key in bto_targets:
+                        props = {}
+                        if self.write_properties:
+                            props['rel_type'] = self.predicate_name(predicate)
+                            if self.add_provenance:
+                                props['source'] = self.source
+                                props['source_url'] = self.source_url
+
+                        yield from_node_key, bto_key, self.label, props
+
+                    edge_count += 1
+                    if self.dry_run and edge_count > 100:
+                        return
+                    continue
+
                 to_node_key = self.to_key(object_or_restriction)
 
                 props = {}
@@ -145,6 +175,60 @@ class CellOntologyAdapter(OntologyAdapter):
                 edge_count += 1
                 if self.dry_run and edge_count > 100:
                     return
+
+    def _build_uberon_to_bto_map(self):
+        """Build a mapping UBERON term key -> set of BTO term keys.
+
+        UBERON provides dbxrefs to BTO; we invert those xrefs.
+        """
+        uberon_graph = rdflib.Graph()
+
+        cache_dir = Path(self.cache_dir) if self.cache_dir else None
+        local_uberon = cache_dir / 'uberon.owl' if cache_dir else None
+
+        parsed = False
+        if local_uberon and local_uberon.exists():
+            for fmt in ('xml', 'turtle', 'n3', 'nt'):
+                try:
+                    uberon_graph.parse(str(local_uberon), format=fmt)
+                    parsed = True
+                    break
+                except Exception:
+                    continue
+
+        if not parsed:
+            try:
+                from biocypher_metta.adapters.uberon_adapter import UberonAdapter
+
+                uberon_graph.parse(UberonAdapter.ONTOLOGIES['uberon'])
+                parsed = True
+            except Exception:
+                return {}
+
+        uberon_to_bto = {}
+        for uberon_node, xref in uberon_graph.subject_objects(predicate=OntologyAdapter.DB_XREF, unique=True):
+            if not isinstance(uberon_node, rdflib.term.URIRef):
+                continue
+            if not str(uberon_node).startswith('http://purl.obolibrary.org/obo/UBERON_'):
+                continue
+            if not isinstance(xref, rdflib.term.Literal):
+                continue
+
+            xref_str = str(xref).strip()
+            if not xref_str:
+                continue
+            xref_str = xref_str.split()[0]
+            if not xref_str.startswith('BTO:'):
+                continue
+
+            uberon_key = OntologyAdapter.to_key(uberon_node)
+            if not uberon_key:
+                continue
+            bto_key = xref_str.replace('BTO:', 'BTO:', 1)
+
+            uberon_to_bto.setdefault(uberon_key, set()).add(bto_key)
+
+        return uberon_to_bto
 
     def resolve_object(self, object_or_restriction, predicate):
         if not isinstance(object_or_restriction, rdflib.term.BNode):

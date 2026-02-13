@@ -1043,6 +1043,57 @@ cl part of:
   source: cell type
   target: anatomy
 
+cell line is a cell type:
+  is_a: subclass of
+  biolink_predicate: "biolink:subclass_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_line_is_a_cell_type
+  output_label: is_a
+  kgx_properties:
+    subject_category: "biolink:CellLine"
+    object_category: "biolink:Cell"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a Cell Line Ontology (CLO) term to a Cell Ontology (CL) term.
+  source: cell line
+  target: cell type
+
+cell type part of tissue:
+  is_a: part of
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_type_part_of_tissue
+  output_label: part_of
+  kgx_properties:
+    subject_category: "biolink:Cell"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a CL cell type to a BTO tissue term.
+  source: cell type
+  target: tissue
+
+tissue part of anatomy:
+  is_a: part of
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: tissue_part_of_anatomy
+  output_label: part_of
+  kgx_properties:
+    subject_category: "biolink:AnatomicalEntity"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a BRENDA Tissue Ontology (BTO) term to an UBERON anatomy term.
+  source: tissue
+  target: anatomy
+
 gene to pathway association:
   description: >-
     An interaction between a gene or gene product and a biological process or pathway.
