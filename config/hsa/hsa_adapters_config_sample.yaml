@@ -1510,3 +1510,54 @@ uniprot_dbxref_molecular_function:
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
+uniprot_has_xref_catalytic_activity:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_catalytic_activity
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_catalytic_activity
+  nodes: False
+  edges: True
+
+uniprot_has_xref_cofactor:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_cofactor
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_cofactor
+  nodes: False
+  edges: True
+
+uniprot_has_xref_binding_site_ligand:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
+      label: protein_has_xref_binding_site_ligand
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_binding_site_ligand
+  nodes: False
+  edges: True
+
+uniprot_chebi_part_of_chebi:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
+      label: chemical_substance_part_of_chemical_substance
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/chebi_part_of
+  nodes: False
+  edges: True

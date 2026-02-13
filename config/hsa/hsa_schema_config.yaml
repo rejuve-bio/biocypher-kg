@@ -2217,7 +2217,7 @@ protein has_xref catalytic_activity:
   input_label: protein_has_xref_catalytic_activity
   output_label: has_xref
   source: protein
-  target: chemical substance
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:ChemicalEntity"
@@ -2232,7 +2232,7 @@ protein has_xref cofactor:
   input_label: protein_has_xref_cofactor
   output_label: has_xref
   source: protein
-  target: chemical substance
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:ChemicalEntity"
@@ -2247,7 +2247,7 @@ protein has_xref binding_site_ligand:
   input_label: protein_has_xref_binding_site_ligand
   output_label: has_xref
   source: protein
-  target: chemical substance
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:ChemicalEntity"
@@ -2260,8 +2260,8 @@ chemical_substance part_of chemical_substance:
   represented_as: edge
   input_label: chemical_substance_part_of_chemical_substance
   output_label: part_of
-  source: chemical substance
-  target: chemical substance
+  source: small molecule
+  target: small molecule
   properties:
     evidence:
       type: str[]
