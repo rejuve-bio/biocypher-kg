@@ -178,16 +178,16 @@ class NetworkXWriter(BaseWriter):
                 target_clean = self._preprocess_id(target_id)
                 _, target_type = self._get_edge_type_info(label, source_id, target_id)
             
-            if edges_skipped < 5: 
-                if source_clean not in self.node_mapping or target_clean not in self.node_mapping:
-                    logger.info(f"DEBUG - Edge ID mismatch for edge type '{label}':")
-                    logger.info(f"  Original source: {source_id} -> Cleaned: {source_clean}")
-                    logger.info(f"  Original target: {target_id} -> Cleaned: {target_clean}")
-                    logger.info(f"  Source in mapping: {source_clean in self.node_mapping}")
-                    logger.info(f"  Target in mapping: {target_clean in self.node_mapping}")
-                    sample_nodes = list(self.node_mapping.keys())[:3]
-                    logger.info(f"  Sample node IDs in mapping: {sample_nodes}")
-            
+            if source_clean not in self.node_mapping:
+                source_node_id = self._get_or_create_node_id(source_clean)
+                self.graph.add_node(source_node_id, id=source_clean, label=source_type.lower())
+                self.node_counters[source_type.lower()] += 1
+
+            if target_clean not in self.node_mapping:
+                target_node_id = self._get_or_create_node_id(target_clean)
+                self.graph.add_node(target_node_id, id=target_clean, label=target_type.lower())
+                self.node_counters[target_type.lower()] += 1
+                        
             try:
                 source_node_id = self.node_mapping[source_clean]
                 target_node_id = self.node_mapping[target_clean]
@@ -258,4 +258,10 @@ class NetworkXWriter(BaseWriter):
         
     def clear_counts(self):
         # Clear/reset any internal counters
-        pass
+        self.node_counters.clear()
+        self.edge_counters.clear()
+        try:
+            super().clear_counts()
+        except Exception:
+            pass
+        
