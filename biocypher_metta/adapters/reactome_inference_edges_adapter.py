@@ -7,7 +7,7 @@ from biocypher_metta.adapters import Adapter
 
 # Reactome data relating reactions to pathways describe a protein and its different roles in a reaction that is 'part_of' a pathway. S
 # ome examples are shown below.
-# From Reactome data, is possible to create 9at least) the following causal relations between a protein and (a reaction or a pathway):
+# From Reactome data, is possible to create (at least) the following causal relations between a protein and (a reaction or a pathway):
 
 # 1. protein negatively regulates reaction
     # RO:0002212: http://purl.obolibrary.org/obo/RO_0002212
@@ -17,12 +17,19 @@ from biocypher_metta.adapters import Adapter
     # RO:0002212: http://purl.obolibrary.org/obo/RO_0002212
 # 4. protein positively regulates pathway
     # RO:0002213: http://purl.obolibrary.org/obo/RO_0002213
+# 5. protein regulates reaction/pathway
+    # RO:0002211: http://purl.obolibrary.org/obo/RO_0002211
 
 # Besides, if a protein is an input of a reaction (or pathway) it enables that reaction (or pathway). Similarly, if a protein is an
 # output of a reaction (or pathway) it is produced_by that reaction (or pathway).
 
 # 5. protein is an input of a reaction (or pathway): it enables that reaction (or pathway).
 # 6. protein is an output of a reaction (or pathway): it is produced_by that reaction (or pathway).
+
+# 6. protein enables reaction/pathway
+    # RO:0002211: http://purl.obolibrary.org/obo/RO_0002327
+# 7. protein produced_by reaction/pathway
+    # RO:0002211: http://purl.obolibrary.org/obo/RO_0003001
 
 
 # According to Reactome AI bot (https://reactome.org/chat/) there are only 5 roles in the data:
