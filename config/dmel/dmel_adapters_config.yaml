@@ -850,15 +850,55 @@ uniprot_dbxref_molecular_function:
   nodes: False
   edges: True
 
-uniprot_chebi_relationships:
+uniprot_has_xref_catalytic_activity:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_fly.dat.gz
-      label: protein
+      filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      label: protein_has_xref_catalytic_activity
+      taxon_id: 7227
       dbxref: CHEBI
-  outdir: uniprot/chebi_relationships
+  outdir: uniprot/has_xref_catalytic_activity
+  nodes: False
+  edges: True
+
+uniprot_has_xref_cofactor:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      label: protein_has_xref_cofactor
+      taxon_id: 7227
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_cofactor
+  nodes: False
+  edges: True
+
+uniprot_has_xref_binding_site_ligand:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      label: protein_has_xref_binding_site_ligand
+      taxon_id: 7227
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_binding_site_ligand
+  nodes: False
+  edges: True
+
+uniprot_chebi_part_of_chebi:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      label: chemical_substance_part_of_chemical_substance
+      taxon_id: 7227
+      dbxref: CHEBI
+  outdir: uniprot/chebi_part_of
   nodes: False
   edges: True
 

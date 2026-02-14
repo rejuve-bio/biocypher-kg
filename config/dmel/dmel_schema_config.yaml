@@ -2883,13 +2883,13 @@ protein has_xref cellular_component:
 
 protein has_xref catalytic_activity:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:physically_interacts_with"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_catalytic_activity
   output_label: has_xref
   source: protein
-  target: chemical substance
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:ChemicalEntity"
@@ -2898,13 +2898,13 @@ protein has_xref catalytic_activity:
 
 protein has_xref cofactor:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:has_cofactor"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_cofactor
   output_label: has_xref
   source: protein
-  target: chemical substance
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:ChemicalEntity"
@@ -2913,13 +2913,13 @@ protein has_xref cofactor:
 
 protein has_xref binding_site_ligand:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:binds"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_binding_site_ligand
   output_label: has_xref
   source: protein
-  target: chemical substance
+  target: small molecule
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:ChemicalEntity"
@@ -2928,12 +2928,12 @@ protein has_xref binding_site_ligand:
 
 chemical_substance part_of chemical_substance:
   is_a: association
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:part_of"
   represented_as: edge
   input_label: chemical_substance_part_of_chemical_substance
   output_label: part_of
-  source: chemical substance
-  target: chemical substance
+  source: small molecule
+  target: small molecule
   properties:
     evidence:
       type: str[]
