@@ -5,10 +5,10 @@ nodes:
     url: https://hocomoco11.autosome.org/downloads_v11
     input_label: motif
     properties:
-      pwm_A: float[]
+      taxon_id: int
       pwm_C: float[]
+      length: int
       pwm_T: float[]
       tf_name: str
       pwm_G: float[]
-      taxon_id: int
-      length: int
+      pwm_A: float[]

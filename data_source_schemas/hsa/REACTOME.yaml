@@ -5,8 +5,16 @@ nodes:
     url: https://reactome.org
     input_label: pathway
     properties:
-      evidence: str
       pathway_name: str
+      taxon_id: str
+      evidence: str
+  reaction:
+    url: https://reactome.org
+    input_label: reaction
+    properties:
+      taxon_id: str
+      evidence: str
+      reaction_url: str
 relationships:
   gene to pathway association:
     url: https://reactome.org
@@ -15,6 +23,13 @@ relationships:
       or pathway.
     source: [gene, transcript, protein]
     target: pathway
+  gene to reaction association:
+    url: https://reactome.org
+    input_label: gene_or_gene_product_reaction
+    description: An interaction between a gene or a gene product (gogp) and a molecular
+      activity.
+    source: biolink:GeneOrGeneProduct
+    target: reaction
   parent pathway of:
     url: https://reactome.org
     input_label: parent_pathway_of
@@ -37,5 +52,5 @@ relationships:
     source: pathway
     target: biological process
     properties:
-      go_term_id: str
       pathway_name: str
+      go_term_id: str

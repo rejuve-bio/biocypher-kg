@@ -5,9 +5,9 @@ nodes:
     url: https://www.gencodegenes.org/
     input_label: gene
     properties:
-      start: int
       end: int
       chr: str
+      start: int
       gene_type: str
       gene_name: str
   transcript:
@@ -15,20 +15,20 @@ nodes:
     input_label: transcript
     description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
     properties:
-      transcript_name: str
-      transcript_id: str
       transcript_type: str
+      transcript_name: str
       gene_name: str
+      transcript_id: str
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon
     properties:
-      exon_id: str
+      end: int
       gene_id: str
+      exon_id: str
+      chr: str
       exon_number: int
       start: int
-      end: int
-      chr: str
       transcript_id: str
 relationships:
   transcribes to:

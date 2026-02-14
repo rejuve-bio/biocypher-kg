@@ -703,7 +703,7 @@ gene_or_gene_product_reaction:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: gene_or_gene_product_reaction
       taxon_id: 7227
   outdir: reactome

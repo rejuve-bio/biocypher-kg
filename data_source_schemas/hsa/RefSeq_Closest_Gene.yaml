@@ -9,6 +9,6 @@ relationships:
     source: snp
     target: gene
     properties:
-      pos: int
       chr: str
+      pos: int
       distance: int
