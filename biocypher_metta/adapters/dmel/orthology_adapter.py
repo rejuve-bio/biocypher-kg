@@ -44,74 +44,47 @@ import pickle
 
 class OrthologyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, filepath=None, gene_id_map_filepath=None, label='orthologs_genes', 
-                 source_taxon_id=7227, target_taxon_id=9606, source_prefix='FlyBase', target_prefix='Ensembl', 
-                 source_organism_name='Drosophila melanogaster', target_organism_name='Homo sapiens',
-                 dmel_data_filepath=None, hsa_hgnc_to_ensemble_map=None):
-    
-        if dmel_data_filepath and not filepath:
-            filepath = dmel_data_filepath
-        if hsa_hgnc_to_ensemble_map and not gene_id_map_filepath:
-            gene_id_map_filepath = hsa_hgnc_to_ensemble_map
-            
-        if not filepath:
-            raise ValueError("filepath must be provided")
-
-        self.filepath = filepath
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map, label = 'orthologs_genes'):
+        self.dmel_data_filepath = dmel_data_filepath
         self.label = label
         self.type = 'orthology association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
-        
-        self.source_taxon_id = source_taxon_id
-        self.target_taxon_id = target_taxon_id
-        self.source_prefix = source_prefix
-        self.target_prefix = target_prefix
-        self.source_organism_name = source_organism_name
-        self.target_organism_name = target_organism_name
 
-        if gene_id_map_filepath:
-            self.gene_id_map = pickle.load(open(gene_id_map_filepath, 'rb'))
-        else:
-            self.gene_id_map = None
+        self.hsa_hgnc2ensemble = pickle.load(open(hsa_hgnc_to_ensemble_map, 'rb'))
 
         super(OrthologyAssociationAdapter, self).__init__(write_properties, add_provenance)
 
 
     def get_edges(self):
-        fb_orthologs_table = FlybasePrecomputedTable(self.filepath)
-        self.version = fb_orthologs_table.extract_date_string(self.filepath)
+        fb_orthologs_table= FlybasePrecomputedTable(self.dmel_data_filepath)
+        self.version = fb_orthologs_table.extract_date_string(self.dmel_data_filepath)
         # header:
         #Dmel_gene_ID	Dmel_gene_symbol	Human_gene_HGNC_ID	Human_gene_OMIM_ID	Human_gene_symbol	DIOPT_score	OMIM_Phenotype_IDs	OMIM_Phenotype_IDs[name]
         rows = fb_orthologs_table.get_rows()
-        no_map_id = 0
+        no_hgnc_id = 0
         total_rows = len(rows)
         for row in rows:
             props = {}
             source = row[0]
-            external_id = row[2]
-            
-            target = external_id #default
-            if self.gene_id_map:
-                try:
-                    target = self.gene_id_map[external_id]
-                except KeyError as ke:
-                    no_map_id += 1
-                    logger.info(
-                        f'orthology_adapter.py::OrthologyAdapter::get_edges: failed to map ID: {external_id}\n'
-                        f'Missing data in row: {row}\n'
-                        f'Unmapped count: {no_map_id} / {total_rows}'                    
-                    )
-                    continue
+            hsa_hgnc_id = row[2]
+            try:
+                target = self.hsa_hgnc2ensemble[ hsa_hgnc_id ]
+            except KeyError as ke:
+                no_hgnc_id += 1
+                logger.info(
+                    f'orthology_adapter.py::OrthologyAdapter::get_edges-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}:\n'
+                    f'Exception: {ke}\n'
+                    f'Missing data:\n {row}'f'\nGenes without HGNC ID: {no_hgnc_id} / {total_rows}'                    
+                )
+                continue
+            props['hsa_hgnc_id'] = hsa_hgnc_id
+            props['hsa_omim_id'] = row[3]
+            props['hsa_hgnc_symbol'] = row[4]
+            props['DIOPT_score'] = int(row[5])
+            props['hsa_omim_phenotype_ids'] = row[6]
+            props['hsa_omim_phenotype_ids_names'] = row[7]
+            props['source_organism'] = 'Drosophila melanogaster'
+            props['target_organism'] = 'Homo sapiens'
 
-            props['hsa_hgnc_id'] = external_id
-            props['hsa_omim_id'] = row[3] if len(row) > 3 else None
-            props['hsa_hgnc_symbol'] = row[4] if len(row) > 4 else None
-            props['DIOPT_score'] = int(row[5]) if len(row) > 5 and row[5].isdigit() else None
-            props['hsa_omim_phenotype_ids'] = row[6] if len(row) > 6 else None
-            props['hsa_omim_phenotype_ids_names'] = row[7] if len(row) > 7 else None
-            
-            props['source_organism'] = self.source_organism_name
-            props['target_organism'] = self.target_organism_name
-            
-            yield f'{self.source_prefix}:{source}', f'{self.target_prefix}:{target}', self.label, props
+            yield f'FlyBase:{source}', f'Ensembl:{target}', self.label, props
