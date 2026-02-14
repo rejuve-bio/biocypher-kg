@@ -41,17 +41,9 @@ from biocypher._logger import logger
 
 class ParalogyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, filepath=None, label='paralogs_genes', taxon_id=7227, source_prefix='FlyBase', dmel_data_filepath=None):
-        if dmel_data_filepath and not filepath:
-            filepath = dmel_data_filepath
-        
-        if not filepath:
-            raise ValueError("filepath must be provided")
-
-        self.filepath = filepath
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'paralogs_genes'):
+        self.dmel_data_filepath = dmel_data_filepath
         self.label = label
-        self.taxon_id = taxon_id
-        self.source_prefix = source_prefix
         self.type = 'paralogy association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
@@ -60,8 +52,8 @@ class ParalogyAssociationAdapter(Adapter):
 
 
     def get_edges(self):
-        fb_paralogs_table = FlybasePrecomputedTable(self.filepath)
-        self.version = fb_paralogs_table.extract_date_string(self.filepath)
+        fb_paralogs_table= FlybasePrecomputedTable(self.dmel_data_filepath)
+        self.version = fb_paralogs_table.extract_date_string(self.dmel_data_filepath)
         # header:
         ## FBgn_ID	GeneSymbol	Arm/Scaffold	Location	Strand	Paralog_FBgn_ID	Paralog_GeneSymbol	Paralog_Arm/Scaffold	Paralog_Location	Paralog_Strand	DIOPT_score
         rows = fb_paralogs_table.get_rows()
@@ -73,8 +65,8 @@ class ParalogyAssociationAdapter(Adapter):
                 target = row[5]
                 props['target_symbol'] = row[6]
                 props['DIOPT_score'] = int(row[10])
-                props['taxon_id'] = self.taxon_id
+                props['taxon_id'] = 7227
             except Exception as e:
                 print(f'\nDeffective ROW:\n{row}\nException: {e}')
                 continue
-            yield f'{self.source_prefix}:{source}', f'{self.source_prefix}:{target}', self.label, props
+            yield f'FlyBase:{source}', f'FlyBase:{target}', self.label, props
