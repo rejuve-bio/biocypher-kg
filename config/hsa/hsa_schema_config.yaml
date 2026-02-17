@@ -2096,7 +2096,7 @@ exon part_of transcript:
 has xref:
   is_a: annotation
   mixins: [biolink:Association]
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   represented_as: edge
   input_label: has_xref
   output_label: has_xref
@@ -2119,7 +2119,7 @@ has xref:
 
 protein has_xref gene:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_gene
@@ -2135,7 +2135,7 @@ protein has_xref gene:
 
 protein has_xref transcript:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_transcript
@@ -2151,7 +2151,7 @@ protein has_xref transcript:
 
 protein has_xref protein:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_protein
@@ -2166,7 +2166,7 @@ protein has_xref protein:
 
 protein has_xref biological_process:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_biological_process
@@ -2181,7 +2181,7 @@ protein has_xref biological_process:
 
 protein has_xref molecular_function:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_molecular_function
@@ -2196,7 +2196,7 @@ protein has_xref molecular_function:
 
 protein has_xref cellular_component:
   is_a: has xref
-  biolink_predicate: "biolink:related_to"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_cellular_component
@@ -2211,7 +2211,7 @@ protein has_xref cellular_component:
 
 protein has_xref catalytic_activity:
   is_a: has xref
-  biolink_predicate: "biolink:physically_interacts_with"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_catalytic_activity
@@ -2226,7 +2226,7 @@ protein has_xref catalytic_activity:
 
 protein has_xref cofactor:
   is_a: has xref
-  biolink_predicate: "biolink:has_cofactor"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_cofactor
@@ -2241,7 +2241,7 @@ protein has_xref cofactor:
 
 protein has_xref binding_site_ligand:
   is_a: has xref
-  biolink_predicate: "biolink:binds"
+  biolink_predicate: "biolink:xref"
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_binding_site_ligand
