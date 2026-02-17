@@ -1169,8 +1169,7 @@ chebi_chebi_subclass_of:
   outdir: small_molecule
   nodes: False
   edges: True
-
-  
+ 
 
 epd_promoter_dmel:
   adapter:

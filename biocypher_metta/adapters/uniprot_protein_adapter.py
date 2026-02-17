@@ -1,3 +1,4 @@
+from collections import defaultdict
 import gzip
 import pickle
 import re
@@ -53,12 +54,10 @@ class UniprotProteinAdapter(Adapter):
     def parse_isoforms(self, comment):
         isoforms = []
         
-        sections = [s.strip() for s in comment.split(';')]
-        
+        sections = [s.strip() for s in comment.split(';')]        
         for section in sections:
             if section.startswith('Name='):
-                current_name = section.split('=')[1].strip()
-                
+                current_name = section.split('=')[1].strip()                
                 for next_section in sections[sections.index(section):]:
                     if 'IsoId=' in next_section:
                         iso_ids = next_section.split('IsoId=')[1].split(',')
@@ -69,8 +68,7 @@ class UniprotProteinAdapter(Adapter):
                                 'id': clean_id
                             }
                             isoforms.append(isoform)
-                        break
-        
+                        break        
         return isoforms
 
     def _matches_ensembl_label(self, syn):
@@ -83,14 +81,17 @@ class UniprotProteinAdapter(Adapter):
             return True
         return False
 
-
     def get_nodes(self):
+        taxon_to_suffixes = defaultdict(lambda: None)
+        taxon_to_suffixes[7227] ='DROME',
+        taxon_to_suffixes[9606] = 'HUMAN',
+        
         with gzip.open(self.filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
             for record in records:
-                if self.taxon_id == 7227 and not record.entry_name.endswith("DROME"):
+                if taxon_to_suffixes[self.taxon_id] == None or not record.entry_name.endswith(taxon_to_suffixes[self.taxon_id]):
                     continue
-                dbxrefs = self.get_dbxrefs(record.cross_references)
+                # dbxrefs = self.get_dbxrefs(record.cross_references)
                 
                 base_id = record.accessions[0].upper()
                 props = {}
@@ -100,11 +101,8 @@ class UniprotProteinAdapter(Adapter):
                         'protein_name': record.entry_name.split('_')[0],
                         'is_canonical': True
                     }
-
                     if len(record.accessions) > 1:
                         props['accessions'] = record.accessions[1:]
-
-
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -113,12 +111,10 @@ class UniprotProteinAdapter(Adapter):
                 
                 for comment in record.comments:
                     if 'ALTERNATIVE PRODUCTS:' in comment:
-                        isoforms = self.parse_isoforms(comment)
-                        
+                        isoforms = self.parse_isoforms(comment)                        
                         for isoform in isoforms:
                             isoform_id = isoform['id'].upper()
                             props = {}
-
                             if self.write_properties:
                                 props = {
                                     'protein_name': record.entry_name.split('_')[0],
@@ -126,8 +122,6 @@ class UniprotProteinAdapter(Adapter):
                                     'canonical_accession': record.accessions[0],
                                     'isoform_name': isoform['name']
                                 }
-
-
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
@@ -136,8 +130,14 @@ class UniprotProteinAdapter(Adapter):
                         break
 
     def get_edges(self):
+        taxon_to_suffixes = defaultdict(lambda: None)
+        taxon_to_suffixes[7227] ='DROME',
+        taxon_to_suffixes[9606] = 'HUMAN',
+                
         with gzip.open(self.filepath, 'rt') as input_file:
             for record in SwissProt.parse(input_file):
+                if taxon_to_suffixes[self.taxon_id] == None or not record.entry_name.endswith(taxon_to_suffixes[self.taxon_id]):
+                    continue                
                 dbxrefs = self.get_dbxrefs(record.cross_references)
                 base_id = f"UniProtKB:{record.accessions[0].upper()}"
 

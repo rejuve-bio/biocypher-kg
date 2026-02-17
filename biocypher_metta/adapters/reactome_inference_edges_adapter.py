@@ -32,6 +32,7 @@ from biocypher_metta.adapters import Adapter
     # RO:0002211: http://purl.obolibrary.org/obo/RO_0003001
 
 
+
 # According to Reactome AI bot (https://reactome.org/chat/) there are only 5 roles in the data:
 # Input: 
     # This refers to the substrates or reactants that are required for a biochemical reaction to occur. 
@@ -110,11 +111,11 @@ class ReactomeInferenceEdgesAdapter(Adapter):
             'R-RNO': 10116,   # Rattus norvegicus
         }        
         roles_to_label_map = defaultdict(lambda: None)
-        roles_to_label_map['input'] = 'enables'
-        roles_to_label_map['output'] = 'produced_by'
-        roles_to_label_map['catalyst'] = 'regulates'
-        roles_to_label_map['negative'] = 'negatively_regulates'
-        roles_to_label_map['positive'] = 'positively_regulates'
+        roles_to_label_map['input'] = ('enables', 'RO_0002327')
+        roles_to_label_map['output'] = ('produced_by', 'RO_0003001')
+        roles_to_label_map['catalyst'] = ('regulates', 'RO_0002211')
+        roles_to_label_map['negative'] = ('negatively_regulates', 'RO_0002212')
+        roles_to_label_map['positive'] = ('positively_regulates', 'RO_0002213')
         with open(self.filepath) as input_file:
             base_props = {}
             if self.write_properties and self.add_provenance:
@@ -148,10 +149,11 @@ class ReactomeInferenceEdgesAdapter(Adapter):
                     total_in_species_records += 1
                     protein_roles = protein_roles.replace('[', '').replace(']', '').replace(' ', '').split(',')
                     for protein_role in protein_roles:
-                        label = roles_to_label_map[protein_role]
+                        label = roles_to_label_map[protein_role][0]
                         edges_key = f'{uniprot_id}_{protein_role}_{pathway_id}'  
                         if not edges_key in edges_dict:
                             props = base_props.copy()
+                            props['relation_ontology_term'] = roles_to_label_map[protein_role][1]
                             props['taxon_id'] = self.taxon_id
                             edges_dict[edges_key] = True                                                
                             yield uniprot_id, ('pathway', pathway_id), label, props

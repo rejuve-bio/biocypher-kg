@@ -148,7 +148,7 @@ class ReactomeEdgesAdapter(Adapter):
                         total_in_species_records += 1
                         source_type = self._get_entity_type(entity_id)
                         if source_type is None:
-                            print(f'Invalid type for entity {entity_id}.\nRecord: {data}')
+                            # print(f'Invalid type for entity {entity_id}.\nRecord: {data}')
                             not_mapped_no_processing += 1
                             continue                        
 
@@ -161,7 +161,7 @@ class ReactomeEdgesAdapter(Adapter):
                                     
                                     uniprot_id = self.get_uniprot_id_from_FB(self.connection, entity_id)
                                     if uniprot_id is None:
-                                        print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
+                                        # print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
                                         not_mapped_no_processing += 1
                                         continue
                                 curie_entity_id = f'UniProtKB:{uniprot_id}'
@@ -169,6 +169,9 @@ class ReactomeEdgesAdapter(Adapter):
                                 curie_entity_id = f'FlyBase:{entity_id}'
                             elif entity_id.startswith('CHEBI'):
                                 curie_entity_id = entity_id
+                            else:
+                                not_mapped_no_processing += 1
+                                continue
                             # print(f'ID for protein: {curie_entity_id}, entity: {entity_id}, type {source_type} of dmel.\tReactome {pathway_id}')
                             source = (source_type, curie_entity_id)
                             # target = pathway_id
@@ -191,7 +194,7 @@ class ReactomeEdgesAdapter(Adapter):
                                     entity_id = self.ensembl_uniprot_map.get(entity_id)
                                     curie_entity_id = f"{entity_id}"                                    
                                 else:
-                                    print(f"No UniProt mapping for {entity_id} of H. sapiens.\nRecord: {data}")
+                                    # print(f"No UniProt mapping for {entity_id} of H. sapiens.\nRecord: {data}")
                                     not_mapped_no_processing += 1
                                     continue
                             source = (source_type, curie_entity_id)
