@@ -129,78 +129,6 @@ reactome_reaction:
   nodes: True
   edges: False
 
-reactome_reaction_to_pathway:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
-      label: reaction_to_pathway
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_input_role_protein_to_reaction_or_pathway:
-  adapter:
-    module: biocypher_metta.adapters.reactome_inference_edges_adapter
-    cls: ReactomeInferenceEdgesAdapter
-    args:
-      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
-      label: enables
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_output_role_protein_to_reaction_or_pathway:
-  adapter:
-    module: biocypher_metta.adapters.reactome_inference_edges_adapter
-    cls: ReactomeInferenceEdgesAdapter
-    args:
-      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
-      label: produced_by
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_catalyst_role_protein_to_reaction_or_pathway:
-  adapter:
-    module: biocypher_metta.adapters.reactome_inference_edges_adapter
-    cls: ReactomeInferenceEdgesAdapter
-    args:
-      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
-      label: regulates
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_negative_role_protein_to_reaction_or_pathway:
-  adapter:
-    module: biocypher_metta.adapters.reactome_inference_edges_adapter
-    cls: ReactomeInferenceEdgesAdapter
-    args:
-      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
-      label: negatively_regulates
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_positive_role_protein_to_reaction_or_pathway:
-  adapter:
-    module: biocypher_metta.adapters.reactome_inference_edges_adapter
-    cls: ReactomeInferenceEdgesAdapter
-    args:
-      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
-      label: positively_regulates
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -222,32 +150,6 @@ gene_or_gene_product_reaction:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
       ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
       label: gene_or_gene_product_reaction
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-chebi_small_molecule_to_pathways:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
-      label: small_molecule_to_pathway
-      taxon_id: 9606
-  outdir: reactome
-  nodes: False
-  edges: True
-
-chebi_small_molecule_to_reactions:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
-      label: small_molecule_to_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
@@ -351,6 +253,7 @@ go_biological_process:
       dry_run: True
       add_description: False
       cache_dir: ./ontology_dataset_cache
+
   outdir: gene_ontology/biological_process
   nodes: True
   edges: False
@@ -365,6 +268,7 @@ go_biological_process_subclass_of:
       label: biological_process_subclass_of
       dry_run: True
       cache_dir: ./ontology_dataset_cache
+
   outdir: gene_ontology/biological_process
   nodes: False
   edges: True
@@ -794,52 +698,6 @@ dgv_variant:
   outdir: dgv
   nodes: True
   edges: False
-
-dgv_variant_gene_overlap:
-  adapter:
-    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
-    cls: DGVVariantAdapter
-    args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
-      label: structural_variant
-      feature_files:
-        - path: ./samples/hsa/gencode_sample.gtf.gz
-          label: gene
-          type: gtf
-  outdir: dgv
-  nodes: False
-  edges: True
-
-dgv_variant_ncrna_overlap:
-  adapter:
-    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
-    cls: DGVVariantAdapter
-    args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
-      label: structural_variant
-      feature_files:
-        - path: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-          label: non_coding_rna
-          type: bed
-  outdir: dgv
-  nodes: False
-  edges: True
-
-dgv_variant_promoter_overlap:
-  adapter:
-    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
-    cls: DGVVariantAdapter
-    args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
-      label: structural_variant
-      feature_files:
-        - path: ./samples/hsa/Hs_EPDnew.bed.gz
-          label: promoter
-          type: bed
-          delimiter: ' '
-  outdir: dgv
-  nodes: False
-  edges: True
   
 epd_promoter:
   adapter:
@@ -903,52 +761,6 @@ dbvar_variant:
   outdir: dbvar
   nodes: True
   edges: False
-
-dbvar_variant_gene_overlap:
-  adapter:
-    module: biocypher_metta.adapters.hsa.dbvar_adapter
-    cls: DBVarVariantAdapter
-    args:
-      filepath: ./samples/hsa/dbvar_sample.vcf.gz
-      label: structural_variant
-      feature_files:
-        - path: ./samples/hsa/gencode_sample.gtf.gz
-          label: gene
-          type: gtf
-  outdir: dbvar
-  nodes: False
-  edges: True
-
-dbvar_variant_ncrna_overlap:
-  adapter:
-    module: biocypher_metta.adapters.hsa.dbvar_adapter
-    cls: DBVarVariantAdapter
-    args:
-      filepath: ./samples/hsa/dbvar_sample.vcf.gz
-      label: structural_variant
-      feature_files:
-        - path: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
-          label: non_coding_rna
-          type: bed
-  outdir: dbvar
-  nodes: False
-  edges: True
-
-dbvar_variant_promoter_overlap:
-  adapter:
-    module: biocypher_metta.adapters.hsa.dbvar_adapter
-    cls: DBVarVariantAdapter
-    args:
-      filepath: ./samples/hsa/dbvar_sample.vcf.gz
-      label: structural_variant
-      feature_files:
-        - path: ./samples/hsa/Hs_EPDnew.bed.gz
-          label: promoter
-          type: bed
-          delimiter: ' '
-  outdir: dbvar
-  nodes: False
-  edges: True
 
 peregrine_enhancer:
   adapter:
@@ -1696,56 +1508,5 @@ uniprot_dbxref_molecular_function:
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_molecular_function
-  nodes: False
-  edges: True
-uniprot_has_xref_catalytic_activity:
-  adapter:
-    module: biocypher_metta.adapters.uniprot_protein_adapter
-    cls: UniprotProteinAdapter
-    args:
-      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
-      label: protein_has_xref_catalytic_activity
-      taxon_id: 9606
-      dbxref: CHEBI
-  outdir: uniprot/has_xref_catalytic_activity
-  nodes: False
-  edges: True
-
-uniprot_has_xref_cofactor:
-  adapter:
-    module: biocypher_metta.adapters.uniprot_protein_adapter
-    cls: UniprotProteinAdapter
-    args:
-      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
-      label: protein_has_xref_cofactor
-      taxon_id: 9606
-      dbxref: CHEBI
-  outdir: uniprot/has_xref_cofactor
-  nodes: False
-  edges: True
-
-uniprot_has_xref_binding_site_ligand:
-  adapter:
-    module: biocypher_metta.adapters.uniprot_protein_adapter
-    cls: UniprotProteinAdapter
-    args:
-      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
-      label: protein_has_xref_binding_site_ligand
-      taxon_id: 9606
-      dbxref: CHEBI
-  outdir: uniprot/has_xref_binding_site_ligand
-  nodes: False
-  edges: True
-
-uniprot_chebi_part_of_chebi:
-  adapter:
-    module: biocypher_metta.adapters.uniprot_protein_adapter
-    cls: UniprotProteinAdapter
-    args:
-      filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
-      label: chemical_substance_part_of_chemical_substance
-      taxon_id: 9606
-      dbxref: CHEBI
-  outdir: uniprot/chebi_part_of
   nodes: False
   edges: True

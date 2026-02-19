@@ -6,7 +6,7 @@ import networkx as nx
 import re
 
 from biocypher_metta import BaseWriter
-77
+
 class PrologWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config,
@@ -43,6 +43,8 @@ class PrologWriter(BaseWriter):
 
     def preprocess_id(self, prev_id):
         """Ensure ID remains in CURIE format while cleaning special characters"""
+        if prev_id is None:
+            return None
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
             prefix = prefix.upper()
@@ -142,6 +144,9 @@ class PrologWriter(BaseWriter):
         if isinstance(source_id, tuple):
             source_type = source_id[0]
             source_id_processed = self.preprocess_id(source_id[1])
+            if source_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because source ID is None")
+                return []
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
@@ -161,6 +166,9 @@ class PrologWriter(BaseWriter):
             #             raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             source_id_processed = self.preprocess_id(source_id)
+            if source_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because source ID is None")
+                return []
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
                 if isinstance(source_type_info, list):
@@ -173,6 +181,9 @@ class PrologWriter(BaseWriter):
         if isinstance(target_id, tuple):
             target_type = target_id[0]
             target_id_processed = self.preprocess_id(target_id[1])
+            if target_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because target ID is None")
+                return []
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
@@ -192,6 +203,9 @@ class PrologWriter(BaseWriter):
             #             raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             target_id_processed = self.preprocess_id(target_id)
+            if target_id_processed is None:
+                logger.warning(f"Edge '{label}': skipping because target ID is None")
+                return []
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
                 if isinstance(target_type_info, list):

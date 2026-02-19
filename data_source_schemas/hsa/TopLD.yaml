@@ -3,14 +3,9 @@ website: http://topld.genetics.unc.edu
 relationships:
   topld in linkage disequilibrium with:
     url: http://topld.genetics.unc.edu/
-<<<<<<< HEAD:data_source_schemas/hsa/TopLD.yaml
-    description: holds between two sequence variants, the presence of which are correlated in a population
-    input_label: in_linkage_desquilibrium_with
-=======
-    input_label: in_ld_with
+    input_label: in_linkage_disequilibrium_with
     description: holds between two sequence variants, the presence of which are correlated
       in a population
->>>>>>> main:data_source_schemas/TopLD.yaml
     source: snp
     target: snp
     properties:

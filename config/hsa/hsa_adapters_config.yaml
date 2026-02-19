@@ -856,6 +856,52 @@ dgv_variant:
   nodes: True
   edges: False
 
+dgv_variant_gene_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
+    cls: DGVVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+      label: structural_variant
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+          label: gene
+          type: gtf
+  outdir: dgv
+  nodes: False
+  edges: True
+
+dgv_variant_ncrna_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
+    cls: DGVVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+      label: structural_variant
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+          label: non_coding_rna
+          type: bed
+  outdir: dgv
+  nodes: False
+  edges: True
+
+dgv_variant_promoter_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dgv_variant_adapter
+    cls: DGVVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+      label: structural_variant
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+          label: promoter
+          type: bed
+          delimiter: ' '
+  outdir: dgv
+  nodes: False
+  edges: True
+
 epd_promoter:
   adapter:
     module: biocypher_metta.adapters.epd_adapter
@@ -894,6 +940,52 @@ dbvar_variant:
   nodes: True
   edges: False
 
+dbvar_variant_gene_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dbvar_adapter
+    cls: DBVarVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+      label: structural_variant
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+          label: gene
+          type: gtf
+  outdir: dbvar
+  nodes: False
+  edges: True
+
+dbvar_variant_ncrna_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dbvar_adapter
+    cls: DBVarVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+      label: structural_variant
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+          label: non_coding_rna
+          type: bed
+  outdir: dbvar
+  nodes: False
+  edges: True
+
+dbvar_variant_promoter_overlap:
+  adapter:
+    module: biocypher_metta.adapters.hsa.dbvar_adapter
+    cls: DBVarVariantAdapter
+    args:
+      filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+      label: structural_variant
+      feature_files:
+        - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+          label: promoter
+          type: bed
+          delimiter: ' '
+  outdir: dbvar
+  nodes: False
+  edges: True
+
 peregrine_enhancer:
   adapter:
     module: biocypher_metta.adapters.hsa.peregrine_adapter
@@ -924,6 +1016,7 @@ peregrine_enhancer_regulates:
   outdir: peregrine
   nodes: False
   edges: True
+
 
 dbsuper_super_enhancer:
   adapter:
@@ -1566,5 +1659,57 @@ uniprot_dbxref_molecular_function:
       mapping_file: ./aux_files/go_subontology_mapping.pkl
       taxon_id: 9606
   outdir: uniprot/has_xref_molecular_function
+  nodes: False
+  edges: True
+
+uniprot_has_xref_catalytic_activity:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_catalytic_activity
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_catalytic_activity
+  nodes: False
+  edges: True
+
+uniprot_has_xref_cofactor:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_cofactor
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_cofactor
+  nodes: False
+  edges: True
+
+uniprot_has_xref_binding_site_ligand:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: protein_has_xref_binding_site_ligand
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_binding_site_ligand
+  nodes: False
+  edges: True
+
+uniprot_chebi_part_of_chebi:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
+      label: chemical_substance_part_of_chemical_substance
+      taxon_id: 9606
+      dbxref: CHEBI
+  outdir: uniprot/chebi_part_of
   nodes: False
   edges: True

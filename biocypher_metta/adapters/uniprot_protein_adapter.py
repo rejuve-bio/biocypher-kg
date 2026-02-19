@@ -141,6 +141,110 @@ class UniprotProteinAdapter(Adapter):
                 dbxrefs = self.get_dbxrefs(record.cross_references)
                 base_id = f"UniProtKB:{record.accessions[0].upper()}"
 
+                if self.dbxref == "CHEBI":
+                    if self.label == "protein_has_xref_catalytic_activity":
+                        for comment in record.comments:
+                            if "CATALYTIC ACTIVITY" in comment:
+                                chebi_ids = re.findall(r"CHEBI:(\d+)", comment, re.IGNORECASE)
+                                evidence = re.findall(r"ECO:(\d+)", comment, re.IGNORECASE)
+                                evidence_codes = [f"ECO_{eco}" for eco in evidence]
+                                for cid in chebi_ids:
+                                    chebi_id = f"CHEBI:{cid}"
+                                    props = {}
+                                    if self.write_properties:
+                                        if evidence_codes:
+                                            props['evidence'] = evidence_codes
+                                        if self.add_provenance:
+                                            props['source'] = self.source
+                                            props['source_url'] = self.source_url
+                                    yield base_id, chebi_id, self.label, props
+
+                    elif self.label == "protein_has_xref_cofactor":
+                        for comment in record.comments:
+                            if "COFACTOR" in comment:
+                                chebi_ids = re.findall(r"CHEBI:(\d+)", comment, re.IGNORECASE)
+                                evidence = re.findall(r"ECO:(\d+)", comment, re.IGNORECASE)
+                                evidence_codes = [f"ECO_{eco}" for eco in evidence]
+                                for cid in chebi_ids:
+                                    chebi_id = f"CHEBI:{cid}"
+                                    props = {}
+                                    if self.write_properties:
+                                        if evidence_codes:
+                                            props['evidence'] = evidence_codes
+                                        if self.add_provenance:
+                                            props['source'] = self.source
+                                            props['source_url'] = self.source_url
+                                    yield base_id, chebi_id, self.label, props
+
+                    elif self.label in ["protein_has_xref_binding_site_ligand", "chemical_substance_part_of_chemical_substance"]:
+                        for feature in record.features:
+                            if feature.type == "BINDING":
+                                ligand_id = feature.qualifiers.get('ligand_id')
+                                if ligand_id:
+                                    if self.label == "protein_has_xref_binding_site_ligand":
+                                        if isinstance(ligand_id, str):
+                                            ligand_id = [ligand_id]
+                                        
+                                        for lid in ligand_id:
+                                            cid_match = re.search(r"CHEBI:(\d+)", lid, re.IGNORECASE)
+                                            if cid_match:
+                                                cid = f"CHEBI:{cid_match.group(1)}"
+                                                
+                                                evidence = feature.qualifiers.get('evidence', [])
+                                                if isinstance(evidence, str):
+                                                    evidence = [evidence]
+                                                evidence_codes = []
+                                                for ev in evidence:
+                                                    ecos = re.findall(r"ECO:(\d+)", ev)
+                                                    for eco in ecos:
+                                                        evidence_codes.append(f"ECO_{eco}")
+                                                
+                                                props = {}
+                                                if self.write_properties:
+                                                    if evidence_codes:
+                                                        props['evidence'] = evidence_codes
+                                                    if self.add_provenance:
+                                                        props['source'] = self.source
+                                                        props['source_url'] = self.source_url
+                                                yield base_id, cid, self.label, props
+
+                                    if self.label == "chemical_substance_part_of_chemical_substance":
+                                        part_id = feature.qualifiers.get('ligand_part_id')
+                                        if part_id:
+                                            if isinstance(ligand_id, str):
+                                                ligand_id = [ligand_id]
+                                            if isinstance(part_id, str):
+                                                part_id = [part_id]
+                                            
+                                            evidence = feature.qualifiers.get('evidence', [])
+                                            if isinstance(evidence, str):
+                                                evidence = [evidence]
+                                            evidence_codes = []
+                                            for ev in evidence:
+                                                ecos = re.findall(r"ECO:(\d+)", ev)
+                                                for eco in ecos:
+                                                    evidence_codes.append(f"ECO_{eco}")
+            
+                                            for lid in ligand_id:
+                                                l_match = re.search(r"CHEBI:(\d+)", lid, re.IGNORECASE)
+                                                if l_match:
+                                                    l_chebi = f"CHEBI:{l_match.group(1)}"
+                                                    for pid in part_id:
+                                                        p_match = re.search(r"CHEBI:(\d+)", pid, re.IGNORECASE)
+                                                        if p_match:
+                                                            p_chebi = f"CHEBI:{p_match.group(1)}"
+                                                            
+                                                            part_props = {}
+                                                            if self.write_properties:
+                                                                if evidence_codes:
+                                                                    part_props['evidence'] = evidence_codes
+                                                                if self.add_provenance:
+                                                                    part_props['source'] = self.source
+                                                                    part_props['source_url'] = self.source_url
+                                                            yield p_chebi, l_chebi, self.label, part_props
+                    continue
+
+                dbxrefs = self.get_dbxrefs(record.cross_references)
                 for syn in dbxrefs:
                     # Skip if not matching desired dbxref
                     if not syn.startswith(self.dbxref):

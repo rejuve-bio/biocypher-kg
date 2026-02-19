@@ -2509,6 +2509,34 @@ chebi subclass of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+feature overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: feature_overlaps_structural_variant
+  output_label: overlaps
+  source: biological entity
+  target: structural variant
+  kgx_properties:
+    subject_category: "biolink:GenomicEntity"
+    object_category: "biolink:SequenceVariant"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+structural_variant overlaps feature:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_feature
+  output_label: overlaps
+  source: structural variant
+  target: biological entity
+  kgx_properties:
+    subject_category: "biolink:SequenceVariant"
+    object_category: "biolink:GenomicEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
 
 # ---
 # regulatory association (edges)
@@ -2900,6 +2928,10 @@ has xref:
     xref_db:
       type: str
       biolink: knowledge_source
+    evidence:
+      type: str[]
+      biolink: has_evidence
+
 
 
 protein has_xref gene:
@@ -2991,5 +3023,68 @@ protein has_xref cellular_component:
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:CellularComponent"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref catalytic_activity:
+  is_a: has xref
+  biolink_predicate: "biolink:physically_interacts_with"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_catalytic_activity
+  output_label: has_xref
+  source: protein
+  target: small molecule
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref cofactor:
+  is_a: has xref
+  biolink_predicate: "biolink:has_cofactor"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_cofactor
+  output_label: has_xref
+  source: protein
+  target: small molecule
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein has_xref binding_site_ligand:
+  is_a: has xref
+  biolink_predicate: "biolink:binds"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_has_xref_binding_site_ligand
+  output_label: has_xref
+  source: protein
+  target: small molecule
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:ChemicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+chemical_substance part_of chemical_substance:
+  is_a: association
+  biolink_predicate: "biolink:part_of"
+  represented_as: edge
+  input_label: chemical_substance_part_of_chemical_substance
+  output_label: part_of
+  source: small molecule
+  target: small molecule
+  properties:
+    evidence:
+      type: str[]
+      biolink: has_evidence
+  kgx_properties:
+    subject_category: "biolink:ChemicalEntity"
+    object_category: "biolink:ChemicalEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
