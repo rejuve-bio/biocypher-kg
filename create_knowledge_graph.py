@@ -408,7 +408,8 @@ def main(
                 logger.info(f"Loading dbsnp rsids map for {sp}")
                 sp_dbsnp_rsids_dict = pickle.load(open(sp_dbsnp_rsids, 'rb'))
                 logger.info(f"Loading dbsnp pos map for {sp}")
-                sp_dbsnp_pos_dict = pickle.load(open(sp_dbsnp_pos, 'rb'))
+                # sp_dbsnp_pos_dict = pickle.load(open(sp_dbsnp_pos, 'rb'))
+                sp_dbsnp_pos_dict = sp_dbsnp_rsids_dict
                 
                 bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
                 logger.info(f"Using {writer_type} writer for {sp}")

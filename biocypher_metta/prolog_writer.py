@@ -15,6 +15,7 @@ class PrologWriter(BaseWriter):
         self.create_edge_types()
         #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
+        self.type_hierarchy = self._type_hierarchy()
 
 
     def create_edge_types(self):
@@ -52,6 +53,37 @@ class PrologWriter(BaseWriter):
             clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
             return f"{prefix}:{clean_local}"
         return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+
+
+    def _type_hierarchy(self):
+        # to use Biolink-compatible schema
+        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
+        return {
+            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
+            'pathway': frozenset({'pathway'}),
+            'reaction': frozenset({'reaction'}),
+            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
+            'gene': frozenset({'gene'}),
+            'transcript': frozenset({'transcript'}),
+            'protein': frozenset({'protein'}),
+            'snp': frozenset({'snp'}),
+            'phenotype_set': frozenset({'phenotype_set'}),
+
+            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
+            'anatomy': frozenset({'anatomy'}),
+            'developmental_stage': frozenset({'developmental_stage'}),
+            'cell_type': frozenset({'cell_type'}),
+            'cell_line': frozenset({'cell_line'}),
+            'experimental_factor': frozenset({'experimental_factor'}),
+            'phenotype': frozenset({'phenotype'}),
+            'disease': frozenset({'disease'}),
+            'sequence_type': frozenset({'sequence_type'}),
+            'small_molecule': frozenset({'small_molecule'}),
+            'biological_process': frozenset({'biological_process'}),
+            'molecular_function': frozenset({'molecular_function'}),
+            'cellular_component': frozenset({'cellular_component'}),
+            'tissue': frozenset({'tissue'}),
+        }
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
@@ -118,17 +150,20 @@ class PrologWriter(BaseWriter):
             if label in self.edge_node_types:
                 valid_source_types = self.edge_node_types[label]["source"]
                 if isinstance(valid_source_types, list):
-                    if source_type not in valid_source_types:
-                        logger.warning(
-                            f"Edge '{label}': coercing source type '{source_type}' to '{valid_source_types[0]}'"
-                        )
-                        source_type = valid_source_types[0]
+                    if source_type not in self.type_hierarchy:
+                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
                 else:
-                    if source_type != valid_source_types:
-                        logger.warning(
-                            f"Edge '{label}': coercing source type '{source_type}' to '{valid_source_types}'"
-                        )
-                        source_type = valid_source_types
+                    if source_type not in self.type_hierarchy:
+                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+
+            # if label in self.edge_node_types:
+            #     valid_source_types = self.edge_node_types[label]["source"]
+            #     if isinstance(valid_source_types, list):
+            #         if source_type not in valid_source_types:
+            #             raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
+            #     else:
+            #         if source_type != valid_source_types:
+            #             raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             source_id_processed = self.preprocess_id(source_id)
             if source_id_processed is None:
@@ -150,19 +185,22 @@ class PrologWriter(BaseWriter):
                 logger.warning(f"Edge '{label}': skipping because target ID is None")
                 return []
             if label in self.edge_node_types:
-                valid_target_types = self.edge_node_types[label]["target"]
-                if isinstance(valid_target_types, list):
-                    if target_type not in valid_target_types:
-                        logger.warning(
-                            f"Edge '{label}': coercing target type '{target_type}' to '{valid_target_types[0]}'"
-                        )
-                        target_type = valid_target_types[0]
+                valid_source_types = self.edge_node_types[label]["source"]
+                if isinstance(valid_source_types, list):
+                    if source_type not in self.type_hierarchy:
+                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
                 else:
-                    if target_type != valid_target_types:
-                        logger.warning(
-                            f"Edge '{label}': coercing target type '{target_type}' to '{valid_target_types}'"
-                        )
-                        target_type = valid_target_types
+                    if source_type not in self.type_hierarchy:
+                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
+
+            # if label in self.edge_node_types:
+            #     valid_target_types = self.edge_node_types[label]["target"]
+            #     if isinstance(valid_target_types, list):
+            #         if target_type not in valid_target_types:
+            #             raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
+            #     else:
+            #         if target_type != valid_target_types:
+            #             raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             target_id_processed = self.preprocess_id(target_id)
             if target_id_processed is None:

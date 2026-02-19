@@ -87,14 +87,13 @@ genomic variant:
 
 epigenomic feature:
   represented_as: node
-  is_a: position entity
+  is_a: position entity     # epigenomic entity has no position in the  genome... :/
   mixins: [biolink:EpigenomicEntity]
   biolink_category: "biolink:EpigenomicEntity"
   inherit_properties: true
   input_label: epigenomic_feature
   description: >-
     A region of the genome that is associated with epigenetic modifications
-
   properties:
     biological_context: 
       type: str
@@ -449,6 +448,9 @@ pathway:
     evidence:
       type: str
       biolink: has_evidence
+    pubmed_url:        
+      type: str
+      biolink: source_record_urls            
     source:
       type: str
       biolink: knowledge_source
@@ -481,6 +483,9 @@ reaction:
     evidence:
       type: str
       biolink: has_evidence
+    pubmed_url:        
+      type: str
+      biolink: source_record_urls      
     source:
       type: str
       biolink: knowledge_source
@@ -1115,11 +1120,11 @@ gene to pathway association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+
 gene to reaction association:
   description: >-
-    An interaction between a gene or a gene product (gogp) and a molecular activity.
+    An interaction between a gene or a gene product (gogp) and a reaction (Reactome).
   is_a: annotation
-  mixins: [biolink:GeneOrGeneProductOrGeneFamilyToBiologicalProcessOrActivityAssociation]
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
@@ -1129,7 +1134,153 @@ gene to reaction association:
   target: reaction
   kgx_properties:
     subject_category: "biolink:GeneOrGeneProduct"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+small molecule to reaction association:
+  description: >-
+    An interaction between a small molecule (ChEBI) and a reaction (Reactome).
+  is_a: annotation
+  mixins: [biolink:MolecularActivityToPathwayAssociation]  # ???  provisory
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: small_molecule_to_reaction
+  output_label: participates_in 
+  source: small molecule
+  target: reaction
+  kgx_properties:
+    subject_category: "biolink:SmallMolecule"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+small molecule to pathway association:
+  description: >-
+    An interaction between a small molecule (ChEBI) and a pathway (Reactome).
+  is_a: annotation
+  mixins: [biolink:MolecularActivityToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: small_molecule_to_pathway
+  output_label: participates_in 
+  source: small molecule
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:SmallMolecule"
     object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+reaction to pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  description: >-
+    holds between a reaction and a pathway
+  represented_as: edge
+  input_label: reaction_to_pathway
+  output_label: part_of
+  source: reaction
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:MolecularActivity"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+input role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:is_input_of"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: enables
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "enables" relation
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+output role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:produced_by"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: produced_by
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "produced_by" relation
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+catalyst protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:regulates"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: regulates
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]  
+  properties:
+    relation_ontology_term: str   # RO term for "regulates" relation
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+negative role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:regulates"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: negatively_regulates
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "negatively regulates" relation  
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+
+positive role protein to reaction or pathway association:
+  is_a: annotation
+  biolink_predicate: "biolink:regulates"
+  inherit_properties: true
+  description: >-
+    holds between a protein playing an input role in a reaction and a pathway
+  represented_as: edge
+  input_label: positively_regulates
+  source: protein
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "positively regulates" relation
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:MolecularActivity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
@@ -1148,7 +1299,7 @@ parent pathway of:
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-
+    
 child pathway of:
   is_a: annotation
   biolink_predicate: "biolink:part_of"
@@ -1263,7 +1414,7 @@ chebi subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: chebi_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: small molecule
   target: small molecule
@@ -1328,6 +1479,7 @@ pathway_to_biological_process:
     target: biological process
     represented_as: edge
     input_label: pathway_to_biological_process
+    output_label: equivalent_to
     description: >-
       An association between a pathway and a biological process, indicating that the pathway is involved in the process.
     properties:

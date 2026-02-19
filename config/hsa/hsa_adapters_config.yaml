@@ -14,7 +14,7 @@ gencode_gene:
 gencode_transcripts:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
-    cls: GencodeAdapter
+    cls: GencodeTranscriptAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcript
@@ -27,7 +27,7 @@ gencode_transcripts:
 transcribes_to:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
-    cls: GencodeAdapter
+    cls: GencodeTranscriptAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcribes to
@@ -128,6 +128,78 @@ reactome_reaction:
   nodes: True
   edges: False
 
+reactome_reaction_to_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_input_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: enables
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_output_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: produced_by
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_catalyst_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: regulates
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_negative_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: negatively_regulates
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_positive_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
+      label: positively_regulates
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
 genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -155,6 +227,31 @@ gene_or_gene_product_reaction:
   nodes: False
   edges: True
 
+chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2Reactome_All_Levels.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
+      label: small_molecule_to_pathway
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2ReactomeReactions.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_uniprot_map.pkl
+      label: small_molecule_to_reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
 
 parent_pathway_of:
   adapter:
@@ -1130,10 +1227,11 @@ cell_type_part_of_tissue:
 
 motif_diff_tf_snp:
   adapter:
-    module: biocypher_metta.adapters.motif_diff_adapter
+    module: biocypher_metta.adapters.hsa.motif_diff_adapter
     cls: MotifDiffAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/motif_diff/motif_diff_mono_probNorm_average.diff
+      # filepath: /mnt/hdd_1/abdu/biocypher_data/motif_diff/motif_diff_mono_probNorm_average.diff
+      filepath: /mnt/hdd_1/abdu/motif_diff/_mono_probNorm_average.diff
       hgnc_to_ensembl: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       label: tf_snp
   outdir: MotifDiff
@@ -1245,7 +1343,7 @@ chebi_ontology:
     args:
       ontology: 'chebi'
       type: node
-      dry_run: True
+      dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
   outdir: chebi
@@ -1260,7 +1358,7 @@ chebi_chebi_subclass_of:
       ontology: 'chebi'
       label: chebi_subclass_of
       type: edge
-      dry_run: True
+      dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: chebi
   nodes: False
@@ -1317,7 +1415,7 @@ gene_tfbs_association:
 
 snp_to_upstream_gene:
   adapter:
-    module: biocypher_metta.adapters.gwas_adapter
+    module: biocypher_metta.adapters.hsa.gwas_adapter
     cls: GWASAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/gwas/gwas-catalog-associations_ontology-annotated.tsv
@@ -1328,7 +1426,7 @@ snp_to_upstream_gene:
 
 snp_to_downstream_gene:
   adapter:
-    module: biocypher_metta.adapters.gwas_adapter
+    module: biocypher_metta.adapters.hsa.gwas_adapter
     cls: GWASAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/gwas/gwas-catalog-associations_ontology-annotated.tsv
@@ -1339,7 +1437,7 @@ snp_to_downstream_gene:
 
 snp_to_in_gene:
   adapter:
-    module: biocypher_metta.adapters.gwas_adapter
+    module: biocypher_metta.adapters.hsa.gwas_adapter
     cls: GWASAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/gwas/gwas-catalog-associations_ontology-annotated.tsv
@@ -1471,29 +1569,31 @@ promoter_ccre_associates_with_gene_eqtl:
   nodes: False
   edges: True
 
-encode_re2g:
-  adapter:
-    module: biocypher_metta.adapters.encode_re2g_adapter
-    cls: ENCODERe2GAdapter
-    args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
-      label: enhancer
-      taxon_id: 9606
-  outdir: encode_re2g
-  nodes: True
-  edges: False
 
-encode_re2g_gene_associates:
-  adapter:
-    module: biocypher_metta.adapters.encode_re2g_adapter
-    cls: ENCODERe2GAdapter
-    args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
-      label: enhancer_gene
-      taxon_id: 9606
-  outdir: encode_re2g
-  nodes: False
-  edges: True
+#######################   there is no such filepath   #######################################
+# encode_re2g:
+#   adapter:
+#     module: biocypher_metta.adapters.encode_re2g_adapter
+#     cls: ENCODERe2GAdapter
+#     args:
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
+#       label: enhancer
+#       taxon_id: 9606
+#   outdir: encode_re2g
+#   nodes: True
+#   edges: False
+
+# encode_re2g_gene_associates:
+#   adapter:
+#     module: biocypher_metta.adapters.encode_re2g_adapter
+#     cls: ENCODERe2GAdapter
+#     args:
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
+#       label: enhancer_gene
+#       taxon_id: 9606
+#   outdir: encode_re2g
+#   nodes: False
+#   edges: True
 
 
 uniprot_dbxref_bgee_gene:
@@ -1504,6 +1604,7 @@ uniprot_dbxref_bgee_gene:
       filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       label: protein_has_xref_gene
       dbxref: BGEE
+      taxon_id: 9606
   outdir: uniprot/protein_has_xref_gene
   nodes: False
   edges: True
@@ -1516,6 +1617,7 @@ uniprot_dbxref_ensembl_gene:
       filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       label: protein_has_xref_gene
       dbxref: ENSEMBL
+      taxon_id: 9606
   outdir: uniprot/protein_has_xref_gene
   nodes: False
   edges: True
@@ -1528,6 +1630,7 @@ uniprot_dbxref_ensembl_transcript:
       filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       label: protein_has_xref_transcript
       dbxref: ENSEMBL
+      taxon_id: 9606
   outdir: uniprot/protein_has_xref_transcript
   nodes: False
   edges: True
@@ -1540,6 +1643,7 @@ uniprot_dbxref_ensembl_protein:
       filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       label: protein_has_xref_protein
       dbxref: ENSEMBL
+      taxon_id: 9606
   outdir: uniprot/protein_has_xref_protein
   nodes: False
   edges: True
@@ -1553,6 +1657,7 @@ uniprot_dbxref_string_protein:
       filepath: /mnt/hdd_1/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       label: protein_has_xref_protein
       dbxref: STRING
+      taxon_id: 9606
   outdir: uniprot/has_xref_protein
   nodes: False
   edges: True
@@ -1566,6 +1671,7 @@ uniprot_dbxref_biological_process:
       label: protein_has_xref_biological_process
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
+      taxon_id: 9606
   outdir: uniprot/has_xref_biological_process
   nodes: False
   edges: True
@@ -1579,6 +1685,7 @@ uniprot_dbxref_cellular_component:
       label: protein_has_xref_cellular_component
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
+      taxon_id: 9606
   outdir: uniprot/has_xref_cellular_component
   nodes: False
   edges: True
@@ -1592,6 +1699,7 @@ uniprot_dbxref_molecular_function:
       label: protein_has_xref_molecular_function
       dbxref: GO
       mapping_file: ./aux_files/go_subontology_mapping.pkl
+      taxon_id: 9606
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
