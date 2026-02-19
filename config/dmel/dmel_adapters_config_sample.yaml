@@ -762,6 +762,105 @@ gene_or_gene_product_reaction:
   nodes: False
   edges: True
 
+
+reactome_reaction_to_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: reaction_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_input_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: enables
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_output_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: produced_by
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_catalyst_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: regulates
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_negative_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: negatively_regulates
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_positive_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
+      label: positively_regulates
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      label: small_molecule_to_pathway
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
+      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      label: small_molecule_to_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
 parent_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -787,7 +886,6 @@ child_pathway_of:
   outdir: reactome
   nodes: False
   edges: True
-
 
 string:
   adapter:
@@ -1123,8 +1221,7 @@ chebi_chebi_subclass_of:
   outdir: small_molecule
   nodes: False
   edges: True
-
-  
+ 
 
 epd_promoter_dmel:
   adapter:

@@ -64,7 +64,7 @@ class MotifDiffAdapter(Adapter):
                     tf_ensembl = self.hgnc_to_ensembl_map.get(hgnc_symbol)
                 
                     if tf_ensembl is None:
-                        logger.warning(f"Couldn't find Ensembl ID for TF {hgnc_symbol}")
+                        # logger.warning(f"Couldn't find Ensembl ID for TF {hgnc_symbol}")
                         continue
                 
                     effect = "gain" if score > 0 else "loss"
