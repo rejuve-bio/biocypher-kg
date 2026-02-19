@@ -1,3 +1,41 @@
+"""
+PR Summary: Create Relations Between Ontology Types (#178)
+
+This PR introduces three new cross-ontology relations to the BioCypher knowledge graph (human / hsa build):
+
+- cell_line_is_a_cell_type
+  Connects CLO cell lines to CL cell types using:
+  * rdfs:subClassOf axioms in CLO
+  * CLO database cross-references (hasDbXref) to CL terms
+
+- cell_type_part_of_tissue
+  Connects CL cell types to BTO tissues by:
+  * Resolving CL → UBERON anatomical references
+  * Following UBERON part_of OWL restrictions
+  * Mapping UBERON terms to BTO tissues via UBERON dbxrefs
+
+- tissue_part_of_anatomy
+  Connects BTO tissues to UBERON anatomical structures by:
+  * Using UBERON structural part_of relationships
+  * Translating UBERON terms to BTO tissues via dbxrefs
+
+Changes:
+- Updated schema and adapter configurations to define the new edge types.
+- Extended the following adapters to emit cross-ontology edges:
+  - Cell Line Ontology adapter (CLO)
+  - Cell Ontology adapter (CL)
+  - Brenda Tissue Ontology adapter (BTO)
+- Validated that generated KG output files include the new relations with correct labels and properties.
+
+Technical Notes:
+- Cross-ontology relations are derived using:
+  * rdfs:subClassOf
+  * OWL part_of restrictions
+  * hasDbXref mappings
+- UBERON serves as the central bridge ontology for anatomical structure resolution.
+- Edge generation logic includes duplicate prevention and optimized traversal of OWL restrictions for performance and correctness.
+"""
+
 import rdflib
 from rdflib.namespace import RDFS
 
