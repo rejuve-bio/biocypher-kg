@@ -1151,6 +1151,8 @@ input role protein to reaction or pathway association:
   input_label: enables
   source: protein
   target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "enables" relation
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:MolecularActivity"
@@ -1167,6 +1169,8 @@ output role protein to reaction or pathway association:
   input_label: produced_by
   source: protein
   target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "produced_by" relation
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:MolecularActivity"
@@ -1182,7 +1186,9 @@ catalyst protein to reaction or pathway association:
   represented_as: edge
   input_label: regulates
   source: protein
-  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]  
+  properties:
+    relation_ontology_term: str   # RO term for "regulates" relation
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:MolecularActivity"
@@ -1200,6 +1206,8 @@ negative role protein to reaction or pathway association:
   input_label: negatively_regulates
   source: protein
   target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "negatively regulates" relation  
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:MolecularActivity"
@@ -1217,6 +1225,8 @@ positive role protein to reaction or pathway association:
   input_label: positively_regulates
   source: protein
   target: biolink:BiologicalProcessOrActivity  # [pathway, reaction]
+  properties:
+    relation_ontology_term: str   # RO term for "positively regulates" relation
   kgx_properties:
     subject_category: "biolink:Protein"
     object_category: "biolink:MolecularActivity"
