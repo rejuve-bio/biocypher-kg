@@ -1,3 +1,14 @@
+# MORK Persistence Integration
+
+This directory contains the integration of **MORK**, a high-performance reasoning engine designed for large-scale biological knowledge graphs.
+
+Our implementation focuses on a **"Convert-then-Load" workflow**, which transforms BioCypher's text-based .metta exports into optimized binary `.paths` indices. This approach allows us to:
+1.  **Bypass Parsing Overhead**: Skip the expensive text parsing step on subsequent loads.
+2.  **Achieve MM2-Scale Performance**: Load large number of atoms in seconds rather than hours.
+3.  **Enable Persistent Reasoning**: Query the graph instantly via a high-speed Rust server.
+
+---
+
 # 1. Setup Environment
 
 We configured the MORK service to use a persistent volume, ensuring data access across container restarts.
@@ -44,21 +55,26 @@ result = scope.download(pattern, template)
 
 To run the full end-to-end process, execute these commands in order:
 
-### A. Convert MeTTa to Binary
-Pre-process the BioCypher exports into optimized indices.
+### A. Start MORK Service
+Initialize the high-performance Rust server.
+```bash
+docker-compose up -d mork
+```
+
+### B. Convert MeTTa to Binary
+Pre-process the BioCypher exports into optimized indices (only needed when data changes).
 ```bash
 python3 scripts/convert_topaths.py
 ```
 
-### B. Load into MORK
+### C. Load into MORK
 Map the binary files into the server's memory.
 ```bash
 python3 scripts/load_paths.py
 ```
 
-### C. Run a Query
+### D. Run a Query
 Test the connection and verify queries using the internal REPL tool. This allows you to test patterns interactively without writing new scripts for each test.
 ```bash
 python3 scripts/mork_repl.py
 ```
-
