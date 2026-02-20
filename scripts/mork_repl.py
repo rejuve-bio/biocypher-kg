@@ -2,10 +2,16 @@ import sys
 import readline  # For comfortable typing with history
 from mork_client import MORK
 
+import argparse
+
 def main():
-    print("Connecting to MORK at http://localhost:8027...")
+    parser = argparse.ArgumentParser(description="MORK REPL for querying.")
+    parser.add_argument("--mork-url", type=str, default="http://localhost:8027")
+    args = parser.parse_args()
+
+    print(f"Connecting to MORK at {args.mork_url}...")
     try:
-        mork = MORK(base_url="http://localhost:8027")
+        mork = MORK(base_url=args.mork_url)
         # Test connection
         cmd = mork.Status("test")
         cmd.dispatch(mork)

@@ -64,17 +64,22 @@ docker-compose up -d mork
 ### B. Convert MeTTa to Binary
 Pre-process the BioCypher exports into optimized indices (only needed when data changes).
 ```bash
-python3 scripts/convert_topaths.py
+python3 scripts/convert_topaths.py [--input-dir <dir>] [--mork-url <url>]
 ```
+-   `--input-dir`: Directory containing `.metta` files (default: `output`)
+-   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
 
 ### C. Load into MORK
 Map the binary files into the server's memory.
 ```bash
-python3 scripts/load_paths.py
+python3 scripts/load_paths.py [--input-dir <dir>] [--mork-url <url>]
 ```
+-   `--input-dir`: Directory containing `.paths` files (default: `output`)
+-   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
 
 ### D. Run a Query
-Test the connection and verify queries using the internal REPL tool. This allows you to test patterns interactively without writing new scripts for each test.
+Test the connection and verify queries using the internal REPL tool.
 ```bash
-python3 scripts/mork_repl.py
+python3 scripts/mork_repl.py [--mork-url <url>]
 ```
+-   `--mork-url`: MORK service URL (default: `http://localhost:8027`)

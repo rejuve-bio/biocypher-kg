@@ -1,9 +1,15 @@
 from pathlib import Path
 from mork_client import MORK
+import argparse
 import sys
 
 def main():
-    output_dir = Path("output")
+    parser = argparse.ArgumentParser(description="Convert .metta files to .paths using MORK.")
+    parser.add_argument("--input-dir", type=str, default="output")
+    parser.add_argument("--mork-url", type=str, default="http://localhost:8027")
+    args = parser.parse_args()
+
+    output_dir = Path(args.input_dir)
     metta_files = list(output_dir.rglob("*.metta"))
     
     if not metta_files:
@@ -13,7 +19,7 @@ def main():
     print(f"Found {len(metta_files)} .metta files")
     
     try:
-        mork = MORK(base_url="http://localhost:8027")
+        mork = MORK(base_url=args.mork_url)
     except Exception as e:
         print(f"Failed to connect to MORK: {e}")
         sys.exit(1)
