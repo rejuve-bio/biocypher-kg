@@ -69,6 +69,17 @@ python3 scripts/convert_topaths.py [--input-dir <dir>] [--mork-url <url>]
 -   `--input-dir`: Directory containing `.metta` files (default: `output`)
 -   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
 
+#### Switching Data Directories
+By default, MORK looks at `./output`. To use a different folder (e.g., `output_human`), you **must** prefix the docker command with the `MORK_DATA_DIR` variable:
+
+```bash
+# 1. Start MORK with the specific variable for directory
+MORK_DATA_DIR=./output_human docker-compose up -d mork
+
+# 2. Run conversion pointing to the same directory
+python3 scripts/convert_topaths.py --input-dir output_human
+```
+
 ### C. Load into MORK
 Map the binary files into the server's memory.
 ```bash

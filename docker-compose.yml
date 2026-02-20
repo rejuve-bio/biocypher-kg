@@ -49,7 +49,7 @@ services:
     build: 
       context: ./biocypher-mork
     volumes:
-      - ./output:/app/data
+      - ${MORK_DATA_DIR:-./output}:/app/data
     ports:
       - "8027:8027"
     environment:
