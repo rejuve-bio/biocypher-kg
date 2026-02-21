@@ -257,5 +257,5 @@ class NetworkXWriter(BaseWriter):
         return self.output_path
         
     def clear_counts(self):
-        # Clear/reset any internal counters
-        pass
+        self.node_counters = defaultdict(int)
+        self.edge_counters = defaultdict(int)
