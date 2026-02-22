@@ -101,7 +101,6 @@ uniprotkb_sprot_translates_to:
   nodes: False
   edges: True
 
-
 pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
@@ -724,7 +723,7 @@ refseq_closest_gene:
   nodes: False
   edges: True
 
-# There is no adapter config for topld SAMPLE data
+# TODO There is no adapter config for topld SAMPLE data
 topld_afr:
   adapter:
     module: biocypher_metta.adapters.hsa.topld_adapter
@@ -1016,7 +1015,6 @@ peregrine_enhancer_regulates:
   outdir: peregrine
   nodes: False
   edges: True
-
 
 dbsuper_super_enhancer:
   adapter:
@@ -1553,7 +1551,6 @@ promoter_ccre_associates_with_gene_eqtl:
 #   nodes: False
 #   edges: True
 
-
 uniprot_dbxref_bgee_gene:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
@@ -1605,7 +1602,6 @@ uniprot_dbxref_ensembl_protein:
   outdir: uniprot/protein_has_xref_protein
   nodes: False
   edges: True
-
 
 uniprot_dbxref_string_protein:
   adapter:
