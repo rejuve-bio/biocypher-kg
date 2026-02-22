@@ -1698,6 +1698,7 @@ uniprot_dbxref_molecular_function:
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
+
 uniprot_has_xref_catalytic_activity:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
