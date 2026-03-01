@@ -48,14 +48,14 @@ def find_config_files(organism: str = None) -> Dict[str, str]:
     files = {
         "Human - Sample Adapters": str(config_dir / "hsa" / "hsa_adapters_config_sample.yaml"),
         "Human - Full Adapters": str(config_dir / "hsa" / "hsa_adapters_config.yaml"),
+        "Human - Schema Config": str(config_dir / "hsa" / "hsa_schema_config.yaml"),
         "Fly - Sample Adapters": str(config_dir / "dmel" / "dmel_adapters_config_sample.yaml"),
         "Fly - Full Adapters": str(config_dir / "dmel" / "dmel_adapters_config.yaml"),
-        # "Fly - Sample Adapters": str(config_dir / "dmel_adapters_config_sample.yaml"),
-        # "Fly - Full Adapters": str(config_dir / "dmel_adapters_config.yml"),
-        "Biocypher Config": str(config_dir / "biocypher_config.yml"),
-        "Docker Config": str(config_dir / "biocypher_docker_config.yml"),
-        "Data Source Config": str(config_dir / "data_source_config.yml"),
-        "Download Config": str(config_dir / "download.yml"),
+        "Fly - Schema Config": str(config_dir / "dmel" / "dmel_schema_config.yaml"),
+        "Biocypher Config": str(config_dir / "biocypher_config.yaml"),
+        "Docker Config": str(config_dir / "biocypher_docker_config.yaml"),
+        "Data Source Config": str(config_dir / "data_source_config.yaml"),
+        "Download Config": str(config_dir / "download.yaml"),
     }
     if organism == "human":
         return {k: v for k, v in files.items() if k.startswith("Human") or "Config" in k}
