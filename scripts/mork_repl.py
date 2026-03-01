@@ -3,14 +3,24 @@ import argparse
 import subprocess
 from pathlib import Path
 
-def run_mork_query(act_file_name, pattern, template):
-    metta_script = f"(exec 0 (I (ACT {act_file_name} {pattern})) (, ({template})))"
+def run_mork_query(file_path, pattern, template):
+    is_metta = file_path.endswith(".metta")
+    space_name = file_path
+    if space_name.endswith(".act"): space_name = space_name[:-4]
+    if space_name.endswith(".metta"): space_name = space_name[:-6]
+
+    if is_metta:
+        metta_script = f"(exec 0 (I (BTM {pattern})) (, ({template})))"
+        mork_run_cmd = f"/app/MORK/target/release/mork run --aux-path /dev/shm/{file_path} /dev/shm/query.metta"
+    else:
+        metta_script = f"(exec 0 (I (ACT {space_name} {pattern})) (, ({template})))"
+        mork_run_cmd = "/app/MORK/target/release/mork run /dev/shm/query.metta"
     
     sh_cmd = (
-        f"mkdir -p /dev/shm/$(dirname '{act_file_name}') && "
-        f"cp /app/data/{act_file_name}.act /dev/shm/{act_file_name}.act && "
+        f"mkdir -p /dev/shm/$(dirname '{file_path}') && "
+        f"cp /app/data/{file_path} /dev/shm/{file_path} && "
         f"echo '{metta_script}' > /dev/shm/query.metta && "
-        f"/app/MORK/target/release/mork run /dev/shm/query.metta"
+        f"{mork_run_cmd}"
     )
 
     cmd = ["docker", "compose", "run", "--rm", "-T", "mork", "sh", "-c", sh_cmd]
@@ -34,9 +44,9 @@ def main():
     while True:
         try:
             print("\n" + "="*40)
-            act_file = input("ACT File (e.g. reactome/nodes)> ").strip()
-            if act_file.lower() in ('quit', 'exit'): break
-            if not act_file: continue
+            user_input_path = input("File to load (e.g. reactome/nodes.act or .metta)> ").strip()
+            if user_input_path.lower() in ('quit', 'exit'): break
+            if not user_input_path: continue
 
             pattern = input("Pattern (e.g. (Gene $g))> ").strip()
             if pattern.lower() in ('quit', 'exit'): break
@@ -46,12 +56,15 @@ def main():
             if template.lower() in ('quit', 'exit'): break
             if not template: template = "(result)"
 
-            clean_name = act_file.replace("output/", "", 1)
-            if clean_name.startswith("/app/data/"): clean_name = clean_name.replace("/app/data/", "", 1)
-            if clean_name.endswith(".act"): clean_name = clean_name[:-4]
+            normalized_path = user_input_path.replace("output/", "", 1)
+            if normalized_path.startswith("/app/data/"): 
+                normalized_path = normalized_path.replace("/app/data/", "", 1)
+            
+            if not normalized_path.endswith(".act") and not normalized_path.endswith(".metta"):
+                normalized_path += ".act"
 
-            print(f"Executing query on {clean_name}...")
-            output = run_mork_query(clean_name, pattern, template)
+            print(f"Executing query on {normalized_path}...")
+            output = run_mork_query(normalized_path, pattern, template)
             
             if output and output.strip():
                  print(f"Result:\n{output.strip()}")
