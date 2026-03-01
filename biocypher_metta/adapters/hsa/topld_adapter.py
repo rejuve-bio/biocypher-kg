@@ -46,7 +46,7 @@ class TopLDAdapter(Adapter):
                     rsid_1 = self.dbsnp_pos_map.get(f"{self.chr}_{var1_pos}", None)
                     rsid_2 = self.dbsnp_pos_map.get(f"{self.chr}_{var2_pos}", None)
                     if rsid_1 is None or rsid_2 is None:
-                        logger.warning(f"Couldn't find rsid for position {var1_pos} or {var2_pos}")
+                        # logger.warning(f"Couldn't find rsid for position {var1_pos} or {var2_pos}")
                         continue
 
                     r2_score = to_float(f"{row[TopLDAdapter.INDEX['+/-corr']]}{row[TopLDAdapter.INDEX['R2']]}")

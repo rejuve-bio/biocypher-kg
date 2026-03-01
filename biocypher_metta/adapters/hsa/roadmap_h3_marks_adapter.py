@@ -61,15 +61,15 @@ class RoadMapH3MarkAdapter(Adapter):
                         chr = self.dbsnp_rsid_map.get(_id, {}).get("chr", None) 
                         pos = self.dbsnp_rsid_map.get(_id, {}).get("pos", None)
                         if chr == None:
-                            print(f"roadmap_h3_marks: chr is None for {_id}. Skipping it {_id}...")
+                            # print(f"roadmap_h3_marks: chr is None for {_id}. Skipping it {_id}...")
                             continue
                         if pos == None:
-                            print(f"roadmap_h3_marks: pos is None for {_id}. Skipping it {_id}...")
+                            # print(f"roadmap_h3_marks: pos is None for {_id}. Skipping it {_id}...")
                             continue
                         cell_id = row[self.COL_DICT['cell']].split()[0]
                         biological_context = self.cell_to_ontology_id_map.get(cell_id, [None])[-1]
                         if biological_context == None:
-                            print(f"{row[self.COL_DICT['cell']]} not found in ontology map. Skipping it...")
+                            # print(f"{row[self.COL_DICT['cell']]} not found in ontology map. Skipping it...")
                             continue
 
                         if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):                        

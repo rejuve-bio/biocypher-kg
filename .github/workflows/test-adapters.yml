@@ -115,7 +115,7 @@ jobs:
             python .github/scripts/prepare_config.py "${{ needs.determine_changes.outputs.changed_adapters }}" "${{ needs.determine_changes.outputs.config_changed }}" "${{ needs.determine_changes.outputs.changed_config_items }}"
           else
             echo "No adapter changes detected. Using sample config."
-            cp config/hsa/hsa_adapters_config_sample.yaml config/test_config.yaml
+            echo '!include hsa/hsa_adapters_config_sample.yaml' > config/test_config.yaml
           fi
       - uses: actions/upload-artifact@v4
         with:

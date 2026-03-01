@@ -205,16 +205,20 @@ class MeTTaWriter(BaseWriter):
         def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
-
     def _type_hierarchy(self):
         # to use Biolink-compatible schema
         # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
         return {
+            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
+            'pathway': frozenset({'pathway'}),
+            'reaction': frozenset({'reaction'}),
             'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
             'gene': frozenset({'gene'}),
             'transcript': frozenset({'transcript'}),
             'protein': frozenset({'protein'}),
-            
+            'snp': frozenset({'snp'}),
+            'phenotype_set': frozenset({'phenotype_set'}),
+                        
             'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
             'anatomy': frozenset({'anatomy'}),
             'developmental_stage': frozenset({'developmental_stage'}),

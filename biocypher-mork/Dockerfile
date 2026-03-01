@@ -1,4 +1,4 @@
-FROM rust:latest
+FROM rustlang/rust:nightly 
 
 # Install dependencies including curl for healthcheck
 RUN apt-get update && apt-get install -y \
@@ -19,8 +19,13 @@ RUN git clone https://github.com/Adam-Vandervorst/PathMap.git /app/PathMap && \
     cargo build --release
 
 # Build MORK (server branch)
-RUN git clone -b server https://github.com/Abdu1964/MORK.git /app/MORK && \
-    cd /app/MORK/server && \
+# RUN git clone -b server https://github.com/Abdu1964/MORK.git /app/MORK && \
+#     cd /app/MORK/server && \
+#     cargo build --release
+
+RUN git clone -b server https://github.com/trueagi-io/MORK.git /app/MORK && \  
+    cd /app/MORK/server && \  
+    cargo update pathmap && \  
     cargo build --release
 
 # Create data, reports, and benchmarks directories

@@ -461,7 +461,7 @@ class MORK:
         return cmd
 
     def paths_import_(self, file_uri):
-        return self.sexpr_import("$x", "$x", file_uri)
+        return self.paths_import("$x", "$x", file_uri)
 
     def paths_import(self, pattern, template, file_uri):
         """

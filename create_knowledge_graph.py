@@ -15,6 +15,7 @@ from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher._logger import logger
 import typer
 import yaml
+from config.yaml_loader import load_yaml_with_includes
 import importlib  # for reflection
 from typing_extensions import Annotated
 import pickle
@@ -31,7 +32,7 @@ def load_species_config(config_path: str = "config/species_config.yaml") -> dict
     """Load species configuration from YAML file."""
     try:
         with open(config_path, "r") as fp:
-            species_config = yaml.safe_load(fp)
+            species_config = load_yaml_with_includes(fp)
             logger.info(f"Loaded species configuration from {config_path}")
             return species_config
     except FileNotFoundError:
@@ -407,7 +408,8 @@ def main(
                 logger.info(f"Loading dbsnp rsids map for {sp}")
                 sp_dbsnp_rsids_dict = pickle.load(open(sp_dbsnp_rsids, 'rb'))
                 logger.info(f"Loading dbsnp pos map for {sp}")
-                sp_dbsnp_pos_dict = pickle.load(open(sp_dbsnp_pos, 'rb'))
+                # sp_dbsnp_pos_dict = pickle.load(open(sp_dbsnp_pos, 'rb'))
+                sp_dbsnp_pos_dict = sp_dbsnp_rsids_dict
                 
                 bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
                 logger.info(f"Using {writer_type} writer for {sp}")
@@ -420,7 +422,7 @@ def main(
                 
                 with open(sp_adapters_config, "r") as fp:
                     try:
-                        sp_adapters_dict = yaml.safe_load(fp)
+                        sp_adapters_dict = load_yaml_with_includes(fp)
                     except yaml.YAMLError as e:
                         logger.error(f"Error loading adapter config for {sp}")
                         logger.error(e)
@@ -524,7 +526,7 @@ def main(
 
     with open(adapters_config, "r") as fp:
         try:
-            adapters_dict = yaml.safe_load(fp)
+            adapters_dict = load_yaml_with_includes(fp)
         except yaml.YAMLError as e:
             logger.error("Error while trying to load adapter config")
             logger.error(e)

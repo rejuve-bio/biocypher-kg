@@ -61,7 +61,7 @@ class BgeeAdapter(Adapter):
                         anatomical_entities = self.split_by_intersection(data[BgeeAdapter.FIELD_INDEX['anatomical_entity']])
                         
                         for anatomical_entity in anatomical_entities:                            
-                            target_id = anatomical_entity.replace(':', '_').upper()
+                            target_id = anatomical_entity.replace(':', '_').upper()                            
                             score = float(data[BgeeAdapter.FIELD_INDEX['expression_score']])
                         # target_id = data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].split(' ∩ ')[0]
                         # score = float(data[BgeeAdapter.FIELD_INDEX['expression_score']])
@@ -71,7 +71,7 @@ class BgeeAdapter(Adapter):
                                 "score": score,
                                 "p_value": float(data[BgeeAdapter.FIELD_INDEX['fdr']]),
                                 # "anatomical_entity": data[BgeeAdapter.FIELD_INDEX['anatomical_entity']].replace(':', '_').upper(),      # should be removed because of the link.
-                                # "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
+                                "developmental_stage": data[BgeeAdapter.FIELD_INDEX['developmental stage']].replace(':', '_').upper(),  # should be removed because of the link.
                                 "taxon_id": f'{self.taxon_id}',
                             }
 

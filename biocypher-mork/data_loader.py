@@ -23,16 +23,17 @@ def connect_to_mork(host="localhost", port=None):
     return server
 
 def load_metta_files(server, data_dir):
-    """Load all .metta files from the given directory into MORK."""
+    """Load all .metta and .paths files from the given directory into MORK."""
     path = Path(data_dir)
     if not path.exists():
         raise ValueError(f"[FAILED] Data directory '{path}' not found.")
     
-    files = list(path.rglob("*.metta"))
+    # to look for both .paths and .metta files
+    files = list(path.rglob("*.paths")) + list(path.rglob("*.metta"))
     if not files:
-        raise ValueError(f"[WARNING] No .metta files found in '{path}'.")
+        raise ValueError(f"[WARNING] No .paths or .metta files found in '{path}'.")
     
-    print(f"[FILE] Found {len(files)} .metta files. Starting import...")
+    print(f"[FILE] Found {len(files)} files. Starting import...")
 
     successful_files = 0
     failed_files = 0
@@ -48,9 +49,15 @@ def load_metta_files(server, data_dir):
             folder_path = file_path.parent
             print(f"...Importing {folder_path}/{file_path.name}")
             try:
-                cmd = scope.sexpr_import_(file_uri)
+                if file_path.suffix == ".paths":
+                    cmd = scope.paths_import_(file_uri)
+                    file_type = "PATHS"
+                else:
+                    cmd = scope.sexpr_import_(file_uri)
+                    file_type = "METTA"
+                
                 cmd.block()
-                print(f"   [SUCCESS] LOADED: {folder_path}/{file_path.name}")
+                print(f"   [SUCCESS] LOADED: {folder_path}/{file_path.name} ({file_type})")
                 successful_files += 1
             except Exception as e:
                 print(f"   [FAILED] FAILED: {folder_path}/{file_path.name}: {e}")
