@@ -1,96 +1,67 @@
-# MORK Persistence Integration
+# MORK CLI & BioAtomSpace Integration
 
 This directory contains the integration of **MORK**, a high-performance reasoning engine designed for large-scale biological knowledge graphs.
 
-Our implementation focuses on a **"Convert-then-Load" workflow**, which transforms BioCypher's text-based .metta exports into optimized binary `.paths` indices. This approach allows us to:
-1.  **Bypass Parsing Overhead**: Skip the expensive text parsing step on subsequent loads.
-2.  **Achieve MM2-Scale Performance**: Load large number of atoms in seconds rather than hours.
-3.  **Enable Persistent Reasoning**: Query the graph instantly via a high-speed Rust server.
+Our implementation uses a **CLI-based "Convert-then-Query" workflow, optimized for speed, zero-footprint on disk, and compatibility.
 
 ---
 
-# 1. Setup Environment
+## Core Architecture & Advantages
 
-We configured the MORK service to use a persistent volume, ensuring data access across container restarts.
+Unlike traditional database servers, our MORK integration runs as a series of ephemeral, high-speed CLI operations:
 
-*   **Docker Configuration**: Modified `docker-compose.yml` to mount the local `output/` directory (containing BioCypher exports) to `/app/data` inside the MORK container.
-*   **Networking**: Exposed host port `8027` mapped to container port `8027` to allow external HTTP API access.
+1.  **Binary Conversion**: MeTTa files are compiled into **Arena Compact Trees (.act)**. This is a binary memory-snapshot of the graph that skips text parsing during queries.
+    -   **Advantage**: Near-instant loading regardless of file size (GBs vs KBs). It turns a "minutes-long" parse into a "milliseconds-long" map.
+2.  **RAM-Disk Execution**: All queries are executed using `/dev/shm` (Linux Shared Memory). Data is mapped directly from RAM for maximum throughput.
+    -   **Advantage**: High-performance throughput. RAM access is faster than standard SSDs.
+3.  **Zero-Footprint Querying**: Uses ephemeral containers (`--rm`) and memory-mapping.
+    -   **Advantage**: MORK's `mmap` requirement is natively supported by the Linux kernel on the `/dev/shm` filesystem, ensuring maximum stability and speed without leaving any temporary files on your physical machine.
+4.  **Memory Efficiency (mmap)**: Instead of loading the entire dataset into RAM, MORK uses memory mapping to "view" the file.
+    -   **Advantage**: Allows you to query datasets that are much larger than your physical RAM. The kernel only loads the specific "pages" of the file that your query actually touches.
 
-## 2. Loading Strategy (The "Convert & Load" Workflow)
+---
 
-To solve the performance bottleneck of parsing `.metta` files on every restart, we implemented a two-step loading process:
+## Quick Step-by-Step Guide
 
-**(A) Conversion (One-time)**
-We created a script (`scripts/convert_topaths.py`) that compiles text-based `.metta` files into optimized binary `.paths` indices.
-*   **Why**: Bypasses the expensive text parser on subsequent loads.
-*   **How**: It checks file timestamps and only re-compiles files that have changed since the last run (incremental build).
+Follow these steps to start querying your BioCypher data with MORK.
 
-**(B) Persistence (Every restart)**
-We created a loader script (`scripts/load_paths.py`) that instructs MORK to memory-map these binary files.
-*   **How**: It iterates through the `.paths` files and calls the MORK API to load them into the `annotation` namespace.
-*   **Result**: The entire graph becomes available for querying almost instantly (microseconds per file) because it is mapped directly from disk to memory.
+### Step 1: Prepare your Data
+First, ensure your BioCypher exports are in a folder (default is `./output`). 
+If you have human data, you might use `./output_human`.
 
-## 3. Execution of Queries
+### Step 2: Choose your Path (ACT vs MeTTa)
 
-Once loaded, we query the graph using the MORK HTTP API, wrapped in a Python client.
+#### Option A: The "High Performance" Path (Recommended for large files)
+Use this to convert your text files into fast binary files. **You only need to do this once** unless your data changes.
+1.  Open your terminal in the project root.
+2.  Run the batch converter:
+    ```bash
+    MORK_DATA_DIR=./output_human ./scripts/convert_toact.sh
+    ```
+    *(Note: This creates `.act` files next to your `.metta` files.)*
 
-*   **Mechanism**: The `mork.download(pattern, template)` method sends a request to the `/export/` endpoint.
-*   **Scope**: Queries are executed against the `annotation` namespace where all binary paths are merged.
+#### Option B: The "Quick Test" Path
+If you just want to test a small file immediately without converting it, you can skip Step 2 and go straight to Step 3.
 
-**Example Query Pattern:**
-To find a specific transcript entity, we use the following Python code:
-
-```python
-# 1. Define the Pattern to match
-pattern = "(transcript ENST00000353224)"
-
-# 2. Define the Template (what to return)
-template = "$x" # Return the matching atom itself
-
-# 3. Execute the Query
-result = scope.download(pattern, template)
-```
-
-## 4. How to Execute (The Workflow)
-
-To run the full end-to-end process, execute these commands in order:
-
-### A. Start MORK Service
-Initialize the high-performance Rust server.
+### Step 3: Run the Query Tool (REPL)
+Start the interactive query tool by pointing it to your data folder:
 ```bash
-docker-compose up -d mork
+MORK_DATA_DIR=./output_human python3 scripts/mork_repl.py
 ```
 
-### B. Convert MeTTa to Binary
-Pre-process the BioCypher exports into optimized indices (only needed when data changes).
-```bash
-python3 scripts/convert_topaths.py [--input-dir <dir>] [--mork-url <url>]
-```
--   `--input-dir`: Directory containing `.metta` files (default: `output`)
--   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
+### Step 4: Ask a Question (Example)
+Once the tool starts, it will ask you for 3 things. Here is an example of what to type:
 
-#### Switching Data Directories
-By default, MORK looks at `./output`. To use a different folder (e.g., `output_human`), you **must** prefix the docker command with the `MORK_DATA_DIR` variable:
+1.  **File to load**: `reactome/nodes.act` (or `nodes.metta` if you skipped conversion)
+2.  **Pattern**: `(Pathway $p)` (This looks for all atoms that are Pathways)
+3.  **Return**: `$p` (This tells MORK to show you the name of the pathway)
 
-```bash
-# 1. Start MORK with the specific variable for directory
-MORK_DATA_DIR=./output_human docker-compose up -d mork
+---
 
-# 2. Run conversion pointing to the same directory
-python3 scripts/convert_topaths.py --input-dir output_human
-```
+## Summary of Tools
 
-### C. Load into MORK
-Map the binary files into the server's memory.
-```bash
-python3 scripts/load_paths.py [--input-dir <dir>] [--mork-url <url>]
-```
--   `--input-dir`: Directory containing `.paths` files (default: `output`)
--   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
+- **`scripts/convert_toact.sh`**: The "Compiler". Use this to turn slow text into fast binary.
+- **`scripts/mork_repl.py`**: The "Searcher". Your interactive window into the data.
+- **`/dev/shm`**: Where the magic happens. Everything runs in your computer's RAM for maximum speed and zero disk clutter.
 
-### D. Run a Query
-Test the connection and verify queries using the internal REPL tool.
-```bash
-python3 scripts/mork_repl.py [--mork-url <url>]
-```
--   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
+---

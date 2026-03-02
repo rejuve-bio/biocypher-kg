@@ -23,9 +23,8 @@ RUN git clone https://github.com/Adam-Vandervorst/PathMap.git /app/PathMap && \
 #     cd /app/MORK/server && \
 #     cargo build --release
 
-RUN git clone -b server https://github.com/trueagi-io/MORK.git /app/MORK && \  
-    cd /app/MORK/server && \  
-    cargo update pathmap && \  
+RUN git clone https://github.com/trueagi-io/MORK.git /app/MORK && \  
+    cd /app/MORK/kernel && \
     cargo build --release
 
 # Create data, reports, and benchmarks directories
@@ -42,9 +41,4 @@ USER mork
 # Expose the server port
 EXPOSE 8027
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8027/status/- || exit 1
-
-# Run the built MORK server binary
-CMD ["/app/MORK/target/release/mork-server", "--data-dir", "/app/data", "--host", "0.0.0.0", "--port", "8027"]
+CMD ["/app/MORK/target/release/mork"]

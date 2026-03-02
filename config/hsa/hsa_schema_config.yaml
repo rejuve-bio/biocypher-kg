@@ -2527,6 +2527,7 @@ gene to disease association:
       type: str
     source_ref:
       type: str
+
 gene overlaps structural_variant:
   is_a: association
   biolink_predicate: "biolink:overlaps"
