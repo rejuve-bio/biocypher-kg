@@ -101,7 +101,6 @@ uniprotkb_sprot_translates_to:
   nodes: False
   edges: True
 
-
 pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
@@ -724,7 +723,7 @@ refseq_closest_gene:
   nodes: False
   edges: True
 
-# There is no adapter config for topld SAMPLE data
+# TODO There is no adapter config for topld SAMPLE data
 topld_afr:
   adapter:
     module: biocypher_metta.adapters.hsa.topld_adapter
@@ -1017,7 +1016,6 @@ peregrine_enhancer_regulates:
   nodes: False
   edges: True
 
-
 dbsuper_super_enhancer:
   adapter:
     module: biocypher_metta.adapters.hsa.dbsuper_adapter
@@ -1141,6 +1139,20 @@ clo_subclass_of:
   nodes: False
   edges: True
 
+cell_line_is_a_cell_type:
+  adapter:
+    module: biocypher_metta.adapters.cell_line_ontology_adapter
+    cls: CellLineOntologyAdapter
+    args:
+      ontology: "clo"
+      label: cell_line_is_a_cell_type
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_line_ontology
+  nodes: False
+  edges: True
+
 cell_ontology:
   adapter:
     module: biocypher_metta.adapters.cell_ontology_adapter
@@ -1190,6 +1202,20 @@ cl_part_of:
     args:
       ontology: "cl"
       label: cl_part_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cell_type_part_of_tissue:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cell_type_part_of_tissue
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
@@ -1259,6 +1285,20 @@ bto_subclass_of:
     args:
       ontology: "bto"
       label: bto_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
+
+tissue_part_of_anatomy:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: "bto"
+      label: tissue_part_of_anatomy
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
@@ -1553,7 +1593,6 @@ promoter_ccre_associates_with_gene_eqtl:
 #   nodes: False
 #   edges: True
 
-
 uniprot_dbxref_bgee_gene:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
@@ -1605,7 +1644,6 @@ uniprot_dbxref_ensembl_protein:
   outdir: uniprot/protein_has_xref_protein
   nodes: False
   edges: True
-
 
 uniprot_dbxref_string_protein:
   adapter:

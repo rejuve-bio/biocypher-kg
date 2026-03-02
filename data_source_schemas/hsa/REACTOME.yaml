@@ -54,3 +54,11 @@ relationships:
     properties:
       pathway_name: str
       go_term_id: str
+  post translational interaction:
+    url: https://reactome.org/
+    input_label: interacts_with
+    source: protein
+    target: protein
+    properties:
+      interaction_type: str
+      reactome_pathway: str

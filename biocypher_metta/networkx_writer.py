@@ -12,10 +12,57 @@ class NetworkXWriter(BaseWriter):
         self.directed = directed
         self.graph = nx.DiGraph() if directed else nx.Graph()
         self.node_id_counter = 0
-        self.node_mapping = {}  
+        self.node_mapping = {}
         self.node_counters = defaultdict(int)
         self.edge_counters = defaultdict(int)
+        self.label_is_ontology = self._build_label_types_map()
         self.create_edge_types()
+
+    def _build_label_types_map(self):
+        """Build mapping of labels to whether they are ontology terms from schema."""
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        label_is_ontology = {}
+
+        # First pass: identify which schema types are ontology terms
+        ontology_types = set()
+        for schema_type, config in schema.items():
+            if config.get("represented_as") == "node":
+                is_a = config.get("is_a")
+                normalized = schema_type.lower().replace(" ", "_")
+                if normalized == "ontology_term":
+                    ontology_types.add(normalized)
+                elif is_a:
+                    parent_types = [is_a] if isinstance(is_a, str) else is_a
+                    for parent in parent_types:
+                        if parent.lower().replace(" ", "_") == "ontology_term":
+                            ontology_types.add(normalized)
+                            break
+
+        # Second pass: map input labels to ontology status
+        for schema_type, config in schema.items():
+            if config.get("represented_as") == "node":
+                input_label = config.get("input_label")
+                if isinstance(input_label, list):
+                    labels_to_process = input_label
+                else:
+                    labels_to_process = [input_label]
+
+                normalized_schema_type = schema_type.lower().replace(" ", "_")
+                is_ontology = normalized_schema_type in ontology_types
+
+                for label in labels_to_process:
+                    normalized_label = label.split(".")[-1] if "." in label else label
+                    normalized_label = normalized_label.lower().replace(" ", "_")
+                    label_is_ontology[normalized_label] = is_ontology
+
+        return label_is_ontology
+
+    def _is_ontology_label(self, label):
+        """Check if a label represents an ontology term."""
+        if not label:
+            return False
+        normalized_label = label.lower().replace(" ", "_")
+        return self.label_is_ontology.get(normalized_label, False)
 
     def create_edge_types(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -60,16 +107,24 @@ class NetworkXWriter(BaseWriter):
             return [item.lower().replace(" ", "_") for item in label]
         return label.lower().replace(" ", "_")
 
-    def _preprocess_id(self, node_id: Union[str, tuple, list]) -> str:
+    def _preprocess_id(self, node_id: Union[str, tuple, list], label: str = None) -> str:
         if isinstance(node_id, (tuple, list)) and len(node_id) >= 2:
             node_id = node_id[1]
-        
-        id_str = str(node_id).lower().strip()
-        
+
+        id_str = str(node_id).strip()
+
         if ':' in id_str:
-            id_str = id_str.split(':', 1)[1]  
-        
-        return id_str.replace(' ', '_')
+            prefix, local_id = id_str.split(':', 1)
+            if label and self._is_ontology_label(label):
+                # Ontology terms: keep prefix (e.g., "GO:0005515" -> "go_0005515")
+                id_str = f"{prefix}_{local_id}".lower().replace(' ', '_')
+            else:
+                # Non-ontology terms: strip prefix (e.g., "UniProtKB:P12345" -> "p12345")
+                id_str = local_id.lower().strip().replace(' ', '_')
+        else:
+            id_str = id_str.lower().replace(' ', '_')
+
+        return id_str
 
     def _get_or_create_node_id(self, original_id: str) -> int:
         if original_id not in self.node_mapping:
@@ -126,8 +181,8 @@ class NetworkXWriter(BaseWriter):
             if "." in label:
                 label = label.split(".")[1]
             label = label.lower()
-            
-            clean_id = self._preprocess_id(original_id)
+
+            clean_id = self._preprocess_id(original_id, label=label)
             node_id = self._get_or_create_node_id(clean_id)
             
             node_attrs = {
@@ -147,7 +202,7 @@ class NetworkXWriter(BaseWriter):
         
         logger.info(f"Node ID patterns found: {dict(id_patterns)}")
         logger.info(f"Sample node IDs: {sample_ids[:5]}")
-        logger.info(f"Sample processed node IDs: {[self._preprocess_id(id) for id in sample_ids[:5]]}")
+        logger.info(f"Sample processed node IDs (without label): {[self._preprocess_id(id) for id in sample_ids[:5]]}")
         
         return dict(self.node_counters), node_headers
 
@@ -165,18 +220,18 @@ class NetworkXWriter(BaseWriter):
             edge_label = edge_info.get("output_label") or label
             
             if isinstance(source_id, tuple):
-                source_clean = self._preprocess_id(source_id[1])
                 source_type = source_id[0]
+                source_clean = self._preprocess_id(source_id[1], label=source_type)
             else:
-                source_clean = self._preprocess_id(source_id)
                 source_type, _ = self._get_edge_type_info(label, source_id, target_id)
-            
+                source_clean = self._preprocess_id(source_id, label=source_type)
+
             if isinstance(target_id, tuple):
-                target_clean = self._preprocess_id(target_id[1])
                 target_type = target_id[0]
+                target_clean = self._preprocess_id(target_id[1], label=target_type)
             else:
-                target_clean = self._preprocess_id(target_id)
                 _, target_type = self._get_edge_type_info(label, source_id, target_id)
+                target_clean = self._preprocess_id(target_id, label=target_type)
             
             if edges_skipped < 5: 
                 if source_clean not in self.node_mapping or target_clean not in self.node_mapping:
@@ -257,5 +312,5 @@ class NetworkXWriter(BaseWriter):
         return self.output_path
         
     def clear_counts(self):
-        # Clear/reset any internal counters
-        pass
+        self.node_counters = defaultdict(int)
+        self.edge_counters = defaultdict(int)

@@ -138,7 +138,6 @@ dmel_gene_to_metabolic_pathway_gene_group:
   nodes: False
   edges: True
 
-
 dmel_disease_model:
   adapter:
     module: biocypher_metta.adapters.dmel.disease_model_adapter
@@ -209,8 +208,6 @@ dmel_allele_to_phenotype_set:
   nodes: False
   edges: True
 
-
-
 dmel_phenotype_set_to_genotype:
   adapter:
     module: biocypher_metta.adapters.dmel.genotype_phenotype_set_adapter
@@ -248,7 +245,6 @@ dmel_phenotype_set_to_cellular_component:
   nodes: False
   edges: True
 
-
 # ptp stands for "protein or transcript to protein"
 dmel_ptp_physical_interaction:
   adapter:
@@ -281,7 +277,6 @@ dmel_ptt_physical_interaction:
   nodes: False
   edges: True
 
-
 orthology_adapter:
     adapter:
         module: biocypher_metta.adapters.dmel.orthology_adapter
@@ -293,7 +288,6 @@ orthology_adapter:
     nodes: False
     edges: True
 
-
 paralogy_adapter:
     adapter:
         module: biocypher_metta.adapters.dmel.paralogy_adapter
@@ -303,7 +297,6 @@ paralogy_adapter:
     outdir: paralogs
     nodes: False
     edges: True
-
 
 allele:
   adapter:
@@ -316,7 +309,6 @@ allele:
   nodes: True
   edges: False
 
-
 dmel_allele_to_gene:
   adapter:
     module: biocypher_metta.adapters.dmel.allele_adapter
@@ -328,7 +320,6 @@ dmel_allele_to_gene:
   nodes: False
   edges: True
 
-
 dmel_gene_genetic_adapter:
     adapter:
         module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter
@@ -338,7 +329,6 @@ dmel_gene_genetic_adapter:
     outdir: flybase/gene_genetic
     nodes: False
     edges: True
-
 
 dmel_allele_to_allele_genetic_interaction_adapter:
     adapter:
@@ -351,7 +341,6 @@ dmel_allele_to_allele_genetic_interaction_adapter:
     outdir: flybase/allele_genetic
     nodes: False
     edges: True
-
 
 dmel_expressed_in:
   adapter:
@@ -372,7 +361,6 @@ dmel_gene_to_sequence_ontology:
   outdir: so_classified_as
   nodes: False
   edges: True
-
 
 RNASeq_library:
   adapter:
@@ -631,6 +619,19 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
+coexpression:
+  adapter:
+    module: biocypher_metta.adapters.coxpresdb_adapter
+    cls: CoxpresdbAdapter
+    args:
+      filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/coexpressdb/
+      entrez_to_ensemble_path: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
+      label: coexpressed_with
+      taxon_id: 7227
+  outdir: coxpressdb
+  nodes: False
+  edges: True
+
 pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
@@ -807,7 +808,6 @@ child_pathway_of:
   nodes: False
   edges: True
 
-
 uniprotkb_sprot:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
@@ -819,7 +819,6 @@ uniprotkb_sprot:
   outdir: uniprot/uniprot
   nodes: True
   edges: False
-
 
 uniprotkb_sprot_translates_to:
   adapter:
@@ -993,8 +992,6 @@ uniprot_chebi_part_of_chebi:
   nodes: False
   edges: True
 
-
-
 tflink:     
     adapter:
         module: biocypher_metta.adapters.tflink_adapter
@@ -1021,8 +1018,6 @@ string:
   nodes: False
   edges: True
 
-
-
 go_biological_process:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
@@ -1038,7 +1033,6 @@ go_biological_process:
   nodes: True
   edges: False
 
-
 go_biological_process_subclass_of:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
@@ -1052,7 +1046,6 @@ go_biological_process_subclass_of:
   outdir: gene_ontology/biological_process
   nodes: False
   edges: True
-
 
 go_molecular_function:
   adapter:
@@ -1069,7 +1062,6 @@ go_molecular_function:
   nodes: True
   edges: False
 
-
 go_molecular_function_subclass_of:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
@@ -1083,7 +1075,6 @@ go_molecular_function_subclass_of:
   outdir: gene_ontology/molecular_function
   nodes: False
   edges: True
-
 
 go_cellular_component:
   adapter:
@@ -1100,7 +1091,6 @@ go_cellular_component:
   nodes: True
   edges: False
 
-
 go_cellular_component_subclass_of:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
@@ -1114,7 +1104,6 @@ go_cellular_component_subclass_of:
   outdir: gene_ontology/cellular_component
   nodes: False
   edges: True
-
 
 sequence_ontology:
   adapter:
@@ -1143,7 +1132,6 @@ so_sequence_subclass_of:
   outdir: flybase_ontologies
   nodes: False
   edges: True
-
 
 # # molecular_interactions_ontology:
 # #   adapter:
@@ -1187,7 +1175,6 @@ disease_ontology:
   nodes: True
   edges: False
 
-
 disease_do_subclass_of:
   adapter:
     module: biocypher_metta.adapters.disease_ontology_adapter
@@ -1229,7 +1216,6 @@ chebi_chebi_subclass_of:
   outdir: small_molecule
   nodes: False
   edges: True
-  
 
 epd_promoter_dmel:
   adapter:
