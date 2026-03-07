@@ -350,7 +350,7 @@ class Neo4jCSVWriter(BaseWriter):
                 input_label, source_type, target_type = key
                 edge_label = self.edge_node_types[input_label].get("output_label") or input_label 
             
-                file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
+                file_suffix = f"{source_type}_{edge_label}_{target_type}".lower()
                 csv_file_path = output_dir / f"edges_{file_suffix}.csv"
                 cypher_file_path = output_dir / f"edges_{file_suffix}.cypher"
             

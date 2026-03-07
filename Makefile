@@ -19,9 +19,9 @@ help:
 # Check if UV is installed, install via pip if not
 check-uv:
 	@echo "🔍 Checking if UV is installed..."
-	@which uv > /dev/null 2>&1 || { \
-		echo "📥 UV not found. Installing UV via pip..."; \
-		pip install uv; \
+	@which uv > /dev/null 2>&1 || test -f "$$HOME/.local/bin/uv" || { \
+		echo "📥 UV not found. Installing UV..."; \
+		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 		echo "✅ UV installed successfully!"; \
 	}
 	@echo "✅ UV is installed!"
@@ -29,7 +29,7 @@ check-uv:
 # Install dependencies (with UV check)
 setup: check-uv
 	@echo "📦 Installing dependencies..."
-	uv sync
+	@export PATH="$$HOME/.local/bin:$$PATH"; uv sync
 	@echo "✅ Dependencies installed successfully!"
 
 # Interactive run with prompts
@@ -43,16 +43,20 @@ run-interactive: check-uv
 	OUTPUT_DIR=$${OUTPUT_DIR:-./output}; \
 	echo "Using output directory: $$OUTPUT_DIR"; \
 	echo ""; \
-	read -p "⚙️  Enter adapters config path [./config/adapters_config_sample.yaml]: " ADAPTERS_CONFIG; \
-	ADAPTERS_CONFIG=$${ADAPTERS_CONFIG:-./config/adapters_config_sample.yaml}; \
+	read -p "⚙️  Enter adapters config path [./config/hsa/hsa_adapters_config_sample.yaml]: " ADAPTERS_CONFIG; \
+	ADAPTERS_CONFIG=$${ADAPTERS_CONFIG:-./config/hsa/hsa_adapters_config_sample.yaml}; \
 	echo "Using adapters config: $$ADAPTERS_CONFIG"; \
 	echo ""; \
-	read -p "🧬 Enter dbSNP RSIDs path [./aux_files/sample_dbsnp_rsids.pkl]: " DBSNP_RSIDS; \
-	DBSNP_RSIDS=$${DBSNP_RSIDS:-./aux_files/sample_dbsnp_rsids.pkl}; \
+	read -p "📊 Enter schema config path [./config/hsa/hsa_schema_config.yaml]: " SCHEMA_CONFIG; \
+	SCHEMA_CONFIG=$${SCHEMA_CONFIG:-./config/hsa/hsa_schema_config.yaml}; \
+	echo "Using schema config: $$SCHEMA_CONFIG"; \
+	echo ""; \
+	read -p "🧬 Enter dbSNP RSIDs path [./aux_files/hsa/sample_dbsnp_rsids.pkl]: " DBSNP_RSIDS; \
+	DBSNP_RSIDS=$${DBSNP_RSIDS:-./aux_files/hsa/sample_dbsnp_rsids.pkl}; \
 	echo "Using dbSNP RSIDs: $$DBSNP_RSIDS"; \
 	echo ""; \
-	read -p "📍 Enter dbSNP positions path [./aux_files/sample_dbsnp_pos.pkl]: " DBSNP_POS; \
-	DBSNP_POS=$${DBSNP_POS:-./aux_files/sample_dbsnp_pos.pkl}; \
+	read -p "📍 Enter dbSNP positions path [./aux_files/hsa/sample_dbsnp_pos.pkl]: " DBSNP_POS; \
+	DBSNP_POS=$${DBSNP_POS:-./aux_files/hsa/sample_dbsnp_pos.pkl}; \
 	echo "Using dbSNP positions: $$DBSNP_POS"; \
 	echo ""; \
 	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
@@ -80,9 +84,11 @@ run-interactive: check-uv
 	fi; \
 	echo ""; \
 	echo "🎯 Starting knowledge graph creation..."; \
+	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
 		--output-dir "$$OUTPUT_DIR" \
 		--adapters-config "$$ADAPTERS_CONFIG" \
+		--schema-config "$$SCHEMA_CONFIG" \
 		--dbsnp-rsids "$$DBSNP_RSIDS" \
 		--dbsnp-pos "$$DBSNP_POS" \
 		--writer-type "$$WRITER_TYPE" \
@@ -136,19 +142,20 @@ run-sample: check-uv
 		ADD_PROVENANCE_FLAG="--no-add-provenance"; \
 		echo "Provenance: disabled"; \
 	fi; \
+	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
 		--output-dir ./output \
-		--adapters-config ./config/adapters_config_sample.yaml \
-		--dbsnp-rsids ./aux_files/sample_dbsnp_rsids.pkl \
-		--dbsnp-pos ./aux_files/sample_dbsnp_pos.pkl \
+		--adapters-config ./config/hsa/hsa_adapters_config_sample.yaml \
+		--dbsnp-rsids ./aux_files/hsa/sample_dbsnp_rsids.pkl \
+		--dbsnp-pos ./aux_files/hsa/sample_dbsnp_pos.pkl \
+		--schema-config ./config/hsa/hsa_schema_config.yaml \
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
-		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG
 	@echo "✅ Sample run completed! Check the ./output directory for results."
 
 # Run tests
 test: check-uv
-	uv run pytest -v
+	@export PATH="$$HOME/.local/bin:$$PATH"; uv run pytest -v
 
 # Clean temporary files and output
 clean:

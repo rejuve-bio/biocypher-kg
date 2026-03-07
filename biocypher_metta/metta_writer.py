@@ -156,41 +156,99 @@ class MeTTaWriter(BaseWriter):
         return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
+        # Set up output directory
         if path_prefix is not None:
-            file_path = f"{self.output_path}/{path_prefix}/nodes.metta"
+            output_dir = f"{self.output_path}/{path_prefix}"
             if create_dir:
-                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
-                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
+                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
         else:
-            file_path = f"{self.output_path}/nodes.metta"
-        
-        with open(file_path, "a") as f:
+            output_dir = self.output_path
+
+        # Each unique node label gets its own file handle
+        file_handles = {}
+
+        try:
             for node in nodes:
                 self.extract_node_info(node)  # Count nodes and extract node properties
+
+                _id, label, properties = node
+                if "." in label:
+                    label = label.split(".")[1]
+                label = label.lower()
+
+                if label not in file_handles:
+                    file_path = f"{output_dir}/nodes_{label}.metta"
+                    file_handles[label] = open(file_path, "w")
+
                 out_str = self.write_node(node)
                 for s in out_str:
-                    f.write(s + "\n")
-            f.write("\n")
+                    file_handles[label].write(s + "\n")
+
+        finally:
+            # Always close all open file handles, even if an exception occurs
+            for fh in file_handles.values():
+                try:
+                    fh.write("\n")
+                    fh.close()
+                except Exception:
+                    pass
 
         logger.info("Finished writing out nodes")
         return self.node_freq, self.node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
-            file_path = f"{self.output_path}/{path_prefix}/edges.metta"
+            output_dir = f"{self.output_path}/{path_prefix}"
             if create_dir:
-                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
-                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
+                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
         else:
-            file_path = f"{self.output_path}/edges.metta"
+            output_dir = self.output_path
 
-        with open(file_path, "a") as f:
+        # Each unique (label, source_type, target_type) gets its own file handle
+        file_handles = {}
+
+        try:
             for edge in edges:
                 self.extract_edge_info(edge)  # Count edges
+
+                source_id, target_id, label, properties = edge
+                label = label.lower()
+                if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
+                    output_label = self.edge_node_types[label]["output_label"]
+                    label_to_use = output_label
+                else:
+                    label_to_use = label
+                # Resolve source and target types from the schema (same as Neo4j writer)
+                edge_info = self.edge_node_types.get(label, {})
+                source_type = edge_info.get("source", "unknown")
+                target_type = edge_info.get("target", "unknown")
+
+                # Handle list types (take first element, same as Neo4j writer)
+                if isinstance(source_type, list):
+                    source_type = source_type[0]
+                if isinstance(target_type, list):
+                    target_type = target_type[0]
+
+                file_key = (label, source_type, target_type)
+
+                if file_key not in file_handles:
+                    file_suffix = f"{source_type}_{label_to_use}_{target_type}"
+                    file_path = f"{output_dir}/edges_{file_suffix}.metta"
+                    file_handles[file_key] = open(file_path, "w")
+
                 out_str = self.write_edge(edge)
                 for s in out_str:
-                    f.write(s + "\n")
-            f.write("\n")
+                    file_handles[file_key].write(s + "\n")
+
+        finally:
+            # Always close all open file handles, even if an exception occurs
+            for fh in file_handles.values():
+                try:
+                    fh.write("\n")
+                    fh.close()
+                except Exception:
+                    pass
+
         return self.edge_freq
 
     def write_node(self, node):
