@@ -67,11 +67,11 @@ def find_aux_files(organism: str = None) -> Dict[str, str]:
     aux_dir = PROJECT_ROOT / "aux_files"
     files = {
         "Human - Tissues Ontology Map": str(aux_dir / "hsa" / "abc_tissues_to_ontology_map.pkl"),
-        "Human - Gene Mapping": str(aux_dir / "hsa" / "hgnc_symbol_to_ensembl_id_map.pkl"),
-        "Human - dbSNP rsIDs": str(aux_dir / "hsa" / "sample_dbsnp_rsids.pkl"),
-        "Human - dbSNP Positions": str(aux_dir / "hsa" / "sample_dbsnp_pos.pkl"),
-        "Fly - dbSNP rsIDs": str(aux_dir / "hsa" / "sample_dbsnp_rsids.pkl"),
-        "Fly - dbSNP Positions": str(aux_dir / "hsa" / "sample_dbsnp_pos.pkl"),
+        "Human - HGNC Processor Cache": str(aux_dir / "hsa" / "hgnc" / "hgnc_mapping.pkl"),
+        "Human - Entrez-Ensembl Processor Cache": str(aux_dir / "hsa" / "entrez_ensembl" / "entrez_ensembl_mapping.pkl"),
+        "Human - Ensembl-UniProt Processor Cache": str(aux_dir / "hsa" / "ensembl_uniprot" / "ensembl_uniprot_mapping.pkl"),
+        "Human - dbSNP Processor Cache": str(aux_dir / "hsa" / "sample_dbsnp" / "dbsnp_mapping.pkl"),
+        "GO Subontology Processor Cache": str(aux_dir / "go_subontology" / "go_subontology_mapping.pkl"),
     }
     if organism == "human":
         return {k: v for k, v in files.items() if k.startswith("Human")}

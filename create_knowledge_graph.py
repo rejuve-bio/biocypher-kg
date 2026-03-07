@@ -12,13 +12,13 @@ from biocypher_metta.neo4j_csv_writer import *
 from biocypher_metta.kgx_writer import *
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.networkx_writer import NetworkXWriter
+from biocypher_metta.processors import DBSNPProcessor
 from biocypher._logger import logger
 import typer
 import yaml
 from config.yaml_loader import load_yaml_with_includes
 import importlib  # for reflection
 from typing_extensions import Annotated
-import pickle
 import json
 from collections import Counter, defaultdict
 from typing import Union, List, Optional
@@ -375,6 +375,77 @@ def _write_graph_info(
     return graph_info
 
 
+def _load_dbsnp(cache_dir: str, is_sample: bool = False) -> tuple:
+    """Load dbSNP mappings using DBSNPProcessor.
+
+    Args:
+        cache_dir: Path to directory containing dbsnp_mapping.pkl.
+                   If empty string, returns empty dicts.
+        is_sample: Whether this is a sample config. For full configs,
+                   missing cache is treated as an error.
+
+    Returns:
+        Tuple of (rsid_to_pos_dict, pos_to_rsid_dict)
+    """
+    if not cache_dir:
+        logger.info("No dbSNP cache directory specified, continuing without rsID mappings")
+        return {}, {}
+
+    cache_path = Path(cache_dir)
+
+    if not cache_path.exists() or not cache_path.is_dir():
+        if is_sample:
+            logger.warning(f"dbSNP cache directory not found at {cache_path}, continuing without rsID mappings")
+            return {}, {}
+        else:
+            logger.error("=" * 80)
+            logger.error("ERROR: Full config requires server dbSNP cache directory")
+            logger.error(f"Expected location: {cache_path}")
+            logger.error("Directory not found!")
+            logger.error("")
+            logger.error("Solutions:")
+            logger.error("  1. Run on the bizon server where cache exists")
+            logger.error("  2. Use sample config instead: --dataset sample")
+            logger.error("  3. Create cache by running: python update_dbsnp.py")
+            logger.error("=" * 80)
+            raise typer.Exit(1)
+
+    mapping_file = cache_path / 'dbsnp_mapping.pkl'
+    if not mapping_file.exists():
+        if is_sample:
+            logger.warning(f"dbSNP mapping file not found at {mapping_file}, continuing without rsID mappings")
+            return {}, {}
+        else:
+            logger.error("=" * 80)
+            logger.error(f"ERROR: dbSNP mapping file not found at {mapping_file}")
+            logger.error("")
+            logger.error("Solutions:")
+            logger.error("  1. If cache doesn't exist, run: python update_dbsnp.py")
+            logger.error("  2. Use sample config instead: --dataset sample")
+            logger.error("=" * 80)
+            raise typer.Exit(1)
+
+    try:
+        dbsnp_proc = DBSNPProcessor(cache_dir=str(cache_path))
+        dbsnp_proc.load_mapping()
+        rsids_dict, pos_dict = dbsnp_proc.get_dict_wrappers()
+        logger.info(f"Loaded {len(rsids_dict):,} rsID mappings from {cache_path}")
+        return rsids_dict, pos_dict
+    except Exception as e:
+        if is_sample:
+            logger.warning(f"Failed to load dbSNP mappings from {cache_path}: {e}")
+            return {}, {}
+        else:
+            logger.error("=" * 80)
+            logger.error(f"ERROR: Failed to load dbSNP mappings: {e}")
+            logger.error("")
+            logger.error("Solutions:")
+            logger.error("  1. If cache doesn't exist, run: python update_dbsnp.py")
+            logger.error("  2. Use sample config instead: --dataset sample")
+            logger.error("=" * 80)
+            raise typer.Exit(1)
+
+
 # Run build
 @app.command()
 def main(
@@ -408,19 +479,9 @@ def main(
         dir_okay=False,
         help="Adapters config path (manual mode only)"
     ),
-    dbsnp_rsids: Optional[Path] = typer.Option(
+    dbsnp_cache_dir: Optional[str] = typer.Option(
         None,
-        exists=True,
-        file_okay=True,
-        dir_okay=False,
-        help="dbSNP rsids file (manual mode only)"
-    ),
-    dbsnp_pos: Optional[Path] = typer.Option(
-        None,
-        exists=True,
-        file_okay=True,
-        dir_okay=False,
-        help="dbSNP positions file (manual mode only)"
+        help="dbSNP cache directory containing dbsnp_mapping.pkl (manual mode only, optional - defaults to aux_files/hsa/sample_dbsnp)"
     ),
     schema_config: Optional[Path] = typer.Option(
         None,
@@ -482,14 +543,14 @@ def main(
       --restart         Delete any checkpoint and start over without prompting.
     """
 
-    # ── Determine mode ──────────────────────────────────────────────────
-    manual_mode = all([adapters_config, dbsnp_rsids, dbsnp_pos, schema_config])
+    # Determine which mode we're in
+    manual_mode = all([adapters_config, schema_config])
     species_mode = species is not None
 
     if not manual_mode and not species_mode:
         logger.error("You must either:")
         logger.error("  1. Use --species flag with --output-dir (e.g., --species hsa --dataset sample --output-dir output_hsa)")
-        logger.error("  2. Provide all manual parameters (--output-dir, --adapters-config, --dbsnp-rsids, --dbsnp-pos, --schema-config)")
+        logger.error("  2. Provide all manual parameters (--output-dir, --adapters-config, --schema-config)")
         raise typer.Exit(1)
 
     if output_dir is None:
@@ -520,14 +581,17 @@ def main(
                 config = SPECIES_CONFIG[sp][dataset]
 
                 sp_adapters_config = Path(config['adapters_config'])
-                sp_dbsnp_rsids = Path(config['dbsnp_rsids'])
-                sp_dbsnp_pos = Path(config['dbsnp_pos'])
                 sp_schema_config = Path(config['schema_config'])
+                sp_is_sample = (dataset == 'sample')
+                sp_dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
+                if not sp_dbsnp_cache_dir:
+                    if sp_is_sample:
+                        sp_dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
+                    else:
+                        sp_dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
 
-                logger.info(f"Loading dbsnp rsids map for {sp}")
-                sp_dbsnp_rsids_dict = pickle.load(open(sp_dbsnp_rsids, 'rb'))
-                logger.info(f"Loading dbsnp pos map for {sp}")
-                sp_dbsnp_pos_dict = sp_dbsnp_rsids_dict
+                # Load dbSNP mappings via DBSNPProcessor
+                sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_cache_dir, is_sample=sp_is_sample)
 
                 bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
                 logger.info(f"Using {writer_type} writer for {sp}")
@@ -618,15 +682,23 @@ def main(
             output_dir.mkdir(parents=True, exist_ok=True)
 
             adapters_config = Path(config['adapters_config'])
-            dbsnp_rsids = Path(config['dbsnp_rsids'])
-            dbsnp_pos = Path(config['dbsnp_pos'])
             schema_config = Path(config['schema_config'])
+            dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
 
-    # ── Common path (manual mode + single-species after config resolution) ──
-    logger.info("Loading dbsnp rsids map")
-    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
-    logger.info("Loading dbsnp pos map")
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+    # Load dbSNP mappings via DBSNPProcessor
+    # Determine sample vs full, and resolve dbsnp_cache_dir if not set
+    if not species_mode:
+        is_sample_config = 'sample' in str(adapters_config).lower()
+    else:
+        is_sample_config = (dataset == 'sample')
+
+    if not dbsnp_cache_dir:
+        if is_sample_config:
+            dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
+        else:
+            # Full config: use server cache
+            dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
+    dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_cache_dir, is_sample=is_sample_config)
 
     bc = get_writer(writer_type, output_dir, schema_config)
     logger.info(f"Using {writer_type} writer")

@@ -287,7 +287,6 @@ orthology_adapter:
         cls: OrthologyAssociationAdapter
         args:
           dmel_data_filepath: ./samples/dmel/flybase/dmel_human_orthologs_disease_fb_2024_02.tsv.gz
-          hsa_hgnc_to_ensemble_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
     outdir: orthologs
     nodes: False
     edges: True
@@ -1161,7 +1160,6 @@ uniprot_dbxref_biological_process:
       label: protein_has_xref_biological_process
       taxon_id: 7227
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_biological_process
   nodes: False
   edges: True
@@ -1175,7 +1173,6 @@ uniprot_dbxref_cellular_component:
       label: protein_has_xref_cellular_component
       taxon_id: 7227
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_cellular_component
   nodes: False
   edges: True
@@ -1189,7 +1186,6 @@ uniprot_dbxref_molecular_function:
       label: protein_has_xref_molecular_function
       taxon_id: 7227
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True

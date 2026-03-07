@@ -2,6 +2,7 @@
 
 import psycopg2
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import EnsemblUniProtProcessor
 
 # Data file for genes_pathways: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
 # data format:
@@ -92,18 +93,20 @@ class ReactomeEdgesAdapter(Adapter):
         self.taxon_id = taxon_id
         if self.taxon_id == 7227:
             self.connection = self.connect_to_flybase()
-        # Load the Ensembl to UniProt mapping if provided
+        # Load the Ensembl to UniProt mapping
         self.ensembl_uniprot_map = {}
-        if ensembl_uniprot_map_path:
+        if ensembl_uniprot_map_path and taxon_id != 9606:
             try:
                 import pickle
-                # with open(ensembl_uniprot_map_path, 'rb') as f:
-                #     self.ensembl_uniprot_map = pickle.load(f)
-                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb')) if ensembl_uniprot_map_path else None 
-                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
+                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb'))
+                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings from pickle")
             except Exception as e:
                 print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
                 self.ensembl_uniprot_map = {}
+        else:
+            processor = EnsemblUniProtProcessor()
+            processor.load_or_update()
+            self.ensembl_uniprot_map = processor.mapping
         super(ReactomeEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):

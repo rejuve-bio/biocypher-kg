@@ -4,6 +4,7 @@ from typing import Dict
 from typing import Optional
 
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import EntrezEnsemblProcessor
 
 
 def _open_text(path: str):
@@ -35,16 +36,26 @@ class HPOGeneDiseaseAdapter(Adapter):
     def __init__(
         self,
         filepath: str,
-        entrez_to_ensembl_map: str,
         write_properties: bool,
         add_provenance: bool,
+        entrez_to_ensembl_map: str = None,
         label: str = "gene_disease",
+        entrez_ensembl_processor=None,
     ):
         self.filepath = filepath
         self.label = label
         self.source = "Human Phenotype Ontology"
         self.source_url = "https://hpo.jax.org/"
-        self.entrez_to_ensembl = _load_pickle_map(entrez_to_ensembl_map)
+
+        if entrez_ensembl_processor is not None:
+            self.entrez_to_ensembl = entrez_ensembl_processor.entrez_to_ensembl
+        elif entrez_to_ensembl_map is not None:
+            self.entrez_to_ensembl = _load_pickle_map(entrez_to_ensembl_map)
+        else:
+            processor = EntrezEnsemblProcessor()
+            processor.load_or_update()
+            self.entrez_to_ensembl = processor.entrez_to_ensembl
+
         super().__init__(write_properties, add_provenance)
 
     def _map_entrez_to_ensembl(self, raw: str) -> Optional[str]:

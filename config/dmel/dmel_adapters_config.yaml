@@ -283,7 +283,6 @@ orthology_adapter:
         cls: OrthologyAssociationAdapter
         args:
           dmel_data_filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/flybase/dmel_human_orthologs_disease_fb_2025_03.tsv.gz
-          hsa_hgnc_to_ensemble_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
     outdir: orthologs
     nodes: False
     edges: True
@@ -906,7 +905,6 @@ uniprot_dbxref_biological_process:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
       label: protein_has_xref_biological_process
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
       taxon_id: 7227
   outdir: uniprot/has_xref_biological_process
   nodes: False
@@ -920,7 +918,6 @@ uniprot_dbxref_cellular_component:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
       label: protein_has_xref_cellular_component
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
       taxon_id: 7227
   outdir: uniprot/has_xref_cellular_component
   nodes: False
@@ -934,7 +931,6 @@ uniprot_dbxref_molecular_function:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
       label: protein_has_xref_molecular_function
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
       taxon_id: 7227
   outdir: uniprot/has_xref_molecular_function
   nodes: False

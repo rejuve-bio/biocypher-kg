@@ -19,10 +19,9 @@ FBrf0245988	Cattenoz et al., 2020, EMBO J. 39(12): e104486	FBlc0003731	scRNAseq_
 FBrf0245988	Cattenoz et al., 2020, EMBO J. 39(12): e104486	FBlc0003731	scRNAseq_2020_Cattenoz_NI_seq_clustering		larval stage	embryonic/larval hemolymph	FBlc0003732	scRNAseq_2020_Cattenoz_NI_seq_clustering_plasmatocytes	FBbt:00001685	embryonic/larval plasmatocyte	FBgn0024989	CG3777	354.646665	0.0003379520108144643
 
 '''
-import pickle
-import os
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import GOSubontologyProcessor
 from biocypher._logger import logger
 
 class ExpressedInAdapter(Adapter):
@@ -39,12 +38,17 @@ class ExpressedInAdapter(Adapter):
         'go': ['biological_process', 'molecular_function', 'cellular_component'],
     }
 
-    def __init__(self, write_properties, add_provenance, filepath):
+    def __init__(self, write_properties, add_provenance, filepath, go_subontology_processor=None):
         self.filepath = filepath
         self.label = 'expressed_in'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
 
+        if go_subontology_processor is not None:
+            self.go_subontology_processor = go_subontology_processor
+        else:
+            self.go_subontology_processor = GOSubontologyProcessor()
+        self.go_subontology_processor.load_or_update()
 
         super(ExpressedInAdapter, self).__init__(write_properties, add_provenance)
 
@@ -53,9 +57,7 @@ class ExpressedInAdapter(Adapter):
         expression_table = FlybasePrecomputedTable(self.filepath)
         self.version = expression_table.extract_date_string(self.filepath)
         # To avoid duplicates
-        expresseds: dict[str, list[str]] = {}   
-        go_mapping_file = os.path.join('aux_files/go_subontology_mapping.pkl')
-        go_subonto_mapping = pickle.load(open(go_mapping_file, 'rb')) if go_mapping_file else None 
+        expresseds: dict[str, list[str]] = {}
 
         # header:
         # Pub_ID	Pub_miniref	Clustering_Analysis_ID	Clustering_Analysis_Name	Source_Tissue_Sex	Source_Tissue_Stage
@@ -69,7 +71,7 @@ class ExpressedInAdapter(Adapter):
             # if isinstance(target_type, list):  #just for testing, remove later
             #     target_type = target_type[0]
             if target.startswith('GO'):
-                target_type = go_subonto_mapping.get(target)
+                target_type = self.go_subontology_processor.get_subontology(target)
             target = target.replace(':', '_').upper()
             if source in expresseds:
                 cell_types = expresseds[source]

@@ -1,10 +1,10 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
-import pickle
 import csv
 import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location, build_regulatory_region_id
 from biocypher._logger import logger
+from biocypher_metta.processors import HGNCProcessor
 
 #Example RefSeq Closest Gene Data
 # rsid,chromosome,start_position,end_position,gene_chromosome,gene_start_position,gene_end_position,gene_symbol
@@ -17,15 +17,21 @@ class RefSeqClosestGeneAdapter(Adapter):
     """
     Adapter for RefSeq Closest Gene data
     """
-    def __init__(self, filepath, hgnc_to_ensembl_map, dbsnp_rsid_map, label,
-                 write_properties, add_provenance,
-                 chr=None, start=None, end=None):
+    def __init__(self, filepath, hgnc_to_ensembl_map=None, dbsnp_rsid_map=None, label='closest_gene',
+                 write_properties=None, add_provenance=None,
+                 chr=None, start=None, end=None, hgnc_processor=None):
         self.file_path = filepath
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
         self.end = end
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is not None:
+            self.hgnc_processor = hgnc_processor
+        else:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
 
         self.label = label
         self.source = "RefSeq Closest Gene"
@@ -45,7 +51,10 @@ class RefSeqClosestGeneAdapter(Adapter):
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         try:
                             source_id = rsid
-                            target_id = self.hgnc_to_ensembl_map[(row[7]).strip()]
+                            gene_symbol = (row[7]).strip()
+                            target_id = self.hgnc_processor.get_ensembl_id(gene_symbol)
+                            if target_id is None:
+                                continue
                             distance = int(row[5]) + 1 - int(pos)
                             props = {}
                             if self.write_properties:

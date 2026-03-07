@@ -2,6 +2,8 @@ import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import HGNCProcessor
+from biocypher._logger import logger
 
 # Human data:
 # https://epd.expasy.org/ftp/epdnew/H_sapiens/
@@ -41,10 +43,22 @@ class EPDAdapter(Adapter):
         9606: 'ENSEMBL'
     }
 
-    def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, taxon_id,
-                 type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None):
+    def __init__(self, filepath, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
+                 type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None,
+                 hgnc_processor=None):
         self.filepath = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one for human; fallback to pickle for other species
+        if hgnc_processor is not None:
+            self.hgnc_processor = hgnc_processor
+            self.hgnc_to_ensembl_map = None
+        elif hgnc_to_ensembl_map is not None and taxon_id != 9606:
+            self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+            self.hgnc_processor = None
+        else:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+            self.hgnc_to_ensembl_map = None
         self.type = type
         self.label = label
         self.delimiter = delimiter
@@ -105,11 +119,17 @@ class EPDAdapter(Adapter):
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
-                if self.taxon_id == 7227:
+                if self.hgnc_processor is not None:
+                    ensembl_id = self.hgnc_processor.get_ensembl_id(gene_id)
+                    if ensembl_id is None:
+                        continue
+                    ensembl_gene_id = f"ENSEMBL:{ensembl_id}"
+                elif self.taxon_id == 7227:
                     fbgn = self.hgnc_to_ensembl_map.get(gene_id, None)
                     ensembl_gene_id = f"FlyBase:{fbgn}" if fbgn else None
-                elif self.taxon_id == 9606:
-                    ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
+                else:
+                    mapped_id = self.hgnc_to_ensembl_map.get(gene_id, None)
+                    ensembl_gene_id = f"ENSEMBL:{mapped_id}" if mapped_id else None
                 if ensembl_gene_id is None:
                     continue
                 

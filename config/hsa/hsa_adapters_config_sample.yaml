@@ -4,7 +4,6 @@ gencode_gene:
     cls: GencodeGeneAdapter
     args:
       filepath: ./samples/hsa/gencode_sample.gtf.gz
-      gene_alias_file_path: ./aux_files/hsa/Homo_sapiens.gene_info.gz
       label: gene
       taxon_id: 9606
   outdir: gencode/gene
@@ -207,7 +206,7 @@ genes_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+
       label: genes_pathways
       taxon_id: 9606
   outdir: reactome
@@ -220,7 +219,7 @@ gene_or_gene_product_reaction:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+
       label: gene_or_gene_product_reaction
       taxon_id: 9606
   outdir: reactome
@@ -233,7 +232,7 @@ chebi_small_molecule_to_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+
       label: small_molecule_to_pathway
       taxon_id: 9606
   outdir: reactome
@@ -246,7 +245,7 @@ chebi_small_molecule_to_reactions:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
+
       label: small_molecule_to_reaction
       taxon_id: 9606
   outdir: reactome
@@ -300,7 +299,6 @@ pathway_to_biological_process:
       label: pathway_to_biological_process
       taxon_id: 9606      
       subontology: biological_process
-      mapping_file: aux_files/go_subontology_mapping.pkl
   outdir: reactome/biological_process
   nodes: false
   edges: true
@@ -486,7 +484,6 @@ gaf_biological_process_gene:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: biological_process_gene
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -499,7 +496,6 @@ gaf_molecular_function_gene:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: molecular_function_gene
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -512,7 +508,6 @@ gaf_cellular_component_gene_part_of:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_part_of
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -525,7 +520,6 @@ gaf_cellular_component_gene_located_in:
     args:
       filepath: ./samples/hsa/goa_human_sample.gaf.gz
       label: cellular_component_gene_located_in
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       taxon_id: 9606
   outdir: gaf
   nodes: False
@@ -537,7 +531,6 @@ coexpression:
     cls: CoxpresdbAdapter
     args:
       filepath: ./samples/hsa/coxpressdb
-      entrez_to_ensemble_path: ./aux_files/hsa/entrez_to_ensembl.pkl
       label: coexpressed_with
       taxon_id: 9606
   outdir: coxpressdb
@@ -550,7 +543,6 @@ tflink:
     cls: TFLinkAdapter
     args:
       filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
-      entrez_to_ensemble_map: ./aux_files/hsa/entrez_to_ensembl.pkl
       label: tf_gene
       taxon_id: 9606
   outdir: tflink
@@ -563,7 +555,6 @@ string:
     cls: StringPPIAdapter
     args:
       filepath: ./samples/hsa/string_human_ppi_v12.0.txt.gz
-      ensembl_to_uniprot_map: ./aux_files/hsa/string_ensembl_uniprot_map.pkl
       label: interacts_with
       taxon_id: 9606
   outdir: string
@@ -626,7 +617,6 @@ hocomoco:
     args:
       filepath: ./samples/hsa/motifs
       annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       label: motif
       taxon_id: 9606      
   outdir: hocomoco
@@ -681,7 +671,6 @@ abc:
     cls: ABCAdapter
     args:
       filepath: ./samples/hsa/abc.forgedb_sample.csv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       tissue_to_ontology_id_map: ./aux_files/hsa/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
       label: activity_by_contact
@@ -707,7 +696,6 @@ refseq_closest_gene:
     cls: RefSeqClosestGeneAdapter
     args:
       filepath: ./samples/hsa/closest_gene.forgedb_sample.csv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
       label: closest_gene
   outdir: refseq
@@ -847,7 +835,6 @@ epd_promoter:
     cls: EPDAdapter
     args:
       filepath: ./samples/hsa/Hs_EPDnew.bed.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       label: promoter
       taxon_id: 9606
   outdir: epd
@@ -859,11 +846,11 @@ hpo_gene_phenotype:
   adapter:  
     module: biocypher_metta.adapters.hsa.hpo_gene_phenotype_adapter
     cls: HPOAdapter  
-    args:  
+    args:
       filepath: ./samples/hsa/hpo/genes_to_phenotype.txt
-      entrez_to_ensembl_map: ./aux_files/hsa/entrez_to_ensembl.pkl
-  outdir: hpo  
-  nodes: False  
+
+  outdir: hpo
+  nodes: False
   edges: True
 
 
@@ -873,7 +860,7 @@ hpo_gene_disease:
     cls: HPOGeneDiseaseAdapter
     args:
       filepath: ./samples/hsa/hpo/genes_to_disease.txt
-      entrez_to_ensembl_map: ./aux_files/hsa/entrez_to_ensembl.pkl
+
   outdir: hpo
   nodes: False
   edges: True
@@ -885,7 +872,6 @@ epd_promoter_regulates_gene:
     cls: EPDAdapter
     args:
       filepath: ./samples/hsa/Hs_EPDnew.bed.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       type: promoter to gene association
       label: promoter_gene
       taxon_id: 9606
@@ -958,7 +944,6 @@ peregrine_enhancer:
       enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
       enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
       source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
-      hgnc_ensembl_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       label: enhancer
   outdir: peregrine
@@ -974,7 +959,6 @@ peregrine_enhancer_regulates:
       enhancers_file: ./samples/hsa/peregrine/PEREGRINEenhancershg38.gz
       enhancer_gene_link: ./samples/hsa/peregrine/sample_enhancer_gene_link_18.tsv.gz
       source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
-      hgnc_ensembl_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
       label: enhancer_gene
@@ -988,7 +972,6 @@ dbsuper_super_enhancer:
     cls: DBSuperAdapter
     args:
       filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       label: super_enhancer
   outdir: dbsuper
@@ -1001,7 +984,6 @@ dbsuper_super_enhancer_regulates_gene:
     cls: DBSuperAdapter
     args:
       filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
-      hgnc_to_ensembl_map: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
       label: super_enhancer_gene
@@ -1359,7 +1341,6 @@ transcription_factor_binding_site:
     cls: TfbsAdapter
     args:
       filepath: ./samples/hsa/sampleEncRegTfbsClustered.csv.gz
-      hgnc_to_ensembl: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       label: tfbs
       taxon_id: 9606      
   outdir: tfbs
@@ -1372,7 +1353,6 @@ gene_tfbs_association:
     cls: TfbsAdapter
     args:
       filepath: ./samples/hsa/sampleEncRegTfbsClustered.csv.gz
-      hgnc_to_ensembl: ./aux_files/hsa/hgnc_symbol_to_ensembl_id_map.pkl
       label: gene_tfbs
       taxon_id: 9606      
   outdir: tfbs
@@ -1708,7 +1688,6 @@ uniprot_dbxref_biological_process:
       label: protein_has_xref_biological_process
       taxon_id: 9606
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_biological_process
   nodes: False
   edges: True
@@ -1722,7 +1701,6 @@ uniprot_dbxref_cellular_component:
       label: protein_has_xref_cellular_component
       taxon_id: 9606
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_cellular_component
   nodes: False
   edges: True
@@ -1736,7 +1714,6 @@ uniprot_dbxref_molecular_function:
       label: protein_has_xref_molecular_function
       taxon_id: 9606
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
