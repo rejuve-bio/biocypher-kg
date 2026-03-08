@@ -63,7 +63,7 @@ google-crc32c==1.8.0
     #   google-resumable-media
 google-resumable-media==2.7.2
     # via google-cloud-storage
-googleapis-common-protos==1.71.0
+googleapis-common-protos==1.73.0
     # via google-api-core
 hgvs==1.5.4
     # via biocypher-metta (pyproject.toml)
