@@ -57,7 +57,7 @@ google-cloud-core==2.5.0
     # via google-cloud-storage
 google-cloud-storage==2.19.0
     # via biocypher-metta (pyproject.toml)
-google-crc32c==1.7.1
+google-crc32c==1.8.0
     # via
     #   google-cloud-storage
     #   google-resumable-media
