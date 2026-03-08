@@ -12,7 +12,7 @@ dependencies = [
     "asttokens==3.0.0",
     "attrs==25.4.0",
     "biocommons-seqrepo==0.6.11",
-    "biocypher==0.5.44",
+    "biocypher==0.12.5",
     "biopython==1.86",
     "bioutils==0.6.1",
     "cachetools==6.2.1",

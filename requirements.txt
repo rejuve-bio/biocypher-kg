@@ -10,7 +10,7 @@ attrs==25.4.0
     #   hgvs
 biocommons-seqrepo==0.6.11
     # via hgvs
-biocypher==0.5.44
+biocypher==0.12.5
     # via biocypher-metta (pyproject.toml)
 biopython==1.86
     # via biocypher-metta (pyproject.toml)
