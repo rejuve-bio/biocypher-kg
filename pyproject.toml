@@ -36,7 +36,7 @@ dependencies = [
     "hgvs==1.5.4",
     "humanfriendly==10.0",
     "idna==3.11",
-    "importlib-metadata==8.7.0",
+    "importlib-metadata==8.7.1",
     "iniconfig==2.3.0",
     "ipython==8.37.0",
     "isodate==0.6.1",

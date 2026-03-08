@@ -71,7 +71,7 @@ humanfriendly==10.0
     # via coloredlogs
 idna==3.11
     # via requests
-importlib-metadata==8.7.0
+importlib-metadata==8.7.1
     # via yoyo-migrations
 iniconfig==2.3.0
     # via pytest
