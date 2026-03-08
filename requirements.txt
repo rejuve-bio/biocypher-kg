@@ -136,7 +136,7 @@ prompt-toolkit==3.0.52
     #   questionary
 proto-plus==1.26.1
     # via google-api-core
-protobuf==6.33.0
+protobuf==7.34.0
     # via
     #   google-api-core
     #   googleapis-common-protos
