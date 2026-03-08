@@ -79,7 +79,7 @@ ipython==8.37.0
     # via
     #   biocommons-seqrepo
     #   hgvs
-isodate==0.6.1
+isodate==0.7.2
     # via rdflib
 jedi==0.19.2
     # via ipython
