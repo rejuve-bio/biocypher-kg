@@ -134,7 +134,7 @@ prompt-toolkit==3.0.52
     # via
     #   ipython
     #   questionary
-proto-plus==1.26.1
+proto-plus==1.27.1
     # via google-api-core
 protobuf==6.33.0
     # via
