@@ -91,7 +91,7 @@ dependencies = [
     "tabulate==0.10.0",
     "toml==0.10.2",
     "tomli==2.3.0",
-    "tqdm==4.67.1",
+    "tqdm==4.67.3",
     "traitlets==5.14.3",
     "treelib==1.6.4",
     "typer==0.20.0",
