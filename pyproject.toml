@@ -59,7 +59,7 @@ dependencies = [
     "pexpect==4.9.0",
     "platformdirs==4.5.0",
     "pluggy==1.6.0",
-    "pooch==1.8.2",
+    "pooch==1.9.0",
     "prompt-toolkit==3.0.52",
     "proto-plus==1.27.1",
     "protobuf==6.33.0",
