@@ -108,7 +108,7 @@ numpy==1.26.4
     #   pandas
 obonet==1.0.0
     # via biocypher-metta (pyproject.toml)
-owlready2==0.44
+owlready2==0.50
     # via biocypher-metta (pyproject.toml)
 packaging==25.0
     # via
