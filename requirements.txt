@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml -o requirements.txt
 appdirs==1.4.4
     # via biocypher
-asttokens==3.0.0
+asttokens==3.0.1
     # via stack-data
 attrs==25.4.0
     # via
