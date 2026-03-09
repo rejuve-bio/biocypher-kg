@@ -97,7 +97,7 @@ dependencies = [
     "typer==0.20.0",
     "typing-extensions==4.15.0",
     "tzdata==2025.2",
-    "urllib3==2.5.0",
+    "urllib3==2.6.3",
     "wcwidth==0.2.14",
     "yoyo-migrations==9.0.0",
     "zipp==3.23.0",
