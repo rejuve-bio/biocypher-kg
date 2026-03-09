@@ -206,7 +206,7 @@ six==1.17.0
     #   isodate
     #   python-dateutil
     #   treelib
-sqlparse==0.5.3
+sqlparse==0.5.4
     # via yoyo-migrations
 stack-data==0.6.3
     # via ipython
