@@ -62,7 +62,7 @@ dependencies = [
     "pooch==1.8.2",
     "prompt-toolkit==3.0.52",
     "proto-plus==1.27.1",
-    "protobuf==6.33.0",
+    "protobuf==6.33.5",
     "psycopg2==2.9.11",
     "ptyprocess==0.7.0",
     "pure-eval==0.2.3",
