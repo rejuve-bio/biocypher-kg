@@ -75,7 +75,7 @@ importlib-metadata==8.7.1
     # via yoyo-migrations
 iniconfig==2.3.0
     # via pytest
-ipython==8.37.0
+ipython==8.38.0
     # via
     #   biocommons-seqrepo
     #   hgvs
