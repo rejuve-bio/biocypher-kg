@@ -26,7 +26,8 @@ import gzip
 
 
 class TFLinkAdapter(Adapter):
-    INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
+    INDEX = {'UniprotID.TF': 0, 'UniprotID.Target': 1, 'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 
+             'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
 
     def __init__(self, filepath, entrez_to_ensemble_map=None, label='tf_gene',
                  write_properties=None, add_provenance=None, taxon_id=9606,
@@ -63,33 +64,47 @@ class TFLinkAdapter(Adapter):
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as fp:
             table = csv.reader(fp, delimiter="\t", quotechar='"')
+            next(table) # skip header
             for row in table:
-                tf_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.TF']]
-                target_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.Target']]
-                if tf_entrez_id in self.entrez2ensemble and target_entrez_id in self.entrez2ensemble:
-                    tf_ensemble_id = self.entrez2ensemble[tf_entrez_id]
-                    target_ensemble_id = self.entrez2ensemble[target_entrez_id]
-                    _source = f"{tf_ensemble_id}"
-                    _target = f"{target_ensemble_id}"
-                    pubmed_ids_str = row[TFLinkAdapter.INDEX['PubmedID']]
-                    pubmed_ids = [f"pubmed:{i}" for i in pubmed_ids_str.split(";")]
-                    sources = row[TFLinkAdapter.INDEX['Source.database']].split(";")
-                    small_scale_evidence = row[TFLinkAdapter.INDEX['Small-scale.evidence']]
-                    if small_scale_evidence == "Yes":
-                        evidence_type = "small_scale_evidence"
+                if self.label == 'tf_gene':
+                    tf_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.TF']]
+                    target_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.Target']]
+                    if tf_entrez_id in self.entrez2ensemble and target_entrez_id in self.entrez2ensemble:
+                        tf_ensemble_id = self.entrez2ensemble[tf_entrez_id]
+                        target_ensemble_id = self.entrez2ensemble[target_entrez_id]
+                        _source = f"{tf_ensemble_id}"
+                        _target = f"{target_ensemble_id}"
                     else:
-                        evidence_type = "large_scale_evidence"
-                    _props = {}
-                    if self.write_properties:
-                        _props = {
-                            "evidence": pubmed_ids,
-                            "database": sources,
-                            "evidence_type": evidence_type,
-                            "detection_method": row[TFLinkAdapter.INDEX['Detection.method']],
-                            "taxon_id": f'{self.taxon_id}',
-                        }
-                        if self.add_provenance:
-                            _props['source'] = self.source
-                            _props['source_url'] = self.source_url
+                        continue
+                elif self.label == 'interacts_with':
+                    tf_uniprot_id = row[TFLinkAdapter.INDEX['UniprotID.TF']]
+                    target_uniprot_id = row[TFLinkAdapter.INDEX['UniprotID.Target']]
+                    if tf_uniprot_id == '-' or target_uniprot_id == '-':
+                        continue
+                    _source = f"{tf_uniprot_id}"
+                    _target = f"{target_uniprot_id}"
+                else:
+                    continue
 
-                    yield _source, _target, self.label, _props
+                pubmed_ids_str = row[TFLinkAdapter.INDEX['PubmedID']]
+                pubmed_ids = [f"pubmed:{i}" for i in pubmed_ids_str.split(";")]
+                sources = row[TFLinkAdapter.INDEX['Source.database']].split(";")
+                small_scale_evidence = row[TFLinkAdapter.INDEX['Small-scale.evidence']]
+                if small_scale_evidence == "Yes":
+                    evidence_type = "small_scale_evidence"
+                else:
+                    evidence_type = "large_scale_evidence"
+                _props = {}
+                if self.write_properties:
+                    _props = {
+                        "evidence": pubmed_ids,
+                        "database": sources,
+                        "evidence_type": evidence_type,
+                        "detection_method": row[TFLinkAdapter.INDEX['Detection.method']],
+                        "taxon_id": f'{self.taxon_id}',
+                    }
+                    if self.add_provenance:
+                        _props['source'] = self.source
+                        _props['source_url'] = self.source_url
+
+                yield _source, _target, self.label, _props
