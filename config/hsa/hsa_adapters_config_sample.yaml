@@ -1708,3 +1708,24 @@ uniprot_chebi_part_of_chebi:
   outdir: uniprot/chebi_part_of
   nodes: False
   edges: True
+
+alliance_gene_disease:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_ids: ["NCBITaxon:10116"]
+  outdir: alliance/gene_disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_all_species:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+  outdir: alliance/gene_disease_all_species
+  nodes: False
+  edges: True
