@@ -45,6 +45,8 @@ class ABCAdapter(Adapter):
         with gzip.open(self.file_path, "rt") as fp:
             next(fp)
             reader = csv.reader(fp, delimiter=",")
+            not_processed = 0
+            processed = 0
             for row in reader:
                 try:
                     rsid = row[COL_DICT['rsid']]
@@ -56,17 +58,19 @@ class ABCAdapter(Adapter):
                             target_gene = (row[COL_DICT['target_gene']]).strip()
                             _target = self.hgnc_processor.get_ensembl_id(target_gene)
                             if _target is None:
+                                not_processed += 1
                                 logger.warning(f"Couldn't find Ensembl ID for gene {target_gene}")
                                 continue
                             props = {
                                 "score": to_float(row[COL_DICT['abc_score']]),
                                 "biological_context": self.tissue_to_ontology_id_map[row[COL_DICT['cell_type']]]
                             }
-
+                            processed += 1
                             yield _source, _target, self.label, props
                         except Exception as e:
                             print(f"error while parsing row: {row}, error: {e} skipping...")
                             continue
                 except KeyError as e:
-                    logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
+                    # logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
                     continue
+        print(f"Not processed records: {not_processed} out of {processed + not_processed} records")

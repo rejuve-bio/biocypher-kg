@@ -610,18 +610,18 @@ gtex_expression:
   nodes: False
   edges: True
 
-hocomoco:
-  adapter:
-    module: biocypher_metta.adapters.hocomoco_motif_adapter
-    cls: HoCoMoCoMotifAdapter
-    args:
-      filepath: ./samples/hsa/motifs
-      annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-      label: motif
-      taxon_id: 9606      
-  outdir: hocomoco
-  nodes: True
-  edges: False
+# hocomoco:
+#   adapter:
+#     module: biocypher_metta.adapters.hocomoco_motif_adapter
+#     cls: HoCoMoCoMotifAdapter
+#     args:
+#       filepath: ./samples/hsa/motifs
+#       annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+#       label: motif
+#       taxon_id: 9606      
+#   outdir: hocomoco
+#   nodes: True
+#   edges: False
 
 roadmap_chromatin_state:
   adapter:
