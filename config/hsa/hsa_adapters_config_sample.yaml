@@ -10,7 +10,6 @@ gencode_gene:
   nodes: True
   edges: False
 
-
 gencode_transcripts:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
@@ -23,7 +22,6 @@ gencode_transcripts:
   outdir: gencode/transcript
   nodes: True
   edges: False
-
 
 transcribes_to:
   adapter:
