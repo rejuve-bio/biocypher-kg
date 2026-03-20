@@ -44,11 +44,31 @@ services:
         condition: service_completed_successfully
 
   mork:
-    build: 
+    build:
       context: ./biocypher-mork
+    container_name: mork-biocypher
     volumes:
-      - ${MORK_DATA_DIR:-./output}:/app/data
-
+      # KG output data (MeTTa / paths files) — source of truth
+      - ${MORK_DATA_DIR:-./output_human}:/app/data
+      # Persistent snapshot volume — bind mount translates host WAL to container
+      - ./mork_persist:/app/persist
+      # Map the fixed entrypoint script
+      - ./biocypher-mork/entrypoint.sh:/app/entrypoint.sh:ro
+    ports:
+      - "${MORK_HOST_PORT:-8027}:8027"
+    environment:
+      - RUST_LOG=info
+      # Snapshot settings (can be overridden in .env or docker-variables.env)
+      - SNAPSHOT_DIR=/app/persist
+      - SNAPSHOT_INTERVAL_SECONDS=${SNAPSHOT_INTERVAL_SECONDS:-300}
+      - MORK_URL=http://127.0.0.1:8027
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8027/status/-"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 volumes:
   biocypher_neo4j_volume:

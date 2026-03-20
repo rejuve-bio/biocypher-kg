@@ -7,7 +7,7 @@ from time import monotonic, sleep
 from base64 import b32encode
 import re
 from io import StringIO, FileIO
-from urllib.parse import quote, quote_from_bytes
+from urllib.parse import quote, quote_from_bytes, unquote
 
 import requests
 from requests import request, RequestException
@@ -21,6 +21,97 @@ def variables(pats):
 
 # One session per process
 requests_session = requests.Session()
+
+
+import threading
+from pathlib import Path
+
+class WalMORK:
+    """
+    Durability layer for MORK. Tees every write to a local MeTTa file.
+    Merged into the main client to provide unified persistence support.
+    """
+    def __init__(self, base_mork, wal_path=None, sync_writes=True, host_data_dir=None):
+        self._mork = base_mork
+        if wal_path is None:
+            snapshot_dir = os.environ.get("SNAPSHOT_DIR", "mork_persist")
+            wal_path = os.path.join(snapshot_dir, "wal.metta")
+        self.wal_path = Path(wal_path).resolve()
+        self.wal_path.parent.mkdir(parents=True, exist_ok=True)
+        self.sync_writes = sync_writes
+        self.host_data_dir = host_data_dir
+        self._wal_lock = threading.Lock()
+        
+    def __getattr__(self, name):
+        return getattr(self._mork, name)
+
+    def __enter__(self):
+        self._mork.__enter__()
+        return self
+
+    def __exit__(self, *args):
+        return self._mork.__exit__(*args)
+
+    def _wal_append(self, text):
+        if not text: return
+        if not text.endswith("\n"): text += "\n"
+        with self._wal_lock:
+            with open(self.wal_path, "a", encoding="utf-8") as f:
+                f.write(text)
+                f.flush()
+                if self.sync_writes: os.fsync(f.fileno())
+
+    def _wal_append_file(self, file_uri):
+        if not file_uri.startswith("file://"): return
+        # Decode URL-encoded characters (e.g., %3A -> :)
+        local_path = unquote(file_uri[len("file://"):])
+        # ALWAYS translate /app/data to host_data_dir if we are on the host
+        # We assume if /app/data is used and host_data_dir is set, we MUST translate.
+        clean_path = local_path.replace("//", "/") # Handle file:///app/data -> //app/data
+        if clean_path.startswith("/app/data") and self.host_data_dir:
+            suffix = clean_path[len("/app/data"):].lstrip("/")
+            local_path = str(Path(self.host_data_dir) / suffix)
+            # print(f"[WalMORK] DEBUG: Translating {clean_path} -> {local_path}")
+
+        try:
+            with open(local_path, "r", encoding="utf-8") as f:
+                self._wal_append(f.read())
+        except Exception as e:
+            print(f"[WalMORK] WARNING: could not tee {file_uri} to WAL: {e}")
+
+    def upload_(self, data):
+        return self.upload("$x", "$x", data)
+
+    def upload(self, pattern, template, data):
+        self._wal_append(data)
+        return self._mork.upload(pattern, template, data)
+
+    def sexpr_import_(self, file_uri):
+        return self.sexpr_import("$x", "$x", file_uri)
+
+    def sexpr_import(self, pattern, template, file_uri):
+        self._wal_append_file(file_uri)
+        return self._mork.sexpr_import(pattern, template, file_uri)
+
+    def paths_import_(self, file_uri):
+        return self.paths_import("$x", "$x", file_uri)
+
+    def paths_import(self, pattern, template, file_uri):
+        # tee .metta sibling if it exists
+        if file_uri.startswith("file://"):
+            m_path = file_uri.replace(".paths", ".metta")[len("file://"):]
+            if os.path.exists(m_path): self._wal_append_file("file://" + m_path)
+            else: self._wal_append_file(file_uri)
+        return self._mork.paths_import(pattern, template, file_uri)
+
+    def clear(self):
+        self._wal_append(";; CLEAR ALL\n")
+        return self._mork.clear()
+
+    def work_at(self, *args, **kwargs):
+        child_mork = self._mork.work_at(*args, **kwargs)
+        return WalMORK(child_mork, wal_path=self.wal_path, sync_writes=self.sync_writes, host_data_dir=self.host_data_dir)
+
 
 class MORK:
     """
@@ -461,7 +552,7 @@ class MORK:
         return cmd
 
     def paths_import_(self, file_uri):
-        return self.sexpr_import("$x", "$x", file_uri)
+        return self.paths_import("$x", "$x", file_uri)
 
     def paths_import(self, pattern, template, file_uri):
         """
@@ -515,7 +606,7 @@ class MORK:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if "time" in self.finalization: print(f"{self.ns.format('*')} time {monotonic() - self.t0:.6f} s")
+        if "time" in self.finalization: print(f"{self.ns.format("*")} time {monotonic() - self.t0:.6f} s")
         if "clear" in self.finalization: self.clear().block()
         if "spin_down" in self.finalization:
             try: self.spin_down()
@@ -584,14 +675,8 @@ class ManagedMORK(MORK):
     def start(cls, binary_path, *args):
         """
         Starts the MORK server.  Fails if it's already running and therefore can't be started
-
-        Args:
-            binary_path (str): file system path to the compiled MORK server binary
-
-        Returns:
-            Self: a ManagedMORK instance
         """
-        if not os.path.isfile(binary_path):
+        if binary_path is None or not os.path.isfile(binary_path):
             raise RuntimeError(f"Can't connect to running server, and no server binary found at path: {binary_path}")
 
         print("Starting server from binary")
@@ -677,7 +762,7 @@ class ManagedMORK(MORK):
 
 def _main():
     # smoke test
-    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         with server.work_at("main").and_clear() as ins:
             print("entered")
             ins.upload_("(foo 1)\n(foo 2)\n")
@@ -694,7 +779,7 @@ def _main():
 
 def _main_mm2():
     # smoke test
-    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         server.upload_("(data (foo 1))\n(data (foo 2))\n(_exec 0 (, (data (foo $x))) (, (data (bar $x))))")
         server.transform(("(_exec $priority $p $t)",), ("(exec (test $priority) $p $t)",)).listen()
         server.exec(thread_id="test").listen()
@@ -706,7 +791,7 @@ def _main_mm2():
 
 def test_sse_status():
     # smoke test
-    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         server.sexpr_import_(f"https://raw.githubusercontent.com/Adam-Vandervorst/metta-examples/refs/heads/main/aunt-kg/simpsons.metta").listen()
     print("done listening")
 

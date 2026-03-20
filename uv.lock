@@ -236,7 +236,7 @@ requires-dist = [
     { name = "ptyprocess", specifier = "==0.7.0" },
     { name = "pure-eval", specifier = "==0.2.3" },
     { name = "pyarrow", specifier = "==20.0.0" },
-    { name = "pyasn1", specifier = "==0.6.1" },
+    { name = "pyasn1", specifier = "==0.6.2" },
     { name = "pyasn1-modules", specifier = "==0.4.2" },
     { name = "pygments", specifier = "==2.19.2" },
     { name = "pyparsing", specifier = "==3.2.5" },
