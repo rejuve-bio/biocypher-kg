@@ -21,7 +21,14 @@ def variables(pats):
 
 # One session per process
 requests_session = requests.Session()
-
+import sys
+from pathlib import Path
+# wal_client lives in the same directory as this script
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from wal_client import WalMORK
+except ImportError:
+    from .wal_client import WalMORK
 
 class MORK:
     """
@@ -672,7 +679,7 @@ class ManagedMORK(MORK):
 
 def _main():
     # smoke test
-    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         with server.work_at("main").and_clear() as ins:
             print("entered")
             ins.upload_("(foo 1)\n(foo 2)\n")
@@ -689,7 +696,7 @@ def _main():
 
 def _main_mm2():
     # smoke test
-    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         server.upload_("(data (foo 1))\n(data (foo 2))\n(_exec 0 (, (data (foo $x))) (, (data (bar $x))))")
         server.transform(("(_exec $priority $p $t)",), ("(exec (test $priority) $p $t)",)).listen()
         server.exec(thread_id="test").listen()
@@ -701,7 +708,7 @@ def _main_mm2():
 
 def test_sse_status():
     # smoke test
-    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         server.sexpr_import_(f"https://raw.githubusercontent.com/Adam-Vandervorst/metta-examples/refs/heads/main/aunt-kg/simpsons.metta").listen()
     print("done listening")
 
