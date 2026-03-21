@@ -22,6 +22,9 @@ RUN git clone --depth=1 https://github.com/Adam-Vandervorst/PathMap.git /app/Pat
 RUN git clone --depth=1 -b server https://github.com/Abdu1964/MORK.git /app/MORK_SERVER && \
     cd /app/MORK_SERVER/server && cargo build --release
 
+# RUN git clone https://github.com/trueagi-io/MORK.git /app/MORK && \  
+#     cd /app/MORK/kernel && \
+#     cargo build --release
 
 # Create data, reports, and benchmarks directories
 RUN mkdir -p /app/data /app/reports /app/benchmarks

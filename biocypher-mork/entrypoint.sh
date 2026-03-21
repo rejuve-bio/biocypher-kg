@@ -52,7 +52,6 @@ import_snapshot_to_server() {
 
     local restored=false
 
-    # Attempt high-speed binary import from .paths
     if [ -f "$SNAPSHOT_PATHS" ]; then
         log "Performing high-speed binary recovery from $SNAPSHOT_PATHS ..."
         cp "$SNAPSHOT_PATHS" /tmp/restore.paths
@@ -65,7 +64,6 @@ import_snapshot_to_server() {
         rm -f /tmp/restore.paths
     fi
 
-    # CRITICAL: Wait for the import to actually finish (MORK imports are async)
     if [ "$restored" = "true" ]; then
         log "Waiting for server to finish background ingestion..."
         local tries=0
@@ -103,7 +101,7 @@ export_snapshot() {
         if [ -f /tmp/snapshot.paths ]; then
             cur_size=$(wc -c < /tmp/snapshot.paths)
             if [ "$cur_size" -gt 0 ] && [ "$cur_size" -eq "$prev_size" ]; then
-                break  # File size stable — write complete
+                break  
             fi
             prev_size=$cur_size
         fi
@@ -157,13 +155,13 @@ is_server_busy() {
     status=$(curl -sf --max-time 5 "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; try: print(json.load(sys.stdin).get('status','')) except: print('')" 2>/dev/null)
     
     if [ "$status" = "pathClear" ]; then
-        return 1 # Not busy
+        return 1 
     elif [ -z "$status" ]; then
         log "WARNING: Status check failed or returned empty. Assuming not busy to avoid infinite skip."
-        return 1 # Fallback to not busy
+        return 1 
     else
         log "INFO: Server is busy (status: $status). Skipping snapshot this cycle."
-        return 0 # Busy
+        return 0
     fi
 }
 
@@ -172,7 +170,6 @@ snapshot_daemon() {
     while true; do
         sleep "$INTERVAL"
         
-        # BUSY-SAFETY: Avoid snapshots during active ingestion/mutations
         if is_server_busy; then
             log "SKIPPED: Periodic snapshot (Server is busy with mutations). Retrying next interval."
             continue
