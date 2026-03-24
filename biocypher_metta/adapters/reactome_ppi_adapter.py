@@ -71,11 +71,12 @@ class ReactomePPIAdapter(Adapter):
             
             interaction_type = row[6]
             interaction_context = row[7]
+            pubmed_refs = row[8] if len(row) > 8 else None
             
             if not self.include_self_interactions and protein1_uniprot == protein2_uniprot:
                 return
             
-            interaction_key = tuple(sorted([protein1_uniprot, protein2_uniprot]))
+            interaction_key = (tuple(sorted([protein1_uniprot, protein2_uniprot])), interaction_context)
             
             if interaction_key in self.seen_interactions:
                 return
@@ -91,9 +92,12 @@ class ReactomePPIAdapter(Adapter):
                 
                 _props = {
                     "interaction_type": interaction_type,
-                    "reactome_pathway": pathway_id,
+                    "interaction_context": pathway_id,
                     "taxon_id": self.taxon_id,
                 }
+                
+                if pubmed_refs and pubmed_refs != '-':
+                    _props["pubmed_references"] = pubmed_refs.split("|")
                 
                 if self.add_provenance:
                     _props["source"] = self.source
