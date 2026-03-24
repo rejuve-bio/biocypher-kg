@@ -235,6 +235,9 @@ class ParquetWriter(BaseWriter):
             for node in nodes:
                 try:
                     id, label, properties = node
+                    if not self.check_node_label(label):
+                        logger.warning(f"Skipping node with invalid label: {label}")
+                        continue
                     if "." in label:
                         label = label.split(".")[1]
                     label = label.lower()
@@ -311,6 +314,9 @@ class ParquetWriter(BaseWriter):
             for edge in edges:
                 try:
                     source_id_raw, target_id_raw, label, properties = edge
+                    if not self.check_edge_label(label):
+                        logger.warning(f"Skipping edge with invalid label: {label}")
+                        continue
                     label = label.lower()
                     edge_freq[label] += 1
 

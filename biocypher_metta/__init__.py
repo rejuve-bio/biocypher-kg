@@ -20,6 +20,38 @@ class BaseWriter(ABC):
         self.node_props = defaultdict(set)
         self.edge_freq = Counter()
 
+        self.valid_node_labels = set()
+        self.valid_edge_labels = set()
+        self._get_valid_labels()
+
+    def _get_valid_labels(self):
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        for k, v in schema.items():
+            input_label = v.get("input_label")
+            if input_label:
+                labels = [input_label] if isinstance(input_label, str) else input_label
+                for label in labels:
+                    normalized_label = self.normalize_label(label)
+                    if v.get("represented_as") == "node":
+                        self.valid_node_labels.add(normalized_label)
+                    elif v.get("represented_as") == "edge":
+                        self.valid_edge_labels.add(normalized_label)
+
+    def normalize_label(self, label):
+        if not label:
+            return ""
+        if "." in label:
+            label = label.split(".")[1]
+        return label.lower().replace(" ", "_")
+
+    def check_node_label(self, label):
+        normalized_label = self.normalize_label(label)
+        return normalized_label in self.valid_node_labels
+
+    def check_edge_label(self, label):
+        normalized_label = self.normalize_label(label)
+        return normalized_label in self.valid_edge_labels
+
     @abstractmethod
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         pass

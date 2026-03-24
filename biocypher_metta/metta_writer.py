@@ -169,6 +169,10 @@ class MeTTaWriter(BaseWriter):
 
         try:
             for node in nodes:
+                id, label, properties = node
+                if not self.check_node_label(label):
+                    logger.warning(f"Skipping node with invalid label: {label}")
+                    continue
                 self.extract_node_info(node)  # Count nodes and extract node properties
 
                 _id, label, properties = node
@@ -209,6 +213,10 @@ class MeTTaWriter(BaseWriter):
 
         try:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    logger.warning(f"Skipping edge with invalid label: {label}")
+                    continue
                 self.extract_edge_info(edge)  # Count edges
 
                 source_id, target_id, label, properties = edge
