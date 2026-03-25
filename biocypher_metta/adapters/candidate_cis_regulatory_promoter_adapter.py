@@ -140,6 +140,7 @@ class PromotercCREAdapter(Adapter):
                 
         except Exception as e:
             print(f"Error loading promoter data: {e}")
+            raise
         
         if 'eqtl' in self.edge_type:
             try:
@@ -176,10 +177,10 @@ class PromotercCREAdapter(Adapter):
                         'tissue': tissue,
                     })
                 
-                file.close()
-                
-            except Exception as e:
-                print(f"Error loading eQTL data: {e}")
+                file.close()                
+            except OSError as e:
+                print(f"Error loading promoter data: {e}")
+                raise
     
     def get_nodes(self):
         for accession, promoter_data in self.accession_to_promoter.items():
