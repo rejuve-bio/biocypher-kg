@@ -1,6 +1,5 @@
 Title: BioCypher graph schema configuration file
 
-
 activity by contact:
   description: An association between a variant in a regulatory region and a gene
     it predicted by the ABC model (Fulco et.al 2019)
@@ -25,39 +24,6 @@ activity by contact:
     biological_context:
       type: str
       biolink: has_biological_sequence
-
-cell line is a cell type:
-  is_a: subclass of
-  biolink_predicate: biolink:subclass_of
-  inherit_properties: true
-  represented_as: edge
-  input_label: cell_line_is_a_cell_type
-  output_label: is_a
-  kgx_properties:
-    subject_category: biolink:CellLine
-    object_category: biolink:Cell
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-  description: Cross-ontology relation linking a Cell Line Ontology (CLO) term to
-    a Cell Ontology (CL) term.
-  source: cell line
-  target: cell type
-
-cell type part of tissue:
-  is_a: part of
-  biolink_predicate: biolink:part_of
-  inherit_properties: true
-  represented_as: edge
-  input_label: cell_type_part_of_tissue
-  output_label: part_of
-  kgx_properties:
-    subject_category: biolink:Cell
-    object_category: biolink:AnatomicalEntity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-  description: Cross-ontology relation linking a CL cell type to a BTO tissue term.
-  source: cell type
-  target: tissue
 
 chromatin state:
   is_a: association
@@ -162,68 +128,6 @@ downstream gene to variant association:
     p_value:
       type: float
       biolink: has_quantitative_value
-
-gene overlaps structural_variant:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: gene_overlaps_structural_variant
-  output_label: overlaps
-  source: gene
-  target: structural variant
-
-gene to disease association:
-  description: An association between a gene and a disease identifier (e.g., OMIM,
-    ORPHA).
-  is_a: association
-  mixins:
-  - biolink:GeneToDiseaseAssociation
-  biolink_predicate: biolink:associated_with
-  inherit_properties: true
-  represented_as: edge
-  input_label: gene_disease
-  output_label: associated_with
-  source: gene
-  target: disease
-  kgx_properties:
-    subject_category: biolink:Gene
-    object_category: biolink:Disease
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-  properties:
-    gene_symbol:
-      type: str
-    association_type:
-      type: str
-    source_ref:
-      type: str
-
-gene to phenotype association:
-  description: An association between a gene and a phenotype (HPO term).
-  is_a: association
-  mixins:
-  - biolink:GeneToPhenotypicFeatureAssociation
-  biolink_predicate: biolink:has_phenotype
-  inherit_properties: true
-  represented_as: edge
-  input_label: gene_phenotype
-  output_label: involved_in
-  source: gene
-  target: phenotype
-  kgx_properties:
-    subject_category: biolink:Gene
-    object_category: biolink:PhenotypicFeature
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-  properties:
-    gene_symbol:
-      type: str
-    phenotype_name:
-      type: str
-    frequency:
-      type: str
-    disease_id:
-      type: str
 
 gtex variant to gene expression association:
   aliases:
@@ -361,15 +265,6 @@ non_coding_rna:
     rna_type:
       type: str
 
-non_coding_rna overlaps structural_variant:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: non_coding_rna_overlaps_structural_variant
-  output_label: overlaps
-  source: non_coding_rna
-  target: structural variant
-
 pathway_to_biological_process:
   is_a: association
   biolink_predicate: biolink:participates_in
@@ -468,15 +363,6 @@ polyphen2 variant:
     polyphen2_humvar_prediction:
       type: str
 
-promoter overlaps structural_variant:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: promoter_overlaps_structural_variant
-  output_label: overlaps
-  source: promoter
-  target: structural variant
-
 snp:
   represented_as: node
   input_label: snp
@@ -499,34 +385,7 @@ snp:
   description: A single nucleotide polymorphism (SNP) is a variation in a single nucleotide
     that occurs at a specific position in the genome
 
-structural_variant overlaps gene:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: structural_variant_overlaps_gene
-  output_label: overlaps
-  source: structural variant
-  target: gene
-
-structural_variant overlaps non_coding_rna:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: structural_variant_overlaps_non_coding_rna
-  output_label: overlaps
-  source: structural variant
-  target: non_coding_rna
-
-structural_variant overlaps promoter:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: structural_variant_overlaps_promoter
-  output_label: overlaps
-  source: structural variant
-  target: promoter
-
-super_enhancer:
+super enhancer:
   represented_as: node
   input_label: super_enhancer
   is_a: non coding element
@@ -534,12 +393,17 @@ super_enhancer:
   - biolink:RegulatoryRegion
   biolink_category: biolink:RegulatoryRegion
   inherit_properties: true
-  kgx_properties:
-    category: biolink:RegulatoryRegion
   properties:
     se_id:
       type: str
       biolink: id
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: biolink:RegulatoryRegion
 
 tissue:
   is_a: ontology term

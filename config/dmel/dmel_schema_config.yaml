@@ -95,17 +95,6 @@ allele to phenotype_set:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-developmental stage:
-  is_a: ontology term
-  represented_as: node
-  input_label: developmental_stage
-  mixins:
-  - biolink:LifeStage
-  biolink_category: biolink:LifeStage
-  inherit_properties: true
-  kgx_properties:
-    category: biolink:LifeStage
-
 dmel disease model:
   represented_as: node
   input_label: dmel_disease_model
@@ -154,21 +143,6 @@ dmel disease model:
       biolink: publication
   kgx_properties:
     category: biolink:DiseaseModel
-
-do subclass of:
-  is_a: subclass of
-  inherit_properties: true
-  represented_as: edge
-  input_label: do_subclass_of
-  output_label: is_a
-  biolink_predicate: biolink:subclass_of
-  source: disease
-  target: disease
-  kgx_properties:
-    subject_category: biolink:Disease
-    object_category: biolink:Disease
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
 
 expression value:
   is_a: expression
@@ -244,20 +218,6 @@ FBdv subclass of:
   kgx_properties:
     subject_category: biolink:LifeStage
     object_category: biolink:LifeStage
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-feature overlaps structural_variant:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: feature_overlaps_structural_variant
-  output_label: overlaps
-  source: biological entity
-  target: structural variant
-  kgx_properties:
-    subject_category: biolink:GenomicEntity
-    object_category: biolink:SequenceVariant
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
@@ -457,21 +417,6 @@ metabolic pathway gene group:
   kgx_properties:
     category: biolink:Pathway
 
-mi subclass of:
-  is_a: subclass of
-  inherit_properties: true
-  represented_as: edge
-  input_label: mi_subclass_of
-  output_label: is_a
-  biolink_predicate: biolink:subclass_of
-  source: molecular interaction
-  target: molecular interaction
-  kgx_properties:
-    subject_category: biolink:OntologyClass
-    object_category: biolink:OntologyClass
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
 modelled to do term:
   represented_as: edge
   input_label: modelled_to_do_term
@@ -493,7 +438,7 @@ modelled to do term:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-modelled to human disease:
+modelled to human disease:  # dmel gen modelled to a human disease
   represented_as: edge
   input_label: modelled_to_human_disease
   is_a: annotation
@@ -508,99 +453,6 @@ modelled to human disease:
   kgx_properties:
     subject_category: biolink:Gene
     object_category: biolink:DiseaseModel
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-non coding rna:
-  represented_as: node
-  input_label: non_coding_rna
-  is_a: non coding element
-  mixins:
-  - biolink:RNAProduct
-  biolink_category: biolink:RNAProduct
-  inherit_properties: true
-  properties:
-    rna_type:
-      type: str
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: biolink:RNAProduct
-
-orthology association:
-  description: "Non-directional association between two genes indicating that there\
-    \ is an orthology relation among them:  \u201CHistorical homology that involves\
-    \ genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)\""
-  is_a: related to at instance level
-  represented_as: edge
-  input_label: orthologs_genes
-  biolink_predicate: biolink:ortholog_of
-  source: gene
-  target: gene
-  properties:
-    DIOPT_score:
-      type: int
-      biolink: has_quantitative_value
-    hsa_hgnc_id:
-      type: str
-      biolink: id
-    hsa_omim_id:
-      type: str
-      biolink: id
-    hsa_omim_phenotype_ids:
-      type: str
-      biolink: has_phenotype
-    hsa_omim_phenotype_ids_names:
-      type: str
-      biolink: has_phenotype_label
-    source_organism:
-      type: str
-      biolink: in_taxon
-    target_organism:
-      type: str
-      biolink: in_taxon
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    subject_category: biolink:Gene
-    object_category: biolink:Gene
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-paralogy association:
-  description: ''
-  Non-directional association between two genes indicating that there is an paralogy relation among them: "\u201C\
-    Historical homology that involves genes that diverged after a duplication event\
-    \ (http://purl.obolibrary.org/obo/RO_HOM0000011)\""
-  is_a: related to at instance level
-  represented_as: edge
-  input_label: paralogs_genes
-  biolink_predicate: biolink:paralog_of
-  source: gene
-  target: gene
-  properties:
-    source_symbol:
-      type: str
-      biolink: symbol
-    target_symbol:
-      type: str
-      biolink: symbol
-    DIOPT_score:
-      type: int
-      biolink: has_quantitative_value
-    taxon_id:
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    subject_category: biolink:Gene
-    object_category: biolink:Gene
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
@@ -863,51 +715,3 @@ signaling pathway gene group:
   kgx_properties:
     category: biolink:Pathway
 
-so subclass of:
-  is_a: subclass of
-  inherit_properties: true
-  represented_as: edge
-  input_label: so_subclass_of
-  output_label: is_a
-  biolink_predicate: biolink:subclass_of
-  source: sequence type
-  target: sequence type
-  kgx_properties:
-    subject_category: biolink:OntologyClass
-    object_category: biolink:OntologyClass
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-structural_variant overlaps feature:
-  is_a: association
-  biolink_predicate: biolink:overlaps
-  represented_as: edge
-  input_label: structural_variant_overlaps_feature
-  output_label: overlaps
-  source: structural variant
-  target: biological entity
-  kgx_properties:
-    subject_category: biolink:SequenceVariant
-    object_category: biolink:GenomicEntity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-super enhancer:
-  represented_as: node
-  input_label: super_enhancer
-  is_a: non coding element
-  mixins:
-  - biolink:RegulatoryRegion
-  biolink_category: biolink:RegulatoryRegion
-  inherit_properties: true
-  properties:
-    se_id:
-      type: str
-      biolink: id
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: biolink:RegulatoryRegion
