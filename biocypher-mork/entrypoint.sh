@@ -69,7 +69,7 @@ import_snapshot_to_server() {
         local tries=0
         while [ $tries -lt 60 ]; do
             local status
-            status=$(curl -s "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; print(json.load(sys.stdin).get('status',''))")
+            status=$(curl -s "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; print(json.load(sys.stdin).get('status', ''))" 2>/dev/null)
             if [ "$status" = "pathClear" ]; then
                 log "Server ready. Background ingestion complete."
                 return 0
@@ -118,7 +118,7 @@ export_snapshot() {
 
     # Truncate WAL only after confirmed snapshot
     local is_idle
-    is_idle=$(curl -s "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null)
+    is_idle=$(curl -s "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; print(json.load(sys.stdin).get('status', ''))" 2>/dev/null)
     if [ "$is_idle" = "pathClear" ]; then
         sync
         cat /dev/null > "$WAL_FILE" && log "SUCCESS: Snapshot persistent. WAL cleared." \
@@ -152,7 +152,7 @@ is_server_busy() {
     encoded=$(python3 -c "from urllib.parse import quote; print(quote('\$x'))")
     local status
     # Use a timeout on curl and handle non-zero exit or empty response
-    status=$(curl -sf --max-time 5 "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; try: print(json.load(sys.stdin).get('status','')) except: print('')" 2>/dev/null)
+    status=$(curl -sf --max-time 5 "$SERVER_URL/status/${encoded}" | python3 -c "import sys, json; print(json.load(sys.stdin).get('status', ''))" 2>/dev/null)
     
     if [ "$status" = "pathClear" ]; then
         return 1 
@@ -182,9 +182,13 @@ snapshot_daemon() {
 
 shutdown_handler() {
     log "Shutdown signal received. Running final export..."
-    export_snapshot || true
-    sync
-    cat /dev/null > "$WAL_FILE"
+    if export_snapshot; then
+        sync
+        cat /dev/null > "$WAL_FILE"
+        log "Final snapshot successful, WAL cleared."
+    else
+        log "WARNING: Final snapshot failed. WAL NOT cleared to prevent data loss."
+    fi
     log "Stopping MORK server..."
     kill -TERM "$SERVER_PID" 2>/dev/null || true
     wait "$SERVER_PID" 2>/dev/null || true

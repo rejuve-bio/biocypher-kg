@@ -21,14 +21,6 @@ def variables(pats):
 
 # One session per process
 requests_session = requests.Session()
-import sys
-from pathlib import Path
-# wal_client lives in the same directory as this script
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-try:
-    from wal_client import WalMORK
-except ImportError:
-    from .wal_client import WalMORK
 
 class MORK:
     """
@@ -523,7 +515,7 @@ class MORK:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if "time" in self.finalization: print(f"{self.ns.format("*")} time {monotonic() - self.t0:.6f} s")
+        if "time" in self.finalization: print(f"{self.ns.format('*')} time {monotonic() - self.t0:.6f} s")
         if "clear" in self.finalization: self.clear().block()
         if "spin_down" in self.finalization:
             try: self.spin_down()

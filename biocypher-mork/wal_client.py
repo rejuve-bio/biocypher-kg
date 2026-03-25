@@ -77,8 +77,15 @@ class WalMORK:
     def paths_import(self, pattern, template, file_uri):
         # tee .metta sibling if it exists
         if file_uri.startswith("file://"):
-            m_path = file_uri.replace(".paths", ".metta")[len("file://"):]
-            if os.path.exists(m_path):
+            m_path = unquote(file_uri.replace(".paths", ".metta")[len("file://"):])
+            # Handle host/container path translation
+            host_m_path = m_path
+            clean_path = m_path.replace("//", "/")
+            if clean_path.startswith("/app/data") and self.host_data_dir:
+                suffix = clean_path[len("/app/data"):].lstrip("/")
+                host_m_path = str(Path(self.host_data_dir) / suffix)
+            
+            if os.path.exists(host_m_path):
                 self._wal_append_file("file://" + m_path)
             else:
                 self._wal_append_file(file_uri)
@@ -86,6 +93,18 @@ class WalMORK:
 
     def clear(self):
         self._wal_append(";; CLEAR ALL\n")
+        # Truncate the WAL so that operations prior to this clear()
+        # are not replayed during crash recovery.
+        with self._wal_lock:
+            try:
+                with open(self.wal_path, "w", encoding="utf-8") as f:
+                    f.truncate(0)
+                    f.flush()
+                    if self.sync_writes:
+                        os.fsync(f.fileno())
+                print(f"[WalMORK] WAL truncated due to clear() operation.")
+            except Exception as e:
+                print(f"[WalMORK] WARNING: could not truncate WAL on clear: {e}")
         return self._mork.clear()
 
     def work_at(self, *args, **kwargs):

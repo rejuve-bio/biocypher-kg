@@ -24,7 +24,7 @@ def get_user_input():
     
     # Get MORK port
     while True:
-        mork_port_input = input("Enter MORK server port (default: 8080): ").strip()
+        mork_port_input = input("Enter MORK server port (default: 8027): ").strip()
         if not mork_port_input:
             mork_port = 8027
             break
@@ -149,8 +149,8 @@ def load_metta_dataset(dataset_path, mork_port, space, clear_before_load=True):
                 
                 # Construct path for server (inside container)
                 # We avoid .as_uri() here because MORK doesn't automatically decode percent-encoded colons
-                if abs_path.startswith(abs_dataset_path):
-                    container_path = "/app/data/" + abs_path[len(abs_dataset_path):].lstrip("/")
+                if Path(abs_path).is_relative_to(Path(abs_dataset_path)):
+                    container_path = "/app/data/" + str(Path(abs_path).relative_to(Path(abs_dataset_path))).lstrip("/")
                     file_url = f"file://{container_path}"
                 else:
                     file_url = path_obj.resolve().as_uri()

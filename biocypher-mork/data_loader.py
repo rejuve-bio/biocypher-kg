@@ -20,8 +20,9 @@ def connect_to_mork(host="localhost", port=None):
     )
     wal_path = os.path.join(persist_dir, "wal.metta")
 
+    base_client = MORK(f"http://{host}:{port}")
     server = WalMORK(
-        base_url=f"http://{host}:{port}",
+        base_client,
         wal_path=wal_path,
         sync_writes=True,
     )

@@ -19,7 +19,6 @@ services:
       - SNAPSHOT_DIR=/app/persist
       - SNAPSHOT_INTERVAL_SECONDS=${SNAPSHOT_INTERVAL_SECONDS:-300}
       - MORK_URL=http://127.0.0.1:8027
-      - MORK_PERSIST_CONTAINER_PATH=/app/persist/snapshot.metta
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8027/status/-"]
