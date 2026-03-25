@@ -206,6 +206,23 @@ cell line:
   kgx_properties:
     category: biolink:CellLine
 
+cell line is a cell type:
+  is_a: subclass of
+  biolink_predicate: biolink:subclass_of
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_line_is_a_cell_type
+  output_label: is_a
+  kgx_properties:
+    subject_category: biolink:CellLine
+    object_category: biolink:Cell
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  description: Cross-ontology relation linking a Cell Line Ontology (CLO) term to
+    a Cell Ontology (CL) term.
+  source: cell line
+  target: cell type
+
 cell type:
   is_a: ontology term
   represented_as: node
@@ -216,6 +233,22 @@ cell type:
   inherit_properties: true
   kgx_properties:
     category: biolink:Cell
+
+cell type part of tissue:
+  is_a: part of
+  biolink_predicate: biolink:part_of
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_type_part_of_tissue
+  output_label: part_of
+  kgx_properties:
+    subject_category: biolink:Cell
+    object_category: biolink:AnatomicalEntity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  description: Cross-ontology relation linking a CL cell type to a BTO tissue term.
+  source: cell type
+  target: tissue
 
 cellular component:
   is_a: ontology term
@@ -509,6 +542,17 @@ coding element:
   kgx_properties:
     category: biolink:GenomicEntity
 
+developmental stage:
+  is_a: ontology term
+  represented_as: node
+  input_label: developmental_stage
+  mixins:
+  - biolink:LifeStage
+  biolink_category: biolink:LifeStage
+  inherit_properties: true
+  kgx_properties:
+    category: biolink:LifeStage
+
 disease:
   is_a: ontology term
   represented_as: node
@@ -519,6 +563,21 @@ disease:
   inherit_properties: true
   kgx_properties:
     category: biolink:Disease
+
+do subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: do_subclass_of
+  output_label: is_a
+  biolink_predicate: biolink:subclass_of
+  source: disease
+  target: disease
+  kgx_properties:
+    subject_category: biolink:Disease
+    object_category: biolink:Disease
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
 
 efo subclass of:
   is_a: subclass of
@@ -780,6 +839,20 @@ expression:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
+feature overlaps structural_variant:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: feature_overlaps_structural_variant
+  output_label: overlaps
+  source: biological entity
+  target: structural variant
+  kgx_properties:
+    subject_category: biolink:GenomicEntity
+    object_category: biolink:SequenceVariant
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 gene:
   represented_as: node
   preferred_id: ensemble
@@ -827,6 +900,41 @@ gene in tad region:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
+gene overlaps structural_variant:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: gene_overlaps_structural_variant
+  output_label: overlaps
+  source: gene
+  target: structural variant
+
+gene to disease association:
+  description: An association between a gene and a disease identifier (e.g., OMIM,
+    ORPHA).
+  is_a: association
+  mixins:
+  - biolink:GeneToDiseaseAssociation
+  biolink_predicate: biolink:associated_with
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_disease
+  output_label: associated_with
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: biolink:Gene
+    object_category: biolink:Disease
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    gene_symbol:
+      type: str
+    association_type:
+      type: str
+    source_ref:
+      type: str
+
 gene to gene coexpression association:
   description: Indicates that two genes are co-expressed, generally under the same
     conditions.
@@ -864,11 +972,8 @@ gene to pathway association:
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
-  output_label: participates_in
-  source:
-  - gene
-  - transcript
-  - protein
+  # output_label: participates_in
+  source: biolink:GeneOrGeneProduct # [gene, transcript, protein]
   target: pathway
   pathway_url:
     type: str
@@ -878,6 +983,33 @@ gene to pathway association:
     object_category: biolink:Pathway
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
+
+gene to phenotype association:
+  description: An association between a gene and a phenotype (HPO term).
+  is_a: association
+  mixins:
+  - biolink:GeneToPhenotypicFeatureAssociation
+  biolink_predicate: biolink:has_phenotype
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_phenotype
+  output_label: involved_in
+  source: gene
+  target: phenotype
+  kgx_properties:
+    subject_category: biolink:Gene
+    object_category: biolink:PhenotypicFeature
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    gene_symbol:
+      type: str
+    phenotype_name:
+      type: str
+    frequency:
+      type: str
+    disease_id:
+      type: str
 
 gene to reaction association:
   description: An interaction between a gene or a gene product (gogp) and a reaction
@@ -1066,6 +1198,21 @@ input role protein to reaction or pathway association:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
+mi subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: mi_subclass_of
+  output_label: is_a
+  biolink_predicate: biolink:subclass_of
+  source: molecular interaction
+  target: molecular interaction
+  kgx_properties:
+    subject_category: biolink:OntologyClass
+    object_category: biolink:OntologyClass
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 molecular function:
   is_a: ontology term
   represented_as: node
@@ -1231,6 +1378,34 @@ non coding element:
   kgx_properties:
     category: biolink:RNAProduct
 
+non coding rna:
+  represented_as: node
+  input_label: non_coding_rna
+  is_a: non coding element
+  mixins:
+  - biolink:RNAProduct
+  biolink_category: biolink:RNAProduct
+  inherit_properties: true
+  properties:
+    rna_type:
+      type: str
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: biolink:RNAProduct
+
+non_coding_rna overlaps structural_variant:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: non_coding_rna_overlaps_structural_variant
+  output_label: overlaps
+  source: non_coding_rna
+  target: structural variant
+
 ontology term:
   is_a: ontology class
   mixins:
@@ -1265,6 +1440,51 @@ ontology term:
   kgx_properties:
     category: biolink:OntologyClass
 
+# This was written for dmel  data, but could be used for other species. Perhaps it might be 'redefined' in the future.
+# Or it may be redfined (overhidden, extended) to be compliant with data for other species.
+orthology association:
+  description: "Non-directional association between two genes indicating that there\
+    \ is an orthology relation among them:  \u201CHistorical homology that involves\
+    \ genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)\""
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: orthologs_genes
+  biolink_predicate: biolink:ortholog_of
+  source: gene
+  target: gene
+  properties:
+    DIOPT_score:
+      type: int
+      biolink: has_quantitative_value
+    hsa_hgnc_id:
+      type: str
+      biolink: id
+    hsa_omim_id:
+      type: str
+      biolink: id
+    hsa_omim_phenotype_ids:
+      type: str
+      biolink: has_phenotype
+    hsa_omim_phenotype_ids_names:
+      type: str
+      biolink: has_phenotype_label
+    source_organism:
+      type: str
+      biolink: in_taxon
+    target_organism:
+      type: str
+      biolink: in_taxon
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    subject_category: biolink:Gene
+    object_category: biolink:Gene
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 output role protein to reaction or pathway association:
   is_a: annotation
   biolink_predicate: biolink:produced_by
@@ -1279,6 +1499,39 @@ output role protein to reaction or pathway association:
   kgx_properties:
     subject_category: biolink:Protein
     object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+# This was written for dmel  data, but could be used for other species. Perhaps it might be 'redefined' in the future.
+# Or it may be redefined (overhidden, extended) to be compliant with data for other species.
+paralogy association:
+  description: ''
+  Non-directional association between two genes indicating that there is an paralogy relation among them: "\u201C\
+    Historical homology that involves genes that diverged after a duplication event\
+    \ (http://purl.obolibrary.org/obo/RO_HOM0000011)\""
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: paralogs_genes
+  biolink_predicate: biolink:paralog_of
+  source: gene
+  target: gene
+  properties:
+    source_symbol:
+      type: str
+      biolink: symbol
+    target_symbol:
+      type: str
+      biolink: symbol
+    DIOPT_score:
+      type: int
+      biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    subject_category: biolink:Gene
+    object_category: biolink:Gene
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
@@ -1471,6 +1724,15 @@ promoter:
       range: biolink:OrganismTaxon
   kgx_properties:
     category: biolink:RegulatoryRegion
+
+promoter overlaps structural_variant:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: promoter_overlaps_structural_variant
+  output_label: overlaps
+  source: promoter
+  target: structural variant
 
 promoter to gene association:
   description: An association between a promoter and a gene
@@ -1811,6 +2073,21 @@ sequence type:
   kgx_properties:
     category: biolink:OntologyClass
 
+sequence type subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: so_subclass_of
+  output_label: is_a
+  biolink_predicate: biolink:subclass_of
+  source: sequence type
+  target: sequence type
+  kgx_properties:
+    subject_category: biolink:OntologyClass
+    object_category: biolink:OntologyClass
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 sequence variant:
   represented_as: node
   input_label: sequence_variant
@@ -1915,6 +2192,47 @@ structural variant:
       range: biolink:OrganismTaxon
   kgx_properties:
     category: biolink:SequenceVariant
+
+structural_variant overlaps feature:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: structural_variant_overlaps_feature
+  output_label: overlaps
+  source: structural variant
+  target: biological entity
+  kgx_properties:
+    subject_category: biolink:SequenceVariant
+    object_category: biolink:GenomicEntity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+structural_variant overlaps gene:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: structural_variant_overlaps_gene
+  output_label: overlaps
+  source: structural variant
+  target: gene
+
+structural_variant overlaps non_coding_rna:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: structural_variant_overlaps_non_coding_rna
+  output_label: overlaps
+  source: structural variant
+  target: non_coding_rna
+
+structural_variant overlaps promoter:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: structural_variant_overlaps_promoter
+  output_label: overlaps
+  source: structural variant
+  target: promoter
 
 subclass of:
   is_a: annotation
