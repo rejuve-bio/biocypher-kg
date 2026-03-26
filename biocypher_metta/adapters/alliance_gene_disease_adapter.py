@@ -42,18 +42,23 @@ ASSOCIATION_TYPE_MAP = {
 
 
 class AllianceGeneDiseaseAdapter(Adapter):
-    def __init__(self, filepath, taxon_ids=None, write_properties=None, add_provenance=None):
+    def __init__(self, filepath, label, taxon_id, write_properties=None, add_provenance=None):
         """
         Constructs Alliance gene-disease adapter.
         
         :param filepath: Path to DISEASE-ALLIANCE_COMBINED.tsv.gz file
-        :param taxon_ids: List of NCBI taxon IDs to include (e.g., [9606] for human).
-                         If None, includes all species.
+        :param label: One of the supported association types:
+                      - biomarker_via_orthology
+                      - implicated_via_orthology
+                      - is_implicated_in
+                      - is_model_of
+        :param taxon_id: NCBI taxon ID (e.g., '9606' for human).
         :param write_properties: Whether to write edge properties
         :param add_provenance: Whether to add provenance information
         """
         self.filepath = filepath
-        self.taxon_ids = taxon_ids
+        self.label = label
+        self.taxon_id = str(taxon_id)
         self.source = "Alliance for Genome Resources"
         self.source_url = "https://www.alliancegenome.org/"
         self.version = "latest"
@@ -65,10 +70,13 @@ class AllianceGeneDiseaseAdapter(Adapter):
         Yields edges between genes and diseases.
         
         Filters by:
-        - Taxon IDs (if specified)
-        - Association types (only the four supported types)
+        - Label (association type)
+        - Taxon ID
         - Gene objects (DBobjectType == 'gene')
         """
+        if self.label not in ASSOCIATION_TYPE_MAP:
+            raise ValueError(f"Invalid label: {self.label}. Must be one of {list(ASSOCIATION_TYPE_MAP.keys())}")
+
         with gzip.open(self.filepath, "rt") as fp:
             reader = csv.reader(fp, delimiter="\t")
             
@@ -76,17 +84,17 @@ class AllianceGeneDiseaseAdapter(Adapter):
                 if not row or row[0].startswith("#"):
                     continue
                 
-                taxon = row[COLUMNS['taxon']]
+                taxon = row[COLUMNS['taxon']].replace("NCBITaxon:", "")
                 db_object_type = row[COLUMNS['db_object_type']]
                 association_type = row[COLUMNS['association_type']]
                 
-                if self.taxon_ids and taxon not in self.taxon_ids:
+                if taxon != self.taxon_id:
                     continue
                 
                 if db_object_type != 'gene':
                     continue
                 
-                if association_type not in ASSOCIATION_TYPE_MAP:
+                if association_type != self.label:
                     continue
                 
                 db_object_id = row[COLUMNS['db_object_id']]
@@ -106,12 +114,12 @@ class AllianceGeneDiseaseAdapter(Adapter):
                 # Create edge
                 _source = ("gene", db_object_id)
                 _target = ("disease", doid)
-                _label = ASSOCIATION_TYPE_MAP[association_type]
+                _label = self.label
                 _props = {}
                 
                 if self.write_properties:
                     _props = {
-                        "taxon_id": int(taxon.replace("NCBITaxon:", "")),
+                        "taxon_id": int(taxon),
                         "species_name": species_name,
                         "gene_symbol": db_object_symbol,
                         "disease_name": do_term_name,
