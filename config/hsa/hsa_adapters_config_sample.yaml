@@ -622,18 +622,18 @@ gtex_expression:
   nodes: False
   edges: True
 
-hocomoco:
-  adapter:
-    module: biocypher_metta.adapters.hocomoco_motif_adapter
-    cls: HoCoMoCoMotifAdapter
-    args:
-      filepath: ./samples/hsa/motifs
-      annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-      label: motif
-      taxon_id: 9606      
-  outdir: hocomoco
-  nodes: True
-  edges: False
+# hocomoco:
+#   adapter:
+#     module: biocypher_metta.adapters.hocomoco_motif_adapter
+#     cls: HoCoMoCoMotifAdapter
+#     args:
+#       filepath: ./samples/hsa/motifs
+#       annotation_file: ./samples/hsa/motifs/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+#       label: motif
+#       taxon_id: 9606      
+#   outdir: hocomoco
+#   nodes: True
+#   edges: False
 
 roadmap_chromatin_state:
   adapter:
@@ -1718,5 +1718,18 @@ uniprot_chebi_part_of_chebi:
       taxon_id: 9606
       dbxref: CHEBI
   outdir: uniprot/chebi_part_of
+  nodes: False
+  edges: True
+
+
+alliance_gene_disease_mouse:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: "10090"  
+      label: "biomarker_via_orthology"
+  outdir: alliance/gene_disease_mouse
   nodes: False
   edges: True
