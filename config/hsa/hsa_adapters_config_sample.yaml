@@ -1708,16 +1708,3 @@ uniprot_chebi_part_of_chebi:
   outdir: uniprot/chebi_part_of
   nodes: False
   edges: True
-
-
-alliance_gene_disease_mouse:
-  adapter:
-    module: biocypher_metta.adapters.alliance_gene_disease_adapter
-    cls: AllianceGeneDiseaseAdapter
-    args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: "10090"  
-      label: "biomarker_via_orthology"
-  outdir: alliance/gene_disease_mouse
-  nodes: False
-  edges: True
