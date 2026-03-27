@@ -2581,3 +2581,174 @@ structural_variant overlaps promoter:
   output_label: overlaps
   source: structural variant
   target: promoter
+
+gene_biomarker_via_orthology_disease:
+  description: >-
+    A gene is a biomarker for a disease via orthology relationship.
+    From Alliance for Genome Resources.
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:biomarker_for"
+  inherit_properties: true
+  represented_as: edge
+  input_label: biomarker_via_orthology
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+gene_implicated_via_orthology_disease:
+  description: >-
+    A gene is implicated in a disease via orthology relationship.
+    From Alliance for Genome Resources.
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:implicated_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: implicated_via_orthology
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+gene_is_implicated_in_disease:
+  description: >-
+    A gene is implicated in a disease.
+    From Alliance for Genome Resources.
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:implicated_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: is_implicated_in
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+gene_to_disease_model_association:
+  description: >-
+    Gene is a model for disease
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:model_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: is_model_of
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
