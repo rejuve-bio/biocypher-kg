@@ -602,6 +602,21 @@ disease:
   kgx_properties:
     category: "biolink:Disease"
 
+do subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: do_subclass_of
+  output_label: is_a
+  biolink_predicate: "biolink:subclass_of"
+  source: disease
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Disease"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
 #chebi
 small molecule:
   is_a: ontology term
@@ -2710,6 +2725,49 @@ gene_is_implicated_in_disease:
       type: string
     inferred_from_symbol:
       type: string
+
+gene_to_disease_marker_association:
+  description: >-
+    Gene is a marker for a disease
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:model_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: is_marker_for
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
 
 gene_to_disease_model_association:
   description: >-

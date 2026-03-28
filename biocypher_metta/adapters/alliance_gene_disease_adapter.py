@@ -5,10 +5,12 @@
 # - implicated_via_orthology
 # - is_implicated_in
 # - is_model_of
+# - is_marker_for
 
 import gzip
 import csv
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import HGNCProcessor
 
 # Column indices for the TSV file
 COLUMNS = {
@@ -38,6 +40,7 @@ ASSOCIATION_TYPE_MAP = {
     'implicated_via_orthology': 'implicated_via_orthology',
     'is_implicated_in': 'is_implicated_in',
     'is_model_of': 'is_model_of',
+    'is_marker_for': 'is_marker_for',
 }
 
 
@@ -59,6 +62,9 @@ class AllianceGeneDiseaseAdapter(Adapter):
         self.filepath = filepath
         self.label = label
         self.taxon_id = str(taxon_id)
+        self.hgnc_processor = None
+        if self.taxon_id == "9606":
+            self.hgnc_processor = HGNCProcessor()
         self.source = "Alliance for Genome Resources"
         self.source_url = "https://www.alliancegenome.org/"
         self.version = "latest"
@@ -110,9 +116,13 @@ class AllianceGeneDiseaseAdapter(Adapter):
                 with_ortholog = row[COLUMNS['with_ortholog']]
                 inferred_from_id = row[COLUMNS['inferred_from_id']]
                 inferred_from_symbol = row[COLUMNS['inferred_from_symbol']]
-                    
+                
                 # Create edge
-                _source = ("gene", db_object_id)
+                if self.taxon_id == "9606":
+                    ensembl_id = self.hgnc_processor.get_ensembl_id(db_object_id)
+                    _source = ("gene", ensembl_id)
+                else:
+                    _source = ("gene", db_object_id)
                 _target = ("disease", doid)
                 _label = self.label
                 _props = {}
