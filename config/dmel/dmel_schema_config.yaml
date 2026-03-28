@@ -434,25 +434,6 @@ promoter:
   kgx_properties:
     category: "biolink:RegulatoryRegion"
 
-super enhancer:
-  represented_as: node
-  input_label: super_enhancer
-  is_a: non coding element
-  mixins: [biolink:RegulatoryRegion]
-  biolink_category: "biolink:RegulatoryRegion"
-  inherit_properties: true
-  properties:
-    se_id:
-      type: str
-      biolink: id
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: "biolink:RegulatoryRegion"
-
 non coding rna:
   represented_as: node
   input_label: non_coding_rna
@@ -753,6 +734,84 @@ experimental factor:
   inherit_properties: true
   kgx_properties:
     category: "biolink:OntologyClass"
+
+tissue:
+  is_a: ontology term
+  mixins:
+  - biolink:AnatomicalEntity
+  biolink_category: biolink:AnatomicalEntity
+  represented_as: node
+  input_label: tissue
+  inherit_properties: true
+  kgx_properties:
+    category: biolink:AnatomicalEntity
+
+bto subclass of:
+  is_a: subclass of
+  mixins: [biolink:AnatomicalEntityToAnatomicalEntityAssociation]
+  biolink_predicate: "biolink:subclass_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: bto_subclass_of
+  output_label: is_a
+  source: tissue
+  target: tissue
+  kgx_properties:
+    subject_category: "biolink:AnatomicalEntity"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+cell line is a cell type:
+  is_a: subclass of
+  biolink_predicate: "biolink:subclass_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_line_is_a_cell_type
+  output_label: is_a
+  kgx_properties:
+    subject_category: "biolink:CellLine"
+    object_category: "biolink:Cell"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a Cell Line Ontology (CLO) term to a Cell Ontology (CL) term.
+  source: cell line
+  target: cell type
+
+cell type part of tissue:
+  is_a: part of
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_type_part_of_tissue
+  output_label: part_of
+  kgx_properties:
+    subject_category: "biolink:Cell"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a CL cell type to a BTO tissue term.
+  source: cell type
+  target: tissue
+
+tissue part of anatomy:
+  is_a: part of
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: tissue_part_of_anatomy
+  output_label: part_of
+  kgx_properties:
+    subject_category: "biolink:AnatomicalEntity"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a BRENDA Tissue Ontology (BTO) term to an UBERON anatomy term.
+  source: tissue
+  target: anatomy
 
 motif:
   represented_as: node
@@ -2266,6 +2325,77 @@ gene to metabolic pathway group association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+
+pathway to biological process:
+  is_a: association
+  biolink_predicate: biolink:participates_in
+  source: pathway
+  target: biological process
+  represented_as: edge
+  input_label: pathway_to_biological_process
+  output_label: equivalent_to
+  description: An association between a pathway and a biological process, indicating
+    that the pathway is involved in the process.
+  properties:
+    pathway_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: biological process
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+  kgx_properties:
+    subject_category: biolink:Pathway
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+pathway to cellular component:
+  is_a: association
+  source: pathway
+  target: cellular component
+  biolink_predicate: biolink:related_to
+  represented_as: edge
+  input_label: pathway_to_cellular_component
+  description: An association between a pathway and a cellular component, indicating
+    that the pathway is associated with the component.
+  properties:
+    pathway_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: cellular component
+  kgx_properties:
+    subject_category: biolink:Pathway
+    object_category: biolink:CellularComponent
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+pathway to molecular function:
+  is_a: association
+  source: pathway
+  target: molecular function
+  biolink_predicate: biolink:related_to
+  represented_as: edge
+  input_label: pathway_to_molecular_function
+  description: An association between a pathway and a molecular function, indicating
+    that the pathway is involved in the function.
+  properties:
+    pathway_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: molecular function
+  kgx_properties:
+    subject_category: biolink:Pathway
+    object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 allele to gene association:
   is_a: annotation
   inherit_properties: true
@@ -2580,6 +2710,59 @@ structural_variant overlaps feature:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+gene overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: gene_overlaps_structural_variant
+  output_label: overlaps
+  source: gene
+  target: structural variant
+
+structural_variant overlaps gene:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_gene
+  output_label: overlaps
+  source: structural variant
+  target: gene
+
+non_coding_rna overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: non_coding_rna_overlaps_structural_variant
+  output_label: overlaps
+  source: non_coding_rna
+  target: structural variant
+
+structural_variant overlaps non_coding_rna:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_non_coding_rna
+  output_label: overlaps
+  source: structural variant
+  target: non_coding_rna
+
+promoter overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: promoter_overlaps_structural_variant
+  output_label: overlaps
+  source: promoter
+  target: structural variant
+
+structural_variant overlaps promoter:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_promoter
+  output_label: overlaps
+  source: structural variant
+  target: promoter
 
 # ---
 # regulatory association (edges)
@@ -2852,7 +3035,6 @@ exon part_of transcript:
     object_category: "biolink:Exon"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-
 
 orthology association:
   description: >-
