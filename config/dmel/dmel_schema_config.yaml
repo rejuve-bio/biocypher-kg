@@ -715,7 +715,6 @@ cell line:
   is_a: ontology term
   represented_as: node
   input_label: cell_line
-  # output_label: cell_line
   mixins: [biolink:CellLine]
   biolink_category: "biolink:CellLine"
   inherit_properties: true
@@ -727,7 +726,6 @@ cell type:
   is_a: ontology term
   represented_as: node
   input_label: cell_type
-  # output_label: cell_type
   mixins: [biolink:Cell]
   biolink_category: "biolink:Cell"
   inherit_properties: true
@@ -739,20 +737,17 @@ experimental factor:
   is_a: ontology term
   represented_as: node
   input_label: experimental_factor
-  # output_label: experimental_factor
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
   inherit_properties: true
   kgx_properties:
     category: "biolink:OntologyClass"
 
-
 # Experimental Factor Ontology
 experimental factor:
   is_a: ontology term
   represented_as: node
   input_label: experimental_factor
-  # output_label: experimental_factor
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
   inherit_properties: true
@@ -831,7 +826,6 @@ molecular interaction:
   is_a: ontology term
   represented_as: node
   input_label: molecular_interaction
-  # output_label: molecular_interaction
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
   inherit_properties: true
@@ -843,7 +837,6 @@ sequence type:
   is_a: ontology term
   represented_as: node
   input_label: sequence_type
-  # output_label: sequence_type
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
   inherit_properties: true
@@ -855,7 +848,6 @@ disease:
   is_a: ontology term
   represented_as: node
   input_label: disease
-  # output_label: disease
   mixins: [biolink:Disease]
   biolink_category: "biolink:Disease"
   inherit_properties: true
@@ -866,7 +858,6 @@ small molecule:
   is_a: ontology term
   represented_as: node
   input_label: small_molecule
-  # output_label: small_molecule
   mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
@@ -878,7 +869,6 @@ developmental stage:
   is_a: ontology term
   represented_as: node
   input_label: developmental_stage
-  # output_label: developmental_stage
   mixins: [biolink:LifeStage]
   biolink_category: "biolink:LifeStage"
   inherit_properties: true
@@ -890,7 +880,6 @@ anatomy:
   is_a: ontology term
   represented_as: node
   input_label: anatomy
-  # output_label: anatomy
   mixins: [biolink:AnatomicalEntity]
   biolink_category: "biolink:AnatomicalEntity"
   inherit_properties: true
@@ -908,6 +897,60 @@ phenotype:
   inherit_properties: true
   kgx_properties:
     category: "biolink:OntologyClass"
+
+
+
+gene to phenotype association:
+  description: >-
+    An association between a gene and a phenotype (HPO term).
+  is_a: association
+  mixins: [biolink:GeneToPhenotypicFeatureAssociation]
+  biolink_predicate: "biolink:has_phenotype"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_phenotype
+  output_label: involved_in #has_phenotype
+  source: gene
+  target: phenotype
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:PhenotypicFeature"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    phenotype_name:
+      type: str
+    frequency:
+      type: str
+    disease_id:
+      type: str
+
+gene to disease association:
+  description: >-
+    An association between a gene and a disease identifier (e.g., OMIM, ORPHA).
+  is_a: association
+  mixins: [biolink:GeneToDiseaseAssociation]
+  biolink_predicate: "biolink:associated_with"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_disease
+  output_label: associated_with
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    association_type:
+      type: str
+    source_ref:
+      type: str
 
 # ---
 # 3D genome structures
@@ -3089,7 +3132,7 @@ chemical_substance part_of chemical_substance:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-gene_biomarker_via_orthology_disease:
+gene biomarker via orthology disease:
   description: >-
     A gene is a biomarker for a disease via orthology relationship.
     From Alliance for Genome Resources.
@@ -3132,7 +3175,7 @@ gene_biomarker_via_orthology_disease:
     inferred_from_symbol:
       type: string
 
-gene_implicated_via_orthology_disease:
+gene implicated via orthology disease:
   description: >-
     A gene is implicated in a disease via orthology relationship.
     From Alliance for Genome Resources.
@@ -3175,7 +3218,7 @@ gene_implicated_via_orthology_disease:
     inferred_from_symbol:
       type: string
 
-gene_is_implicated_in_disease:
+gene is implicated in disease:
   description: >-
     A gene is implicated in a disease.
     From Alliance for Genome Resources.
@@ -3218,7 +3261,7 @@ gene_is_implicated_in_disease:
     inferred_from_symbol:
       type: string
 
-gene_to_disease_marker_association:
+gene to disease marker association:
   description: >-
     Gene is a marker for a disease
   is_a: association
@@ -3260,7 +3303,8 @@ gene_to_disease_marker_association:
     inferred_from_symbol:
       type: string
 
-gene_to_disease_model_association:
+
+gene to disease model association:
   description: >-
     Gene is a model for disease
   is_a: association

@@ -591,6 +591,21 @@ sequence type:
   kgx_properties:
     category: "biolink:OntologyClass"
 
+so subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: so_subclass_of
+  output_label: is_a
+  biolink_predicate: "biolink:subclass_of"
+  source: sequence type
+  target: sequence type
+  kgx_properties:
+    subject_category: "biolink:OntologyClass"
+    object_category: "biolink:OntologyClass"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
 # disease ontology (DO) 
 disease:
   is_a: ontology term
@@ -2490,6 +2505,7 @@ chemical_substance part_of chemical_substance:
     object_category: "biolink:ChemicalEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
 gene to phenotype association:
   description: >-
     An association between a gene and a phenotype (HPO term).
@@ -2516,7 +2532,6 @@ gene to phenotype association:
       type: str
     disease_id:
       type: str
-
 
 gene to disease association:
   description: >-
@@ -2597,7 +2612,7 @@ structural_variant overlaps promoter:
   source: structural variant
   target: promoter
 
-gene_biomarker_via_orthology_disease:
+gene biomarker via orthology disease:
   description: >-
     A gene is a biomarker for a disease via orthology relationship.
     From Alliance for Genome Resources.
@@ -2640,7 +2655,7 @@ gene_biomarker_via_orthology_disease:
     inferred_from_symbol:
       type: string
 
-gene_implicated_via_orthology_disease:
+gene implicated via orthology disease:
   description: >-
     A gene is implicated in a disease via orthology relationship.
     From Alliance for Genome Resources.
@@ -2683,7 +2698,7 @@ gene_implicated_via_orthology_disease:
     inferred_from_symbol:
       type: string
 
-gene_is_implicated_in_disease:
+gene is implicated in disease:
   description: >-
     A gene is implicated in a disease.
     From Alliance for Genome Resources.
@@ -2726,7 +2741,7 @@ gene_is_implicated_in_disease:
     inferred_from_symbol:
       type: string
 
-gene_to_disease_marker_association:
+gene to disease marker association:
   description: >-
     Gene is a marker for a disease
   is_a: association
@@ -2768,8 +2783,7 @@ gene_to_disease_marker_association:
     inferred_from_symbol:
       type: string
 
-
-gene_to_disease_model_association:
+gene to disease model association:
   description: >-
     Gene is a model for disease
   is_a: association
