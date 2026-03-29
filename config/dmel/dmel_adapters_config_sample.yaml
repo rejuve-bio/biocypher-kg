@@ -314,6 +314,7 @@ allele:
   nodes: True
   edges: False
 
+
 dmel_allele_to_gene:
   adapter:
     module: biocypher_metta.adapters.dmel.allele_adapter
@@ -325,6 +326,7 @@ dmel_allele_to_gene:
   nodes: False
   edges: True
 
+
 dmel_gene_genetic_adapter:
     adapter:
         module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter
@@ -334,6 +336,7 @@ dmel_gene_genetic_adapter:
     outdir: flybase/gene_genetic
     nodes: False
     edges: True
+
 
 dmel_allele_to_allele_genetic_interaction_adapter:
     adapter:
@@ -347,6 +350,8 @@ dmel_allele_to_allele_genetic_interaction_adapter:
     nodes: False
     edges: True
 
+
+
 dmel_expressed_in:
   adapter:
     module: biocypher_metta.adapters.dmel.expressed_in_adapter
@@ -356,6 +361,7 @@ dmel_expressed_in:
   outdir: expressed_in
   nodes: False
   edges: True
+
 
 RNASeq_library:
   adapter:
@@ -1211,7 +1217,7 @@ chebi_chebi_subclass_of:
   outdir: small_molecule
   nodes: False
   edges: True
-
+ 
 
 epd_promoter_dmel:
   adapter:
@@ -1238,5 +1244,65 @@ epd_promoter_regulates_gene_dmel:
       type: promoter_gene
       taxon_id: 7227
   outdir: epd
+  nodes: False
+  edges: True
+
+alliance_gene_disease_biomarker_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: biomarker_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_implicated_via_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: implicated_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_implicated_in:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_implicated_in
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_model_of:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_model_of
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_marker_for:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_marker_for
+  outdir: disease
   nodes: False
   edges: True

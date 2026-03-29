@@ -18,7 +18,8 @@ hsa:
   full:
     adapters_config: config/hsa/hsa_adapters_config.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    # dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    # dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
     dbsnp_rsids: /mnt/hdd_1/abdu/dbsnp/dbsnp_rsids.pkl
     dbsnp_pos: /mnt/hdd_1/abdu/dbsnp/dbsnp_pos.pkl
 
@@ -32,9 +33,7 @@ dmel:
     adapters_config: config/dmel/dmel_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
     dbsnp_cache_dir: ""
-    dbsnp_rsids: /mnt/hdd_1/abdu/dbsnp/dbsnp_rsids.pkl
-    dbsnp_pos: /mnt/hdd_1/abdu/dbsnp/dbsnp_pos.pkl
-    
+
 cel:
   full:
     adapters_config: config/cel/cel_adapters_config.yaml

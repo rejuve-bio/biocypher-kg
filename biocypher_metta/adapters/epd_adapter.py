@@ -25,7 +25,7 @@ from biocypher._logger import logger
 # chr2L 59231 59291 Cda5_1 900 - 59231 59242
 
 # CEL data:
-# 
+# https://epd.expasy.org/ftp/epdnew/C_elegans/current/
 
 # Mouse data:
 # https://epd.expasy.org/ftp/epdnew/M_musculus/ 
