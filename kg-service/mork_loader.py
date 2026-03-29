@@ -73,7 +73,7 @@ class MORKVersionManager:
         print("VERSION CHECK - MORK Database")
         print("="*60)
         
-        print("\n... Calculating hashes...")
+        print("\nCalculating hashes...")
         current_hashes = self.hash_all_datasets()
         print(f"   Found {len(current_hashes)} datasets")
         
@@ -340,7 +340,7 @@ def main():
     version_info = version_manager.check_and_version()
     
     if version_info is None:
-        # No changes - SKIP loading completely
+        # no changes, skip loading
         print("\n✅ Load complete (no changes)\n")
         return
     
