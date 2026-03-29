@@ -16,7 +16,7 @@ def connect_to_mork(host="localhost", port=None):
 
     persist_dir = os.getenv(
         "SNAPSHOT_DIR",
-        str(Path(__file__).resolve().parent.parent / "mork_persist")
+        str(Path(__file__).resolve().parent / "mork_persist")
     )
     wal_path = os.path.join(persist_dir, "wal.metta")
 

@@ -8,16 +8,16 @@ class WalMORK:
     Durability layer for MORK. Tees every write to a local MeTTa file.
     Merged into the main client to provide unified persistence support.
     """
-    def __init__(self, base_mork, wal_path=None, sync_writes=True, host_data_dir=None):
+    def __init__(self, base_mork, wal_path=None, sync_writes=True, host_data_dir=None, lock=None):
         self._mork = base_mork
         if wal_path is None:
-            snapshot_dir = os.environ.get("SNAPSHOT_DIR", "mork_persist")
+            snapshot_dir = os.environ.get("SNAPSHOT_DIR", os.path.join(os.path.dirname(__file__), "mork_persist"))
             wal_path = os.path.join(snapshot_dir, "wal.metta")
         self.wal_path = Path(wal_path).resolve()
         self.wal_path.parent.mkdir(parents=True, exist_ok=True)
         self.sync_writes = sync_writes
         self.host_data_dir = host_data_dir
-        self._wal_lock = threading.Lock()
+        self._wal_lock = lock or threading.RLock()
         
     def __getattr__(self, name):
         return getattr(self._mork, name)
@@ -92,7 +92,6 @@ class WalMORK:
         return self._mork.paths_import(pattern, template, file_uri)
 
     def clear(self):
-        self._wal_append(";; CLEAR ALL\n")
         # Truncate the WAL so that operations prior to this clear()
         # are not replayed during crash recovery.
         with self._wal_lock:
@@ -102,11 +101,18 @@ class WalMORK:
                     f.flush()
                     if self.sync_writes:
                         os.fsync(f.fileno())
-                print(f"[WalMORK] WAL truncated due to clear() operation.")
+              
+                # Also truncate snapshot file if it exists to prevent old data recovery on restart
+                snapshot_path = self.wal_path.parent / "snapshot.paths"
+                if snapshot_path.exists():
+                    with open(snapshot_path, "wb") as f:
+                        f.truncate(0)
+                    print(f"[WalMORK] Snapshot file truncated to ensure persistent clear.")
+                return self._mork.clear()
             except Exception as e:
-                print(f"[WalMORK] WARNING: could not truncate WAL on clear: {e}")
-        return self._mork.clear()
+                print(f"[WalMORK] Warning: Failed to truncate persistence files on clear: {e}")
+                return self._mork.clear()
 
     def work_at(self, *args, **kwargs):
         child_mork = self._mork.work_at(*args, **kwargs)
-        return WalMORK(child_mork, wal_path=self.wal_path, sync_writes=self.sync_writes, host_data_dir=self.host_data_dir)
+        return WalMORK(child_mork, wal_path=self.wal_path, sync_writes=self.sync_writes, host_data_dir=self.host_data_dir, lock=self._wal_lock)

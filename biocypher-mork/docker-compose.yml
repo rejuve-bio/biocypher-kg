@@ -9,7 +9,7 @@ services:
     ports:
       - "${HOST_PORT:-8027}:8027"
     volumes:
-      - ./data:/app/data
+      - ${MORK_DATA_DIR:-./data}:/app/data
       - ./reports:/app/reports
       # Persistent snapshot volume — graph state survives restarts
       - ./mork_persist:/app/persist
