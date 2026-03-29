@@ -43,8 +43,8 @@ class EPDAdapter(Adapter):
         9606: 'ENSEMBL'
     }
 
-    def __init__(self, filepath, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
-                 type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None,
+    def __init__(self, filepath, label, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
+                 type='promoter', delimiter=' ', chr=None, start=None, end=None,
                  hgnc_processor=None):
         self.filepath = filepath
 

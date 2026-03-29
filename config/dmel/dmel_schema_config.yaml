@@ -434,25 +434,6 @@ promoter:
   kgx_properties:
     category: "biolink:RegulatoryRegion"
 
-super enhancer:
-  represented_as: node
-  input_label: super_enhancer
-  is_a: non coding element
-  mixins: [biolink:RegulatoryRegion]
-  biolink_category: "biolink:RegulatoryRegion"
-  inherit_properties: true
-  properties:
-    se_id:
-      type: str
-      biolink: id
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: "biolink:RegulatoryRegion"
-
 non coding rna:
   represented_as: node
   input_label: non_coding_rna
@@ -715,7 +696,6 @@ cell line:
   is_a: ontology term
   represented_as: node
   input_label: cell_line
-  # output_label: cell_line
   mixins: [biolink:CellLine]
   biolink_category: "biolink:CellLine"
   inherit_properties: true
@@ -727,7 +707,6 @@ cell type:
   is_a: ontology term
   represented_as: node
   input_label: cell_type
-  # output_label: cell_type
   mixins: [biolink:Cell]
   biolink_category: "biolink:Cell"
   inherit_properties: true
@@ -739,25 +718,100 @@ experimental factor:
   is_a: ontology term
   represented_as: node
   input_label: experimental_factor
-  # output_label: experimental_factor
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
   inherit_properties: true
   kgx_properties:
     category: "biolink:OntologyClass"
-
 
 # Experimental Factor Ontology
 experimental factor:
   is_a: ontology term
   represented_as: node
   input_label: experimental_factor
-  # output_label: experimental_factor
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass" # Changed from Biolink:NamedThing in hsa as it's an OntologyClass
   inherit_properties: true
   kgx_properties:
     category: "biolink:OntologyClass"
+
+tissue:
+  is_a: ontology term
+  mixins:
+  - biolink:AnatomicalEntity
+  biolink_category: biolink:AnatomicalEntity
+  represented_as: node
+  input_label: tissue
+  inherit_properties: true
+  kgx_properties:
+    category: biolink:AnatomicalEntity
+
+bto subclass of:
+  is_a: subclass of
+  mixins: [biolink:AnatomicalEntityToAnatomicalEntityAssociation]
+  biolink_predicate: "biolink:subclass_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: bto_subclass_of
+  output_label: is_a
+  source: tissue
+  target: tissue
+  kgx_properties:
+    subject_category: "biolink:AnatomicalEntity"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+cell line is a cell type:
+  is_a: subclass of
+  biolink_predicate: "biolink:subclass_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_line_is_a_cell_type
+  output_label: is_a
+  kgx_properties:
+    subject_category: "biolink:CellLine"
+    object_category: "biolink:Cell"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a Cell Line Ontology (CLO) term to a Cell Ontology (CL) term.
+  source: cell line
+  target: cell type
+
+cell type part of tissue:
+  is_a: part of
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: cell_type_part_of_tissue
+  output_label: part_of
+  kgx_properties:
+    subject_category: "biolink:Cell"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a CL cell type to a BTO tissue term.
+  source: cell type
+  target: tissue
+
+tissue part of anatomy:
+  is_a: part of
+  biolink_predicate: "biolink:part_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: tissue_part_of_anatomy
+  output_label: part_of
+  kgx_properties:
+    subject_category: "biolink:AnatomicalEntity"
+    object_category: "biolink:AnatomicalEntity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  description: >-
+    Cross-ontology relation linking a BRENDA Tissue Ontology (BTO) term to an UBERON anatomy term.
+  source: tissue
+  target: anatomy
 
 motif:
   represented_as: node
@@ -831,7 +885,6 @@ molecular interaction:
   is_a: ontology term
   represented_as: node
   input_label: molecular_interaction
-  # output_label: molecular_interaction
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
   inherit_properties: true
@@ -843,7 +896,6 @@ sequence type:
   is_a: ontology term
   represented_as: node
   input_label: sequence_type
-  # output_label: sequence_type
   mixins: [biolink:OntologyClass]
   biolink_category: "biolink:OntologyClass"
   inherit_properties: true
@@ -855,7 +907,6 @@ disease:
   is_a: ontology term
   represented_as: node
   input_label: disease
-  # output_label: disease
   mixins: [biolink:Disease]
   biolink_category: "biolink:Disease"
   inherit_properties: true
@@ -866,7 +917,6 @@ small molecule:
   is_a: ontology term
   represented_as: node
   input_label: small_molecule
-  # output_label: small_molecule
   mixins: [biolink:ChemicalEntity]
   biolink_category: "biolink:ChemicalEntity"
   inherit_properties: true
@@ -878,7 +928,6 @@ developmental stage:
   is_a: ontology term
   represented_as: node
   input_label: developmental_stage
-  # output_label: developmental_stage
   mixins: [biolink:LifeStage]
   biolink_category: "biolink:LifeStage"
   inherit_properties: true
@@ -890,7 +939,6 @@ anatomy:
   is_a: ontology term
   represented_as: node
   input_label: anatomy
-  # output_label: anatomy
   mixins: [biolink:AnatomicalEntity]
   biolink_category: "biolink:AnatomicalEntity"
   inherit_properties: true
@@ -908,6 +956,60 @@ phenotype:
   inherit_properties: true
   kgx_properties:
     category: "biolink:OntologyClass"
+
+
+
+gene to phenotype association:
+  description: >-
+    An association between a gene and a phenotype (HPO term).
+  is_a: association
+  mixins: [biolink:GeneToPhenotypicFeatureAssociation]
+  biolink_predicate: "biolink:has_phenotype"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_phenotype
+  output_label: involved_in #has_phenotype
+  source: gene
+  target: phenotype
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:PhenotypicFeature"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    phenotype_name:
+      type: str
+    frequency:
+      type: str
+    disease_id:
+      type: str
+
+gene to disease association:
+  description: >-
+    An association between a gene and a disease identifier (e.g., OMIM, ORPHA).
+  is_a: association
+  mixins: [biolink:GeneToDiseaseAssociation]
+  biolink_predicate: "biolink:associated_with"
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_disease
+  output_label: associated_with
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    gene_symbol:
+      type: str
+    association_type:
+      type: str
+    source_ref:
+      type: str
 
 # ---
 # 3D genome structures
@@ -1771,7 +1873,7 @@ bto subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: bto_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: tissue
   target: tissue
   kgx_properties:
@@ -1786,7 +1888,7 @@ efo subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: efo_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: experimental factor 
   target: experimental factor
   kgx_properties:
@@ -1802,7 +1904,7 @@ uberon subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: uberon_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: anatomy
   target: anatomy
   kgx_properties:
@@ -1817,7 +1919,7 @@ clo subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: clo_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: cell line
   target: cell line
   kgx_properties:
@@ -1832,7 +1934,7 @@ cl subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: cl_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: cell type
   target: cell type
   kgx_properties:
@@ -1848,7 +1950,7 @@ biological process subclass:
   inherit_properties: true
   represented_as: edge
   input_label: biological_process_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: biological process
   target: biological process
   kgx_properties:
@@ -1864,7 +1966,7 @@ molecular function subclass:
   inherit_properties: true
   represented_as: edge
   input_label: molecular_function_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: molecular function
   target: molecular_function
   kgx_properties:
@@ -1879,7 +1981,7 @@ cellular component subclass:
   inherit_properties: true
   represented_as: edge
   input_label: cellular_component_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   source: cellular_component
   target: cellular_component
   kgx_properties:
@@ -2223,6 +2325,77 @@ gene to metabolic pathway group association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+
+pathway to biological process:
+  is_a: association
+  biolink_predicate: biolink:participates_in
+  source: pathway
+  target: biological process
+  represented_as: edge
+  input_label: pathway_to_biological_process
+  output_label: equivalent_to
+  description: An association between a pathway and a biological process, indicating
+    that the pathway is involved in the process.
+  properties:
+    pathway_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: biological process
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+  kgx_properties:
+    subject_category: biolink:Pathway
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+pathway to cellular component:
+  is_a: association
+  source: pathway
+  target: cellular component
+  biolink_predicate: biolink:related_to
+  represented_as: edge
+  input_label: pathway_to_cellular_component
+  description: An association between a pathway and a cellular component, indicating
+    that the pathway is associated with the component.
+  properties:
+    pathway_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: cellular component
+  kgx_properties:
+    subject_category: biolink:Pathway
+    object_category: biolink:CellularComponent
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+pathway to molecular function:
+  is_a: association
+  source: pathway
+  target: molecular function
+  biolink_predicate: biolink:related_to
+  represented_as: edge
+  input_label: pathway_to_molecular_function
+  description: An association between a pathway and a molecular function, indicating
+    that the pathway is involved in the function.
+  properties:
+    pathway_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: molecular function
+  kgx_properties:
+    subject_category: biolink:Pathway
+    object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 allele to gene association:
   is_a: annotation
   inherit_properties: true
@@ -2409,7 +2582,7 @@ FBdv subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: FBdv_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: developmental stage
   target: developmental stage
@@ -2424,7 +2597,7 @@ FBbt subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: FBbt_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: anatomy
   target: anatomy
@@ -2439,7 +2612,7 @@ FBcv subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: FBcv_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: phenotype
   target: phenotype
@@ -2454,7 +2627,7 @@ mi subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: mi_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: molecular interaction
   target: molecular interaction
@@ -2469,7 +2642,7 @@ so subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: so_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: sequence type
   target: sequence type
@@ -2484,7 +2657,7 @@ do subclass of:
   inherit_properties: true
   represented_as: edge
   input_label: do_subclass_of
-  output_label: subclass_of
+  output_label: is_a
   biolink_predicate: "biolink:subclass_of"
   source: disease
   target: disease
@@ -2537,6 +2710,59 @@ structural_variant overlaps feature:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+gene overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: gene_overlaps_structural_variant
+  output_label: overlaps
+  source: gene
+  target: structural variant
+
+structural_variant overlaps gene:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_gene
+  output_label: overlaps
+  source: structural variant
+  target: gene
+
+non_coding_rna overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: non_coding_rna_overlaps_structural_variant
+  output_label: overlaps
+  source: non_coding_rna
+  target: structural variant
+
+structural_variant overlaps non_coding_rna:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_non_coding_rna
+  output_label: overlaps
+  source: structural variant
+  target: non_coding_rna
+
+promoter overlaps structural_variant:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: promoter_overlaps_structural_variant
+  output_label: overlaps
+  source: promoter
+  target: structural variant
+
+structural_variant overlaps promoter:
+  is_a: association
+  biolink_predicate: "biolink:overlaps"
+  represented_as: edge
+  input_label: structural_variant_overlaps_promoter
+  output_label: overlaps
+  source: structural variant
+  target: promoter
 
 # ---
 # regulatory association (edges)
@@ -2809,7 +3035,6 @@ exon part_of transcript:
     object_category: "biolink:Exon"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-
 
 orthology association:
   description: >-
@@ -3088,3 +3313,217 @@ chemical_substance part_of chemical_substance:
     object_category: "biolink:ChemicalEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+gene biomarker via orthology disease:
+  description: >-
+    A gene is a biomarker for a disease via orthology relationship.
+    From Alliance for Genome Resources.
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:biomarker_for"
+  inherit_properties: true
+  represented_as: edge
+  input_label: biomarker_via_orthology
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+gene implicated via orthology disease:
+  description: >-
+    A gene is implicated in a disease via orthology relationship.
+    From Alliance for Genome Resources.
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:implicated_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: implicated_via_orthology
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+gene is implicated in disease:
+  description: >-
+    A gene is implicated in a disease.
+    From Alliance for Genome Resources.
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:implicated_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: is_implicated_in
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+gene to disease marker association:
+  description: >-
+    Gene is a marker for a disease
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:model_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: is_marker_for
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string
+
+
+gene to disease model association:
+  description: >-
+    Gene is a model for disease
+  is_a: association
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:model_of"
+  inherit_properties: true
+  represented_as: edge
+  input_label: is_model_of
+  source: gene
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: integer
+    species_name:
+      type: string
+    gene_symbol:
+      type: string
+    disease_name:
+      type: string
+    evidence_code:
+      type: string
+    evidence_code_name:
+      type: string
+    reference:
+      type: string
+    date:
+      type: string
+    source:
+      type: string
+    with_ortholog:
+      type: string
+    inferred_from_id:
+      type: string
+    inferred_from_symbol:
+      type: string

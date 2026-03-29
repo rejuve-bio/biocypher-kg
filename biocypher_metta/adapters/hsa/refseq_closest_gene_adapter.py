@@ -43,6 +43,8 @@ class RefSeqClosestGeneAdapter(Adapter):
         with gzip.open(self.file_path, "rt") as fp:
             next(fp)
             reader = csv.reader(fp, delimiter=",")
+            not_processed = 0
+            processed = 0
             for row in reader:
                 try:
                     rsid = row[0]
@@ -54,6 +56,7 @@ class RefSeqClosestGeneAdapter(Adapter):
                             gene_symbol = (row[7]).strip()
                             target_id = self.hgnc_processor.get_ensembl_id(gene_symbol)
                             if target_id is None:
+                                not_processed += 1
                                 continue
                             distance = int(row[5]) + 1 - int(pos)
                             props = {}
@@ -64,12 +67,13 @@ class RefSeqClosestGeneAdapter(Adapter):
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
-
+                            processed += 1
                             yield source_id, target_id, self.label, props
 
                         except Exception as e:
                             logger.error(f"error while parsing row: {row}, error: {e} skipping...")
                             continue
                 except KeyError as e:
-                    logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
+                    # logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
                     continue
+        print(f"Not processed records: {not_processed} out of {processed + not_processed} records")

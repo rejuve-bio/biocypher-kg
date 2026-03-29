@@ -13,10 +13,16 @@ hsa:
     adapters_config: config/hsa/hsa_adapters_config_sample.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
     dbsnp_cache_dir: aux_files/hsa/sample_dbsnp
+    dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
+    dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl    
   full:
     adapters_config: config/hsa/hsa_adapters_config.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    # dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    # dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    dbsnp_rsids: /mnt/hdd_1/abdu/dbsnp/dbsnp_rsids.pkl
+    dbsnp_pos: /mnt/hdd_1/abdu/dbsnp/dbsnp_pos.pkl
+
 
 dmel:
   sample:
