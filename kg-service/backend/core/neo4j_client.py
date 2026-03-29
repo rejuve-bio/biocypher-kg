@@ -5,7 +5,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class Neo4jClient:
     def __init__(self):
         self.driver = GraphDatabase.driver(
@@ -21,10 +20,10 @@ class Neo4jClient:
         try:
             with self.driver.session(database=settings.NEO4J_DATABASE) as session:
                 session.run("RETURN 1").consume()
-            logger.info("✅ Neo4j connection verified")
+            logger.info("[success:] Neo4j connection verified")
             return True
         except Exception as e:
-            logger.error(f"❌ Connection failed: {e}")
+            logger.error(f"[failed:] Connection failed: {e}")
             return False
 
     # ===== DISCOVERY =====
@@ -334,56 +333,6 @@ class Neo4jClient:
             
             return {"nodes": nodes, "edges": edges}
 
-    # def get_datasets_with_metadata(self) -> list:
-    #     """
-    #     Get comprehensive dataset metadata from Neo4j.
-    #     Gets URL from source_url property, lists actual nodes and edges.
-    #     """
-    #     with self.driver.session() as session:
-    #         # Get dataset info from DatasetVersion nodes
-    #         result = session.run("""
-    #             MATCH (dv:DatasetVersion {db_type: "neo4j"})
-                
-    #             // Get a sample node from this dataset to extract source_url
-    #             OPTIONAL MATCH (sample_node)
-    #             WHERE sample_node.source = dv.dataset
-    #             WITH dv, head(collect(sample_node.source_url)) as source_url
-                
-    #             // Get all node types for this dataset
-    #             OPTIONAL MATCH (n)
-    #             WHERE n.source = dv.dataset
-    #                 AND NOT n:DatasetHash AND NOT n:DatasetVersion 
-    #                 AND NOT n:KGVersion AND NOT n:DatasetMapping
-    #             WITH dv, source_url, collect(DISTINCT labels(n)[0]) as node_types
-                
-    #             // Get all edge types for this dataset
-    #             OPTIONAL MATCH (a)-[r]->(b)
-    #             WHERE (a.source = dv.dataset OR b.source = dv.dataset)
-    #                 AND NOT a:DatasetHash AND NOT a:DatasetVersion 
-    #                 AND NOT a:KGVersion AND NOT a:DatasetMapping
-    #             WITH dv, source_url, node_types, collect(DISTINCT type(r)) as edge_types
-                
-    #             RETURN dv.dataset as name,
-    #                 dv.version as version,
-    #                 dv.timestamp as imported_on,
-    #                 source_url,
-    #                 node_types,
-    #                 edge_types
-    #             ORDER BY name
-    #         """)
-            
-    #         datasets = []
-    #         for record in result:
-    #             datasets.append({
-    #                 "name": record["name"].upper(),  # Uppercase dataset name
-    #                 "version": record["version"],
-    #                 "url": record["source_url"],  # From source_url property!
-    #                 "nodes": sorted([n.lower() for n in record["node_types"] if n]),
-    #                 "edges": sorted([e.lower() for e in record["edge_types"] if e]),
-    #                 "imported_on": record["imported_on"][:10] if record["imported_on"] else None
-    #             })
-            
-    #         return datasets
     def get_frequent_relationships(self, limit: int = 50) -> list:
         """Get most frequent entity pair connections"""
         with self.driver.session() as session:
