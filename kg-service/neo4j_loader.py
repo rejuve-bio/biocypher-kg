@@ -30,10 +30,10 @@ class Neo4jLoader:
         # Initialize version manager with db_type="neo4j"
         self.version_manager = VersionManager(
             archive_dir=archive_dir,      
-            neo4j_uri=uri,                
+            neo4j_uri=uri,                 
             username=username,
             password=password,
-            db_type="neo4j"                
+            db_type="neo4j"               
         )
 
     def close(self):
@@ -125,16 +125,16 @@ class Neo4jLoader:
             with open(cypher_file, 'r') as f:
                 content = f.read()
 
-            # # DEBUG: Show what we're looking for
+            # # DEBUG: 
             # import re
             # paths_before = re.findall(r"file://[^\s'\"]+\.csv", content)
             # if paths_before:
-            #     logger.info(f"    🔍 BEFORE replacement: {paths_before[0]}")
+            #     logger.info(f"     BEFORE replacement: {paths_before[0]}")
             
             # # Show the pattern we're trying to match
             # pattern_to_match = f'file:////{str(self.output_dir)}/'
-            # logger.info(f"    🔍 Looking for pattern: {pattern_to_match[:80]}...")
-            # logger.info(f"    🔍 Will replace with: file:///import/")
+            # logger.info(f"     Looking for pattern: {pattern_to_match[:80]}...")
+            # logger.info(f"     Will replace with: file:///import/")
 
             # FIX PATHS
             content = content.replace(
@@ -144,7 +144,7 @@ class Neo4jLoader:
 
             # BOOST BATCH SIZE: dynamically replace whatever small batchSize was baked
             # into the .cypher file with the configured import_batch_size.
-            # This lets us speed up already-generated files (e.g. coxpresdb) without
+            # speed up already-generated files (e.g. coxpresdb) without
             # re-running the full KG generation pipeline.
             content = re.sub(
                 r'\{batchSize\s*:\s*\d+',
@@ -373,7 +373,6 @@ class Neo4jLoader:
         logger.info("\nSTEP 4: Loading data from .cypher files...")
         logger.info("="*60)
 
-        # LOAD EACH DATASET (THIS WAS MISSING!)
         for dataset in changed_datasets:
             success = self.load_dataset(dataset)
             
