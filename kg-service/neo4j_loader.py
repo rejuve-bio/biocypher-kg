@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""
-Hybrid Neo4j Loader with Version Management
-- Uses version_manager for versioning/archiving
-- Uses .cypher files for reliable loading 
-- Adds metadata after loading
-- Multi-database architecture with db_type="neo4j"
-"""
 from neo4j import GraphDatabase
 from version_manager import VersionManager
 from pathlib import Path
@@ -27,7 +20,6 @@ class Neo4jLoader:
         self.archive_dir = Path(archive_dir)
         self.import_batch_size = import_batch_size
         
-        # Initialize version manager with db_type="neo4j"
         self.version_manager = VersionManager(
             archive_dir=archive_dir,      
             neo4j_uri=uri,                 
@@ -125,17 +117,6 @@ class Neo4jLoader:
             with open(cypher_file, 'r') as f:
                 content = f.read()
 
-            # # DEBUG: 
-            # import re
-            # paths_before = re.findall(r"file://[^\s'\"]+\.csv", content)
-            # if paths_before:
-            #     logger.info(f"     BEFORE replacement: {paths_before[0]}")
-            
-            # # Show the pattern we're trying to match
-            # pattern_to_match = f'file:////{str(self.output_dir)}/'
-            # logger.info(f"     Looking for pattern: {pattern_to_match[:80]}...")
-            # logger.info(f"     Will replace with: file:///import/")
-
             # FIX PATHS
             content = content.replace(
                 f'file:///{str(self.output_dir)}/',
@@ -151,11 +132,6 @@ class Neo4jLoader:
                 '{batchSize:' + str(self.import_batch_size),
                 content
             )
-
-            # # DEBUG: Show result
-            # paths_after = re.findall(r"file://[^\s'\"]+\.csv", content)
-            # if paths_after:
-            #     logger.info(f"    🔍 AFTER replacement: {paths_after[0]}")
 
             queries = []
             current_query = []
@@ -390,7 +366,7 @@ class Neo4jLoader:
             build_id
         )
         
-        # Step 6: Add metadata to all loaded datasets (AFTER finalize!)
+        # Step 6: Add metadata to all loaded datasets
         logger.info("\nSTEP 6: Adding metadata...")
         for dataset in changed_datasets:
             self.add_metadata_to_dataset(
