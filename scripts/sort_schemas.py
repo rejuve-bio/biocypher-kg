@@ -82,7 +82,7 @@ def write_output_file(file_path, title, data_dict, sorted_nodes, sorted_edges):
 def main():
     """Main function"""
     if len(sys.argv) != 2:
-        print("Usage: python script.py <input.yaml>")
+        print("Usage: python sort_schemas.py <input.yaml>")
         sys.exit(1)
     
     input_file = sys.argv[1]
