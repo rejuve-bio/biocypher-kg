@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     NEO4J_USER: str = "YOUR_USERNAME_HERE"
     NEO4J_PASSWORD: str = "YOUR_PASSWORD_HERE"
     NEO4J_DATABASE: str = "YOUR_DATABASE_NAME_HERE"
+    ARCHIVE_BASE: str = "/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/"
+    VERSION_DIFF_SCRIPT: str = "/home/abdum/services/biocypher-kg/version_diff.py"
+    MORK_SUMMARY_SCRIPT: str = "/home/abdum/services/biocypher-kg/get_mork_summary.py"
 
     # Cache
     CACHE_TTL: int = 300
