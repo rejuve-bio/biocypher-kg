@@ -1826,9 +1826,9 @@ non_coding_rna overlaps structural_variant:
   target: structural variant
 
 orthology association:
-  description: "Non-directional association between two genes indicating that there\
-    \ is an orthology relation among them:  \u201CHistorical homology that involves\
-    \ genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)\""
+  description: Non-directional association between two genes indicating that there
+    is an orthology relation among them:  Historical homology that involves
+    genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)
   is_a: related to at instance level
   represented_as: edge
   input_label: orthologs_genes
@@ -1886,10 +1886,9 @@ output role protein to reaction or pathway association:
     agent_type: manual_agent
 
 paralogy association:
-  description: ''
-  Non-directional association between two genes indicating that there is an paralogy relation among them: "\u201C\
-    Historical homology that involves genes that diverged after a duplication event\
-    \ (http://purl.obolibrary.org/obo/RO_HOM0000011)\""
+  description: Non-directional association between two genes indicating that there is an paralogy relation among them: 
+     Historical homology that involves genes that diverged after a duplication event
+     (http://purl.obolibrary.org/obo/RO_HOM0000011)
   is_a: related to at instance level
   represented_as: edge
   input_label: paralogs_genes
