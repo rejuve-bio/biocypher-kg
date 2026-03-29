@@ -354,7 +354,7 @@ expression value:
   kgx_properties:
     subject_category: biolink:GeneOrGeneProduct
     object_category: biolink:DataSet
-    knowledge_level: knowledge_assertion
+    knowledge_level: knowledge_assertionesus
     agent_type: manual_agent
 
 FBbt subclass of:
