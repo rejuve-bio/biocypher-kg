@@ -23,7 +23,7 @@ class VersionManager:
     def __init__(self, archive_dir, neo4j_uri, username, password, output_dir=None, db_type="neo4j"):
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(username, password))
         self.archive_dir = Path(archive_dir)
-        self.output_dir = None  # Initialize as None, will be set later
+        self.output_dir = None
         if output_dir:
             self.output_dir = Path(output_dir)
         self.db_type = db_type
@@ -127,9 +127,8 @@ class VersionManager:
         Archive a dataset folder to /archives/{folder}/{version}/
         Only archives CHANGED datasets to save space.
         """
-        # Update output_dir (neo4j_loader passes it)
         self.output_dir = Path(output_dir)
-        
+
         source_folder = self.output_dir / folder_name
         archive_path = self.archive_dir / self.db_type / folder_name / version
         
@@ -137,13 +136,10 @@ class VersionManager:
             logger.error(f"Source folder not found: {source_folder}")
             return None
         
-        # Create archive directory
         archive_path.mkdir(parents=True, exist_ok=True)
-        
-        # Copy entire folder
+
         logger.info(f"Archiving [{folder_name}] to {archive_path}")
-        
-        # Copy all files
+
         for item in source_folder.rglob("*"):
             if item.is_file():
                 relative = item.relative_to(source_folder)
@@ -311,9 +307,9 @@ class VersionManager:
         4. Archive changed datasets
         5. Return result (tuple format for neo4j_loader.py)
         """
-        # FIRST: Store output_dir
+        # Store output_dir
         self.output_dir = Path(output_dir)
-        
+
         logger.info("="*60)
         logger.info("Starting version check...")
         logger.info("="*60)
@@ -443,7 +439,7 @@ if __name__ == "__main__":
                         help="Neo4j URI")
     parser.add_argument("--username", default="neo4j",
                         help="Neo4j username")
-    parser.add_argument("--password", default="Atomspace@123",
+    parser.add_argument("--password", required=True,
                         help="Neo4j password")
     parser.add_argument("--build-id",
                         default=f"build-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
