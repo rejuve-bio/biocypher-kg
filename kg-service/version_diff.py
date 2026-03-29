@@ -35,6 +35,7 @@ def read_csv_rows(csv_file: Path) -> Dict[str, Dict]:
             reader = csv.DictReader(f)
             for row in reader:
                 if row:
+                    # use first column as the row ID
                     row_id = row.get(reader.fieldnames[0])
                     if row_id:
                         rows[row_id] = dict(row)
@@ -74,6 +75,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
         v1_csvs = list(v1_dir.rglob("*.csv"))
         v2_csvs = list(v2_dir.rglob("*.csv"))
         
+        # compare files present in v1 against v2
         for v1_csv in v1_csvs:
             relative_path = v1_csv.relative_to(v1_dir)
             v2_csv = v2_dir / relative_path
@@ -87,6 +89,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
             v1_rows = read_csv_rows(v1_csv)
             v2_rows = read_csv_rows(v2_csv)
             
+            # compute added, deleted, and common IDs between versions
             added = v2_ids - v1_ids
             deleted = v1_ids - v2_ids
             common = v1_ids & v2_ids
@@ -98,6 +101,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
                     modified.append(id)
                     modified_details.append({"id": id, "old": v1_rows.get(id), "new": v2_rows.get(id)})
             
+            # cap sample records at 20 to avoid large output
             added_records = [v2_rows.get(id) for id in list(added)[:20]]
             deleted_records = [v1_rows.get(id) for id in list(deleted)[:20]]
             
@@ -108,6 +112,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
                 "modified_details": modified_details[:20]
             }
         
+        # check for new files in v2 not present in v1
         for v2_csv in v2_csvs:
             relative_path = v2_csv.relative_to(v2_dir)
             v1_csv = v1_dir / relative_path
@@ -125,6 +130,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
         v1_mettas = list(v1_dir.rglob("*.metta"))
         v2_mettas = list(v2_dir.rglob("*.metta"))
         
+        # compare files present in v1 against v2
         for v1_metta in v1_mettas:
             relative_path = v1_metta.relative_to(v1_dir)
             v2_metta = v2_dir / relative_path
@@ -136,6 +142,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
             v1_atoms = read_metta_atoms(v1_metta)
             v2_atoms = read_metta_atoms(v2_metta)
             
+            # compute added and deleted atoms between versions
             added = v2_atoms - v1_atoms
             deleted = v1_atoms - v2_atoms
             
@@ -145,6 +152,7 @@ def compare_dataset(archive_dir: Path, dataset: str, version1: str, version2: st
                 "added_atoms": list(added)[:20], "deleted_atoms": list(deleted)[:20]
             }
         
+        # check for new files in v2 not present in v1
         for v2_metta in v2_mettas:
             relative_path = v2_metta.relative_to(v2_dir)
             v1_metta = v1_dir / relative_path
@@ -194,6 +202,7 @@ def main():
     if args.json:
         print(json.dumps(results, indent=2))
     else:
+        # human-readable summary output
         print(f"\n{'='*60}\nCOMPARISON: {args.version1} → {args.version2} ({args.db_type.upper()})\n{'='*60}\n")
         for dataset, data in results.get("datasets", {}).items():
             if "error" in data:
