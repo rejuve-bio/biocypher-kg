@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Script that receives a YAML file with BioCypher schemas and generates a '_sorted.yaml' file
-with the schemas sorted alphabetically (case-insensitive, digits first).
+with schemas organized as: nodes first (sorted), then edges (sorted).
+Nodes and edges are sorted alphabetically (case-insensitive, digits first).
 """
 
 import sys
@@ -27,6 +28,57 @@ def load_yaml(file_path):
         print(f"Error: Invalid YAML in '{file_path}': {e}")
         sys.exit(1)
 
+def categorize_schemas(data):
+    """Separate schemas into nodes and edges based on 'represented_as' field"""
+    nodes = {}
+    edges = {}
+    
+    for schema_name, schema_content in data.items():
+        if schema_name == 'Title':
+            continue
+        
+        if isinstance(schema_content, dict) and schema_content.get('represented_as') == 'node':
+            nodes[schema_name] = schema_content
+        elif isinstance(schema_content, dict) and schema_content.get('represented_as') == 'edge':
+            edges[schema_name] = schema_content
+    
+    return nodes, edges
+
+def write_output_file(file_path, title, data_dict, sorted_nodes, sorted_edges):
+    """Write output file with nodes first, then edges"""
+    try:
+        with open(file_path, 'w') as f:
+            # Write title
+            if title:
+                yaml.dump({'Title': title}, f, default_flow_style=False, sort_keys=False)
+                f.write('\n')  # Blank line after title
+            
+            # Write nodes (sorted)
+            f.write('\n\n##################             NODES   SECTION             ####################\n\n')
+            for i, schema_name in enumerate(sorted_nodes):
+                yaml.dump(
+                    {schema_name: data_dict[schema_name]},
+                    f,
+                    default_flow_style=False,
+                    sort_keys=False
+                )
+                f.write('\n')  # Blank line between schemas
+            
+            # Write edges (sorted)
+            f.write('\n\n##################             EDGES   SECTION             ####################\n\n')
+            for i, schema_name in enumerate(sorted_edges):
+                yaml.dump(
+                    {schema_name: data_dict[schema_name]},
+                    f,
+                    default_flow_style=False,
+                    sort_keys=False
+                )
+                if i < len(sorted_edges) - 1:
+                    f.write('\n')  # Blank line between schemas (except last)
+    except Exception as e:
+        print(f"Error: Failed to write to '{file_path}': {e}")
+        sys.exit(1)
+
 def main():
     """Main function"""
     if len(sys.argv) != 2:
@@ -42,16 +94,26 @@ def main():
         print("Error: YAML file must contain a dictionary.")
         sys.exit(1)
     
-    # Extract schemas (excluding 'Title')
-    schemas = [k for k in data.keys() if k != 'Title']
+    # Extract title
+    title = data.get('Title')
     
-    print(f"Number of schemas in '{input_file}': {len(schemas)}")
+    # Categorize schemas into nodes and edges
+    nodes, edges = categorize_schemas(data)
     
     # Sort schemas
-    sorted_schemas = sorted(schemas, key=sort_key)
+    sorted_nodes = sorted(nodes.keys(), key=sort_key)
+    sorted_edges = sorted(edges.keys(), key=sort_key)
     
-    print("\nSchemas (sorted):")
-    for schema in sorted_schemas:
+    print(f"Number of schemas in '{input_file}': {len(nodes) + len(edges)}")
+    print(f"Number of nodes: {len(nodes)}")
+    print(f"Number of edges: {len(edges)}")
+    
+    print("\nNodes (sorted):")
+    for schema in sorted_nodes:
+        print(f"  {schema}")
+    
+    print("\nEdges (sorted):")
+    for schema in sorted_edges:
         print(f"  {schema}")
     
     # Generate output file name
@@ -60,35 +122,8 @@ def main():
     output_file = os.path.join(os.path.dirname(input_file), f"{name}_sorted{ext}")
     
     # Write output file
-    try:
-        with open(output_file, 'w') as f:
-            # Write Title if it exists
-            if 'Title' in data:
-                yaml.dump(
-                    {'Title': data['Title']},
-                    f,
-                    default_flow_style=False,
-                    sort_keys=False
-                )
-                f.write('\n')
-            
-            # Write each schema with blank line separation
-            for i, schema in enumerate(sorted_schemas):
-                yaml.dump(
-                    {schema: data[schema]},
-                    f,
-                    default_flow_style=False,
-                    sort_keys=False
-                )
-                if i < len(sorted_schemas) - 1:
-                    f.write('\n')
-        
-        print(f"\n✅ Sorted schemas written to '{output_file}'")
-        print(f"Number of schemas written: {len(sorted_schemas)}")
-    
-    except Exception as e:
-        print(f"Error writing to '{output_file}': {e}")
-        sys.exit(1)
+    write_output_file(output_file, title, {**nodes, **edges}, sorted_nodes, sorted_edges)
+
 
 if __name__ == "__main__":
     main()

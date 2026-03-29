@@ -1,5 +1,118 @@
 Title: BioCypher graph schema configuration file
 
+
+
+##################             NODES   SECTION             ####################
+
+chromosome:
+  represented_as: node
+  is_a: position entity
+  mixins:
+  - biolink:GenomicEntity
+  biolink_category: biolink:GenomicEntity
+  inherit_properties: true
+  input_label: chromosome
+  properties:
+    chromosome_id:
+      type: str
+
+enhancer:
+  represented_as: node
+  input_label: enhancer
+  is_a: non coding element
+  mixins:
+  - biolink:RegulatoryRegion
+  biolink_category: biolink:RegulatoryRegion
+  inherit_properties: true
+  properties:
+    data_source:
+      type: str
+      biolink: source_web_page
+    enhancer_id:
+      type: str
+      biolink: id
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: biolink:RegulatoryRegion
+
+polyphen2 variant:
+  represented_as: node
+  is_a: genomic variant
+  mixins:
+  - biolink:SequenceVariant
+  biolink_category: biolink:SequenceVariant
+  inherit_properties: true
+  input_label: polyphen2_variant
+  description: A variant with PolyPhen-2 predictions for the impact of amino acid
+    substitutions on protein structure and function
+  kgx_properties:
+    category: biolink:SequenceVariant
+  properties:
+    ref:
+      type: str
+    alt:
+      type: str
+    polyphen2_humdiv_score:
+      type: float
+      biolink: has_quantitative_value
+    polyphen2_humdiv_prediction:
+      type: str
+    polyphen2_humvar_score:
+      type: float
+      biolink: has_quantitative_value
+    polyphen2_humvar_prediction:
+      type: str
+
+snp:
+  represented_as: node
+  input_label: snp
+  is_a: genomic variant
+  mixins:
+  - biolink:Snv
+  biolink_category: biolink:Snv
+  inherit_properties: true
+  kgx_properties:
+    category: biolink:Snv
+  properties:
+    ref:
+      type: str
+    alt:
+      type: str
+    caf_ref:
+      type: str
+    caf_alt:
+      type: str
+  description: A single nucleotide polymorphism (SNP) is a variation in a single nucleotide
+    that occurs at a specific position in the genome
+
+super enhancer:
+  represented_as: node
+  input_label: super_enhancer
+  is_a: non coding element
+  mixins:
+  - biolink:RegulatoryRegion
+  biolink_category: biolink:RegulatoryRegion
+  inherit_properties: true
+  properties:
+    se_id:
+      type: str
+      biolink: id
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  kgx_properties:
+    category: biolink:RegulatoryRegion
+
+
+
+##################             EDGES   SECTION             ####################
+
 activity by contact:
   description: An association between a variant in a regulatory region and a gene
     it predicted by the ABC model (Fulco et.al 2019)
@@ -43,18 +156,6 @@ chromatin state:
     state:
       type: str
       biolink: phenotypic_state
-
-chromosome:
-  represented_as: node
-  is_a: position entity
-  mixins:
-  - biolink:GenomicEntity
-  biolink_category: biolink:GenomicEntity
-  inherit_properties: true
-  input_label: chromosome
-  properties:
-    chromosome_id:
-      type: str
 
 closest gene to variant association:
   is_a: association
@@ -251,20 +352,6 @@ lower resolution structure:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-non_coding_rna:
-  represented_as: node
-  input_label: non_coding_rna
-  is_a: non coding element
-  mixins:
-  - biolink:RNAProduct
-  biolink_category: biolink:RNAProduct
-  inherit_properties: true
-  kgx_properties:
-    category: biolink:RnaProduct
-  properties:
-    rna_type:
-      type: str
-
 pathway_to_biological_process:
   is_a: association
   biolink_predicate: biolink:participates_in
@@ -334,104 +421,6 @@ pathway_to_molecular_function:
     object_category: biolink:MolecularActivity
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
-
-polyphen2 variant:
-  represented_as: node
-  is_a: genomic variant
-  mixins:
-  - biolink:SequenceVariant
-  biolink_category: biolink:SequenceVariant
-  inherit_properties: true
-  input_label: polyphen2_variant
-  description: A variant with PolyPhen-2 predictions for the impact of amino acid
-    substitutions on protein structure and function
-  kgx_properties:
-    category: biolink:SequenceVariant
-  properties:
-    ref:
-      type: str
-    alt:
-      type: str
-    polyphen2_humdiv_score:
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humdiv_prediction:
-      type: str
-    polyphen2_humvar_score:
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humvar_prediction:
-      type: str
-
-snp:
-  represented_as: node
-  input_label: snp
-  is_a: genomic variant
-  mixins:
-  - biolink:Snv
-  biolink_category: biolink:Snv
-  inherit_properties: true
-  kgx_properties:
-    category: biolink:Snv
-  properties:
-    ref:
-      type: str
-    alt:
-      type: str
-    caf_ref:
-      type: str
-    caf_alt:
-      type: str
-  description: A single nucleotide polymorphism (SNP) is a variation in a single nucleotide
-    that occurs at a specific position in the genome
-
-super enhancer:
-  represented_as: node
-  input_label: super_enhancer
-  is_a: non coding element
-  mixins:
-  - biolink:RegulatoryRegion
-  biolink_category: biolink:RegulatoryRegion
-  inherit_properties: true
-  properties:
-    se_id:
-      type: str
-      biolink: id
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: biolink:RegulatoryRegion
-
-tissue:
-  is_a: ontology term
-  mixins:
-  - biolink:AnatomicalEntity
-  biolink_category: biolink:AnatomicalEntity
-  represented_as: node
-  input_label: tissue
-  inherit_properties: true
-  kgx_properties:
-    category: biolink:AnatomicalEntity
-
-tissue part of anatomy:
-  is_a: part of
-  biolink_predicate: biolink:part_of
-  inherit_properties: true
-  represented_as: edge
-  input_label: tissue_part_of_anatomy
-  output_label: part_of
-  kgx_properties:
-    subject_category: biolink:AnatomicalEntity
-    object_category: biolink:AnatomicalEntity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-  description: Cross-ontology relation linking a BRENDA Tissue Ontology (BTO) term
-    to an UBERON anatomy term.
-  source: tissue
-  target: anatomy
 
 topld in linkage disequilibrium with:
   is_a: association
