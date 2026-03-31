@@ -35,10 +35,19 @@ setup: check-uv
 # Interactive run with prompts
 run: run-interactive
 
+
+# read -p "🧬 Enter dbSNP RSIDs path [./aux_files/hsa/sample_dbsnp_rsids.pkl]: " DBSNP_RSIDS; \
+# DBSNP_RSIDS=$${DBSNP_RSIDS:-./aux_files/hsa/sample_dbsnp_rsids.pkl}; \
+# echo "Using dbSNP RSIDs: $$DBSNP_RSIDS"; \
+# echo ""; \
+# read -p "📍 Enter dbSNP positions path [./aux_files/hsa/sample_dbsnp_pos.pkl]: " DBSNP_POS; \
+# DBSNP_POS=$${DBSNP_POS:-./aux_files/hsa/sample_dbsnp_pos.pkl}; \
+# echo "Using dbSNP positions: $$DBSNP_POS"; \
+
 # Interactive run with step-by-step prompts
 run-interactive: check-uv
-	@echo "🚀 Starting interactive knowledge graph creation..."
-	@echo ""
+	@echo "\n🚀 Starting interactive knowledge graph creation..."
+	@echo "🚀 Press ENTER to chose the default value [in square brackets] for each option...\n" 
 	@read -p "📁 Enter output directory [./output]: " OUTPUT_DIR; \
 	OUTPUT_DIR=$${OUTPUT_DIR:-./output}; \
 	echo "Using output directory: $$OUTPUT_DIR"; \
@@ -47,17 +56,13 @@ run-interactive: check-uv
 	ADAPTERS_CONFIG=$${ADAPTERS_CONFIG:-./config/hsa/hsa_adapters_config_sample.yaml}; \
 	echo "Using adapters config: $$ADAPTERS_CONFIG"; \
 	echo ""; \
-	read -p "📊 Enter schema config path [./config/hsa/hsa_schema_config.yaml]: " SCHEMA_CONFIG; \
-	SCHEMA_CONFIG=$${SCHEMA_CONFIG:-./config/hsa/hsa_schema_config.yaml}; \
+	read -p "📊 Enter schema config path [./config/primer_schema_config.yaml]: " SCHEMA_CONFIG; \
+	SCHEMA_CONFIG=$${SCHEMA_CONFIG:-./config/primer_schema_config.yaml}; \
 	echo "Using schema config: $$SCHEMA_CONFIG"; \
 	echo ""; \
-	read -p "🧬 Enter dbSNP RSIDs path [./aux_files/hsa/sample_dbsnp_rsids.pkl]: " DBSNP_RSIDS; \
-	DBSNP_RSIDS=$${DBSNP_RSIDS:-./aux_files/hsa/sample_dbsnp_rsids.pkl}; \
-	echo "Using dbSNP RSIDs: $$DBSNP_RSIDS"; \
-	echo ""; \
-	read -p "📍 Enter dbSNP positions path [./aux_files/hsa/sample_dbsnp_pos.pkl]: " DBSNP_POS; \
-	DBSNP_POS=$${DBSNP_POS:-./aux_files/hsa/sample_dbsnp_pos.pkl}; \
-	echo "Using dbSNP positions: $$DBSNP_POS"; \
+	read -p "🧬 Enter dbSNP RSIDs and POS path [./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl]: " DBSNP_CACHE_DIR; \
+	DBSNP_CACHE_DIR=$${DBSNP_CACHE_DIR:-./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl}; \
+	echo "Using dbSNP RSIDs and POS dictionary: $$DBSNP_CACHE_DIR"; \
 	echo ""; \
 	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
@@ -89,18 +94,17 @@ run-interactive: check-uv
 		--output-dir "$$OUTPUT_DIR" \
 		--adapters-config "$$ADAPTERS_CONFIG" \
 		--schema-config "$$SCHEMA_CONFIG" \
-		--dbsnp-rsids "$$DBSNP_RSIDS" \
-		--dbsnp-pos "$$DBSNP_POS" \
+		--dbsnp-cache-dir "$$DBSNP_CACHE_DIR" \
+		# --dbsnp-pos "$$DBSNP_POS" \
 		--writer-type "$$WRITER_TYPE" \
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG; \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
-# Direct run with parameters (non-interactive)
 run-direct: check-uv
-	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(DBSNP_RSIDS)" ] || [ -z "$(DBSNP_POS)" ]; then \
+	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(DBSNP_CACHE_DIR)" ]; then \
 		echo "❌ Error: Missing required parameters"; \
-		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... DBSNP_RSIDS=... DBSNP_POS=... [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...]"; \
+		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... DBSNP_CACHE_DIR=... [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...]"; \
 		echo ""; \
 		echo "Or use 'make run' for interactive mode"; \
 		exit 1; \
@@ -118,7 +122,7 @@ run-direct: check-uv
 	uv run python create_knowledge_graph.py \
 		--output-dir $(OUTPUT_DIR) \
 		--adapters-config $(ADAPTERS_CONFIG) \
-		--dbsnp-rsids $(DBSNP_RSIDS) \
+		--dbsnp-cache-dir $(DBSNP_CACHE_DIR) \
 		--dbsnp-pos $(DBSNP_POS) \
 		$(if $(WRITER_TYPE),--writer-type $(WRITER_TYPE),--writer-type metta) \
 		$$WRITE_PROPERTIES_FLAG \
@@ -146,13 +150,12 @@ run-sample: check-uv
 	uv run python create_knowledge_graph.py \
 		--output-dir ./output \
 		--adapters-config ./config/hsa/hsa_adapters_config_sample.yaml \
-		--dbsnp-rsids ./aux_files/hsa/sample_dbsnp_rsids.pkl \
-		--dbsnp-pos ./aux_files/hsa/sample_dbsnp_pos.pkl \
+		--dbsnp-cache-dir ./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl \
 		--schema-config ./config/hsa/hsa_schema_config.yaml \
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
 		$$ADD_PROVENANCE_FLAG
 	@echo "✅ Sample run completed! Check the ./output directory for results."
-
+#		# --dbsnp-pos ./aux_files/hsa/sample_dbsnp_pos.pkl 
 # Run tests
 test: check-uv
 	@export PATH="$$HOME/.local/bin:$$PATH"; uv run pytest -v
