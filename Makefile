@@ -151,7 +151,7 @@ run-sample: check-uv
 		--output-dir ./output \
 		--adapters-config ./config/hsa/hsa_adapters_config_sample.yaml \
 		--dbsnp-cache-dir ./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl \
-		--schema-config ./config/hsa/hsa_schema_config.yaml \
+		--schema-config ./config/primer_schema_config.yaml \
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
 		$$ADD_PROVENANCE_FLAG
 	@echo "✅ Sample run completed! Check the ./output directory for results."
