@@ -495,17 +495,17 @@ tadmap_gene:
   nodes: False
   edges: True
 
-gtex_eqtl:
-  adapter:
-    module: biocypher_metta.adapters.hsa.gtex_eqtl_adapter
-    cls: GTExEQTLAdapter
-    args:
-      filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
-      gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
-      label: gtex_variant_gene
-  outdir: gtex/eqtl
-  nodes: False
-  edges: True
+# gtex_eqtl:
+#   adapter:
+#     module: biocypher_metta.adapters.hsa.gtex_eqtl_adapter
+#     cls: GTExEQTLAdapter
+#     args:
+#       filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
+#       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
+#       label: gtex_variant_gene
+#   outdir: gtex/eqtl
+#   nodes: False
+#   edges: True
 
 gtex_expression:
   adapter:
