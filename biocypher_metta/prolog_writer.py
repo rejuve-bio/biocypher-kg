@@ -246,10 +246,15 @@ class PrologWriter(BaseWriter):
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
             if k == 'biological_context':
+                if v is None or v == "":
+                    continue
                 try:
-                    prop = self.normalize_text(v)
-                    ontology = prop.split('_')[0]
-                    out_str.append(f'{k}({def_out}, {ontology}({prop})).')
+                    ontology_id = v.upper().replace('_', ':')
+                    ontology_prefix = ontology_id.split(':')[0].lower()
+                    ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+                    ontology_name = ontology_dict.get(ontology_prefix, ontology_prefix)
+                    prop = self.normalize_text(ontology_id)
+                    out_str.append(f'{k}({def_out}, {ontology_name}({prop})).')
                 except Exception as e:
                     print(f"An error occurred while processing the biological context '{v}': {e}.")
                     continue

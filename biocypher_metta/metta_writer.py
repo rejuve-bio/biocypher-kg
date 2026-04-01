@@ -376,13 +376,19 @@ class MeTTaWriter(BaseWriter):
                 continue
             
             if k == 'biological_context':
+                if v is None or v == "":
+                    continue
                 try:
-                    ontology_id = self.check_property(v).upper().replace('_', ':')
+                    ontology_id = v.upper().replace('_', ':')
                     ontology_name = ontology_id.split(':')[0].lower()
+                    ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+                    ontology_name = ontology_dict.get(ontology_name, ontology_name)
+                    ontology_id = self.check_property(ontology_id)
                     out_str.append(f'({k} {def_out} ({ontology_name} {ontology_id}))')
                 except Exception as e:
                     print(f"An error occurred while processing the biological context '{v}': {e}.")
-                    continue
+                    out_str.append(f'({k} {def_out} {self.check_property(v)})')
+                    
             elif isinstance(v, list):
                 # Handle lists by decomposing into individual facts
                 for item in v:
