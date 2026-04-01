@@ -1541,6 +1541,76 @@ distal_enhancer_ccre_associates_with_gene_coding_only:
   nodes: False
   edges: True
 
+catlas_ccre_promoter:
+  adapter:
+    module: biocypher_metta.adapters.catlas_ccre_adapter
+    cls: CAtlasCCREAdapter
+    args:
+      filepath: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
+      class_filter: promoter
+      taxon_id: 9606
+      input_coordinate_system: bed
+  outdir: catlas_ccre/promoter
+  nodes: True
+  edges: False
+
+catlas_ccre_enhancer:
+  adapter:
+    module: biocypher_metta.adapters.catlas_ccre_adapter
+    cls: CAtlasCCREAdapter
+    args:
+      filepath: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
+      class_filter: enhancer
+      taxon_id: 9606
+      input_coordinate_system: bed
+  outdir: catlas_ccre/enhancer
+  nodes: True
+  edges: False
+
+catlas_enhancer_accessible_in:
+  adapter:
+    module: biocypher_metta.adapters.catlas_ccre_cell_type_adapter
+    cls: CAtlasCCRECellTypeAdapter
+    args:
+      cres_dirpath: ./samples/hsa/catlasv1/cCREs
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      ccre_type: enhancer
+  outdir: catlas_ccre/enhancer_accessible_in
+  nodes: False
+  edges: True
+
+catlas_promoter_accessible_in:
+  adapter:
+    module: biocypher_metta.adapters.catlas_ccre_cell_type_adapter
+    cls: CAtlasCCRECellTypeAdapter
+    args:
+      cres_dirpath: ./samples/hsa/catlasv1/cCREs
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      ccre_type: promoter
+  outdir: catlas_ccre/promoter_accessible_in
+  nodes: False
+  edges: True
+
+catlas_abc_scores:
+  adapter:
+    module: biocypher_metta.adapters.catlas_abc_score_adapter
+    cls: CAtlasABCScoreAdapter
+    args:
+      dirpath: ./samples/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
+      abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      # score_threshold: 0.015  # optional: filter low-confidence predictions
+  outdir: catlas_ccre/abc_scores
+  nodes: False
+  edges: True
+
 encode_re2g:
   adapter:
     module: biocypher_metta.adapters.encode_re2g_adapter
