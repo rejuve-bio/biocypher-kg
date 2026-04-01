@@ -5,7 +5,8 @@ import importlib
 import logging
 import os
 import sys
-from biocypher_metta.processors import DBSNPProcessor
+from pathlib import Path
+import tempfile
 
 
 logging.basicConfig(level=logging.INFO)
@@ -72,12 +73,77 @@ def parse_schema(bcy):
     return node_labels, edges_schema
     
 
+def merge_schemas(primer_schema_path, species_schema_path):
+    """
+    Merges two BioCypher schema YAML files into a single dictionary and writes it to a temporary file.
+    
+    Args:
+        prime_schema_config_path (str): Path to the prime schema YAML file.
+        species_schema_config_path (str): Path to the species-specific schema YAML file.
+    
+    Returns:
+        str: Path to the temporary merged schema file.    
+    """
+
+    primer_schema_path   = Path(primer_schema_path)
+    species_schema_path = Path(species_schema_path)
+
+    # Load both YAML files
+    with open(primer_schema_path, 'r') as f:
+        primer_schema = yaml.safe_load(f)
+
+    with open(species_schema_path, 'r') as f:
+        species_schema = yaml.safe_load(f)
+
+    # Merge: species schemas override primer schemas on conflict
+    merged_schema = {**primer_schema, **species_schema}
+
+    # Write to a temporary file in the same directory as the prime schema
+    temp_fd, temp_path = tempfile.mkstemp(
+        suffix='.yaml',
+        dir=primer_schema_path.parent  # same dir as prime schema
+    )
+
+    try:
+        with os.fdopen(temp_fd, 'w') as f:
+            # Write each schema with blank line separation
+            items = list(merged_schema.items())
+            for i, (schema_name, schema_content) in enumerate(items):
+                yaml.dump(
+                    {schema_name: schema_content},
+                    f,
+                    default_flow_style=False,
+                    sort_keys=False
+                )
+                if i < len(items) - 1:
+                    f.write('\n')
+    except Exception as e:
+        # Clean up temp file if write fails
+        Path(temp_path).unlink(missing_ok=True)
+        raise RuntimeError(f"Error writing merged schema: {e}")
+
+    return Path(temp_path)  # always returns a Path object
+
+
+def delete_temp_schema(temp_path):
+    """
+    Deletes the temporary file created by merge_schemas.
+    Accepts both str and Path objects as argument.
+    """
+    try:
+        Path(temp_path).unlink(missing_ok=True)
+    except OSError:
+        pass  # File may already be deleted or inaccessible
+
 @pytest.fixture(scope="session")
 def setup_class(request):
     try:
+        # merge species schema with primer schema ---> species schemas with same name prevails over primer schemas
+        schema_config = merge_schemas('config/primer_schema_config.yaml', 'config/hsa/hsa_schema_config.yaml')
         bcy = BioCypher(
-            schema_config_path='config/hsa/hsa_schema_config.yaml',
-            biocypher_config_path='config/biocypher_config.yaml'
+            # schema_config_path='config/hsa/hsa_schema_config.yaml',
+            schema_config_path = schema_config,
+            biocypher_config_path = 'config/biocypher_config.yaml'
         )
         node_labels, edges_schema = parse_schema(bcy) 
     except FileNotFoundError as e:
