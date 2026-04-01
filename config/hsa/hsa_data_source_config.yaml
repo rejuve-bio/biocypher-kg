@@ -145,3 +145,12 @@ enhancer_atlas:
 brenda_tissue_ontology:
   name: BRENDA Tissue Ontology
   url: http://purl.obolibrary.org/obo/bto.owl
+
+catlas:
+  name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
+  url:
+    cCRE_hg38.tsv.gz: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
+    Cell_ontology.tsv: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
+  directories:
+    cCREs: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCREs/
+    ABC_scores: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/ABC_scores/

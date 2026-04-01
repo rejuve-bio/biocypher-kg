@@ -1,3 +1,4 @@
+import re
 import yaml
 from pathlib import Path
 import requests
@@ -66,7 +67,9 @@ class DownloadManager:
         save_dir.mkdir(parents=True, exist_ok=True)
 
         try:
-            if source_id == 'roadmap':
+            if source_id == 'catlas':
+                self._handle_catlas_download(source_config, save_dir)
+            elif source_id == 'roadmap':
                 self._handle_roadmap_download(source_config, save_dir)
             elif 'bucket' in source_config:
                 self._handle_gcp_download(source_config, save_dir)
@@ -119,6 +122,65 @@ class DownloadManager:
         logger.info(f"Downloading from GCS: {bucket_name}/{path}")
         blob.download_to_filename(filepath)
         
+    def _list_directory(self, dir_url: str) -> list[str]:
+        """Scrape an HTTP directory listing and return absolute file URLs."""
+        r = self.session.get(dir_url)
+        r.raise_for_status()
+        # Match href values that look like files (contain a dot, no leading slash or ..)
+        hrefs = re.findall(r'href=["\']([^"\']+)["\']', r.text)
+        files = []
+        for href in hrefs:
+            if href.startswith(('?', '/', '..')):
+                continue
+            if '.' not in href.split('/')[-1]:
+                continue  # skip subdirectories / bare names
+            base = dir_url.rstrip('/')
+            files.append(f"{base}/{href.lstrip('/')}")
+        return files
+
+    def _handle_catlas_download(self, config: dict, save_dir: Path):
+        """
+        Handle CATLAS downloads:
+          - url (dict)  : individual named files (master TSV, Cell_ontology.tsv)
+          - directories : subdirectory listings to fully mirror (cCREs/, ABC_scores/)
+        """
+        # Single files listed under `url`
+        urls = config.get('url', {})
+        if isinstance(urls, dict):
+            for filename, url in urls.items():
+                filepath = save_dir / filename
+                if filepath.exists():
+                    logger.info(f"Already exists, skipping: {filepath.name}")
+                    continue
+                self.download_file(url, filepath)
+        elif isinstance(urls, str):
+            filepath = save_dir / urls.split('/')[-1]
+            if not filepath.exists():
+                self.download_file(urls, filepath)
+
+        # Directory listings
+        directories = config.get('directories', {})
+        for subdir_name, dir_url in directories.items():
+            subdir = save_dir / subdir_name
+            subdir.mkdir(parents=True, exist_ok=True)
+            logger.info(f"Listing directory: {dir_url}")
+            try:
+                file_urls = self._list_directory(dir_url)
+            except Exception as e:
+                logger.error(f"Failed to list {dir_url}: {e}")
+                raise
+            logger.info(f"  Found {len(file_urls)} file(s) in {subdir_name}/")
+            for file_url in file_urls:
+                filename = file_url.split('/')[-1]
+                filepath = subdir / filename
+                if filepath.exists():
+                    logger.info(f"  Already exists, skipping: {filename}")
+                    continue
+                try:
+                    self.download_file(file_url, filepath)
+                except Exception as e:
+                    logger.warning(f"  Failed to download {filename}: {e}")
+
     def _handle_roadmap_download(self, config: dict, save_dir: Path):
         """Special handler for roadmap downloads"""
         root_url = config['url']
