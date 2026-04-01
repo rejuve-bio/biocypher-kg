@@ -26,6 +26,9 @@ _MASTER_TSV_URL = (
 # BED sample (cCREs/Adipocyte.bed):
 #   chr1    9955    10355   cCRE1   .       .
 #
+# cCRE node ID (via build_regulatory_region_id, BED 0-based start → 1-based closed):
+#   {chr}_{start}_{end}_GRCh38   e.g. chr1_9956_10355_GRCh38
+#
 # Two adapter config entries are used — one per ccre_type:
 #   ccre_type=enhancer  yields edges with labels:
 #     CL:    enhancer_accessible_in_cell_type  →  cell type node

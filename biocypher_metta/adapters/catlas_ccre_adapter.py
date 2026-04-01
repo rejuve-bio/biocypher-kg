@@ -1,27 +1,35 @@
+"""
+CATLAS cCRE node adapter.
+https://catlas.org/
+
+Reads the master catalog (cCRE_hg38.tsv.gz):
+    #Chromosome  hg38_Start  hg38_End  Class  Present in fetal tissues  Present in adult tissues  CRE module
+    chr1         9955        10355     Promoter Proximal  yes  yes  146
+    chr1         79215       79615     Distal             no   yes  75
+
+Class mapping:
+    Distal                      → enhancer
+    Promoter / Promoter Proximal → promoter
+
+Node ID format (via build_regulatory_region_id):
+    {chr}_{start_1based}_{end}_GRCh38   e.g. chr1_9956_10355_GRCh38
+"""
+
 import csv
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id
 
-"""
-- Sample data from CATLAS cCRE dataset:
-
-#Chromosome     hg38_Start      hg38_End        Class   Present in fetal tissues        Present in adult tissues        CRE module
-chr1    9955    10355   Promoter Proximal       yes     yes     146
-chr1    29163   29563   Promoter        yes     yes     37
-chr1    79215   79615   Distal  no      yes     75
-chr1    102755  103155  Distal  no      yes     51
-chr1    115530  115930  Distal  yes     no      36
-chr1    180580  180980  Promoter Proximal       no      yes     146
-chr1    181273  181673  Promoter Proximal       no      yes     146
-"""
-
 
 class CAtlasCCREAdapter(Adapter):
     """
-    - Class mapping:
-      * Distal -> enhancer
-      * Promoter / Promoter Proximal -> promoter
+    Yields enhancer and promoter nodes from the CATLAS master cCRE catalog.
+
+    Node ID: {chr}_{start}_{end}_GRCh38  (built by build_regulatory_region_id,
+    1-based closed coordinates converted from the BED 0-based start).
+
+    Use class_filter="enhancer" or "promoter" via separate config entries to
+    produce the two node types independently.
     """
 
     _PROMOTER_CLASSES = {"promoter", "promoter proximal"}
@@ -159,6 +167,4 @@ class CAtlasCCREAdapter(Adapter):
             yield node_id, record["label"], props
 
     def get_edges(self):
-        # CATLAS sample file provides region annotations only (no gene links).
-        if False:
-            yield
+        pass

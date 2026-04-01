@@ -18,16 +18,20 @@ _MASTER_TSV_URL = (
 # https://catlas.org/
 #
 # Each file in ABC_scores/ corresponds to a cell type (e.g., Adipocyte.tsv.gz).
-# Columns: cCRE, Promoter, ABC_score, Gene Name, Distance
+# cCRE    Promoter        ABC_score       Gene Name       Distance
+# chr10:100006303-100006703       chr10:99731111-99733111 0.0170610891557263      AL133353.2:ENST00000649102.1        274392
+# chr10:100006303-100006703       chr10:100228666-100230666       0.018493391897199167    AL138921.1:ENST00000444359.1        223163
+# chr10:100006303-100006703       chr10:100228628-100230628       0.018493391897199167    AL138921.1:ENST00000667469.1        223125
 #
 # cCRE field: "chr10:100006303-100006703"  (0-based start, as in BED)
 # Gene Name:  "CHUK:ENST00000370397.8"     (symbol:transcript_id)
 #
 # Pre-built pkls required:
-#   catlas_ccre_label_map.pkl   — {(chr, start_1based, end): "enhancer"|"promoter"}
-#                                 produced by scripts/create_catlas_ccre_label_map.py
-#   hgnc_mapping.pkl (gzipped)  — {symbol_to_ensembl: {symbol: ENSG_ID, ...}, ...}
-#   catlas_cell_ontology_map.pkl — {cell_type_name: "CL:XXXXXXX"}  (optional)
+#   catlas_ccre_label_map.pkl       — {(chr, start_1based, end): "enhancer"|"promoter"}
+#                                     produced by scripts/create_catlas_ccre_label_map.py
+#   hgnc_mapping.pkl (gzipped)      — {symbol_to_ensembl: {symbol: ENSG_ID, ...}, ...}
+#   catlas_abc_cell_ontology_map.pkl — {abc_stem: "CL:XXXXXXX" | "UBERON:XXXXXXX"}
+#                                     produced by scripts/create_catlas_abc_cell_ontology_map.py
 #
 # Edge label is chosen from the cCRE class:
 #   enhancer cCRE  →  enhancer_activity_by_contact
@@ -41,10 +45,10 @@ class CAtlasABCScoreAdapter(Adapter):
     Edge adapter linking CATLAS cCRE regions to genes using ABC model scores.
 
     Yields edges: (ccre_id, gene_id, label, props)
-      - ccre_id  : CATLAS:cCRE:{chr}:{start}-{end}:{enhancer|promoter}
+      - ccre_id  : {chr}_{start}_{end}_GRCh38  (via build_regulatory_region_id, 1-based closed)
       - label    : enhancer_activity_by_contact  OR  promoter_activity_by_contact
       - gene_id  : ENSEMBL:{ENSG_ID}
-      - props    : abc_score, distance, cell_type, biological_context (CL ID)
+      - props    : abc_score, distance, cell_type, biological_context (CL/UBERON ID)
     """
 
     _LABEL_MAP = {
@@ -142,16 +146,8 @@ class CAtlasABCScoreAdapter(Adapter):
         return self._cell_ontology_map
 
     def _cell_type_files(self):
-        # split by dot then take the first part as cell type (e.g., "Adipocyte" from "Adipocyte.tsv.gz")
-
         for fname in os.listdir(self.dirpath):
-            cell_type = fname.split(".", 1)[0]
-            # if fname.endswith(".tsv.gz"):
-            #     cell_type = fname[: -len(".tsv.gz")]
-            # elif fname.endswith(".tsv"):
-            #     cell_type = fname[: -len(".tsv")]
-            # else:
-            #     continue
+            cell_type = fname.split(".", 1)[0]  # "Adipocyte" from "Adipocyte.tsv.gz"
             yield cell_type, os.path.join(self.dirpath, fname)
 
     @staticmethod
@@ -227,7 +223,6 @@ class CAtlasABCScoreAdapter(Adapter):
                     except ValueError:
                         distance = None
 
-                    # ccre_id = f"CATLAS:cCRE:{chrom}:{start}-{end}:{ccre_label}"
                     ccre_id = build_regulatory_region_id(chrom, start, end)
                     gene_id = f"ENSEMBL:{ensg_id}"
                     edge_label = self._LABEL_MAP[ccre_label]
