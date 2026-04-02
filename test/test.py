@@ -331,9 +331,14 @@ class TestBiocypherKG:
             try:
                 adapter_module = importlib.import_module(module_name)
             except Exception as e:
-                logging.warning(f"Skipping adapter '{adapter_name}': could not import module "
-                                f"'{module_name}' ({type(e).__name__}: {e})")
-                continue
+                error_message = (
+                    f"Adapter '{adapter_name}' could not import module "
+                    f"'{module_name}' ({type(e).__name__}: {e})"
+                )
+                if test_options["mode"] == "smoke":
+                    logging.warning(f"Skipping adapter in smoke mode: {error_message}")
+                    continue
+                pytest.fail(error_message, pytrace=True)
 
             adapter_class = getattr(adapter_module, config['adapter']['cls'])
 
@@ -409,9 +414,14 @@ class TestBiocypherKG:
             try:
                 adapter_module = importlib.import_module(module_name)
             except Exception as e:
-                logging.warning(f"Skipping adapter '{adapter_name}': could not import module "
-                                f"'{module_name}' ({type(e).__name__}: {e})")
-                continue
+                error_message = (
+                    f"Adapter '{adapter_name}' could not import module "
+                    f"'{module_name}' ({type(e).__name__}: {e})"
+                )
+                if test_options["mode"] == "smoke":
+                    logging.warning(f"Skipping adapter in smoke mode: {error_message}")
+                    continue
+                pytest.fail(error_message, pytrace=True)
 
             adapter_class = getattr(adapter_module, config['adapter']['cls'])
 
