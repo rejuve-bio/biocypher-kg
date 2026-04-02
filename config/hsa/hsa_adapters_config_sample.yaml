@@ -557,7 +557,7 @@ tflink_protein_protein:
       filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
       label: interacts_with
       taxon_id: 9606
-  outdir: tflink/protein_protein
+  outdir: tflink
   nodes: False
   edges: True
 

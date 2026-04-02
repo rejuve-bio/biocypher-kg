@@ -29,13 +29,17 @@ class TFLinkAdapter(Adapter):
     INDEX = {'UniprotID.TF': 0, 'UniprotID.Target': 1, 'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 
              'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
 
-    def __init__(self, filepath, entrez_to_ensemble_map=None, label='tf_gene',
-                 write_properties=None, add_provenance=None, taxon_id=9606,
+    def __init__(self, filepath, label, taxon_id, entrez_to_ensemble_map=None,
+                 write_properties=None, add_provenance=None,
                  entrez_ensembl_processor=None):
         """
         Constructs TFLink adapter that returns edges between TFs and their target gene
         :param filepath: Path to the TSV file downloaded from tflink
+        :param label: Interaction type (tf_gene or interacts_with)
+        :param taxon_id: Taxon ID (default: 9606 for Human)
         :param entrez_to_ensemble_map: DEPRECATED - use entrez_ensembl_processor instead
+        :param write_properties: Whether to write properties to edges
+        :param add_provenance: Whether to add provenance to edges
         :param entrez_ensembl_processor: EntrezEnsemblProcessor instance for ID mapping
         """
         self.filepath = filepath
