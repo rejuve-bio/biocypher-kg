@@ -489,7 +489,7 @@ class OntologyAdapter(Adapter):
         
             # Skip deprecated nodes
             if self.is_deprecated(node):
-                print(f"Skipping deprecated node: {node_key}")
+                # print(f"Skipping deprecated node: {node_key}")
                 continue
 
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))

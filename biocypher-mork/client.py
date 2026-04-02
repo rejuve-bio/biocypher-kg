@@ -7,7 +7,7 @@ from time import monotonic, sleep
 from base64 import b32encode
 import re
 from io import StringIO, FileIO
-from urllib.parse import quote, quote_from_bytes
+from urllib.parse import quote, quote_from_bytes, unquote
 
 import requests
 from requests import request, RequestException
@@ -461,7 +461,7 @@ class MORK:
         return cmd
 
     def paths_import_(self, file_uri):
-        return self.sexpr_import("$x", "$x", file_uri)
+        return self.paths_import("$x", "$x", file_uri)
 
     def paths_import(self, pattern, template, file_uri):
         """
@@ -584,14 +584,8 @@ class ManagedMORK(MORK):
     def start(cls, binary_path, *args):
         """
         Starts the MORK server.  Fails if it's already running and therefore can't be started
-
-        Args:
-            binary_path (str): file system path to the compiled MORK server binary
-
-        Returns:
-            Self: a ManagedMORK instance
         """
-        if not os.path.isfile(binary_path):
+        if binary_path is None or not os.path.isfile(binary_path):
             raise RuntimeError(f"Can't connect to running server, and no server binary found at path: {binary_path}")
 
         print("Starting server from binary")

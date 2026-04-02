@@ -1721,15 +1721,90 @@ uniprot_chebi_part_of_chebi:
   nodes: False
   edges: True
 
+disease_ontology:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      type: node
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache      
+  outdir: disease
+  nodes: True
+  edges: False
 
-alliance_gene_disease_mouse:
+disease_do_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      label: do_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_biomarker_orthology:
   adapter:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
       filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: "10090"  
-      label: "biomarker_via_orthology"
-  outdir: alliance/gene_disease_mouse
+      taxon_id: 9606
+      label: biomarker_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_implicated_via_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: implicated_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_implicated_in:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: is_implicated_in
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_model_of:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: is_model_of
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_marker_for:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: is_marker_for
+  outdir: disease
   nodes: False
   edges: True
