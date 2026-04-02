@@ -59,7 +59,7 @@ def detect_config_changes():
             if key not in current_config:
                 changed_items.append(key)
 
-    output_file = os.path.join(os.environ['GITHUB_WORKSPACE'], '.github/changed_config_items.txt')
+    output_file = os.path.join(os.getenv('GITHUB_WORKSPACE', os.getcwd()), '.github/changed_config_items.txt')
     with open(output_file, 'w') as f:
         f.write(','.join(changed_items))
 

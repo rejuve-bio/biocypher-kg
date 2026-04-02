@@ -126,8 +126,11 @@ class OntologyAdapter(Adapter):
                     else:
                         print("Cache has expired and version information is incomplete. Updating data.")
                 elif remote_version == current_version:
-                    # Versions match — cache is valid regardless of age
-                    use_cached = True
+                    if not cache_expired:
+                        use_cached = True
+                        print("Using cached data: remote and cached ontology versions match and cache is not expired")
+                    else:
+                        print("Cache has expired even though ontology versions match. Updating data.")
                 else:
                     print(f"Not using cache: New version available (remote: {remote_version}, current: {current_version})")
 
