@@ -33,7 +33,16 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--adapter-profile",
-        action="store_true",
+        action="store_const",
+        const=True,
+        dest="adapter_profile",
         default=True,
-        help="Print per-adapter runtime for profiling slow adapters."
+        help="Enable per-adapter runtime profiling output."
+    )
+    parser.addoption(
+        "--no-adapter-profile",
+        action="store_const",
+        const=False,
+        dest="adapter_profile",
+        help="Disable per-adapter runtime profiling output."
     )
