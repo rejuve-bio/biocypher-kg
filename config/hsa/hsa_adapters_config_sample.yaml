@@ -1774,7 +1774,7 @@ alliance_gene_disease_is_implicated_in:
   edges: True
 
 #=====================================
-# For hsa (9606) config, is_model_of do not produce edges from this file. 
+# For hsa (9606) config, is_model_of does not produce edges from this file.
 #===================================
 
 # alliance_gene_disease_is_model_of:
