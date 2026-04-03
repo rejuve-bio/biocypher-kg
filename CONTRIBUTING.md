@@ -20,7 +20,7 @@ This guide covers how to add a new adapter for a biological dataset, update the 
 ## 1. Setup
 
 ```bash
-git clone https://github.com/your-org/biocypher-kg.git
+git clone https://github.com/rejuve-bio/biocypher-kg.git
 cd biocypher-kg
 pip install uv
 uv sync

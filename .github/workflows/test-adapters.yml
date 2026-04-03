@@ -105,12 +105,18 @@ jobs:
           fi
           echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT
 
-          # On PRs with no writer changes, only test with metta to avoid spinning up 6 identical writer jobs.
-          # On pushes to main or when a writer file changed, test all writers.
-          if [ "${{ github.event_name }}" == "pull_request" ] && [ -z "$WRITERS" ]; then
+          # Use all writers when: push to main, a writer file changed, the main script
+          # changed (output format could be affected), or change detection fell back to
+          # git ls-files (can't tell what's safe to skip).
+          # Only narrow to metta on PRs where the change is isolated to adapter logic.
+          ALL_WRITERS_JSON='["metta","neo4j","prolog","parquet","kgx","networkx"]'
+          if [ "${{ github.event_name }}" == "pull_request" ] \
+            && [ -z "$WRITERS" ] \
+            && [ "$MAIN_SCRIPT_CHANGED" != "true" ] \
+            && [ "$ALL_FILES_USED" != "true" ]; then
             TEST_WRITERS='["metta"]'
           else
-            TEST_WRITERS='["metta","neo4j","prolog","parquet","kgx","networkx"]'
+            TEST_WRITERS="$ALL_WRITERS_JSON"
           fi
           echo "test_writers=$TEST_WRITERS" >> $GITHUB_OUTPUT
 
