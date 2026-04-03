@@ -4,6 +4,8 @@ from math import log10, floor, isinf
 from liftover import get_lifter
 
 import hgvs.dataproviders.uta
+from hgvs.easy import parser
+from hgvs.extras.babelfish import Babelfish
 
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
@@ -41,15 +43,9 @@ def build_regulatory_region_id(chr, pos_start, pos_end, assembly='GRCh38'):
 def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
     # translate hgvs naming to vcf format e.g. NC_000003.12:g.183917980C>T -> 3_183917980_C_T
     if validate:  # use tools from hgvs, which corrects ref allele if it's wrong
-        # Import lazily to avoid eager network calls from hgvs.easy at module import time.
-        # Some test/dev environments run fully offline and should still be able to import adapters.
-        from hgvs.extras.babelfish import Babelfish
-        from hgvs.parser import Parser
-
         # got connection timed out error occasionally, could add a retry function
         hdp = hgvs.dataproviders.uta.connect()
         babelfish38 = Babelfish(hdp, assembly_name=assembly)
-        parser = Parser()
         try:
             chr, pos_start, ref, alt, type = babelfish38.hgvs_to_vcf(
                 parser.parse(hgvs_id))

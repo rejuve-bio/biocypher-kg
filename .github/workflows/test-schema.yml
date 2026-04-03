@@ -3,25 +3,9 @@ name: Test Adapters Against Schema
 on:
   push:
     branches: ["main"]
-    paths:
-      - "config/primer_schema_config.yaml"
-      - "config/hsa/hsa_schema_config.yaml"
-      - "config/hsa/hsa_adapters_config_sample.yaml"
-      - "biocypher_metta/adapters/**"
-      - "biocypher_metta/processors/**"
-      - "test/test.py"
-      - "test/conftest.py"
 
   pull_request:
     branches: ["main"]
-    paths:
-      - "config/primer_schema_config.yaml"
-      - "config/hsa/hsa_schema_config.yaml"
-      - "config/hsa/hsa_adapters_config_sample.yaml"
-      - "biocypher_metta/adapters/**"
-      - "biocypher_metta/processors/**"
-      - "test/test.py"
-      - "test/conftest.py"
 
 jobs:
   test:
@@ -34,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.10.12"
 
       - name: Install uv
         run: |
@@ -58,6 +42,4 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           uv run pytest test/test.py \
             --adapters-config=./config/hsa/hsa_adapters_config_sample.yaml \
-            --primer-schema-config=./config/primer_schema_config.yaml \
-            --species-schema-config=./config/hsa/hsa_schema_config.yaml \
             -v -s

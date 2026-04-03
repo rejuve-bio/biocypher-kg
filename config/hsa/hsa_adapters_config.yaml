@@ -1826,21 +1826,17 @@ alliance_gene_disease_is_implicated_in:
   nodes: False
   edges: True
 
-#=====================================
-# For hsa (9606) config, is_model_of does not produce edges from this file.
-#===================================
-
-# alliance_gene_disease_is_model_of:
-#   adapter:
-#     module: biocypher_metta.adapters.alliance_gene_disease_adapter
-#     cls: AllianceGeneDiseaseAdapter
-#     args:
-#       filepath: /mnt/hdd_1/biocypher-kg/input/agr/DISEASE-ALLIANCE_COMBINED.tsv.gz
-#       taxon_id: 9606
-#       label: is_model_of
-#   outdir: disease
-#   nodes: False
-#   edges: True
+alliance_gene_disease_is_model_of:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/agr/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: is_model_of
+  outdir: disease
+  nodes: False
+  edges: True
 
 alliance_gene_disease_is_marker_for:
   adapter:
