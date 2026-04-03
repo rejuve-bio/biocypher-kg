@@ -375,38 +375,39 @@ def _write_graph_info(
     return graph_info
 
 
-def _load_dbsnp(cache_dir: str, is_sample: bool = False) -> tuple:
+def _load_dbsnp(mapping_path: str, is_sample: bool = False) -> tuple:
     """Load dbSNP mappings using DBSNPProcessor.
 
     Args:
-        cache_dir: Path to directory containing dbsnp_mapping.pkl.
-                   If empty string, returns empty dicts.
+        mapping_path: Path to either `dbsnp_mapping.pkl` or the directory that
+            contains it. If empty string, returns empty dicts.
         is_sample: Whether this is a sample config. For full configs,
-                   missing cache is treated as an error.
+            missing mapping data is treated as an error.
 
     Returns:
         Tuple of (rsid_to_pos_dict, pos_to_rsid_dict)
     """
-    if not cache_dir:
-        logger.info("No dbSNP cache directory specified, continuing without rsID mappings")
+    if not mapping_path:
+        logger.info("No dbSNP mapping path specified, continuing without rsID mappings")
         return {}, {}
 
-    cache_path = Path(cache_dir)
+    input_path = Path(mapping_path)
+    cache_path = input_path.parent if input_path.name == "dbsnp_mapping.pkl" else input_path
 
     if not cache_path.exists() or not cache_path.is_dir():
         if is_sample:
-            logger.warning(f"dbSNP cache directory not found at {cache_path}, continuing without rsID mappings")
+            logger.warning(f"dbSNP mapping location not found at {cache_path}, continuing without rsID mappings")
             return {}, {}
         else:
             logger.error("=" * 80)
-            logger.error("ERROR: Full config requires server dbSNP cache directory")
+            logger.error("ERROR: Full config requires a valid dbSNP mapping path")
             logger.error(f"Expected location: {cache_path}")
             logger.error("Directory not found!")
             logger.error("")
             logger.error("Solutions:")
             logger.error("  1. Run on the bizon server where cache exists")
             logger.error("  2. Use sample config instead: --dataset sample")
-            logger.error("  3. Create cache by running: python update_dbsnp.py")
+            logger.error("  3. Create dbSNP mappings by running: python update_dbsnp.py")
             logger.error("=" * 80)
             raise typer.Exit(1)
 
@@ -429,7 +430,7 @@ def _load_dbsnp(cache_dir: str, is_sample: bool = False) -> tuple:
         dbsnp_proc = DBSNPProcessor(cache_dir=str(cache_path))
         dbsnp_proc.load_mapping()
         rsids_dict, pos_dict = dbsnp_proc.get_dict_wrappers()
-        logger.info(f"Loaded {len(rsids_dict):,} rsID mappings from {cache_path}")
+        logger.info(f"Loaded {len(rsids_dict):,} rsID mappings from {mapping_file}")
         return rsids_dict, pos_dict
     except Exception as e:
         if is_sample:
@@ -543,9 +544,11 @@ def main(
         dir_okay=False,
         help="Adapters config path (manual mode only)"
     ),
-    dbsnp_cache_dir: Optional[str] = typer.Option(
+    dbsnp_mapping_path: Optional[str] = typer.Option(
         None,
-        help="dbSNP cache directory containing dbsnp_mapping.pkl (manual mode only, optional - defaults to aux_files/hsa/sample_dbsnp)"
+        "--dbsnp-mapping-path",
+        "--dbsnp-cache-dir",
+        help="Path to dbSNP mapping data: either dbsnp_mapping.pkl or its containing directory (manual mode only, optional)"
     ),
     schema_config: Optional[Path] = typer.Option(
         None,
@@ -651,15 +654,15 @@ def main(
                     # merge species schema with primer schema ---> species schemas with same name prevails over primer schemas
                     sp_schema_config = merge_schemas('config/primer_schema_config.yaml', sp_schema_config)
                     sp_is_sample = (dataset == 'sample')
-                    sp_dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
-                    if not sp_dbsnp_cache_dir:
+                    sp_dbsnp_mapping_path = config.get('dbsnp_mapping_path', '') or config.get('dbsnp_cache_dir', '')
+                    if not sp_dbsnp_mapping_path:
                         if sp_is_sample:
-                            sp_dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
+                            sp_dbsnp_mapping_path = 'aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl'
                         else:
-                            sp_dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
+                            sp_dbsnp_mapping_path = '/mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl'
 
                     # Load dbSNP mappings via DBSNPProcessor
-                    sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_cache_dir, is_sample=sp_is_sample)
+                    sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_mapping_path, is_sample=sp_is_sample)
 
                     bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
                     logger.info(f"Using {writer_type} writer for {sp}")
@@ -759,22 +762,22 @@ def main(
                 schema_config = merge_schemas('config/primer_schema_config.yaml', schema_config)
                 is_merged_schema = True
                 temp_schema_to_cleanup = schema_config  # to be deleted after successful completion
-                dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
+                dbsnp_mapping_path = config.get('dbsnp_mapping_path', '') or config.get('dbsnp_cache_dir', '')
 
         # Load dbSNP mappings via DBSNPProcessor
-        # Determine sample vs full, and resolve dbsnp_cache_dir if not set
+        # Determine sample vs full, and resolve dbSNP mapping path if not set
         if not species_mode:
             is_sample_config = 'sample' in str(adapters_config).lower()
         else:
             is_sample_config = (dataset == 'sample')
 
-        if not dbsnp_cache_dir:
+        if not dbsnp_mapping_path:
             if is_sample_config:
-                dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
+                dbsnp_mapping_path = 'aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl'
             else:
                 # Full config: use server cache
-                dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
-        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_cache_dir, is_sample=is_sample_config)
+                dbsnp_mapping_path = '/mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl'
+        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_mapping_path, is_sample=is_sample_config)
 
         # ── NEW: Auto-merge species schema in manual mode if only primer is provided ──
         if not species_mode and str(schema_config) == 'config/primer_schema_config.yaml':
