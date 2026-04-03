@@ -10,6 +10,7 @@ on:
       - "biocypher_metta/adapters/**"
       - "biocypher_metta/processors/**"
       - "test/test.py"
+      - "test/test_unit.py"
       - "test/conftest.py"
 
   pull_request:
@@ -21,6 +22,7 @@ on:
       - "biocypher_metta/adapters/**"
       - "biocypher_metta/processors/**"
       - "test/test.py"
+      - "test/test_unit.py"
       - "test/conftest.py"
 
 jobs:
@@ -53,7 +55,12 @@ jobs:
         run: |
           uv sync
 
-      - name: Run tests
+      - name: Run unit tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          uv run pytest test/test_unit.py -v -s
+
+      - name: Run schema integration tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           uv run pytest test/test.py \
