@@ -106,18 +106,21 @@ jobs:
           fi
           echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT
 
-          # Use all writers when: push to main, a writer file changed, the main script
-          # changed (output format could be affected), or change detection fell back to
-          # git ls-files (can't tell what's safe to skip).
-          # Only narrow to metta on PRs where the change is isolated to adapter logic.
+          # Determine which writers to include in the matrix:
+          # - push to main or fallback (all_files_used): all 6 writers
+          # - main script changed: all 6 writers (orchestration change could affect any writer)
+          # - writer file(s) changed on PR: only the changed writer(s)
+          # - adapter/config only change on PR: only metta (adapter logic is writer-agnostic)
           ALL_WRITERS_JSON='["metta","neo4j","prolog","parquet","kgx","networkx"]'
-          if [ "${{ github.event_name }}" == "pull_request" ] \
-            && [ -z "$WRITERS" ] \
-            && [ "$MAIN_SCRIPT_CHANGED" != "true" ] \
-            && [ "$ALL_FILES_USED" != "true" ]; then
-            TEST_WRITERS='["metta"]'
-          else
+          if [ "${{ github.event_name }}" != "pull_request" ] \
+            || [ "$ALL_FILES_USED" == "true" ] \
+            || [ "$MAIN_SCRIPT_CHANGED" == "true" ]; then
             TEST_WRITERS="$ALL_WRITERS_JSON"
+          elif [ -n "$WRITERS" ]; then
+            # Build a JSON array from the comma-separated changed writers
+            TEST_WRITERS=$(echo "$WRITERS" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read().strip().split(',')))")
+          else
+            TEST_WRITERS='["metta"]'
           fi
           echo "test_writers=$TEST_WRITERS" >> $GITHUB_OUTPUT
 
