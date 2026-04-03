@@ -18,6 +18,10 @@ on:
       - "config/hsa/hsa_adapters_config_sample.yaml"
       - "create_knowledge_graph.py"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   determine_changes:
     runs-on: ubuntu-latest
@@ -25,6 +29,7 @@ jobs:
       changed_adapters: ${{ steps.get-changes.outputs.adapters }}
       changed_writers: ${{ steps.get-changes.outputs.writers }}
       all_writers: ${{ steps.get-changes.outputs.all_writers }}
+      test_writers: ${{ steps.get-changes.outputs.test_writers }}
       changes_detected: ${{ steps.get-changes.outputs.changes_detected }}
       config_changed: ${{ steps.get-changes.outputs.config_changed }}
       changed_config_items: ${{ steps.get-changes.outputs.changed_config_items }}
@@ -99,6 +104,15 @@ jobs:
           fi
           echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT
 
+          # On PRs with no writer changes, only test with metta to avoid spinning up 6 identical writer jobs.
+          # On pushes to main or when a writer file changed, test all writers.
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ -z "$WRITERS" ]; then
+            TEST_WRITERS='["metta"]'
+          else
+            TEST_WRITERS='["metta","neo4j","prolog","parquet","kgx","networkx"]'
+          fi
+          echo "test_writers=$TEST_WRITERS" >> $GITHUB_OUTPUT
+
   prepare_config:
     needs: determine_changes
     runs-on: ubuntu-latest
@@ -130,7 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        writer-type: [metta, neo4j, prolog, parquet, kgx, networkx]
+        writer-type: ${{ fromJson(needs.determine_changes.outputs.test_writers) }}
 
     steps:
       - uses: actions/checkout@v4
