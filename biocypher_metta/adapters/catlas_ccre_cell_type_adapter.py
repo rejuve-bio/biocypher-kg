@@ -65,6 +65,7 @@ class CAtlasCCRECellTypeAdapter(Adapter):
         write_properties=True,
         add_provenance=True,
         ccre_master_tsv=None,
+        cell_ontology_tsv=None,
     ):
         if ccre_type not in ("enhancer", "promoter"):
             raise ValueError(f"ccre_type must be 'enhancer' or 'promoter', got '{ccre_type}'")
@@ -77,6 +78,7 @@ class CAtlasCCRECellTypeAdapter(Adapter):
         self.source_url = "https://catlas.org/"
 
         self._ensure_ccre_label_pkl(ccre_master_tsv)
+        self._ensure_cell_ontology_pkl(cell_ontology_tsv)
 
         super(CAtlasCCRECellTypeAdapter, self).__init__(write_properties, add_provenance)
 
@@ -98,6 +100,26 @@ class CAtlasCCRECellTypeAdapter(Adapter):
         subprocess.run(
             [sys.executable, str(_SCRIPTS_DIR / "create_catlas_ccre_label_map.py"),
              ccre_master_tsv, self.ccre_label_pkl],
+            check=True,
+        )
+
+    def _ensure_cell_ontology_pkl(self, cell_ontology_tsv):
+        if os.path.exists(self.cell_ontology_pkl):
+            return
+        if not cell_ontology_tsv:
+            raise FileNotFoundError(
+                f"cell_ontology_pkl not found: {self.cell_ontology_pkl}\n"
+                "Either pre-build it with:\n"
+                f"  python scripts/create_catlas_cell_ontology_map.py <Cell_ontology.tsv> {self.cell_ontology_pkl}\n"
+                "Or pass cell_ontology_tsv= in the adapter config to auto-generate it."
+            )
+        print(
+            f"[CAtlasCCRECellTypeAdapter] Building {self.cell_ontology_pkl} "
+            f"from {cell_ontology_tsv} ..."
+        )
+        subprocess.run(
+            [sys.executable, str(_SCRIPTS_DIR / "create_catlas_cell_ontology_map.py"),
+             cell_ontology_tsv, self.cell_ontology_pkl],
             check=True,
         )
 

@@ -147,8 +147,13 @@ class CAtlasABCScoreAdapter(Adapter):
 
     def _cell_type_files(self):
         for fname in os.listdir(self.dirpath):
+            full_path = os.path.join(self.dirpath, fname)
+            if not os.path.isfile(full_path):
+                continue
+            if not (fname.endswith(".tsv") or fname.endswith(".tsv.gz")):
+                continue
             cell_type = fname.split(".", 1)[0]  # "Adipocyte" from "Adipocyte.tsv.gz"
-            yield cell_type, os.path.join(self.dirpath, fname)
+            yield cell_type, full_path
 
     @staticmethod
     def _parse_ccre(ccre_str):
