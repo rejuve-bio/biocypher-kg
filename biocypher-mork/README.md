@@ -1,73 +1,89 @@
 ## BioAtomSpace with MORK
 
-### This project uses MORK to load BioAtomSpace data into a MORK database, store it efficiently, and perform benchmarks to evaluate performance. It also enables using BioAtomSpace as a graph database.
+### This project uses MORK to load BioAtomSpace data into a MORK graph server and store it with crash-safe WAL persistence.
 
 #### Features
+- Load BioCypher-generated `.metta` files into MORK.
+- Crash-safe persistence via snapshots + Write-Ahead Log (WAL).
 
- - Load BioAtomSpace data into MORK.
+---
 
- - Store and manage data efficiently.
+### Setup & Configuration
 
- - Benchmark MORK performance with BioAtomSpace datasets.
+#### 1. Prerequisites
+- Docker & Docker Compose installed
+- Python 3
 
- - Use BioAtomSpace as a graph database.
-
-### Getting Started
-#### Prerequisites
-
- - Docker & Docker Compose installed
-
- - Python 3
-
-### how to run
-
-### Clone the repository
+#### 2. Initial Setup
 ```bash
 git clone https://github.com/Abdu1964/biocypher-mork.git
 cd biocypher-mork
-
-# Create necessary folders
-mkdir reports
-mkdir benchmarks
-touch .env # update your .env values
-
-# Build Docker containers
-docker compose build
-
-# Start containers in detached mode
-docker compose up -d
-
-# Fix permissions for the reports and data folders
-sudo chown -R $USER:$USER reports data benchmarks
-sudo chmod -R u+rw reports data benchmarks
-
-#load data to mork
-python3 load_metta_data.py
-#do benchmarks
-python3 benchmark.py
+mkdir -p reports mork_persist
 ```
-### option 2
-#### use a prebuilt image
 
-- mkdir reports
-- mkdir benchmarks
+#### 3. Configure Data Directory
+Edit `.env` in the `biocypher-mork/` folder to point `MORK_DATA_DIR` to your BioCypher output folder. By default, it looks for `../output_human`.
 
-```bash 
-docker run -d \
-  -p ${HOST_PORT}:8027 \
-  --name mork-biocypher \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/reports:/app/reports \
-  -v $(pwd)/benchmarks:/app/benchmarks \
-  abdum1964/mork-biocypher:latest
+```bash
+# Example .env setting
+MORK_DATA_DIR=../output_human
+```
 
+---
 
-# Fix permissions for the reports and data folders
-sudo chown -R $USER:$USER reports data
-sudo chmod -R u+rw reports data
+### Usage Workflow
 
-# load data to mork
-python3 load_metta_data.py
-# do benchmarks
-python3 benchmark.py
+#### 1. Start the MORK Server
+Run from the `biocypher-mork/` folder:
+```bash
+docker compose up -d --build
+docker compose ps  
+```
+
+#### 2. Load Data
+Run from the **project root** (`biocypher-kg/`), one level above `biocypher-mork/`:
+```bash
+python3 scripts/mork_loader.py
+```
+**When prompted:**
+- **Dataset Path**: Enter the path to your `.metta` directory (e.g., `/path/to/output_human`).
+- **Clear existing data**: Always answer **`y`** on fresh loads to wipe the in-memory graph and truncate the WAL, preventing data duplication.
+
+#### 3. Reloading Data
+To reload after regenerating your data, simply re-run the loader with **Clear = y**. This automatically:
+1. Clears the in-memory graph on the server.
+2. Truncates `wal.metta` and `snapshot.paths` to 0 bytes.
+3. Loads the fresh data.
+
+---
+
+### Persistence Explained
+
+| File | Purpose |
+|---|---|
+| `mork_persist/snapshot.paths` | Full compressed snapshot of the graph (created every ~5 min or on shutdown). |
+| `mork_persist/wal.metta` | Write-Ahead Log — records every write since the last snapshot. |
+
+On startup, the server automatically restores state by replaying the snapshot and then the WAL.
+
+---
+
+### Monitoring & Querying
+
+#### Check Server Status
+```bash
+# Container health
+docker compose ps
+
+# Live logs
+docker compose logs -f mork-biocypher
+
+curl http://localhost:8027/status/-
+```
+
+#### Querying Data
+To see your loaded data, use the `/explore` endpoint or the Python client.
+
+```bash
+curl "http://localhost:8027/explore/%28default%20%24x%29//"
 ```
