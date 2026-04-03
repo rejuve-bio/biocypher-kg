@@ -9,6 +9,8 @@ Update strategy: Dependency-based (updates when GO.owl file changes)
 """
 
 import rdflib
+import json
+from datetime import datetime
 from typing import Dict, Any, Optional
 from pathlib import Path
 from biocypher._logger import logger
@@ -40,6 +42,88 @@ class GOSubontologyProcessor(BaseMappingProcessor):
 
     def set_graph(self, graph: rdflib.Graph):
         self.graph = graph
+
+    def _read_dependency_signature(self) -> Optional[Dict[str, str]]:
+        """
+        Read stable dependency signature from go_meta.json-like files.
+
+        Uses ontology `version` and `hash` fields (ignores mutable `date`).
+        """
+        if not self.dependency_file or not self.dependency_file.exists():
+            return None
+
+        try:
+            with open(self.dependency_file, "r") as f:
+                meta = json.load(f)
+
+            version = meta.get("version")
+            content_hash = meta.get("hash")
+
+            if version is None and content_hash is None:
+                return None
+
+            return {
+                "version": version,
+                "hash": content_hash,
+            }
+        except Exception:
+            return None
+
+    def check_update_needed(self) -> bool:
+        """
+        Use dependency signature when available to avoid unnecessary rebuilds.
+
+        This prevents re-generation when go_meta.json is rewritten but ontology
+        version/hash are unchanged.
+        """
+        if not self.mapping_file.exists() or not self.version_file.exists():
+            logger.info(f"{self.name}: Mapping or version file not found. Update needed.")
+            return True
+
+        version_info = self._load_version_info()
+        if not version_info:
+            logger.warning(f"{self.name}: Invalid version file. Update needed.")
+            return True
+
+        current_sig = self._read_dependency_signature()
+        cached_sig = version_info.get("dependency_signature")
+
+        if current_sig and cached_sig:
+            if current_sig != cached_sig:
+                logger.info(f"{self.name}: Dependency signature changed. Update needed.")
+                return True
+
+            logger.info(f"{self.name}: Dependency signature unchanged. Using cached mapping.")
+            return False
+
+        if self.dependency_file and self.dependency_file.exists() and "timestamp" in version_info:
+            dep_mtime = datetime.fromtimestamp(self.dependency_file.stat().st_mtime)
+            mapping_time = datetime.fromisoformat(version_info["timestamp"])
+
+            if dep_mtime > mapping_time:
+                logger.info(f"{self.name}: Dependency file is newer. Update needed.")
+                return True
+
+        logger.info(f"{self.name}: Using cached mapping.")
+        return False
+
+    def save_version_info(self):
+        super().save_version_info()
+
+        dependency_signature = self._read_dependency_signature()
+        if not dependency_signature:
+            return
+
+        try:
+            with open(self.version_file, "r") as f:
+                version_info = json.load(f)
+
+            version_info["dependency_signature"] = dependency_signature
+
+            with open(self.version_file, "w") as f:
+                json.dump(version_info, f, indent=2)
+        except Exception as e:
+            logger.warning(f"{self.name}: Could not persist dependency signature: {e}")
 
     def fetch_data(self) -> rdflib.Graph:
         if self.graph is None:

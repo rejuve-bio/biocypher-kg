@@ -15,6 +15,7 @@ import requests
 import gzip
 import re
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from biocypher._logger import logger
@@ -45,6 +46,38 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
 
     def get_remote_urls(self):
         return [self.NCBI_GENE_INFO_URL, self.GENCODE_URL]
+
+    def check_update_needed(self) -> bool:
+        """
+        Make cache behavior predictable for this processor.
+
+        We honor the configured time window first (default: 7 days) and only
+        allow remote metadata checks after the interval has elapsed.
+        This avoids daily rebuilds caused by frequently changing HTTP
+        Last-Modified headers on upstream files.
+        """
+        if not self.mapping_file.exists() or not self.version_file.exists():
+            logger.info(f"{self.name}: Mapping or version file not found. Update needed.")
+            return True
+
+        version_info = self._load_version_info()
+        if not version_info or "timestamp" not in version_info:
+            logger.warning(f"{self.name}: Invalid version file. Update needed.")
+            return True
+
+        if self.update_interval:
+            last_update = datetime.fromisoformat(version_info["timestamp"])
+            time_since_update = datetime.now() - last_update
+            if time_since_update <= self.update_interval:
+                days = time_since_update.days
+                hours = time_since_update.seconds // 3600
+                logger.info(
+                    f"{self.name}: Using cached mapping (age: {days} days, {hours} hours; "
+                    f"refresh window: {self.update_interval.days} days)."
+                )
+                return False
+
+        return super().check_update_needed()
 
     def fetch_data(self) -> Dict[str, Any]:
         temp_dir = Path(tempfile.mkdtemp())
