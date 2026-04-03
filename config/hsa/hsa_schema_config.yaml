@@ -1965,6 +1965,10 @@ promoter to gene association:
   properties:
     score:
       type: float
+      biolink: has_quantitative_value
+    biological_context:
+      type: str
+      biolink: has_biological_sequence
 
 enhancer accessible in cell type:
   description: >-

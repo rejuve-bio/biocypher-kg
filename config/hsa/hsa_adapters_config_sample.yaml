@@ -1573,9 +1573,10 @@ catlas_enhancer_accessible_in:
     cls: CAtlasCCRECellTypeAdapter
     args:
       cres_dirpath: ./samples/hsa/catlasv1/cCREs
-      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: enhancer
   outdir: catlas_ccre/enhancer_accessible_in
   nodes: False
@@ -1587,9 +1588,10 @@ catlas_promoter_accessible_in:
     cls: CAtlasCCRECellTypeAdapter
     args:
       cres_dirpath: ./samples/hsa/catlasv1/cCREs
-      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: promoter
   outdir: catlas_ccre/promoter_accessible_in
   nodes: False
@@ -1601,7 +1603,7 @@ catlas_abc_scores:
     cls: CAtlasABCScoreAdapter
     args:
       dirpath: ./samples/hsa/catlasv1/ABC_scores
-      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
