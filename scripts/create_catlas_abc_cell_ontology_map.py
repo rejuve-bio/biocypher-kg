@@ -1,7 +1,7 @@
 """
 Build a pickle mapping ABC_scores filename stems → Cell Ontology IDs.
 
-Reads the hand-curated TSV at aux_files/hsa/catlas_abc_cell_type_aliases.tsv
+Reads the hand-curated TSV at ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
 which has three columns:
     abc_stem      — filename stem used in ABC_scores/ (e.g. "Airway Goblet")
     ontology_id   — CL: or UBERON: ID           (e.g. "CL:0002370")
@@ -11,8 +11,8 @@ Output pkl: dict  {abc_stem: "CL:XXXXXXX" or "UBERON:XXXXXXX"}
 
 Usage:
     python scripts/create_catlas_abc_cell_ontology_map.py \\
-        aux_files/hsa/catlas_abc_cell_type_aliases.tsv \\
-        aux_files/hsa/catlas_abc_cell_ontology_map.pkl
+        ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv \\
+        ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
 """
 
 import csv

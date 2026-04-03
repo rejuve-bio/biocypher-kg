@@ -9,7 +9,7 @@ Output pkl: dict  {bed_file_stem: "CL:XXXXXXX" or "UBERON:XXXXXXX"}
 Usage:
     python scripts/create_catlas_cell_ontology_map.py \
         /path/to/CATLAS/Cell_ontology.tsv \
-        aux_files/hsa/catlas_cell_ontology_map.pkl \
+        ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl \
         [/path/to/ccre_dir]   # optional: warn about unmatched bed files
 """
 
