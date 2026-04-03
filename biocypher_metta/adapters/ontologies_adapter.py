@@ -125,10 +125,14 @@ class OntologyAdapter(Adapter):
                         print("Using cached data as version information is incomplete and cache is not expired")
                     else:
                         print("Cache has expired and version information is incomplete. Updating data.")
-                elif remote_version == current_version and not cache_expired:
-                    use_cached = True
+                elif remote_version == current_version:
+                    if not cache_expired:
+                        use_cached = True
+                        print("Using cached data: remote and cached ontology versions match and cache is not expired")
+                    else:
+                        print("Cache has expired even though ontology versions match. Updating data.")
                 else:
-                    print(f"Not using cache: Expired: {cache_expired}, New version available: {remote_version != current_version}")
+                    print(f"Not using cache: New version available (remote: {remote_version}, current: {current_version})")
 
         # Create a new World instance for this ontology
         self.world = World()

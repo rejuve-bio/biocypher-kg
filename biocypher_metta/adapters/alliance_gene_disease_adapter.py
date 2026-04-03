@@ -89,6 +89,8 @@ class AllianceGeneDiseaseAdapter(Adapter):
             for row in reader:
                 if not row or row[0].startswith("#"):
                     continue
+                if row[COLUMNS['taxon']] == "Taxon":
+                    continue
                 
                 taxon = row[COLUMNS['taxon']].replace("NCBITaxon:", "")
                 db_object_type = row[COLUMNS['db_object_type']]
