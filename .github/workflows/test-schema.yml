@@ -74,10 +74,33 @@ jobs:
 
             HEAVY_CHANGED=false
 
+            # Build the heavy-adapter pattern from SMOKE_SKIP_MODULE_PATTERNS in test/test.py
+            # — single source of truth, no duplicate list to maintain here.
+            HEAVY_FILE_PATTERNS=$(python - <<'PY'
+import ast, pathlib, sys
+try:
+    source = pathlib.Path("test/test.py").read_text()
+    tree = ast.parse(source)
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "SMOKE_SKIP_MODULE_PATTERNS":
+                    print("|".join(ast.literal_eval(node.value)))
+                    sys.exit(0)
+    sys.exit(1)
+except Exception as e:
+    print(f"ERROR:{e}", file=sys.stderr)
+    sys.exit(1)
+PY
+            )
+            if [ $? -ne 0 ]; then
+              echo "Warning: could not read SMOKE_SKIP_MODULE_PATTERNS from test/test.py — defaulting to full mode"
+              HEAVY_CHANGED=true
+            fi
+
             # Check if any changed adapter .py file is a heavy ontology adapter
-            # (pattern match on file path is sufficient here — file names match module names)
-            HEAVY_FILE_PATTERNS="ontologies_adapter|gene_ontology_adapter|uberon_adapter|cell_ontology_adapter|cell_line_ontology_adapter|experimental_factor_ontology_adapter|brenda_tissue_ontology_adapter|human_phenotype_ontology_adapter|chebi_ontology_adapter|disease_ontology_adapter"
-            if echo "$CHANGED_FILES" | grep -qE "($HEAVY_FILE_PATTERNS)"; then
+            # (file names match module names so the pattern works directly on paths)
+            if [ "$HEAVY_CHANGED" == "false" ] && echo "$CHANGED_FILES" | grep -qE "($HEAVY_FILE_PATTERNS)"; then
               HEAVY_CHANGED=true
               echo "Heavy ontology adapter .py file changed — running full mode"
             fi

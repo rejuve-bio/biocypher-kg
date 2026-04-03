@@ -4,7 +4,11 @@ Detect if any heavy ontology adapter was affected by changes to the adapters con
 
 Instead of grepping diff text (which misses changes to nested fields like filepaths),
 this script maps changed line numbers back to their top-level YAML key by scanning
-upward for the nearest unindented key. That key is the adapter name.
+upward for the nearest unindented key, then reads the adapter.module field within
+that block and checks it against the heavy-adapter pattern list.
+
+The heavy-adapter patterns are read at runtime from SMOKE_SKIP_MODULE_PATTERNS in
+test/test.py — that is the single source of truth. No separate list to maintain here.
 
 Usage:
     python detect_heavy_adapter_changes.py <base_sha> <head_sha>
@@ -12,31 +16,34 @@ Usage:
 Prints:
     HEAVY_CHANGE:<adapter_name>  — if a heavy adapter block was modified
     NO_HEAVY_CHANGE              — otherwise
-
-Must stay in sync with SMOKE_SKIP_MODULE_PATTERNS in test/test.py.
 """
+import ast
+import pathlib
 import sys
 import subprocess
 import re
 
-HEAVY_PATTERNS = [
-    "ontologies_adapter",
-    "gene_ontology_adapter",
-    "uberon_adapter",
-    "cell_ontology_adapter",
-    "cell_line_ontology_adapter",
-    "experimental_factor_ontology_adapter",
-    "brenda_tissue_ontology_adapter",
-    "human_phenotype_ontology_adapter",
-    "chebi_ontology_adapter",
-    "disease_ontology_adapter",
-]
-
 CONFIG_FILE = "config/hsa/hsa_adapters_config_sample.yaml"
 
 
-def is_heavy_adapter(name):
-    return any(p in name for p in HEAVY_PATTERNS)
+def load_heavy_patterns():
+    """
+    Read SMOKE_SKIP_MODULE_PATTERNS from test/test.py at runtime.
+    This makes test/test.py the single source of truth for what counts as a
+    heavy adapter — no duplicate list to keep in sync.
+    """
+    source = pathlib.Path("test/test.py").read_text()
+    tree = ast.parse(source)
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "SMOKE_SKIP_MODULE_PATTERNS":
+                    return ast.literal_eval(node.value)
+    raise RuntimeError("Could not find SMOKE_SKIP_MODULE_PATTERNS in test/test.py")
+
+
+def is_heavy_adapter(name, heavy_patterns):
+    return any(p in name for p in heavy_patterns)
 
 
 def find_top_level_key(lines, line_num_1indexed):
@@ -96,7 +103,7 @@ def parse_diff_hunks(diff_text):
     return old_ranges, new_ranges
 
 
-def check_ranges(lines, ranges):
+def check_ranges(lines, ranges, heavy_patterns):
     """
     Return the first heavy adapter found in the given line ranges, or None.
     Detection is done via the adapter.module value (not the top-level key name),
@@ -108,7 +115,7 @@ def check_ranges(lines, ranges):
             key = find_top_level_key(lines, line_num)
             if not key:
                 continue
-            # Find the 0-based index of the top-level key line so we can scan its block
+            # Find the 0-based index of the top-level key line to scan its block
             key_line_idx = None
             for i in range(line_num - 1, -1, -1):
                 line = lines[i]
@@ -117,7 +124,7 @@ def check_ranges(lines, ranges):
                     break
             if key_line_idx is not None:
                 module = find_module_for_block(lines, key_line_idx)
-                if module and is_heavy_adapter(module):
+                if module and is_heavy_adapter(module, heavy_patterns):
                     return key
     return None
 
@@ -128,6 +135,13 @@ def main():
         sys.exit(1)
 
     base_sha, head_sha = sys.argv[1], sys.argv[2]
+
+    try:
+        heavy_patterns = load_heavy_patterns()
+    except Exception as e:
+        # Can't load patterns — be conservative
+        print(f"HEAVY_CHANGE:unknown (could not load SMOKE_SKIP_MODULE_PATTERNS: {e})")
+        return
 
     try:
         diff_text = subprocess.check_output(
@@ -149,7 +163,7 @@ def main():
     # Check added/modified lines using the new file content
     new_lines = get_file_lines(head_sha, CONFIG_FILE)
     if new_lines:
-        hit = check_ranges(new_lines, new_ranges)
+        hit = check_ranges(new_lines, new_ranges, heavy_patterns)
         if hit:
             print(f"HEAVY_CHANGE:{hit}")
             return
@@ -157,7 +171,7 @@ def main():
     # Check removed lines using the old file content
     old_lines = get_file_lines(base_sha, CONFIG_FILE)
     if old_lines:
-        hit = check_ranges(old_lines, old_ranges)
+        hit = check_ranges(old_lines, old_ranges, heavy_patterns)
         if hit:
             print(f"HEAVY_CHANGE:{hit}")
             return
