@@ -41,7 +41,7 @@ class BaseWriter(ABC):
         if not label:
             return ""
         if "." in label:
-            label = label.split(".")[1]
+            label = label.split(".")[-1]
         return label.lower().replace(" ", "_")
 
     def check_node_label(self, label):

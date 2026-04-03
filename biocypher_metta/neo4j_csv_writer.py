@@ -187,9 +187,8 @@ class Neo4jCSVWriter(BaseWriter):
                     continue
                 self.extract_node_info(node)
                 
-                id, label, properties = node
                 if "." in label:
-                    label = label.split(".")[1]
+                    label = label.split(".")[-1]
                 label = label.lower()
                 node_freq[label] += 1
                 
@@ -289,7 +288,6 @@ class Neo4jCSVWriter(BaseWriter):
                 # Extract edge info for counting (from BaseWriter)
                 self.extract_edge_info(edge)
                 
-                source_id, target_id, label, properties = edge
                 label = label.lower()
                 
                 edge_info = self.edge_node_types[label]

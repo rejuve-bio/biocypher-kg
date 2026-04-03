@@ -175,9 +175,8 @@ class MeTTaWriter(BaseWriter):
                     continue
                 self.extract_node_info(node)  # Count nodes and extract node properties
 
-                _id, label, properties = node
                 if "." in label:
-                    label = label.split(".")[1]
+                    label = label.split(".")[-1]
                 label = label.lower()
 
                 if label not in file_handles:
@@ -219,7 +218,6 @@ class MeTTaWriter(BaseWriter):
                     continue
                 self.extract_edge_info(edge)  # Count edges
 
-                source_id, target_id, label, properties = edge
                 label = label.lower()
                 if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
                     output_label = self.edge_node_types[label]["output_label"]

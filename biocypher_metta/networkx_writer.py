@@ -169,8 +169,7 @@ class NetworkXWriter(BaseWriter):
             if not self.check_node_label(label):
                 logger.warning(f"Skipping node with invalid label: {label}")
                 continue
-            self.extract_node_info(node)  
-            original_id, label, properties = node  
+            self.extract_node_info(node)
             
             if i < 10:
                 sample_ids.append(str(original_id))
@@ -220,8 +219,7 @@ class NetworkXWriter(BaseWriter):
             if not self.check_edge_label(label):
                 logger.warning(f"Skipping edge with invalid label: {label}")
                 continue
-            self.extract_edge_info(edge)  
-            source_id, target_id, label, properties = edge  
+            self.extract_edge_info(edge)
             label = label.lower()
             
             edge_info = self.edge_node_types.get(label, {})
