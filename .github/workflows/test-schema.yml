@@ -11,6 +11,8 @@ on:
       - "biocypher_metta/processors/**"
       - "test/test.py"
       - "test/conftest.py"
+      - ".github/workflows/test-schema.yml"
+      - ".github/scripts/detect_heavy_adapter_changes.py"
 
   pull_request:
     branches: ["main"]
@@ -22,6 +24,8 @@ on:
       - "biocypher_metta/processors/**"
       - "test/test.py"
       - "test/conftest.py"
+      - ".github/workflows/test-schema.yml"
+      - ".github/scripts/detect_heavy_adapter_changes.py"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -93,14 +97,15 @@ except Exception as e:
     sys.exit(1)
 PY
             )
-            if [ $? -ne 0 ]; then
+            if [ $? -ne 0 ] || [ -z "$HEAVY_FILE_PATTERNS" ]; then
               echo "Warning: could not read SMOKE_SKIP_MODULE_PATTERNS from test/test.py — defaulting to full mode"
               HEAVY_CHANGED=true
             fi
 
             # Check if any changed adapter .py file is a heavy ontology adapter
             # (file names match module names so the pattern works directly on paths)
-            if [ "$HEAVY_CHANGED" == "false" ] && echo "$CHANGED_FILES" | grep -qE "($HEAVY_FILE_PATTERNS)"; then
+            # Guard: skip grep if pattern is empty to avoid matching everything
+            if [ "$HEAVY_CHANGED" == "false" ] && [ -n "$HEAVY_FILE_PATTERNS" ] && echo "$CHANGED_FILES" | grep -qE "($HEAVY_FILE_PATTERNS)"; then
               HEAVY_CHANGED=true
               echo "Heavy ontology adapter .py file changed — running full mode"
             fi

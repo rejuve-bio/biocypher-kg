@@ -9,6 +9,9 @@ on:
       - "biocypher_metta/*.py"
       - "config/hsa/hsa_adapters_config_sample.yaml"
       - "create_knowledge_graph.py"
+      - ".github/workflows/test-adapters.yml"
+      - ".github/scripts/detect_config_changes.py"
+      - ".github/scripts/prepare_config.py"
   pull_request:
     branches: ["main"]
     paths:
@@ -17,6 +20,9 @@ on:
       - "biocypher_metta/*.py"
       - "config/hsa/hsa_adapters_config_sample.yaml"
       - "create_knowledge_graph.py"
+      - ".github/workflows/test-adapters.yml"
+      - ".github/scripts/detect_config_changes.py"
+      - ".github/scripts/prepare_config.py"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

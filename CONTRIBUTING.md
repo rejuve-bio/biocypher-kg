@@ -133,13 +133,11 @@ def get_edges(self):
 
 ### 3.5 Heavy ontology adapters
 
-If your adapter downloads and parses OWL/ontology files at runtime it is considered a **heavy adapter**. These are skipped during PR smoke tests to keep CI fast. You must update three places when adding one:
+If your adapter downloads and parses OWL/ontology files at runtime it is considered a **heavy adapter**. These are skipped during PR smoke tests to keep CI fast.
 
-1. `SMOKE_SKIP_MODULE_PATTERNS` in `test/test.py`
-2. The heavy-adapter detection logic used by CI helper scripts (for example `.github/scripts/detect_heavy_adapter_changes.py`)
-3. Any workflow or helper config that maintains a separate list of heavy ontology adapters
+Add your adapter's module name to `SMOKE_SKIP_MODULE_PATTERNS` in `test/test.py` — that is the **single source of truth**. CI workflows and helper scripts read this list at runtime, so no other files need updating.
 
-Keep these lists and detection rules in sync so local tests and CI treat heavy adapters consistently.
+Only touch `.github/scripts/detect_heavy_adapter_changes.py` or the workflow files if the pattern-parsing mechanism itself needs to change.
 
 ---
 
