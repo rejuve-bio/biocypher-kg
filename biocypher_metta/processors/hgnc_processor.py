@@ -13,6 +13,7 @@ Update strategy: Time-based (every 48 hours)
 import requests
 import csv
 from io import StringIO
+from datetime import datetime
 from typing import Dict, Any, Optional
 from biocypher._logger import logger
 from .base_mapping_processor import BaseMappingProcessor
@@ -38,6 +39,36 @@ class HGNCProcessor(BaseMappingProcessor):
 
     def get_remote_urls(self):
         return [self.HGNC_API_URL]
+
+    def check_update_needed(self) -> bool:
+        """
+        Keep HGNC cache behavior predictable.
+
+        Honor the configured update interval first (default: 48h), then fall
+        back to base checks only after the interval has elapsed.
+        """
+        if not self.mapping_file.exists() or not self.version_file.exists():
+            logger.info(f"{self.name}: Mapping or version file not found. Update needed.")
+            return True
+
+        version_info = self._load_version_info()
+        if not version_info or "timestamp" not in version_info:
+            logger.warning(f"{self.name}: Invalid version file. Update needed.")
+            return True
+
+        if self.update_interval:
+            last_update = datetime.fromisoformat(version_info["timestamp"])
+            time_since_update = datetime.now() - last_update
+            if time_since_update <= self.update_interval:
+                days = time_since_update.days
+                hours = time_since_update.seconds // 3600
+                logger.info(
+                    f"{self.name}: Using cached mapping (age: {days} days, {hours} hours; "
+                    f"refresh window: {self.update_interval.days} days)."
+                )
+                return False
+
+        return super().check_update_needed()
 
     def fetch_data(self) -> str:
         logger.info(f"{self.name}: Fetching data from HGNC API...")
