@@ -48,6 +48,23 @@ def find_top_level_key(lines, line_num_1indexed):
     return None
 
 
+def find_module_for_block(lines, top_key_line_0indexed):
+    """
+    Scan forward from the top-level key to find the adapter.module value within
+    that block. Stops when the next top-level key is encountered.
+    Returns the module string or None.
+    """
+    for i in range(top_key_line_0indexed + 1, len(lines)):
+        line = lines[i]
+        # Next unindented key means we've left the block
+        if line and not line[0].isspace() and ":" in line and not line.startswith("#"):
+            break
+        stripped = line.strip()
+        if stripped.startswith("module:"):
+            return stripped.split("module:", 1)[1].strip()
+    return None
+
+
 def get_file_lines(sha, path):
     """Get file content at a specific git commit. Returns [] if not found."""
     try:
@@ -80,12 +97,28 @@ def parse_diff_hunks(diff_text):
 
 
 def check_ranges(lines, ranges):
-    """Return the first heavy adapter key found in the given line ranges, or None."""
+    """
+    Return the first heavy adapter found in the given line ranges, or None.
+    Detection is done via the adapter.module value (not the top-level key name),
+    because top-level keys like 'uberon' or 'cell_ontology' don't contain the
+    pattern 'uberon_adapter' / 'cell_ontology_adapter' — but their module field does.
+    """
     for start, count in ranges:
         for line_num in range(start, start + count):
             key = find_top_level_key(lines, line_num)
-            if key and is_heavy_adapter(key):
-                return key
+            if not key:
+                continue
+            # Find the 0-based index of the top-level key line so we can scan its block
+            key_line_idx = None
+            for i in range(line_num - 1, -1, -1):
+                line = lines[i]
+                if line and not line[0].isspace() and line.split(":")[0].strip() == key:
+                    key_line_idx = i
+                    break
+            if key_line_idx is not None:
+                module = find_module_for_block(lines, key_line_idx)
+                if module and is_heavy_adapter(module):
+                    return key
     return None
 
 

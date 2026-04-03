@@ -70,7 +70,8 @@ jobs:
           echo "$CHANGED_FILES"
 
           ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
-          WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog|parquet|kgx|networkx)(?=_writer\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+          # Match both neo4j_writer.py and neo4j_csv_writer.py and normalise to 'neo4j'
+          WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|neo4j|prolog|parquet|kgx|networkx)(?=_writer\.py)' | sed 's/^neo4j_csv$/neo4j/' | sort -u | tr '\n' ',' | sed 's/,$//')
           ALL_WRITERS="metta,neo4j,prolog,parquet,kgx,networkx"
 
           echo "adapters=$ADAPTERS" >> $GITHUB_OUTPUT
