@@ -79,8 +79,8 @@ class MeTTaWriter(BaseWriter):
                     f.write(f"(<: {node.upper()} {ancestor.upper()})\n")
 
             self.create_data_constructors(f)
-
         logger.info("Type hierarchy created successfully.")
+
 
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()

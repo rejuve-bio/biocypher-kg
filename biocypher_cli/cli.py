@@ -23,7 +23,7 @@ def build_default_human_command() -> List[str]:
         sys.executable, str(PROJECT_ROOT / "create_knowledge_graph.py"),
         "--output-dir", str(PROJECT_ROOT / "output_human"),
         "--adapters-config", str(PROJECT_ROOT / "config/hsa/hsa_adapters_config_sample.yaml"),
-        "--schema-config", str(PROJECT_ROOT / "config/hsa/hsa_schema_config.yaml"),
+        "--schema-config", str(PROJECT_ROOT / "config/primer_schema_config.yaml"),
         "--writer-type", "neo4j", "--no-add-provenance"
     ]
 
