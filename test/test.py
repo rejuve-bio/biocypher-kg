@@ -244,9 +244,15 @@ def should_skip_adapter(adapter_name, module_name, test_mode):
     return False, ""
 
 
+def is_ontology_adapter(module_name):
+    return any(pattern in module_name for pattern in SMOKE_SKIP_MODULE_PATTERNS)
+
+
 def print_profile_summary(kind, timings):
     if not timings:
         return
+    total_elapsed = sum(elapsed for _, elapsed in timings)
+    print(f"[{kind}] Total runtime: {total_elapsed:.2f}s across {len(timings)} adapters")
     print(f"[{kind}] Slowest adapters:")
     for adapter_name, elapsed in sorted(timings, key=lambda x: x[1], reverse=True)[:10]:
         print(f"[{kind}]   {adapter_name}: {elapsed:.2f}s")
@@ -352,6 +358,11 @@ class TestBiocypherKG:
 
             adapter = adapter_class(**adapter_args)
 
+            # Ontology adapters pre-build a full property cache before yielding any node.
+            # For the test we only need label/id — skip the cache to avoid scanning all triples.
+            if is_ontology_adapter(module_name) and hasattr(adapter, 'cache_node_properties'):
+                adapter.cache_node_properties = lambda: None
+
             sample_node = next(adapter.get_nodes(), None)
             assert sample_node, f"No nodes found for adapter '{adapter_name}'"
 
@@ -434,6 +445,12 @@ class TestBiocypherKG:
             adapter_args['add_provenance'] = True
 
             adapter = adapter_class(**adapter_args)
+
+            if is_ontology_adapter(module_name):
+                if hasattr(adapter, 'cache_node_properties'):
+                    adapter.cache_node_properties = lambda: None
+                if hasattr(adapter, 'cache_edge_properties'):
+                    adapter.cache_edge_properties = lambda: None
 
             sample_edge = next(adapter.get_edges(), None)
 
