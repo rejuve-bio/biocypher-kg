@@ -446,6 +446,70 @@ def _load_dbsnp(cache_dir: str, is_sample: bool = False) -> tuple:
             raise typer.Exit(1)
 
 
+import tempfile
+
+def merge_schemas(primer_schema_path, species_schema_path):
+    """
+    Merges two BioCypher schema YAML files into a single dictionary and writes it to a temporary file.
+    
+    Args:
+        prime_schema_config_path (str): Path to the prime schema YAML file.
+        species_schema_config_path (str): Path to the species-specific schema YAML file.
+    
+    Returns:
+        str: Path to the temporary merged schema file.    
+    """
+
+    primer_schema_path   = Path(primer_schema_path)
+    species_schema_path = Path(species_schema_path)
+
+    # Load both YAML files
+    with open(primer_schema_path, 'r') as f:
+        primer_schema = yaml.safe_load(f)
+
+    with open(species_schema_path, 'r') as f:
+        species_schema = yaml.safe_load(f)
+
+    # Merge: species schemas override primer schemas on conflict
+    merged_schema = {**primer_schema, **species_schema}
+
+    # Write to a temporary file in the same directory as the prime schema
+    temp_fd, temp_path = tempfile.mkstemp(
+        suffix='.yaml',
+        dir=primer_schema_path.parent  # same dir as prime schema
+    )
+
+    try:
+        with os.fdopen(temp_fd, 'w') as f:
+            # Write each schema with blank line separation
+            items = list(merged_schema.items())
+            for i, (schema_name, schema_content) in enumerate(items):
+                yaml.dump(
+                    {schema_name: schema_content},
+                    f,
+                    default_flow_style=False,
+                    sort_keys=False
+                )
+                if i < len(items) - 1:
+                    f.write('\n')
+    except Exception as e:
+        # Clean up temp file if write fails
+        Path(temp_path).unlink(missing_ok=True)
+        raise RuntimeError(f"Error writing merged schema: {e}")
+
+    return Path(temp_path)  # always returns a Path object
+
+
+def delete_temp_schema(temp_path):
+    """
+    Deletes the temporary file created by merge_schemas.
+    Accepts both str and Path objects as argument.
+    """
+    try:
+        Path(temp_path).unlink(missing_ok=True)
+    except OSError:
+        pass  # File may already be deleted or inaccessible
+
 # Run build
 @app.command()
 def main(
@@ -557,216 +621,230 @@ def main(
         logger.error("--output-dir is required")
         raise typer.Exit(1)
 
-    # ── Species mode ────────────────────────────────────────────────────
-    if species_mode:
-        SPECIES_CONFIG = load_species_config(species_config_path)
+    is_merged_schema = False
+    temp_schema_to_cleanup = None
+    try:
+        # ── Species mode ────────────────────────────────────────────────────
+        if species_mode:
+            SPECIES_CONFIG = load_species_config(species_config_path)
+            if species.lower() == 'all':
+                logger.info("Generating KG for all species")
+                logger.info(f"Base output directory: {output_dir}")
+                available_species = list(SPECIES_CONFIG.keys())
 
-        if species.lower() == 'all':
-            logger.info("Generating KG for all species")
-            logger.info(f"Base output directory: {output_dir}")
-            available_species = list(SPECIES_CONFIG.keys())
-
-            for sp in available_species:
-                if dataset not in SPECIES_CONFIG[sp]:
-                    logger.warning(f"Dataset '{dataset}' not available for species '{sp}', skipping...")
-                    continue
-
-                sp_output_dir = output_dir / sp
-                logger.info(f"\n{'='*60}")
-                logger.info(f"Processing {sp} - {dataset}")
-                logger.info(f"Output: {sp_output_dir}")
-                logger.info(f"{'='*60}\n")
-
-                sp_output_dir.mkdir(parents=True, exist_ok=True)
-                config = SPECIES_CONFIG[sp][dataset]
-
-                sp_adapters_config = Path(config['adapters_config'])
-                sp_schema_config = Path(config['schema_config'])
-                sp_is_sample = (dataset == 'sample')
-                sp_dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
-                if not sp_dbsnp_cache_dir:
-                    if sp_is_sample:
-                        sp_dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
-                    else:
-                        sp_dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
-
-                # Load dbSNP mappings via DBSNPProcessor
-                sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_cache_dir, is_sample=sp_is_sample)
-
-                bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
-                logger.info(f"Using {writer_type} writer for {sp}")
-
-                if writer_type == 'parquet':
-                    bc.buffer_size = buffer_size
-                    bc.overwrite = overwrite
-
-                schema_dict = preprocess_schema(sp_schema_config)
-
-                with open(sp_adapters_config, "r") as fp:
-                    try:
-                        sp_adapters_dict = load_yaml_with_includes(fp)
-                    except yaml.YAMLError as e:
-                        logger.error(f"Error loading adapter config for {sp}")
-                        logger.error(e)
+                for sp in available_species:
+                    if dataset not in SPECIES_CONFIG[sp]:
+                        logger.warning(f"Dataset '{dataset}' not available for species '{sp}', skipping...")
                         continue
 
-                if include_adapters:
-                    original_count = len(sp_adapters_dict)
-                    include_lower = [a.lower() for a in include_adapters]
-                    sp_adapters_dict = {
-                        k: v for k, v in sp_adapters_dict.items()
-                        if k.lower() in include_lower
-                    }
-                    if not sp_adapters_dict:
-                        logger.error(f"No matching adapters found for {sp}.")
-                        continue
-                    logger.info(f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}")
+                    sp_output_dir = output_dir / sp
+                    logger.info(f"\n{'='*60}")
+                    logger.info(f"Processing {sp} - {dataset}")
+                    logger.info(f"Output: {sp_output_dir}")
+                    logger.info(f"{'='*60}\n")
 
-                # ── Checkpoint setup per-species ─────────────────────
-                ckpt = _setup_checkpoint(
-                    sp_output_dir,
-                    pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
-                    no_checkpoint=no_checkpoint,
-                    resume=resume,
-                )
+                    sp_output_dir.mkdir(parents=True, exist_ok=True)
+                    config = SPECIES_CONFIG[sp][dataset]
 
-                nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
-                    sp_adapters_dict, sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict, bc,
-                    write_properties, add_provenance, schema_dict,
-                    checkpoint_manager=ckpt,
-                )
+                    sp_adapters_config = Path(config['adapters_config'])
+                    sp_schema_config = Path(config['schema_config'])
+                    # merge species schema with primer schema ---> species schemas with same name prevails over primer schemas
+                    sp_schema_config = merge_schemas('config/primer_schema_config.yaml', sp_schema_config)
+                    sp_is_sample = (dataset == 'sample')
+                    sp_dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
+                    if not sp_dbsnp_cache_dir:
+                        if sp_is_sample:
+                            sp_dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
+                        else:
+                            sp_dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
 
-                if writer_type == 'networkx':
-                    bc.write_graph()
-                    logger.info(f"NetworkX graph saved for {sp}")
+                    # Load dbSNP mappings via DBSNPProcessor
+                    sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_cache_dir, is_sample=sp_is_sample)
 
-                if hasattr(bc, 'finalize'):
-                    bc.finalize()
+                    bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
+                    logger.info(f"Using {writer_type} writer for {sp}")
 
-                _write_graph_info(
-                    nodes_count, nodes_props, edges_count,
-                    schema_dict, sp_output_dir, datasets_dict
-                )
+                    if writer_type == 'parquet':
+                        bc.buffer_size = buffer_size
+                        bc.overwrite = overwrite
 
-                # ── Delete checkpoint after successful completion ─────
-                if ckpt is not None:
-                    ckpt.delete()
+                    schema_dict = preprocess_schema(sp_schema_config)
 
-                logger.info(f"Done with {sp}")
-                logger.info(f"Total nodes processed for {sp}: {sum(nodes_count.values())}")
-                logger.info(f"Total edges processed for {sp}: {sum(edges_count.values())}")
+                    with open(sp_adapters_config, "r") as fp:
+                        try:
+                            sp_adapters_dict = load_yaml_with_includes(fp)
+                        except yaml.YAMLError as e:
+                            logger.error(f"Error loading adapter config for {sp}")
+                            logger.error(e)
+                            continue
 
-            logger.info("\n" + "=" * 60)
-            logger.info("All species processed successfully!")
-            logger.info("=" * 60)
-            return
+                    if include_adapters:
+                        original_count = len(sp_adapters_dict)
+                        include_lower = [a.lower() for a in include_adapters]
+                        sp_adapters_dict = {
+                            k: v for k, v in sp_adapters_dict.items()
+                            if k.lower() in include_lower
+                        }
+                        if not sp_adapters_dict:
+                            logger.error(f"No matching adapters found for {sp}.")
+                            continue
+                        logger.info(f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}")
 
+                    # ── Checkpoint setup per-species ─────────────────────
+                    ckpt = _setup_checkpoint(
+                        sp_output_dir,
+                        pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
+                        no_checkpoint=no_checkpoint,
+                        resume=resume,
+                    )
+
+                    nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+                        sp_adapters_dict, sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict, bc,
+                        write_properties, add_provenance, schema_dict,
+                        checkpoint_manager=ckpt,
+                    )
+
+
+                    if writer_type == 'networkx':
+                        bc.write_graph()
+                        logger.info(f"NetworkX graph saved for {sp}")
+
+                    if hasattr(bc, 'finalize'):
+                        bc.finalize()
+
+                    _write_graph_info(
+                        nodes_count, nodes_props, edges_count,
+                        schema_dict, sp_output_dir, datasets_dict
+                    )
+
+                    # ── Delete checkpoint after successful completion ─────
+                    if ckpt is not None:
+                        ckpt.delete()
+                    
+                    if sp_schema_config is not None:
+                        delete_temp_schema(sp_schema_config)
+
+                    logger.info(f"Done with {sp}")
+                    logger.info(f"Total nodes processed for {sp}: {sum(nodes_count.values())}")
+                    logger.info(f"Total edges processed for {sp}: {sum(edges_count.values())}")
+
+                logger.info("\n" + "=" * 60)
+                logger.info("All species processed successfully!")
+                logger.info("=" * 60)
+                return
+
+            else:
+                # Single species
+                if species not in SPECIES_CONFIG:
+                    logger.error(f"Unknown species: {species}")
+                    logger.error(f"Available: {', '.join(SPECIES_CONFIG.keys())}")
+                    raise typer.Exit(1)
+
+                if dataset not in SPECIES_CONFIG[species]:
+                    logger.error(f"Dataset '{dataset}' not available for species '{species}'")
+                    logger.error(f"Available datasets: {', '.join(SPECIES_CONFIG[species].keys())}")
+                    raise typer.Exit(1)
+
+                config = SPECIES_CONFIG[species][dataset]
+                logger.info(f"Generating KG for {species} using {dataset} dataset")
+                logger.info(f"Output directory: {output_dir}")
+                logger.info(f"Write properties: {write_properties}")
+                logger.info(f"Add provenance: {add_provenance}")
+
+                output_dir.mkdir(parents=True, exist_ok=True)
+
+                adapters_config = Path(config['adapters_config'])
+                schema_config = Path(config['schema_config'])
+                # merge species schema with primer schema ---> species schemas with same name prevails over primer schemas
+                schema_config = merge_schemas('config/primer_schema_config.yaml', schema_config)
+                is_merged_schema = True
+                temp_schema_to_cleanup = schema_config  # to be deleted after successful completion
+                dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
+
+        # Load dbSNP mappings via DBSNPProcessor
+        # Determine sample vs full, and resolve dbsnp_cache_dir if not set
+        if not species_mode:
+            is_sample_config = 'sample' in str(adapters_config).lower()
         else:
-            # Single species
-            if species not in SPECIES_CONFIG:
-                logger.error(f"Unknown species: {species}")
-                logger.error(f"Available: {', '.join(SPECIES_CONFIG.keys())}")
+            is_sample_config = (dataset == 'sample')
+
+        if not dbsnp_cache_dir:
+            if is_sample_config:
+                dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
+            else:
+                # Full config: use server cache
+                dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
+        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_cache_dir, is_sample=is_sample_config)
+
+
+        bc = get_writer(writer_type, output_dir, schema_config)
+        logger.info(f"Using {writer_type} writer")
+
+        if writer_type == 'parquet':
+            bc.buffer_size = buffer_size
+            bc.overwrite = overwrite
+
+        schema_dict = preprocess_schema(schema_config)
+
+        with open(adapters_config, "r") as fp:
+            try:
+                adapters_dict = load_yaml_with_includes(fp)
+            except yaml.YAMLError as e:
+                logger.error("Error while trying to load adapter config")
+                logger.error(e)
+
+        if include_adapters:
+            original_count = len(adapters_dict)
+            include_lower = [a.lower() for a in include_adapters]
+            adapters_dict = {
+                k: v for k, v in adapters_dict.items()
+                if k.lower() in include_lower
+            }
+            if not adapters_dict:
+                available = "\n".join(f" - {a}" for a in adapters_dict.keys())
+                logger.error(f"No matching adapters found. Available adapters:\n{available}")
                 raise typer.Exit(1)
+            logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
 
-            if dataset not in SPECIES_CONFIG[species]:
-                logger.error(f"Dataset '{dataset}' not available for species '{species}'")
-                logger.error(f"Available datasets: {', '.join(SPECIES_CONFIG[species].keys())}")
-                raise typer.Exit(1)
+        # ── Checkpoint setup ─────────────────────────────────────────────────
+        output_dir.mkdir(parents=True, exist_ok=True)
+        ckpt = _setup_checkpoint(
+            output_dir,
+            pipeline_id=f"{output_dir}::{adapters_config}",
+            no_checkpoint=no_checkpoint,
+            resume=resume,
+        )
+        # ────────────────────────────────────────────────────────────────────
 
-            config = SPECIES_CONFIG[species][dataset]
-            logger.info(f"Generating KG for {species} using {dataset} dataset")
-            logger.info(f"Output directory: {output_dir}")
-            logger.info(f"Write properties: {write_properties}")
-            logger.info(f"Add provenance: {add_provenance}")
+        nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+            adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc,
+            write_properties, add_provenance, schema_dict,
+            checkpoint_manager=ckpt,
+        )
 
-            output_dir.mkdir(parents=True, exist_ok=True)
+        if writer_type == 'networkx':
+            bc.write_graph()
+            logger.info("NetworkX graph saved successfully")
 
-            adapters_config = Path(config['adapters_config'])
-            schema_config = Path(config['schema_config'])
-            dbsnp_cache_dir = config.get('dbsnp_cache_dir', '')
+        if hasattr(bc, 'finalize'):
+            bc.finalize()
 
-    # Load dbSNP mappings via DBSNPProcessor
-    # Determine sample vs full, and resolve dbsnp_cache_dir if not set
-    if not species_mode:
-        is_sample_config = 'sample' in str(adapters_config).lower()
-    else:
-        is_sample_config = (dataset == 'sample')
+        _write_graph_info(
+            nodes_count, nodes_props, edges_count,
+            schema_dict, output_dir, datasets_dict
+        )
 
-    if not dbsnp_cache_dir:
-        if is_sample_config:
-            dbsnp_cache_dir = 'aux_files/hsa/sample_dbsnp'
-        else:
-            # Full config: use server cache
-            dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
-    dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_cache_dir, is_sample=is_sample_config)
-
-    bc = get_writer(writer_type, output_dir, schema_config)
-    logger.info(f"Using {writer_type} writer")
-
-    if writer_type == 'parquet':
-        bc.buffer_size = buffer_size
-        bc.overwrite = overwrite
-
-    schema_dict = preprocess_schema(schema_config)
-
-    with open(adapters_config, "r") as fp:
-        try:
-            adapters_dict = load_yaml_with_includes(fp)
-        except yaml.YAMLError as e:
-            logger.error("Error while trying to load adapter config")
-            logger.error(e)
-
-    if include_adapters:
-        original_count = len(adapters_dict)
-        include_lower = [a.lower() for a in include_adapters]
-        adapters_dict = {
-            k: v for k, v in adapters_dict.items()
-            if k.lower() in include_lower
-        }
-        if not adapters_dict:
-            available = "\n".join(f" - {a}" for a in adapters_dict.keys())
-            logger.error(f"No matching adapters found. Available adapters:\n{available}")
-            raise typer.Exit(1)
-
-        logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
-
-    # ── Checkpoint setup ─────────────────────────────────────────────────
-    output_dir.mkdir(parents=True, exist_ok=True)
-    ckpt = _setup_checkpoint(
-        output_dir,
-        pipeline_id=f"{output_dir}::{adapters_config}",
-        no_checkpoint=no_checkpoint,
-        resume=resume,
-    )
-    # ────────────────────────────────────────────────────────────────────
-
-    nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
-        adapters_dict, dbsnp_rsids_dict, dbsnp_pos_dict, bc,
-        write_properties, add_provenance, schema_dict,
-        checkpoint_manager=ckpt,
-    )
-
-    if writer_type == 'networkx':
-        bc.write_graph()
-        logger.info("NetworkX graph saved successfully")
-
-    if hasattr(bc, 'finalize'):
-        bc.finalize()
-
-    _write_graph_info(
-        nodes_count, nodes_props, edges_count,
-        schema_dict, output_dir, datasets_dict
-    )
-
-    # ── Delete checkpoint after successful completion ────────────────────
-    if ckpt is not None:
-        ckpt.delete()
-    # ────────────────────────────────────────────────────────────────────
-
-    logger.info("Done")
-    logger.info(f"Total nodes processed: {sum(nodes_count.values())}")
-    logger.info(f"Total edges processed: {sum(edges_count.values())}")
-
+        # ── Delete checkpoint after successful completion ────────────────────
+        if ckpt is not None:
+            ckpt.delete()
+        # ────────────────────────────────────────────────────────────────────
+        
+        logger.info("Done")
+        logger.info(f"Total nodes processed: {sum(nodes_count.values())}")
+        logger.info(f"Total edges processed: {sum(edges_count.values())}")
+    finally:
+        if is_merged_schema and temp_schema_to_cleanup is not None:
+            delete_temp_schema(temp_schema_to_cleanup)
 
 # ── Helper: create and configure a CheckpointManager ────────────────────────
 def _setup_checkpoint(

@@ -25,7 +25,7 @@ from biocypher._logger import logger
 # chr2L 59231 59291 Cda5_1 900 - 59231 59242
 
 # CEL data:
-# 
+# https://epd.expasy.org/ftp/epdnew/C_elegans/current/
 
 # Mouse data:
 # https://epd.expasy.org/ftp/epdnew/M_musculus/ 
@@ -43,8 +43,8 @@ class EPDAdapter(Adapter):
         9606: 'ENSEMBL'
     }
 
-    def __init__(self, filepath, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
-                 type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None,
+    def __init__(self, filepath, label, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
+                 type='promoter', delimiter=' ', chr=None, start=None, end=None,
                  hgnc_processor=None):
         self.filepath = filepath
 

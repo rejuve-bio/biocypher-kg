@@ -1,4 +1,8 @@
 ---
+agr:    #agr: alliance of genome resource
+  url:
+    - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
+
 bgee:
   name: Bgee Expression Data
   url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
