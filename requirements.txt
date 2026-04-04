@@ -10,7 +10,7 @@ attrs==25.4.0
     #   hgvs
 biocommons-seqrepo==0.6.11
     # via hgvs
-biocypher==0.5.44
+biocypher==0.12.5
     # via biocypher-metta (pyproject.toml)
 biopython==1.86
     # via biocypher-metta (pyproject.toml)
@@ -38,7 +38,7 @@ coverage==7.11.0
     # via pytest-cov
 decorator==5.2.1
     # via ipython
-exceptiongroup==1.3.0
+exceptiongroup==1.3.1
     # via
     #   ipython
     #   pytest
@@ -57,13 +57,13 @@ google-cloud-core==2.5.0
     # via google-cloud-storage
 google-cloud-storage==2.19.0
     # via biocypher-metta (pyproject.toml)
-google-crc32c==1.7.1
+google-crc32c==1.8.0
     # via
     #   google-cloud-storage
     #   google-resumable-media
 google-resumable-media==2.7.2
     # via google-cloud-storage
-googleapis-common-protos==1.71.0
+googleapis-common-protos==1.73.0
     # via google-api-core
 hgvs==1.5.4
     # via biocypher-metta (pyproject.toml)
@@ -71,15 +71,15 @@ humanfriendly==10.0
     # via coloredlogs
 idna==3.11
     # via requests
-importlib-metadata==8.7.0
+importlib-metadata==8.7.1
     # via yoyo-migrations
 iniconfig==2.3.0
     # via pytest
-ipython==8.37.0
+ipython==8.38.0
     # via
     #   biocommons-seqrepo
     #   hgvs
-isodate==0.6.1
+isodate==0.7.2
     # via rdflib
 jedi==0.19.2
     # via ipython
@@ -134,9 +134,9 @@ prompt-toolkit==3.0.52
     # via
     #   ipython
     #   questionary
-proto-plus==1.26.1
+proto-plus==1.27.1
     # via google-api-core
-protobuf==6.33.0
+protobuf==6.33.5
     # via
     #   google-api-core
     #   googleapis-common-protos
@@ -149,7 +149,7 @@ pure-eval==0.2.3
     # via stack-data
 pyarrow==20.0.0
     # via biocypher-metta (pyproject.toml)
-pyasn1==0.6.1
+pyasn1==0.6.2
     # via
     #   pyasn1-modules
     #   rsa
@@ -212,7 +212,7 @@ stack-data==0.6.3
     # via ipython
 stringcase==1.2.0
     # via biocypher
-tabulate==0.9.0
+tabulate==0.10.0
     # via yoyo-migrations
 toml==0.10.2
     # via neo4j-utils
@@ -220,7 +220,7 @@ tomli==2.3.0
     # via
     #   coverage
     #   pytest
-tqdm==4.67.1
+tqdm==4.67.3
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
@@ -241,7 +241,7 @@ typing-extensions==4.15.0
     #   typer
 tzdata==2025.2
     # via pandas
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   liftover
     #   requests

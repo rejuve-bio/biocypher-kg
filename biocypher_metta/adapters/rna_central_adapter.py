@@ -1,10 +1,9 @@
 from collections import defaultdict
 import csv
 import gzip
-import os
-import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.processors import GOSubontologyProcessor
 
 # Example RNAcentral bed input file:
 # chr1    10244    10273    URS000035F234_9606    0    -    10244    10273    63,125,151    2    19,5    0,24    .    piRNA    PirBase
@@ -28,9 +27,9 @@ class RNACentralAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'id': 3, 'rna_type': 13}
 
     def __init__(self, filepath, rfam_filepath, write_properties, add_provenance, taxon_id,
-                 type=None, label=None, 
-                 chr=None, start=None, end=None, 
-                 mapping_file='aux_files/go_subontology_mapping.pkl'):
+                 type=None, label=None,
+                 chr=None, start=None, end=None,
+                 go_subontology_processor=None):
         self.filepath = filepath
         self.rfam_filepath = rfam_filepath
         self.chr = chr
@@ -46,7 +45,6 @@ class RNACentralAdapter(Adapter):
         self.taxon_id = taxon_id
 
         self.subontology = None
-        self.subontology_mapping = None
 
         # Determine subontology based on label
         if label == 'biological_process_rna':
@@ -56,12 +54,14 @@ class RNACentralAdapter(Adapter):
         elif label == 'cellular_component_rna':
             self.subontology = 'cellular_component'
 
-        # Load subontology mapping
-        if os.path.exists(mapping_file):
-            # with open(mapping_file, 'rb') as f:
-            #     self.subontology_mapping = pickle.load(f)
-            self.subontology_mapping = pickle.load(open(mapping_file, 'rb')) if mapping_file else None 
+        # Use provided GO subontology processor or create new one
+        if go_subontology_processor is None:
+            self.go_subontology_processor = GOSubontologyProcessor()
+            self.go_subontology_processor.load_or_update()
+        else:
+            self.go_subontology_processor = go_subontology_processor
 
+        self.subontology_mapping = self.go_subontology_processor.mapping
         self.seen_edges = set()
 
         super(RNACentralAdapter, self).__init__(write_properties, add_provenance)

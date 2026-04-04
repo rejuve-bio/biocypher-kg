@@ -1,7 +1,7 @@
 from biocypher_metta.adapters import Adapter
 import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location
-from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor
+from biocypher_metta.processors import HGNCProcessor
 
 # Human data:
 # https://www.gencodegenes.org/human/
@@ -95,8 +95,8 @@ class GencodeTranscriptAdapter(Adapter):
         self.version = 'v44'
         self.source_url = 'https://www.gencodegenes.org/'
 
-        self.hgnc_processor = HGNCSymbolProcessor()
-        self.hgnc_processor.update_hgnc_data()
+        self.hgnc_processor = HGNCProcessor()
+        self.hgnc_processor.load_or_update()
 
         super(GencodeTranscriptAdapter, self).__init__(write_properties, add_provenance)
 

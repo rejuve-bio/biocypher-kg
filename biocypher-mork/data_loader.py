@@ -1,26 +1,42 @@
 import os
 import glob
+import subprocess
+import sys
 from pathlib import Path
-from client import MORK   
+
+# wal_client lives in the same directory as this script
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wal_client import WalMORK
+from client import MORK
 
 def connect_to_mork(host="localhost", port=None):
-    """Connect to the running MORK instance."""
+    """Connect to the running MORK instance (WAL-backed for crash-safe writes)."""
     if port is None:
-        port = os.getenv("HOST_PORT", 8431)
-    url = f"http://{host}:{port}"
-    print(f"Connecting to MORK at {url} ...")
-    server = MORK(url)
-    
-    # Proper connection check - test namespace access
+        port = int(os.getenv("HOST_PORT", 8027))
+
+    persist_dir = os.getenv(
+        "SNAPSHOT_DIR",
+        str(Path(__file__).resolve().parent / "mork_persist")
+    )
+    wal_path = os.path.join(persist_dir, "wal.metta")
+
+    base_client = MORK(f"http://{host}:{port}")
+    server = WalMORK(
+        base_client,
+        wal_path=wal_path,
+        sync_writes=True,
+    )
+
+    # Verify connection
     try:
         with server.work_at("annotation") as scope:
-            # Simply accessing the namespace to test the connection
             pass
-        print("[SUCCESS] Successfully connected to MORK.")
+        print("[SUCCESS] Connected to MORK (WAL enabled).")
     except Exception as e:
         raise ConnectionError(f"[FAILED] Connection failed: {e}")
-    
+
     return server
+
 
 def load_metta_files(server, data_dir):
     """Load all .metta and .paths files from the given directory into MORK."""
@@ -89,7 +105,6 @@ def show_summary(server):
         except Exception as e:
             print(f"[WARNING] Error fetching summary: {e}")
 
-
 def main():
     # Update the path where .metta files are stored
     dataset_path = os.getenv("DATASET_PATH", "./data")    
@@ -100,6 +115,7 @@ def main():
     successful, failed = load_metta_files(server, dataset_path)
     show_summary(server)
     
+
     # Final status
     if failed == 0:
         print(f"\n SUCCESS: All {successful} files loaded successfully!")

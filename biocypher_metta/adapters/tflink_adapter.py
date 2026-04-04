@@ -1,6 +1,7 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
 import pickle
+from biocypher_metta.processors import EntrezEnsemblProcessor
 import csv
 import gzip
 
@@ -27,18 +28,30 @@ import gzip
 class TFLinkAdapter(Adapter):
     INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
 
-    def __init__(self, filepath, entrez_to_ensemble_map, label,
-                 write_properties, add_provenance, taxon_id):
+    def __init__(self, filepath, entrez_to_ensemble_map=None, label='tf_gene',
+                 write_properties=None, add_provenance=None, taxon_id=9606,
+                 entrez_ensembl_processor=None):
         """
         Constructs TFLink adapter that returns edges between TFs and their target gene
         :param filepath: Path to the TSV file downloaded from tflink
-        :param entrez_to_ensemble_map: file containing pickled dictionary mapping NCBI Entrez IDs to Ensemble IDs -
-        this b/c we use Ensemble IDs to identify genes where TFLink uses Entrez Ids
+        :param entrez_to_ensemble_map: DEPRECATED - use entrez_ensembl_processor instead
+        :param entrez_ensembl_processor: EntrezEnsemblProcessor instance for ID mapping
         """
         self.filepath = filepath
 
-        with open(entrez_to_ensemble_map, "rb") as f:
-            self.entrez2ensemble = pickle.load(f)
+        # Use provided processor or create new one; fallback to pickle for non-human
+        if entrez_ensembl_processor is not None:
+            self.processor = entrez_ensembl_processor
+        elif entrez_to_ensemble_map is not None and taxon_id != 9606:
+            self.processor = None
+            with open(entrez_to_ensemble_map, "rb") as f:
+                self.entrez2ensemble = pickle.load(f)
+        else:
+            self.processor = EntrezEnsemblProcessor()
+            self.processor.load_or_update()
+
+        if hasattr(self, 'processor') and self.processor is not None:
+            self.entrez2ensemble = self.processor.entrez_to_ensembl
 
         self.label = label
         self.source = "TFLink"

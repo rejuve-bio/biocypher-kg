@@ -76,10 +76,13 @@ class EnhancercCREAdapter(Adapter):
                 element_id = f"SO:000165:{chrom}_{start}_{end}"
                 yield element_id, self.label, props
             
-            file.close()
-                
+            file.close()                
+        except OSError as e:
+            print(f"Error loading enhancer data: {e}")
+            raise
         except Exception as e:
             print(f"Error loading enhancer data: {e}")
+            raise
     
     def get_edges(self):
         try:
@@ -147,3 +150,4 @@ class EnhancercCREAdapter(Adapter):
                 
         except Exception as e:
             print(f"Error processing enhancer edges: {e}")
+            raise

@@ -21,7 +21,8 @@ def configuration_workflow(organism: str) -> Optional[Dict[str, Union[str, List[
         choice = select("Adapter configuration method:", choices=[{"name": "📁 Use existing config", "value": "existing"}, {"name": "🛠️ Create custom adapter", "value": "custom"}, "🔙 Back"], pointer="→").unsafe_ask()
         if choice == "🔙 Back": return None
         elif choice == "existing":
-            result = get_file_selection("Select adapters config:", config_files, allow_multiple=False, allow_custom=True)
+            adapter_files = {k: v for k, v in config_files.items() if "Adapter" in k}
+            result = get_file_selection("Select adapters config:", adapter_files, allow_multiple=False, allow_custom=True)
             if result: selections["--adapters-config"] = result; break
         elif choice == "custom":
             custom_config = build_custom_adapter_config()
@@ -34,18 +35,14 @@ def configuration_workflow(organism: str) -> Optional[Dict[str, Union[str, List[
             if selected_adapters: selections["--include-adapters"] = selected_adapters
     
     while True:
-        result = get_file_selection("Select schema config:", config_files, allow_multiple=False, allow_custom=True)
+        schema_files = {k: v for k, v in config_files.items() if "Schema" in k}
+        result = get_file_selection("Select schema config:", schema_files, allow_multiple=False, allow_custom=True)
         if result: selections["--schema-config"] = result; break
     
     while True:
-        result = get_file_selection("Select dbSNP rsIDs file:", aux_files, allow_multiple=False, allow_custom=True)
+        result = get_file_selection("Select dbSNP cache directory:", aux_files, allow_multiple=False, allow_custom=True)
         if result is None: continue
-        selections["--dbsnp-rsids"] = result; break
-    
-    while True:
-        result = get_file_selection("Select dbSNP positions file:", aux_files, allow_multiple=False, allow_custom=True)
-        if result is None: continue
-        selections["--dbsnp-pos"] = result; break
+        selections["--dbsnp-cache-dir"] = result; break
     
     selections["--writer-type"] = select("Select output format:", choices=["neo4j", "metta", "prolog", "parquet", "KGX","networkx"], default="neo4j").unsafe_ask()
     selections["--add-provenance"] = not confirm("Skip adding provenance?", default=False).unsafe_ask()
@@ -59,8 +56,7 @@ def build_command_from_selections(selections: Dict[str, Union[str, List[str]]]) 
     cmd.extend(["--schema-config", selections["--schema-config"]])
     if "--include-adapters" in selections:
         for adapter in selections["--include-adapters"]: cmd.extend(["--include-adapters", adapter])
-    cmd.extend(["--dbsnp-rsids", selections["--dbsnp-rsids"]])
-    cmd.extend(["--dbsnp-pos", selections["--dbsnp-pos"]])
+    cmd.extend(["--dbsnp-cache-dir", selections["--dbsnp-cache-dir"]])
     cmd.extend(["--writer-type", selections["--writer-type"]])
     if not selections["--add-provenance"]: cmd.append("--no-add-provenance")
     if not selections["--write-properties"]: cmd.append("--no-write-properties")

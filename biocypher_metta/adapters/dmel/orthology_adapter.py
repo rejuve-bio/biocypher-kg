@@ -39,19 +39,23 @@ FBgn0031081	Nep3	HGNC:53615		EEF1AKMT4-ECE2	13
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 #from flybase_tsv_reader import FlybasePrecomputedTable
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import HGNCProcessor
 from biocypher._logger import logger
-import pickle
 
 class OrthologyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map, label = 'orthologs_genes'):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map=None, hgnc_processor=None, label = 'orthologs_genes'):
         self.dmel_data_filepath = dmel_data_filepath
         self.label = label
         self.type = 'orthology association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
 
-        self.hsa_hgnc2ensemble = pickle.load(open(hsa_hgnc_to_ensemble_map, 'rb'))
+        if hgnc_processor is not None:
+            self.hgnc_processor = hgnc_processor
+        else:
+            self.hgnc_processor = HGNCProcessor()
+        self.hgnc_processor.load_or_update()
 
         super(OrthologyAssociationAdapter, self).__init__(write_properties, add_provenance)
 
@@ -68,14 +72,13 @@ class OrthologyAssociationAdapter(Adapter):
             props = {}
             source = row[0]
             hsa_hgnc_id = row[2]
-            try:
-                target = self.hsa_hgnc2ensemble[ hsa_hgnc_id ]
-            except KeyError as ke:
+            target = self.hgnc_processor.get_ensembl_id(hsa_hgnc_id)
+            if target is None:
                 no_hgnc_id += 1
                 logger.info(
                     f'orthology_adapter.py::OrthologyAdapter::get_edges-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}:\n'
-                    f'Exception: {ke}\n'
-                    f'Missing data:\n {row}'f'\nGenes without HGNC ID: {no_hgnc_id} / {total_rows}'                    
+                    f'No Ensembl ID for HGNC ID: {hsa_hgnc_id}\n'
+                    f'Missing data:\n {row}'f'\nGenes without HGNC ID: {no_hgnc_id} / {total_rows}'
                 )
                 continue
             props['hsa_hgnc_id'] = hsa_hgnc_id

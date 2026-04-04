@@ -1,7 +1,7 @@
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
-from biocypher_metta.adapters.hgnc_processor import HGNCSymbolProcessor  
+from biocypher_metta.processors import HGNCProcessor, EntrezEnsemblProcessor
 
 # Human data:
 # https://www.gencodegenes.org/human/
@@ -46,7 +46,7 @@ class GencodeGeneAdapter(Adapter):
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
     def __init__(self, write_properties, add_provenance, taxon_id, filepath, label,
-                 gene_alias_file_path, chr=None, start=None, end=None):
+                 gene_alias_file_path=None, chr=None, start=None, end=None):
 
         self.filepath = filepath
         self.chr = chr
@@ -63,9 +63,19 @@ class GencodeGeneAdapter(Adapter):
         if version.startswith('v'):
             self.version = version
         self.source_url = 'https://www.gencodegenes.org/'
-        
-        self.hgnc_processor = HGNCSymbolProcessor()
-        self.hgnc_processor.update_hgnc_data()
+
+        self.hgnc_processor = HGNCProcessor()
+        self.hgnc_processor.load_or_update()
+
+        # Pre-load gene aliases: use processor for human, file-based for other species
+        if gene_alias_file_path:
+            self.gene_aliases = self.get_gene_alias()
+        elif taxon_id == 9606:
+            processor = EntrezEnsemblProcessor()
+            processor.load_or_update()
+            self.gene_aliases = processor.gene_aliases
+        else:
+            self.gene_aliases = {}
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
  
@@ -123,7 +133,7 @@ class GencodeGeneAdapter(Adapter):
         return alias_dict
 
     def get_nodes(self):
-        alias_dict = self.get_gene_alias()
+        alias_dict = self.gene_aliases
         not_processed = 0
         processed_records = 0
         with gzip.open(self.filepath, 'rt') as input:

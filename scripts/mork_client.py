@@ -7,7 +7,7 @@ from time import monotonic, sleep
 from base64 import b32encode
 import re
 from io import StringIO, FileIO
-from urllib.parse import quote, quote_from_bytes
+from urllib.parse import quote, quote_from_bytes, unquote
 
 import requests
 from requests import request, RequestException
@@ -21,6 +21,12 @@ def variables(pats):
 
 # One session per process
 requests_session = requests.Session()
+
+
+import sys as _sys
+_sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'biocypher-mork'))
+from wal_client import WalMORK
+
 
 class MORK:
     """
@@ -584,14 +590,8 @@ class ManagedMORK(MORK):
     def start(cls, binary_path, *args):
         """
         Starts the MORK server.  Fails if it's already running and therefore can't be started
-
-        Args:
-            binary_path (str): file system path to the compiled MORK server binary
-
-        Returns:
-            Self: a ManagedMORK instance
         """
-        if not os.path.isfile(binary_path):
+        if binary_path is None or not os.path.isfile(binary_path):
             raise RuntimeError(f"Can't connect to running server, and no server binary found at path: {binary_path}")
 
         print("Starting server from binary")
@@ -677,7 +677,7 @@ class ManagedMORK(MORK):
 
 def _main():
     # smoke test
-    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         with server.work_at("main").and_clear() as ins:
             print("entered")
             ins.upload_("(foo 1)\n(foo 2)\n")
@@ -694,7 +694,7 @@ def _main():
 
 def _main_mm2():
     # smoke test
-    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         server.upload_("(data (foo 1))\n(data (foo 2))\n(_exec 0 (, (data (foo $x))) (, (data (bar $x))))")
         server.transform(("(_exec $priority $p $t)",), ("(exec (test $priority) $p $t)",)).listen()
         server.exec(thread_id="test").listen()
@@ -706,7 +706,7 @@ def _main_mm2():
 
 def test_sse_status():
     # smoke test
-    with ManagedMORK.connect("../target/debug/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
+    with ManagedMORK.connect("../target/release/mork-server").and_log_stdout().and_log_stderr().and_terminate() as server:
         server.sexpr_import_(f"https://raw.githubusercontent.com/Adam-Vandervorst/metta-examples/refs/heads/main/aunt-kg/simpsons.metta").listen()
     print("done listening")
 
