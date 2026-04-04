@@ -319,8 +319,7 @@ class KGXWriter(BaseWriter):
             for node in nodes:
                 node_id, label, properties = node
                 if not self.check_node_label(label):
-                    logger.warning(f"Skipping node with invalid label: {label}")
-                    continue
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 normalized_label = self._normalize_label(label)
                 node_freq[normalized_label] += 1
                 
@@ -415,8 +414,7 @@ class KGXWriter(BaseWriter):
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 if not self.check_edge_label(label):
-                    logger.warning(f"Skipping edge with invalid label: {label}")
-                    continue
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 normalized_label = self._normalize_label(label)
                 edge_freq[normalized_label] += 1
 

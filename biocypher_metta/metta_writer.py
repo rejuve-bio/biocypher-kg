@@ -171,8 +171,7 @@ class MeTTaWriter(BaseWriter):
             for node in nodes:
                 id, label, properties = node
                 if not self.check_node_label(label):
-                    logger.warning(f"Skipping node with invalid label: {label}")
-                    continue
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)  # Count nodes and extract node properties
 
                 if "." in label:
@@ -214,8 +213,7 @@ class MeTTaWriter(BaseWriter):
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 if not self.check_edge_label(label):
-                    logger.warning(f"Skipping edge with invalid label: {label}")
-                    continue
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_edge_info(edge)  # Count edges
 
                 label = label.lower()
