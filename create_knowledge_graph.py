@@ -392,7 +392,14 @@ def _load_dbsnp(mapping_path: str, is_sample: bool = False) -> tuple:
         return {}, {}
 
     input_path = Path(mapping_path)
-    cache_path = input_path.parent if input_path.name == "dbsnp_mapping.pkl" else input_path
+    if input_path.is_file():
+        # User passed a direct path to the .pkl file (any filename accepted)
+        mapping_file = input_path
+        cache_path = input_path.parent
+    else:
+        # User passed a directory — look for dbsnp_mapping.pkl inside it
+        cache_path = input_path
+        mapping_file = cache_path / 'dbsnp_mapping.pkl'
 
     if not cache_path.exists() or not cache_path.is_dir():
         if is_sample:
@@ -411,7 +418,6 @@ def _load_dbsnp(mapping_path: str, is_sample: bool = False) -> tuple:
             logger.error("=" * 80)
             raise typer.Exit(1)
 
-    mapping_file = cache_path / 'dbsnp_mapping.pkl'
     if not mapping_file.exists():
         if is_sample:
             logger.warning(f"dbSNP mapping file not found at {mapping_file}, continuing without rsID mappings")
