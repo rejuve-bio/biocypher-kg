@@ -776,6 +776,25 @@ def main(
                 dbsnp_cache_dir = '/mnt/hdd_2/kedist/rsids_map'
         dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_cache_dir, is_sample=is_sample_config)
 
+        # ── NEW: Auto-merge species schema in manual mode if only primer is provided ──
+        if not species_mode and str(schema_config) == 'config/primer_schema_config.yaml':
+            # Try to infer species from adapters_config path
+            potential_species = None
+            path_parts = Path(adapters_config).parts
+            for p in path_parts:
+                if p in ['hsa', 'dmel', 'cel', 'mmo', 'rno']:
+                    potential_species = p
+                    break
+            
+            if potential_species:
+                species_schema_path = Path(f"config/{potential_species}/{potential_species}_schema_config.yaml")
+                if species_schema_path.exists():
+                    logger.info(f"Manual mode: detected species '{potential_species}' from adapters config.")
+                    logger.info(f"Automatically merging primer schema with {species_schema_path}")
+                    schema_config = merge_schemas('config/primer_schema_config.yaml', species_schema_path)
+                    is_merged_schema = True
+                    temp_schema_to_cleanup = schema_config
+       
 
         bc = get_writer(writer_type, output_dir, schema_config)
         logger.info(f"Using {writer_type} writer")
