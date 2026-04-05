@@ -545,6 +545,18 @@ tflink:
       filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
       label: tf_gene
       taxon_id: 9606
+  outdir: tflink/gene_tf
+  nodes: False
+  edges: True
+
+tflink_protein_protein:
+  adapter:
+    module: biocypher_metta.adapters.tflink_adapter
+    cls: TFLinkAdapter
+    args:
+      filepath: ./samples/hsa/tflink_homo_sapiens_interactions.tsv.gz
+      label: interacts_with
+      taxon_id: 9606
   outdir: tflink
   nodes: False
   edges: True
