@@ -165,8 +165,10 @@ class NetworkXWriter(BaseWriter):
         sample_ids = []
         
         for i, node in enumerate(nodes):
-            self.extract_node_info(node)  
-            original_id, label, properties = node  
+            original_id, label, properties = node
+            if not self.check_node_label(label):
+                raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
+            self.extract_node_info(node)
             
             if i < 10:
                 sample_ids.append(str(original_id))
@@ -212,8 +214,10 @@ class NetworkXWriter(BaseWriter):
         edges_skipped = 0
         
         for edge in edges:
-            self.extract_edge_info(edge)  
-            source_id, target_id, label, properties = edge  
+            source_id, target_id, label, properties = edge
+            if not self.check_edge_label(label):
+                raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
+            self.extract_edge_info(edge)
             label = label.lower()
             
             edge_info = self.edge_node_types.get(label, {})

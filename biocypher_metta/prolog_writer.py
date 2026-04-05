@@ -96,6 +96,9 @@ class PrologWriter(BaseWriter):
         
         with open(file_path, "a") as f:
             for node in nodes:
+                id, label, properties = node
+                if not self.check_node_label(label):
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)
                 out_str = self.write_node(node)
                 for s in out_str:
@@ -117,6 +120,9 @@ class PrologWriter(BaseWriter):
 
         with open(file_path, "a") as f:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_edge_info(edge)
                 out_str = self.write_edge(edge)
                 for s in out_str:
