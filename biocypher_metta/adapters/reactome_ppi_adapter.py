@@ -10,6 +10,9 @@ import gzip
 # uniprotkb:P0DJI8	ENST00000532858|ENST00000672418|ENST00000672712|ENST00000356524|ENST00000405158|ENST00000672662|ENSP00000500281|ENSP00000384906|ENSP00000436866|ENSP00000500630|ENSP00000348918|ENSP00000500639|ENSG00000173432|ENSG00000288411	-	uniprotkb:P0DJI8	ENST00000532858|ENST00000672418|ENST00000672712|ENST00000356524|ENST00000405158|ENST00000672662|ENSP00000500281|ENSP00000384906|ENSP00000436866|ENSP00000500630|ENSP00000348918|ENSP00000500639|ENSG00000173432|ENSG00000288411	-	physical association	reactome:R-HSA-976898	19393650|103558
 # uniprotkb:P06727	ENST00000357780|ENSP00000350425|ENSG00000110244	-	uniprotkb:P06727	ENST00000357780|ENSP00000350425|ENSG00000110244	-	physical association	reactome:R-HSA-976889	15146166
 
+from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+
+
 class ReactomePPIAdapter(Adapter):
     def __init__(self, filepath, write_properties, add_provenance, label, taxon_id=None,
                  include_self_interactions=True):
@@ -30,18 +33,15 @@ class ReactomePPIAdapter(Adapter):
         if not context or not context.startswith('reactome:R-'):
             return None
         
-        mapping = {
-            'R-HSA': '9606',   'R-MMU': '10090',  'R-RNO': '10116',
-            'R-BTA': '9913',   'R-SSC': '9823',   'R-DRE': '7955',
-            'R-GGA': '9031',   'R-CEL': '6239',   'R-SCE': '5592',
-            'R-SPO': '4896',   'R-DME': '7227',   'R-PFA': '5833',
-            'R-XTR': '8364',   'R-CFA': '9615',
-        }
-        
         prefix = context.replace('reactome:', '')[:5]
-        return mapping.get(prefix)
+        taxon_id = REACTOME_ORGANISM_TAXON_MAP.get(prefix)
+        
+        if not taxon_id and prefix != 'R-NUL':
+             print(f"ReactomePPIAdapter: Unknown species prefix '{prefix}' in context '{context}'")
+             
+        return taxon_id
 
-    def _extract_reactome_pathway(self, context):
+    def _normalize_reactome_id(self, context):
         if context and context.startswith('reactome:'):
             return context.replace('reactome:', '')
         return context
@@ -99,11 +99,11 @@ class ReactomePPIAdapter(Adapter):
             
         _props = {}
         if self.write_properties:
-            pathway_id = self._extract_reactome_pathway(interaction_context)
+            context_id = self._normalize_reactome_id(interaction_context)
             
             _props = {
                 "interaction_type": interaction_type,
-                "interaction_context": pathway_id,
+                "interaction_context": context_id,
             }
             
             # Use detected species unless explicitly overridden by configuration

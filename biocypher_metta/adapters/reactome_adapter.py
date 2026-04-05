@@ -74,14 +74,8 @@ class ReactomeAdapter(Adapter):
 
                             yield pathway_id, self.label, props
         elif self.label == 'reaction':
-            organism_taxon_map = {
-                'R-DME': 7227,  # Drosophila melanogaster (dmel)
-                'R-HSA': 9606,  # Homo sapiens (hsa)
-                'R-CEL': 6239,  # Caenorhabditis elegans (cel)
-                # Add more organisms here as needed
-                'R-MMU': 10090,   # Mus musculus (mmu)
-                'R-RNO': 10116,   # Rattus norvegicus
-            }   
+            from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+            organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
             # nodes = set()   
             with open(self.filepath) as input_file:
                 base_props = {}                
