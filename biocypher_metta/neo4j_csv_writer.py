@@ -181,11 +181,13 @@ class Neo4jCSVWriter(BaseWriter):
         
         try:
             for node in nodes:
+                id, label, properties = node
+                if not self.check_node_label(label):
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)
                 
-                id, label, properties = node
                 if "." in label:
-                    label = label.split(".")[1]
+                    label = label.split(".")[-1]
                 label = label.lower()
                 node_freq[label] += 1
                 
@@ -278,10 +280,12 @@ class Neo4jCSVWriter(BaseWriter):
         
         try:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 # Extract edge info for counting (from BaseWriter)
                 self.extract_edge_info(edge)
                 
-                source_id, target_id, label, properties = edge
                 label = label.lower()
                 
                 edge_info = self.edge_node_types[label]
