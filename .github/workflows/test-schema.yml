@@ -3,9 +3,33 @@ name: Test Adapters Against Schema
 on:
   push:
     branches: ["main"]
+    paths:
+      - "config/primer_schema_config.yaml"
+      - "config/hsa/hsa_schema_config.yaml"
+      - "config/hsa/hsa_adapters_config_sample.yaml"
+      - "biocypher_metta/adapters/**"
+      - "biocypher_metta/processors/**"
+      - "test/test.py"
+      - "test/conftest.py"
+      - ".github/workflows/test-schema.yml"
+      - ".github/scripts/detect_heavy_adapter_changes.py"
 
   pull_request:
     branches: ["main"]
+    paths:
+      - "config/primer_schema_config.yaml"
+      - "config/hsa/hsa_schema_config.yaml"
+      - "config/hsa/hsa_adapters_config_sample.yaml"
+      - "biocypher_metta/adapters/**"
+      - "biocypher_metta/processors/**"
+      - "test/test.py"
+      - "test/conftest.py"
+      - ".github/workflows/test-schema.yml"
+      - ".github/scripts/detect_heavy_adapter_changes.py"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -14,11 +38,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10.12"
+          python-version: "3.10"
 
       - name: Install uv
         run: |
@@ -40,6 +66,71 @@ jobs:
       - name: Run tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
+
+          # Default: full mode (used on push to main)
+          SMOKE_FLAG=""
+
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_SHA=${{ github.event.pull_request.base.sha }}
+            HEAD_SHA=${{ github.event.pull_request.head.sha }}
+
+            CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA 2>/dev/null || git ls-files)
+
+            HEAVY_CHANGED=false
+
+            # Build the heavy-adapter pattern from SMOKE_SKIP_MODULE_PATTERNS in test/test.py
+            # — single source of truth, no duplicate list to maintain here.
+            HEAVY_FILE_PATTERNS=$(python - <<'PY'
+import ast, pathlib, sys
+try:
+    source = pathlib.Path("test/test.py").read_text()
+    tree = ast.parse(source)
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "SMOKE_SKIP_MODULE_PATTERNS":
+                    print("|".join(ast.literal_eval(node.value)))
+                    sys.exit(0)
+    sys.exit(1)
+except Exception as e:
+    print(f"ERROR:{e}", file=sys.stderr)
+    sys.exit(1)
+PY
+            )
+            if [ $? -ne 0 ] || [ -z "$HEAVY_FILE_PATTERNS" ]; then
+              echo "Warning: could not read SMOKE_SKIP_MODULE_PATTERNS from test/test.py — defaulting to full mode"
+              HEAVY_CHANGED=true
+            fi
+
+            # Check if any changed adapter .py file is a heavy ontology adapter
+            # (file names match module names so the pattern works directly on paths)
+            # Guard: skip grep if pattern is empty to avoid matching everything
+            if [ "$HEAVY_CHANGED" == "false" ] && [ -n "$HEAVY_FILE_PATTERNS" ] && echo "$CHANGED_FILES" | grep -qE "($HEAVY_FILE_PATTERNS)"; then
+              HEAVY_CHANGED=true
+              echo "Heavy ontology adapter .py file changed — running full mode"
+            fi
+
+            # Check if the config file changed: use the Python script which maps changed
+            # line numbers → top-level YAML key, so changes to nested fields (args, filepath, etc.)
+            # are correctly attributed to their adapter block — not just a grep on diff text.
+            if [ "$HEAVY_CHANGED" == "false" ] && echo "$CHANGED_FILES" | grep -q "hsa_adapters_config_sample.yaml"; then
+              DETECTION=$(python .github/scripts/detect_heavy_adapter_changes.py $BASE_SHA $HEAD_SHA)
+              echo "Config change detection: $DETECTION"
+              if [[ "$DETECTION" == HEAVY_CHANGE* ]]; then
+                HEAVY_CHANGED=true
+                echo "Heavy ontology adapter config block changed — running full mode"
+              fi
+            fi
+
+            if [ "$HEAVY_CHANGED" == "false" ]; then
+              SMOKE_FLAG="--adapter-test-mode=smoke"
+              echo "No heavy ontology adapter changes detected — running smoke mode"
+            fi
+          fi
+
           uv run pytest test/test.py \
             --adapters-config=./config/hsa/hsa_adapters_config_sample.yaml \
+            --primer-schema-config=./config/primer_schema_config.yaml \
+            --species-schema-config=./config/hsa/hsa_schema_config.yaml \
+            $SMOKE_FLAG \
             -v -s
