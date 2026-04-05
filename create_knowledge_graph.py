@@ -782,7 +782,7 @@ def main(
             potential_species = None
             path_parts = Path(adapters_config).parts
             for p in path_parts:
-                if p in ['hsa', 'dmel']:
+                if p in ['hsa', 'dmel', 'cel', 'mmo', 'rno']:
                     potential_species = p
                     break
             
