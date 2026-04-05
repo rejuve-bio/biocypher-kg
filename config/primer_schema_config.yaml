@@ -1535,7 +1535,8 @@ protein to protein coexpression association:
   biolink_predicate: "biolink:coexpressed_with"
   inherit_properties: true
   represented_as: edge
-  input_label: coexpressed_with
+  input_label: protein_coexpressed_with
+  output_label: coexpressed_with
   source: protein
   target: protein
   kgx_properties:
