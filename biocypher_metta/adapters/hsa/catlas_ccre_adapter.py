@@ -158,6 +158,7 @@ class CAtlasCCREAdapter(Adapter):
                     "present_in_fetal_tissues": record["present_in_fetal_tissues"],
                     "present_in_adult_tissues": record["present_in_adult_tissues"],
                     "cre_module": record["cre_module"],
+                    "taxon_id": self.taxon_id,
                 }
 
                 if self.add_provenance:

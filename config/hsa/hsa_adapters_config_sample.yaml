@@ -1543,7 +1543,7 @@ distal_enhancer_ccre_associates_with_gene_coding_only:
 
 catlas_ccre_promoter:
   adapter:
-    module: biocypher_metta.adapters.catlas_ccre_adapter
+    module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
     cls: CAtlasCCREAdapter
     args:
       filepath: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
@@ -1556,7 +1556,7 @@ catlas_ccre_promoter:
 
 catlas_ccre_enhancer:
   adapter:
-    module: biocypher_metta.adapters.catlas_ccre_adapter
+    module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
     cls: CAtlasCCREAdapter
     args:
       filepath: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
@@ -1569,7 +1569,7 @@ catlas_ccre_enhancer:
 
 catlas_enhancer_accessible_in:
   adapter:
-    module: biocypher_metta.adapters.catlas_ccre_cell_type_adapter
+    module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
     cls: CAtlasCCRECellTypeAdapter
     args:
       cres_dirpath: ./samples/hsa/catlasv1/cCREs
@@ -1584,7 +1584,7 @@ catlas_enhancer_accessible_in:
 
 catlas_promoter_accessible_in:
   adapter:
-    module: biocypher_metta.adapters.catlas_ccre_cell_type_adapter
+    module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
     cls: CAtlasCCRECellTypeAdapter
     args:
       cres_dirpath: ./samples/hsa/catlasv1/cCREs
@@ -1599,7 +1599,7 @@ catlas_promoter_accessible_in:
 
 catlas_abc_scores:
   adapter:
-    module: biocypher_metta.adapters.catlas_abc_score_adapter
+    module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
     args:
       dirpath: ./samples/hsa/catlasv1/ABC_scores

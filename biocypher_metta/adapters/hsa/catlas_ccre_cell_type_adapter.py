@@ -8,7 +8,7 @@ from pathlib import Path
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import build_regulatory_region_id
 
-_SCRIPTS_DIR = Path(__file__).parent.parent.parent / "scripts"
+_SCRIPTS_DIR = Path(__file__).parent.parent.parent.parent / "scripts"
 _MASTER_TSV_URL = (
     "https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz"
 )
@@ -64,6 +64,7 @@ class CAtlasCCRECellTypeAdapter(Adapter):
         ccre_type,
         write_properties=True,
         add_provenance=True,
+        taxon_id=9606,
         ccre_master_tsv=None,
         cell_ontology_tsv=None,
     ):
@@ -74,6 +75,7 @@ class CAtlasCCRECellTypeAdapter(Adapter):
         self.cres_dirpath = cres_dirpath
         self.cell_ontology_pkl = cell_ontology_pkl
         self.ccre_type = ccre_type
+        self.taxon_id = str(taxon_id) if taxon_id is not None else None
         self.source = "CATLAS"
         self.source_url = "https://catlas.org/"
 
@@ -199,6 +201,7 @@ class CAtlasCCRECellTypeAdapter(Adapter):
 
                     props = {}
                     if self.write_properties:
+                        props["taxon_id"] = self.taxon_id
                         if self.add_provenance:
                             props["source"] = self.source
                             props["source_url"] = self.source_url
