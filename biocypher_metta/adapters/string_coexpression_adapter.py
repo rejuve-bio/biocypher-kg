@@ -17,8 +17,8 @@ from biocypher_metta.adapters.helpers import to_float
 
 
 class StringCoexpressionAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map=None, taxon_id=9606, 
-                 label='coexpressed_with', coexpression_threshold=400,
+    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id, 
+                 label, coexpression_threshold=400,
                  write_properties=None, add_provenance=None,
                  ensembl_uniprot_processor=None):
         """
@@ -27,8 +27,8 @@ class StringCoexpressionAdapter(Adapter):
         
         :param filepath: Path to the detailed links file downloaded from STRING
         :param ensembl_to_uniprot_map: DEPRECATED - use ensembl_uniprot_processor instead
-        :param taxon_id: NCBI taxonomy ID (default: 9606 for human)
-        :param label: Edge label (default: 'coexpressed_with')
+        :param taxon_id: NCBI taxonomy ID
+        :param label: Edge label
         :param coexpression_threshold: Minimum coexpression score to create edge (default: 400)
         :param write_properties: Whether to write edge properties
         :param add_provenance: Whether to add provenance information
@@ -71,33 +71,36 @@ class StringCoexpressionAdapter(Adapter):
             table.__next__()  
             
             for row in table:
-                protein1 = row[0].split(".")[1]
-                protein2 = row[1].split(".")[1]
-                coexpression_score = int(row[5])  
-                
-                if coexpression_score <= self.coexpression_threshold:
-                    continue
-                
-                if protein1 not in self.ensembl2uniprot or protein2 not in self.ensembl2uniprot:
-                    continue
-                
-                protein1_uniprot = self.ensembl2uniprot[protein1]
-                protein2_uniprot = self.ensembl2uniprot[protein2]
-
-                _source = ("protein", protein1_uniprot)
-                _target = ("protein", protein2_uniprot)
-                _props = {}
-                
-                if self.write_properties:
-                    # Normalize coexpression score to 0-1 range
-                    _props = {
-                        "coexpression_score": to_float(coexpression_score) / 1000,
-                    }
-                    _props['taxon_id'] = f'{self.taxon_id}'
+                try:
+                    protein1 = row[0].split(".")[1]
+                    protein2 = row[1].split(".")[1]
+                    coexpression_score = int(row[5])  
                     
-                    if self.add_provenance:
-                        _props["source"] = self.source
-                        _props["source_url"] = self.source_url
-                
-                yield _source, _target, self.label, _props
+                    if coexpression_score <= self.coexpression_threshold:
+                        continue
+                    
+                    if protein1 not in self.ensembl2uniprot or protein2 not in self.ensembl2uniprot:
+                        continue
+                    
+                    protein1_uniprot = self.ensembl2uniprot[protein1]
+                    protein2_uniprot = self.ensembl2uniprot[protein2]
+
+                    _source = ("protein", protein1_uniprot)
+                    _target = ("protein", protein2_uniprot)
+                    _props = {}
+                    
+                    if self.write_properties:
+                        # Normalize coexpression score to 0-1 range
+                        _props = {
+                            "coexpression_score": to_float(coexpression_score) / 1000,
+                        }
+                        _props['taxon_id'] = f'{self.taxon_id}'
+                        
+                        if self.add_provenance:
+                            _props["source"] = self.source
+                            _props["source_url"] = self.source_url
+                    
+                    yield _source, _target, self.label, _props
+                except KeyError:
+                    continue
                     
