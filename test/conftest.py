@@ -1,3 +1,14 @@
+import sys
+from pathlib import Path
+
+
+# Ensure tests can import the local package when the project is run
+# directly from the repository without an editable install.
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--adapters-config",
