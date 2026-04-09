@@ -1635,7 +1635,7 @@ catlas_promoter_accessible_in:
   nodes: False
   edges: True
 
-catlas_abc_scores:
+catlas_abc_enhancer_to_promoter:
   adapter:
     module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
@@ -1646,8 +1646,26 @@ catlas_abc_scores:
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      edge_type: enhancer_activity_by_contact
       # score_threshold: 0.015  # optional: filter low-confidence predictions
-  outdir: catlas_ccre/abc_scores
+  outdir: catlas_ccre/abc_enhancer_to_promoter
+  nodes: False
+  edges: True
+
+catlas_abc_promoter_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
+    cls: CAtlasABCScoreAdapter
+    args:
+      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
+      abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      edge_type: promoter_gene
+      # score_threshold: 0.015  # optional: filter low-confidence predictions
+  outdir: catlas_ccre/abc_promoter_to_gene
   nodes: False
   edges: True
 

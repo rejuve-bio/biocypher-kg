@@ -388,6 +388,15 @@ enhancer:
     enhancer_id: 
       type: str
       biolink: id
+    development_stage:
+      type: str[]
+      biolink: in_taxon
+    ccre_module:
+      type: int
+      biolink: has_quantitative_value
+    taxon_id:
+      type: str
+      description: Taxon ID for the organism (e.g., 9606 for human)
 
 promoter:
   represented_as: node
@@ -398,6 +407,16 @@ promoter:
   inherit_properties: true
   kgx_properties:
     category: "biolink:RegulatoryRegion"
+  properties:
+    development_stage:
+      type: str[]
+      biolink: in_taxon
+    ccre_module:
+      type: int
+      biolink: has_quantitative_value
+    taxon_id:
+      type: str
+      description: Taxon ID for the organism (e.g., 9606 for human)
 
 super enhancer:
   represented_as: node
@@ -2394,9 +2413,9 @@ activity by contact:
 
 enhancer activity by contact:
   description: >-
-    An association between an enhancer cCRE and a gene predicted by the ABC model
-    (Activity-By-Contact, Fulco et al. 2019) using CATLAS single-cell chromatin
-    accessibility data.
+    An association between an enhancer cCRE and a promoter cCRE predicted by the
+    ABC model (Activity-By-Contact, Fulco et al. 2019) using CATLAS single-cell
+    chromatin accessibility data.
   is_a: regulatory association
   mixins: [biolink:association]
   biolink_predicate: "biolink:affects"
@@ -2405,10 +2424,10 @@ enhancer activity by contact:
   input_label: enhancer_activity_by_contact
   output_label: activity_by_contact
   source: enhancer
-  target: gene
+  target: promoter
   kgx_properties:
     subject_category: "biolink:RegulatoryRegion"
-    object_category: "biolink:Gene"
+    object_category: "biolink:RegulatoryRegion"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
@@ -2421,6 +2440,12 @@ enhancer activity by contact:
     biological_context:
       type: str
       biolink: has_biological_sequence
+    taxon_id:
+      type: str
+      description: Taxon ID for the organism (e.g., 9606 for human)
+    gene:
+      type: str
+      description: ensemble gene id of the target gene
 
 promoter activity by contact:
   description: >-
