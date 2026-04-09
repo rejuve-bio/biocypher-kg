@@ -37,7 +37,7 @@ tflink:
 string:
   name: STRING PPI
   url: https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
-
+       https://stringdb-downloads.org/download/protein.links.detailed.v12.0/9606.protein.links.detailed.v12.0.txt.gz
 tadmap:
   name: TADMap
   url: https://cb.csail.mit.edu/cb/tadmap/TADMap_geneset_hs.csv

@@ -2217,6 +2217,29 @@ protein has_xref transcript:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
+protein to protein coexpression association:
+  description: >-
+    Indicates that two proteins are co-expressed,
+    generally under the same conditions. Based on STRING coexpression data.
+  is_a: expression
+  mixins: [biolink:Association]
+  biolink_predicate: "biolink:coexpressed_with"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_coexpressed_with
+  output_label: coexpressed_with
+  source: protein
+  target: protein
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:Protein"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    coexpression_score:  
+      type: float
+      biolink: has_quantitative_value
+
 reaction to pathway association:
   is_a: annotation
   biolink_predicate: biolink:part_of
