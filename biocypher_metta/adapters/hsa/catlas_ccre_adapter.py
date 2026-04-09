@@ -78,6 +78,15 @@ class CAtlasCCREAdapter(Adapter):
     def _to_bool(value):
         return str(value).strip().lower() in {"yes", "true", "1", "y"}
 
+    @staticmethod
+    def _get_development_stage(fetal_present, adult_present):
+        stages = []
+        if fetal_present:
+            stages.append("fetal")
+        if adult_present:
+            stages.append("adult")
+        return stages
+
     def _normalize_coordinates(self, start, end):
         if self.input_coordinate_system == "bed":
             # 0-based start, 1-based end
@@ -133,13 +142,14 @@ class CAtlasCCREAdapter(Adapter):
                 except ValueError:
                     cre_module = None
 
+                fetal_present = self._to_bool(row.get("Present in fetal tissues", ""))
+                adult_present = self._to_bool(row.get("Present in adult tissues", ""))
+
                 yield {
                     "chr": chrom,
                     "start": start,
                     "end": end,
-                    "class": cls,
-                    "present_in_fetal_tissues": self._to_bool(row.get("Present in fetal tissues", "")),
-                    "present_in_adult_tissues": self._to_bool(row.get("Present in adult tissues", "")),
+                    "development_stage": self._get_development_stage(fetal_present, adult_present),
                     "cre_module": cre_module,
                     "label": node_label,
                 }
@@ -154,10 +164,8 @@ class CAtlasCCREAdapter(Adapter):
                     "chr": record["chr"],
                     "start": record["start"],
                     "end": record["end"],
-                    "class": record["class"],
-                    "present_in_fetal_tissues": record["present_in_fetal_tissues"],
-                    "present_in_adult_tissues": record["present_in_adult_tissues"],
-                    "cre_module": record["cre_module"],
+                    "development_stage": record["development_stage"],
+                    "ccre_module": record["cre_module"],
                     "taxon_id": self.taxon_id,
                 }
 

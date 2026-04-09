@@ -51,10 +51,6 @@ class CAtlasABCScoreAdapter(Adapter):
       - props    : abc_score, distance, cell_type, biological_context (CL/UBERON ID)
     """
 
-    _LABEL_MAP = {
-        "enhancer": "enhancer_activity_by_contact",
-        "promoter": "promoter_activity_by_contact",
-    }
 
     def __init__(
         self,
@@ -68,6 +64,7 @@ class CAtlasABCScoreAdapter(Adapter):
         score_threshold=None,
         ccre_master_tsv=None,
         abc_aliases_tsv=None,
+        edge_type=None,
     ):
         self.dirpath = dirpath
         self.ccre_label_pkl = ccre_label_pkl
@@ -75,6 +72,8 @@ class CAtlasABCScoreAdapter(Adapter):
         self.cell_ontology_pkl = cell_ontology_pkl
         self.taxon_id = str(taxon_id) if taxon_id is not None else None
         self.score_threshold = score_threshold
+        # "enhancer_activity_by_contact" | "promoter_gene" | None (both)
+        self.edge_type = edge_type
         self.source = "CATLAS"
         self.source_url = "https://catlas.org/"
 
@@ -193,6 +192,7 @@ class CAtlasABCScoreAdapter(Adapter):
                 reader = csv.DictReader(handle, delimiter="\t")
                 for row in reader:
                     ccre_str = (row.get("cCRE") or "").strip()
+                    promoter_str = (row.get("Promoter") or "").strip()
                     gene_name_field = (row.get("Gene Name") or "").strip()
                     abc_score_str = (row.get("ABC_score") or "").strip()
                     distance_str = (row.get("Distance") or "").strip()
@@ -223,7 +223,7 @@ class CAtlasABCScoreAdapter(Adapter):
 
                     ensg_id = symbol_to_ensembl.get(gene_symbol)
                     if not ensg_id:
-                        continue  # skip genes with no ENSG mapping
+                        continue
 
                     try:
                         distance = int(distance_str)
@@ -232,18 +232,41 @@ class CAtlasABCScoreAdapter(Adapter):
 
                     ccre_id = build_regulatory_region_id(chrom, start, end)
                     gene_id = f"ENSEMBL:{ensg_id}"
-                    edge_label = self._LABEL_MAP[ccre_label]
 
-                    props = {}
+                    abc_props = {}
                     if self.write_properties:
-                        props["abc_score"] = abc_score
-                        props["cell_type"] = cell_type
-                        props["distance"] = distance
-                        props["biological_context"] = biological_context
-                        props["taxon_id"] = self.taxon_id
-
+                        abc_props["abc_score"] = abc_score
+                        abc_props["distance"] = distance
+                        abc_props["biological_context"] = biological_context
+                        abc_props["taxon_id"] = self.taxon_id
+                        abc_props["gene"] = ensg_id
                         if self.add_provenance:
-                            props["source"] = self.source
-                            props["source_url"] = self.source_url
+                            abc_props["source"] = self.source
+                            abc_props["source_url"] = self.source_url
 
-                    yield ccre_id, gene_id, edge_label, props
+                    assoc_props = {}
+                    if self.write_properties:
+                        assoc_props["biological_context"] = biological_context
+                        assoc_props["taxon_id"] = self.taxon_id
+                        if self.add_provenance:
+                            assoc_props["source"] = self.source
+                            assoc_props["source_url"] = self.source_url
+
+                    if ccre_label == "enhancer":
+                        parsed_promoter = self._parse_ccre(promoter_str) if promoter_str else None
+                        if parsed_promoter is None:
+                            continue
+                        p_chrom, p_start, p_end = parsed_promoter
+                        promoter_id = build_regulatory_region_id(p_chrom, p_start, p_end)
+
+                        if self.edge_type != "promoter_gene":
+                            # enhancer → promoter (ABC activity-by-contact)
+                            yield ccre_id, promoter_id, "enhancer_activity_by_contact", abc_props
+                        if self.edge_type != "enhancer_activity_by_contact":
+                            # promoter → gene (associated_with)
+                            yield promoter_id, gene_id, "promoter_gene", assoc_props
+
+                    elif ccre_label == "promoter":
+                        if self.edge_type != "enhancer_activity_by_contact":
+                            # promoter → gene (associated_with)
+                            yield ccre_id, gene_id, "promoter_gene", abc_props
