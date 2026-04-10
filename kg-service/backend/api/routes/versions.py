@@ -71,7 +71,7 @@ async def get_latest_version(db_type: str):
         driver = get_neo4j_driver()
         
         try:
-            with driver.session() as session:
+            with driver.session(database=settings.NEO4J_DATABASE) as session:
                 result = session.run("""
                     MATCH (v:KGVersion {db_type: "neo4j"})
                     RETURN v.version as version,
@@ -167,7 +167,7 @@ async def list_versions(db_type: str):
         driver = get_neo4j_driver()
         
         try:
-            with driver.session() as session:
+            with driver.session(database=settings.NEO4J_DATABASE) as session:
                 results = session.run("""
                     MATCH (v:KGVersion {db_type: "neo4j"})
                     RETURN v.version as version,
@@ -354,7 +354,7 @@ async def get_current_stats(db_type: str):
         driver = get_neo4j_driver()
         
         try:
-            with driver.session() as session:
+            with driver.session(database=settings.NEO4J_DATABASE) as session:
                 # Get latest version
                 version_result = session.run("""
                     MATCH (v:KGVersion {db_type: "neo4j"})
