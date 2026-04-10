@@ -40,41 +40,26 @@ class Neo4jClient:
     
     def get_database_size(self) -> dict:
         """
-        Get Neo4j database size in GB.
+        Get actual Neo4j store size in GB using apoc.monitor.store().
         Always returns a dict with size_gb, even if None.
         """
         try:
             with self.driver.session() as session:
-                # Try JMX for actual database size
-                try:
-                    result = session.run("""
-                        CALL dbms.queryJmx("org.neo4j:instance=kernel#0,name=Store file sizes")
-                        YIELD attributes
-                        RETURN attributes.TotalStoreSize.value as size_bytes
-                    """).single()
-                    
-                    if result and result.get("size_bytes"):
-                        size_bytes = int(result["size_bytes"])
-                        size_gb = round(size_bytes / (1024**3), 2)
-                        return {"size_gb": size_gb, "method": "jmx"}
-                except Exception as e:
-                    logger.debug(f"JMX query not available: {e}")
-                
-                # Fallback: Estimate from counts
-                counts = self.get_total_counts()
-                node_count = counts.get("node_count", 0)
-                edge_count = counts.get("edge_count", 0)
-                
-                # Rough estimate: 1KB per node, 500 bytes per edge
-                estimated_bytes = (node_count * 1000) + (edge_count * 500)
-                size_gb = round(estimated_bytes / (1024**3), 2)
-                
-                return {"size_gb": size_gb, "method": "estimated"}
-                
+                result = session.run("""
+                    CALL apoc.monitor.store()
+                    YIELD totalStoreSize
+                    RETURN totalStoreSize
+                """).single()
+
+                if result and result["totalStoreSize"] is not None:
+                    size_bytes = int(result["totalStoreSize"])
+                    size_gb = round(size_bytes / (1024**3), 2)
+                    return {"size_gb": size_gb, "method": "apoc"}
+
         except Exception as e:
             logger.error(f"Failed to get database size: {e}")
-            # Always return a dict, even on error
-            return {"size_gb": None, "method": "error"}
+
+        return {"size_gb": None, "method": "error"}
 
     def get_entity_properties(self, label: str) -> List[str]:
         with self.driver.session(database=settings.NEO4J_DATABASE) as session:
@@ -206,75 +191,6 @@ class Neo4jClient:
             }
 
     # ===== DATASETS =====
-
-    def get_datasets_with_metadata(self) -> list:
-        """Get dataset metadata (optimized for large graphs)"""
-        with self.driver.session() as session:
-            # Single query that aggregates everything at once
-            result = session.run("""
-                // Get all DatasetVersion info
-                MATCH (dv:DatasetVersion {db_type: "neo4j"})
-                OPTIONAL MATCH (dm:DatasetMapping {folder: dv.dataset, db_type: "neo4j"})
-                
-                WITH dv, dm.source as source
-                
-                // Aggregate node types and edge types in ONE pass
-                OPTIONAL MATCH (n)
-                WHERE n.source = source
-                    AND NOT n:DatasetHash AND NOT n:DatasetVersion 
-                    AND NOT n:KGVersion AND NOT n:DatasetMapping
-                WITH dv, source, 
-                    collect(DISTINCT labels(n)[0]) as node_types,
-                    head(collect(DISTINCT n.source_url)) as url
-                
-                OPTIONAL MATCH ()-[r]->()
-                WHERE r.source = source
-                WITH dv, source, node_types, url,
-                    collect(DISTINCT type(r)) as edge_types
-                
-                RETURN dv.dataset as name,
-                    dv.version as version,
-                    dv.timestamp as imported_on,
-                    source,
-                    url,
-                    node_types,
-                    edge_types
-                ORDER BY name
-            """)
-            
-            datasets = []
-            for record in result:
-                datasets.append({
-                    "name": record["name"].upper() if record["name"] else "UNKNOWN",
-                    "version": record["version"],
-                    "url": record["url"],
-                    "nodes": sorted([n.lower() for n in record["node_types"] if n]),
-                    "edges": sorted([e.lower() for e in record["edge_types"] if e]),
-                    "imported_on": record["imported_on"][:10] if record["imported_on"] else None
-                })
-            
-            return datasets
-    def get_frequent_relationships(self, limit: int = 50) -> list:
-        """Get most frequent entity pair connections"""
-        with self.driver.session() as session:
-            result = session.run("""
-                MATCH (a)-[r]->(b)
-                WITH labels(a)[0] as source_type, 
-                    labels(b)[0] as target_type,
-                    count(r) as count
-                WHERE source_type IS NOT NULL AND target_type IS NOT NULL
-                RETURN source_type, target_type, count
-                ORDER BY count DESC
-                LIMIT $limit
-            """, limit=limit)
-            
-            return [
-                {
-                    "count": record["count"],
-                    "entities": [record["source_type"].lower(), record["target_type"].lower()]
-                }
-                for record in result
-            ]
 
     def get_detailed_schema(self) -> dict:
         """Get comprehensive schema with node properties and edge details"""
