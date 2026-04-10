@@ -4,21 +4,32 @@ Wraps MORK operations for API endpoints
 """
 
 import json
+import importlib
 from pathlib import Path
-import sys
-
-# Add MORK client to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "biocypher-kg" / "biocypher-mork"))
-from client import MORK
+from backend.core.config import settings
 
 
 class MORKClient:
     """Client for MORK database operations"""
     
-    def __init__(self, mork_url: str = "http://localhost:8432"):
+    def __init__(self, mork_url: str = None, archive_base: str = None):
+        if mork_url is None:
+            mork_url = settings.MORK_URL
+        if archive_base is None:
+            archive_base = settings.ARCHIVE_BASE
+
+        try:
+            mork_module = importlib.import_module("mork")
+            mork_cls = getattr(mork_module, "MORK")
+        except Exception as exc:
+            raise ImportError(
+                "MORK package is not installed or does not expose MORK."
+            ) from exc
+
         self.mork_url = mork_url
-        self.server = MORK(mork_url)
-        self.metadata_file = Path("/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/mork/version_metadata.json")
+        self.server = mork_cls(mork_url)
+        self.archive_dir = Path(archive_base) / "mork"
+        self.metadata_file = self.archive_dir / "version_metadata.json"
     
     def get_latest_version(self):
         """Get latest version from metadata file"""
@@ -40,13 +51,11 @@ class MORKClient:
     
     def get_all_versions(self):
         """Get all versions from archives"""
-        archive_dir = Path("/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/mork")
-        
-        if not archive_dir.exists():
+        if not self.archive_dir.exists():
             return []
         
         versions = set()
-        for dataset_dir in archive_dir.iterdir():
+        for dataset_dir in self.archive_dir.iterdir():
             if dataset_dir.is_dir() and dataset_dir.name != "version_metadata.json":
                 for version_dir in dataset_dir.iterdir():
                     if version_dir.is_dir():
@@ -89,13 +98,11 @@ class MORKClient:
     
     def get_archives(self):
         """List all archived datasets"""
-        archive_dir = Path("/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/mork")
-        
-        if not archive_dir.exists():
+        if not self.archive_dir.exists():
             return []
         
         archives = []
-        for dataset_dir in archive_dir.iterdir():
+        for dataset_dir in self.archive_dir.iterdir():
             if dataset_dir.is_dir() and dataset_dir.name != "version_metadata.json":
                 dataset_versions = []
                 for version_dir in dataset_dir.iterdir():
