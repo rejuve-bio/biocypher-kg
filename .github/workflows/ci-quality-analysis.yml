@@ -10,6 +10,7 @@ on:
 jobs:
   sonarqube-scan:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     
     steps:
     - name: Checkout repository
@@ -25,8 +26,6 @@ jobs:
       with:
         args: >
           -Dsonar.projectKey=Biocypher_KG
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=.
           -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/__pycache__/**,**/build/**,**/dist/**,**/target/**,**/.git/**,**/coverage/**,**/*.test.js,**/*.test.py,**/*.spec.js
           -Dsonar.sourceEncoding=UTF-8
