@@ -217,8 +217,29 @@ class Neo4jLoader:
         logger.info("✅ Surgical delete complete!")
 
     def get_dataset_source_name(self, dataset_folder: str) -> str:
-        """Map dataset folder name to source name (uppercase)"""
-        return dataset_folder.upper()
+        """Resolve dataset source from DatasetMapping, fallback to uppercase folder name."""
+        fallback_source = dataset_folder.upper()
+
+        try:
+            with self.driver.session() as session:
+                result = session.run(
+                    """
+                    MATCH (dm:DatasetMapping {folder: $folder, db_type: "neo4j"})
+                    RETURN dm.source as source
+                    LIMIT 1
+                    """,
+                    folder=dataset_folder,
+                ).single()
+
+            if result and result.get("source"):
+                return result["source"]
+        except Exception as e:
+            logger.warning(
+                f"Could not resolve DatasetMapping source for '{dataset_folder}': {e}. "
+                f"Falling back to '{fallback_source}'."
+            )
+
+        return fallback_source
 
     # ===== CYPHER FILE LOADING =====
 
