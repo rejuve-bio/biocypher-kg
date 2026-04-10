@@ -44,7 +44,7 @@ class Neo4jClient:
         Always returns a dict with size_gb, even if None.
         """
         try:
-            with self.driver.session() as session:
+            with self.driver.session(database=settings.NEO4J_DATABASE) as session:
                 result = session.run("""
                     CALL apoc.monitor.store()
                     YIELD totalStoreSize
@@ -82,7 +82,7 @@ class Neo4jClient:
 
     def get_node_type_distribution(self, limit: int = 20) -> list:
         """Get distribution of node types"""
-        with self.driver.session() as session:
+        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE NOT n:DatasetHash AND NOT n:DatasetVersion 
@@ -99,7 +99,7 @@ class Neo4jClient:
 
     def get_edge_type_distribution(self, limit: int = 30) -> list:
         """Get distribution of relationship types"""
-        with self.driver.session() as session:
+        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
             result = session.run("""
                 MATCH ()-[r]->()
                 WITH type(r) as type, count(*) as count
@@ -194,7 +194,7 @@ class Neo4jClient:
 
     def get_detailed_schema(self) -> dict:
         """Get comprehensive schema with node properties and edge details"""
-        with self.driver.session() as session:
+        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
             # Filter out metadata nodes
             node_result = session.run("""
                 MATCH (n)
@@ -251,7 +251,7 @@ class Neo4jClient:
 
     def get_frequent_relationships(self, limit: int = 50) -> list:
         """Get most frequent entity pair connections"""
-        with self.driver.session() as session:
+        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
             result = session.run("""
                 MATCH (a)-[r]->(b)
                 WITH labels(a)[0] as source_type, 
@@ -273,7 +273,7 @@ class Neo4jClient:
 
     def get_datasets_with_metadata(self) -> list:
         """Get complete dataset metadata (batched to avoid memory issues)"""
-        with self.driver.session() as session:
+        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
             # Get all datasets first
             datasets_result = session.run("""
                 MATCH (dv:DatasetVersion {db_type: "neo4j"})
