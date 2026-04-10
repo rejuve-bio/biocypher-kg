@@ -324,16 +324,13 @@ async def get_archive_stats(db_type: str, dataset: str, version: str):
             except:
                 pass
         
-        # Count files
-        count_cmd = ["find", archive_path, "-name", file_ext, "-type", "f", "|", "wc", "-l"]
-        count_result = subprocess.run(" ".join(count_cmd), shell=True, capture_output=True, text=True, timeout=10)
-        
+        # Count files safely (no shell pipeline)
+        count_cmd = ["find", archive_path, "-type", "f", "-name", file_ext]
+        count_result = subprocess.run(count_cmd, capture_output=True, text=True, timeout=10)
+
         file_count = 0
         if count_result.returncode == 0:
-            try:
-                file_count = int(count_result.stdout.strip())
-            except:
-                pass
+            file_count = sum(1 for line in count_result.stdout.splitlines() if line.strip())
         
         return {
             "database": db_type,
