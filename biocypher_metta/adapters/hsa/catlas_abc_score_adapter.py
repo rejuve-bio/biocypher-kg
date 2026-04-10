@@ -34,8 +34,8 @@ _MASTER_TSV_URL = (
 #                                     produced by scripts/create_catlas_abc_cell_ontology_map.py
 #
 # Edge label is chosen from the cCRE class:
-#   enhancer cCRE  →  enhancer_activity_by_contact
-#   promoter cCRE  →  promoter_activity_by_contact
+#   enhancer cCRE  →  enhancer_activity_by_contact  (enhancer → gene)
+#   promoter cCRE  →  promoter_gene                 (promoter → gene)
 #
 # Rows with no ENSG mapping are skipped.
 
@@ -46,9 +46,10 @@ class CAtlasABCScoreAdapter(Adapter):
 
     Yields edges: (ccre_id, gene_id, label, props)
       - ccre_id  : {chr}_{start}_{end}_GRCh38  (via build_regulatory_region_id, 1-based closed)
-      - label    : enhancer_activity_by_contact  OR  promoter_activity_by_contact
+      - label    : enhancer_activity_by_contact (enhancer → gene)
+                   OR promoter_gene             (promoter → gene)
       - gene_id  : ENSEMBL:{ENSG_ID}
-      - props    : abc_score, distance, cell_type, biological_context (CL/UBERON ID)
+      - props    : abc_score, distance, biological_context (CL/UBERON ID)
     """
 
 
@@ -234,39 +235,28 @@ class CAtlasABCScoreAdapter(Adapter):
                     gene_id = f"ENSEMBL:{ensg_id}"
 
                     abc_props = {}
+                    promoter_props = {}
                     if self.write_properties:
                         abc_props["abc_score"] = abc_score
                         abc_props["distance"] = distance
                         abc_props["biological_context"] = biological_context
                         abc_props["taxon_id"] = self.taxon_id
-                        abc_props["gene"] = ensg_id
                         if self.add_provenance:
                             abc_props["source"] = self.source
                             abc_props["source_url"] = self.source_url
 
-                    assoc_props = {}
-                    if self.write_properties:
-                        assoc_props["biological_context"] = biological_context
-                        assoc_props["taxon_id"] = self.taxon_id
+                        promoter_props["biological_context"] = biological_context
+                        promoter_props["taxon_id"] = self.taxon_id
                         if self.add_provenance:
-                            assoc_props["source"] = self.source
-                            assoc_props["source_url"] = self.source_url
+                            promoter_props["source"] = self.source
+                            promoter_props["source_url"] = self.source_url
 
                     if ccre_label == "enhancer":
-                        parsed_promoter = self._parse_ccre(promoter_str) if promoter_str else None
-                        if parsed_promoter is None:
-                            continue
-                        p_chrom, p_start, p_end = parsed_promoter
-                        promoter_id = build_regulatory_region_id(p_chrom, p_start, p_end)
-
                         if self.edge_type != "promoter_gene":
-                            # enhancer → promoter (ABC activity-by-contact)
-                            yield ccre_id, promoter_id, "enhancer_activity_by_contact", abc_props
-                        if self.edge_type != "enhancer_activity_by_contact":
-                            # promoter → gene (associated_with)
-                            yield promoter_id, gene_id, "promoter_gene", assoc_props
+                            # enhancer → gene (ABC activity-by-contact)
+                            yield ccre_id, gene_id, "enhancer_activity_by_contact", abc_props
 
                     elif ccre_label == "promoter":
                         if self.edge_type != "enhancer_activity_by_contact":
                             # promoter → gene (associated_with)
-                            yield ccre_id, gene_id, "promoter_gene", abc_props
+                            yield ccre_id, gene_id, "promoter_gene", promoter_props
