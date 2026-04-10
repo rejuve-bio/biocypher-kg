@@ -1635,7 +1635,7 @@ catlas_promoter_accessible_in:
   nodes: False
   edges: True
 
-catlas_abc_enhancer_to_promoter:
+catlas_abc_enhancer_to_gene:
   adapter:
     module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
@@ -1648,7 +1648,7 @@ catlas_abc_enhancer_to_promoter:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: enhancer_activity_by_contact
       # score_threshold: 0.015  # optional: filter low-confidence predictions
-  outdir: catlas_ccre/abc_enhancer_to_promoter
+  outdir: catlas_ccre/abc_enhancer_to_gene
   nodes: False
   edges: True
 
@@ -1682,14 +1682,15 @@ catlas_abc_promoter_to_gene:
 #   nodes: True
 #   edges: False
 
-# encode_re2g_gene_associates:
+# encode_re2g_enhancer_to_gene:
 #   adapter:
 #     module: biocypher_metta.adapters.encode_re2g_adapter
 #     cls: ENCODERe2GAdapter
 #     args:
 #       filepath: /mnt/hdd_1/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
-#       label: enhancer_gene
+#       label: enhancer_activity_by_contact
 #       taxon_id: 9606
+#       cell_ontology_id: "CLO:0007059"  # K562
 #   outdir: encode_re2g
 #   nodes: False
 #   edges: True

@@ -2413,9 +2413,9 @@ activity by contact:
 
 enhancer activity by contact:
   description: >-
-    An association between an enhancer cCRE and a promoter cCRE predicted by the
+    An association between an enhancer cCRE and a gene predicted by the
     ABC model (Activity-By-Contact, Fulco et al. 2019) using CATLAS single-cell
-    chromatin accessibility data.
+    chromatin accessibility data, or by ENCODE rE2G.
   is_a: regulatory association
   mixins: [biolink:association]
   biolink_predicate: "biolink:affects"
@@ -2424,14 +2424,17 @@ enhancer activity by contact:
   input_label: enhancer_activity_by_contact
   output_label: activity_by_contact
   source: enhancer
-  target: promoter
+  target: gene
   kgx_properties:
     subject_category: "biolink:RegulatoryRegion"
-    object_category: "biolink:RegulatoryRegion"
+    object_category: "biolink:Gene"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
     abc_score:
+      type: float
+      biolink: has_quantitative_value
+    score:
       type: float
       biolink: has_quantitative_value
     distance:
@@ -2443,9 +2446,6 @@ enhancer activity by contact:
     taxon_id:
       type: str
       description: Taxon ID for the organism (e.g., 9606 for human)
-    gene:
-      type: str
-      description: ensemble gene id of the target gene
 
 promoter activity by contact:
   description: >-
