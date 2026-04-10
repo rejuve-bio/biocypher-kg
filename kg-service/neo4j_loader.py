@@ -45,6 +45,26 @@ class Neo4jLoader:
 
     # ===== SURGICAL DELETE =====
 
+    def extract_rel_type_from_cypher(self, cypher_file: Path) -> tuple:
+        """Extract (rel_type, source_label, target_label) from an edge cypher file.
+        Example: MATCH (source:protein {id:...}) MATCH (target:pathway {id:...}) MERGE (source)-[r:enables]->(target)
+        Returns (enables, protein, pathway) — all three needed for precise surgical delete.
+        """
+        try:
+            content = cypher_file.read_text()
+            rel_match = re.search(r'\[(?:\w+)?:([\w]+)\]', content)
+            rel_type = rel_match.group(1) if rel_match else None
+
+            # Extract all MATCH (alias:label {id:...}) patterns — first is source, second is target
+            label_matches = re.findall(r'MATCH\s*\(\w+:([\w]+)\s*\{', content)
+            source_label = label_matches[0] if len(label_matches) > 0 else None
+            target_label = label_matches[1] if len(label_matches) > 1 else None
+
+            return (rel_type, source_label, target_label)
+        except Exception as e:
+            logger.warning(f"Could not extract rel type from {cypher_file}: {e}")
+        return (None, None, None)
+
     def delete_changed_datasets(self, changed_datasets: list):
         """Delete nodes from changed datasets only"""
         logger.info("="*60)
@@ -95,6 +115,107 @@ class Neo4jLoader:
 
         logger.info("✅ Surgical delete complete!")
 
+    def delete_changed_files(self, changed_files: list):
+        """Per-file surgical delete.
+        - Edge files: delete only the specific relationship type (not all edges in folder)
+        - Node files: delete all nodes for that source (folder-level, once per source)
+        """
+        logger.info("="*60)
+        logger.info("Starting surgical delete (per-file)...")
+        logger.info("="*60)
+
+        deleted_node_sources = set()  # avoid deleting the same source nodes twice
+
+        with self.driver.session() as session:
+            for file_path in changed_files:
+                path = Path(file_path)
+                file_name = path.name
+                folder = path.parts[0]
+                source = self.get_dataset_source_name(folder)
+
+                if file_name.startswith("edges_"):
+                    cypher_file = self.output_dir / path.with_suffix(".cypher")
+                    rel_type, source_label, target_label = self.extract_rel_type_from_cypher(cypher_file)
+
+                    if rel_type and target_label:
+                        label = f"{source}:{rel_type}→{target_label}"
+                        count_result = session.run("""
+                            MATCH ()-[r]->(t)
+                            WHERE type(r) = $rel_type AND r.source = $source AND $target_label IN labels(t)
+                            RETURN count(r) as count
+                        """, rel_type=rel_type, source=source, target_label=target_label).single()
+                        count = count_result["count"] if count_result else 0
+
+                        if count == 0:
+                            logger.info(f"  [{label}]: 0 edges (skip)")
+                            continue
+
+                        logger.info(f"  [{label}]: Deleting {count:,} edges...")
+                        session.run("""
+                            CALL apoc.periodic.iterate(
+                                'MATCH ()-[r]->(t) WHERE type(r) = $rel_type AND r.source = $source AND $target_label IN labels(t) RETURN r',
+                                'DELETE r',
+                                {batchSize: $batch_size, parallel: false, params: {rel_type: $rel_type, source: $source, target_label: $target_label}}
+                            )
+                        """, rel_type=rel_type, source=source, target_label=target_label, batch_size=self.import_batch_size).consume()
+                        logger.info(f"  ✅ [{label}]: Deleted {count:,} edges")
+                    elif rel_type:
+                        label = f"{source}:{rel_type}"
+                        count_result = session.run("""
+                            MATCH ()-[r]->()
+                            WHERE type(r) = $rel_type AND r.source = $source
+                            RETURN count(r) as count
+                        """, rel_type=rel_type, source=source).single()
+                        count = count_result["count"] if count_result else 0
+
+                        if count == 0:
+                            logger.info(f"  [{label}]: 0 edges (skip)")
+                            continue
+
+                        logger.info(f"  [{label}]: Deleting {count:,} edges...")
+                        session.run("""
+                            CALL apoc.periodic.iterate(
+                                'MATCH ()-[r]->() WHERE type(r) = $rel_type AND r.source = $source RETURN r',
+                                'DELETE r',
+                                {batchSize: $batch_size, parallel: false, params: {rel_type: $rel_type, source: $source}}
+                            )
+                        """, rel_type=rel_type, source=source, batch_size=self.import_batch_size).consume()
+                        logger.info(f"  ✅ [{label}]: Deleted {count:,} edges")
+                    else:
+                        # fallback: delete all edges for this source
+                        logger.warning(f"  Could not extract rel type from {file_path}, falling back to full source delete")
+                        session.run("""
+                            CALL apoc.periodic.iterate(
+                                'MATCH ()-[r {source: $source}]->() RETURN r',
+                                'DELETE r',
+                                {batchSize: $batch_size, parallel: false, params: {source: $source}}
+                            )
+                        """, source=source, batch_size=self.import_batch_size).consume()
+
+                elif file_name.startswith("nodes_") and source not in deleted_node_sources:
+                    count_result = session.run("""
+                        MATCH (n {source: $source}) RETURN count(n) as count
+                    """, source=source).single()
+                    count = count_result["count"] if count_result else 0
+
+                    if count == 0:
+                        logger.info(f"  [{source}]: 0 nodes (skip)")
+                        deleted_node_sources.add(source)
+                        continue
+
+                    logger.info(f"  [{source}]: Deleting {count:,} nodes...")
+                    session.run("""
+                        CALL apoc.periodic.iterate(
+                            'MATCH (n {source: $source}) RETURN n',
+                            'DETACH DELETE n',
+                            {batchSize: $batch_size, parallel: false, params: {source: $source}}
+                        )
+                    """, source=source, batch_size=self.import_batch_size).consume()
+                    logger.info(f"  ✅ [{source}]: Deleted {count:,} nodes")
+                    deleted_node_sources.add(source)
+
+        logger.info("✅ Surgical delete complete!")
+
     def get_dataset_source_name(self, dataset_folder: str) -> str:
         """Map dataset folder name to source name (uppercase)"""
         return dataset_folder.upper()
@@ -125,13 +246,25 @@ class Neo4jLoader:
 
             # BOOST BATCH SIZE: dynamically replace whatever small batchSize was baked
             # into the .cypher file with the configured import_batch_size.
-            # speed up already-generated files (e.g. coxpresdb) without
-            # re-running the full KG generation pipeline.
+            # For large files (>1GB CSV), cap at 5000 to avoid Java heap OOM.
+            csv_file = cypher_file.with_suffix('.csv')
+            if csv_file.exists() and csv_file.stat().st_size > 1_000_000_000:
+                effective_batch_size = 5000
+                logger.info(f"    Large file detected ({csv_file.stat().st_size // (1024**3)}GB) — using batch size {effective_batch_size}")
+            else:
+                effective_batch_size = self.import_batch_size
             content = re.sub(
                 r'\{batchSize\s*:\s*\d+',
-                '{batchSize:' + str(self.import_batch_size),
+                '{batchSize:' + str(effective_batch_size),
                 content
             )
+
+            # USE CREATE INSTEAD OF MERGE FOR EDGE FILES
+            # Edges are always surgically deleted before reloading, so MERGE's
+            # expensive existence check is unnecessary and causes Java heap OOM
+            # on large files (e.g. gtex eqtl: 67M rows). CREATE is correct here.
+            if cypher_file.name.startswith("edges_"):
+                content = re.sub(r'\bMERGE\s*\((\w+)\)-\[', r'CREATE (\1)-[', content)
 
             queries = []
             current_query = []
@@ -167,6 +300,20 @@ class Neo4jLoader:
         except Exception as e:
             logger.error(f"    ❌ Error executing {cypher_file.name}: {e}")
             return False
+
+    def load_single_file(self, relative_file_path: str) -> bool:
+        """Load a single CSV file via its corresponding .cypher file.
+        relative_file_path is like 'reactome/edges_ppi.csv'
+        """
+        path = Path(relative_file_path)
+        cypher_file = self.output_dir / path.with_suffix(".cypher")
+
+        if not cypher_file.exists():
+            logger.error(f"Cypher file not found: {cypher_file}")
+            return False
+
+        logger.info(f"  Loading [{relative_file_path}]...")
+        return self.execute_cypher_file(cypher_file)
 
     def load_dataset(self, folder_name: str):
         """Load a dataset using its .cypher files"""
@@ -306,12 +453,12 @@ class Neo4jLoader:
     def load_all(self, build_id: str):
         """
         Main method - complete workflow:
-        1. Check versions
-        2. Archive changed datasets
-        3. Delete changed datasets
-        4. Load data using .cypher files
-        5. Add metadata
-        6. Finalize version
+        1. Check versions (per-file hash comparison)
+        2. Archive changed datasets (folder-level)
+        3. Surgical delete per changed file (edge-type-level for edges, folder-level for nodes)
+        4. Load only changed files via .cypher
+        5. Finalize version metadata in Neo4j
+        6. Stamp metadata on loaded nodes/edges
         """
         logger.info("="*60)
         logger.info("STARTING NEO4J LOAD WORKFLOW")
@@ -326,35 +473,54 @@ class Neo4jLoader:
             logger.info("\n✅ No changes detected - nothing to load!")
             return True
 
-        new_atomspace_version, new_dataset_versions, changed_datasets = result
+        new_atomspace_version, new_dataset_versions, changed_datasets, changed_files = result
 
         logger.info(f"\n📦 New AtomSpace version: {new_atomspace_version}")
         logger.info(f"📦 Changed datasets: {len(changed_datasets)}")
+        logger.info(f"📦 Changed files: {len(changed_files)}")
 
-        # Step 2: Archive changed datasets
+        # Step 2: Archive changed datasets (folder-level)
         logger.info("\nSTEP 2: Archiving changed datasets...")
         for dataset in changed_datasets:
             version = new_dataset_versions[dataset]
             logger.info(f"  Archiving [{dataset}] to {version}...")
             self.version_manager.archive_dataset(self.output_dir, dataset, version)
 
-        # Step 3: Delete changed datasets (surgical)
-        if changed_datasets:
-            logger.info("\nSTEP 3: Surgical delete...")
-            self.delete_changed_datasets(changed_datasets)
+        # Step 3: Per-file surgical delete
+        if changed_files:
+            logger.info("\nSTEP 3: Surgical delete (per-file)...")
+            self.delete_changed_files(changed_files)
 
         # Step 4: Generate timestamp for this load
         timestamp = datetime.utcnow().isoformat() + 'Z'
 
-        logger.info("\nSTEP 4: Loading data from .cypher files...")
+        logger.info("\nSTEP 4: Loading changed files from .cypher files...")
         logger.info("="*60)
 
-        for dataset in changed_datasets:
-            success = self.load_dataset(dataset)
-            
+        # Nodes must load before edges — edges use MATCH on nodes that must already exist
+        ordered_files = sorted(changed_files, key=lambda p: (0 if Path(p).name.startswith("nodes_") else 1))
+
+        failed_files = {}   # file_path -> error (populated by load_single_file logging)
+        loaded_datasets = set()
+
+        for file_path in ordered_files:
+            success = self.load_single_file(file_path)
+            dataset = Path(file_path).parts[0]  # e.g. "gtex/eqtl/edges_..." → "gtex"
+
             if not success:
-                logger.error(f"Failed to load {dataset}")
-                return False
+                failed_files[file_path] = "see error above"
+            else:
+                loaded_datasets.add(dataset)
+
+        # Datasets where EVERY file failed — skip steps 5 & 6 for these
+        failed_datasets = set()
+        for file_path in failed_files:
+            dataset = Path(file_path).parts[0]
+            if dataset not in loaded_datasets:
+                failed_datasets.add(dataset)
+
+        # Datasets that had at least one file succeed
+        ok_datasets = set(changed_datasets) - failed_datasets
 
         # Step 5: Finalize version (store hashes, create metadata nodes)
         logger.info("\nSTEP 5: Finalizing version metadata...")
@@ -362,13 +528,13 @@ class Neo4jLoader:
             self.output_dir,
             new_atomspace_version,
             new_dataset_versions,
-            changed_datasets,
+            list(ok_datasets),
             build_id
         )
-        
-        # Step 6: Add metadata to all loaded datasets
+
+        # Step 6: Add metadata to successfully loaded datasets only
         logger.info("\nSTEP 6: Adding metadata...")
-        for dataset in changed_datasets:
+        for dataset in ok_datasets:
             self.add_metadata_to_dataset(
                 folder_name=dataset,
                 atomspace_version=new_atomspace_version,
@@ -378,12 +544,23 @@ class Neo4jLoader:
             )
 
         logger.info("\n" + "="*60)
-        logger.info(f"✅ NEO4J LOAD COMPLETE - AtomSpace {new_atomspace_version}")
-        logger.info(f"   Build ID: {build_id}")
-        logger.info(f"   Changed datasets: {len(changed_datasets)}")
+        if failed_files:
+            logger.info(f"⚠️  NEO4J LOAD PARTIAL - AtomSpace {new_atomspace_version}")
+            logger.info(f"   Build ID: {build_id}")
+            logger.info(f"   Loaded datasets:  {len(ok_datasets)}")
+            logger.info(f"   Failed datasets:  {len(failed_datasets)}")
+            logger.info(f"\n   ❌ Failed files ({len(failed_files)}):")
+            for fp in sorted(failed_files):
+                logger.info(f"      - {fp}")
+            logger.info("\n   Re-run with --only-files to retry failed files:")
+            logger.info(f"      --only-files {' '.join(sorted(failed_files))}")
+        else:
+            logger.info(f"✅ NEO4J LOAD COMPLETE - AtomSpace {new_atomspace_version}")
+            logger.info(f"   Build ID: {build_id}")
+            logger.info(f"   Changed datasets: {len(changed_datasets)}")
         logger.info("="*60)
 
-        return True
+        return len(failed_files) == 0
 
 
 def main():
