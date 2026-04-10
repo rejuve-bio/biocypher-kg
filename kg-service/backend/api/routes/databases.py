@@ -47,7 +47,8 @@ async def get_database_status(db_type: str):
         Database status information
     """
     if db_type == "neo4j":
-        from ..core.neo4j_client import Neo4jClient
+        from backend.core.neo4j_client import Neo4jClient
+        client = None
         
         try:
             client = Neo4jClient()
@@ -63,9 +64,13 @@ async def get_database_status(db_type: str):
                 "status": "offline",
                 "message": str(e)
             }
+        finally:
+            if client is not None:
+                client.close()
     
     elif db_type == "mork":
-        from ..core.mork_client import MORKClient
+        from backend.core.mork_client import MORKClient
+        client = None
         
         try:
             client = MORKClient()
@@ -84,6 +89,9 @@ async def get_database_status(db_type: str):
                 "status": "offline",
                 "message": str(e)
             }
+        finally:
+            if client is not None and hasattr(client, "close"):
+                client.close()
     
     else:
         raise HTTPException(status_code=404, detail=f"Database '{db_type}' not found")
