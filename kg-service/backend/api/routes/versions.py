@@ -412,14 +412,16 @@ async def get_current_stats(db_type: str):
         if not metadata:
             raise HTTPException(status_code=404, detail="No MORK versions found")
         
-        # Count atoms in MORK using docker locally
+        # Count atoms in MORK using local Python and configured URL
         try:
             cmd = [
-                "docker", "exec", "mork-test", "python3", "-c",
-                "from mork import MORK; s=MORK('http://37.27.231.93:8432'); scope=s.work_at('annotation').__enter__(); data=scope.download_(max_results=100000); data.block(); lines=[l for l in data.data.split('\\\\n') if l.strip() and not l.strip().startswith(';')]; print(len(lines))"
+                "python3", "-c",
+                "import os; from mork import MORK; s=MORK(os.getenv('MORK_URL', 'http://localhost:8432')); scope=s.work_at('annotation').__enter__(); data=scope.download_(max_results=100000); data.block(); lines=[l for l in data.data.split('\\n') if l.strip() and not l.strip().startswith(';')]; print(len(lines))"
             ]
-            
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+
+            env = os.environ.copy()
+            env["MORK_URL"] = getattr(settings, "MORK_URL", "http://localhost:8432")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=env)
             
             atom_count = 0
             if result.returncode == 0:
