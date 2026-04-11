@@ -846,7 +846,7 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
 #         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
@@ -861,7 +861,7 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
 #         - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
@@ -876,7 +876,7 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
 #         - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz

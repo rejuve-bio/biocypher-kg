@@ -29,7 +29,7 @@ class DGVVariantAdapter(Adapter):
         super(DGVVariantAdapter, self).__init__(write_properties, add_provenance)
 
     def get_nodes(self):
-        with gzip.open(self.filepath, 'rt') as f:
+        with open(self.filepath, 'r') as f:
             next(f)
             for line in f:
                 data = line.strip().split(self.delimiter)
@@ -110,7 +110,7 @@ class DGVVariantAdapter(Adapter):
                     yield sv['id'], feat_id, sv_to_feat_label, props
 
     def _parse_dgv(self, path):
-        with gzip.open(path, 'rt') as f:
+        with open(path, 'r') as f:
             next(f)
             for line in f:
                 data = line.strip().split(self.delimiter)
