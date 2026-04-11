@@ -97,12 +97,14 @@ class DGVVariantAdapter(Adapter):
                 overlapping = sv_trees[chr][start:end + 1]
                 for interval in overlapping:
                     sv = interval.data
-                    props = {
-                        'overlap_start': max(start, sv['start']),
-                        'overlap_end': min(end, sv['end'])
-                    }
-                    if self.add_provenance:
-                        props['source'] = 'Overlap calculation'
+                    props = {}
+                    if self.write_properties:
+                        props = {
+                            'overlap_start': max(start, sv['start']),
+                            'overlap_end': min(end, sv['end'])
+                        }
+                        if self.add_provenance:
+                            props['source'] = 'Overlap calculation'
 
                     yield feat_id, sv['id'], feat_to_sv_label, props
                     yield sv['id'], feat_id, sv_to_feat_label, props
