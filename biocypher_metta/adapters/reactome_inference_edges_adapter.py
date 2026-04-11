@@ -101,15 +101,8 @@ class ReactomeInferenceEdgesAdapter(Adapter):
         super(ReactomeInferenceEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
-        organism_taxon_map = {
-            'R-CEL': 6239,  # Caenorhabditis elegans (cel)
-            'R-DME': 7227,  # Drosophila melanogaster (dmel)
-            # 'R-NUL': 7227,  # some reactions of Drosophila melanogaster (dmel)  <----:: CAUTION: some other reactome entities use R-NULL
-            'R-HSA': 9606,  # Homo sapiens (hsa)
-            # Add more organisms here as needed
-            'R-MMU': 10090,   # Mus musculus (mmu)
-            'R-RNO': 10116,   # Rattus norvegicus
-        }        
+        from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+        organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
         roles_to_label_map = defaultdict(lambda: None)
         roles_to_label_map['input'] = ('enables', 'RO_0002327')
         roles_to_label_map['output'] = ('produced_by', 'RO_0003001')

@@ -281,7 +281,7 @@ reactome_ppi:
     module: biocypher_metta.adapters.reactome_ppi_adapter
     cls: ReactomePPIAdapter
     args:
-      filepath: ./samples/reactome/reactome_homo_sapiens_interactions_tab_delimited_sample.txt.gz
+      filepath: ./samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt.gz
       label: interacts_with
       taxon_id: 9606
   outdir: reactome/ppi

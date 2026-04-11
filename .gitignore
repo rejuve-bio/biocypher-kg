@@ -174,3 +174,4 @@ output/
 output_cli/
 output_fly/
 output_human/
+samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt
