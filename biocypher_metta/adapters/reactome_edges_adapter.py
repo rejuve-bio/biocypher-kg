@@ -111,15 +111,8 @@ class ReactomeEdgesAdapter(Adapter):
 
     def get_edges(self):
         # this is being used only as a list  :/
-        organism_taxon_map = {
-            'R-CEL': 6239,  # Caenorhabditis elegans (cel)
-            'R-DME': 7227,  # Drosophila melanogaster (dmel)
-            # 'R-NUL': 7227,  # some reactions of Drosophila melanogaster (dmel)  <----:: CAUTION: some other reactome entities use R-NULL
-            'R-HSA': 9606,  # Homo sapiens (hsa)
-            # Add more organisms here as needed
-            'R-MMU': 10090,   # Mus musculus (mmu)
-            'R-RNO': 10116,   # Rattus norvegicus
-        }
+        from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+        organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
         with open(self.filepath) as input_file:
             base_props = {}
             if self.write_properties and self.add_provenance:
