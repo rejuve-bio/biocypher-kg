@@ -2,6 +2,7 @@
 Knowledge graph generation through BioCypher script
 """
 
+import time
 from datetime import date
 from pathlib import Path
 
@@ -201,6 +202,16 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     return graph_info
 
 
+def _fmt_elapsed(seconds: float) -> str:
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    m, s = divmod(seconds, 60)
+    if m < 60:
+        return f"{int(m)}m {s:.1f}s"
+    h, m = divmod(m, 60)
+    return f"{int(h)}h {int(m)}m {s:.1f}s"
+
+
 # ── MODIFIED: process_adapters now accepts and updates a CheckpointManager ──
 def process_adapters(
     adapters_dict,
@@ -245,6 +256,8 @@ def process_adapters(
         checkpoint_manager.completed_adapters if checkpoint_manager else []
     )
 
+    total_start = time.time()
+
     for c in adapters_dict:
         # ── Skip already-completed adapters ─────────────────────────
         if c in completed_adapters:
@@ -253,6 +266,7 @@ def process_adapters(
 
         writer.clear_counts()
         logger.info(f"Running adapter: {c}")
+        adapter_start = time.time()
 
         adapter_config = adapters_dict[c]["adapter"]
         adapter_module = importlib.import_module(adapter_config["module"])
@@ -320,7 +334,7 @@ def process_adapters(
                         datasets_dict[dataset_name]['edges'].add(output_label)
 
         except Exception as exc:
-            logger.error(f"Adapter '{c}' failed: {exc}")
+            logger.error(f"Adapter '{c}' failed after {_fmt_elapsed(time.time() - adapter_start)}: {exc}")
             # ── Save checkpoint with the failed adapter name ─────────
             if checkpoint_manager is not None:
                 checkpoint_manager.save(
@@ -338,6 +352,7 @@ def process_adapters(
 
         # ── Mark adapter as completed and save checkpoint ────────────
         completed_adapters.append(c)
+        logger.info(f"Adapter '{c}' completed in {_fmt_elapsed(time.time() - adapter_start)}")
         if checkpoint_manager is not None:
             checkpoint_manager.save(
                 completed_adapters=completed_adapters,
@@ -349,6 +364,7 @@ def process_adapters(
             )
             logger.info(f"Checkpoint updated after adapter: {c}")
 
+    logger.info(f"All adapters completed in {_fmt_elapsed(time.time() - total_start)}")
     return nodes_count, nodes_props, edges_count, datasets_dict
 # ────────────────────────────────────────────────────────────────────────────
 

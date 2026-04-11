@@ -835,7 +835,7 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_1/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2020-02-25.txt.gz
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #   outdir: dgv
 #   nodes: True
