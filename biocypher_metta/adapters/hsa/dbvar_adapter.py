@@ -1,4 +1,5 @@
 import gzip
+from intervaltree import IntervalTree
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location, build_regulatory_region_id
 # Example dbVar input file:
@@ -68,44 +69,49 @@ class DBVarVariantAdapter(Adapter):
     def get_edges(self):
         if not self.feature_files:
             raise FileNotFoundError("Feature files for overlap calculation not provided in configuration.")
-            
-        svs = {}
+
+        # Build per-chromosome interval trees from SVs for O(log n) overlap queries
+        sv_trees = {}
         for sv_id, chr, start, end, label in self._parse_vcf(self.filepath):
             if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                 continue
-            if chr not in svs: svs[chr] = []
-            svs[chr].append({'id': sv_id, 'start': start, 'end': end, 'label': label})
-            
+            if chr not in sv_trees:
+                sv_trees[chr] = IntervalTree()
+            # IntervalTree uses half-open intervals [begin, end); use end+1 to include the last base
+            tree_end = end + 1 if end >= start else start + 1
+            sv_trees[chr][start:tree_end] = {'id': sv_id, 'start': start, 'end': end}
+
         for feat_config in self.feature_files:
             path = feat_config['path']
             label = feat_config['label']
             file_type = feat_config['type']
             delimiter = feat_config.get('delimiter', '\t')
-            
+
             if file_type == 'gtf':
                 iterator = self._parse_gtf(path)
             elif file_type == 'bed':
                 iterator = self._parse_bed(path, delimiter, label)
             else:
                 continue
-                
+
+            feat_to_sv_label = f"{label}_overlaps_structural_variant"
+            sv_to_feat_label = f"structural_variant_overlaps_{label}"
+
             for feat_id, chr, start, end in iterator:
-                if chr in svs:
-                    for sv in svs[chr]:
-                        if self._check_overlap(start, end, sv['start'], sv['end']):
-                            props = {
-                                'overlap_start': max(start, sv['start']),
-                                'overlap_end': min(end, sv['end'])
-                            }
-                            if self.add_provenance:
-                                props['source'] = 'Overlap calculation'
-                            
-                            # Dynamic granular labels
-                            feat_to_sv_label = f"{label}_overlaps_structural_variant"
-                            sv_to_feat_label = f"structural_variant_overlaps_{label}"
-                            
-                            yield feat_id, sv['id'], feat_to_sv_label, props
-                            yield sv['id'], feat_id, sv_to_feat_label, props
+                if chr not in sv_trees:
+                    continue
+                overlapping = sv_trees[chr][start:end + 1]
+                for interval in overlapping:
+                    sv = interval.data
+                    props = {
+                        'overlap_start': max(start, sv['start']),
+                        'overlap_end': min(end, sv['end'])
+                    }
+                    if self.add_provenance:
+                        props['source'] = 'Overlap calculation'
+
+                    yield feat_id, sv['id'], feat_to_sv_label, props
+                    yield sv['id'], feat_id, sv_to_feat_label, props
 
     def _parse_vcf(self, path):
         import re
@@ -130,9 +136,6 @@ class DBVarVariantAdapter(Adapter):
                 if match:
                     end = int(match.group(1))
                 yield variant_id, chr, start, end, self.label
-
-    def _check_overlap(self, s1, e1, s2, e2):
-        return max(s1, s2) <= min(e1, e2)
 
     def _parse_gtf(self, path):
         with gzip.open(path, 'rt') as f:
