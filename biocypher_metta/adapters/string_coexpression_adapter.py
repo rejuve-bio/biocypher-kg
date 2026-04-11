@@ -17,8 +17,8 @@ from biocypher_metta.adapters.helpers import to_float
 
 
 class StringCoexpressionAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id, 
-                 label, coexpression_threshold=400,
+    def __init__(self, filepath, taxon_id, 
+                 label,ensembl_to_uniprot_map=None, coexpression_threshold=400,
                  write_properties=None, add_provenance=None,
                  ensembl_uniprot_processor=None):
         """
