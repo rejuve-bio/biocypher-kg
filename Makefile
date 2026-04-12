@@ -73,7 +73,10 @@ run-interactive: check-uv
 	if [ "$$INCLUDE_ADAPTERS" = "all" ]; then \
 		INCLUDE_ADAPTERS_FLAG=""; \
 	else \
-		INCLUDE_ADAPTERS_FLAG="--include-adapters $$INCLUDE_ADAPTERS"; \
+		INCLUDE_ADAPTERS_FLAG=""; \
+		for adapter in $$INCLUDE_ADAPTERS; do \
+			INCLUDE_ADAPTERS_FLAG="$$INCLUDE_ADAPTERS_FLAG --include-adapters $$adapter"; \
+		done; \
 	fi; \
 	echo "Including adapters: $$INCLUDE_ADAPTERS"; \
 	echo ""; \
