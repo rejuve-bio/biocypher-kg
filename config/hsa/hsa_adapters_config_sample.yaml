@@ -833,7 +833,7 @@ dgv_variant_promoter_overlap:
       filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt
       label: structural_variant
       feature_files:
-        - path: ./samples/hsa/Hs_EPDnew.bed
+        - path: ./samples/hsa/Hs_EPDnew_sample.bed
           label: promoter
           type: bed
           delimiter: ' '
@@ -846,7 +846,7 @@ epd_promoter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: ./samples/hsa/Hs_EPDnew.bed
+      filepath: ./samples/hsa/Hs_EPDnew_sample.bed
       label: promoter
       taxon_id: 9606
   outdir: epd
@@ -883,7 +883,7 @@ epd_promoter_regulates_gene:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: ./samples/hsa/Hs_EPDnew.bed
+      filepath: ./samples/hsa/Hs_EPDnew_sample.bed
       type: promoter to gene association
       label: promoter_gene
       taxon_id: 9606
@@ -940,7 +940,7 @@ dbvar_variant_promoter_overlap:
       filepath: ./samples/hsa/dbvar_sample.vcf.gz
       label: structural_variant
       feature_files:
-        - path: ./samples/hsa/Hs_EPDnew.bed
+        - path: ./samples/hsa/Hs_EPDnew_sample.bed
           label: promoter
           type: bed
           delimiter: ' '
