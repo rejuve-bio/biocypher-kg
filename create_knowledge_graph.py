@@ -417,6 +417,13 @@ def _load_dbsnp(mapping_path: str, is_sample: bool = False) -> tuple:
         cache_path = input_path
         mapping_file = cache_path / 'dbsnp_mapping.pkl'
 
+    # Accept either a .pkl file path or a directory path
+    if cache_path.suffix == '.pkl' or (cache_path.exists() and cache_path.is_file()):
+        mapping_file = cache_path
+        cache_path = cache_path.parent
+    else:
+        mapping_file = cache_path / 'dbsnp_mapping.pkl'
+
     if not cache_path.exists() or not cache_path.is_dir():
         if is_sample:
             logger.warning(f"dbSNP mapping location not found at {cache_path}, continuing without rsID mappings")
@@ -789,7 +796,12 @@ def main(
         # Load dbSNP mappings via DBSNPProcessor
         # Determine sample vs full, and resolve dbSNP mapping path if not set
         if not species_mode:
-            is_sample_config = 'sample' in str(adapters_config).lower()
+            # If the user explicitly provided a dbsnp path, derive is_sample from that path.
+            # Otherwise fall back to the adapters config name.
+            if dbsnp_cache_dir:
+                is_sample_config = 'sample' in str(dbsnp_cache_dir).lower()
+            else:
+                is_sample_config = 'sample' in str(adapters_config).lower()
         else:
             is_sample_config = (dataset == 'sample')
 

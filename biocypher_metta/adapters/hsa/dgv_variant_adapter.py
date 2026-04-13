@@ -174,7 +174,7 @@ class DGVVariantAdapter(Adapter):
 
     def _parse_bed(self, path, delimiter, label):
         import csv
-        with gzip.open(path, 'rt') as f:
+        with open(path, 'r') as f:
             # EPD uses multiple spaces as delimiter sometimes, handle it robustly
             if delimiter == ' ':
                 reader = (line.split() for line in f if not line.startswith('#'))

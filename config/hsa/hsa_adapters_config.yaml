@@ -3,7 +3,7 @@ gencode_gene:
     module: biocypher_metta.adapters.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
       label: gene
       taxon_id: 9606      # multi-species version needs this
   outdir: gencode/gene
@@ -15,7 +15,7 @@ gencode_transcripts:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
       type: transcript
       label: transcript
       taxon_id: 9606      # multi-species version needs this
@@ -28,7 +28,7 @@ transcribes_to:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
       type: transcribes to
       label: transcribes_to
       taxon_id: 9606      # multi-species version needs this
@@ -41,7 +41,7 @@ gencode_exon:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
       target_type: exon   # it could be anything here
       label: exon
       taxon_id: 9606      # multi-species version needs this
@@ -54,7 +54,7 @@ exon_part_of_transcript: # replaces transcript_includes_exon
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
       label: part_of_transcript
       target_type: transcript
       taxon_id: 9606      
@@ -67,7 +67,7 @@ exon_part_of_gene:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
       label: part_of_gene
       target_type: gene
       taxon_id: 9606      
@@ -846,10 +846,10 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+#         - path: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
 #           label: gene
 #           type: gtf
 #   outdir: dgv
@@ -861,10 +861,10 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+#         - path: /mnt/hdd_1/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
 #           label: non_coding_rna
 #           type: bed
 #   outdir: dgv
@@ -876,10 +876,10 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+#         - path: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed
 #           label: promoter
 #           type: bed
 #           delimiter: ' '
@@ -892,7 +892,7 @@ hpo_gene_phenotype:
     module: biocypher_metta.adapters.hsa.hpo_gene_phenotype_adapter
     cls: HPOAdapter  
     args:  
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/hpo/genes_to_phenotype.txt
+      filepath: /mnt/hdd_1/abdu/biocypher_data/hpo/genes_to_phenotype.txt
       # entrez_to_ensembl_map: None #./aux_files/hsa/entrez_ensembl/entrez_ensembl_mapping.pkl
   outdir: human_phenotype_ontology
   nodes: False  
@@ -903,7 +903,7 @@ hpo_gene_disease:
     module: biocypher_metta.adapters.hsa.hpo_gene_disease_adapter
     cls: HPOGeneDiseaseAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/hpo/genes_to_disease.txt
+      filepath: /mnt/hdd_1/abdu/biocypher_data/hpo/genes_to_disease.txt
       # entrez_to_ensembl_map: None #./aux_files/hsa/entrez_ensembl/entrez_ensembl_mapping.pkl
   outdir: human_phenotype_ontology
   nodes: False
@@ -914,7 +914,7 @@ epd_promoter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed
       label: promoter
       taxon_id: 9606
   outdir: epd
@@ -926,7 +926,7 @@ epd_promoter_regulates_gene:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed
       type: promoter to gene association
       label: promoter_gene
       taxon_id: 9606
@@ -950,10 +950,10 @@ epd_promoter_regulates_gene:
 #     module: biocypher_metta.adapters.hsa.dbvar_adapter
 #     cls: DBVarVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+#         - path: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
 #           label: gene
 #           type: gtf
 #   outdir: dbvar
@@ -965,10 +965,10 @@ epd_promoter_regulates_gene:
 #     module: biocypher_metta.adapters.hsa.dbvar_adapter
 #     cls: DBVarVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_2/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+#         - path: /mnt/hdd_1/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
 #           label: non_coding_rna
 #           type: bed
 #   outdir: dbvar
@@ -980,10 +980,10 @@ epd_promoter_regulates_gene:
 #     module: biocypher_metta.adapters.hsa.dbvar_adapter
 #     cls: DBVarVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_2/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+#       filepath: /mnt/hdd_1/abdu/biocypher_data/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_2/abdu/biocypher_data/epd/Hs_EPDnew.bed.gz
+#         - path: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed
 #           label: promoter
 #           type: bed
 #           delimiter: ' '
@@ -1526,9 +1526,9 @@ promoter_ccre:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      filepath: /mnt/hdd_1/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       edge_type: eqtl
-      eqtl_filepath: /mnt/hdd_1/biocypher-kg/input/hsa/cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz
+      eqtl_filepath: /mnt/hdd_1/abdu/biocypher_data/cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz
       label: promoter
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       taxon_id: 9606

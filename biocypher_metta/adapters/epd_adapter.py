@@ -81,7 +81,7 @@ class EPDAdapter(Adapter):
         """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
-        with gzip.open(self.filepath, 'rt') as f:
+        with open(self.filepath, 'r') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
@@ -111,7 +111,7 @@ class EPDAdapter(Adapter):
         """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
-        with gzip.open(self.filepath, 'rt') as f:
+        with open(self.filepath, 'r') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             not_found_symbols = 0
             for line in reader:
