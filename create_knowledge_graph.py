@@ -265,7 +265,7 @@ def process_adapters(
             continue
 
         writer.clear_counts()
-        logger.info(f"Running adapter: {c}")
+        logger.info(f"\033[1;36m\n{'='*60}\n  Running adapter: {c}\n{'='*60}\033[0m")
         adapter_start = time.time()
 
         adapter_config = adapters_dict[c]["adapter"]
