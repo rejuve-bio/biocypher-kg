@@ -150,6 +150,8 @@ more-itertools==10.8.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
+ncls==0.0.70
+    # via biocypher-metta (pyproject.toml)
 neo4j==4.4.13
     # via
     #   biocypher-metta (pyproject.toml)
@@ -165,6 +167,7 @@ numpy==1.26.4
     # via
     #   biocypher-metta (pyproject.toml)
     #   biopython
+    #   ncls
     #   pandas
 obonet==1.0.0
     # via biocypher-metta (pyproject.toml)
