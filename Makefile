@@ -68,6 +68,18 @@ run-interactive: check-uv
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
 	echo "Using writer type: $$WRITER_TYPE"; \
 	echo ""; \
+	read -p "🔌 Enter adapters to include [all]: " INCLUDE_ADAPTERS; \
+	INCLUDE_ADAPTERS=$${INCLUDE_ADAPTERS:-all}; \
+	if [ "$$INCLUDE_ADAPTERS" = "all" ]; then \
+		INCLUDE_ADAPTERS_FLAG=""; \
+	else \
+		INCLUDE_ADAPTERS_FLAG=""; \
+		for adapter in $$INCLUDE_ADAPTERS; do \
+			INCLUDE_ADAPTERS_FLAG="$$INCLUDE_ADAPTERS_FLAG --include-adapters $$adapter"; \
+		done; \
+	fi; \
+	echo "Including adapters: $$INCLUDE_ADAPTERS"; \
+	echo ""; \
 	read -p "📋 Write properties? (yes/no) [yes]: " WRITE_PROPERTIES; \
 	WRITE_PROPERTIES=$${WRITE_PROPERTIES:-yes}; \
 	if [ "$$WRITE_PROPERTIES" = "no" ]; then \
@@ -95,8 +107,8 @@ run-interactive: check-uv
 		--adapters-config "$$ADAPTERS_CONFIG" \
 		--schema-config "$$SCHEMA_CONFIG" \
 		--dbsnp-cache-dir "$$DBSNP_CACHE_DIR" \
-		# --dbsnp-pos "$$DBSNP_POS" \
 		--writer-type "$$WRITER_TYPE" \
+		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG; \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
