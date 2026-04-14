@@ -237,7 +237,7 @@ class CAtlasABCScoreAdapter(Adapter):
                     abc_props = {}
                     promoter_props = {}
                     if self.write_properties:
-                        abc_props["abc_score"] = abc_score
+                        abc_props["score"] = abc_score
                         abc_props["distance"] = distance
                         abc_props["biological_context"] = biological_context
                         abc_props["taxon_id"] = self.taxon_id

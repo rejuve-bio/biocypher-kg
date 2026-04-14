@@ -119,7 +119,7 @@ class PrologWriter(BaseWriter):
                 label = label.lower()
 
                 if label not in file_handles:
-                    file_path = f"{output_dir}/nodes_{label}.pl"
+                    file_path = f"{output_dir}/nodes.pl"
                     file_handles[label] = open(file_path, "w")
 
                 out_str = self.write_node(node)
@@ -173,7 +173,7 @@ class PrologWriter(BaseWriter):
 
                 if file_key not in file_handles:
                     file_suffix = f"{source_type}_{label_to_use}_{target_type}"
-                    file_path = f"{output_dir}/edges_{file_suffix}.pl"
+                    file_path = f"{output_dir}/edges.pl"
                     file_handles[file_key] = open(file_path, "w")
 
                 out_str = self.write_edge(edge)
