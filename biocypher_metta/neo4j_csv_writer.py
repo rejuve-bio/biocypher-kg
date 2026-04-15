@@ -262,14 +262,6 @@ class Neo4jCSVWriter(BaseWriter):
                 
                 if isinstance(source_id, tuple):
                     source_type = source_id[0]
-                    if isinstance(edge_info["source"], list):
-                        if source_type not in edge_info["source"]:
-                            raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
-                    else:
-                        pass
-                        # if source_type != edge_info["source"]:
-                        # if source_type not in self.type_hierarchy:
-                        #     raise TypeError(f"Type '{source_type}' must be '{edge_info['source']}'")
                     source_id = source_id[1]
                 else:
                     if isinstance(edge_info["source"], list):
@@ -279,14 +271,6 @@ class Neo4jCSVWriter(BaseWriter):
 
                 if isinstance(target_id, tuple):
                     target_type = target_id[0]
-                    if isinstance(edge_info["target"], list):
-                        if target_type not in edge_info["target"]:
-                            raise TypeError(f"Type '{target_type}' must be one of {edge_info['target']}")
-                    else:
-                        pass
-                        # if target_type != edge_info["target"]:
-                        # if target_type not in self.type_hierarchy:
-                        #     raise TypeError(f"Type '{target_type}' must be '{edge_info['target']}'")
                     target_id = target_id[1]
                 else:
                     if isinstance(edge_info["target"], list):
