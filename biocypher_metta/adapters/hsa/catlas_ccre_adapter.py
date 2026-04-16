@@ -82,9 +82,11 @@ class CAtlasCCREAdapter(Adapter):
     def _get_development_stage(fetal_present, adult_present):
         stages = []
         if fetal_present:
-            stages.append("fetal")
+            # fetal stage: http://purl.obolibrary.org/obo/HsapDv_0000037
+            stages.append("HsapDv_0000037")
         if adult_present:
-            stages.append("adult")
+            # adult stage: http://purl.obolibrary.org/obo/HsapDv_0000258
+            stages.append("HsapDv_0000258")
         return stages
 
     def _normalize_coordinates(self, start, end):
