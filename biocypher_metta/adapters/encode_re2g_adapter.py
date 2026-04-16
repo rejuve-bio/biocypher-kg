@@ -45,10 +45,11 @@ class ENCODERe2GAdapter(Adapter):
                 end = int(fields[2])
                 is_self_promoter = fields[8].strip().upper() == "TRUE"
 
+                region_id = f"ENCODE_RE2G:{build_regulatory_region_id(chr, start, end)}"
+                
                 if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     continue
 
-                region_id = build_regulatory_region_id(chr, start, end)
                 node_label = self.label if self.label else self._node_label(is_self_promoter)
 
                 props = {}
@@ -79,12 +80,16 @@ class ENCODERe2GAdapter(Adapter):
                 is_self_promoter = fields[8].strip().upper() == "TRUE"
                 cell_type = fields[9].strip() if len(fields) > 9 else None
 
+                #CURIE ID for gene, ENSEMBL prefix
+                gene_id = f"ENSEMBL:{fields[6] }"
+                score = float(fields[-1])
+                region_id = f"ENCODE_RE2G:{build_regulatory_region_id(chr, start, end)}"
+                
                 if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     continue
 
                 gene_id = f"ENSEMBL:{fields[6].strip()}"
                 score = float(fields[-1])
-                region_id = build_regulatory_region_id(chr, start, end)
                 edge_label = self.label if self.label else self._edge_label(is_self_promoter)
                 biological_context = self.cell_ontology_id if self.cell_ontology_id else cell_type
 

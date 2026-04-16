@@ -72,8 +72,7 @@ class EnhancercCREAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
-                #  SO:000165 for enhancer (Sequence Ontology term)
-                element_id = f"SO:000165:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{chrom}_{start}_{end}"
                 yield element_id, self.label, props
             
             file.close()                
@@ -142,8 +141,7 @@ class EnhancercCREAdapter(Adapter):
                     props['source'] = self.source
                     props['source_url'] = self.source_url
 
-                # SO:000165 for enhancer (Sequence Ontology term)
-                element_id = f"SO:000165:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{chrom}_{start}_{end}"
                 yield element_id, gene_id, self.label, props
             
             file.close()

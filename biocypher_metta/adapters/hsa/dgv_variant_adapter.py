@@ -41,8 +41,7 @@ class DGVVariantAdapter(Adapter):
                 end = int(data[DGVVariantAdapter.INDEX['coord_end']])
                 variant_type = data[DGVVariantAdapter.INDEX['type']]
                 pubmedid = data[DGVVariantAdapter.INDEX['pubmedid']]
-                #Using SO:0001059 as the CURIE prefix for structural variants since dbVar lacks a standard ID format
-                region_id = f"SO:0001059_{build_regulatory_region_id(chr, start, end)}"
+                region_id = f"DGV:{build_regulatory_region_id(chr, start, end)}"
                 if not check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     continue
                 props = {}
@@ -177,7 +176,7 @@ class DGVVariantAdapter(Adapter):
                 end = int(data[DGVVariantAdapter.INDEX['coord_end']])
 
                 #Reconstruct ID
-                region_id = f"SO:0001059_{build_regulatory_region_id(chr, start, end)}"
+                region_id = f"DGV:{build_regulatory_region_id(chr, start, end)}"
 
                 yield region_id, chr, start, end, self.label
 
@@ -249,7 +248,7 @@ class DGVVariantAdapter(Adapter):
 
                 if label == 'promoter':
                     # EPD ID logic: build_regulatory_region_id matches EPDAdapter
-                    feat_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
+                    feat_id = f"EPD:{build_regulatory_region_id(chr, start, end)}"
                 elif label == 'non_coding_rna':
                     # RNAcentral ID logic: split on underscore.
                     # Official adapter DOES NOT add RNACENTRAL: prefix in get_nodes
