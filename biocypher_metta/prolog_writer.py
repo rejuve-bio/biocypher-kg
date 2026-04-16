@@ -16,8 +16,8 @@ class PrologWriter(BaseWriter):
     })
 
     def __init__(self, schema_config, biocypher_config,
-                 output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+                 output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.create_edge_types()
         #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []

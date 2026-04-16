@@ -51,36 +51,42 @@ def load_species_config(config_path: str = "config/species_config.yaml") -> dict
 
 
 # Function to choose the writer class based on user input
-def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path):
+def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path, include_curie: bool = False):
     if writer_type.lower() == 'metta':
         return MeTTaWriter(schema_config=str(schema_config_path),
                            biocypher_config="config/biocypher_config.yaml",
-                           output_dir=output_dir)
+                           output_dir=output_dir,
+                           include_curie=include_curie)
     elif writer_type.lower() == 'prolog':
-        return PrologWriter(schema_config=str(schema_config_path), 
+        return PrologWriter(schema_config=str(schema_config_path),
                             biocypher_config="config/biocypher_config.yaml",
-                            output_dir=output_dir)
+                            output_dir=output_dir,
+                            include_curie=include_curie)
     elif writer_type.lower() == 'neo4j':
-        return Neo4jCSVWriter(schema_config=str(schema_config_path), 
+        return Neo4jCSVWriter(schema_config=str(schema_config_path),
                                biocypher_config="config/biocypher_config.yaml",
-                               output_dir=output_dir)
+                               output_dir=output_dir,
+                               include_curie=include_curie)
     elif writer_type.lower() == 'parquet':
         return ParquetWriter(
-            schema_config=str(schema_config_path), 
+            schema_config=str(schema_config_path),
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir,
             buffer_size=10000,
-            overwrite=True
+            overwrite=True,
+            include_curie=include_curie,
         )
     elif writer_type.lower() == 'kgx':
         return KGXWriter(schema_config=str(schema_config_path),
                           biocypher_config="config/biocypher_config.yaml",
-                          output_dir=output_dir)
+                          output_dir=output_dir,
+                          include_curie=include_curie)
     elif writer_type.lower() == 'networkx':
         return NetworkXWriter(
             schema_config=str(schema_config_path),
             biocypher_config="config/biocypher_config.yaml",
-            output_dir=output_dir
+            output_dir=output_dir,
+            include_curie=include_curie,
         )
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
@@ -362,7 +368,7 @@ def process_adapters(
                 datasets_dict=datasets_dict,
                 failed_adapter=None,
             )
-            logger.info(f"Checkpoint updated after adapter: {c}")
+            # logger.info(f"Checkpoint updated after adapter: {c}")
 
     logger.info(f"All adapters completed in {_fmt_elapsed(time.time() - total_start)}")
     return nodes_count, nodes_props, edges_count, datasets_dict
@@ -591,6 +597,7 @@ def main(
     writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX"),
     write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
     add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
+    include_curie: bool = typer.Option(False, "--include-curie/--no-curie", help="Keep CURIE namespace prefixes in node/edge IDs (default: strip them)"),
     buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
     overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
     include_adapters: Optional[List[str]] = typer.Option(
@@ -693,7 +700,7 @@ def main(
                     # Load dbSNP mappings via DBSNPProcessor
                     sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_mapping_path, is_sample=sp_is_sample)
 
-                    bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
+                    bc = get_writer(writer_type, sp_output_dir, sp_schema_config, include_curie=include_curie)
                     logger.info(f"Using {writer_type} writer for {sp}")
 
                     if writer_type == 'parquet':
@@ -833,7 +840,7 @@ def main(
                     temp_schema_to_cleanup = schema_config
        
 
-        bc = get_writer(writer_type, output_dir, schema_config)
+        bc = get_writer(writer_type, output_dir, schema_config, include_curie=include_curie)
         logger.info(f"Using {writer_type} writer")
 
         if writer_type == 'parquet':

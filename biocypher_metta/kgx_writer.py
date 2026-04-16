@@ -9,8 +9,8 @@ import re
 
 class KGXWriter(BaseWriter):
     
-    def __init__(self, schema_config, biocypher_config, output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.csv_delimiter = ','
         self.array_delimiter = ';'
         self.translation_table = str.maketrans({

@@ -24,16 +24,17 @@ class ParquetWriter(BaseWriter):
         buffer_size: int = 10000,
         overwrite: bool = False,
         excluded_properties: Optional[List[str]] = None,
+        include_curie: bool = False,
     ):
         """
         Initialize the Parquet writer.
-        
+
         Args:
             schema_config: BioCypher schema configuration
             biocypher_config: BioCypher main configuration
             output_dir: Directory to write Parquet files to
         """
-        super().__init__(schema_config, biocypher_config, output_dir)
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
 
         # Configure serialization settings
         self.batch_size = buffer_size

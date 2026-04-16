@@ -6,10 +6,11 @@ import os
 
 
 class BaseWriter(ABC):
-    def __init__(self, schema_config, biocypher_config, output_dir):
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
         self.schema_config = schema_config
         self.biocypher_config = biocypher_config
         self.output_path = pathlib.Path(output_dir)
+        self.include_curie = include_curie
         self.bcy = BioCypher(schema_config_path=schema_config,
                              biocypher_config_path=biocypher_config)
         if not os.path.exists(output_dir):
