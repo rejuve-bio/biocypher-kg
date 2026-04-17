@@ -20,7 +20,6 @@ class Neo4jCSVWriter(BaseWriter):
         })
 
         self.label_is_ontology = self._build_label_types_map()
-        self.type_hierarchy = self._type_hierarchy()
 
         self.create_edge_types()
         self._node_writers = {}
@@ -241,35 +240,6 @@ class Neo4jCSVWriter(BaseWriter):
         return node_freq, self._node_headers
 
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:Biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
-            'pathway': frozenset({'pathway'}),
-            'reaction': frozenset({'reaction'}),
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            'snp': frozenset({'snp'}),
-            'phenotype_set': frozenset({'phenotype_set'}),
-                        
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
@@ -292,13 +262,6 @@ class Neo4jCSVWriter(BaseWriter):
                 
                 if isinstance(source_id, tuple):
                     source_type = source_id[0]
-                    if isinstance(edge_info["source"], list):
-                        if source_type not in edge_info["source"]:
-                            raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
-                    else:
-                        # if source_type != edge_info["source"]:
-                        if source_type not in self.type_hierarchy:
-                            raise TypeError(f"Type '{source_type}' must be '{edge_info['source']}'")
                     source_id = source_id[1]
                 else:
                     if isinstance(edge_info["source"], list):
@@ -308,13 +271,6 @@ class Neo4jCSVWriter(BaseWriter):
 
                 if isinstance(target_id, tuple):
                     target_type = target_id[0]
-                    if isinstance(edge_info["target"], list):
-                        if target_type not in edge_info["target"]:
-                            raise TypeError(f"Type '{target_type}' must be one of {edge_info['target']}")
-                    else:
-                        # if target_type != edge_info["target"]:
-                        if target_type not in self.type_hierarchy:
-                            raise TypeError(f"Type '{target_type}' must be '{edge_info['target']}'")
                     target_id = target_id[1]
                 else:
                     if isinstance(edge_info["target"], list):

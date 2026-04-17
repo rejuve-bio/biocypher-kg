@@ -21,7 +21,6 @@ class MeTTaWriter(BaseWriter):
         self.label_is_ontology = self._build_label_types_map()
         self.create_type_hierarchy()
         self.excluded_properties = []
-        self.type_hierarchy = self._type_hierarchy()
 
     def _build_label_types_map(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -222,16 +221,23 @@ class MeTTaWriter(BaseWriter):
                     label_to_use = output_label
                 else:
                     label_to_use = label
-                # Resolve source and target types from the schema (same as Neo4j writer)
-                edge_info = self.edge_node_types.get(label, {})
-                source_type = edge_info.get("source", "unknown")
-                target_type = edge_info.get("target", "unknown")
 
-                # Handle list types (take first element, same as Neo4j writer)
-                if isinstance(source_type, list):
-                    source_type = source_type[0]
-                if isinstance(target_type, list):
-                    target_type = target_type[0]
+                # Resolve source and target types
+                if isinstance(source_id, tuple):
+                    source_type = source_id[0]
+                else:
+                    edge_info = self.edge_node_types.get(label, {})
+                    source_type = edge_info.get("source", "unknown")
+                    if isinstance(source_type, list):
+                        source_type = source_type[0]
+
+                if isinstance(target_id, tuple):
+                    target_type = target_id[0]
+                else:
+                    edge_info = self.edge_node_types.get(label, {})
+                    target_type = edge_info.get("target", "unknown")
+                    if isinstance(target_type, list):
+                        target_type = target_type[0]
 
                 file_key = (label, source_type, target_type)
 
@@ -267,35 +273,6 @@ class MeTTaWriter(BaseWriter):
         def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
-            'pathway': frozenset({'pathway'}),
-            'reaction': frozenset({'reaction'}),
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            'snp': frozenset({'snp'}),
-            'phenotype_set': frozenset({'phenotype_set'}),
-                        
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
@@ -307,14 +284,6 @@ class MeTTaWriter(BaseWriter):
             source_type = source_id[0]
             # Pass label for ontology-aware processing
             source_id_processed = self.preprocess_id(str(source_id[1]), label=source_type)
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
@@ -331,14 +300,6 @@ class MeTTaWriter(BaseWriter):
             target_type = target_id[0]
             # Pass label for ontology-aware processing
             target_id_processed = self.preprocess_id(str(target_id[1]), label=target_type)
-            if label in self.edge_node_types:
-                valid_target_types = self.edge_node_types[label]["target"]
-                if isinstance(valid_target_types, list):
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
-                else:
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
