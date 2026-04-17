@@ -582,7 +582,6 @@ def main(
     dbsnp_mapping_path: Optional[str] = typer.Option(
         None,
         "--dbsnp-mapping-path",
-        "--dbsnp-cache-dir",
         help="Path to dbSNP mapping data: either dbsnp_mapping.pkl or its containing directory (manual mode only, optional)"
     ),
     schema_config: Optional[Path] = typer.Option(
@@ -690,7 +689,7 @@ def main(
                     # merge species schema with primer schema ---> species schemas with same name prevails over primer schemas
                     sp_schema_config = merge_schemas('config/primer_schema_config.yaml', sp_schema_config)
                     sp_is_sample = (dataset == 'sample')
-                    sp_dbsnp_mapping_path = config.get('dbsnp_mapping_path', '') or config.get('dbsnp_cache_dir', '')
+                    sp_dbsnp_mapping_path = config.get('dbsnp_mapping_path', '')                    
                     if not sp_dbsnp_mapping_path:
                         if sp_is_sample:
                             sp_dbsnp_mapping_path = 'aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl'
@@ -798,15 +797,14 @@ def main(
                 schema_config = merge_schemas('config/primer_schema_config.yaml', schema_config)
                 is_merged_schema = True
                 temp_schema_to_cleanup = schema_config  # to be deleted after successful completion
-                dbsnp_mapping_path = config.get('dbsnp_mapping_path', '') or config.get('dbsnp_cache_dir', '')
-
+                dbsnp_mapping_path = config.get('dbsnp_mapping_path', '')
         # Load dbSNP mappings via DBSNPProcessor
         # Determine sample vs full, and resolve dbSNP mapping path if not set
         if not species_mode:
             # If the user explicitly provided a dbsnp path, derive is_sample from that path.
             # Otherwise fall back to the adapters config name.
-            if dbsnp_cache_dir:
-                is_sample_config = 'sample' in str(dbsnp_cache_dir).lower()
+            if dbsnp_mapping_path:
+                is_sample_config = 'sample' in str(dbsnp_mapping_path).lower()
             else:
                 is_sample_config = 'sample' in str(adapters_config).lower()
         else:
