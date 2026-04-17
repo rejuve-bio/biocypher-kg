@@ -376,13 +376,8 @@ class MeTTaWriter(BaseWriter):
                 continue
             
             if k == 'biological_context':
-                try:
-                    ontology_id = self.check_property(v).upper().replace('_', ':')
-                    ontology_name = ontology_id.split(':')[0].lower()
-                    out_str.append(f'({k} {def_out} ({ontology_name} {ontology_id}))')
-                except Exception as e:
-                    print(f"An error occurred while processing the biological context '{v}': {e}.")
-                    continue
+                out_str.append(f'({k} {def_out} {self.check_biological_context(v)})')
+                    
             elif isinstance(v, list):
                 # Handle lists by decomposing into individual facts
                 for item in v:
@@ -432,6 +427,20 @@ class MeTTaWriter(BaseWriter):
         prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
 
         return prop
+    
+    def check_biological_context(self, context):
+        if context is None or context == "":
+            return None
+        try:
+            ontology_id = context.upper().replace('_', ':')
+            ontology_name = ontology_id.split(':')[0].lower()
+            ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+            ontology_name = ontology_dict.get(ontology_name, None)
+            ontology_id = ontology_id.replace(':', '_')
+            return f'({ontology_name} {ontology_id})'
+        except Exception as e:
+            # print(f"An error occurred while processing the biological context '{context}': {e}.")
+            return self.check_property(context)
 
     # def check_property(self, prop):
     #     if isinstance(prop, str):

@@ -1581,6 +1581,96 @@ promoter_ccre_associates_with_gene_eqtl:
   nodes: False
   edges: True
 
+catlas_ccre_promoter:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
+    cls: CAtlasCCREAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      class_filter: promoter
+      taxon_id: 9606
+      input_coordinate_system: bed
+  outdir: catlas_ccre/promoter
+  nodes: True
+  edges: False
+
+catlas_ccre_enhancer:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
+    cls: CAtlasCCREAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      class_filter: enhancer
+      taxon_id: 9606
+      input_coordinate_system: bed
+  outdir: catlas_ccre/enhancer
+  nodes: True
+  edges: False
+
+catlas_enhancer_accessible_in:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
+    cls: CAtlasCCRECellTypeAdapter
+    args:
+      cres_dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCREs
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
+      ccre_type: enhancer
+      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+  outdir: catlas_ccre/enhancer
+  nodes: False
+  edges: True
+
+catlas_promoter_accessible_in:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
+    cls: CAtlasCCRECellTypeAdapter
+    args:
+      cres_dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCREs
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
+      ccre_type: promoter
+      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+  outdir: catlas_ccre/promoter
+  nodes: False
+  edges: True
+
+catlas_abc_enhancer_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
+    cls: CAtlasABCScoreAdapter
+    args:
+      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
+      abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      edge_type: enhancer_activity_by_contact
+      # score_threshold: 0.015  # optional: filter low-confidence predictions
+  outdir: catlas_ccre/abc
+  nodes: False
+  edges: True
+
+catlas_abc_promoter_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
+    cls: CAtlasABCScoreAdapter
+    args:
+      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
+      abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      edge_type: promoter_gene
+      # score_threshold: 0.015  # optional: filter low-confidence predictions
+  outdir: catlas_ccre/abc
+  nodes: False
+  edges: True
+
 #######################   there is no such filepath   #######################################
 # encode_re2g:
 #   adapter:
@@ -1594,14 +1684,15 @@ promoter_ccre_associates_with_gene_eqtl:
 #   nodes: True
 #   edges: False
 
-# encode_re2g_gene_associates:
+# encode_re2g_enhancer_to_gene:
 #   adapter:
 #     module: biocypher_metta.adapters.encode_re2g_adapter
 #     cls: ENCODERe2GAdapter
 #     args:
 #       filepath: /mnt/hdd_1/abdu/biocypher_data/encode_re2g/ENCODE_rE2G_K562.bed.gz
-#       label: enhancer_gene
+#       label: enhancer_activity_by_contact
 #       taxon_id: 9606
+#       cell_ontology_id: "CLO:0007059"  # K562
 #   outdir: encode_re2g
 #   nodes: False
 #   edges: True
@@ -1615,7 +1706,7 @@ uniprot_dbxref_bgee_gene:
       label: protein_has_xref_gene
       dbxref: BGEE
       taxon_id: 9606
-  outdir: uniprot/protein_has_xref_gene
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1628,7 +1719,7 @@ uniprot_dbxref_ensembl_gene:
       label: protein_has_xref_gene
       dbxref: ENSEMBL
       taxon_id: 9606
-  outdir: uniprot/protein_has_xref_gene
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1641,7 +1732,7 @@ uniprot_dbxref_ensembl_transcript:
       label: protein_has_xref_transcript
       dbxref: ENSEMBL
       taxon_id: 9606
-  outdir: uniprot/protein_has_xref_transcript
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1654,7 +1745,7 @@ uniprot_dbxref_ensembl_protein:
       label: protein_has_xref_protein
       dbxref: ENSEMBL
       taxon_id: 9606
-  outdir: uniprot/protein_has_xref_protein
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1667,7 +1758,7 @@ uniprot_dbxref_string_protein:
       label: protein_has_xref_protein
       dbxref: STRING
       taxon_id: 9606
-  outdir: uniprot/has_xref_protein
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1680,7 +1771,7 @@ uniprot_dbxref_biological_process:
       label: protein_has_xref_biological_process
       dbxref: GO
       taxon_id: 9606
-  outdir: uniprot/has_xref_biological_process
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1693,7 +1784,7 @@ uniprot_dbxref_cellular_component:
       label: protein_has_xref_cellular_component
       dbxref: GO
       taxon_id: 9606
-  outdir: uniprot/has_xref_cellular_component
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1706,7 +1797,7 @@ uniprot_dbxref_molecular_function:
       label: protein_has_xref_molecular_function
       dbxref: GO
       taxon_id: 9606
-  outdir: uniprot/has_xref_molecular_function
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1719,7 +1810,7 @@ uniprot_has_xref_catalytic_activity:
       label: protein_has_xref_catalytic_activity
       taxon_id: 9606
       dbxref: CHEBI
-  outdir: uniprot/has_xref_catalytic_activity
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1732,7 +1823,7 @@ uniprot_has_xref_cofactor:
       label: protein_has_xref_cofactor
       taxon_id: 9606
       dbxref: CHEBI
-  outdir: uniprot/has_xref_cofactor
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 
@@ -1745,7 +1836,7 @@ uniprot_has_xref_binding_site_ligand:
       label: protein_has_xref_binding_site_ligand
       taxon_id: 9606
       dbxref: CHEBI
-  outdir: uniprot/has_xref_binding_site_ligand
+  outdir: uniprot/has_xref
   nodes: False
   edges: True
 

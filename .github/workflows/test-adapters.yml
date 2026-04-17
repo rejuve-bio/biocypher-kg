@@ -225,15 +225,15 @@ jobs:
 
           if [ "$MAIN_SCRIPT_CHANGED" == "true" ] || [ "$ALL_FILES_USED" == "true" ]; then
             echo "Running all adapters with all writers due to main script change or all files being used"
-            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/hsa/hsa_adapters_config_sample.yaml --schema-config config/primer_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-dir aux_files/hsa/sample_dbsnp
+            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/hsa/hsa_adapters_config_sample.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-mapping-path aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
           elif [ -n "$CHANGED_WRITERS" ]; then
             if [[ $CHANGED_WRITERS == *"$CURRENT_WRITER"* ]] || [ "$CHANGED_WRITERS" == "$ALL_WRITERS" ]; then
               echo "Running all adapters with changed writer: $CURRENT_WRITER"
-              uv run python create_knowledge_graph.py --output-dir output --adapters-config config/hsa/hsa_adapters_config_sample.yaml --schema-config config/primer_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-dir aux_files/hsa/sample_dbsnp
+              uv run python create_knowledge_graph.py --output-dir output --adapters-config config/hsa/hsa_adapters_config_sample.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-mapping-path aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
             else
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"
-                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/primer_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-dir aux_files/hsa/sample_dbsnp
+                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-mapping-path aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
 
               else
                 echo "Skipping unchanged writer: $CURRENT_WRITER"
@@ -241,7 +241,7 @@ jobs:
             fi
           elif [ -n "$CHANGED_ADAPTERS" ] || [ "$CONFIG_CHANGED" == "true" ]; then
             echo "Running changed adapters or config with writer: $CURRENT_WRITER"
-            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/primer_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-dir aux_files/hsa/sample_dbsnp
+            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-mapping-path aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
           else
             echo "No relevant changes detected for this writer. Skipping."
           fi

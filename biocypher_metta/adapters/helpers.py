@@ -3,8 +3,6 @@ import hashlib
 from math import log10, floor, isinf
 from liftover import get_lifter
 
-import hgvs.dataproviders.uta
-
 ALLOWED_ASSEMBLIES = ['GRCh38']
 _lifters = {}
 
@@ -43,6 +41,7 @@ def build_variant_id_from_hgvs(hgvs_id, validate=True, assembly='GRCh38'):
     if validate:  # use tools from hgvs, which corrects ref allele if it's wrong
         # Import lazily to avoid eager network calls from hgvs.easy at module import time.
         # Some test/dev environments run fully offline and should still be able to import adapters.
+        import hgvs.dataproviders.uta
         from hgvs.extras.babelfish import Babelfish
         from hgvs.parser import Parser
 

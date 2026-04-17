@@ -1,0 +1,262 @@
+import csv
+import gzip
+import os
+import pickle
+import subprocess
+import sys
+import urllib.request
+from pathlib import Path
+from biocypher_metta.adapters import Adapter
+from biocypher_metta.adapters.helpers import build_regulatory_region_id, to_float
+
+_SCRIPTS_DIR = Path(__file__).parent.parent.parent.parent / "scripts"
+_MASTER_TSV_URL = (
+    "https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz"
+)
+
+# ABC (Activity-By-Contact) model cCRE-to-gene linkage predictions from CATLAS.
+# https://catlas.org/
+#
+# Each file in ABC_scores/ corresponds to a cell type (e.g., Adipocyte.tsv.gz).
+# cCRE    Promoter        ABC_score       Gene Name       Distance
+# chr10:100006303-100006703       chr10:99731111-99733111 0.0170610891557263      AL133353.2:ENST00000649102.1        274392
+# chr10:100006303-100006703       chr10:100228666-100230666       0.018493391897199167    AL138921.1:ENST00000444359.1        223163
+# chr10:100006303-100006703       chr10:100228628-100230628       0.018493391897199167    AL138921.1:ENST00000667469.1        223125
+#
+# cCRE field: "chr10:100006303-100006703"  (0-based start, as in BED)
+# Gene Name:  "CHUK:ENST00000370397.8"     (symbol:transcript_id)
+#
+# Pre-built pkls required:
+#   catlas_ccre_label_map.pkl       — {(chr, start_1based, end): "enhancer"|"promoter"}
+#                                     produced by scripts/create_catlas_ccre_label_map.py
+#   hgnc_mapping.pkl (gzipped)      — {symbol_to_ensembl: {symbol: ENSG_ID, ...}, ...}
+#   catlas_abc_cell_ontology_map.pkl — {abc_stem: "CL:XXXXXXX" | "UBERON:XXXXXXX"}
+#                                     produced by scripts/create_catlas_abc_cell_ontology_map.py
+#
+# Edge label is chosen from the cCRE class:
+#   enhancer cCRE  →  enhancer_activity_by_contact  (enhancer → gene)
+#   promoter cCRE  →  promoter_gene                 (promoter → gene)
+#
+# Rows with no ENSG mapping are skipped.
+
+
+class CAtlasABCScoreAdapter(Adapter):
+    """
+    Edge adapter linking CATLAS cCRE regions to genes using ABC model scores.
+
+    Yields edges: (ccre_id, gene_id, label, props)
+      - ccre_id  : {chr}_{start}_{end}_GRCh38  (via build_regulatory_region_id, 1-based closed)
+      - label    : enhancer_activity_by_contact (enhancer → gene)
+                   OR promoter_gene             (promoter → gene)
+      - gene_id  : ENSEMBL:{ENSG_ID}
+      - props    : abc_score, distance, biological_context (CL/UBERON ID)
+    """
+
+
+    def __init__(
+        self,
+        dirpath,
+        ccre_label_pkl,
+        hgnc_mapping_pkl,
+        write_properties,
+        add_provenance,
+        cell_ontology_pkl,
+        taxon_id=9606,
+        score_threshold=None,
+        ccre_master_tsv=None,
+        abc_aliases_tsv=None,
+        edge_type=None,
+    ):
+        self.dirpath = dirpath
+        self.ccre_label_pkl = ccre_label_pkl
+        self.hgnc_mapping_pkl = hgnc_mapping_pkl
+        self.cell_ontology_pkl = cell_ontology_pkl
+        self.taxon_id = str(taxon_id) if taxon_id is not None else None
+        self.score_threshold = score_threshold
+        # "enhancer_activity_by_contact" | "promoter_gene" | None (both)
+        self.edge_type = edge_type
+        self.source = "CATLAS"
+        self.source_url = "https://catlas.org/"
+
+        self._symbol_to_ensembl = None    # lazy-loaded
+        self._cell_ontology_map = None    # lazy-loaded
+
+        self._ensure_ccre_label_pkl(ccre_master_tsv)
+        self._ensure_cell_ontology_pkl(abc_aliases_tsv)
+
+        super(CAtlasABCScoreAdapter, self).__init__(write_properties, add_provenance)
+
+    def _ensure_ccre_label_pkl(self, ccre_master_tsv):
+        if os.path.exists(self.ccre_label_pkl):
+            return
+        if not ccre_master_tsv:
+            raise FileNotFoundError(
+                f"ccre_label_pkl not found: {self.ccre_label_pkl}\n"
+                "Either pre-build it with:\n"
+                f"  python scripts/create_catlas_ccre_label_map.py <cCRE_hg38.tsv.gz> {self.ccre_label_pkl}\n"
+                "Or pass ccre_master_tsv= in the adapter config to auto-generate it."
+            )
+        if not os.path.exists(ccre_master_tsv):
+            print(f"[CAtlasABCScoreAdapter] Downloading master TSV → {ccre_master_tsv} ...")
+            os.makedirs(os.path.dirname(os.path.abspath(ccre_master_tsv)), exist_ok=True)
+            urllib.request.urlretrieve(_MASTER_TSV_URL, ccre_master_tsv)
+        print(f"[CAtlasABCScoreAdapter] Building {self.ccre_label_pkl} from {ccre_master_tsv} ...")
+        subprocess.run(
+            [sys.executable, str(_SCRIPTS_DIR / "create_catlas_ccre_label_map.py"),
+             ccre_master_tsv, self.ccre_label_pkl],
+            check=True,
+        )
+
+    def _ensure_cell_ontology_pkl(self, abc_aliases_tsv):
+        if os.path.exists(self.cell_ontology_pkl):
+            return
+        if not abc_aliases_tsv:
+            raise FileNotFoundError(
+                f"cell_ontology_pkl not found: {self.cell_ontology_pkl}\n"
+                "Either pre-build it with:\n"
+                f"  python scripts/create_catlas_abc_cell_ontology_map.py <aliases.tsv> {self.cell_ontology_pkl}\n"
+                "Or pass abc_aliases_tsv= in the adapter config to auto-generate it."
+            )
+        print(f"[CAtlasABCScoreAdapter] Building {self.cell_ontology_pkl} from {abc_aliases_tsv} ...")
+        subprocess.run(
+            [sys.executable, str(_SCRIPTS_DIR / "create_catlas_abc_cell_ontology_map.py"),
+             abc_aliases_tsv, self.cell_ontology_pkl],
+            check=True,
+        )
+
+    # ------------------------------------------------------------------ helpers
+
+    def _open(self, filepath):
+        if filepath.endswith(".gz"):
+            return gzip.open(filepath, "rt")
+        return open(filepath, "rt")
+
+    def _get_symbol_to_ensembl(self):
+        if self._symbol_to_ensembl is None:
+            with gzip.open(self.hgnc_mapping_pkl, "rb") as f:
+                hgnc_data = pickle.load(f)
+            self._symbol_to_ensembl = hgnc_data.get("symbol_to_ensembl", {})
+        return self._symbol_to_ensembl
+
+    def _get_cell_ontology_map(self):
+        if self._cell_ontology_map is None:
+            if self.cell_ontology_pkl:
+                with open(self.cell_ontology_pkl, "rb") as f:
+                    self._cell_ontology_map = pickle.load(f)
+            else:
+                self._cell_ontology_map = {}
+        return self._cell_ontology_map
+
+    def _cell_type_files(self):
+        for fname in os.listdir(self.dirpath):
+            full_path = os.path.join(self.dirpath, fname)
+            if not os.path.isfile(full_path):
+                continue
+            if not (fname.endswith(".tsv") or fname.endswith(".tsv.gz")):
+                continue
+            cell_type = fname.split(".", 1)[0]  # "Adipocyte" from "Adipocyte.tsv.gz"
+            yield cell_type, full_path
+
+    @staticmethod
+    def _parse_ccre(ccre_str):
+        """Parse 'chrN:start-end' (0-based start) → (chr, start_1based, end)."""
+        try:
+            chrom, coords = ccre_str.split(":", 1)
+            start_str, end_str = coords.split("-", 1)
+            # ABC cCRE coordinates match master file (0-based start in storage)
+            start = int(start_str) + 1  # → 1-based closed to match node IDs
+            end = int(end_str)
+            return chrom, start, end
+        except (ValueError, AttributeError):
+            return None
+
+    @staticmethod
+    def _parse_gene_symbol(gene_name_field):
+        """Extract gene symbol from 'SYMBOL:ENST...' field."""
+        return gene_name_field.split(":")[0].strip()
+
+    # ------------------------------------------------------------------ interface
+
+    def get_nodes(self):
+        pass
+
+    def get_edges(self):
+        with open(self.ccre_label_pkl, "rb") as f:
+            coord_map = pickle.load(f)
+        symbol_to_ensembl = self._get_symbol_to_ensembl()
+        cell_ontology_map = self._get_cell_ontology_map()
+
+        for cell_type, filepath in self._cell_type_files():
+            biological_context = cell_ontology_map.get(cell_type)
+
+            with self._open(filepath) as handle:
+                reader = csv.DictReader(handle, delimiter="\t")
+                for row in reader:
+                    ccre_str = (row.get("cCRE") or "").strip()
+                    promoter_str = (row.get("Promoter") or "").strip()
+                    gene_name_field = (row.get("Gene Name") or "").strip()
+                    abc_score_str = (row.get("ABC_score") or "").strip()
+                    distance_str = (row.get("Distance") or "").strip()
+
+                    if not ccre_str or not gene_name_field or not abc_score_str:
+                        continue
+
+                    parsed = self._parse_ccre(ccre_str)
+                    if parsed is None:
+                        continue
+                    chrom, start, end = parsed
+
+                    ccre_label = coord_map.get((chrom, start, end))
+                    if ccre_label is None:
+                        continue
+
+                    try:
+                        abc_score = to_float(abc_score_str)
+                    except ValueError:
+                        continue
+
+                    if self.score_threshold is not None and abc_score < self.score_threshold:
+                        continue
+
+                    gene_symbol = self._parse_gene_symbol(gene_name_field)
+                    if not gene_symbol:
+                        continue
+
+                    ensg_id = symbol_to_ensembl.get(gene_symbol)
+                    if not ensg_id:
+                        continue
+
+                    try:
+                        distance = int(distance_str)
+                    except ValueError:
+                        distance = None
+
+                    ccre_id = build_regulatory_region_id(chrom, start, end)
+                    gene_id = f"ENSEMBL:{ensg_id}"
+
+                    abc_props = {}
+                    promoter_props = {}
+                    if self.write_properties:
+                        abc_props["score"] = abc_score
+                        abc_props["distance"] = distance
+                        abc_props["biological_context"] = biological_context
+                        abc_props["taxon_id"] = self.taxon_id
+                        if self.add_provenance:
+                            abc_props["source"] = self.source
+                            abc_props["source_url"] = self.source_url
+
+                        promoter_props["biological_context"] = biological_context
+                        promoter_props["taxon_id"] = self.taxon_id
+                        if self.add_provenance:
+                            promoter_props["source"] = self.source
+                            promoter_props["source_url"] = self.source_url
+
+                    if ccre_label == "enhancer":
+                        if self.edge_type != "promoter_gene":
+                            # enhancer → gene (ABC activity-by-contact)
+                            yield ccre_id, gene_id, "enhancer_activity_by_contact", abc_props
+
+                    elif ccre_label == "promoter":
+                        if self.edge_type != "enhancer_activity_by_contact":
+                            # promoter → gene (associated_with)
+                            yield ccre_id, gene_id, "promoter_gene", promoter_props
