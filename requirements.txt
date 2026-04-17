@@ -119,8 +119,6 @@ iniconfig==2.3.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   pytest
-intervaltree==3.2.1
-    # via biocypher-metta (pyproject.toml)
 ipython==8.38.0
     # via
     #   biocypher-metta (pyproject.toml)
@@ -314,7 +312,6 @@ six==1.17.0
     #   python-dateutil
     #   treelib
 sortedcontainers==2.4.0
-    # via intervaltree
 sqlparse==0.5.3
     # via
     #   biocypher-metta (pyproject.toml)

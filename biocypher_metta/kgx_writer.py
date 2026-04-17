@@ -8,7 +8,12 @@ import re
 
 
 class KGXWriter(BaseWriter):
-    
+
+    _ONTOLOGY_PREFIXES = frozenset({
+        'CL', 'UBERON', 'CLO', 'EFO', 'BTO', 'GO', 'HP', 'MONDO', 'DOID',
+        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO',
+    })
+
     def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
         super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.csv_delimiter = ','
@@ -240,26 +245,30 @@ class KGXWriter(BaseWriter):
     
 
     def preprocess_id(self, prev_id):
-        """Clean ID to remove parentheses and type prefixes like gene/protein/transcript"""
         if prev_id is None:
             return None
 
-        # If prev_id is a tuple, get the actual string (usually the second element)
         if isinstance(prev_id, tuple):
             prev_id = prev_id[1]
 
-        # Ensure we are working with a string
         prev_id = str(prev_id).strip()
 
-        # Remove surrounding parentheses if present
         if prev_id.startswith("(") and prev_id.endswith(")"):
             prev_id = prev_id[1:-1].strip()
 
-        # Remove type prefixes like gene/protein/transcript at the start
         prev_id = re.sub(r"^(gene|protein|transcript)\s*", "", prev_id, flags=re.IGNORECASE)
-
-        # Strip any remaining whitespace
         prev_id = prev_id.strip()
+
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            prefix_upper = prefix.strip().upper()
+            local_id = local_id.strip()
+            # Ontology prefixes are always kept as CURIEs (KGX is a CURIE-native format)
+            if prefix_upper in self._ONTOLOGY_PREFIXES:
+                return f"{prefix_upper}:{local_id}"
+            if self.include_curie:
+                return f"{prefix_upper}:{local_id}"
+            return local_id
 
         return prev_id
 

@@ -131,44 +131,37 @@ class ParquetWriter(BaseWriter):
 
     def preprocess_id(self, prev_id):
         """
-        Normalize IDs for Parquet output:
-        - Accept (type, id) tuples and strings
-        - Remove provider prefixes like 'ensembl_' or 'react_' or 'ensembl:' / 'react:'
-        - Remove surrounding parentheses
-        - Remove leading 'gene'/'protein'/'transcript' tokens if attached
-        - Return a lowercase, normalized id (e.g. 'ensg00000000419' or 'r-hsa-162699')
+        Normalize IDs for Parquet output.
+
+        When include_curie is False (default): strips known namespace prefixes
+        (ENSEMBL:, REACT:) and returns a bare lowercase local ID.
+        When include_curie is True: retains the namespace prefix, joining it to
+        the local part with an underscore (e.g. 'ensembl_ensg00000000419').
         """
         if prev_id is None:
             return None
 
-        # If tuple like ("GENE", "ENSEMBL:ENSG...") take second element
         if isinstance(prev_id, tuple):
-            # typical tuple is (type, id)
             prev_id = prev_id[1] if len(prev_id) > 1 else prev_id[0]
 
-        # ensure string
         prev_id = str(prev_id).strip()
 
-        # remove surrounding parentheses if any
         if prev_id.startswith("(") and prev_id.endswith(")"):
             prev_id = prev_id[1:-1].strip()
 
-        # remove a leading type token e.g. "gene " or "GENE " that may have been prepended
         prev_id = re.sub(r'^(gene|protein|transcript)\s*', '', prev_id, flags=re.IGNORECASE)
 
-        # unify separators and lowercase
         normalized = prev_id.strip()
 
-        # remove common provider prefixes and separators
-        # examples to handle:
-        #   "ensembl_ensg00000000419" -> "ensg00000000419"
-        #   "ensembl:ENSG00000000419" -> "ensg00000000419"
-        #   "react_r-hsa-162699" or "REACT:R-HSA-162699" -> "r-hsa-162699"
-        normalized = normalized.replace("ENSEMBL:", "").replace("ensembl:", "")
-        normalized = normalized.replace("REACT:", "").replace("react:", "")
-        normalized = normalized.replace("ensembl_", "").replace("react_", "")
+        if self.include_curie:
+            # Normalise separator to underscore, keep prefix
+            normalized = re.sub(r'[:_]', '_', normalized).lower()
+        else:
+            # Strip known namespace prefixes
+            normalized = normalized.replace("ENSEMBL:", "").replace("ensembl:", "")
+            normalized = normalized.replace("REACT:", "").replace("react:", "")
+            normalized = normalized.replace("ensembl_", "").replace("react_", "")
 
-        # replace spaces with underscore, keep hyphens as-is, lowercase
         normalized = normalized.replace(" ", "_").lower()
 
         return normalized

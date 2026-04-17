@@ -31,7 +31,8 @@ class DGVVariantAdapter(Adapter):
         super(DGVVariantAdapter, self).__init__(write_properties, add_provenance)
 
     def get_nodes(self):
-        with open(self.filepath, 'r') as f:
+        opener = gzip.open if self.filepath.endswith('.gz') else open
+        with opener(self.filepath, 'rt') as f:
             next(f)
             for line in f:
                 data = line.strip().split(self.delimiter)
@@ -167,7 +168,8 @@ class DGVVariantAdapter(Adapter):
                 yield sv_id, feat_id, sv_to_feat_label, props
 
     def _parse_dgv(self, path):
-        with open(path, 'r') as f:
+        opener = gzip.open if path.endswith('.gz') else open
+        with opener(path, 'rt') as f:
             next(f)
             for line in f:
                 data = line.strip().split(self.delimiter)
@@ -181,7 +183,8 @@ class DGVVariantAdapter(Adapter):
                 yield region_id, chr, start, end, self.label
 
     def _parse_gtf(self, path):
-        with gzip.open(path, 'rt') as f:
+        opener = gzip.open if path.endswith('.gz') else open
+        with opener(path, 'rt') as f:
             for line_num, line in enumerate(f, 1):
                 try:
                     if line.startswith('#'): continue

@@ -47,12 +47,6 @@ class PrologWriter(BaseWriter):
                         }
 
     def preprocess_id(self, prev_id):
-        """
-        Strip CURIE prefixes for non-ontology IDs (e.g. ENSEMBL:ENSG… → ENSG…),
-        matching MeTTa writer behaviour.  Ontology prefixes (CL, UBERON, …) are
-        kept joined with '_' so that downstream normalize_text produces the
-        expected form (e.g. CL_0000136 → cl_0000136).
-        """
         if prev_id is None:
             return None
         if ':' in prev_id:
@@ -61,7 +55,8 @@ class PrologWriter(BaseWriter):
             local_id = local_id.strip().translate(str.maketrans({' ': '_'}))
             if prefix_upper in self._ONTOLOGY_PREFIXES:
                 return f"{prefix_upper}_{local_id.upper()}"
-            # Non-ontology prefix — strip it (type is already in the Prolog functor)
+            if self.include_curie:
+                return f"{prefix_upper}_{local_id}"
             return local_id
         return prev_id.strip().translate(str.maketrans({' ': '_'}))
 

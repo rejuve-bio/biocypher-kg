@@ -111,7 +111,7 @@ rna_central:
 
 dgv:
   name: Database of Genomic Variants
-  url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt 
+  url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
 
 epd:
   name: Eukaryotic Promoter Database

@@ -271,7 +271,7 @@ def process_adapters(
             continue
 
         writer.clear_counts()
-        logger.info(f"\033[1;36m\n{'='*60}\n  Running adapter: {c}\n{'='*60}\033[0m")
+        logger.info(f"\n{'='*60}\n  Running adapter: {c}\n{'='*60}")
         adapter_start = time.time()
 
         adapter_config = adapters_dict[c]["adapter"]
@@ -584,6 +584,12 @@ def main(
         "--dbsnp-mapping-path",
         help="Path to dbSNP mapping data: either dbsnp_mapping.pkl or its containing directory (manual mode only, optional)"
     ),
+    dbsnp_cache_dir: Optional[str] = typer.Option(
+        None,
+        "--dbsnp-cache-dir",
+        hidden=True,
+        help="Deprecated: use --dbsnp-mapping-path instead",
+    ),
     schema_config: Optional[Path] = typer.Option(
         None,
         exists=True,
@@ -596,7 +602,11 @@ def main(
     writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX"),
     write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
     add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
-    include_curie: bool = typer.Option(False, "--include-curie/--no-curie", help="Keep CURIE namespace prefixes in node/edge IDs (default: strip them)"),
+    include_curie: bool = typer.Option(
+        False,
+        "--include-curie/--no-curie",
+        help="Keep CURIE namespace prefixes in node/edge IDs; by default these IDs are written without prefixes, though some ontology labels may still retain them.",
+    ),
     buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
     overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
     include_adapters: Optional[List[str]] = typer.Option(
@@ -644,6 +654,19 @@ def main(
       --resume          Resume automatically without prompting.
       --restart         Delete any checkpoint and start over without prompting.
     """
+
+    # --dbsnp-cache-dir is a deprecated alias for --dbsnp-mapping-path
+    if dbsnp_cache_dir is not None:
+        if dbsnp_mapping_path is None:
+            logger.warning(
+                "--dbsnp-cache-dir is deprecated and will be removed in a future release. "
+                "Use --dbsnp-mapping-path instead."
+            )
+            dbsnp_mapping_path = dbsnp_cache_dir
+        else:
+            logger.warning(
+                "--dbsnp-cache-dir is deprecated; ignoring it because --dbsnp-mapping-path was also provided."
+            )
 
     # Determine which mode we're in
     manual_mode = all([adapters_config, schema_config])
