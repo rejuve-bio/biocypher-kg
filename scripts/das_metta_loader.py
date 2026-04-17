@@ -62,7 +62,7 @@ def load_metta_files(root_dir):
                 try:
                     result = subprocess.run(
                         cmd,
-                        stdout=subprocess.PIPE,
+                        stdout=subprocess.DEVNULL,
                         stderr=subprocess.PIPE,
                         text=True,
                     )
@@ -98,6 +98,15 @@ def load_metta_files(root_dir):
     print("=" * 60)
 
 
+def check_das_cli():
+    try:
+        subprocess.run(["das-cli", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except FileNotFoundError:
+        print("Error: 'das-cli' is not installed or not on PATH.")
+        print("Install it using the setup guide: https://github.com/singnet/das-toolbox/blob/master/das-cli/README.md")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python scripts/das_metta_loader.py <directory>")
@@ -109,4 +118,5 @@ if __name__ == "__main__":
         print(f"Error: '{directory}' is not a valid directory.")
         sys.exit(1)
 
+    check_das_cli()
     load_metta_files(directory)

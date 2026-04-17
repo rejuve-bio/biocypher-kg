@@ -5,8 +5,13 @@ from pathlib import Path
 # Ensure tests can import the local package when the project is run
 # directly from the repository without an editable install.
 ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+ROOT_STR = str(ROOT)
+EXISTING_PATHS = {
+    str((Path.cwd() if entry in ("", ".") else Path(entry)).resolve())
+    for entry in sys.path
+}
+if ROOT_STR not in EXISTING_PATHS:
+    sys.path.insert(0, ROOT_STR)
 
 
 def pytest_addoption(parser):
