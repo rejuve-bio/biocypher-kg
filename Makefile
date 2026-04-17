@@ -111,7 +111,7 @@ run-interactive: check-uv
 		--writer-type "$$WRITER_TYPE" \
 		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG; \
+		$$ADD_PROVENANCE_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
@@ -170,7 +170,6 @@ run-sample: check-uv
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG
 	@echo "✅ Sample run completed! Check the ./output directory for results."
-#		# --dbsnp-pos ./aux_files/hsa/sample_dbsnp_pos.pkl 
 # Run tests
 test: check-uv
 	@export PATH="$$HOME/.local/bin:$$PATH"; uv run pytest -v
