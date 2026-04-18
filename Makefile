@@ -61,9 +61,9 @@ run-interactive: check-uv
 	SCHEMA_CONFIG=$${SCHEMA_CONFIG:-./config/hsa/hsa_schema_config.yaml}; \
 	echo "Using schema config: $$SCHEMA_CONFIG"; \
 	echo ""; \
-	read -p "🗂️  Enter dbSNP mapping path [./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl]: " DBSNP_MAPPING_PATH; \
-	DBSNP_MAPPING_PATH=$${DBSNP_MAPPING_PATH:-./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl}; \
-	echo "Using dbSNP mapping path: $$DBSNP_MAPPING_PATH"; \
+	read -p "🗂️  Enter dbSNP cache root [./aux_files/hsa/sample_dbsnp]: " DBSNP_CACHE_ROOT; \
+	DBSNP_CACHE_ROOT=$${DBSNP_CACHE_ROOT:-./aux_files/hsa/sample_dbsnp}; \
+	echo "Using dbSNP cache root: $$DBSNP_CACHE_ROOT"; \
 	echo ""; \
 	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
@@ -107,7 +107,7 @@ run-interactive: check-uv
 		--output-dir "$$OUTPUT_DIR" \
 		--adapters-config "$$ADAPTERS_CONFIG" \
 		--schema-config "$$SCHEMA_CONFIG" \
-		--dbsnp-mapping-path "$$DBSNP_MAPPING_PATH" \
+		--dbsnp-cache-root "$$DBSNP_CACHE_ROOT" \
 		--writer-type "$$WRITER_TYPE" \
 		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
@@ -117,7 +117,7 @@ run-interactive: check-uv
 run-direct: check-uv
 	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(SCHEMA_CONFIG)" ]; then \
 		echo "❌ Error: Missing required parameters"; \
-		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_MAPPING_PATH=...] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...]"; \
+		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...]"; \
 		echo ""; \
 		echo "Or use 'make run' for interactive mode"; \
 		exit 1; \
@@ -137,7 +137,8 @@ run-direct: check-uv
 		--output-dir $(OUTPUT_DIR) \
 		--adapters-config $(ADAPTERS_CONFIG) \
 		--schema-config $(SCHEMA_CONFIG) \
-		$(if $(DBSNP_MAPPING_PATH),--dbsnp-mapping-path $(DBSNP_MAPPING_PATH),) \
+		$(if $(DBSNP_CACHE_ROOT),--dbsnp-cache-root $(DBSNP_CACHE_ROOT),) \
+		$(if $(DBSNP_VARIANT),--dbsnp-variant $(DBSNP_VARIANT),) \
 		$(if $(WRITER_TYPE),--writer-type $(WRITER_TYPE),--writer-type metta) \
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG
@@ -164,7 +165,7 @@ run-sample: check-uv
 	uv run python create_knowledge_graph.py \
 		--output-dir ./output \
 		--adapters-config ./config/hsa/hsa_adapters_config_sample.yaml \
-		--dbsnp-mapping-path ./aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl \
+		--dbsnp-cache-root ./aux_files/hsa/sample_dbsnp \
 		--schema-config ./config/hsa/hsa_schema_config.yaml \
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
 		$$WRITE_PROPERTIES_FLAG \

@@ -59,29 +59,64 @@ symbol = hgnc.get_symbol_from_hgnc_id('HGNC:11998')
 
 Maps between dbSNP rsIDs and genomic positions (chr:pos).
 
-**Data Source:** dbSNP VCF (30GB download)
-**Update Strategy:** Manual only (no auto-updates) - see update_dbsnp.py
+**Data Source:** dbSNP VCF (~30 GB download for the full release)
+**Update Strategy:** Manual only (no auto-updates) — see `scripts/update_dbsnp.py`
 **Mappings:**
 - rsID → genomic position (`rsid_to_pos`)
-- Genomic position → rsID (`pos_to_rsid`)
+- Genomic position → rsID (via index on `rsid_to_pos(chr, pos)` — no separate table)
 
-**Usage:**
+**Two variants are supported:**
+
+| Variant | Filter | Entries | DB size |
+|---------|--------|---------|---------|
+| `common` | MAF ≥ 1% in any `FREQ` population | ~15-25M | ~1-2 GB |
+| `full`   | All rsIDs with chr + pos           | ~800M   | ~35-50 GB |
+
+Generate both by running the updater twice into a shared root:
+
+```bash
+# Common variants only (recommended for development)
+python3 scripts/update_dbsnp.py \
+    --cache-dir /data/dbsnp/common --common-only --temp-dir /tmp
+
+# Full dataset (run when needed)
+python3 scripts/update_dbsnp.py \
+    --cache-dir /data/dbsnp/full --temp-dir /tmp
+```
+
+Expected layout:
+```
+/data/dbsnp/
+├── common/
+│   ├── dbsnp_mapping.db
+│   └── dbsnp_version.json
+└── full/
+    ├── dbsnp_mapping.db
+    └── dbsnp_version.json
+```
+
+Select the variant at KG-build time:
+```bash
+python3 create_knowledge_graph.py --species hsa --dataset full \
+    --dbsnp-cache-root /data/dbsnp --dbsnp-variant common \
+    --output-dir output/hsa
+```
+Or set `dbsnp_cache_root` + `dbsnp_variant` in `config/species_config.yaml`.
+
+**Usage (direct processor):**
 ```python
 from biocypher_metta.processors import DBSNPProcessor
 
-# Load-only processor (never auto-updates)
-dbsnp = DBSNPProcessor(cache_dir='/mnt/hdd_2/kedist/rsids_map')
-dbsnp.load_mapping()  # Only loads, never downloads
+# Point at a variant subdir
+dbsnp = DBSNPProcessor(cache_dir='/data/dbsnp/common')
+dbsnp.load_mapping()                 # reads SQLite DB + version JSON
+print(dbsnp.is_common_only())        # True / False / None (legacy)
 
-# Get position from rsID
 position = dbsnp.get_position('rs123456')
-# Returns: {'chr': 'chr1', 'pos': 12345}
+# {'chr': 'chr1', 'pos': 12345}
 
-# Get wrappers for dict-like access
 rsid_to_pos, pos_to_rsid = dbsnp.get_dict_wrappers()
 ```
-
-**Note:** Update dbSNP using `update_dbsnp.py` script (see main README).
 
 ### 3. EntrezEnsemblProcessor
 

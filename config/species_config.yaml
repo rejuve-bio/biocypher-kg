@@ -2,53 +2,62 @@
 # Each species can have 'sample' and/or 'full' dataset configurations
 # Note: output_dir is NOT included here - users specify it via --output-dir flag
 #
-# dbsnp_mapping_path: Path to dbsnp_mapping.pkl (preferred), or to the directory
-#   that contains it for backward compatibility.
-#   - For sample configs: use aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
-#   - For full configs: point to the server dbSNP mapping file
-#   - Leave empty ("") for species that don't use dbSNP data
+# dbsnp_cache_root: Root directory containing 'common/' and/or 'full/' subdirs
+#                   produced by scripts/update_dbsnp.py.
+#   - For sample configs: this IS the cache dir (no variant subdir needed).
+#     Defaults to 'aux_files/hsa/sample_dbsnp' if left empty.
+#   - For full/non-sample configs: leave empty and set at runtime via
+#     --dbsnp-cache-root, OR set it here to a persistent location.
+#   - Leave empty ("") for species that don't use dbSNP data.
+#
+# dbsnp_variant: Which variant subset to load under dbsnp_cache_root.
+#   - "common": ~15-25M common variants (MAF >= 1% in any population), ~1-2 GB
+#   - "full":   ~800M rsIDs, ~35-50 GB
+#   - Required for non-sample runs (either here or via --dbsnp-variant).
+#   - Ignored for sample configs.
 
 
 hsa:
   sample:
     adapters_config: config/hsa/hsa_adapters_config_sample.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_mapping_path: aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
-    dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
-    dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl    
+    dbsnp_cache_root: aux_files/hsa/sample_dbsnp
+    dbsnp_variant: ""
   full:
     adapters_config: config/hsa/hsa_adapters_config.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    # dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
-    # dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
-    dbsnp_rsids: /mnt/hdd_1/abdu/dbsnp/dbsnp_rsids.pkl
-    dbsnp_pos: /mnt/hdd_1/abdu/dbsnp/dbsnp_pos.pkl
-
+    dbsnp_cache_root: ""       # set at runtime: --dbsnp-cache-root <path>
+    dbsnp_variant: ""          # set at runtime: --dbsnp-variant common|full
 
 dmel:
   sample:
     adapters_config: config/dmel/dmel_adapters_config_sample.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_mapping_path: ""
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
   full:
     adapters_config: config/dmel/dmel_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_mapping_path: ""
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
 
 cel:
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml
-    dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
 
 mmo:
   full:
     adapters_config: config/mmo/mmo_adapters_config.yaml
     schema_config: config/mmo/mmo_schema_config.yaml
-    dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
 
 rno:
   full:
     adapters_config: config/rno/rno_adapters_config.yaml
     schema_config: config/rno/rno_schema_config.yaml
-    dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
