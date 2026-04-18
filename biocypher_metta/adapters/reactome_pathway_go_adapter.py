@@ -11,10 +11,22 @@ from biocypher_metta.processors import GOSubontologyProcessor
 # R-HSA-392170	ADP signalling through P2Y purinoceptor 12	GO:0030168
 # R-HSA-198323	AKT phosphorylates targets in the cytosol	GO:0043491
 
+
+# Reaction to GO Term file:
+# Identifier	Name	GO_Term
+# R-HSA-1008248	Adenylate Kinase 3 is a GTP-AMP phosphotransferase	GO:0046899
+# R-HSA-1013012	Binding of Gbeta/gamma to GIRK/Kir3 channels	GO:0004965
+# R-HSA-1013013	Association of GABA B receptor with G protein beta-gamma subunits	GO:0004965
+# R-HSA-1013020	Activation of GIRK/Kir3 Channels	GO:0015467
+# R-HSA-1022129	ST3GAL4 transfers Neu5Ac to terminal Gal of N-glycans	GO:0003836
+# R-HSA-1022133	ST8SIA2,3,6 transfer Neu5Ac to terminal Gal of N-glycans	GO:0003828
+# R-HSA-1028788	FUT8 transfers fucosyl group from GDP-Fuc to GlcNAc of NGP	GO:0008424
+
+
 class ReactomePathwayGOAdapter(Adapter):
     """
-    Adapter for Reactome Pathway to specific GO subontology mappings.
-    Filters pathways to only include terms from the specified subontology.
+    Adapter for Reactome Pathway or Reaction to specific GO subontology mappings.
+    Filters pathways or reactions to only include terms from the specified subontology.
     """
     
     def __init__(self, filepath, write_properties, add_provenance, label, taxon_id,
@@ -47,11 +59,11 @@ class ReactomePathwayGOAdapter(Adapter):
             if self.skip_first_line:
                 next(f)
                 
+            processed = 0;
             for line in f:
                 parts = line.strip().split('\t')
                 if len(parts) < 3:
-                    continue
-                    
+                    continue            
                 pathway_id, pathway_name, go_term = parts[0], parts[1], parts[2]
                 
                 # Clean and standardize GO term
@@ -85,10 +97,12 @@ class ReactomePathwayGOAdapter(Adapter):
                         'source_url': self.source_url
                     })
                 
+                processed += 1
                 # Only yield edges that match the specified subontology
                 yield (
                     f"{pathway_id}",  # source
                     full_go_term,     # target
-                    self.label,       # label from config or default
+                    self.label,       # label from config
                     properties
                 )
+            print(f'Processed records: {processed}')

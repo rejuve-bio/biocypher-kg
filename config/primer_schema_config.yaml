@@ -1537,10 +1537,11 @@ gene to pathway association:
   represented_as: edge
   input_label: genes_pathways
   output_label: participates_in
-  source:
-  - gene
-  - transcript
-  - protein
+  # source:
+  # - gene
+  # - transcript
+  # - protein
+  source: biolink:GeneOrGeneProduct
   target: pathway
   pathway_url:
     type: str
@@ -1941,7 +1942,7 @@ part of:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-pathway_to_biological_process:
+pathway to biological process:
   is_a: association
   biolink_predicate: biolink:participates_in
   source: pathway
@@ -2214,6 +2215,34 @@ protein has_xref transcript:
   kgx_properties:
     subject_category: biolink:Protein
     object_category: biolink:Transcript
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+reaction to biological process:
+  is_a: association
+  biolink_predicate: biolink:equivalent_to
+  source: reaction
+  target: biological process
+  represented_as: edge
+  input_label: reaction_to_biological_process
+  output_label: equivalent_to
+  description: An association between a reaction and a biological process, indicating
+    that the reaction is equivalent to the biological process.
+  properties:
+    reaction_name: str
+    go_term_id: str
+    go_term_type:
+      type: str
+      const: biological process
+    source:
+      type: str
+      biolink: knowledge_source
+    source_url:
+      type: str
+      biolink: source_web_page
+  kgx_properties:
+    subject_category: biolink:MolecularActivity
+    object_category: biolink:BiologicalProcess
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 

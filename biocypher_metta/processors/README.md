@@ -70,7 +70,7 @@ Maps between dbSNP rsIDs and genomic positions (chr:pos).
 from biocypher_metta.processors import DBSNPProcessor
 
 # Load-only processor (never auto-updates)
-dbsnp = DBSNPProcessor(cache_dir='/mnt/hdd_2/kedist/rsids_map')
+dbsnp = DBSNPProcessor(cache_dir='/mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/')
 dbsnp.load_mapping()  # Only loads, never downloads
 
 # Get position from rsID
