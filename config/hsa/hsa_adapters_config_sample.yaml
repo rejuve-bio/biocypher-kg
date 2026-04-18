@@ -281,7 +281,7 @@ reactome_ppi:
     module: biocypher_metta.adapters.reactome_ppi_adapter
     cls: ReactomePPIAdapter
     args:
-      filepath: ./samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt.gz
+      filepath: ./samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt
       label: interacts_with
       taxon_id: 9606
   outdir: reactome/ppi
@@ -300,6 +300,21 @@ pathway_to_biological_process:
       taxon_id: 9606      
       subontology: biological_process
   outdir: reactome/biological_process
+  nodes: false
+  edges: true
+
+reaction_to_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.reactome_pathway_go_adapter
+    cls: ReactomePathwayGOAdapter
+    args:
+      filepath: ./samples/reactome/Reactions2GoTerms_human.txt
+      write_properties: true
+      add_provenance: true
+      label: reaction_to_biological_process
+      subontology: molecular_function
+      taxon_id: 9606      
+  outdir: reactome/molecular_function
   nodes: false
   edges: true
 

@@ -1,47 +1,54 @@
 # ---
 bgee:
   name: Bgee Expression Data
+  extract: false
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
 
 coxpressdb:
   name: Coxpress DB
+  extract: true
   url: https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
 
-enhancer_atlas:
-  name: EnhancerAtlas
-  url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   
+# enhancer_atlas:
+#   name: EnhancerAtlas
+#   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/7227_all_tissues.bed   
 
 flybase: 
-  name: Flybase 2025_05
+  name: Flybase 2026_01
+  extract: false
   url: 
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/alleles/allele_genetic_interactions_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/alleles/fbal_to_fbgn_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/alleles/genotype_phenotype_data_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/best_gene_summary_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2025_05.tsv.gz
-    # - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2025_05.tsv.gz  nao existe!!!!!!!!!!!!!!
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_genetic_interactions_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_group_data_fb_2025_05.tsv.gz    
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_groups_HGNC_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/gene_rpkm_report_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/high-throughput_gene_expression_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/metabolic_pathway_group_data_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/physical_interactions_mitab_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/genes/signaling_pathway_group_data_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/human_disease/disease_model_annotations_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/orthologs/dmel_paralogs_fb_2025_05.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2025_05.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/alleles/allele_genetic_interactions_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/alleles/fbal_to_fbgn_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/alleles/genotype_phenotype_data_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/collaborators/fbgn_uniprot_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/best_gene_summary_fb_2026_01.tsv.gze
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_genetic_interactions_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_group_data_fb_2026_01.tsv.gz    
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_groups_HGNC_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_rpkm_report_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/high-throughput_gene_expression_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/metabolic_pathway_group_data_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/physical_interactions_mitab_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/signaling_pathway_group_data_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/go/gene_association.fb.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/human_disease/disease_model_annotations_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/orthologs/dmel_paralogs_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
     
 goa:
   name: GO Annotation File (GAF) from Flybase
-  url: https://s3ftp.flybase.org/releases/FB2025_05/precomputed_files/go/gene_association.fb.gz
+  extract: false
+  url: 
 
 gencode:
   name: GENCODE v54
+  extract: false
   url: 
     - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.chr.gtf.gz
     - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
@@ -49,6 +56,7 @@ gencode:
 
 uniprot:
   name: UniProtKB/Swiss-Prot
+  extract: false
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
 
 reactome:
@@ -59,28 +67,33 @@ reactome:
     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
     - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
+    - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
+    - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
 
 rna_central:
   name: RNA Central
+  extract: false
   url:
-    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
-    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
 
 tflink:
   name: TFLink
+  compress: gzip
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv
 
 
 string:
   name: STRING PPI
+  extract: false
   url: https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
 
 
 epd:
   name: Eukaryotic Promoter Database
+  compress: gzip
   url:
-    - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
-    # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/
+    # - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0  # this is not working
+    # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/ 
     - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
-
-

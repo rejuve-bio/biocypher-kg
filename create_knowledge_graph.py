@@ -717,7 +717,7 @@ def main(
                         if sp_is_sample:
                             sp_dbsnp_mapping_path = 'aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl'
                         else:
-                            sp_dbsnp_mapping_path = '/mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl'
+                            sp_dbsnp_cache_dir = '/mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/'
 
                     # Load dbSNP mappings via DBSNPProcessor
                     sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_mapping_path, is_sample=sp_is_sample)
@@ -838,8 +838,8 @@ def main(
                 dbsnp_mapping_path = 'aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl'
             else:
                 # Full config: use server cache
-                dbsnp_mapping_path = '/mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl'
-        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_mapping_path, is_sample=is_sample_config)
+                dbsnp_cache_dir = '/mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/'
+        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(dbsnp_cache_dir, is_sample=is_sample_config)
 
         # ── NEW: Auto-merge species schema in manual mode if only primer is provided ──
         if not species_mode and str(schema_config) == 'config/primer_schema_config.yaml':

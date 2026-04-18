@@ -1,0 +1,541 @@
+Identifier	Name	GO_Term
+R-HSA-1008248	Adenylate Kinase 3 is a GTP-AMP phosphotransferase	GO:0046899
+R-HSA-1013012	Binding of Gbeta/gamma to GIRK/Kir3 channels	GO:0004965
+R-HSA-1013013	Association of GABA B receptor with G protein beta-gamma subunits	GO:0004965
+R-HSA-1013020	Activation of GIRK/Kir3 Channels	GO:0015467
+R-HSA-1022129	ST3GAL4 transfers Neu5Ac to terminal Gal of N-glycans	GO:0003836
+R-HSA-1022133	ST8SIA2,3,6 transfer Neu5Ac to terminal Gal of N-glycans	GO:0003828
+R-HSA-1028788	FUT8 transfers fucosyl group from GDP-Fuc to GlcNAc of NGP	GO:0008424
+R-HSA-109278	NT5E:Zn2+ hydrolyses AMP,dAMP,GMP, IMP	GO:0008253
+R-HSA-109291	CMP or TMP or UMP + H2O => cytidine, thymidine, or uridine + orthophosphate [NT5E]	GO:0008253
+R-HSA-109338	Isomerization of cis,cis-3,6-Dodecadienoyl-CoA to form trans,cis-Lauro-2,6-dienoyl-CoA	GO:0004165
+R-HSA-109341	dehydrogenation of 4-cis-decenoyl-CoA to form 2-trans-4-cis-decadienoyl-CoA	GO:0003995
+R-HSA-109343	Reduction of 2-trans-4-cis-decadienoyl-CoA to form 3-trans-decenoyl-CoA	GO:0016651
+R-HSA-109380	(d)CMP, TMP, or (d)UMP + H2O => (deoxy)cytidine, thymidine, or (deoxy)uridine + orthophosphate (NT5C1A)	GO:0008253
+R-HSA-109387	(2'-deoxy)purine nucleoside 5'-monophosphate + H2O => (2'-deoxy)purine nucleoside + orthophosphate [NT5C1A]	GO:0008253
+R-HSA-109415	AMP + H2O => adenosine + orthophosphate [NT5C1B]	GO:0008253
+R-HSA-109449	(d)CMP, TMP, or (d)UMP + H2O => (deoxy)cytidine, thymidine, or (deoxy)uridine + orthophosphate (NT5C3)	GO:0008253
+R-HSA-109470	(d)GMP or (d)IMP + H2O => (d)G or (d)I + orthophosphate (NT5C)	GO:0008253
+R-HSA-109480	TMP, uridine 2', 3', or 5' monophosphates, or deoxyuridine 3' or 5' monophosphates + H2O => thymidine or (deoxy)uridine + orthophosphate [NT5C]	GO:0008253
+R-HSA-109514	TMP, (d)UMP, uridine 2' monophosphate, or uridine 3'-monophosphate + H2O => thymidine, deoxyuridine, or uridine + orthophosphate [NT5M]	GO:0008253
+R-HSA-109527	Equilibrative transport (import) of nucleosides and free bases by solute carrier family 29 (nucleoside transporters), member 2	GO:0005337
+R-HSA-109529	Equilibrative transport (export) of nucleosides and free bases by solute carrier family 29 (nucleoside transporters), member 2	GO:0005337
+R-HSA-109530	Concentrative transport (import) of a nucleoside and a sodium ions by solute carrier family 28 (sodium-coupled nucleoside transporter), member 1	GO:0005415
+R-HSA-109534	Equilibrative transport (export) of nucleosides and free bases by solute carrier family 29 (nucleoside transporters), member 1	GO:0005337
+R-HSA-109536	Equilibrative transport (import) of nucleosides and free bases by solute carrier family 29 (nucleoside transporters), member 1	GO:0005337
+R-HSA-109538	Concentrative transport (import) of a nucleoside and two sodium ions by solute carrier family 28 (sodium-coupled nucleoside transporter), member 3	GO:0005415
+R-HSA-109539	Concentrative transport (import) of nucleosides plus sodium ions by solute carrier family 28 (sodium-coupled nucleoside transporter), member 2	GO:0005415
+R-HSA-109624	(2'-deoxy)adenosine + ATP => (d)AMP + ADP (ADK)	GO:0004001
+R-HSA-109671	deoxyadenosine or deoxyguanosine + ATP => dAMP or dGMP + ADP (DCK)	GO:0019206
+R-HSA-109699	PI3K-containing complexes phosphorylate PIP2 to PIP3	GO:0016303
+R-HSA-109702	PDPK1 phosphorylates AKT2	GO:0004674
+R-HSA-109759	deoxycytidine, thymidine, or deoxyuridine + ATP => dCMP, TMP, or dUMP + ADP [TK2]	GO:0019206
+R-HSA-109807	GRB2:SOS:p-Y427-SHC1 mediated nucleotide exchange of RAS	GO:0005085
+R-HSA-109817	GRB2:SOS1:p-Y-IRS1,p-Y-IRS2 mediated nucleotide exchange of RAS	GO:0005085
+R-HSA-109822	MAPK3,(MAPK1) phosphorylates GRB2-1:SOS1:p-Y427-SHC1	GO:0004674
+R-HSA-109823	MAPK3,(MAPK1) phosphorylates GRB2-1:SOS1:p-Y-IRS1,p-Y-IRS2	GO:0004674
+R-HSA-109860	MAP2K1 phosphorylates MAPK3	GO:0004674
+R-HSA-109862	MAP2K2 phosphorylates MAPK1	GO:0004674
+R-HSA-109903	cytidine or uridine + ATP => CMP or UMP + ADP [UCK2]	GO:0019206
+R-HSA-109998	Isomerization of 3-trans-decenoyl-CoA to form trans-dec-2-enoyl-CoA	GO:0016860
+R-HSA-110133	(d)GDP + ADP <=> (d)GMP + ATP (GUK1)	GO:0004385
+R-HSA-110137	(d)ADP or (d)CDP + ADP <=> (d)AMP or (d)CMP + ATP	GO:0019206
+R-HSA-110138	AK5,7,8,9 phosphorylates (d)NMPs to (d)NDPs	GO:0019206
+R-HSA-110141	(d)ADP + ADP <=> (d)AMP + ATP (AK1)	GO:0004017
+R-HSA-110144	ADP + ADP <=> AMP + ATP [AK2]	GO:0004017
+R-HSA-110145	AMP + ATP <=> ADP + ADP [AK2]	GO:0004017
+R-HSA-110215	Cleavage of uracil by UNG glycosylase	GO:0004844
+R-HSA-110217	Cleavage of 5-hydroxyluracil by UNG glycosylase	GO:0004844
+R-HSA-110218	Cleavage of uracil by TDG glycosylase	GO:0019104
+R-HSA-110219	Cleavage of thymine by TDG glycosylase	GO:0019104
+R-HSA-110221	Cleavage of uracil by SMUG1 glycosylase	GO:0017065
+R-HSA-110224	Cleavage of thymine glycol by NTHL1 glycosylase  	GO:0000703
+R-HSA-110226	Cleavage of cytosine glycol by NTHL1 glycosylase	GO:0000703
+R-HSA-110227	Cleavage of dihydrouracil by NTHL1 glycosylase	GO:0000703
+R-HSA-110229	Cleavage of formamidopyrimidine (FapyA) by NTHL1 glycosylase 	GO:0008534
+R-HSA-110231	Cleavage of uracil by MBD4 glycosylase	GO:0019104
+R-HSA-110232	Cleavage of thymine by MBD4 glycosylase	GO:0019104
+R-HSA-110234	Cleavage of ethenocytosine by TDG glycosylase 	GO:0019104
+R-HSA-110243	Excision of 8-oxoguanine by OGG1 glycosylase	GO:0008534
+R-HSA-110244	Excision of FapyG by OGG1 glycosylase	GO:0008534
+R-HSA-110246	Cleavage of adenine mispaired with 8-oxoguanine by MUTYH	GO:0019104
+R-HSA-110248	Cleavage of 3-methyladenine by MPG glycosylase 	GO:0019104
+R-HSA-110250	Cleavage of ethenoadenine by MPG glycosylase	GO:0019104
+R-HSA-110251	Cleavage of hypoxanthine by MPG glycosylase	GO:0019104
+R-HSA-110308	REV1 inserts dCMP opposite to AP sites in DNA	GO:0017125
+R-HSA-110311	POLZ extends translesion synthesis	GO:0003887
+R-HSA-110317	Insertion of correct bases opposite the lesion by POLH	GO:0003887
+R-HSA-110319	Elongation by POLH	GO:0003887
+R-HSA-110359	APEX1 mediates endonucleolytic cleavage at the 5' side of the AP site	GO:0004520
+R-HSA-110363	FEN1 bound to PCNA and APEX1 cleaves flap ssDNA	GO:0017108
+R-HSA-110368	POLD,POLE-mediated DNA strand displacement synthesis	GO:0003887
+R-HSA-110375	Excision of the abasic sugar phosphate (5'dRP) residue at the single strand break	GO:0003906
+R-HSA-111215	PRPS1 dimer pyrophosphorylates R5P using dATP	GO:0004749
+R-HSA-111253	POLB incorporates the first 3' dNMP and displaces 5'ddRP at SSB site	GO:0003887
+R-HSA-1112602	Tyrosine phosphorylation of STAT1, STAT3 by IL6 receptor	GO:0004715
+R-HSA-111264	Addition of nucleotides between position +11 and +30	GO:0003899
+R-HSA-1112666	BLNK (SLP-65) Signalosome hydrolyzes phosphatidyinositol bisphosphate forming diacylglycerol and inositol-1,4,5-trisphosphate	GO:0004629
+R-HSA-1112703	PTPN11 is phosphorylated	GO:0004715
+R-HSA-111524	IMP + L-Aspartate + GTP => Adenylosuccinate + GDP + Pi [ADSS]	GO:0004019
+R-HSA-111742	RNR (M1M2) reduces nucleotide diphosphates to deoxynucleotide diphosphates (glutaredoxin)	GO:0036175
+R-HSA-111746	glutaredoxin (oxidized) + glutathione (reduced) => glutaredoxin (reduced) + glutathione (oxidized)	GO:0015038
+R-HSA-111751	RNR (M1M2) reduces nucleotide diphosphates to deoxynucleotide diphosphates (thioredoxin)	GO:0004748
+R-HSA-111804	RNR (M1M2B) reduces nucleotide diphosphates to deoxynucleotide diphosphates (thioredoxin)	GO:0004748
+R-HSA-111879	PIP2 hydrolysis	GO:0004435
+R-HSA-111881	Phospho-cPLA2 translocates to membranes when intracellular calcium levels increase	GO:0004623
+R-HSA-111883	PLA2G4A (cPLA2) hydrolyzes phosphatidylcholine	GO:0004623
+R-HSA-111898	Phosphorylation of cPLA2 by ERK-2	GO:0004707
+R-HSA-111912	CaMK4 phosphorylates CREB1	GO:0004683
+R-HSA-111915	CAMK4 autophosphorylates	GO:0004683
+R-HSA-111919	PKA phosphorylates CREB1	GO:0004674
+R-HSA-111925	cAMP induces dissociation of inactive PKA tetramers	GO:0030552
+R-HSA-111930	Adenylate cyclase produces cAMP	GO:0008294
+R-HSA-111955	cAMP hydrolysis by Cam-PDE 1	GO:0004117
+R-HSA-111962	PDE4A,C,D hydrolyse cAMP	GO:0004115
+R-HSA-111970	PKC phosphorylates GRK2	GO:0004674
+R-HSA-112033	PNP catalyzes the conversion of hypoxanthine and (deoxy)ribose-1-phosphate to (deoxy)inosine	GO:0004731
+R-HSA-112034	PNP catalyzes the conversion of guanine and (deoxy)ribose-1-phosphate to (deoxy)guanosine	GO:0004731
+R-HSA-112118	Oxidative demethylation of 1-meA damaged DNA by ALKBH2	GO:0035516
+R-HSA-112120	Oxidative demethylation of 3-meC damaged DNA by ALKBH2	GO:0051213
+R-HSA-112121	Oxidative dealkylation of 1-etA damaged DNA By ALKBH2	GO:0051213
+R-HSA-112123	Oxidative demethylation of 1-meA damaged DNA By ALKBH3	GO:0035516
+R-HSA-112124	Oxidative demethylation of 3-meC damaged DNA By ALKBH3	GO:0051213
+R-HSA-112125	Oxidative dealkylation of 1-EtA damaged DNA by ABH3	GO:0051213
+R-HSA-112265	thymidine or deoxyuridine + orthophosphate <=> thymine or uracil + 2-deoxy-D-ribose 1-phosphate [TYMP]	GO:0016763
+R-HSA-112266	thymine or uracil + 2-deoxy-D-ribose 1-phosphate <=> thymidine or deoxyuridine + orthophosphate [TYMP]	GO:0016763
+R-HSA-112333	SRC autophosphorylation is positively regulated by InlA-bound CDH1	GO:0004713
+R-HSA-112342	Inactivation of MAP2K1 by CDK1	GO:0004674
+R-HSA-112381	Hyperphosphorylation (Ser2) of RNA Pol II CTD by P-TEFb complex	GO:0004674
+R-HSA-112383	Hypophosphorylation of RNA Pol II CTD by FCP1P protein	GO:0004721
+R-HSA-113503	PP2A mediated localization of RB1 protein in chromatin	GO:0004721
+R-HSA-114252	Cleavage of Procaspase-3 by the apoptosome	GO:0004197
+R-HSA-114259	Cleavage of Procaspaseâ€‘9 to caspaseâ€‘9	GO:0004197
+R-HSA-114261	Cleavage of Procaspase-7 by the apoptosome	GO:0004197
+R-HSA-114544	p115-RhoGEF activation of RHOA	GO:0005085
+R-HSA-114552	Thrombin-activated PARs activate G12/13	GO:0004930
+R-HSA-114558	Thrombin-activated PARs activate Gq	GO:0004930
+R-HSA-114600	Fyn/Lyn-mediated phosphorylation of FcR1 gamma	GO:0004713
+R-HSA-114683	Phosphorylation of Platelet Sec-1	GO:0004698
+R-HSA-114684	Phosphorylation of Syntaxin-4	GO:0004698
+R-HSA-114688	PLC-beta hydrolyses PIP2 to DAG and IP3	GO:0004629
+R-HSA-114689	PLC gamma 2-mediated PIP2 hydrolysis	GO:0004629
+R-HSA-114697	Activated thrombin (factor IIa) cleaves PAR3,4, activating them	GO:0004252
+R-HSA-1168376	STIM1 oligomerizes	GO:0099604
+R-HSA-1168394	STAT5 tyrosine phosphorylation	GO:0004713
+R-HSA-1168423	JAK2 phosphorylation of IRS-1/2	GO:0004715
+R-HSA-1168459	Lyn activates ERK	GO:0004715
+R-HSA-1168635	PRKCB (PKC-beta) phosphorylates CARMA1	GO:0004674
+R-HSA-1168636	p-RasGRP1,3:DAG cause RAS to exchange GDP for GTP	GO:0005085
+R-HSA-1168638	Activated IKK phosphorylates I-kappaB	GO:0004674
+R-HSA-1168640	Ubiquitinated IkB is degraded	GO:0004175
+R-HSA-1168641	TAK1 associated with the CBM complex phosphorylates IKKbeta	GO:0004674
+R-HSA-1168767	JAK2 phosphorylates STAT1/STAT3	GO:0004715
+R-HSA-1168777	Metalloprotease cleavage of GHR	GO:0004222
+R-HSA-1169188	SHP1 (PTPN6) dephosphorylates JAK2	GO:0004725
+R-HSA-1169192	PTP1B dephosphorylates GHR	GO:0004725
+R-HSA-1169210	PTP1B dephosphorylates JAK2	GO:0004725
+R-HSA-1169394	ISGylation of IRF3	GO:0061662
+R-HSA-1169395	ISGylation of viral protein NS1	GO:0061662
+R-HSA-1169397	Activation of ISG15 by UBA7 E1 enzyme	GO:0019782
+R-HSA-1169398	ISGylation of host protein filamin B	GO:0061662
+R-HSA-1169402	ISGylation of E2 conjugating enzymes	GO:0061662
+R-HSA-1169404	Transfer of ISG15 from E1 to E2 (UBCH8)	GO:0061653
+R-HSA-1169405	ISGylation of protein phosphatase 1 beta (PP2CB)	GO:0061662
+R-HSA-1169406	ISGylation of host proteins	GO:0061662
+R-HSA-1169421	Trans-autophosphorylation of activated ligand-responsive EGFR mutant dimers	GO:0004713
+R-HSA-1176059	Translocation of Influenza A virus nonstructural protein 1 (NS1A) into the nucleus	GO:0017056
+R-HSA-1181149	ACVR2A,B (ActRIIA,B) phosphorylates ACVR1B (ActRIB, ALK4) in response to Activin	GO:0004674
+R-HSA-1181152	Cleavage of NODAL proprotein	GO:0004252
+R-HSA-1181156	Type II Activin Receptor (ActRII/ACVR2) phosphorylates Type I Activin Receptor (ActRIB/ACVR1B) in response to NODAL	GO:0004674
+R-HSA-1181355	Phosphorylation of R-SMAD2/3 by NODAL receptor	GO:0004674
+R-HSA-1183128	PADIs:Ca2+ deiminate L-Arg to L-Cit in proteins	GO:0004668
+R-HSA-1214188	PRDM9 trimethylates histone H3	GO:0042800
+R-HSA-1222346	AhpC reduces H2O2	GO:0004601
+R-HSA-1222363	MsrA/B reduces peptide-methionine S/R-sulfoxides	GO:0008113
+R-HSA-1222376	NOX2 generates superoxide from oxygen	GO:0016175
+R-HSA-1222399	Iron is reduced and separates from mycobactin	GO:0052873
+R-HSA-1222412	LpdC dimer reactivates DlaT	GO:0004148
+R-HSA-1222417	TrxA reactivates AhpC	GO:0015036
+R-HSA-1222431	Peroxynitrite is reduced to nitrite by AhpC	GO:0051920
+R-HSA-1222462	SodB reduces superoxide to H2O2	GO:0004784
+R-HSA-1222469	SodC reduces superoxide to H2O2	GO:0004784
+R-HSA-1222485	TrxB reactivates TrxA	GO:0004791
+R-HSA-1222516	Intraphagosomal pH is lowered to 5 by V-ATPase	GO:0015078
+R-HSA-1222523	SodB gets secreted	GO:0042626
+R-HSA-1222526	AhpC reduces peroxidated lipids	GO:0102039
+R-HSA-1222583	MscR reduces nitrosomycothiol to ammonia	GO:0016620
+R-HSA-1222597	Loaded mycobactin gets imported	GO:0015343
+R-HSA-1222644	TrxA/B1 reactivates Tpx	GO:0015036
+R-HSA-1222655	AhpD reactivates AhpC	GO:0015036
+R-HSA-1222690	DlaT reactivates AhpD	GO:0015036
+R-HSA-1222704	KatG reduces H2O2	GO:0004096
+R-HSA-1222712	Nitrosoglutathione gets cleaved to Cys(NO)-Gly	GO:0036374
+R-HSA-1222723	Nitric oxide is oxidized to nitrate	GO:0008941
+R-HSA-1222755	Peroxynitrite is reduced to nitrite by Tpx	GO:0051920
+R-HSA-1225894	Type II Activin Receptor (ActRIIB/ACVR2B) phosphorylates Type I Activin Receptor (ActRIC/ACVR1C) in response to NODAL	GO:0004674
+R-HSA-1225951	SOS-mediated nucleotide exchange of RAS (mediated by GRB2:SOS1 in complex with ligand-responsive p-6Y-EGFR mutants)	GO:0005085
+R-HSA-1225952	Phosphorylation of SHC1 by ligand-responsive p-6Y-EGFR mutants	GO:0004713
+R-HSA-1225956	Inefficient ubiquitination of ligand-responsive p-6Y-EGFR mutants by p-Y371-CBL	GO:0061630
+R-HSA-1225957	SOS-mediated nucleotide exchange of RAS (mediated by GRB2:SOS1 in complex with phosphorylated SHC1 and ligand-responsive p-6Y-EGFR mutants)	GO:0005085
+R-HSA-1225960	Phosphorylation of CBL by ligand-responsive p-6Y-EGFR mutants	GO:0004713
+R-HSA-1226014	Conversion of PIP2 to PIP3 by PI3K bound to ligand-responsive p-6Y-EGFR mutants	GO:0046934
+R-HSA-1226094	Cyclin D:Cdk4/6 mediated phosphorylation of p130 (RBL2) and dissociation of phosphorylated p130 (RBL2) from DP1:E2F4/5 complex	GO:0004693
+R-HSA-1226095	Cyclin D:CDK4/6 mediated phosphorylation of p107 (RBL1) and dissociation of phosphorylated p107 (p-RBL1) from DP1:E2F4 complex	GO:0004693
+R-HSA-1234159	Proteasome proteolyzes ub-HIF-alpha	GO:0004175
+R-HSA-1234163	Cytosolic VBC complex ubiquitinylates hydroxyprolyl-HIF-alpha 	GO:0004842
+R-HSA-1234164	Cytosolic HIF1AN (FIH1) hydroxylates asparagine residues of Hypoxia-inducible Factor Alpha (HIF1A,HIF2A)	GO:0016706
+R-HSA-1234165	Nuclear PHD1,3 hydroxylates proline residues on HIF3A	GO:0031545
+R-HSA-1234166	Nuclear PHD1,3 hydroxylates proline residues on EPAS1 (HIF2A)	GO:0031545
+R-HSA-1234172	Nuclear VBC complex ubiquitinylates HIF-alpha	GO:0004842
+R-HSA-1234173	Cytosolic PHD2,3 hydroxylates proline residues on HIF3A	GO:0031545
+R-HSA-1234177	Cytosolic PHD2,3 hydroxylates proline residues on HIF1A	GO:0031545
+R-HSA-1234179	Cytosolic PHD2,3 hydroxylates proline residues on EPAS1 (HIF2A)	GO:0031545
+R-HSA-1234181	Nuclear PHD1,3 hydroxylates proline residues on HIF1A	GO:0031545
+R-HSA-1236935	Proteasomal cleavage of substrate (26S proteasome catalyst)	GO:0004175
+R-HSA-1236938	Partial proteolysis of antigen in phagolysosomes	GO:0016787
+R-HSA-1236947	Egress of internalized antigen to the cytosol via sec61	GO:0022857
+R-HSA-1236948	Antigen processing by cathepsin S in endosoytic vesicle	GO:0004197
+R-HSA-1236949	Translocation of antigenic peptides back to phagosomes via TAP	GO:0015433
+R-HSA-1236954	Trimming of peptides by IRAP in endocytic vesicles	GO:0004177
+R-HSA-1236967	Alkalization of the phagosomal lumen by NOX2	GO:0016175
+R-HSA-1236970	Proteasomal clevage of exogenous antigen (26S proteasome catalyst)	GO:0004175
+R-HSA-1237038	SLC4A1 exchanges cytosolic HCO3- for extracellular Cl-	GO:0005452
+R-HSA-1237042	AQP1 tetramer transports CO2 from extracellular region to cytosol	GO:0035379
+R-HSA-1237045	Carbonic Anhydrase VI hydrates carbon dioxide to bicarbonate and a proton	GO:0004089
+R-HSA-1237047	CA4:Zn2+ hydrates CO2 to HCO3-	GO:0004089
+R-HSA-1237059	CA4:Zn2+ dehydrates HCO3- to CO2	GO:0004089
+R-HSA-1237069	RHAG transports CO2 from extracellular region to cytosol	GO:0035379
+R-HSA-1237081	Carbonic anhydrase VI dehydrates bicarbonate to water and carbon dioxide	GO:0004089
+R-HSA-1237096	Methylthio-ribose-P => Methylthio-ribulose-P	GO:0046523
+R-HSA-1237102	Transamination of MOB to methionine	GO:0008483
+R-HSA-1237119	Acireductone is oxidized to MOB	GO:0010309
+R-HSA-1237129	Acireductone is created	GO:0043874
+R-HSA-1237140	Dehydration of methylthio-ribulose-P	GO:0046570
+R-HSA-1237160	MTA is cleaved and phosphorylated	GO:0017061
+R-HSA-1247645	RHAG transports CO2 from cytosol to extracellular region	GO:0035379
+R-HSA-1247649	AQP1 tetramer transports CO2 from cytosol to extracellular region	GO:0035379
+R-HSA-1247665	SLC4A1 exchanges cytosolic Cl- for extracellular HCO3-	GO:0005452
+R-HSA-1247844	Phosphorylation of PLCG1 by ligand-responsive p-6Y-EGFR mutants	GO:0004713
+R-HSA-1247910	CNDP2:2Mn2+ dimer hydrolyses CysGly	GO:0004180
+R-HSA-1247922	GGCT transforms gGluCys to OPRO	GO:0003839
+R-HSA-1247935	OPLAH hydrolyses OPRO to L-Glu	GO:0017168
+R-HSA-1247960	Activation of p38 MAPK	GO:0004708
+R-HSA-1248655	Trans-autophosphorylation of EGFRvIII mutant dimers	GO:0004713
+R-HSA-1248694	Trans-autophosphorylation of ERBB2 homodimer	GO:0004713
+R-HSA-1250195	SHC1 phosphorylation by ERBB2 heterodimers	GO:0004713
+R-HSA-1250315	Trans-autophosphorylation of ERBB4 homodimers	GO:0004713
+R-HSA-1250348	Phosphorylation of SHC1 by ERBB4 homodimers	GO:0004713
+R-HSA-1250370	Conversion of PIP2 into PIP3 by PI3K bound to p-ERBB4cyt1 homodimers	GO:0046934
+R-HSA-1250383	RAS guanyl-nucleotide exchange mediated by SOS1 in complex with GRB2 and p-Y349,350-SHC1:p-ERBB4	GO:0005085
+R-HSA-1250462	PIP2 to PIP3 conversion by PI3K bound to phosphorylated heterodimer of ERBB2 and ERBB3	GO:0046934
+R-HSA-1250463	RAS guanyl-nucleotide exchange mediated by SOS1 in complex with GRB2 and p-SHC1:Phosphorylated ERBB2 heterodimers	GO:0005085
+R-HSA-1250498	RAS guanyl-nucleotide exchange mediated by SOS1 in complex with GRB2 and phosphorylated EGFR:ERBB2 heterodimers	GO:0005085
+R-HSA-1251922	PLCG1 phosphorylation by p-EGFR:p-ERBB2	GO:0004713
+R-HSA-1251992	Cleavage of P-ERBB4jmA isoforms by ADAM17	GO:0004222
+R-HSA-1251997	Cleavage of ERBB4m80 by gamma-scretase complex	GO:0004175
+R-HSA-1253282	ERBB4 ubiquitination by WWP1/ITCH	GO:0004842
+R-HSA-1268022	TOMM40 complex translocates proteins from the cytosol to the mitochondrial intermembrane space	GO:0008320
+R-HSA-1268025	SAM50 complex inserts proteins into mitochondrial outer membrane	GO:0032977
+R-HSA-1295519	IL7R is phosphorylated on Y499	GO:0004715
+R-HSA-1295540	IL7:p-Y449-IL7R:JAK1:IL2RG:p-JAK3:STAT5A,STAT5B phosphorylates STAT5	GO:0004713
+R-HSA-1295609	SRC phosphorylates SPRY2 on Y55 and Y227	GO:0004713
+R-HSA-1295632	PPA2A dephosphorylates SPRY2	GO:0004722
+R-HSA-1296024	Activation of ATP sensitive Potassium channels in neuroendocrine cells	GO:0005267
+R-HSA-1296035	Activation of Ca2+ activated Potassium channels with  Intermediate conductance	GO:0005267
+R-HSA-1296037	Activation of Ca2+ activated Potassium channels with large conductance	GO:0005267
+R-HSA-1296039	Activation of Ca2+ activated Potassium channels with small conductance	GO:0005267
+R-HSA-1296043	Activation of HCN channels	GO:0005261
+R-HSA-1296045	Activation of Potassium transport channels	GO:0005242
+R-HSA-1296046	KCNJs transport K+ from the extracellular region to cytosol	GO:0005242
+R-HSA-1296127	Activation of voltage gated Potassium channels	GO:0005249
+R-HSA-1296348	Activation of TWIK-related K+ channel (TREK)	GO:0005267
+R-HSA-1297354	Acrosin Cleavage	GO:0002020
+R-HSA-1299297	Activation of THIK	GO:0005267
+R-HSA-1299304	Activation of tandem pore domain in a weak inwardly rectifying  K+ channels	GO:0005267
+R-HSA-1299318	Activation of TASK	GO:0005267
+R-HSA-1299338	Activation of TRESK	GO:0005267
+R-HSA-1299359	Activation of TALK	GO:0005267
+R-HSA-1299475	TIMM23 PAM translocates proteins from the mitochondrial intermembrane space to the mitochondrial matrix	GO:0008320
+R-HSA-1299476	MPP cleaves targeting peptide (presequence) of inner membrane precursors	GO:0004222
+R-HSA-1299478	MPP cleaves targeting peptide (presequence) of matrix precursors	GO:0004222
+R-HSA-1299482	TIMM23 SORT inserts proteins into inner membrane	GO:0032977
+R-HSA-1299507	Methylthio-ribulose-P => Methylthio-ribose-P	GO:0046523
+R-HSA-1306957	PIP2 to PIP3 conversion by PI3K bound to GRB2:GAB1 in complex with phosphorylated heterodimer of ERBB2 and EGFR	GO:0046934
+R-HSA-1306972	RAS guanyl nucleotide exchange mediated by SOS1 bound to GRB2 in complex with phosphorylated ERBB4:ERBB2 heterodimers	GO:0005085
+R-HSA-1306979	PIP2 to PIP3 conversion by PI3K bound to phosphorylated heterodimer of ERBB2 and ERBB4 CYT1	GO:0046934
+R-HSA-1307802	MIA40:ERV1 (CHCHD4:GFER) oxidizes cysteine residues to cystine disulfide bonds	GO:0015035
+R-HSA-1307803	TIMM22 inserts proteins into inner membrane	GO:0032977
+R-HSA-1307963	Autocatalytic phosphorylation of BetaKlotho-bound FGFR4	GO:0004713
+R-HSA-1358789	Self-ubiquitination of RNF41	GO:0004842
+R-HSA-1358790	RNF41 ubiquitinates ERBB3	GO:0004842
+R-HSA-1358791	Phosphorylation of USP8 by P-AKT	GO:0004674
+R-HSA-1358792	RNF41 ubiquitinates activated ERBB3	GO:0004842
+R-HSA-1358795	Deubiquitination of RNF41 by P-USP8	GO:0004843
+R-HSA-1362270	Phosphorylation of LIN52 component of MuvB by DYRK1A	GO:0004674
+R-HSA-1362408	FXN:NFS1:ISD11:ISCU assembles 2Fe-2S iron-sulfur cluster	GO:0031071
+R-HSA-1362416	Frataxin binds iron	GO:0008198
+R-HSA-1362417	Mitoferrin translocates iron from the mitochondrial intermembrane space to the mitochondrial matrix	GO:0015093
+R-HSA-1363274	Dephosphorylation of p107 (RBL1) by PP2A	GO:0004721
+R-HSA-1363276	Dephosphorylation of p130 (RBL2) by PP2A	GO:0004721
+R-HSA-1363331	Ubiquitination of p130 (RBL2) by SCF (Skp2)	GO:0004842
+R-HSA-1369017	Activation of ATP sensitive Potassium channels in muscle cells	GO:0005242
+R-HSA-1369028	ABCAs mediate lipid efflux	GO:0005319
+R-HSA-1369052	ABCAs mediate lipid influx	GO:0005319
+R-HSA-1369065	ABCB6 transports porphyrin from cytosol to mitchondrial matrix	GO:0015439
+R-HSA-1369115	SHP2 is phosphorylated	GO:0004715
+R-HSA-139854	IP3R tetramer:I(1,4,5)P3:4xCa2+ transports Ca2+ from platelet dense tubular system to cytosol	GO:0005262
+R-HSA-139855	P2X1-mediated entry of Ca++ from plasma	GO:0005262
+R-HSA-139893	Granzyme-B activates BID by cleavage	GO:0004252
+R-HSA-139898	Caspase-8 activates BID by cleavage	GO:0004197
+R-HSA-139906	Activation of BAD by calcineurin	GO:0008597
+R-HSA-139908	Phosphorylation of DLC2 by MAPK8	GO:0004674
+R-HSA-139918	Phosphorylation of BIM by JNK	GO:0004674
+R-HSA-139952	Caspase-8 processing in the DISC	GO:0004197
+R-HSA-139970	FMO3:FAD N-oxidises TMA to TMAO	GO:0004499
+R-HSA-140355	Arachidonate is oxidised to PGG2 by PTGS1	GO:0004666
+R-HSA-140359	PGG2 is reduced to PGH2 by PTGS1	GO:0004601
+R-HSA-140599	factor XIII -> factor XIII cleaved tetramer + 2 factor XIII A activation peptides	GO:0004252
+R-HSA-140664	prothrombin -> activated thrombin (factor IIa) + thrombin activation peptide (prothrombinase catalyst)	GO:0004252
+R-HSA-140696	factor V -> factor Va + factor V activation peptide (thrombin catalyst)	GO:0004252
+R-HSA-140700	prothrombin -> activated thrombin (factor IIa) + thrombin activation peptide (Xa catalyst)	GO:0004252
+R-HSA-140769	factor VII -> factor VIIa	GO:0004252
+R-HSA-140840	fibrinogen -> fibrin monomer + 2 fibrinopeptide A + 2 fibrinopeptide B	GO:0004252
+R-HSA-140851	fibrin multimer -> fibrin multimer, crosslinked + NH4+	GO:0003810
+R-HSA-140870	thrombin:antithrombin III:heparan sulfate -> thrombin:cleaved antithrombin III:heparan sulfate	GO:0004252
+R-HSA-141026	Activated protein C cleaves factor Va to factor Vi intermediate form	GO:0004252
+R-HSA-141040	Activated thrombin:thrombomodulin cleaves PROCR:Protein C to PROCR:Activated protein C	GO:0004252
+R-HSA-141186	MAOA:FAD oxidatively deaminates of 5HT	GO:0008131
+R-HSA-141200	MAOB:FAD oxidatively deaminates of PEA	GO:0008131
+R-HSA-141202	MAOB:FAD oxidatively deaminates TYR	GO:0008131
+R-HSA-141341	SMOX-3 oxidises SPN to SPM	GO:0052901
+R-HSA-141348	PAO:FAD oxidises NASPM to PTCN	GO:0052903
+R-HSA-141351	PAOX:FAD oxidises NASPN to SPM	GO:0052903
+R-HSA-141367	Myristoylation of tBID by NMT1	GO:0019107
+R-HSA-1433374	Processing of SCF isoform 1	GO:0004175
+R-HSA-1433415	Activation of RAC1	GO:0005085
+R-HSA-1433418	Phosphorylation of JAK2	GO:0004713
+R-HSA-1433454	Phosphorylation of GAB2 by SFKs	GO:0004713
+R-HSA-1433471	Activation of RAS by p-KIT bound SOS1	GO:0005085
+R-HSA-1433488	Phosphorylation of SHP2 by SFKs	GO:0004713
+R-HSA-1433506	Phosphorylation of APS	GO:0004713
+R-HSA-1433508	PKC alpha interacts with and phosphorylates KIT	GO:0004698
+R-HSA-1433514	Synthesis of PIP3 from PIP2 by PI3K	GO:0016303
+R-HSA-1433542	Phosphorylation and activation of VAV1	GO:0004713
+R-HSA-143468	MEOS oxidizes ethanol to acetaldehyde	GO:0004497
+R-HSA-1445143	RAB8A,10,13,14 hydrolyze GTP	GO:0003924
+R-HSA-1445144	p-AKT1,p-AKT2 phosphorylates AS160 (TBC1D4)	GO:0004674
+R-HSA-1449597	p-AKT2 phosphorylates Myosin 5A	GO:0004674
+R-HSA-1449687	Corticosteroids bind to CBG in blood	GO:0140104
+R-HSA-1454699	AMPK-alpha2 phosphorylates TBC1D1	GO:0004674
+R-HSA-1454757	Gelatin degradation by MMP1, 2, 3, 7, 8, 9, 12, 13	GO:0004222
+R-HSA-1454822	Collagen type I degradation by MMP1,2,8,13, PRSS2	GO:0004222
+R-HSA-1454843	E-cadherin degradation by MMP3, MMP7 and plasmin	GO:0004252
+R-HSA-1454916	The ABCC family mediates organic anion transport	GO:0042626
+R-HSA-1454928	ABCG4 may mediate cholesterol efflux	GO:0120020
+R-HSA-1458433	Collagen type I degradation by MMP14	GO:0004222
+R-HSA-1458463	p-AKT2 phosphorylates RGC2	GO:0004674
+R-HSA-1458485	RALA hydrolyzes GTP	GO:0003924
+R-HSA-1461993	pro-HD5 is cleaved by trypsin	GO:0008236
+R-HSA-1467457	ABCA8,B1,B5 transport xenobiotics from cytosol to extracellular region	GO:0042626
+R-HSA-1467466	ABCA4 mediates atRAL transport	GO:0034632
+R-HSA-1470009	Phosphorylation of STATs	GO:0004713
+R-HSA-1472121	Phosphorylation of p-KIT on Y900 by Src kinases	GO:0004713
+R-HSA-1474146	GCH1 reduces GTP to dihydroneopterin triphosphate	GO:0003934
+R-HSA-1474158	GCHFR binds to GCH1 and negatively regulates its activity	GO:0004857
+R-HSA-1474184	DHNTP is dephosphorylated by PTPS to PTHP	GO:0003874
+R-HSA-1474196	Collagen type II degradation by MMP14	GO:0004222
+R-HSA-1474197	Collagen type II degradation by MMP1,3,8,13,PRSS2	GO:0004252
+R-HSA-1474210	Collagen type III degradation by MMP14	GO:0004222
+R-HSA-1474213	Collagen type III degradation by MMP1,8,9,13	GO:0004222
+R-HSA-1475017	Carbonic anhydrase dehydrates bicarbonate (plasma membrane)	GO:0004089
+R-HSA-1475022	Carbonic anhydrase dehydrates bicarbonate (cytosol)	GO:0004089
+R-HSA-1475025	Carbonic anhydrase hydrates carbon dioxide (plasma membrane)	GO:0004089
+R-HSA-1475026	Carbonic anhydrase hydrates carbon dioxide (cytosol)	GO:0004089
+R-HSA-1475028	Carbonic anhydrase dehydrates bicarbonate (mitochondria)	GO:0004089
+R-HSA-1475032	Carbonic anhydrase hydrates carbon dioxide (mitochondria)	GO:0004089
+R-HSA-1475414	PTHP is reduced to BH4 by sepiapterin reductase (SPR)	GO:0004757
+R-HSA-1475422	PTPS is phosphorylated by cGMP-dependant protein kinase II	GO:0004692
+R-HSA-1475435	CA1:Zn2+,CA2:Zn2+ hydrate CO2 to HCO3-	GO:0004089
+R-HSA-1475436	CA1:Zn2+,CA2:Zn2+ dehydrate HCO3- to CO2	GO:0004089
+R-HSA-1482533	2-acyl LPC is acylated to PC by LPCAT	GO:0047144
+R-HSA-1482539	1-acyl LPG is acylated to PG by LPGAT	GO:0003841
+R-HSA-1482543	2-MAG is hydrolyzed to fatty acid and glycerol by MGLL	GO:0047372
+R-HSA-1482545	2-acyl LPE is hydrolyzed to GPETA by PLA2G4C	GO:0004622
+R-HSA-1482546	2-acyl LPG is acylated to PG by CRLS1 (IM)	GO:0047144
+R-HSA-1482547	1-acyl LPC is acylated to PC by LPCAT	GO:0003841
+R-HSA-1482548	1-acyl LPA is acylated to PA by AGPAT5 (OM)	GO:0003841
+R-HSA-1482571	1-acyl LPE is hydrolyzed to GPETA by PLA2G4C	GO:0004622
+R-HSA-1482598	1-acyl LPI is acylated to PI by MBOAT7	GO:0003841
+R-HSA-1482604	PA is hydrolyzed to 1-acyl LPA by PLA2[1] (OM)	GO:0004623
+R-HSA-1482612	2-acyl LPC is hydrolyzed to GPCho by PLA2[8]	GO:0004622
+R-HSA-1482626	2-acyl LPI is acylated to PI by MBOAT7	GO:0047144
+R-HSA-1482629	2-acyl LPC is hydrolyzed to GPCho by PLA2G4C	GO:0004622
+R-HSA-1482635	2-acyl LPG is acylated to PG by LPGAT	GO:0047144
+R-HSA-1482636	1-acyl LPS is acylated to PS by LPSAT	GO:0003841
+R-HSA-1482646	2-acyl LPE is acylated to PE by LPEAT	GO:0047144
+R-HSA-1482647	2-MAG and DAG are transacylated to TAG by PNPLA2/3	GO:0016411
+R-HSA-1482654	2-MAG is transacylated to DAG by PNPLA2/3	GO:0016411
+R-HSA-1482656	PA is hydrolysed to 1-acyl LPA by PLA2[1]	GO:0004623
+R-HSA-1482667	1-acyl LPE is acylated to PE by LPEAT	GO:0003841
+R-HSA-1482679	PA is hydrolysed to 1-acyl LPA by PLA2G2A	GO:0004623
+R-HSA-1482685	1-acyl LPC is hydrolyzed to GPCho by PLA2[8]	GO:0004622
+R-HSA-1482689	1-acyl LPG is acylated to PG by CRLS1 (IM)	GO:0003841
+R-HSA-1482691	2-acyl LPS is acylated to PS by LPSAT	GO:0047144
+R-HSA-1482695	G3P is acylated to 1-acyl LPA by GPAM/GPAT2 (OM)	GO:0004366
+R-HSA-1482696	1-acyl LPC is hydrolyzed to GPCho by PLA2G4C	GO:0004622
+R-HSA-1482745	PG is hydrolyzed to 1-acyl LPG by PLA2G4B (IM)	GO:0004623
+R-HSA-1482759	MLCL is hydrolyzed to DLCL by PLA2G4A (IM)	GO:0004623
+R-HSA-1482771	PS is hydrolyzed to 1-acyl LPS by PLA2[9]	GO:0004623
+R-HSA-1482775	MLCL is acylated to CL by HADH (IM)	GO:0008374
+R-HSA-1482776	PS is hydrolyzed to 1-acyl LPS by PLA2G2A	GO:0004623
+R-HSA-1482777	TAG is hydrolyzed to DAG by PNPLA2/3	GO:0004806
+R-HSA-1482778	CL is hydrolyzed to MLCL by PLA2G6 (IM)	GO:0004623
+R-HSA-1482781	MLCL and PC are converted to CL and 1-acyl LPC by TAZ (IM) (Reversible)	GO:0008374
+R-HSA-1482794	CL and 1-acyl LPC are converted to MLCL and PC by TAZ (IM) (Reversible)	GO:0047184
+R-HSA-1482811	DAG is hydrolyzed to 2-MAG by PNPLA2/3	GO:0004465
+R-HSA-1482816	PC is hydrolyzed to 1-acyl LPC by PLA2[6]	GO:0004623
+R-HSA-1482825	PI is hydrolyzed to 1-acyl LPI by PLA2[11]	GO:0004623
+R-HSA-1482827	PC is hydrolyzed to 2-acyl LPC by PLA2G4C	GO:0008970
+R-HSA-1482828	PE is hydrolyzed to 2-acyl LPE by PLA2[4]	GO:0008970
+R-HSA-1482847	PG is hydrolysed to 2-acyl LPG by PLA2G4B (IM)	GO:0008970
+R-HSA-1482850	MLCL and PE are converted to CL and 1-acyl LPE by TAZ (IM) (Reversible)	GO:0008374
+R-HSA-1482856	PC is hydrolyzed to 1-acyl LPC by PLA2[5]	GO:0004623
+R-HSA-1482861	MLCL is acylated to CL by LCLAT1 (ER)	GO:0008374
+R-HSA-1482862	PC is hydrolysed to 2-acyl LPC by PLA2[7]	GO:0008970
+R-HSA-1482867	DLCL is acylated to MLCL by LCLAT1 (ER)	GO:0008374
+R-HSA-1482868	PI is hydrolyzed to 1-acyl LPI by PLA2[12]	GO:0004623
+R-HSA-1482884	PE is hydrolyzed to 1-acyl LPE by PLA2[2]	GO:0004623
+R-HSA-1482887	PE is hydrolyzed to 1-acyl LPE by PLA2[3]	GO:0004623
+R-HSA-1482889	DAG is acylated to TAG by DGAT1/2	GO:0004144
+R-HSA-1482892	PE is hydrolyzed to 2-acyl LPE by PLA2G4C	GO:0008970
+R-HSA-1482894	CL and 1-acyl LPE are converted to MLCL and PE by TAZ (IM) (Reversible)	GO:0003841
+R-HSA-1482897	PS is hydrolyzed to 2-acyl LPS by PLA2[10]	GO:0004623
+R-HSA-1482900	PG is hydrolyzed to 1-acyl LPG by PLA2[1]	GO:0004623
+R-HSA-1482907	PG is hydrolyzed to 1-acyl LPG by PLA2G2A	GO:0004623
+R-HSA-1482920	PG is hydrolyzed to 2-acyl LPG by PLA2[14]	GO:0008970
+R-HSA-1482932	PI is hydrolyzed to 2-acyl LPI by PLA2[13]	GO:0008970
+R-HSA-1482939	CDP-DAG is converted to PGP by PGS1	GO:0008444
+R-HSA-1482961	CDP-Cho and DAG are converted to PC by CEPT1 at the ER membrane	GO:0004142
+R-HSA-1482962	CDP-ETA and DAG are converted to PE by CEPT1/EPT1	GO:0004307
+R-HSA-1482973	CDP-Cho and DAG are converted to PC by CHPT1 at the Golgi membrane	GO:0004142
+R-HSA-1482976	CDP-DAG is converted to PI by CDIPT	GO:0003881
+R-HSA-1483002	DHAP is converted to 1-acyl GO3P by GNPAT	GO:0016287
+R-HSA-1483004	Cho is phosphorylated to PCho by CHK dimer	GO:0004103
+R-HSA-1483063	PG and CDP-DAG are converted to CL by CRLS1	GO:0043337
+R-HSA-1483081	PCho and CTP are condensed to CDP-Cho by PCYT1 dimer	GO:0004105
+R-HSA-1483087	PI is exchanged with PC by PITPNB	GO:0120019
+R-HSA-1483089	PE is converted to PS by PTDSS2	GO:0016740
+R-HSA-1483096	PETA is dephosphorylated to ETA by PHOSPHO1	GO:0052732
+R-HSA-1483107	GPETA is hydrolyzed to ETA and G3P by GPCPD1	GO:0008889
+R-HSA-1483116	GPCho is hydrolyzed to Cho and G3P by GPCPD1	GO:0008889
+R-HSA-1483121	PA is converted to CDP-DAG by CDS1	GO:0004605
+R-HSA-1483142	PC is transphosphatidylated to PG by PLD1-4/6	GO:0004630
+R-HSA-1483159	PCho is dephosphorylated to Cho by PHOSPHO1	GO:0052731
+R-HSA-1483165	PA is converted to CDP-DAG by CDS2	GO:0004605
+R-HSA-1483174	PE is methylated to PC by PEMT	GO:0004608
+R-HSA-1483182	PC is hydrolyzed to PA and choline by PLD1/2	GO:0004630
+R-HSA-1483186	PC is converted to PS by PTDSS1	GO:0016740
+R-HSA-1483190	PETA and CTP are condensed to CDP-ETA by PCY2	GO:0004306
+R-HSA-1483197	PTPMT1 dephosphorylates PGP to PG	GO:0008962
+R-HSA-1483203	PA is dephosphorylated to DAG by LPIN	GO:0008195
+R-HSA-1483211	PC:PITPNB is transported from the Golgi membrane to the ER membrane	GO:0120019
+R-HSA-1483212	PS is decarboxylated to PE by PISD	GO:0004609
+R-HSA-1483219	PC is exchanged with PI by PITPNB	GO:0120019
+R-HSA-1483222	ETA is phosphorylated to PETA by CHK/ETNK	GO:0004305
+R-HSA-1483229	PI:PITPNB is transported from the ER membrane to the Golgi membrane	GO:0008526
+R-HSA-1497784	The cofactor BH4 is required for electron transfer in the eNOS catalytic cycle	GO:0034617
+R-HSA-1497794	Salvage - BH2 is reduced to BH4 by DHFR	GO:0004146
+R-HSA-1497796	BH2 binding can lead to eNOS uncoupling	GO:0034617
+R-HSA-1497810	Uncoupled eNOS favours the formation of superoxide	GO:0016175
+R-HSA-1497853	Sepiapterin reductase (SPR) is phosphorylated by Ca2+/calmodulin-dependent protein kinase II	GO:0004692
+R-HSA-1497869	Salvage - Sepiapterin is reduced to q-BH2	GO:0004757
+R-HSA-1500781	Fgd1 reactivates F420	GO:0016614
+R-HSA-1500804	Peroxynitrite is reduced by AhpE	GO:0051920
+R-HSA-1500817	Glutathione is taken up by the bacterium	GO:1904680
+R-HSA-1504190	DVL is ubiquitinated by CUL3:KLHL12:RBX1	GO:0061630
+R-HSA-1504193	Ubiquitinated DVL is degraded by the proteasome	GO:0004175
+R-HSA-1524186	Phosphorylation of PLCgamma by PDGFR	GO:0004713
+R-HSA-1549526	Phosphorylation of SMAD2,3 by Activin:Activin Receptor	GO:0004674
+R-HSA-1549564	PPTN11 dephosphorylates SPRY2	GO:0004725
+R-HSA-1562603	BfrB stores iron	GO:0004322
+R-HSA-1562604	BfrA stores iron	GO:0004322
+R-HSA-1562626	Ferritin Complex oxidises 4Fe2+ to Fe(3+)O(OH)	GO:0004322
+R-HSA-1564112	Collagen type VI degradation by MMP2,9,11	GO:0004222
+R-HSA-1564117	Collagen type XIV degradation by MMP9,13	GO:0004222
+R-HSA-1564120	Collagen type VII degradation by MMP1,2,3	GO:0004222
+R-HSA-1564142	Collagen type IV degradation by MMP2,3,4,9,10,12	GO:0004222
+R-HSA-1564143	Collagen type X degradation by MMP1,2	GO:0004222
+R-HSA-1564164	Collagen type V degradation by MMP2,9,10	GO:0004222
+R-HSA-1564169	Collagen type VIII degradation by MMP1	GO:0004222
+R-HSA-1564179	Collagen type XI degradation by MMP1,2,3,9	GO:0004222
+R-HSA-1564184	Collagen type IX degradation by MMP3,13	GO:0004222
+R-HSA-156526	CYP1A2,3A4,3A5,2A13 oxidise AFB1 to AFXBO	GO:0004497
+R-HSA-156673	Regulation of KIF23 (MKLP1) by phosphorylation	GO:0004674
+R-HSA-156678	Activation of Cdc25C	GO:0004674
+R-HSA-156682	PLK1 phosphorylates NUDC	GO:0004674
+R-HSA-1566962	Elastin degradation by elastin-degrading extracellular proteinases	GO:0004252
+R-HSA-1566979	Laminin-332 degradation by laminin-322 degrading extracellular proteinases	GO:0004252
+R-HSA-1566981	Fibronectin degradation by MMP1, 3, 7, 12, 13, 19, CTSS	GO:0004252
+R-HSA-156699	Inactivation of Wee1 kinase	GO:0004674
+R-HSA-156723	Regulation of KIF20A (MKL2) by phosphorylation	GO:0004674
+R-HSA-156832	INF-gamma induced phosphorylation of L13a	GO:0004672
+R-HSA-156909	eEF1A complexes with GTP	GO:0019001
+R-HSA-156912	Peptide transfer from P-site tRNA to the A-site tRNA	GO:0000048
+R-HSA-156913	Regeneration of eEF1A:GTP by eEF1B activity	GO:0005085
+R-HSA-156923	Hydrolysis of eEF1A:GTP	GO:0003924
+R-HSA-157353	NEXT1 is cleaved to produce NICD1	GO:0004190
+R-HSA-157629	NOTCH2-ligand complex is cleaved to produce NEXT2	GO:0008237
+R-HSA-157632	Complex of NOTCH1 with its ligand is cleaved to produce NEXT1	GO:0008237
+R-HSA-157640	NEXT2 is cleaved to produce NICD2	GO:0004190
+R-HSA-158137	factor VIII:von Willibrand factor multimer -> factor VIIIa + factor VIIIa B A3 acidic polypeptide + von Willibrand factor multimer	GO:0004252
+R-HSA-158164	factor X -> factor Xa + factor X activation peptide (VIIIa:IXa catalyst)	GO:0004252
+R-HSA-158300	factor XI:platelet glycoprotein (GP) Ib:IX:V complex -> factor XIa:platelet glycoprotein (GP) Ib:IX:V complex (XIIa catalyst)	GO:0004252
+R-HSA-158313	factor XII -> factor XIIa	GO:0004252
+R-HSA-158333	factor IX -> factor IXa + factor IX activation peptide (factor XIa catalyst)	GO:0004252
+R-HSA-158419	factor XI:platelet glycoprotein (GP) Ib:IX:V complex -> factor XIa:platelet glycoprotein (GP) Ib:IX:V complex (thrombin catalyst)	GO:0004252
+R-HSA-158468	SULT1A1 dimer sulfonates PARA to PARA-SO4	GO:0004062
+R-HSA-158546	UGTs glucuronate APAP to APAP-GlcA	GO:0015020
+R-HSA-158609	TPMT transfers CH3 from AdoMet to 6MP	GO:0008119
+R-HSA-158744	crosslinked fibrin multimer:tissue plasminogen activator (two-chain):plasminogen -> crosslinked fibrin multimer:tissue plasminogen activator (two-chain) + plasmin	GO:0004252
+R-HSA-158747	crosslinked fibrin multimer:tissue plasminogen activator (one-chain) -> crosslinked fibrin multimer:tissue plasminogen activator (two-chain)	GO:0004252
+R-HSA-158750	crosslinked fibrin multimer:tissue plasminogen activator (one-chain):plasminogen -> crosslinked fibrin multimer:tissue plasminogen activator (one-chain) + plasmin	GO:0004252
+R-HSA-158766	fibrin multimer, crosslinked -> fibrin digestion products (plasmin)	GO:0004252
+R-HSA-158795	fibrin multimer, crosslinked:tissue plasminogen activator (one-chain) + plasminogen activator inhibitor 1 -> fibrin multimer, crosslinked:tissue plasminogen activator (one-chain):plasminogen activator inhibitor 1	GO:0004867
+R-HSA-158800	fibrin multimer, crosslinked:tissue plasminogen activator (two-chain) + plasminogen activator inhibitor 1 -> fibrin multimer, crosslinked:tissue plasminogen activator (two-chain):plasminogen activator inhibitor 1	GO:0004867
+R-HSA-158832	The acetyl group from acetyl-CoA is transferred to NAT2	GO:0019707
+R-HSA-158849	Phenol can form a sulfate conjugate	GO:0004062
+R-HSA-158860	SULT1A1 dimer sulfonates NHABP	GO:0004062
+R-HSA-158893	alpha-2-antiplasmin + plasmin -> alpha-2-antiplasmin:plasmin	GO:0004867
+R-HSA-158925	plasminogen:histidine-rich glycoprotein -> plasmin + histidine-rich glycoprotein (uPA [two-chain] catalyst)	GO:0004252
+R-HSA-158942	urokinase plasminogen activator (one-chain):uPAR -> urokinase plasminogen activator (two-chain):uPAR	GO:0004252
+R-HSA-158982	plasminogen:histidine-rich glycoprotein -> plasmin + histidine-rich glycoprotein (uPA [one-chain] catalyst)	GO:0004252
+R-HSA-159001	urokinase plasminogen activator (two-chain):uPAR + plasminogen activator inhibitor 2 (PAI-2) -> PAI-2:urokinase plasminogen activator (two-chain):uPAR	GO:0004867
+R-HSA-159005	urokinase plasminogen activator (two-chain):uPAR + plasminogen activator inhibitor 1 (PAI-1) -> PAI-1:urokinase plasminogen activator (two-chain):uPAR	GO:0004867
+R-HSA-159101	NXF1:NXT1 (TAP:p15) binds capped mRNA:CBC:EJC:TREX (minus DDX39B)	GO:0016887
+R-HSA-159179	UGT1A4 transfers GlcA from UDP-GlcA to BMG to form BDG	GO:0015020
+R-HSA-159194	UGT1A4 transfers GlcA from UDP-GlcA to BIL to form BMG	GO:0015020
+R-HSA-1592233	p38 MAPK phosphorylates PPARGC1A	GO:0004674
+R-HSA-1592244	AMPK phosphorylates PPARGC1A	GO:0004679
+R-HSA-1592270	NID1 degradation by MMP1, 9, 12, ELANE	GO:0004252
+R-HSA-1592278	Autocatalytic activation of proMMP2	GO:0004252
+R-HSA-1592297	Full activation of MMP1	GO:0004252
+R-HSA-1592310	Aggrecan degradation by ADAMTSs	GO:0004222
+R-HSA-1592314	HSPG2 (perlecan) degradation by MMP3, plasmin, (MMP12)	GO:0004252
+R-HSA-1592316	Initial activation of proMMP1	GO:0004252
+R-HSA-1592362	Activation of proMMP7 by MMP3	GO:0004252
+R-HSA-1592371	Initial activation of proMMP3	GO:0004252
+R-HSA-1592398	Activation of proMMP8	GO:0004252
+R-HSA-1592436	Initial activation of proMMP9 by MMPs	GO:0004252
+R-HSA-159358	SULT1A3,4 dimers sulfate DA to DAOS	GO:0004062
+R-HSA-159425	Cytosolic cholate and chenodeoxycholate are conjugated with Coenzyme A (SLC27A5 BACS)	GO:0004467
+R-HSA-159431	Cytosolic chenodeoxycholoyl-CoA or choloyl-CoA are conjugated with glycine or taurine	GO:0016746
+R-HSA-159443	benzoate + Coenzyme A + ATP => benzoyl-CoA + AMP + pyrophosphate	GO:0016405
+R-HSA-159566	benzoyl-CoA + glycine => benzoyl glycine (hippuric acid) + Coenzyme A	GO:0047962
+R-HSA-159567	ACSM2B-like proteins transform ST to ST-CoA	GO:0016405
+R-HSA-159574	GLYAT-like proteins transfer glycine to ST-CoA to form SUA	GO:0047962
+R-HSA-159728	Furin cleaves pro-prothrombin to prothrombin	GO:0004252
+R-HSA-159733	Furin cleaves pro-factor X to factor X	GO:0004252
+R-HSA-159752	GGCX gamma-carboxylates PROS1(25-676) (pro-protein S)	GO:0008488
+R-HSA-159761	GGCX gamma-carboxylates F7(21-466) (pro-factor VII)	GO:0008488
+R-HSA-159771	Furin cleaves pro-protein C to protein C	GO:0004252
+R-HSA-159773	Furin cleaves pro-protein S to protein S	GO:0004252
