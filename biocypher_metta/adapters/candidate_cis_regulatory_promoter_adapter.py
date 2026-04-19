@@ -125,8 +125,7 @@ class PromotercCREAdapter(Adapter):
                     except (ValueError, IndexError):
                         distance = "NA"
                 
-                # Use SO:0000167 for promoter (Sequence Ontology term)
-                element_id = f"SO:0000167:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{chrom}_{start}_{end}"
                 self.accession_to_promoter[accession] = {
                     'chrom': chrom,
                     'start': start,

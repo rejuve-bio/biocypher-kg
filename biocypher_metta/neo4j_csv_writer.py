@@ -8,8 +8,8 @@ from pathlib import Path
 from biocypher_metta import BaseWriter
 
 class Neo4jCSVWriter(BaseWriter):
-    def __init__(self, schema_config, biocypher_config, output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.csv_delimiter = '|'
         self.array_delimiter = ';'
         self.translation_table = str.maketrans({
@@ -122,18 +122,17 @@ class Neo4jCSVWriter(BaseWriter):
 
     def preprocess_id(self, prev_id, label=None):
         """
-        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        Clean ID, preserving CURIE prefixes for ontology terms or when include_curie is True.
         """
         prev_id = str(prev_id)
 
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
 
-            if label and self._is_ontology_label(label):
+            if (label and self._is_ontology_label(label)) or self.include_curie:
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                # For non-ontology terms, return the local ID part without prefix
                 return local_id.strip().replace(' ', '_').upper()
 
         return prev_id.strip().replace(' ', '_').upper()

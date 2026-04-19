@@ -111,11 +111,11 @@ rna_central:
 
 dgv:
   name: Database of Genomic Variants
-  url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2020-02-25.txt
+  url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
 
 epd:
   name: Eukaryotic Promoter Database
-  url: https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
+  url: https://epd.expasy.org/ftp/epdnew/H_sapiens/current/Hs_EPDnew.bed
 
 dbvar:
   name: NCBI dbVar

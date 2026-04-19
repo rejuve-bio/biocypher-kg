@@ -81,15 +81,14 @@ class EPDAdapter(Adapter):
         """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
-        with gzip.open(self.filepath, 'rt') as f:
+        opener = gzip.open if self.filepath.endswith('.gz') else open
+        with opener(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
-                #CURIE ID Format
-                # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
-                promoter_id = f"SO:{build_regulatory_region_id(chr, coord_start, coord_end)}"
+                promoter_id = f"EPD:{build_regulatory_region_id(chr, coord_start, coord_end)}"
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
                     props = {}
@@ -111,7 +110,8 @@ class EPDAdapter(Adapter):
         """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
-        with gzip.open(self.filepath, 'rt') as f:
+        opener = gzip.open if self.filepath.endswith('.gz') else open
+        with opener(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             not_found_symbols = 0
             for line in reader:
@@ -136,14 +136,10 @@ class EPDAdapter(Adapter):
                 # if ensembl_gene_id is None:
                 #     not_found_symbols += 1
                     # print(f"gene_id: {gene_id}  // {ensembl_gene_id}   --->  {self.taxon_id}")                       
-                #CURIE ID Format
-                # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
                 ensembl_gene_id = f"{ensembl_gene_id}"
-                
+
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
-                    #CURIE ID Format
-                    # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
-                    promoter_id = f"SO:{build_regulatory_region_id(chr, coord_start, coord_end)}"
+                    promoter_id = f"EPD:{build_regulatory_region_id(chr, coord_start, coord_end)}"
                     props = {}
                     if self.write_properties:
                         if self.add_provenance:
@@ -151,12 +147,3 @@ class EPDAdapter(Adapter):
                             props['source_url'] = self.source_url
 
                     yield promoter_id, ensembl_gene_id, self.label, props
-            # print(f"not found symbols: {not_found_symbols}")
-                    props = {}
-                    if self.write_properties:
-                        if self.add_provenance:
-                            props['source'] = self.source
-                            props['source_url'] = self.source_url
-
-                    yield promoter_id, ensembl_gene_id, self.label, props
-            # print(f"not found symbols: {not_found_symbols}")

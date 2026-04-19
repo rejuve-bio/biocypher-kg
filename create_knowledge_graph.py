@@ -2,6 +2,7 @@
 Knowledge graph generation through BioCypher script
 """
 
+import time
 from datetime import date
 from pathlib import Path
 
@@ -50,36 +51,42 @@ def load_species_config(config_path: str = "config/species_config.yaml") -> dict
 
 
 # Function to choose the writer class based on user input
-def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path):
+def get_writer(writer_type: str, output_dir: Path, schema_config_path: Path, include_curie: bool = False):
     if writer_type.lower() == 'metta':
         return MeTTaWriter(schema_config=str(schema_config_path),
                            biocypher_config="config/biocypher_config.yaml",
-                           output_dir=output_dir)
+                           output_dir=output_dir,
+                           include_curie=include_curie)
     elif writer_type.lower() == 'prolog':
-        return PrologWriter(schema_config=str(schema_config_path), 
+        return PrologWriter(schema_config=str(schema_config_path),
                             biocypher_config="config/biocypher_config.yaml",
-                            output_dir=output_dir)
+                            output_dir=output_dir,
+                            include_curie=include_curie)
     elif writer_type.lower() == 'neo4j':
-        return Neo4jCSVWriter(schema_config=str(schema_config_path), 
+        return Neo4jCSVWriter(schema_config=str(schema_config_path),
                                biocypher_config="config/biocypher_config.yaml",
-                               output_dir=output_dir)
+                               output_dir=output_dir,
+                               include_curie=include_curie)
     elif writer_type.lower() == 'parquet':
         return ParquetWriter(
-            schema_config=str(schema_config_path), 
+            schema_config=str(schema_config_path),
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir,
             buffer_size=10000,
-            overwrite=True
+            overwrite=True,
+            include_curie=include_curie,
         )
     elif writer_type.lower() == 'kgx':
         return KGXWriter(schema_config=str(schema_config_path),
                           biocypher_config="config/biocypher_config.yaml",
-                          output_dir=output_dir)
+                          output_dir=output_dir,
+                          include_curie=include_curie)
     elif writer_type.lower() == 'networkx':
         return NetworkXWriter(
             schema_config=str(schema_config_path),
             biocypher_config="config/biocypher_config.yaml",
-            output_dir=output_dir
+            output_dir=output_dir,
+            include_curie=include_curie,
         )
     else:
         raise ValueError(f"Unknown writer type: {writer_type}")
@@ -201,6 +208,16 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
     return graph_info
 
 
+def _fmt_elapsed(seconds: float) -> str:
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    m, s = divmod(seconds, 60)
+    if m < 60:
+        return f"{int(m)}m {s:.1f}s"
+    h, m = divmod(m, 60)
+    return f"{int(h)}h {int(m)}m {s:.1f}s"
+
+
 # ── MODIFIED: process_adapters now accepts and updates a CheckpointManager ──
 def process_adapters(
     adapters_dict,
@@ -245,6 +262,8 @@ def process_adapters(
         checkpoint_manager.completed_adapters if checkpoint_manager else []
     )
 
+    total_start = time.time()
+
     for c in adapters_dict:
         # ── Skip already-completed adapters ─────────────────────────
         if c in completed_adapters:
@@ -252,7 +271,8 @@ def process_adapters(
             continue
 
         writer.clear_counts()
-        logger.info(f"Running adapter: {c}")
+        logger.info(f"\n{'='*60}\n  Running adapter: {c}\n{'='*60}")
+        adapter_start = time.time()
 
         adapter_config = adapters_dict[c]["adapter"]
         adapter_module = importlib.import_module(adapter_config["module"])
@@ -320,7 +340,7 @@ def process_adapters(
                         datasets_dict[dataset_name]['edges'].add(output_label)
 
         except Exception as exc:
-            logger.error(f"Adapter '{c}' failed: {exc}")
+            logger.error(f"Adapter '{c}' failed after {_fmt_elapsed(time.time() - adapter_start)}: {exc}")
             # ── Save checkpoint with the failed adapter name ─────────
             if checkpoint_manager is not None:
                 checkpoint_manager.save(
@@ -338,6 +358,7 @@ def process_adapters(
 
         # ── Mark adapter as completed and save checkpoint ────────────
         completed_adapters.append(c)
+        logger.info(f"Adapter '{c}' completed in {_fmt_elapsed(time.time() - adapter_start)}")
         if checkpoint_manager is not None:
             checkpoint_manager.save(
                 completed_adapters=completed_adapters,
@@ -347,8 +368,9 @@ def process_adapters(
                 datasets_dict=datasets_dict,
                 failed_adapter=None,
             )
-            logger.info(f"Checkpoint updated after adapter: {c}")
+            # logger.info(f"Checkpoint updated after adapter: {c}")
 
+    logger.info(f"All adapters completed in {_fmt_elapsed(time.time() - total_start)}")
     return nodes_count, nodes_props, edges_count, datasets_dict
 # ────────────────────────────────────────────────────────────────────────────
 
@@ -399,6 +421,13 @@ def _load_dbsnp(mapping_path: str, is_sample: bool = False) -> tuple:
     else:
         # User passed a directory — look for dbsnp_mapping.pkl inside it
         cache_path = input_path
+        mapping_file = cache_path / 'dbsnp_mapping.pkl'
+
+    # Accept either a .pkl file path or a directory path
+    if cache_path.suffix == '.pkl' or (cache_path.exists() and cache_path.is_file()):
+        mapping_file = cache_path
+        cache_path = cache_path.parent
+    else:
         mapping_file = cache_path / 'dbsnp_mapping.pkl'
 
     if not cache_path.exists() or not cache_path.is_dir():
@@ -553,8 +582,13 @@ def main(
     dbsnp_mapping_path: Optional[str] = typer.Option(
         None,
         "--dbsnp-mapping-path",
-        "--dbsnp-cache-dir",
         help="Path to dbSNP mapping data: either dbsnp_mapping.pkl or its containing directory (manual mode only, optional)"
+    ),
+    dbsnp_cache_dir: Optional[str] = typer.Option(
+        None,
+        "--dbsnp-cache-dir",
+        hidden=True,
+        help="Deprecated: use --dbsnp-mapping-path instead",
     ),
     schema_config: Optional[Path] = typer.Option(
         None,
@@ -568,6 +602,11 @@ def main(
     writer_type: str = typer.Option(default="metta", help="Choose writer type: metta, prolog, neo4j, parquet, networkx, KGX"),
     write_properties: bool = typer.Option(True, help="Write properties to nodes and edges"),
     add_provenance: bool = typer.Option(True, help="Add provenance to nodes and edges"),
+    include_curie: bool = typer.Option(
+        False,
+        "--include-curie/--no-curie",
+        help="Keep CURIE namespace prefixes in node/edge IDs; by default these IDs are written without prefixes, though some ontology labels may still retain them.",
+    ),
     buffer_size: int = typer.Option(10000, help="Buffer size for Parquet writer"),
     overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
     include_adapters: Optional[List[str]] = typer.Option(
@@ -616,6 +655,19 @@ def main(
       --restart         Delete any checkpoint and start over without prompting.
     """
 
+    # --dbsnp-cache-dir is a deprecated alias for --dbsnp-mapping-path
+    if dbsnp_cache_dir is not None:
+        if dbsnp_mapping_path is None:
+            logger.warning(
+                "--dbsnp-cache-dir is deprecated and will be removed in a future release. "
+                "Use --dbsnp-mapping-path instead."
+            )
+            dbsnp_mapping_path = dbsnp_cache_dir
+        else:
+            logger.warning(
+                "--dbsnp-cache-dir is deprecated; ignoring it because --dbsnp-mapping-path was also provided."
+            )
+
     # Determine which mode we're in
     manual_mode = all([adapters_config, schema_config])
     species_mode = species is not None
@@ -660,7 +712,7 @@ def main(
                     # merge species schema with primer schema ---> species schemas with same name prevails over primer schemas
                     sp_schema_config = merge_schemas('config/primer_schema_config.yaml', sp_schema_config)
                     sp_is_sample = (dataset == 'sample')
-                    sp_dbsnp_mapping_path = config.get('dbsnp_mapping_path', '') or config.get('dbsnp_cache_dir', '')
+                    sp_dbsnp_mapping_path = config.get('dbsnp_mapping_path', '')                    
                     if not sp_dbsnp_mapping_path:
                         if sp_is_sample:
                             sp_dbsnp_mapping_path = 'aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl'
@@ -670,7 +722,7 @@ def main(
                     # Load dbSNP mappings via DBSNPProcessor
                     sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(sp_dbsnp_mapping_path, is_sample=sp_is_sample)
 
-                    bc = get_writer(writer_type, sp_output_dir, sp_schema_config)
+                    bc = get_writer(writer_type, sp_output_dir, sp_schema_config, include_curie=include_curie)
                     logger.info(f"Using {writer_type} writer for {sp}")
 
                     if writer_type == 'parquet':
@@ -768,12 +820,16 @@ def main(
                 schema_config = merge_schemas('config/primer_schema_config.yaml', schema_config)
                 is_merged_schema = True
                 temp_schema_to_cleanup = schema_config  # to be deleted after successful completion
-                dbsnp_mapping_path = config.get('dbsnp_mapping_path', '') or config.get('dbsnp_cache_dir', '')
-
+                dbsnp_mapping_path = config.get('dbsnp_mapping_path', '')
         # Load dbSNP mappings via DBSNPProcessor
         # Determine sample vs full, and resolve dbSNP mapping path if not set
         if not species_mode:
-            is_sample_config = 'sample' in str(adapters_config).lower()
+            # If the user explicitly provided a dbsnp path, derive is_sample from that path.
+            # Otherwise fall back to the adapters config name.
+            if dbsnp_mapping_path:
+                is_sample_config = 'sample' in str(dbsnp_mapping_path).lower()
+            else:
+                is_sample_config = 'sample' in str(adapters_config).lower()
         else:
             is_sample_config = (dataset == 'sample')
 
@@ -805,7 +861,7 @@ def main(
                     temp_schema_to_cleanup = schema_config
        
 
-        bc = get_writer(writer_type, output_dir, schema_config)
+        bc = get_writer(writer_type, output_dir, schema_config, include_curie=include_curie)
         logger.info(f"Using {writer_type} writer")
 
         if writer_type == 'parquet':

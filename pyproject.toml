@@ -46,6 +46,7 @@ dependencies = [
     "matplotlib-inline==0.2.1",
     "mdurl==0.1.2",
     "more-itertools==10.8.0",
+    "ncls>=0.0.70",
     "neo4j==4.4.13",
     "neo4j-utils==0.0.7",
     "networkx==3.4.2",

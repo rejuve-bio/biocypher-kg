@@ -7,8 +7,8 @@ from typing import Optional, Dict, List, Tuple, Union
 from biocypher_metta import BaseWriter
 
 class NetworkXWriter(BaseWriter):
-    def __init__(self, schema_config, biocypher_config, output_dir, directed=True):
-        super().__init__(schema_config, biocypher_config, output_dir)
+    def __init__(self, schema_config, biocypher_config, output_dir, directed=True, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.directed = directed
         self.graph = nx.DiGraph() if directed else nx.Graph()
         self.node_id_counter = 0
@@ -115,8 +115,8 @@ class NetworkXWriter(BaseWriter):
 
         if ':' in id_str:
             prefix, local_id = id_str.split(':', 1)
-            if label and self._is_ontology_label(label):
-                # Ontology terms: keep prefix (e.g., "GO:0005515" -> "go_0005515")
+            if (label and self._is_ontology_label(label)) or self.include_curie:
+                # Ontology terms or include_curie mode: keep prefix
                 id_str = f"{prefix}_{local_id}".lower().replace(' ', '_')
             else:
                 # Non-ontology terms: strip prefix (e.g., "UniProtKB:P12345" -> "p12345")

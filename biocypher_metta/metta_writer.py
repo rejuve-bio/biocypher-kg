@@ -11,8 +11,8 @@ from biocypher_metta import BaseWriter
 class MeTTaWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config,
-                 output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+                 output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
 
         # Initialize edge node types for tuple handling
         self.edge_node_types = {}
@@ -138,20 +138,19 @@ class MeTTaWriter(BaseWriter):
 
     def preprocess_id(self, prev_id, label=None):
         """
-        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        Clean ID, preserving CURIE prefixes for ontology terms or when include_curie is True.
         """
         prev_id = str(prev_id)
-        
+
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            
-            if label and self._is_ontology_label(label):
+
+            if (label and self._is_ontology_label(label)) or self.include_curie:
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                # For non-ontology terms, just return the local ID part without prefix
                 return local_id.strip().replace(' ', '_').upper()
-        
+
         return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
@@ -378,8 +377,8 @@ class MeTTaWriter(BaseWriter):
         ):
             return raw
 
-        # Strip CURIE prefixes from property values
-        if ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
+        # Strip CURIE prefixes from property values (unless include_curie is set)
+        if not self.include_curie and ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
             _, local_part = raw.split(':', 1)
             raw = local_part.strip()
 
