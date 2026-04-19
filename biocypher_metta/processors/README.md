@@ -57,53 +57,78 @@ symbol = hgnc.get_symbol_from_hgnc_id('HGNC:11998')
 
 ### 2. DBSNPProcessor
 
-Maps between dbSNP rsIDs and genomic positions (chr:pos).
+Maps between dbSNP rsIDs and genomic positions (chr:pos). Used by 7 adapters:
+ABC, CADD, RefSeqClosestGene (forward lookup + referential-integrity filter),
+Roadmap DHS/Chromatin/H3 (forward lookup), and TopLD (reverse lookup).
 
-**Data Source:** dbSNP VCF (~30 GB download for the full release)
-**Update Strategy:** Manual only (no auto-updates) — see `scripts/update_dbsnp.py`
-**Mappings:**
-- rsID → genomic position (`rsid_to_pos`)
-- Genomic position → rsID (via index on `rsid_to_pos(chr, pos)` — no separate table)
+**Data source:** dbSNP VCF (~30 GB download for the full release)
+**Update strategy:** Manual — build once every ~3 months via `scripts/update_dbsnp.py`
+**Backend:** SQLite (`dbsnp_mapping.db`), with legacy pickle fallback for old caches
+**Schema:** Single `rsid_to_pos(rsid, chr, pos)` table with `idx_pos(chr, pos)` for reverse lookup
+**Chromosome format:** UCSC (`chr1`, `chrX`, `chrM`) — RefSeq accessions in the VCF are normalized on read
 
-**Two variants are supported:**
+#### Three variants
 
-| Variant | Filter | Entries | DB size |
-|---------|--------|---------|---------|
-| `common` | MAF ≥ 1% in any `FREQ` population | ~15-25M | ~1-2 GB |
-| `full`   | All rsIDs with chr + pos           | ~800M   | ~35-50 GB |
+| Variant | What's in it | Size | Purpose |
+|---------|--------------|------|---------|
+| `sample` | Adapter-driven: exactly the rsIDs + positions referenced by sample adapter inputs | ~100-200 KB (committed to repo) | CI/testing; `--dataset sample` works without any downloads |
+| `common` | Variants with MAF ≥ 1% in any `FREQ` population | ~5 GB | Beta / dev — the primary artifact. Rare rsIDs are filtered out by design |
+| `full`   | All rsIDs with chr + pos | ~35-50 GB | Production with rare-variant coverage |
 
-Generate both by running the updater twice into a shared root:
+**Filter-is-the-feature:** under `common`, adapters that look up rare rsIDs will silently drop those rows (via `except KeyError: continue`). This is intentional — it's the mechanism that scales the KG down for beta development.
 
-```bash
-# Common variants only (recommended for development)
-python3 scripts/update_dbsnp.py \
-    --cache-dir /data/dbsnp/common --common-only --temp-dir /tmp
+#### Layout
 
-# Full dataset (run when needed)
-python3 scripts/update_dbsnp.py \
-    --cache-dir /data/dbsnp/full --temp-dir /tmp
 ```
-
-Expected layout:
-```
-/data/dbsnp/
+<cache_root>/
 ├── common/
 │   ├── dbsnp_mapping.db
 │   └── dbsnp_version.json
-└── full/
+└── full/                        (only if you built it)
     ├── dbsnp_mapping.db
     └── dbsnp_version.json
 ```
 
-Select the variant at KG-build time:
+#### Build pipeline
+
 ```bash
+# Common variants (primary artifact for beta/dev)
+python3 scripts/update_dbsnp.py \
+    --cache-dir /data/dbsnp/common --common-only --temp-dir /tmp
+
+# Full dataset (only when needed)
+python3 scripts/update_dbsnp.py \
+    --cache-dir /data/dbsnp/full --temp-dir /tmp
+```
+
+Flags:
+- `--cache-dir` (required) — output directory for `dbsnp_mapping.db` + `dbsnp_version.json`
+- `--common-only` — apply the MAF ≥ 1% filter
+- `--temp-dir` — where to download the ~30 GB VCF (defaults to `--cache-dir`; use a different disk if space is tight)
+- `--keep-vcf` — preserve the downloaded VCF after processing (for debugging / re-inspection)
+- `--force` — rebuild even if the 90-day refresh interval hasn't elapsed
+
+#### Run pipeline
+
+```bash
+# Sample — no dbSNP flags needed (uses the committed sample cache)
+python3 create_knowledge_graph.py --species hsa --dataset sample --output-dir output/hsa_sample
+
+# Dev / beta — common variant
 python3 create_knowledge_graph.py --species hsa --dataset full \
     --dbsnp-cache-root /data/dbsnp --dbsnp-variant common \
     --output-dir output/hsa
-```
-Or set `dbsnp_cache_root` + `dbsnp_variant` in `config/species_config.yaml`.
 
-**Usage (direct processor):**
+# Production with full coverage
+python3 create_knowledge_graph.py --species hsa --dataset full \
+    --dbsnp-cache-root /data/dbsnp --dbsnp-variant full \
+    --output-dir output/hsa
+```
+
+Or set `dbsnp_cache_root` + `dbsnp_variant` in `config/species_config.yaml` to avoid retyping.
+
+#### Usage (direct processor)
+
 ```python
 from biocypher_metta.processors import DBSNPProcessor
 
@@ -116,6 +141,73 @@ position = dbsnp.get_position('rs123456')
 # {'chr': 'chr1', 'pos': 12345}
 
 rsid_to_pos, pos_to_rsid = dbsnp.get_dict_wrappers()
+```
+
+#### Regenerating the sample cache
+
+The repo ships with a committed sample cache at `aux_files/hsa/sample_dbsnp/dbsnp_mapping.db`
+(~100-200 KB). It's built adapter-driven from an existing `common` DB, so it contains exactly
+the rsIDs + positions referenced by sample adapter inputs — nothing more.
+
+**You only need to regenerate it if you change sample adapter input files.** Most users never do.
+
+```bash
+# Prerequisite: a common DB exists somewhere
+python3 scripts/update_dbsnp.py --cache-dir /data/dbsnp/common --common-only --temp-dir /tmp
+
+# Rebuild the sample DB
+python3 scripts/build_sample_dbsnp.py \
+    --source /data/dbsnp/common \
+    --adapters-config config/hsa/hsa_adapters_config_sample.yaml \
+    --output aux_files/hsa/sample_dbsnp
+
+# Commit
+git add aux_files/hsa/sample_dbsnp/dbsnp_mapping.db aux_files/hsa/sample_dbsnp/dbsnp_version.json
+```
+
+The builder parses the sample adapters config, finds every adapter that consumes dbSNP lookups,
+reads their sample CSVs to extract referenced rsIDs and `(chr, pos)` pairs, then queries the
+source DB for each one. Any miss is logged but non-fatal (consistent with `common`'s filter semantics).
+
+#### Migrating a legacy common DB
+
+Pre-fix builds of `update_dbsnp.py` stored raw RefSeq chromosome names (`NC_000016.10`) instead
+of UCSC names (`chr16`). The one-shot migration rewrites in place — no re-download needed:
+
+```bash
+python3 scripts/migrate_dbsnp_chroms.py \
+    --db /data/dbsnp/common/dbsnp_mapping.db
+```
+
+Takes 10-15 min for a 5 GB DB. Drops any alt / decoy contigs, rebuilds the `idx_pos` index,
+and (by default) `VACUUM`s to reclaim space.
+
+#### End-to-end flow
+
+```
+            ┌─────────────────────────────────────────┐
+            │  dbSNP VCF  (ftp.ncbi.nih.gov, ~30 GB)  │
+            └─────────────┬───────────────────────────┘
+                          │
+          scripts/update_dbsnp.py    (download + filter + write SQLite)
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+     common DB        full DB      (choose one)
+     ~5 GB            ~35-50 GB
+          │               │
+          └───────┬───────┘
+                  │
+  scripts/build_sample_dbsnp.py    (auto-extract refs, query source)
+                  │
+                  ▼
+     committed sample DB in repo
+     aux_files/hsa/sample_dbsnp/dbsnp_mapping.db
+
+     create_knowledge_graph.py    (resolve variant, load DB, feed adapters)
+       --dataset sample                              → sample DB
+       --dataset full --dbsnp-variant common         → common DB
+       --dataset full --dbsnp-variant full           → full DB
 ```
 
 ### 3. EntrezEnsemblProcessor

@@ -4,17 +4,32 @@
 #
 # dbsnp_cache_root: Root directory containing 'common/' and/or 'full/' subdirs
 #                   produced by scripts/update_dbsnp.py.
-#   - For sample configs: this IS the cache dir (no variant subdir needed).
-#     Defaults to 'aux_files/hsa/sample_dbsnp' if left empty.
-#   - For full/non-sample configs: leave empty and set at runtime via
-#     --dbsnp-cache-root, OR set it here to a persistent location.
-#   - Leave empty ("") for species that don't use dbSNP data.
+#   - For 'sample' datasets: this IS the cache dir (no variant subdir needed).
+#     Defaults to 'aux_files/hsa/sample_dbsnp' when left empty — the committed
+#     ~150 KB sample cache ships with the repo, so sample runs need no setup.
+#   - For 'full' (or any non-sample) datasets: the user MUST provide a path,
+#     either here or via --dbsnp-cache-root. No implicit fallback — the
+#     pipeline exits with a clear error if unset.
+#   - Leave empty ("") for species that don't use dbSNP data (dmel, etc.).
+#
+#   Example (set this to a persistent location on your machine/server):
+#       dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
+#   Directory layout expected under that root:
+#       <root>/common/dbsnp_mapping.db       (built with --common-only)
+#       <root>/full/dbsnp_mapping.db         (built without --common-only)
 #
 # dbsnp_variant: Which variant subset to load under dbsnp_cache_root.
-#   - "common": ~15-25M common variants (MAF >= 1% in any population), ~1-2 GB
-#   - "full":   ~800M rsIDs, ~35-50 GB
+#   - "common": ~15-25M common variants (MAF >= 1% in any population), ~1-2 GB.
+#               Recommended for beta / dev work. Rare rsIDs filter out by design
+#               (this is the intended behavior, not a bug).
+#   - "full":   ~800M rsIDs, ~35-50 GB. Use only when rare-variant coverage is
+#               specifically needed.
 #   - Required for non-sample runs (either here or via --dbsnp-variant).
-#   - Ignored for sample configs.
+#   - Ignored for 'sample' datasets.
+#
+# Generate the DBs with:
+#     python3 scripts/update_dbsnp.py --cache-dir <root>/common --common-only --temp-dir /tmp
+#     python3 scripts/update_dbsnp.py --cache-dir <root>/full   --temp-dir /tmp
 
 
 hsa:
@@ -26,38 +41,46 @@ hsa:
   full:
     adapters_config: config/hsa/hsa_adapters_config.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_cache_root: ""       # set at runtime: --dbsnp-cache-root <path>
-    dbsnp_variant: ""          # set at runtime: --dbsnp-variant common|full
+    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
+    # Example: dbsnp_variant: common   (or "full")
+    dbsnp_cache_root: ""       # REQUIRED: set here, or pass --dbsnp-cache-root <path>
+    dbsnp_variant: ""          # REQUIRED: set here, or pass --dbsnp-variant common|full
 
 dmel:
   sample:
     adapters_config: config/dmel/dmel_adapters_config_sample.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_cache_root: ""
+    dbsnp_cache_root: ""       # dmel doesn't use dbSNP
     dbsnp_variant: ""
   full:
     adapters_config: config/dmel/dmel_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_cache_root: ""
+    dbsnp_cache_root: ""       # dmel doesn't use dbSNP
     dbsnp_variant: ""
 
 cel:
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml
-    dbsnp_cache_root: ""
+    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
+    # Example: dbsnp_variant: common
+    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
     dbsnp_variant: ""
 
 mmo:
   full:
     adapters_config: config/mmo/mmo_adapters_config.yaml
     schema_config: config/mmo/mmo_schema_config.yaml
-    dbsnp_cache_root: ""
+    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
+    # Example: dbsnp_variant: common
+    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
     dbsnp_variant: ""
 
 rno:
   full:
     adapters_config: config/rno/rno_adapters_config.yaml
     schema_config: config/rno/rno_schema_config.yaml
-    dbsnp_cache_root: ""
+    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
+    # Example: dbsnp_variant: common
+    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
     dbsnp_variant: ""

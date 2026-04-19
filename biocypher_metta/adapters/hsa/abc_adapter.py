@@ -51,7 +51,7 @@ class ABCAdapter(Adapter):
                 try:
                     rsid = row[COL_DICT['rsid']]
                     chr = row[COL_DICT['chromosome']]
-                    pos = self.dbsnp_rsid_map[rsid]
+                    pos = self.dbsnp_rsid_map[rsid]["pos"]
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         try:
                             _source = rsid

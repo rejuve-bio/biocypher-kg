@@ -45,6 +45,42 @@ BATCH_SIZE = 500_000  # rows per INSERT batch — keeps memory low
 COMMON_MAF_THRESHOLD = 0.01  # MAF ≥ 1% in any population → "common"
 
 
+# Map GRCh38 RefSeq accessions used by the dbSNP VCF to UCSC-style chromosome
+# names. Adapters (TopLD, etc.) expect UCSC names like "chr16", not "NC_000016.10".
+# Any contig not in this map is skipped (alt contigs, decoys, unlocalized).
+REFSEQ_TO_UCSC = {f"NC_{i:06d}": f"chr{i}" for i in range(1, 23)}
+REFSEQ_TO_UCSC.update({
+    "NC_000023": "chrX",
+    "NC_000024": "chrY",
+    "NC_012920": "chrM",
+})
+
+
+def normalize_chrom(raw: str) -> str:
+    """
+    Convert a VCF chromosome field to UCSC style.
+
+    Accepts:
+      - RefSeq accessions like "NC_000016.10" → "chr16"
+      - UCSC names like "chr16" or "16" → "chr16" (pass-through / add prefix)
+
+    Returns None if the contig isn't a primary chromosome (skips alts/decoys).
+    """
+    if not raw:
+        return None
+    # Already UCSC?
+    if raw.startswith("chr"):
+        return raw
+    # RefSeq accession — strip the ".version" suffix and look up
+    key = raw.split(".", 1)[0]
+    if key in REFSEQ_TO_UCSC:
+        return REFSEQ_TO_UCSC[key]
+    # Plain number / sex chromosome without prefix
+    if raw in {str(i) for i in range(1, 23)} | {"X", "Y", "M", "MT"}:
+        return "chr" + ("M" if raw == "MT" else raw)
+    return None
+
+
 def is_common_variant(info_str: str, threshold: float = COMMON_MAF_THRESHOLD) -> bool:
     """
     Return True if variant has MAF >= threshold in any population
@@ -85,7 +121,8 @@ def is_common_variant(info_str: str, threshold: float = COMMON_MAF_THRESHOLD) ->
 
 def download_and_process_dbsnp(cache_dir: Path, logger: logging.Logger,
                                temp_dir: Path = None,
-                               common_only: bool = False) -> bool:
+                               common_only: bool = False,
+                               keep_vcf: bool = False) -> bool:
     """
     Download and process dbSNP VCF file into a SQLite database.
     Streams rows directly to disk — memory usage stays under ~100 MB.
@@ -96,6 +133,8 @@ def download_and_process_dbsnp(cache_dir: Path, logger: logging.Logger,
         temp_dir: Directory for the ~30 GB VCF download. Defaults to cache_dir.
         common_only: If True, keep only variants with MAF >= 1% in any
                      population (FREQ tag). Reduces ~800M → ~15-25M entries.
+        keep_vcf:    If True, preserve the downloaded VCF file after processing
+                     (useful for debugging / re-inspection). Default False.
 
     Returns:
         True if successful, False otherwise
@@ -144,6 +183,7 @@ def download_and_process_dbsnp(cache_dir: Path, logger: logging.Logger,
 
         total_processed = 0
         kept_count = 0
+        skipped_contig = 0
         batch = []
 
         # VCF columns: CHROM(0) POS(1) ID(2) REF(3) ALT(4) QUAL(5) FILTER(6) INFO(7)
@@ -157,17 +197,24 @@ def download_and_process_dbsnp(cache_dir: Path, logger: logging.Logger,
 
                 total_processed += 1
                 if total_processed % 5_000_000 == 0:
-                    logger.info(f"Processed {total_processed:,} variants, kept {kept_count:,}...")
+                    logger.info(f"Processed {total_processed:,} variants, "
+                                f"kept {kept_count:,}, skipped-contig {skipped_contig:,}...")
 
                 fields = line.split('\t', split_count)
                 if len(fields) < 3:
                     continue
 
-                chrom = fields[0]
+                chrom_raw = fields[0]
                 pos = fields[1]
                 rsid = fields[2]
 
                 if not rsid or rsid == '.' or not pos:
+                    continue
+
+                # Normalize chromosome to UCSC style (chr1, chrX, chrM) — drop alts/decoys
+                chrom = normalize_chrom(chrom_raw)
+                if chrom is None:
+                    skipped_contig += 1
                     continue
 
                 if common_only:
@@ -196,7 +243,8 @@ def download_and_process_dbsnp(cache_dir: Path, logger: logging.Logger,
             conn.commit()
 
         logger.info(f"Processed {total_processed:,} total variants")
-        logger.info(f"Inserted {kept_count:,} rsID mappings into SQLite")
+        logger.info(f"Inserted {kept_count:,} rsID mappings into SQLite "
+                    f"(skipped {skipped_contig:,} alt/decoy contigs)")
 
         # Build indexes after bulk insert (faster than indexing during insert)
         logger.info("Building indexes...")
@@ -244,8 +292,11 @@ def download_and_process_dbsnp(cache_dir: Path, logger: logging.Logger,
 
     finally:
         if vcf_temp and vcf_temp.exists():
-            logger.info("Cleaning up temporary VCF file...")
-            vcf_temp.unlink()
+            if keep_vcf:
+                logger.info(f"Preserving VCF file (--keep-vcf): {vcf_temp}")
+            else:
+                logger.info("Cleaning up temporary VCF file...")
+                vcf_temp.unlink()
 
 
 def setup_logging(log_dir: Path) -> logging.Logger:
@@ -327,6 +378,12 @@ def main():
         help='Keep only common variants (MAF >= 1%% in any FREQ population). '
              'Reduces ~800M → ~15-25M entries, final DB ~1-2 GB.'
     )
+    parser.add_argument(
+        '--keep-vcf',
+        action='store_true',
+        help='Preserve the downloaded VCF after processing (for debugging / '
+             're-inspection). Default: delete it to reclaim ~30 GB.'
+    )
 
     args = parser.parse_args()
 
@@ -372,7 +429,8 @@ def main():
             cache_dir=temp_cache_dir,
             logger=logger,
             temp_dir=temp_dir,
-            common_only=args.common_only
+            common_only=args.common_only,
+            keep_vcf=args.keep_vcf
         )
 
         if not success:
