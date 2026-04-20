@@ -15,6 +15,7 @@ rsid_to_pos table — no separate pos_to_rsid table needed.
 import sqlite3
 import pickle
 import gzip
+import time
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -50,11 +51,34 @@ class DBSNPProcessor:
         self._log_version()
 
     def _load_sqlite(self) -> None:
+        db_size_bytes = self.db_file.stat().st_size if self.db_file.exists() else 0
+        logger.info(
+            f"{self.name}: Opening SQLite cache at {self.db_file}"
+            f" ({self._format_bytes(db_size_bytes)})"
+        )
+
+        started = time.time()
         self._conn = sqlite3.connect(str(self.db_file))
         self._conn.execute("PRAGMA query_only=ON")
         self._backend = 'sqlite'
+        logger.info(f"{self.name}: SQLite connection ready in {time.time() - started:.1f}s")
+
+        info = self._read_version_info()
+        entries = info.get('entries')
+        if entries is not None:
+            logger.info(
+                f"{self.name}: Cache ready with {entries:,} rsIDs"
+                f" (from version metadata) in {time.time() - started:.1f}s"
+            )
+            return
+
+        logger.info(f"{self.name}: Counting rsIDs in SQLite cache. This can take a while for full datasets...")
+        count_started = time.time()
         row = self._conn.execute("SELECT COUNT(*) FROM rsid_to_pos").fetchone()
-        logger.info(f"{self.name}: Loaded SQLite database ({row[0]:,} rsIDs) from {self.db_file}")
+        logger.info(
+            f"{self.name}: Loaded SQLite database ({row[0]:,} rsIDs) from {self.db_file}"
+            f" in {time.time() - count_started:.1f}s"
+        )
 
     def _load_pickle(self) -> None:
         try:
@@ -95,6 +119,18 @@ class DBSNPProcessor:
         except Exception:
             return {}
 
+    @staticmethod
+    def _format_bytes(size_bytes: int) -> str:
+        """Format a byte count for logging."""
+        if size_bytes <= 0:
+            return "0 B"
+        units = ["B", "KB", "MB", "GB", "TB"]
+        size = float(size_bytes)
+        for unit in units:
+            if size < 1024 or unit == units[-1]:
+                return f"{size:.1f} {unit}"
+            size /= 1024
+
     def is_common_only(self) -> Optional[bool]:
         """
         Return True if the loaded cache was built with --common-only,
@@ -103,6 +139,33 @@ class DBSNPProcessor:
         """
         return self._read_version_info().get('common_only')
 
+    @staticmethod
+    def _clean_rsid(raw_rsid: str) -> str:
+        """Return the actual rsID from a possibly malformed SQLite key."""
+        return raw_rsid.split('\t', 1)[0].strip()
+
+    @staticmethod
+    def _malformed_rsid_bounds(rsid: str):
+        """Return an index-friendly key range for malformed rsID rows."""
+        lower = f"{rsid}\t"
+        return lower, f"{lower}\uffff"
+
+    def _lookup_rsid_row(self, rsid: str):
+        """Return SQLite row for an rsID, tolerating legacy malformed full-db keys."""
+        row = self._conn.execute(
+            "SELECT rsid, chr, pos FROM rsid_to_pos WHERE rsid = ?",
+            (rsid,),
+        ).fetchone()
+        if row:
+            return row
+
+        lower, upper = self._malformed_rsid_bounds(rsid)
+        return self._conn.execute(
+            "SELECT rsid, chr, pos FROM rsid_to_pos "
+            "WHERE rsid >= ? AND rsid < ? ORDER BY rsid LIMIT 1",
+            (lower, upper),
+        ).fetchone()
+
     # --- Public query API ---
 
     def get_position(self, rsid: str) -> Optional[Dict[str, Any]]:
@@ -110,11 +173,9 @@ class DBSNPProcessor:
         self._ensure_loaded()
 
         if self._backend == 'sqlite':
-            row = self._conn.execute(
-                "SELECT chr, pos FROM rsid_to_pos WHERE rsid = ?", (rsid,)
-            ).fetchone()
+            row = self._lookup_rsid_row(rsid)
             if row:
-                return {'chr': row[0], 'pos': row[1]}
+                return {'chr': row[1], 'pos': row[2]}
             return None
 
         # pickle fallback
@@ -132,7 +193,7 @@ class DBSNPProcessor:
                 (chrom, pos)
             ).fetchone()
             if row:
-                return row[0]
+                return self._clean_rsid(row[0])
             # Try alternative format (with/without 'chr' prefix)
             if not chrom.startswith('chr'):
                 row = self._conn.execute(
@@ -140,7 +201,7 @@ class DBSNPProcessor:
                     (f"chr{chrom}", pos)
                 ).fetchone()
                 if row:
-                    return row[0]
+                    return self._clean_rsid(row[0])
             return None
 
         # pickle fallback
@@ -204,11 +265,19 @@ class _SQLiteRsidToPosWrapper:
 
     def get(self, rsid, default=None):
         row = self._conn.execute(
-            "SELECT chr, pos FROM rsid_to_pos WHERE rsid = ?", (rsid,)
+            "SELECT rsid, chr, pos FROM rsid_to_pos WHERE rsid = ?",
+            (rsid,),
         ).fetchone()
         if row is None:
+            lower, upper = DBSNPProcessor._malformed_rsid_bounds(rsid)
+            row = self._conn.execute(
+                "SELECT rsid, chr, pos FROM rsid_to_pos "
+                "WHERE rsid >= ? AND rsid < ? ORDER BY rsid LIMIT 1",
+                (lower, upper),
+            ).fetchone()
+        if row is None:
             return default
-        return {'chr': row[0], 'pos': row[1]}
+        return {'chr': row[1], 'pos': row[2]}
 
     def __getitem__(self, rsid):
         result = self.get(rsid)
@@ -251,7 +320,7 @@ class _SQLitePosToRsidWrapper:
         ).fetchone()
         if row is None:
             return default
-        return row[0]
+        return DBSNPProcessor._clean_rsid(row[0])
 
     def __getitem__(self, key):
         result = self.get(key)
