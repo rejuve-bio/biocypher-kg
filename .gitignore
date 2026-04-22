@@ -174,4 +174,8 @@ output/
 output_cli/
 output_fly/
 output_human/
+
+# CATLAS generated/downloaded files (large, not committed)
+aux_files/hsa/catlas/*.pkl
+samples/hsa/catlasv1/cCRE_hg38.tsv.gz
 samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt

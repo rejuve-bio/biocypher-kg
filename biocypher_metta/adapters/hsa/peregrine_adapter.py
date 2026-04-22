@@ -92,10 +92,7 @@ class PEREGRINEAdapter(Adapter):
             chr = info['chr']
             start = info['start']
             end = info['end']
-            #CURIE ID Format
-            # Example: SO:chr1:99534632-99534837
-            #SO:0000165 is the official Sequence Ontology (SO) term for "enhancer"
-            enhancer_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
+            enhancer_region_id = f"PEREGRINE:{build_regulatory_region_id(chr, start, end)}"
             props = {}
             if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                 if self.write_properties:
@@ -131,8 +128,7 @@ class PEREGRINEAdapter(Adapter):
                 id = line[self.INDEX['enhancer']]
                 if id not in enhancer_id_map:
                     continue
-                # CURIE ID Format: SO:0000165#:chr:start-end
-                enhancer_region_id = f"SO:{enhancer_id_map[id]}"
+                enhancer_region_id = f"PEREGRINE:{enhancer_id_map[id]}"
                 gene_hgnc_id = self.handle_gene(line[self.INDEX['gene']])
                 # CURIE ID Format: ENSEMBL:ENSG00000123456
                 ensembl_id = self.hgnc_processor.get_ensembl_id(gene_hgnc_id)

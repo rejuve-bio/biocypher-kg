@@ -789,7 +789,7 @@ dgv_variant:
     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
     cls: DGVVariantAdapter
     args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
+      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt
       label: structural_variant
   outdir: dgv
   nodes: True
@@ -800,7 +800,7 @@ dgv_variant_gene_overlap:
     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
     cls: DGVVariantAdapter
     args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
+      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt
       label: structural_variant
       feature_files:
         - path: ./samples/hsa/gencode_sample.gtf.gz
@@ -815,7 +815,7 @@ dgv_variant_ncrna_overlap:
     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
     cls: DGVVariantAdapter
     args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
+      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt
       label: structural_variant
       feature_files:
         - path: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
@@ -830,10 +830,10 @@ dgv_variant_promoter_overlap:
     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
     cls: DGVVariantAdapter
     args:
-      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt.gz
+      filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt
       label: structural_variant
       feature_files:
-        - path: ./samples/hsa/Hs_EPDnew.bed.gz
+        - path: ./samples/hsa/Hs_EPDnew_sample.bed
           label: promoter
           type: bed
           delimiter: ' '
@@ -846,7 +846,7 @@ epd_promoter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: ./samples/hsa/Hs_EPDnew.bed.gz
+      filepath: ./samples/hsa/Hs_EPDnew_sample.bed
       label: promoter
       taxon_id: 9606
   outdir: epd
@@ -883,7 +883,7 @@ epd_promoter_regulates_gene:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: ./samples/hsa/Hs_EPDnew.bed.gz
+      filepath: ./samples/hsa/Hs_EPDnew_sample.bed
       type: promoter to gene association
       label: promoter_gene
       taxon_id: 9606
@@ -940,7 +940,7 @@ dbvar_variant_promoter_overlap:
       filepath: ./samples/hsa/dbvar_sample.vcf.gz
       label: structural_variant
       feature_files:
-        - path: ./samples/hsa/Hs_EPDnew.bed.gz
+        - path: ./samples/hsa/Hs_EPDnew_sample.bed
           label: promoter
           type: bed
           delimiter: ' '
@@ -1541,6 +1541,96 @@ distal_enhancer_ccre_associates_with_gene_coding_only:
   nodes: False
   edges: True
 
+catlas_ccre_promoter:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
+    cls: CAtlasCCREAdapter
+    args:
+      filepath: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
+      class_filter: promoter
+      taxon_id: 9606
+      input_coordinate_system: bed
+  outdir: catlas_ccre/promoter
+  nodes: True
+  edges: False
+
+catlas_ccre_enhancer:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
+    cls: CAtlasCCREAdapter
+    args:
+      filepath: ./samples/hsa/catlasv1/cCRE_hg38_sample.tsv.gz
+      class_filter: enhancer
+      taxon_id: 9606
+      input_coordinate_system: bed
+  outdir: catlas_ccre/enhancer
+  nodes: True
+  edges: False
+
+catlas_enhancer_accessible_in:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
+    cls: CAtlasCCRECellTypeAdapter
+    args:
+      cres_dirpath: ./samples/hsa/catlasv1/cCREs
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
+      ccre_type: enhancer
+  outdir: catlas_ccre/enhancer_accessible_in
+  nodes: False
+  edges: True
+
+catlas_promoter_accessible_in:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
+    cls: CAtlasCCRECellTypeAdapter
+    args:
+      cres_dirpath: ./samples/hsa/catlasv1/cCREs
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
+      cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
+      ccre_type: promoter
+  outdir: catlas_ccre/promoter_accessible_in
+  nodes: False
+  edges: True
+
+catlas_abc_enhancer_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
+    cls: CAtlasABCScoreAdapter
+    args:
+      dirpath: ./samples/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
+      abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      edge_type: enhancer_activity_by_contact
+      # score_threshold: 0.015  # optional: filter low-confidence predictions
+  outdir: catlas_ccre/abc_enhancer_to_gene
+  nodes: False
+  edges: True
+
+catlas_abc_promoter_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
+    cls: CAtlasABCScoreAdapter
+    args:
+      dirpath: ./samples/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: ./samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+      ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
+      hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
+      cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
+      abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
+      edge_type: promoter_gene
+      # score_threshold: 0.015  # optional: filter low-confidence predictions
+  outdir: catlas_ccre/abc_promoter_to_gene
+  nodes: False
+  edges: True
+
 encode_re2g:
   adapter:
     module: biocypher_metta.adapters.encode_re2g_adapter
@@ -1553,14 +1643,15 @@ encode_re2g:
   nodes: True
   edges: False
 
-encode_re2g_gene_associates:
+encode_re2g_enhancer_to_gene:
   adapter:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
       filepath: ./samples/hsa/ENCODE_rE2G_K562.bed.gz
-      label: enhancer_gene
+      label: enhancer_activity_by_contact
       taxon_id: 9606
+      cell_ontology_id: "CLO:0007059"  # K562 chronic myelogenous leukemia cell line
   outdir: encode_re2g
   nodes: False
   edges: True

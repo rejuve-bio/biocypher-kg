@@ -280,7 +280,7 @@ uv run python create_knowledge_graph.py \
   --adapters-config config/hsa/hsa_adapters_config_sample.yaml \
   --schema-config config/hsa/hsa_schema_config.yaml \
   --writer-type metta \
-  --dbsnp-cache-dir aux_files/hsa/sample_dbsnp
+  --dbsnp-mapping-path aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
 ```
 
 ---

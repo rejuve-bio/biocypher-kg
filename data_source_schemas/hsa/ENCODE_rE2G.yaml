@@ -9,10 +9,10 @@ nodes:
       start: int
       chr: str
 relationships:
-  enhancer to gene association:
+  enhancer activity by contact:
     url: https://www.encodeproject.org/
-    input_label: enhancer_gene
-    description: An association between an enhancer and a gene
+    input_label: enhancer_activity_by_contact
+    description: An enhancer-to-gene association predicted by ENCODE rE2G
     source: enhancer
     target: gene
     properties:

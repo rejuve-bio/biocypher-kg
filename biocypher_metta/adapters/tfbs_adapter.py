@@ -64,8 +64,7 @@ class TfbsAdapter(Adapter):
             chr = data[TfbsAdapter.INDEX['chr']].strip('"')
             start = int(data[TfbsAdapter.INDEX['start']].strip('"'))
             end = int(data[TfbsAdapter.INDEX['end']].strip('"'))
-            #CURIE ID Format for tfbs (SO:0000235 for TFBS)
-            tfbs_id = f"SO:0000235_{build_regulatory_region_id(chr, start, end)}"
+            tfbs_id = f"ENCODE_TFBS:{build_regulatory_region_id(chr, start, end)}"
             props = {}
 
             if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
@@ -86,12 +85,11 @@ class TfbsAdapter(Adapter):
             start = int(data[TfbsAdapter.INDEX['start']].strip('"'))
             end = int(data[TfbsAdapter.INDEX['end']].strip('"'))
             tf = data[TfbsAdapter.INDEX['tf']].strip('"')
-            #CURIE ID Format - Get Ensembl ID from HGNC symbol
             ensembl_id = self.hgnc_processor.get_ensembl_id(tf)
             if ensembl_id is None:
                 continue
             tf_ensembl = f"ENSEMBL:{ensembl_id}"
-            tfbs_id = f"SO:0000235_{build_regulatory_region_id(chr, start, end)}"
+            tfbs_id = f"ENCODE_TFBS:{build_regulatory_region_id(chr, start, end)}"
 
             score_str = data[TfbsAdapter.INDEX['score']].strip('"')
             score = to_float(score_str) / 1000  # divide by 1000 to normalize score

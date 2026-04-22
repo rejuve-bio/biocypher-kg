@@ -1,6 +1,5 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 import pathlib
-import os
 from biocypher._logger import logger
 import networkx as nx
 import re
@@ -9,13 +8,19 @@ from biocypher_metta import BaseWriter
 
 class PrologWriter(BaseWriter):
 
+    # Prefixes that represent ontology terms — keep prefix joined with '_'
+    # All other prefixes (ENSEMBL, HGNC, STRING, …) are stripped.
+    _ONTOLOGY_PREFIXES = frozenset({
+        'CL', 'UBERON', 'CLO', 'EFO', 'BTO', 'GO', 'HP', 'MONDO', 'DOID',
+        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO',
+    })
+
     def __init__(self, schema_config, biocypher_config,
-                 output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+                 output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.create_edge_types()
         #self.excluded_properties = ["license", "version", "source"]
         self.excluded_properties = []
-        self.type_hierarchy = self._type_hierarchy()
 
 
     def create_edge_types(self):
@@ -42,93 +47,112 @@ class PrologWriter(BaseWriter):
                         }
 
     def preprocess_id(self, prev_id):
-        """Ensure ID remains in CURIE format while cleaning special characters"""
         if prev_id is None:
             return None
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            prefix = prefix.upper()
-            # Clean local ID (remove duplicate prefix if present)
-            clean_local = local_id.lower().replace(f"{prefix.lower()}_", "")
-            clean_local = clean_local.strip().translate(str.maketrans({' ': '_'}))
-            return f"{prefix}:{clean_local}"
-        return prev_id.lower().strip().translate(str.maketrans({' ': '_', ':': '_'}))
+            prefix_upper = prefix.strip().upper()
+            local_id = local_id.strip().translate(str.maketrans({' ': '_'}))
+            if prefix_upper in self._ONTOLOGY_PREFIXES:
+                return f"{prefix_upper}_{local_id.upper()}"
+            if self.include_curie:
+                return f"{prefix_upper}_{local_id}"
+            return local_id
+        return prev_id.strip().translate(str.maketrans({' ': '_'}))
 
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
-            'pathway': frozenset({'pathway'}),
-            'reaction': frozenset({'reaction'}),
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            'snp': frozenset({'snp'}),
-            'phenotype_set': frozenset({'phenotype_set'}),
-
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
-            file_path = f"{self.output_path}/{path_prefix}/nodes.pl"
+            output_dir = f"{self.output_path}/{path_prefix}"
             if create_dir:
-                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
-                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
+                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
         else:
-            file_path = f"{self.output_path}/nodes.pl"
-        
-        with open(file_path, "a") as f:
+            output_dir = self.output_path
+
+        file_handles = {}
+
+        try:
             for node in nodes:
                 id, label, properties = node
                 if not self.check_node_label(label):
                     raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)
+
+                if "." in label:
+                    label = label.split(".")[-1]
+                label = label.lower()
+
+                if label not in file_handles:
+                    file_path = f"{output_dir}/nodes.pl"
+                    file_handles[label] = open(file_path, "w")
+
                 out_str = self.write_node(node)
                 for s in out_str:
-                    f.write(s + "\n")
+                    file_handles[label].write(s + "\n")
 
-            f.write("\n")
+        finally:
+            for fh in file_handles.values():
+                try:
+                    fh.write("\n")
+                    fh.close()
+                except Exception:
+                    pass
 
         logger.info("Finished writing out nodes")
         return self.node_freq, self.node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
-            file_path = f"{self.output_path}/{path_prefix}/edges.pl"
+            output_dir = f"{self.output_path}/{path_prefix}"
             if create_dir:
-                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
-                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
+                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
         else:
-            file_path = f"{self.output_path}/edges.pl"
+            output_dir = self.output_path
 
-        with open(file_path, "a") as f:
+        file_handles = {}
+
+        try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
                 if not self.check_edge_label(label):
                     raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_edge_info(edge)
+
+                label = label.lower()
+                if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
+                    label_to_use = self.edge_node_types[label]["output_label"]
+                else:
+                    label_to_use = label
+
+                edge_info = self.edge_node_types.get(label, {})
+                source_type = edge_info.get("source", "unknown")
+                target_type = edge_info.get("target", "unknown")
+
+                if isinstance(source_type, list):
+                    source_type = source_type[0]
+                if isinstance(target_type, list):
+                    target_type = target_type[0]
+
+                file_key = (label, source_type, target_type)
+
+                if file_key not in file_handles:
+                    file_suffix = f"{source_type}_{label_to_use}_{target_type}"
+                    file_path = f"{output_dir}/edges.pl"
+                    file_handles[file_key] = open(file_path, "w")
+
                 out_str = self.write_edge(edge)
                 for s in out_str:
-                    f.write(s + "\n")
+                    file_handles[file_key].write(s + "\n")
 
-            f.write("\n")
+        finally:
+            for fh in file_handles.values():
+                try:
+                    fh.write("\n")
+                    fh.close()
+                except Exception:
+                    pass
+
         return self.edge_freq
 
     def write_node(self, node):
@@ -153,14 +177,6 @@ class PrologWriter(BaseWriter):
             if source_id_processed is None:
                 logger.warning(f"Edge '{label}': skipping because source ID is None")
                 return []
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
 
             # if label in self.edge_node_types:
             #     valid_source_types = self.edge_node_types[label]["source"]
@@ -190,14 +206,6 @@ class PrologWriter(BaseWriter):
             if target_id_processed is None:
                 logger.warning(f"Edge '{label}': skipping because target ID is None")
                 return []
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
 
             # if label in self.edge_node_types:
             #     valid_target_types = self.edge_node_types[label]["target"]
@@ -246,20 +254,41 @@ class PrologWriter(BaseWriter):
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
             if k == 'biological_context':
+                if v is None or v == "":
+                    continue
                 try:
-                    prop = self.normalize_text(v)
-                    ontology = prop.split('_')[0]
-                    out_str.append(f'{k}({def_out}, {ontology}({prop})).')
+                    ontology_id = v.upper().replace('_', ':')
+                    ontology_prefix = ontology_id.split(':')[0].lower()
+                    ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+                    ontology_name = ontology_dict.get(ontology_prefix, ontology_prefix)
+                    prop = self.normalize_text(ontology_id)
+                    out_str.append(f'{k}({def_out}, {ontology_name}({prop})).')
                 except Exception as e:
                     print(f"An error occurred while processing the biological context '{v}': {e}.")
                     continue
             elif isinstance(v, list):
-                prop = "["
-                for i, e in enumerate(v):
-                    prop += f'{self.normalize_text(e)}'
-                    if i != len(v) - 1: prop += ","
-                prop += "]"
-                out_str.append(f'{k}({def_out}, {prop}).')
+                for item in v:
+                    if isinstance(item, tuple):
+                        tuple_str = "("
+                        for el in item:
+                            tuple_str += f'{self.normalize_text(el)}, '
+                        tuple_str = tuple_str.rstrip(", ") + ")"
+                        out_str.append(f'{k}({def_out}, {tuple_str}).')
+                    elif isinstance(item, dict):
+                        for sub_k, sub_v in item.items():
+                            if isinstance(sub_v, list):
+                                for sub_item in sub_v:
+                                    prop = self.normalize_text(sub_item)
+                                    if prop is not None:
+                                        out_str.append(f'{sub_k}({def_out}, {prop}).')
+                            else:
+                                prop = self.normalize_text(sub_v)
+                                if prop is not None:
+                                    out_str.append(f'{sub_k}({def_out}, {prop}).')
+                    else:
+                        prop = self.normalize_text(item)
+                        if prop is not None:
+                            out_str.append(f'{k}({def_out}, {prop}).')
             elif isinstance(v, dict):
                 prop = f"{k}({def_out})."
                 out_str.extend(self.write_property(prop, v))

@@ -11,8 +11,8 @@ from biocypher_metta import BaseWriter
 class MeTTaWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config,
-                 output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+                 output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
 
         # Initialize edge node types for tuple handling
         self.edge_node_types = {}
@@ -21,7 +21,6 @@ class MeTTaWriter(BaseWriter):
         self.label_is_ontology = self._build_label_types_map()
         self.create_type_hierarchy()
         self.excluded_properties = []
-        self.type_hierarchy = self._type_hierarchy()
 
     def _build_label_types_map(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -139,20 +138,19 @@ class MeTTaWriter(BaseWriter):
 
     def preprocess_id(self, prev_id, label=None):
         """
-        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        Clean ID, preserving CURIE prefixes for ontology terms or when include_curie is True.
         """
         prev_id = str(prev_id)
-        
+
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            
-            if label and self._is_ontology_label(label):
+
+            if (label and self._is_ontology_label(label)) or self.include_curie:
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                # For non-ontology terms, just return the local ID part without prefix
                 return local_id.strip().replace(' ', '_').upper()
-        
+
         return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
@@ -222,16 +220,23 @@ class MeTTaWriter(BaseWriter):
                     label_to_use = output_label
                 else:
                     label_to_use = label
-                # Resolve source and target types from the schema (same as Neo4j writer)
-                edge_info = self.edge_node_types.get(label, {})
-                source_type = edge_info.get("source", "unknown")
-                target_type = edge_info.get("target", "unknown")
 
-                # Handle list types (take first element, same as Neo4j writer)
-                if isinstance(source_type, list):
-                    source_type = source_type[0]
-                if isinstance(target_type, list):
-                    target_type = target_type[0]
+                # Resolve source and target types
+                if isinstance(source_id, tuple):
+                    source_type = source_id[0]
+                else:
+                    edge_info = self.edge_node_types.get(label, {})
+                    source_type = edge_info.get("source", "unknown")
+                    if isinstance(source_type, list):
+                        source_type = source_type[0]
+
+                if isinstance(target_id, tuple):
+                    target_type = target_id[0]
+                else:
+                    edge_info = self.edge_node_types.get(label, {})
+                    target_type = edge_info.get("target", "unknown")
+                    if isinstance(target_type, list):
+                        target_type = target_type[0]
 
                 file_key = (label, source_type, target_type)
 
@@ -267,35 +272,6 @@ class MeTTaWriter(BaseWriter):
         def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
-            'pathway': frozenset({'pathway'}),
-            'reaction': frozenset({'reaction'}),
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            'snp': frozenset({'snp'}),
-            'phenotype_set': frozenset({'phenotype_set'}),
-                        
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
@@ -307,14 +283,6 @@ class MeTTaWriter(BaseWriter):
             source_type = source_id[0]
             # Pass label for ontology-aware processing
             source_id_processed = self.preprocess_id(str(source_id[1]), label=source_type)
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
@@ -331,14 +299,6 @@ class MeTTaWriter(BaseWriter):
             target_type = target_id[0]
             # Pass label for ontology-aware processing
             target_id_processed = self.preprocess_id(str(target_id[1]), label=target_type)
-            if label in self.edge_node_types:
-                valid_target_types = self.edge_node_types[label]["target"]
-                if isinstance(valid_target_types, list):
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
-                else:
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
@@ -376,13 +336,8 @@ class MeTTaWriter(BaseWriter):
                 continue
             
             if k == 'biological_context':
-                try:
-                    ontology_id = self.check_property(v).upper().replace('_', ':')
-                    ontology_name = ontology_id.split(':')[0].lower()
-                    out_str.append(f'({k} {def_out} ({ontology_name} {ontology_id}))')
-                except Exception as e:
-                    print(f"An error occurred while processing the biological context '{v}': {e}.")
-                    continue
+                out_str.append(f'({k} {def_out} {self.check_biological_context(v)})')
+                    
             elif isinstance(v, list):
                 # Handle lists by decomposing into individual facts
                 for item in v:
@@ -422,8 +377,8 @@ class MeTTaWriter(BaseWriter):
         ):
             return raw
 
-        # Strip CURIE prefixes from property values
-        if ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
+        # Strip CURIE prefixes from property values (unless include_curie is set)
+        if not self.include_curie and ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
             _, local_part = raw.split(':', 1)
             raw = local_part.strip()
 
@@ -432,6 +387,20 @@ class MeTTaWriter(BaseWriter):
         prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
 
         return prop
+    
+    def check_biological_context(self, context):
+        if context is None or context == "":
+            return None
+        try:
+            ontology_id = context.upper().replace('_', ':')
+            ontology_name = ontology_id.split(':')[0].lower()
+            ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+            ontology_name = ontology_dict.get(ontology_name, None)
+            ontology_id = ontology_id.replace(':', '_')
+            return f'({ontology_name} {ontology_id})'
+        except Exception as e:
+            # print(f"An error occurred while processing the biological context '{context}': {e}.")
+            return self.check_property(context)
 
     # def check_property(self, prop):
     #     if isinstance(prop, str):

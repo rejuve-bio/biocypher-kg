@@ -2,9 +2,10 @@
 # Each species can have 'sample' and/or 'full' dataset configurations
 # Note: output_dir is NOT included here - users specify it via --output-dir flag
 #
-# dbsnp_cache_dir: Directory containing dbsnp_mapping.pkl (DBSNPProcessor format).
-#   - For sample configs: use the committed sample cache (aux_files/hsa/sample_dbsnp)
-#   - For full configs: point to the server directory with the full dbSNP cache
+# dbsnp_mapping_path: Path to dbsnp_mapping.pkl (preferred), or to the directory
+#   that contains it for backward compatibility.
+#   - For sample configs: use aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
+#   - For full configs: point to the server dbSNP mapping file
 #   - Leave empty ("") for species that don't use dbSNP data
 
 
@@ -12,14 +13,14 @@ hsa:
   sample:
     adapters_config: config/hsa/hsa_adapters_config_sample.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    dbsnp_cache_dir: aux_files/hsa/sample_dbsnp
+    dbsnp_mapping_path: aux_files/hsa/sample_dbsnp/dbsnp_mapping.pkl
     dbsnp_rsids: aux_files/hsa/sample_dbsnp_rsids.pkl
     dbsnp_pos: aux_files/hsa/sample_dbsnp_pos.pkl    
   full:
     adapters_config: config/hsa/hsa_adapters_config.yaml
     schema_config: config/hsa/hsa_schema_config.yaml
-    # dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
-    # dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    # dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
+    # dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
     dbsnp_rsids: /mnt/hdd_1/abdu/dbsnp/dbsnp_rsids.pkl
     dbsnp_pos: /mnt/hdd_1/abdu/dbsnp/dbsnp_pos.pkl
 
@@ -28,26 +29,26 @@ dmel:
   sample:
     adapters_config: config/dmel/dmel_adapters_config_sample.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_cache_dir: ""
+    dbsnp_mapping_path: ""
   full:
     adapters_config: config/dmel/dmel_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_cache_dir: ""
+    dbsnp_mapping_path: ""
 
 cel:
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml
-    dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
 
 mmo:
   full:
     adapters_config: config/mmo/mmo_adapters_config.yaml
     schema_config: config/mmo/mmo_schema_config.yaml
-    dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
 
 rno:
   full:
     adapters_config: config/rno/rno_adapters_config.yaml
     schema_config: config/rno/rno_schema_config.yaml
-    dbsnp_cache_dir: /mnt/hdd_2/kedist/rsids_map
+    dbsnp_mapping_path: /mnt/hdd_2/kedist/rsids_map/dbsnp_mapping.pkl
