@@ -3,6 +3,7 @@
 import psycopg2
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.processors import EnsemblUniProtProcessor
+from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
 
 # Data file for genes_pathways: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
 # data format:
@@ -111,7 +112,7 @@ class ReactomeEdgesAdapter(Adapter):
 
     def get_edges(self):
         # this is being used only as a list  :/
-        from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+        from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP        
         organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
         with open(self.filepath) as input_file:
             base_props = {}
@@ -122,13 +123,19 @@ class ReactomeEdgesAdapter(Adapter):
             total_in_species_records = 0
             for line in input_file:
                 data = line.strip().split('\t')
-
                 # if not (self.label == 'parent_pathway_of' or self.label == 'child_pathway_of'):  # handles pathways or reactions  edges
                 if self.label in ['genes_pathways', 'gene_or_gene_product_reaction', 'small_molecule_to_pathway', 'small_molecule_to_reaction']: 
-                    entity_id, pathway_id = data[0].strip(), data[1].strip()
+                    try:
+                        entity_id, pathway_id = data[0].strip(), data[1].strip()                        
+                    except Exception:
+                        print(data)
+                        continue
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
                     an_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
+                    entity_taxon_id = organism_taxon_map.get(organism_pathway_prefix)
+                    if entity_taxon_id != self.taxon_id:
+                        continue
                     if organism_pathway_prefix in organism_taxon_map or organism_pathway_prefix.startswith('R-NUL'):
                         # taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()

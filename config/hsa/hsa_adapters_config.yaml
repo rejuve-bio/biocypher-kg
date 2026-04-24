@@ -105,8 +105,8 @@ pathway:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ReactomePathways.txt
-      pubmed_map_path: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ReactionPMIDS.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ReactomePathways.txt
+      pubmed_map_path: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ReactionPMIDS.txt
       label: pathway
       taxon_id: 9606
   outdir: reactome
@@ -118,8 +118,8 @@ reactome_reaction:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Ensembl2ReactomeReactions.txt
-      pubmed_map_path: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ReactionPMIDS.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Ensembl2ReactomeReactions.txt
+      pubmed_map_path: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ReactionPMIDS.txt
       label: reaction
       taxon_id: 9606
   outdir: reactome
@@ -131,7 +131,7 @@ reactome_reaction_to_pathway:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_reaction_exporter_All_species.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome_reaction_exporter_All_species.txt
       label: reaction_to_pathway
       taxon_id: 9606
   outdir: reactome
@@ -143,7 +143,7 @@ reactome_input_role_protein_to_reaction_or_pathway:
     module: biocypher_metta.adapters.reactome_inference_edges_adapter
     cls: ReactomeInferenceEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_reaction_exporter_All_species.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome_reaction_exporter_All_species.txt
       label: enables
       taxon_id: 9606
   outdir: reactome
@@ -155,7 +155,7 @@ reactome_output_role_protein_to_reaction_or_pathway:
     module: biocypher_metta.adapters.reactome_inference_edges_adapter
     cls: ReactomeInferenceEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_reaction_exporter_All_species.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome_reaction_exporter_All_species.txt
       label: produced_by
       taxon_id: 9606
   outdir: reactome
@@ -167,7 +167,7 @@ reactome_catalyst_role_protein_to_reaction_or_pathway:
     module: biocypher_metta.adapters.reactome_inference_edges_adapter
     cls: ReactomeInferenceEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_reaction_exporter_All_species.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome_reaction_exporter_All_species.txt
       label: regulates
       taxon_id: 9606
   outdir: reactome
@@ -179,7 +179,7 @@ reactome_negative_role_protein_to_reaction_or_pathway:
     module: biocypher_metta.adapters.reactome_inference_edges_adapter
     cls: ReactomeInferenceEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_reaction_exporter_All_species.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome_reaction_exporter_All_species.txt
       label: negatively_regulates
       taxon_id: 9606
   outdir: reactome
@@ -191,7 +191,7 @@ reactome_positive_role_protein_to_reaction_or_pathway:
     module: biocypher_metta.adapters.reactome_inference_edges_adapter
     cls: ReactomeInferenceEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_reaction_exporter_All_species.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome_reaction_exporter_All_species.txt
       label: positively_regulates
       taxon_id: 9606
   outdir: reactome
@@ -203,7 +203,7 @@ genes_pathways:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Ensembl2Reactome_All_Levels.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Ensembl2Reactome_All_Levels.txt
       label: genes_pathways
       taxon_id: 9606
   outdir: reactome
@@ -215,7 +215,7 @@ gene_or_gene_product_reaction:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Ensembl2ReactomeReactions.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Ensembl2ReactomeReactions.txt
 
       label: gene_or_gene_product_reaction
       taxon_id: 9606
@@ -228,7 +228,7 @@ chebi_small_molecule_to_pathways:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ChEBI2Reactome_All_Levels.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ChEBI2Reactome_All_Levels.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: small_molecule_to_pathway
       taxon_id: 9606
@@ -241,7 +241,7 @@ chebi_small_molecule_to_reactions:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ChEBI2ReactomeReactions.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ChEBI2ReactomeReactions.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_uniprot_map.pkl
       label: small_molecule_to_reaction
       taxon_id: 9606
@@ -254,7 +254,7 @@ parent_pathway_of:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ReactomePathwaysRelation.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ReactomePathwaysRelation.txt
       label: parent_pathway_of
       taxon_id: 9606
   outdir: reactome
@@ -266,10 +266,22 @@ child_pathway_of:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/ReactomePathwaysRelation.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/ReactomePathwaysRelation.txt
       label: child_pathway_of
       taxon_id: 9606
   outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/reactome.all_species.interactions.tab-delimited.txt
+      label: interacts_with
+      taxon_id: 9606
+  outdir: reactome/ppi
   nodes: False
   edges: True
 
@@ -278,7 +290,7 @@ pathway_to_biological_process:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Pathways2GoTerms_human.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Pathways2GoTerms_human.txt
       write_properties: true
       add_provenance: true
       label: pathway_to_biological_process
@@ -293,7 +305,7 @@ reaction_to_biological_process:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Reactions2GoTerms_human.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Reactions2GoTerms_human.txt
       write_properties: true
       add_provenance: true
       label: reaction_to_biological_process
@@ -302,7 +314,6 @@ reaction_to_biological_process:
   outdir: reactome/molecular_function
   nodes: false
   edges: true
-
 
 # The following adapters for Molecular Function and Cellular Component are commented out
 # because the current dataset only contains Biological Process edges.
@@ -314,7 +325,7 @@ reaction_to_biological_process:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
 #     cls: ReactomePathwayGOAdapter
 #     args:
-#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Pathways2GoTerms_human.txt
+#       filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Pathways2GoTerms_human.txt
 #       write_properties: true
 #       add_provenance: true
 #       subontology: molecular_function
@@ -329,7 +340,7 @@ reaction_to_biological_process:
 #     module: biocypher_metta.adapters.reactome_pathway_go_adapter
 #     cls: ReactomePathwayGOAdapter
 #     args:
-#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/Pathways2GoTerms_human.txt
+#       filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Pathways2GoTerms_human.txt
 #       write_properties: true
 #       add_provenance: true
 #       subontology: cellular_component  
@@ -434,7 +445,7 @@ gaf_biological_process_gene_product:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: biological_process_gene_product
       taxon_id: 9606
   outdir: gaf
@@ -446,7 +457,7 @@ gaf_molecular_function_gene_product:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: molecular_function_gene_product
       taxon_id: 9606
   outdir: gaf
@@ -458,7 +469,7 @@ gaf_cellular_component_gene_product_part_of:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: cellular_component_gene_product_part_of
       taxon_id: 9606
   outdir: gaf
@@ -470,7 +481,7 @@ gaf_cellular_component_gene_product_located_in:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: cellular_component_gene_product_located_in
       taxon_id: 9606
   outdir: gaf
@@ -482,7 +493,7 @@ gaf_biological_process_gene:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: biological_process_gene
       taxon_id: 9606
   outdir: gaf
@@ -494,7 +505,7 @@ gaf_molecular_function_gene:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: molecular_function_gene
       taxon_id: 9606
   outdir: gaf
@@ -506,7 +517,7 @@ gaf_cellular_component_gene_part_of:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: cellular_component_gene_part_of
       taxon_id: 9606
   outdir: gaf
@@ -518,7 +529,7 @@ gaf_cellular_component_gene_located_in:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/go/goa_human.gaf.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gaf/goa_human.gaf.gz
       label: cellular_component_gene_located_in
       taxon_id: 9606
   outdir: gaf
@@ -542,7 +553,7 @@ tflink:
     module: biocypher_metta.adapters.tflink_adapter
     cls: TFLinkAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/tflink/tflink_homo_sapiens_interactions.tsv.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
       label: tf_gene
       taxon_id: 9606
   outdir: tflink
@@ -554,22 +565,10 @@ string:
     module: biocypher_metta.adapters.string_ppi_adapter
     cls: StringPPIAdapter
     args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/string/string_human_ppi_v12.0.txt.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/string/9606.protein.links.v12.0.txt.gz
       label: interacts_with
       taxon_id: 9606
   outdir: string
-  nodes: False
-  edges: True
-
-reactome_ppi:
-  adapter:
-    module: biocypher_metta.adapters.reactome_ppi_adapter
-    cls: ReactomePPIAdapter
-    args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome_homo_sapiens_interactions_tab_delimited.txt
-      label: interacts_with
-      taxon_id: 9606
-  outdir: reactome/ppi
   nodes: False
   edges: True
 
@@ -634,7 +633,7 @@ gtex_expression:
 #       taxon_id: 9606
 #   outdir: hocomoco
 #   nodes: True
-#   edges: False
+# #   edges: False
 
 roadmap_chromatin_state:
   adapter:
@@ -797,7 +796,7 @@ rna_central_non_coding_rna:
     cls: RNACentralAdapter
     args:
       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/rna_central/rfam_annotations.tsv.gz
+      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/multi/rna_central_rfam/rnacentral_rfam_annotations.tsv.gz
       label: non_coding_rna
       type: non_coding_rna
       taxon_id: 9606
@@ -811,7 +810,7 @@ rna_central_non_coding_rna_biological_process:
     cls: RNACentralAdapter
     args:
       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/rna_central/rfam_annotations.tsv.gz
+      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/multi/rna_central_rfam/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
       taxon_id: 9606
@@ -825,7 +824,7 @@ rna_central_non_coding_rna_molecular_function:
     cls: RNACentralAdapter
     args:
       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/rna_central/rfam_annotations.tsv.gz
+      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/multi/rna_central_rfam/rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
       taxon_id: 9606
@@ -839,7 +838,7 @@ rna_central_non_coding_rna_cellular_component:
     cls: RNACentralAdapter
     args:
       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/homo_sapiens.GRCh38.bed.gz
-      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/rnacentral_rfam_annotations.tsv.gz
+      rfam_filepath: /mnt/hdd_1/biocypher-kg/input/multi/rna_central_rfam/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
       taxon_id: 9606
@@ -852,7 +851,7 @@ rna_central_non_coding_rna_cellular_component:
 #     module: biocypher_metta.adapters.hsa.dgv_variant_adapter
 #     cls: DGVVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_1/abdu/biocypher_data/dgv/GRCh38_hg38_variants_2025-12-01.txt 
+#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #   outdir: dgv
 #   nodes: True
@@ -867,7 +866,7 @@ rna_central_non_coding_rna_cellular_component:
 #       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/dgv/GRCh38_hg38_variants_2025-12-01.txt.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
+#         - path: /mnt/hdd_1/biocypher-kg/input/hsa/gencode/gencode.v49.annotation.gtf.gz  
 #           label: gene
 #           type: gtf
 #   outdir: dgv
@@ -883,7 +882,7 @@ rna_central_non_coding_rna_cellular_component:
 #       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/dgv/GRCh38_hg38_variants_2025-12-01.txt.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_1/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+#         - path: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/homo_sapiens.GRCh38.bed.gz
 #           label: non_coding_rna
 #           type: bed
 #   outdir: dgv
@@ -899,7 +898,7 @@ rna_central_non_coding_rna_cellular_component:
 #       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/dgv/GRCh38_hg38_variants_2025-12-01.txt.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed
+#         - path: /mnt/hdd_1/biocypher-kg/input/hsa/epd/Hs_EPDnew.bed.gz
 #           label: promoter
 #           type: bed
 #           delimiter: ' '
@@ -912,7 +911,7 @@ hpo_gene_phenotype:
     module: biocypher_metta.adapters.hsa.hpo_gene_phenotype_adapter
     cls: HPOAdapter  
     args:  
-      filepath: /mnt/hdd_1/abdu/biocypher_data/hpo/genes_to_phenotype.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/hpo/genes_to_phenotype.txt
       # entrez_to_ensembl_map: None #./aux_files/hsa/entrez_ensembl/entrez_ensembl_mapping.pkl
   outdir: human_phenotype_ontology
   nodes: False  
@@ -923,7 +922,7 @@ hpo_gene_disease:
     module: biocypher_metta.adapters.hsa.hpo_gene_disease_adapter
     cls: HPOGeneDiseaseAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/hpo/genes_to_disease.txt
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/hpo/genes_to_disease.txt
       # entrez_to_ensembl_map: None #./aux_files/hsa/entrez_ensembl/entrez_ensembl_mapping.pkl
   outdir: human_phenotype_ontology
   nodes: False
@@ -971,10 +970,10 @@ epd_promoter_regulates_gene:
 #     module: biocypher_metta.adapters.hsa.dbvar_adapter
 #     cls: DBVarVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_1/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/dbvar/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz  
+#         - path: /mnt/hdd_1/biocypher-kg/input/hsa/gencode/gencode.v49.annotation.gtf.gz  
 #           label: gene
 #           type: gtf
 #   outdir: dbvar
@@ -986,10 +985,10 @@ epd_promoter_regulates_gene:
 #     module: biocypher_metta.adapters.hsa.dbvar_adapter
 #     cls: DBVarVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_1/abdu/biocypher_data/dbvar/GRCh38.variant_call.all.vcf.gz
+#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/dbvar/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_1/abdu/biocypher_data/rna_central/homo_sapiens.GRCh38.bed.gz
+#         - path: /mnt/hdd_1/biocypher-kg/input/hsa/rna_central/homo_sapiens.GRCh38.bed.gz
 #           label: non_coding_rna
 #           type: bed
 #   outdir: dbvar
@@ -1001,10 +1000,10 @@ epd_promoter_regulates_gene:
 #     module: biocypher_metta.adapters.hsa.dbvar_adapter
 #     cls: DBVarVariantAdapter
 #     args:
-#       filepath: /mnt/hdd_1/abdu/biocypher_data/GRCh38.variant_call.all.vcf.gz
+#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: /mnt/hdd_1/abdu/biocypher_data/epd/Hs_EPDnew.bed
+#         - path: /mnt/hdd_1/biocypher-kg/input/hsa/epd/Hs_EPDnew.bed.gz
 #           label: promoter
 #           type: bed
 #           delimiter: ' '
@@ -1105,296 +1104,6 @@ enhancer_atlas_enhancer_regulates:
   outdir: enhancer_atlas
   nodes: False
   edges: True
-
-uberon:
-  adapter:
-    module: biocypher_metta.adapters.uberon_adapter
-    cls: UberonAdapter
-    args:
-      ontology: "uberon"
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: uberon
-  nodes: True
-  edges: False
-
-uberon_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.uberon_adapter
-    cls: UberonAdapter
-    args:
-      ontology: "uberon"
-      type: edge
-      dry_run: False
-      label: uberon_subclass_of
-      cache_dir: ./ontology_dataset_cache
-  outdir: uberon
-  nodes: False
-  edges: True
-
-cell_line_ontology:
-  adapter:
-    module: biocypher_metta.adapters.cell_line_ontology_adapter
-    cls: CellLineOntologyAdapter
-    args:
-      ontology: "clo"
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_line_ontology
-  nodes: True
-  edges: False
-
-clo_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.cell_line_ontology_adapter
-    cls: CellLineOntologyAdapter
-    args:
-      ontology: "clo"
-      label: clo_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_line_ontology
-  nodes: False
-  edges: True
-
-cell_line_is_a_cell_type:
-  adapter:
-    module: biocypher_metta.adapters.cell_line_ontology_adapter
-    cls: CellLineOntologyAdapter
-    args:
-      ontology: "clo"
-      label: cell_line_is_a_cell_type
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_line_ontology
-  nodes: False
-  edges: True
-
-cell_ontology:
-  adapter:
-    module: biocypher_metta.adapters.cell_ontology_adapter
-    cls: CellOntologyAdapter
-    args:
-      ontology: "cl"
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_ontology
-  nodes: True
-  edges: False
-
-cl_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.cell_ontology_adapter
-    cls: CellOntologyAdapter
-    args:
-      ontology: "cl"
-      label: cl_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_ontology
-  nodes: False
-  edges: True
-
-cl_capable_of:
-  adapter:
-    module: biocypher_metta.adapters.cell_ontology_adapter
-    cls: CellOntologyAdapter
-    args:
-      ontology: "cl"
-      label: cl_capable_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_ontology
-  nodes: False
-  edges: True
-
-cl_part_of:
-  adapter:
-    module: biocypher_metta.adapters.cell_ontology_adapter
-    cls: CellOntologyAdapter
-    args:
-      ontology: "cl"
-      label: cl_part_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_ontology
-  nodes: False
-  edges: True
-
-cell_type_part_of_tissue:
-  adapter:
-    module: biocypher_metta.adapters.cell_ontology_adapter
-    cls: CellOntologyAdapter
-    args:
-      ontology: "cl"
-      label: cell_type_part_of_tissue
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: cell_ontology
-  nodes: False
-  edges: True
-
-motif_diff_tf_snp:
-  adapter:
-    module: biocypher_metta.adapters.hsa.motif_diff_adapter
-    cls: MotifDiffAdapter
-    args:
-      # filepath: /mnt/hdd_1/abdu/motif_diff/motif_diff_mono_probNorm_average.diff    # FROM WHERE WAS THIS DOWNLOADED?
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/motif_diff/_mono_probNorm_average.diff
-      label: tf_snp
-  outdir: MotifDiff
-  nodes: False
-  edges: True
-
-experimental_factor_ontology:
-  adapter:
-    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
-    cls: ExperimentalFactorOntologyAdapter
-    args:
-      ontology: "efo"
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: experimental_factor_ontology
-  nodes: True
-  edges: False
-
-efo_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
-    cls: ExperimentalFactorOntologyAdapter
-    args:
-      ontology: "efo"
-      label: efo_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: experimental_factor_ontology
-  nodes: False
-  edges: True
-
-brenda_tissue_ontology:
-  adapter:
-    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-    cls: BrendaTissueOntologyAdapter
-    args:
-      ontology: "bto"
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: brenda_tissue_ontology
-  nodes: True
-  edges: False
-
-bto_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-    cls: BrendaTissueOntologyAdapter
-    args:
-      ontology: "bto"
-      label: bto_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: brenda_tissue_ontology
-  nodes: False
-  edges: True
-
-tissue_part_of_anatomy:
-  adapter:
-    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
-    cls: BrendaTissueOntologyAdapter
-    args:
-      ontology: "bto"
-      label: tissue_part_of_anatomy
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: brenda_tissue_ontology
-  nodes: False
-  edges: True
-
-human_phenotype_ontology:
-  adapter:
-    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
-    cls: HumanPhenotypeOntologyAdapter
-    args:
-      ontology: 'hpo'
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: human_phenotype_ontology
-  nodes: True
-  edges: False
-
-hpo_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
-    cls: HumanPhenotypeOntologyAdapter
-    args:
-      ontology: 'hpo'
-      label: hpo_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: human_phenotype_ontology
-  nodes: False
-  edges: True
-
-chebi_ontology:
-  adapter:
-    module: biocypher_metta.adapters.chebi_ontology_adapter
-    cls: ChEBIAdapter
-    args:
-      ontology: 'chebi'
-      type: node
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: chebi
-  nodes: True
-  edges: False
-
-chebi_chebi_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.chebi_ontology_adapter
-    cls: ChEBIAdapter
-    args:
-      ontology: 'chebi'
-      label: chebi_subclass_of
-      type: edge
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: chebi
-  nodes: False
-  edges: True
-
-# out of Beta version
-# polyphen2:
-#   adapter:
-#     module: biocypher_metta.adapters.hsa.polyphen2_adapter
-#     cls: PolyPhen2Adapter
-#     args:
-#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/polyphen2/dbNsfpPolyPhen2.bed.gz
-#       label: polyphen2_variant
-#   outdir: polyphen-2
-#   nodes: True
-#   edges: False
 
 bgee_gene_expressed_in_anatomical_entity:
   adapter:
@@ -1548,9 +1257,9 @@ promoter_ccre:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/cCRE/GRCh38-Closest-Genes-PC.tsv.gz
       edge_type: eqtl
-      eqtl_filepath: /mnt/hdd_1/abdu/biocypher_data/cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz
+      eqtl_filepath: /mnt/hdd_1/biocypher-kg/input/hsa/cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz
       label: promoter
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       taxon_id: 9606
@@ -1608,7 +1317,7 @@ catlas_ccre_promoter:
     module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
     cls: CAtlasCCREAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       class_filter: promoter
       taxon_id: 9606
       input_coordinate_system: bed
@@ -1621,7 +1330,7 @@ catlas_ccre_enhancer:
     module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
     cls: CAtlasCCREAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       class_filter: enhancer
       taxon_id: 9606
       input_coordinate_system: bed
@@ -1634,12 +1343,12 @@ catlas_enhancer_accessible_in:
     module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
     cls: CAtlasCCRECellTypeAdapter
     args:
-      cres_dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCREs
+      cres_dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCREs
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
-      cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
+      cell_ontology_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: enhancer
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
   outdir: catlas_ccre/enhancer
   nodes: False
   edges: True
@@ -1649,12 +1358,12 @@ catlas_promoter_accessible_in:
     module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
     cls: CAtlasCCRECellTypeAdapter
     args:
-      cres_dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCREs
+      cres_dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCREs
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
-      cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
+      cell_ontology_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: promoter
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
   outdir: catlas_ccre/promoter
   nodes: False
   edges: True
@@ -1664,8 +1373,8 @@ catlas_abc_enhancer_to_gene:
     module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
     args:
-      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
@@ -1681,8 +1390,8 @@ catlas_abc_promoter_to_gene:
     module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
     args:
-      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
@@ -1875,6 +1584,362 @@ uniprot_chebi_part_of_chebi:
   nodes: False
   edges: True
 
+
+alliance_gene_disease_biomarker_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: biomarker_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_implicated_via_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: implicated_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_implicated_in:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: is_implicated_in
+  outdir: disease
+  nodes: False
+  edges: True
+
+#=====================================
+# For hsa (9606) config, is_model_of does not produce edges from this file.
+#===================================
+
+# alliance_gene_disease_is_model_of:
+#   adapter:
+#     module: biocypher_metta.adapters.alliance_gene_disease_adapter
+#     cls: AllianceGeneDiseaseAdapter
+#     args:
+#       filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+#       taxon_id: 9606
+#       label: is_model_of
+#   outdir: disease
+#   nodes: False
+#   edges: True
+
+alliance_gene_disease_is_marker_for:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 9606
+      label: is_marker_for
+  outdir: disease
+  nodes: False
+  edges: True
+
+uberon:
+  adapter:
+    module: biocypher_metta.adapters.uberon_adapter
+    cls: UberonAdapter
+    args:
+      ontology: "uberon"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: uberon
+  nodes: True
+  edges: False
+
+uberon_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.uberon_adapter
+    cls: UberonAdapter
+    args:
+      ontology: "uberon"
+      type: edge
+      dry_run: False
+      label: uberon_subclass_of
+      cache_dir: ./ontology_dataset_cache
+  outdir: uberon
+  nodes: False
+  edges: True
+
+cell_line_ontology:
+  adapter:
+    module: biocypher_metta.adapters.cell_line_ontology_adapter
+    cls: CellLineOntologyAdapter
+    args:
+      ontology: "clo"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_line_ontology
+  nodes: True
+  edges: False
+
+clo_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_line_ontology_adapter
+    cls: CellLineOntologyAdapter
+    args:
+      ontology: "clo"
+      label: clo_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_line_ontology
+  nodes: False
+  edges: True
+
+cell_line_is_a_cell_type:
+  adapter:
+    module: biocypher_metta.adapters.cell_line_ontology_adapter
+    cls: CellLineOntologyAdapter
+    args:
+      ontology: "clo"
+      label: cell_line_is_a_cell_type
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_line_ontology
+  nodes: False
+  edges: True
+
+cell_ontology:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: True
+  edges: False
+
+cl_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cl_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cl_capable_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cl_capable_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cl_part_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cl_part_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cell_type_part_of_tissue:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cell_type_part_of_tissue
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+experimental_factor_ontology:
+  adapter:
+    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
+    cls: ExperimentalFactorOntologyAdapter
+    args:
+      ontology: "efo"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: experimental_factor_ontology
+  nodes: True
+  edges: False
+
+efo_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.experimental_factor_ontology_adapter
+    cls: ExperimentalFactorOntologyAdapter
+    args:
+      ontology: "efo"
+      label: efo_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: experimental_factor_ontology
+  nodes: False
+  edges: True
+
+brenda_tissue_ontology:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: "bto"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: brenda_tissue_ontology
+  nodes: True
+  edges: False
+
+bto_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: "bto"
+      label: bto_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
+
+tissue_part_of_anatomy:
+  adapter:
+    module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
+    cls: BrendaTissueOntologyAdapter
+    args:
+      ontology: "bto"
+      label: tissue_part_of_anatomy
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: brenda_tissue_ontology
+  nodes: False
+  edges: True
+
+human_phenotype_ontology:
+  adapter:
+    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
+    cls: HumanPhenotypeOntologyAdapter
+    args:
+      ontology: 'hpo'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: human_phenotype_ontology
+  nodes: True
+  edges: False
+
+hpo_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
+    cls: HumanPhenotypeOntologyAdapter
+    args:
+      ontology: 'hpo'
+      label: hpo_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: human_phenotype_ontology
+  nodes: False
+  edges: True
+
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: True
+  edges: False
+
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: chebi
+  nodes: False
+  edges: True
+
+# out of Beta version
+# polyphen2:
+#   adapter:
+#     module: biocypher_metta.adapters.hsa.polyphen2_adapter
+#     cls: PolyPhen2Adapter
+#     args:
+#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/polyphen2/dbNsfpPolyPhen2.bed.gz
+#       label: polyphen2_variant
+#   outdir: polyphen-2
+#   nodes: True
+#   edges: False
+
+
+motif_diff_tf_snp:
+  adapter:
+    module: biocypher_metta.adapters.hsa.motif_diff_adapter
+    cls: MotifDiffAdapter
+    args:
+      # filepath: /mnt/hdd_1/abdu/motif_diff/motif_diff_mono_probNorm_average.diff    # FROM WHERE WAS THIS DOWNLOADED?
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/motif_diff/_mono_probNorm_average.diff
+      label: tf_snp
+  outdir: MotifDiff
+  nodes: False
+  edges: True
+
 disease_ontology:
   adapter:
     module: biocypher_metta.adapters.disease_ontology_adapter
@@ -1899,70 +1964,6 @@ disease_do_subclass_of:
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-  outdir: disease
-  nodes: False
-  edges: True
-
-alliance_gene_disease_biomarker_orthology:
-  adapter:
-    module: biocypher_metta.adapters.alliance_gene_disease_adapter
-    cls: AllianceGeneDiseaseAdapter
-    args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 9606
-      label: biomarker_via_orthology
-  outdir: disease
-  nodes: False
-  edges: True
-
-alliance_gene_disease_implicated_via_orthology:
-  adapter:
-    module: biocypher_metta.adapters.alliance_gene_disease_adapter
-    cls: AllianceGeneDiseaseAdapter
-    args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 9606
-      label: implicated_via_orthology
-  outdir: disease
-  nodes: False
-  edges: True
-
-alliance_gene_disease_is_implicated_in:
-  adapter:
-    module: biocypher_metta.adapters.alliance_gene_disease_adapter
-    cls: AllianceGeneDiseaseAdapter
-    args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 9606
-      label: is_implicated_in
-  outdir: disease
-  nodes: False
-  edges: True
-
-#=====================================
-# For hsa (9606) config, is_model_of does not produce edges from this file.
-#===================================
-
-# alliance_gene_disease_is_model_of:
-#   adapter:
-#     module: biocypher_metta.adapters.alliance_gene_disease_adapter
-#     cls: AllianceGeneDiseaseAdapter
-#     args:
-#       filepath: /mnt/hdd_1/biocypher-kg/input/hsa/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-#       taxon_id: 9606
-#       label: is_model_of
-#   outdir: disease
-#   nodes: False
-#   edges: True
-
-alliance_gene_disease_is_marker_for:
-  adapter:
-    module: biocypher_metta.adapters.alliance_gene_disease_adapter
-    cls: AllianceGeneDiseaseAdapter
-    args:
-      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 9606
-      label: is_marker_for
   outdir: disease
   nodes: False
   edges: True

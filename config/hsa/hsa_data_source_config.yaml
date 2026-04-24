@@ -1,49 +1,49 @@
-# ---
-# alliance:    #agr: alliance of genome resource
-#   extract: false
-#   url:
-#     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
+---
+alliance:    #agr: alliance of genome resource
+  extract: false
+  url:
+    - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
 
-# bgee:
-#   name: Bgee Expression Data
-#   extract: false
-#   # url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
-#   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+bgee:
+  name: Bgee Expression Data
+  extract: false
+  # url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
+  url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_all_conditions.tsv.gz
 
-# gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
-#   name: GENCODE v49
-#   extract: false
-#   url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz       
+gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
+  name: GENCODE v49
+  extract: false
+  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz       
 
-# uniprot:
-#   name: UniProtKB/Swiss-Prot
-#   extract: false
-#   url:  https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+uniprot:
+  name: UniProtKB/Swiss-Prot
+  extract: false
+  url:  https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
 
-# reactome:
-#   name: Reactome
-#   url:
-#     - https://reactome.org/download/current/ReactomePathways.txt
-#     - https://reactome.org/download/current/ReactomePathwaysRelation.txt
-#     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
-#     - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
-#     - https://reactome.org/download/current/ReactionPMIDS.txt
-#     - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
-#     - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
-#     - https://reactome.org/download/current/Pathways2GoTerms_human.txt
-#     - https://reactome.org/download/current/Reactions2GoTerms_human.txt
-#     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+reactome:
+  name: Reactome
+  url:
+    - https://reactome.org/download/current/ReactomePathways.txt
+    - https://reactome.org/download/current/ReactomePathwaysRelation.txt
+    - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
+    - https://reactome.org/download/current/ReactionPMIDS.txt
+    - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
+    - https://reactome.org/download/current/Pathways2GoTerms_human.txt
+    - https://reactome.org/download/current/Reactions2GoTerms_human.txt
+    - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
     
-# gaf:
-#   name: GO Annotation File (GAF)
-#   extract: false
-#   url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+gaf:
+  name: GO Annotation File (GAF)
+  extract: false
+  url: http://geneontology.org/gene-associations/goa_human.gaf.gz
 
-# hpo:
-#   name: Human Phenotype Ontology Phenotype and disease associations
-#   url: 
-#   - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_disease.txt
-#   - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_phenotype.txt
+hpo:
+  name: Human Phenotype Ontology Phenotype and disease associations
+  url: 
+  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_disease.txt
+  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_phenotype.txt
 
 coxpressdb:
   name: Coxpress DB
@@ -144,8 +144,10 @@ rna_central:
   name: RNA Central
   extract: false
   url:
-    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
-    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    homo_sapiens.GRCh38.bed.gz: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
+    rnacentral_rfam_annotations.tsv.gz: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+  move_to:
+    rnacentral_rfam_annotations.tsv.gz: ../rna_central_rfam
 
 dgv:
   name: Database of Genomic Variants
@@ -167,7 +169,9 @@ dbvar:
 dbsnp:
   name: dbSNP
   extract: false
-  url: https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
+  url:
+    - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
+    - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-common_all.vcf.gz
 
 # # File name has changed to polyphen-2.2.2-whess-2011_12.tab.tar.bz2 
 # # But only nodes are created from it  and will not be included in the Beta.
@@ -191,12 +195,23 @@ gwas:
 #   name: Fabian
 #   url: https://fabian.bioinf.mpi-inf.mpg.de/downloads/human_grch38.tar.gz
 
+cCRE:
+  name: Screen candidate Cis-Regulatory Region
+  compress: gzip
+  url:
+    - https://downloads.wenglab.org/GRCh38-Closest-Genes-PC.tsv
+    - https://downloads.wenglab.org/GRCh38-Closest-Genes-All.tsv
+  zip_extract:
+    - url: https://downloads.wenglab.org/Human-Gene-Links.zip
+      files:
+        - V4-hg38.Gene-Links.eQTLs.txt
+
 catlas:
   name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
   extract: false
   url:
-    cCRE_hg38.tsv.gz: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
-    Cell_ontology.tsv: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
+    - https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
+    - https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
   directories:
     cCREs: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCREs/
     ABC_scores: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/ABC_scores/

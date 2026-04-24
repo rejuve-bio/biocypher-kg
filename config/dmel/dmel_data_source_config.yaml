@@ -1,4 +1,14 @@
 # ---
+alliance:    #agr: alliance of genome resource
+  extract: false
+  url:
+    - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
+    - https://download.alliancegenome.org/8.3.0/EXPRESSION-ALLIANCE/COMBINED/EXPRESSION-ALLIANCE_COMBINED_6.tsv.gz  # gene to expression location (ontologies like GO, FBbt, etc) NO HUMAN DATA
+    - https://download.alliancegenome.org/8.3.0/INTERACTION-MOL/COMBINED/INTERACTION-MOL_COMBINED_5.tsv.gz          # Format is like that processed by dmel.dmel_physical_interaction_psimi_adapter
+    - https://download.alliancegenome.org/8.3.0/ORTHOLOGY-ALLIANCE/COMBINED/ORTHOLOGY-ALLIANCE_COMBINED_7.tsv.gz
+    - https://download.alliancegenome.org/8.3.0/VCF/R6/VCF_R6_7.vcf.gz    # look at EVA  VCF
+    - https://download.alliancegenome.org/8.3.0/VARIANT-ALLELE/NCBITaxon7227/VARIANT-ALLELE_NCBITaxon7227_8.tsv.gz  # variant/allel
+
 bgee:
   name: Bgee Expression Data
   extract: false
@@ -76,7 +86,7 @@ rna_central:
   extract: false
   url:
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
-    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
 tflink:
   name: TFLink

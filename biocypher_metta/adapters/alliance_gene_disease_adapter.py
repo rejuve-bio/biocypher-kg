@@ -135,7 +135,7 @@ class AllianceGeneDiseaseAdapter(Adapter):
                         "species_name": species_name,
                         "gene_symbol": db_object_symbol,
                         "disease_name": do_term_name,
-                        "evidence_code": evidence_code,
+                        "evidence_code": evidence_code.replace(':', '_'),
                         "evidence_code_name": evidence_code_name,
                         "reference": reference,
                         "date": date,
