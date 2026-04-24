@@ -1,6 +1,9 @@
 import yaml
 import requests
+import yaml
+import requests
 import typer
+import logging
 import logging
 from pathlib import Path
 from tqdm import tqdm
@@ -12,6 +15,9 @@ import zipfile
 import shutil
 from urllib.parse import urlparse, urljoin
 from html.parser import HTMLParser
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)

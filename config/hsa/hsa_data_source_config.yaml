@@ -48,15 +48,18 @@ hpo:
 coxpressdb:
   name: Coxpress DB
   extract: true
+  extract: true
   url: https://zenodo.org/record/6861444/files/Hsa-u.v22-05.G16651-S245698.combat_pca.subagging.z.d.zip
 
 tflink:
   name: TFLink
   extract: false
+  extract: false
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
 
 string:
   name: STRING PPI
+  extract: false
   extract: false
   url: https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
 
@@ -73,7 +76,28 @@ gtex_eqtl:
 topld:
   name: TopLD
   extract: false
+  extract: false
   url:
+    AFR: 
+      # - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr1_no_filter_0.2_1000000_LD.csv.gz
+      - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
+    EAS: 
+      - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      # - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+    EUR: 
+      - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz
+      # - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr1_no_filter_0.2_1000000_LD.csv.gz
+    SAS: 
+      - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      # - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+
+# out of Beta version -------->> change the script to extract the tar ball to pwm dir
+# hocomoco:
+#   name: HOCOMOCOv11
+#   extract_tar: true
+#   url:
+#     annotation: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+#     pwm: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
     AFR: 
       # - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr1_no_filter_0.2_1000000_LD.csv.gz
       - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
@@ -100,14 +124,21 @@ topld:
 #   name: FAVOR
 #   url:
 #     chr16: https://dataverse.harvard.edu/api/access/datafile/6388551/   # file in the url: FAVOR.FullDB.Chr16.tar.gz
+# there is no favor record in hsa_adapters_config.yaml
+# favor:
+#   name: FAVOR
+#   url:
+#     chr16: https://dataverse.harvard.edu/api/access/datafile/6388551/   # file in the url: FAVOR.FullDB.Chr16.tar.gz
 
 cadd:
   name: Combined Annotation Dependent Depletion (CADD)
+  extract: false
   extract: false
   url: https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
 
 refseq:
   name: RefSeq Closest Gene
+  extract: false
   extract: false
   url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
 
@@ -120,15 +151,32 @@ dbsuper:
   compress: gzip
   # url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz       #  no  such file
   url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
+dbsuper:
+  name: dbsuper
+  compress: gzip
+  # url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz       #  no  such file
+  url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
 
 abc:
   name: Activity-By-Contact (ABC)
   extract: false
+  extract: false
   url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
 
 # # ONLY  these are available for roadmap and they are on Bizon server
+# # ONLY  these are available for roadmap and they are on Bizon server
 # roadmap:
 #   name: Roadmap Epigenomics Project
+#   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
+# # roadmap_dhs:
+# #   name: RoadMap DHS
+# #   url: https://forgedb.cancer.gov/api/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz  # ACCESS DENIED!
+# # roadmap_state:
+# #   name: Roadmap Epigenomics State
+# #   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/state_calls  # there is no state_calls directory
+# # roadmap_h3marks:
+# #   name: Roadmap Epigenomics H3 Marks
+# #   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/marks  # there is no marks directory
 #   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
 # # roadmap_dhs:
 # #   name: RoadMap DHS
@@ -154,15 +202,22 @@ dgv:
   compress: gzip
   # url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2020-02-25.txt        # adapters use gzipped version.
   url: https://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
+  compress: gzip
+  # url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2020-02-25.txt        # adapters use gzipped version.
+  url: https://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
 
 epd:
   name: Eukaryotic Promoter Database
   compress: gzip
   # url: https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
   url: https://epd.expasy.org/ftp/epdnew/H_sapiens/current/Hs_EPDnew.bed        # adapters use gzipped version.
+  compress: gzip
+  # url: https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
+  url: https://epd.expasy.org/ftp/epdnew/H_sapiens/current/Hs_EPDnew.bed        # adapters use gzipped version.
 
 dbvar:
   name: NCBI dbVar
+  extract: false
   extract: false
   url: https://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh38/vcf/GRCh38.variant_call.all.vcf.gz
 
@@ -190,6 +245,13 @@ gwas:
 # enhancer_atlas:
 #   name: EnhancerAtlas
 #   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   #  http://www.enhanceratlas.org/ is not accessible most of the time...
+  # url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2025/09/30/gwas-catalog-associations_ontology-annotated.tsv
+  url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip
+
+# http://singlecelldb.com/downloadv2.php   does not have links to files... In touch with Single Cell DB folks.. (2026-04-15)
+# enhancer_atlas:
+#   name: EnhancerAtlas
+#   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   #  http://www.enhanceratlas.org/ is not accessible most of the time...
 
 # fabian:  <----::: deleted
 #   name: Fabian
@@ -208,6 +270,7 @@ cCRE:
 
 catlas:
   name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
+  extract: false
   extract: false
   url:
     - https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
