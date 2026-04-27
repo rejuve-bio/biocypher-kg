@@ -53,7 +53,7 @@ class DGVVariantAdapter(Adapter):
                     props['start'] = start
                     props['end'] = end
                     props['variant_type'] = variant_type
-                    props['evidence'] = 'pubmed:' + pubmedid
+                    props['evidence'] = 'PMID_' + pubmedid
 
                     if self.add_provenance:
                         props['source'] = self.source
