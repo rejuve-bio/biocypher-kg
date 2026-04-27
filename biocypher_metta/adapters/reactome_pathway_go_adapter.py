@@ -75,8 +75,6 @@ class ReactomePathwayGOAdapter(Adapter):
                 # Prepare base properties
                 properties = {
                     'pathway_name': pathway_name,
-                    'go_term_id': full_go_term,
-                    'subontology': go_type, 
                 }
                 
                 if self.add_provenance:  
