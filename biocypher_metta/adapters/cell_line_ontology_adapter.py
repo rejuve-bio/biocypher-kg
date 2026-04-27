@@ -52,6 +52,9 @@ class CellLineOntologyAdapter(OntologyAdapter):
     def get_ontology_source(self):
         return 'Cell Line Ontology', 'http://purl.obolibrary.org/obo/clo.owl'
 
+    def should_include_node(self, node):
+        return self.is_term_of_type(node, 'primary')
+
     def get_nodes(self):
         for term_id, label, props in super().get_nodes():
             if self.write_properties and self.add_description and 'description' in props:

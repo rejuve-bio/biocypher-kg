@@ -22,6 +22,9 @@ class HumanPhenotypeOntologyAdapter(OntologyAdapter):
             'chebi': 'http://purl.obolibrary.org/obo/CHEBI_',
         }
 
+    def should_include_node(self, node):
+        return self.is_term_of_type(node, 'primary')
+
     def get_nodes(self):
         for term_id, label, props in super().get_nodes():
             if self.write_properties and self.add_description and 'description' in props:
