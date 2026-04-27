@@ -132,10 +132,6 @@ class ReactomeEdgesAdapter(Adapter):
                     if organism_pathway_prefix in organism_taxon_map or organism_pathway_prefix.startswith('R-NUL'):
                         # taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()
-                        if self.label == 'genes_pathways':
-                            props['pathway_url'] = an_url
-                        else:
-                            props['reaction_url'] = an_url                        
                         props['evidence'] = data[4]
                         props['taxon_id'] = f'{self.taxon_id}'
 
