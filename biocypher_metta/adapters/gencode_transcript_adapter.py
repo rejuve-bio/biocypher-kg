@@ -1,7 +1,6 @@
 from biocypher_metta.adapters import Adapter
 import gzip
 from biocypher_metta.adapters.helpers import check_genomic_location
-from biocypher_metta.processors import HGNCProcessor
 
 # Human data:
 # https://www.gencodegenes.org/human/
@@ -95,9 +94,6 @@ class GencodeTranscriptAdapter(Adapter):
         self.version = 'v44'
         self.source_url = 'https://www.gencodegenes.org/'
 
-        self.hgnc_processor = HGNCProcessor()
-        self.hgnc_processor.load_or_update()
-
         super(GencodeTranscriptAdapter, self).__init__(write_properties, add_provenance)
 
     def parse_info_metadata(self, info):
@@ -152,13 +148,6 @@ class GencodeTranscriptAdapter(Adapter):
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
                     continue
 
-                gene_name = info.get('gene_name')
-                if not gene_name:
-                    # print(f"No gene name found for transcript {info['transcript_id']}. Record: {info}.\nGene name will be 'unkown'")
-                    result = {'status': 'unknown', 'original': 'unknown', 'current': 'unknown'}
-                else:
-                    result = self.hgnc_processor.process_identifier(gene_name)
-                
                 #CURIE ID Formatting
                 transcript_key = f"{GencodeTranscriptAdapter.CURIE_PREFIX[self.taxon_id]}:{info['transcript_id'].split('.')[0]}"
                 if info['transcript_id'].endswith('_PAR_Y'):
@@ -180,11 +169,8 @@ class GencodeTranscriptAdapter(Adapter):
                                 props = {
                                     'transcript_id': info['transcript_id'].upper(),
                                     'transcript_name': info['transcript_name'],
-                                    'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],                                
-                                    'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
+                                    'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],
                                 }
-                                if result['status'] == 'updated':
-                                    props['old_gene_name'] = result['original']
 
                                 if self.add_provenance:
                                     props['source'] = self.source
