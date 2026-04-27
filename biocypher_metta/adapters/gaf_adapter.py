@@ -183,10 +183,9 @@ class GAFAdapter(Adapter):
                     # if self.taxon_id != int(annotation['Taxon_ID'][0].split(':')[-1]):
                     #     raise ValueError(f'GAFAdapter::Invalid taxon. taxon_id parameter ({self.taxon_id}) different from data taxon id ({annotation['Taxon_ID'][0].split(':')[-1]}) ')
                     db_refs = annotation['DB:Reference']
-                    if isinstance(db_refs, list):
-                        db_refs = [r.replace(':', '_') for r in db_refs]
-                    else:
-                        db_refs = db_refs.replace(':', '_')
+                    if not isinstance(db_refs, list):
+                        db_refs = [db_refs]
+                    db_refs = [r.replace(':', '_') for r in db_refs]
                     props = {
                         'db_reference': db_refs,
                         'evidence': annotation['Evidence'],
