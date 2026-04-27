@@ -846,7 +846,9 @@ def main(
             cfg_cache_root = ""
             cfg_variant = None
 
-        is_sample_config = dataset == "sample" if species_mode else "sample" in str(adapters_config).lower()
+        is_sample_config = dataset == "sample" if species_mode else any(
+            kw in str(adapters_config).lower() for kw in ("sample", "test_config")
+        )
 
         resolved_cache_root = dbsnp_cache_root or cfg_cache_root
         if not resolved_cache_root and is_sample_config:
