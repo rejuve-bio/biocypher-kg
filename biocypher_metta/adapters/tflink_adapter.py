@@ -91,7 +91,7 @@ class TFLinkAdapter(Adapter):
                     continue
 
                 pubmed_ids_str = row[TFLinkAdapter.INDEX['PubmedID']]
-                pubmed_ids = [f"pubmed:{i}" for i in pubmed_ids_str.split(";")]
+                pubmed_ids = [f"PMID_{i.strip()}" for i in pubmed_ids_str.split(";")]
                 sources = row[TFLinkAdapter.INDEX['Source.database']].split(";")
                 small_scale_evidence = row[TFLinkAdapter.INDEX['Small-scale.evidence']]
                 if small_scale_evidence == "Yes":
