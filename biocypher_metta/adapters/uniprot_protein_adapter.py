@@ -206,7 +206,6 @@ class UniprotProteinAdapter(Adapter):
                                                 
                                                 props = {}
                                                 if self.write_properties:
-                                                    props['dbxref'] = 'ChEBI'
                                                     if evidence_codes:
                                                         props['evidence'] = evidence_codes
                                                     if self.add_provenance:
