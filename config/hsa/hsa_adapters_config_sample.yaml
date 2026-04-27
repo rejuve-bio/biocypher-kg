@@ -1330,7 +1330,7 @@ polyphen2:
     cls: PolyPhen2Adapter
     args:
       filepath: ./samples/hsa/polyPhen2_sample.bed.gz
-      label: polyphen2_variant      
+      label: snp
   outdir: polyphen-2
   nodes: True
   edges: False

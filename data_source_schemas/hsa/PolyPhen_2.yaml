@@ -3,7 +3,7 @@ website: https://hgdownload.soe.ucsc.edu
 nodes:
   polyphen2 variant:
     url: https://hgdownload.soe.ucsc.edu/gbdb/hg38/dbNsfp/dbNsfpPolyPhen2.bb
-    input_label: polyphen2_variant
+    input_label: snp
     description: A variant with PolyPhen-2 predictions for the impact of amino acid
       substitutions on protein structure and function
     properties:
