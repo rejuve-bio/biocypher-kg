@@ -41,6 +41,9 @@ class CellOntologyAdapter(OntologyAdapter):
         
         return super().should_include_edge(from_node, to_node, predicate, edge_type)
 
+    def should_include_node(self, node):
+        return self.is_term_of_type(node, 'primary')
+
     def get_nodes(self):
         self.update_graph()
         self.cache_node_properties()
