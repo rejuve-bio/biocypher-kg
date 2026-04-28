@@ -1914,10 +1914,6 @@ pathway_to_biological_process:
   description: An association between a pathway and a biological process, indicating
     that the pathway is involved in the process.
   properties:
-    pathway_name: str
-    go_term_type:
-      type: str
-      const: biological process
     source:
       type: str
       biolink: knowledge_source
@@ -1939,11 +1935,7 @@ pathway_to_cellular_component:
   input_label: pathway_to_cellular_component
   description: An association between a pathway and a cellular component, indicating
     that the pathway is associated with the component.
-  properties:
-    pathway_name: str
-    go_term_type:
-      type: str
-      const: cellular component
+  properties: {}
   kgx_properties:
     subject_category: biolink:Pathway
     object_category: biolink:CellularComponent
@@ -1959,11 +1951,7 @@ pathway_to_molecular_function:
   input_label: pathway_to_molecular_function
   description: An association between a pathway and a molecular function, indicating
     that the pathway is involved in the function.
-  properties:
-    pathway_name: str
-    go_term_type:
-      type: str
-      const: molecular function
+  properties: {}
   kgx_properties:
     subject_category: biolink:Pathway
     object_category: biolink:MolecularActivity
