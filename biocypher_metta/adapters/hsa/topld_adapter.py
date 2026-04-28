@@ -43,8 +43,8 @@ class TopLDAdapter(Adapter):
                     if not check_genomic_location(self.chr, self.start, self.end, self.chr, var1_pos, var1_pos) or \
                             not check_genomic_location(self.chr, self.start, self.end, self.chr, var2_pos, var2_pos):
                         continue
-                    rsid_1 = self.dbsnp_pos_map.get(f"{self.chr}_{var1_pos}", None)
-                    rsid_2 = self.dbsnp_pos_map.get(f"{self.chr}_{var2_pos}", None)
+                    rsid_1 = self.dbsnp_pos_map.get(f"{self.chr}:{var1_pos}", None)
+                    rsid_2 = self.dbsnp_pos_map.get(f"{self.chr}:{var2_pos}", None)
                     if rsid_1 is None or rsid_2 is None:
                         # logger.warning(f"Couldn't find rsid for position {var1_pos} or {var2_pos}")
                         continue
