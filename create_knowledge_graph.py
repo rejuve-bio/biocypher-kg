@@ -859,30 +859,44 @@ def main(
             is_sample=is_sample_config,
         )
 
-        if not species_mode and str(schema_config) == "config/primer_schema_config.yaml":
-            potential_species = None
-            for part in Path(adapters_config).parts:
-                if part in ["hsa", "dmel", "cel", "mmo", "rno"]:
-                    potential_species = part
-                    break
+        if not species_mode:
+            primer_schema_path = Path("config/primer_schema_config.yaml")
+            schema_is_primer = (
+                Path(schema_config).resolve() == primer_schema_path.resolve()
+            )
+            if schema_is_primer:
+                potential_species = None
+                for part in Path(adapters_config).parts:
+                    if part in ["hsa", "dmel", "cel", "mmo", "rno"]:
+                        potential_species = part
+                        break
 
-            if potential_species:
-                species_schema_path = Path(
-                    f"config/{potential_species}/{potential_species}_schema_config.yaml"
+                if potential_species:
+                    species_schema_path = Path(
+                        f"config/{potential_species}/{potential_species}_schema_config.yaml"
+                    )
+                    if species_schema_path.exists():
+                        logger.info(
+                            f"Manual mode: detected species '{potential_species}' from adapters config."
+                        )
+                        logger.info(
+                            f"Automatically merging primer schema with {species_schema_path}"
+                        )
+                        schema_config = merge_schemas(
+                            "config/primer_schema_config.yaml",
+                            species_schema_path,
+                        )
+                        is_merged_schema = True
+                        temp_schema_to_cleanup = schema_config
+            else:
+                # User provided a specific schema, merge it with primer
+                logger.info(f"Manual mode: merging primer schema with {schema_config}")
+                schema_config = merge_schemas(
+                    "config/primer_schema_config.yaml",
+                    schema_config,
                 )
-                if species_schema_path.exists():
-                    logger.info(
-                        f"Manual mode: detected species '{potential_species}' from adapters config."
-                    )
-                    logger.info(
-                        f"Automatically merging primer schema with {species_schema_path}"
-                    )
-                    schema_config = merge_schemas(
-                        "config/primer_schema_config.yaml",
-                        species_schema_path,
-                    )
-                    is_merged_schema = True
-                    temp_schema_to_cleanup = schema_config
+                is_merged_schema = True
+                temp_schema_to_cleanup = schema_config
 
         bc = get_writer(
             writer_type,
