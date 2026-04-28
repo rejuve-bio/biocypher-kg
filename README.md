@@ -60,9 +60,60 @@ make run            # Interactive mode (recommended)
 make run-interactive # Same as make run
 make run-direct     # Direct mode with parameters
 make run-sample     # Run with sample data
+make check-paths    # Validate file paths in an adapters config (no adapters run)
 make test           # Run tests
 make clean          # Clean temporary files
 make distclean      # Full clean
+```
+
+### Pre-flight File Path Validation
+
+Before any adapter runs, the pipeline checks that every file and directory path declared in the adapters config actually exists on disk. If any are missing, it prints a grouped report and exits immediately — no partial output, no wasted compute.
+
+Example output when paths are missing:
+```
+ERROR: Pre-flight check failed — 2 adapter(s) have missing file paths:
+
+  [gencode_gene]
+    filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz
+
+  [bgee_gene_expressed_in_anatomical_entity]
+    filepath: /mnt/hdd_1/abdu/biocypher_data/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+
+Fix the paths above or run with --skip-preflight to bypass this check.
+```
+
+#### Check paths without running the pipeline
+
+To validate an adapters config in isolation — without a schema, output directory, or any adapters executing:
+
+```bash
+# Via make (recommended)
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml
+
+# Check only specific adapters
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+                 INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot bgee_gene_expressed_in_anatomical_entity"
+
+# Directly via the CLI
+uv run python create_knowledge_graph.py \
+    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
+    --check-only
+```
+
+Exits with code `0` if all paths exist, `1` if any are missing.
+
+#### Skip the automatic check
+
+If you know some files will be provided at runtime and want to bypass the check:
+
+```bash
+# Make targets
+make run-direct ... SKIP_PREFLIGHT=yes
+make run-sample     SKIP_PREFLIGHT=yes
+
+# Directly via the CLI
+uv run python create_knowledge_graph.py ... --skip-preflight
 ```
 
 
