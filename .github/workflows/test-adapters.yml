@@ -148,12 +148,12 @@ jobs:
             python .github/scripts/prepare_config.py "${{ needs.determine_changes.outputs.changed_adapters }}" "${{ needs.determine_changes.outputs.config_changed }}" "${{ needs.determine_changes.outputs.changed_config_items }}"
           else
             echo "No adapter changes detected. Using sample config."
-            echo '!include hsa/hsa_adapters_config_sample.yaml' > config/test_config.yaml
+            echo '!include hsa/hsa_adapters_config_sample.yaml' > config/test_sample_config.yaml
           fi
       - uses: actions/upload-artifact@v4
         with:
           name: test-config
-          path: config/test_config.yaml
+          path: config/test_sample_config.yaml
 
   run_tasks:
     needs: [determine_changes, prepare_config]
@@ -233,7 +233,7 @@ jobs:
             else
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"
-                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp
+                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_sample_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp
 
               else
                 echo "Skipping unchanged writer: $CURRENT_WRITER"
@@ -241,7 +241,7 @@ jobs:
             fi
           elif [ -n "$CHANGED_ADAPTERS" ] || [ "$CONFIG_CHANGED" == "true" ]; then
             echo "Running changed adapters or config with writer: $CURRENT_WRITER"
-            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp
+            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_sample_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp
           else
             echo "No relevant changes detected for this writer. Skipping."
           fi
