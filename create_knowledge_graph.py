@@ -860,7 +860,11 @@ def main(
         )
 
         if not species_mode:
-            if str(schema_config) == "config/primer_schema_config.yaml":
+            primer_schema_path = Path("config/primer_schema_config.yaml")
+            schema_is_primer = (
+                Path(schema_config).resolve() == primer_schema_path.resolve()
+            )
+            if schema_is_primer:
                 potential_species = None
                 for part in Path(adapters_config).parts:
                     if part in ["hsa", "dmel", "cel", "mmo", "rno"]:
