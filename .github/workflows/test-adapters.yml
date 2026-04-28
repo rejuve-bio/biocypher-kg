@@ -233,7 +233,7 @@ jobs:
             else
               if [ "$CONFIG_CHANGED" == "true" ]; then
                 echo "Running changed config parts with unchanged writer: $CURRENT_WRITER"
-                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp
+                uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp --dbsnp-variant common
 
               else
                 echo "Skipping unchanged writer: $CURRENT_WRITER"
@@ -241,7 +241,7 @@ jobs:
             fi
           elif [ -n "$CHANGED_ADAPTERS" ] || [ "$CONFIG_CHANGED" == "true" ]; then
             echo "Running changed adapters or config with writer: $CURRENT_WRITER"
-            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp
+            uv run python create_knowledge_graph.py --output-dir output --adapters-config config/test_config.yaml --schema-config config/hsa/hsa_schema_config.yaml --writer-type $CURRENT_WRITER --dbsnp-cache-root aux_files/hsa/sample_dbsnp --dbsnp-variant common
           else
             echo "No relevant changes detected for this writer. Skipping."
           fi
