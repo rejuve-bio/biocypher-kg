@@ -14,8 +14,9 @@ help:
 	@echo "Usage examples:"
 	@echo "  make run            - Interactive mode (recommended)"
 	@echo "  make run-interactive - Same as 'make run'"
-	@echo "  make run-sample                    - Run with sample data (default: metta writer)"
-	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
+	@echo "  make run-sample                       - Run with sample data (default: metta writer)"
+	@echo "  make run-sample WRITER_TYPE=prolog    - Run with sample data using prolog writer"
+	@echo "  make run-sample INCLUDE_TAXON_ID=no   - Run without taxon_id in output (single-species KG)"
 
 # Check if UV is installed, install via pip if not
 check-uv:
@@ -101,6 +102,16 @@ run-interactive: check-uv
 		echo "Provenance will NOT be added"; \
 	fi; \
 	echo ""; \
+	read -p "🧬 Include taxon_id in output? (yes/no) [yes]: " INCLUDE_TAXON_ID; \
+	INCLUDE_TAXON_ID=$${INCLUDE_TAXON_ID:-yes}; \
+	if [ "$$INCLUDE_TAXON_ID" = "no" ]; then \
+		INCLUDE_TAXON_ID_FLAG="--no-taxon-id"; \
+		echo "taxon_id will NOT be written to output"; \
+	else \
+		INCLUDE_TAXON_ID_FLAG=""; \
+		echo "taxon_id will be written to output"; \
+	fi; \
+	echo ""; \
 	echo "🎯 Starting knowledge graph creation..."; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
@@ -111,7 +122,8 @@ run-interactive: check-uv
 		--writer-type "$$WRITER_TYPE" \
 		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG && \
+		$$ADD_PROVENANCE_FLAG \
+		$$INCLUDE_TAXON_ID_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
@@ -132,6 +144,11 @@ run-direct: check-uv
 	else \
 		ADD_PROVENANCE_FLAG="--no-add-provenance"; \
 	fi; \
+	if [ "$(INCLUDE_TAXON_ID)" = "false" ] || [ "$(INCLUDE_TAXON_ID)" = "no" ]; then \
+		INCLUDE_TAXON_ID_FLAG="--no-taxon-id"; \
+	else \
+		INCLUDE_TAXON_ID_FLAG=""; \
+	fi; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
 		--output-dir $(OUTPUT_DIR) \
@@ -141,7 +158,8 @@ run-direct: check-uv
 		$(if $(DBSNP_VARIANT),--dbsnp-variant $(DBSNP_VARIANT),) \
 		$(if $(WRITER_TYPE),--writer-type $(WRITER_TYPE),--writer-type metta) \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG
+		$$ADD_PROVENANCE_FLAG \
+		$$INCLUDE_TAXON_ID_FLAG
 
 # Run with sample configuration and data (with optional writer type)
 run-sample: check-uv
@@ -161,6 +179,13 @@ run-sample: check-uv
 		ADD_PROVENANCE_FLAG="--no-add-provenance"; \
 		echo "Provenance: disabled"; \
 	fi; \
+	if [ "$(INCLUDE_TAXON_ID)" = "false" ] || [ "$(INCLUDE_TAXON_ID)" = "no" ]; then \
+		INCLUDE_TAXON_ID_FLAG="--no-taxon-id"; \
+		echo "taxon_id: disabled"; \
+	else \
+		INCLUDE_TAXON_ID_FLAG=""; \
+		echo "taxon_id: enabled"; \
+	fi; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
 		--output-dir ./output \
@@ -169,7 +194,8 @@ run-sample: check-uv
 		--schema-config ./config/hsa/hsa_schema_config.yaml \
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG
+		$$ADD_PROVENANCE_FLAG \
+		$$INCLUDE_TAXON_ID_FLAG
 	@echo "✅ Sample run completed! Check the ./output directory for results."
 # Run tests
 test: check-uv
