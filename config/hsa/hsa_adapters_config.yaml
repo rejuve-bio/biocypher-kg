@@ -1618,6 +1618,10 @@ catlas_enhancer_accessible_in:
       cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
       ccre_type: enhancer
       ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/enhancer
   nodes: False
   edges: True
@@ -1633,6 +1637,10 @@ catlas_promoter_accessible_in:
       cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
       ccre_type: promoter
       ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/promoter
   nodes: False
   edges: True
@@ -1650,6 +1658,10 @@ catlas_abc_enhancer_to_gene:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: enhancer_activity_by_contact
       # score_threshold: 0.015  # optional: filter low-confidence predictions
+  optional_paths:
+    - ccre_master_tsv     # downloaded automatically if absent
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
   outdir: catlas_ccre/abc
   nodes: False
   edges: True
@@ -1667,6 +1679,10 @@ catlas_abc_promoter_to_gene:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: promoter_gene
       # score_threshold: 0.015  # optional: filter low-confidence predictions
+  optional_paths:
+    - ccre_master_tsv     # downloaded automatically if absent
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
   outdir: catlas_ccre/abc
   nodes: False
   edges: True
