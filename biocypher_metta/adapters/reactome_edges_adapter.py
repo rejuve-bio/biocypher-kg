@@ -127,7 +127,6 @@ class ReactomeEdgesAdapter(Adapter):
                 if self.label in ['genes_pathways', 'gene_or_gene_product_reaction', 'small_molecule_to_pathway', 'small_molecule_to_reaction']: 
                     entity_id, pathway_id = data[0].strip(), data[1].strip()
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
-                    an_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
                     if organism_pathway_prefix in organism_taxon_map or organism_pathway_prefix.startswith('R-NUL'):
                         # taxon = organism_taxon_map[organism_pathway_prefix]
