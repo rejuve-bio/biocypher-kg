@@ -267,10 +267,11 @@ def _check_adapter_file_paths(adapters_dict: dict) -> dict:
     """Return {adapter_name: {arg_name: path}} for every declared path that does not exist."""
     missing = {}
     for adapter_name, adapter_entry in adapters_dict.items():
+        optional = set(adapter_entry.get("optional_paths") or [])
         args = (adapter_entry.get("adapter") or {}).get("args") or {}
         adapter_missing = {}
         for arg_name, value in args.items():
-            if arg_name in _PREFLIGHT_SKIP_ARGS:
+            if arg_name in _PREFLIGHT_SKIP_ARGS or arg_name in optional:
                 continue
             if arg_name == "feature_files" and isinstance(value, list):
                 for i, item in enumerate(value):
@@ -288,6 +289,19 @@ def _check_adapter_file_paths(adapters_dict: dict) -> dict:
         if adapter_missing:
             missing[adapter_name] = adapter_missing
     return missing
+
+
+def _report_missing_paths(missing: dict, include_hint: bool = True) -> None:
+    """Log a grouped error report for missing adapter file paths."""
+    logger.error(f"Pre-flight check failed — {len(missing)} adapter(s) have missing file paths:")
+    for adapter_name, bad_args in missing.items():
+        logger.error("")
+        logger.error(f"  [{adapter_name}]")
+        for arg_name, path in bad_args.items():
+            logger.error(f"    {arg_name}: {path}")
+    if include_hint:
+        logger.error("")
+        logger.error("Fix the paths above or run with --skip-preflight to bypass this check.")
 
 
 def process_adapters(
@@ -313,18 +327,11 @@ def process_adapters(
       and resume without losing prior progress.
     """
     if not skip_preflight:
-        missing = _check_adapter_file_paths(adapters_dict)
+        completed = set(checkpoint_manager.completed_adapters if checkpoint_manager else [])
+        adapters_to_check = {k: v for k, v in adapters_dict.items() if k not in completed}
+        missing = _check_adapter_file_paths(adapters_to_check)
         if missing:
-            logger.error(
-                f"Pre-flight check failed — {len(missing)} adapter(s) have missing file paths:"
-            )
-            for adapter_name, bad_args in missing.items():
-                logger.error(f"\n  [{adapter_name}]")
-                for arg_name, path in bad_args.items():
-                    logger.error(f"    {arg_name}: {path}")
-            logger.error(
-                "\nFix the paths above or run with --skip-preflight to bypass this check."
-            )
+            _report_missing_paths(missing, include_hint=True)
             raise typer.Exit(1)
         logger.info("Pre-flight path check passed.")
 
@@ -745,13 +752,7 @@ def main(
             adapters_dict = {k: v for k, v in adapters_dict.items() if k.lower() in include_lower}
         missing = _check_adapter_file_paths(adapters_dict)
         if missing:
-            logger.error(
-                f"Pre-flight check failed — {len(missing)} adapter(s) have missing file paths:"
-            )
-            for adapter_name, bad_args in missing.items():
-                logger.error(f"\n  [{adapter_name}]")
-                for arg_name, path in bad_args.items():
-                    logger.error(f"    {arg_name}: {path}")
+            _report_missing_paths(missing, include_hint=False)
             raise typer.Exit(1)
         logger.info(
             f"Pre-flight check passed — all {len(adapters_dict)} adapter(s) have valid file paths."
