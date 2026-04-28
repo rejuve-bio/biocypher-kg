@@ -275,6 +275,36 @@ def _strip_taxon_id(items, is_edge: bool):
             yield node_id, label, props
 
 
+_PREFLIGHT_SKIP_ARGS = {"cache_dir"}
+
+
+def _check_adapter_file_paths(adapters_dict: dict) -> dict:
+    """Return {adapter_name: {arg_name: path}} for every declared path that does not exist."""
+    missing = {}
+    for adapter_name, adapter_entry in adapters_dict.items():
+        args = (adapter_entry.get("adapter") or {}).get("args") or {}
+        adapter_missing = {}
+        for arg_name, value in args.items():
+            if arg_name in _PREFLIGHT_SKIP_ARGS:
+                continue
+            if arg_name == "feature_files" and isinstance(value, list):
+                for i, item in enumerate(value):
+                    if isinstance(item, dict):
+                        path = item.get("path")
+                        if isinstance(path, str) and not Path(path).exists():
+                            adapter_missing[f"feature_files[{i}].path"] = path
+                continue
+            if not isinstance(value, str):
+                continue
+            if not (value.startswith("/") or value.startswith("./") or value.startswith("../")):
+                continue
+            if not Path(value).exists():
+                adapter_missing[arg_name] = value
+        if adapter_missing:
+            missing[adapter_name] = adapter_missing
+    return missing
+
+
 def process_adapters(
     adapters_dict,
     dbsnp_rsids_dict,
@@ -285,6 +315,7 @@ def process_adapters(
     schema_dict,
     checkpoint_manager: Optional[CheckpointManager] = None,
     include_taxon_id: bool = True,
+    skip_preflight: bool = False,
 ):
     """
     Iterate over all adapters, write nodes/edges, and accumulate statistics.
@@ -297,6 +328,22 @@ def process_adapters(
       failing adapter name before re-raising, so the user can fix the data
       and resume without losing prior progress.
     """
+    if not skip_preflight:
+        missing = _check_adapter_file_paths(adapters_dict)
+        if missing:
+            logger.error(
+                f"Pre-flight check failed — {len(missing)} adapter(s) have missing file paths:"
+            )
+            for adapter_name, bad_args in missing.items():
+                logger.error(f"\n  [{adapter_name}]")
+                for arg_name, path in bad_args.items():
+                    logger.error(f"    {arg_name}: {path}")
+            logger.error(
+                "\nFix the paths above or run with --skip-preflight to bypass this check."
+            )
+            raise typer.Exit(1)
+        logger.info("Pre-flight path check passed.")
+
     if checkpoint_manager is not None and checkpoint_manager.completed_adapters:
         nodes_count, nodes_props, edges_count, datasets_dict = (
             checkpoint_manager.restore_accumulators()
@@ -710,6 +757,11 @@ def main(
             "If omitted you will be prompted interactively."
         ),
     ),
+    skip_preflight: bool = typer.Option(
+        False,
+        "--skip-preflight",
+        help="Skip pre-flight file path validation before running adapters.",
+    ),
 ):
     """
     Main function. Call individual adapters to download and process data. Build
@@ -822,6 +874,7 @@ def main(
                         schema_dict,
                         checkpoint_manager=ckpt,
                         include_taxon_id=include_taxon_id,
+                        skip_preflight=skip_preflight,
                     )
 
                     if writer_type == "networkx":
@@ -989,6 +1042,7 @@ def main(
             schema_dict,
             checkpoint_manager=ckpt,
             include_taxon_id=include_taxon_id,
+            skip_preflight=skip_preflight,
         )
 
         if writer_type == "networkx":
