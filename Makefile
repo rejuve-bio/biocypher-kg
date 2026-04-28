@@ -1,4 +1,4 @@
-.PHONY: help setup check-uv run run-interactive run-sample test clean distclean
+.PHONY: help setup check-uv run run-interactive run-sample run-direct check-paths test clean distclean
 
 # Default target
 help:
@@ -7,6 +7,7 @@ help:
 	@echo "  make run            - Run with interactive prompts for parameters"
 	@echo "  make run-sample     - Run with sample configuration and data"
 	@echo "  make run-direct     - Run with explicit parameters (non-interactive)"
+	@echo "  make check-paths    - Validate file paths in an adapters config (no adapters run)"
 	@echo "  make test           - Run tests"
 	@echo "  make clean          - Clean temporary files"
 	@echo "  make distclean      - Full clean including virtual environment"
@@ -14,8 +15,11 @@ help:
 	@echo "Usage examples:"
 	@echo "  make run            - Interactive mode (recommended)"
 	@echo "  make run-interactive - Same as 'make run'"
-	@echo "  make run-sample                    - Run with sample data (default: metta writer)"
-	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
+	@echo "  make run-sample                         - Run with sample data (default: metta writer)"
+	@echo "  make run-sample WRITER_TYPE=prolog       - Run with sample data using prolog writer"
+	@echo "  make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"
+	@echo "  make run-direct ... SKIP_PREFLIGHT=yes   - Skip pre-flight file path validation"
+	@echo "  make run-sample     SKIP_PREFLIGHT=yes   - Same, for sample runs"
 
 # Check if UV is installed, install via pip if not
 check-uv:
@@ -101,6 +105,16 @@ run-interactive: check-uv
 		echo "Provenance will NOT be added"; \
 	fi; \
 	echo ""; \
+	read -p "🚦 Skip pre-flight path validation? (yes/no) [no]: " SKIP_PREFLIGHT; \
+	SKIP_PREFLIGHT=$${SKIP_PREFLIGHT:-no}; \
+	if [ "$$SKIP_PREFLIGHT" = "yes" ]; then \
+		SKIP_PREFLIGHT_FLAG="--skip-preflight"; \
+		echo "Pre-flight validation will be skipped"; \
+	else \
+		SKIP_PREFLIGHT_FLAG=""; \
+		echo "Pre-flight validation enabled"; \
+	fi; \
+	echo ""; \
 	echo "🎯 Starting knowledge graph creation..."; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
@@ -111,7 +125,8 @@ run-interactive: check-uv
 		--writer-type "$$WRITER_TYPE" \
 		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG && \
+		$$ADD_PROVENANCE_FLAG \
+		$$SKIP_PREFLIGHT_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
@@ -141,7 +156,8 @@ run-direct: check-uv
 		$(if $(DBSNP_VARIANT),--dbsnp-variant $(DBSNP_VARIANT),) \
 		$(if $(WRITER_TYPE),--writer-type $(WRITER_TYPE),--writer-type metta) \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG
+		$$ADD_PROVENANCE_FLAG \
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
 
 # Run with sample configuration and data (with optional writer type)
 run-sample: check-uv
@@ -169,8 +185,29 @@ run-sample: check-uv
 		--schema-config ./config/hsa/hsa_schema_config.yaml \
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
 		$$WRITE_PROPERTIES_FLAG \
-		$$ADD_PROVENANCE_FLAG
+		$$ADD_PROVENANCE_FLAG \
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
 	@echo "✅ Sample run completed! Check the ./output directory for results."
+# Validate file paths in an adapters config without running any adapters
+check-paths: check-uv
+	@if [ -z "$(ADAPTERS_CONFIG)" ]; then \
+		echo "❌ Error: ADAPTERS_CONFIG is required"; \
+		echo "Usage: make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"; \
+		echo "       make check-paths ADAPTERS_CONFIG=... INCLUDE_ADAPTERS='gencode_gene uniprotkb_sprot'"; \
+		exit 1; \
+	fi
+	@export PATH="$$HOME/.local/bin:$$PATH"; \
+	INCLUDE_ADAPTERS_FLAG=""; \
+	if [ -n "$(INCLUDE_ADAPTERS)" ]; then \
+		for adapter in $(INCLUDE_ADAPTERS); do \
+			INCLUDE_ADAPTERS_FLAG="$$INCLUDE_ADAPTERS_FLAG --include-adapters $$adapter"; \
+		done; \
+	fi; \
+	uv run python create_knowledge_graph.py \
+		--adapters-config $(ADAPTERS_CONFIG) \
+		$$INCLUDE_ADAPTERS_FLAG \
+		--check-only
+
 # Run tests
 test: check-uv
 	@export PATH="$$HOME/.local/bin:$$PATH"; uv run pytest -v

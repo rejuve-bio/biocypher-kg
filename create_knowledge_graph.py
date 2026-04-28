@@ -722,11 +722,42 @@ def main(
         "--skip-preflight",
         help="Skip pre-flight file path validation before running adapters.",
     ),
+    check_only: bool = typer.Option(
+        False,
+        "--check-only",
+        help=(
+            "Validate file paths declared in --adapters-config and exit without running any adapters. "
+            "Only --adapters-config is required in this mode."
+        ),
+    ),
 ):
     """
     Main function. Call individual adapters to download and process data. Build
     via BioCypher from node and edge data.
     """
+    if check_only:
+        if adapters_config is None:
+            logger.error("--adapters-config is required with --check-only")
+            raise typer.Exit(1)
+        adapters_dict = _load_adapters_config(adapters_config, str(adapters_config))
+        if include_adapters:
+            include_lower = [a.lower() for a in include_adapters]
+            adapters_dict = {k: v for k, v in adapters_dict.items() if k.lower() in include_lower}
+        missing = _check_adapter_file_paths(adapters_dict)
+        if missing:
+            logger.error(
+                f"Pre-flight check failed — {len(missing)} adapter(s) have missing file paths:"
+            )
+            for adapter_name, bad_args in missing.items():
+                logger.error(f"\n  [{adapter_name}]")
+                for arg_name, path in bad_args.items():
+                    logger.error(f"    {arg_name}: {path}")
+            raise typer.Exit(1)
+        logger.info(
+            f"Pre-flight check passed — all {len(adapters_dict)} adapter(s) have valid file paths."
+        )
+        raise typer.Exit(0)
+
     manual_mode = all([adapters_config, schema_config])
     species_mode = species is not None
 
