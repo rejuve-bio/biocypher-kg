@@ -1578,6 +1578,10 @@ catlas_enhancer_accessible_in:
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
       cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: enhancer
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/enhancer_accessible_in
   nodes: False
   edges: True
@@ -1593,6 +1597,10 @@ catlas_promoter_accessible_in:
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
       cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: promoter
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/promoter_accessible_in
   nodes: False
   edges: True
@@ -1610,6 +1618,10 @@ catlas_abc_enhancer_to_gene:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: enhancer_activity_by_contact
       # score_threshold: 0.015  # optional: filter low-confidence predictions
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/abc_enhancer_to_gene
   nodes: False
   edges: True
@@ -1627,6 +1639,10 @@ catlas_abc_promoter_to_gene:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: promoter_gene
       # score_threshold: 0.015  # optional: filter low-confidence predictions
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/abc_promoter_to_gene
   nodes: False
   edges: True
