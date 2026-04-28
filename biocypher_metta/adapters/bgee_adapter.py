@@ -88,11 +88,15 @@ class BgeeAdapter(Adapter):
 
             # Yield deduplicated edges
             for (source_id, target_id), edge_data in edge_dict.items():
-                yield source_id, ('anatomy', target_id), self.label, edge_data["props"]
-                yield source_id, ('developmental_stage', edge_data['props'].get('developmental_stage')), self.label, edge_data["props"]
+                node_type = 'cell_type' if target_id.startswith('CL_') else 'anatomy'
+                yield source_id, (node_type, target_id), self.label, edge_data["props"]
+                dev_stage_id = edge_data['props'].get('developmental_stage')
+                if dev_stage_id:
+                    dev_props = {k: v for k, v in edge_data["props"].items() if k != 'developmental_stage'}
+                    yield source_id, ('developmental_stage', dev_stage_id), self.label, dev_props
 
         except OSError as e:
-            raise RuntimeError(f"Error opening the file: {https://www.bgee.org/download/gene-expression-calls?id=9606}")
+            raise RuntimeError(f"Error opening the bgee file '{self.filepath}': {e}") from e
 
     def split_by_intersection(self, s: str) -> list[str]:
         """

@@ -25,7 +25,7 @@ This will guide you through all parameters step by step with sensible defaults.
 
 #### Option 2: Quick Sample Run
 ```bash
-make run-sample WRITER_TYPE=<metta,neo4j,prolog>
+make run-sample WRITER_TYPE=<metta,neo4j,prolog> [INCLUDE_TAXON_ID=no]
 ```
 
 #### Option 3: Direct Run with Parameters
@@ -36,7 +36,8 @@ make run-direct OUTPUT_DIR=./output \
                DBSNP_POS=./pos.txt \
                WRITER_TYPE=metta \
                WRITE_PROPERTIES=no \
-               ADD_PROVENANCE=no
+               ADD_PROVENANCE=no \
+               INCLUDE_TAXON_ID=no
 ```
 ### Interactive Mode Example
 When you run `make run`, you'll see:
@@ -50,6 +51,7 @@ When you run `make run`, you'll see:
 📝 Enter writer type (metta/prolog/neo4j) [metta]: 
 📋 Write properties? (yes/no) [no]: 
 🔗 Add provenance? (yes/no) [no]: 
+🧬 Include taxon_id in output? (yes/no) [yes]: 
 ```
 
 ### Available Make Commands

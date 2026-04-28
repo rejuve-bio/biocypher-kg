@@ -52,7 +52,7 @@ class ReactomePathwayGOAdapter(Adapter):
                 if len(parts) < 3:
                     continue
                     
-                pathway_id, pathway_name, go_term = parts[0], parts[1], parts[2]
+                pathway_id, go_term = parts[0], parts[2]
                 
                 # Clean and standardize GO term
                 clean_go_term = go_term.replace('GO:', '').replace('go:', '')
@@ -73,12 +73,8 @@ class ReactomePathwayGOAdapter(Adapter):
                     continue
                 
                 # Prepare base properties
-                properties = {
-                    'pathway_name': pathway_name,
-                    'go_term_id': full_go_term,
-                    'subontology': go_type, 
-                }
-                
+                properties = {}
+
                 if self.add_provenance:  
                     properties.update({
                         'source': self.source,

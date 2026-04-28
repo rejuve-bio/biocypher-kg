@@ -588,7 +588,6 @@ class OntologyAdapter(Adapter):
                         continue  
                     props = {}
                     if self.write_properties:
-                        props['rel_type'] = predicate_name
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url

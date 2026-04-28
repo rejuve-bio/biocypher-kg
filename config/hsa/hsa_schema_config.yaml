@@ -138,13 +138,15 @@ ontology term:
     description: 
       type: str
       biolink: description
-    synonym: 
+    synonym:
       type: str[]
       biolink: synonym
-    source: 
+    alternative_ids:
+      type: str[]
+    source:
       type: str
       biolink: knowledge_source
-    source_url: 
+    source_url:
       type: str
       biolink: source_web_page
 
@@ -206,16 +208,24 @@ protein:
   biolink_category: "biolink:Protein"
   inherit_properties: true
   properties:
-    accession: 
+    accessions:
       type: str[]
       biolink: xref
     protein_name:
       type: str
       biolink: name
-    source: 
+    is_canonical:
+      type: bool
+    is_isoform:
+      type: bool
+    canonical_accession:
+      type: str
+    isoform_name:
+      type: str
+    source:
       type: str
       biolink: knowledge_source
-    source_url: 
+    source_url:
       type: str
       biolink: source_web_page
   kgx_properties:
@@ -231,9 +241,6 @@ transcript:
   kgx_properties:
     category: "biolink:Transcript"
   properties:
-    gene_name: 
-     type: str
-     biolink: name
     transcript_name:
       type: str
       biolink: name
@@ -263,17 +270,8 @@ exon:
   kgx_properties:
     category: "biolink:Exon"
   properties:
-    gene_id: 
-      type: str
-      biolink: id
-    transcript_id: 
-      type: str
-      biolink: id
-    exon_number: 
+    exon_number:
       type: int
-    exon_id: 
-      type: str
-      biolink: id
 
 # ---
 # genomic variants
@@ -293,8 +291,24 @@ snp:
       type: str
     caf_ref: 
       type: str
-    caf_alt: 
+    caf_alt:
       type: str
+    polyphen2_humdiv_score:
+      type: float
+      biolink: has_quantitative_value
+    polyphen2_humdiv_prediction:
+      type: str
+    polyphen2_humvar_score:
+      type: float
+      biolink: has_quantitative_value
+    polyphen2_humvar_prediction:
+      type: str
+    raw_cadd_score:
+      type: float
+      biolink: has_quantitative_value
+    phred_score:
+      type: float
+      biolink: has_quantitative_value
   description: >-
     A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
 
@@ -342,33 +356,6 @@ sequence variant:
       type: float
     phred_score: 
       type: float
-
-polyphen2 variant:
-  represented_as: node
-  is_a: genomic variant
-  mixins: [biolink:SequenceVariant]
-  biolink_category: "biolink:SequenceVariant"
-  inherit_properties: true
-  input_label: polyphen2_variant
-  description: >-
-    A variant with PolyPhen-2 predictions for the impact of amino acid substitutions on protein structure and function
-  kgx_properties:
-    category: "biolink:SequenceVariant"
-  properties:
-    ref: 
-      type: str
-    alt: 
-      type: str
-    polyphen2_humdiv_score: 
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humdiv_prediction: 
-      type: str
-    polyphen2_humvar_score: 
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humvar_prediction: 
-      type: str
 
 # ---
 # non-coding elements
@@ -477,9 +464,6 @@ pathway:
     evidence:
       type: str
       biolink: has_evidence
-    pubmed_url:        
-      type: str
-      biolink: source_record_urls            
     source:
       type: str
       biolink: knowledge_source
@@ -1165,10 +1149,7 @@ subclass of:
     object_category: "biolink:OntologyClass"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-  properties:
-    rel_type: 
-      type: str
-      biolink: relation
+  properties: {}
 
 cl capable of:
   is_a: annotation
@@ -1267,11 +1248,8 @@ gene to pathway association:
   output_label: participates_in
   source: [gene, transcript, protein]
   target: pathway
-  pathway_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
-    type: str
-    biolink: source_record_urls
   kgx_properties:
-    subject_category: "biolink:GeneOrGeneProduct"  
+    subject_category: "biolink:GeneOrGeneProduct"
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
@@ -1638,17 +1616,12 @@ pathway_to_biological_process:
     description: >-
       An association between a pathway and a biological process, indicating that the pathway is involved in the process.
     properties:
-      pathway_name: str
-      go_term_id: str
-      go_term_type: 
-        type: str
-        const: biological process
-      source: 
+      source:
         type: str
         biolink: knowledge_source
       source_url:
         type: str
-        biolink: source_web_page    
+        biolink: source_web_page
     kgx_properties:
       subject_category: "biolink:Pathway"
       object_category: "biolink:BiologicalProcess"
@@ -1664,12 +1637,7 @@ pathway_to_molecular_function:
     input_label: pathway_to_molecular_function
     description: >-
       An association between a pathway and a molecular function, indicating that the pathway is involved in the function.
-    properties:
-      pathway_name: str
-      go_term_id: str
-      go_term_type:
-        type: str
-        const: molecular function
+    properties: {}
     kgx_properties:
       subject_category: "biolink:Pathway"
       object_category: "biolink:MolecularActivity"
@@ -1684,12 +1652,7 @@ pathway_to_cellular_component:
     input_label: pathway_to_cellular_component
     description: >-
       An association between a pathway and a cellular component, indicating that the pathway is associated with the component.
-    properties:
-      pathway_name: str
-      go_term_id: str
-      go_term_type:
-        type: str
-        const: cellular component
+    properties: {}
     kgx_properties:
       subject_category: "biolink:Pathway"
       object_category: "biolink:CellularComponent"
@@ -1709,15 +1672,15 @@ go gene product:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
-    qualifier: 
-      type: str
-      biolink: qualifier
-    db_reference: 
-      type: str
+    db_reference:
+      type: str[]
       biolink: publication
-    evidence: 
+    evidence:
       type: str
       biolink: has_evidence
+    taxon_id:
+      type: str
+      biolink: taxon
 
 biological process gene product:
   is_a: go gene product
@@ -1805,15 +1768,15 @@ go gene:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
-    qualifier: 
-      type: str
-      biolink: qualifier
-    db_reference: 
-      type: str
+    db_reference:
+      type: str[]
       biolink: publication
-    evidence: 
+    evidence:
       type: str
       biolink: has_evidence
+    taxon_id:
+      type: str
+      biolink: taxon
 
 biological process gene:
   is_a: go gene
@@ -2925,12 +2888,6 @@ gene biomarker via orthology disease:
   properties:
     taxon_id:
       type: integer
-    species_name:
-      type: string
-    gene_symbol:
-      type: string
-    disease_name:
-      type: string
     evidence_code:
       type: string
     evidence_code_name:
@@ -2939,7 +2896,7 @@ gene biomarker via orthology disease:
       type: string
     date:
       type: string
-    source:
+    data_source:
       type: string
     with_ortholog:
       type: string
@@ -2968,12 +2925,6 @@ gene implicated via orthology disease:
   properties:
     taxon_id:
       type: integer
-    species_name:
-      type: string
-    gene_symbol:
-      type: string
-    disease_name:
-      type: string
     evidence_code:
       type: string
     evidence_code_name:
@@ -2982,7 +2933,7 @@ gene implicated via orthology disease:
       type: string
     date:
       type: string
-    source:
+    data_source:
       type: string
     with_ortholog:
       type: string
@@ -3011,12 +2962,6 @@ gene is implicated in disease:
   properties:
     taxon_id:
       type: integer
-    species_name:
-      type: string
-    gene_symbol:
-      type: string
-    disease_name:
-      type: string
     evidence_code:
       type: string
     evidence_code_name:
@@ -3025,7 +2970,7 @@ gene is implicated in disease:
       type: string
     date:
       type: string
-    source:
+    data_source:
       type: string
     with_ortholog:
       type: string
@@ -3053,12 +2998,6 @@ gene to disease marker association:
   properties:
     taxon_id:
       type: integer
-    species_name:
-      type: string
-    gene_symbol:
-      type: string
-    disease_name:
-      type: string
     evidence_code:
       type: string
     evidence_code_name:
@@ -3067,7 +3006,7 @@ gene to disease marker association:
       type: string
     date:
       type: string
-    source:
+    data_source:
       type: string
     with_ortholog:
       type: string
@@ -3095,12 +3034,6 @@ gene to disease model association:
   properties:
     taxon_id:
       type: integer
-    species_name:
-      type: string
-    gene_symbol:
-      type: string
-    disease_name:
-      type: string
     evidence_code:
       type: string
     evidence_code_name:
@@ -3109,7 +3042,7 @@ gene to disease model association:
       type: string
     date:
       type: string
-    source:
+    data_source:
       type: string
     with_ortholog:
       type: string

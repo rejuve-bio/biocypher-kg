@@ -130,21 +130,19 @@ class AllianceGeneDiseaseAdapter(Adapter):
                 _props = {}
                 
                 if self.write_properties:
+                    date_fmt = f"{date[:4]}-{date[4:6]}-{date[6:]}" if len(date) == 8 else date
                     _props = {
                         "taxon_id": int(taxon),
-                        "species_name": species_name,
-                        "gene_symbol": db_object_symbol,
-                        "disease_name": do_term_name,
-                        "evidence_code": evidence_code,
+                        "evidence_code": evidence_code.replace('ECO:', 'ECO_'),
                         "evidence_code_name": evidence_code_name,
                         "reference": reference,
-                        "date": date,
-                        "source": source,
+                        "date": date_fmt,
+                        "data_source": source,
                         "with_ortholog": with_ortholog if with_ortholog else None,
                         "inferred_from_id": inferred_from_id if inferred_from_id else None,
                         "inferred_from_symbol": inferred_from_symbol if inferred_from_symbol else None,
                     }
-                        
+
                 if self.add_provenance:
                     _props["source"] = self.source
                     _props["source_url"] = self.source_url

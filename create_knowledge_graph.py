@@ -260,6 +260,21 @@ def _load_adapters_config(config_path: Path, context: str) -> dict:
             raise typer.Exit(1)
 
 
+def _strip_taxon_id(items, is_edge: bool):
+    """Wrap a node/edge generator to remove 'taxon_id' from every props dict."""
+    for item in items:
+        if is_edge:
+            src, tgt, label, props = item
+            if props and 'taxon_id' in props:
+                props = {k: v for k, v in props.items() if k != 'taxon_id'}
+            yield src, tgt, label, props
+        else:
+            node_id, label, props = item
+            if props and 'taxon_id' in props:
+                props = {k: v for k, v in props.items() if k != 'taxon_id'}
+            yield node_id, label, props
+
+
 def process_adapters(
     adapters_dict,
     dbsnp_rsids_dict,
@@ -269,6 +284,7 @@ def process_adapters(
     add_provenance,
     schema_dict,
     checkpoint_manager: Optional[CheckpointManager] = None,
+    include_taxon_id: bool = True,
 ):
     """
     Iterate over all adapters, write nodes/edges, and accumulate statistics.
@@ -349,6 +365,8 @@ def process_adapters(
         try:
             if write_nodes:
                 nodes = adapter.get_nodes()
+                if not include_taxon_id:
+                    nodes = _strip_taxon_id(nodes, is_edge=False)
                 freq, props = writer.write_nodes(nodes, path_prefix=outdir)
                 for node_label, node_count in freq.items():
                     nodes_count[node_label] += node_count
@@ -359,6 +377,8 @@ def process_adapters(
 
             if write_edges:
                 edges = adapter.get_edges()
+                if not include_taxon_id:
+                    edges = _strip_taxon_id(edges, is_edge=True)
                 freq = writer.write_edges(edges, path_prefix=outdir)
                 for edge_label_key, edge_count in freq.items():
                     edges_count[edge_label_key] += edge_count
@@ -643,6 +663,12 @@ def main(
     add_provenance: bool = typer.Option(
         True, help="Add provenance to nodes and edges"
     ),
+    include_taxon_id: bool = typer.Option(
+        True,
+        "--include-taxon-id/--no-taxon-id",
+        help="Include taxon_id property on nodes and edges. "
+             "Use --no-taxon-id for single-species KGs where the taxon is implicit.",
+    ),
     include_curie: bool = typer.Option(
         False,
         "--include-curie/--no-curie",
@@ -781,6 +807,7 @@ def main(
                         add_provenance,
                         schema_dict,
                         checkpoint_manager=ckpt,
+                        include_taxon_id=include_taxon_id,
                     )
 
                     if writer_type == "networkx":
@@ -830,6 +857,7 @@ def main(
             logger.info(f"Output directory: {output_dir}")
             logger.info(f"Write properties: {write_properties}")
             logger.info(f"Add provenance: {add_provenance}")
+            logger.info(f"Include taxon_id: {include_taxon_id}")
 
             output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -846,7 +874,9 @@ def main(
             cfg_cache_root = ""
             cfg_variant = None
 
-        is_sample_config = dataset == "sample" if species_mode else "sample" in str(adapters_config).lower()
+        is_sample_config = dataset == "sample" if species_mode else any(
+            kw in str(adapters_config).lower() for kw in ("sample", "test_config")
+        )
 
         resolved_cache_root = dbsnp_cache_root or cfg_cache_root
         if not resolved_cache_root and is_sample_config:
@@ -930,6 +960,7 @@ def main(
             add_provenance,
             schema_dict,
             checkpoint_manager=ckpt,
+            include_taxon_id=include_taxon_id,
         )
 
         if writer_type == "networkx":
