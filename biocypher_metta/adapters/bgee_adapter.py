@@ -96,7 +96,7 @@ class BgeeAdapter(Adapter):
                     yield source_id, ('developmental_stage', dev_stage_id), self.label, dev_props
 
         except OSError as e:
-            raise RuntimeError(f"Error opening the bgee file: {e}")
+            raise RuntimeError(f"Error opening the bgee file '{self.filepath}': {e}") from e
 
     def split_by_intersection(self, s: str) -> list[str]:
         """
