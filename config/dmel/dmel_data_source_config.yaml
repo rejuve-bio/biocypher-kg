@@ -59,6 +59,7 @@ reactome:
     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
     - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
+    - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
 
 rna_central:
   name: RNA Central

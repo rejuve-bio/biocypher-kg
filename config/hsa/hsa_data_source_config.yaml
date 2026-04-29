@@ -22,6 +22,8 @@ reactome:
     - https://reactome.org/download/current/ReactomePathwaysRelation.txt
     - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
+    - https://reactome.org/download/current/interactors/reactome.homo_sapiens.interactions.tab-delimited.txt
+
 gaf:
   name: GO Annotation File (GAF)
   url: http://geneontology.org/gene-associations/goa_human.gaf.gz

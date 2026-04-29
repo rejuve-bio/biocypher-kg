@@ -229,7 +229,6 @@ chebi_small_molecule_to_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2Reactome_All_Levels.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_uniprot_map.pkl
       label: small_molecule_to_pathway
       taxon_id: 9606
   outdir: reactome
@@ -242,7 +241,6 @@ chebi_small_molecule_to_reactions:
     cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/ChEBI2ReactomeReactions.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_uniprot_map.pkl
       label: small_molecule_to_reaction
       taxon_id: 9606
   outdir: reactome
@@ -550,7 +548,7 @@ reactome_ppi:
     module: biocypher_metta.adapters.reactome_ppi_adapter
     cls: ReactomePPIAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_homo_sapiens_interactions_tab_delimited.txt.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/reactome/reactome.homo_sapiens.interactions.tab-delimited.txt
       label: interacts_with
       taxon_id: 9606
   outdir: reactome/ppi
@@ -1590,7 +1588,7 @@ catlas_ccre_promoter:
     module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
     cls: CAtlasCCREAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       class_filter: promoter
       taxon_id: 9606
       input_coordinate_system: bed
@@ -1603,7 +1601,7 @@ catlas_ccre_enhancer:
     module: biocypher_metta.adapters.hsa.catlas_ccre_adapter
     cls: CAtlasCCREAdapter
     args:
-      filepath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      filepath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       class_filter: enhancer
       taxon_id: 9606
       input_coordinate_system: bed
@@ -1616,12 +1614,12 @@ catlas_enhancer_accessible_in:
     module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
     cls: CAtlasCCRECellTypeAdapter
     args:
-      cres_dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCREs
+      cres_dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCREs
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
-      cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
+      cell_ontology_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: enhancer
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
   optional_paths:
     - ccre_label_pkl      # generated from ccre_master_tsv on first run
     - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
@@ -1635,12 +1633,12 @@ catlas_promoter_accessible_in:
     module: biocypher_metta.adapters.hsa.catlas_ccre_cell_type_adapter
     cls: CAtlasCCRECellTypeAdapter
     args:
-      cres_dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCREs
+      cres_dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCREs
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
-      cell_ontology_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/Cell_ontology.tsv
+      cell_ontology_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: promoter
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
   optional_paths:
     - ccre_label_pkl      # generated from ccre_master_tsv on first run
     - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
@@ -1654,8 +1652,8 @@ catlas_abc_enhancer_to_gene:
     module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
     args:
-      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl
@@ -1675,8 +1673,8 @@ catlas_abc_promoter_to_gene:
     module: biocypher_metta.adapters.hsa.catlas_abc_score_adapter
     cls: CAtlasABCScoreAdapter
     args:
-      dirpath: /mnt/hdd_1/abdu/biocypher_data/catlasv1/ABC_scores
-      ccre_master_tsv: /mnt/hdd_1/abdu/biocypher_data/catlasv1/cCRE_hg38.tsv.gz
+      dirpath: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/ABC_scores
+      ccre_master_tsv: /mnt/hdd_1/biocypher-kg/input/hsa/catlasv1/cCRE_hg38.tsv.gz
       hgnc_mapping_pkl: ./aux_files/hsa/hgnc/hgnc_mapping.pkl
       ccre_label_pkl: ./aux_files/hsa/catlas/catlas_ccre_label_map.pkl
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_abc_cell_ontology_map.pkl

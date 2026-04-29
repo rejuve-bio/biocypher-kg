@@ -232,7 +232,6 @@ chebi_small_molecule_to_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
-
       label: small_molecule_to_pathway
       taxon_id: 9606
   outdir: reactome
@@ -245,7 +244,6 @@ chebi_small_molecule_to_reactions:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
-
       label: small_molecule_to_reaction
       taxon_id: 9606
   outdir: reactome
@@ -281,7 +279,7 @@ reactome_ppi:
     module: biocypher_metta.adapters.reactome_ppi_adapter
     cls: ReactomePPIAdapter
     args:
-      filepath: ./samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt.gz
+      filepath: ./samples/reactome/interactors/reactome.homo_sapiens.interactions.tab-delimited_sample.txt
       label: interacts_with
       taxon_id: 9606
   outdir: reactome/ppi
