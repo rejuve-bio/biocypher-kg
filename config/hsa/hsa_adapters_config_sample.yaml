@@ -1017,7 +1017,7 @@ enhancer_atlas_enhancer:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      enhancer_filepath: ./samples/hsa/enhancer_atlas/hs_sample.bed
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       label: enhancer
@@ -1031,7 +1031,7 @@ enhancer_atlas_enhancer_regulates:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      enhancer_filepath: ./samples/hsa/enhancer_atlas/hs_sample.bed
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association

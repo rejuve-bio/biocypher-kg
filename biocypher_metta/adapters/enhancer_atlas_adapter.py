@@ -6,7 +6,7 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 
 # There are data for CEL, DMEL MMU, RNO & others, but the site is frequently unavailable :-()
 # Human data:
-# https://enhanceratlas.org/downloadv2.php
+# http://singlecelldb.com/downloadv2.php
 
 # Example enhancer atlas input file:
 # enhancer signal - enrichment score calculated as the combination of enrichment scores from individual tracks.
@@ -49,7 +49,7 @@ class EnhancerAtlasAdapter(Adapter):
 
         self.source = 'Enhancer Atlas'
         self.version = '2.0'
-        self.source_url = 'http://enhanceratlas.org/downloadv2.php'
+        self.source_url = 'http://singlecelldb.com/downloadv2.php'
 
         super(EnhancerAtlasAdapter, self).__init__(write_properties, add_provenance)
     
@@ -62,7 +62,7 @@ class EnhancerAtlasAdapter(Adapter):
         return chr, start, end, gene
     
     def get_nodes(self):
-        with gzip.open(self.enhancer_filepath, 'rt') as f:
+        with open(self.enhancer_filepath, 'r') as f:
             for line in f:
                 info = line.strip().split('\t')
                 chr = info[EnhancerAtlasAdapter.INDEX['chr']]
