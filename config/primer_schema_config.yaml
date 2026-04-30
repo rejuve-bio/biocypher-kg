@@ -1860,6 +1860,20 @@ orthology association:
     DIOPT_score:
       type: int
       biolink: has_quantitative_value
+    algorithms:
+      type: str
+    algorithms_match:
+      type: int
+    out_of_algorithms:
+      type: int
+    is_best_score:
+      type: str
+    is_best_rev_score:
+      type: str
+    gene1_symbol:
+      type: str
+    gene2_symbol:
+      type: str
     hsa_hgnc_id:
       type: str
       biolink: id
