@@ -1062,7 +1062,9 @@ gene to gene coexpression association:
 
 protein to protein coexpression association:
   description: >-
-    Indicates that two proteins are co-expressed according to STRING coexpression scores.
+    Indicates that two proteins are co-expressed,
+    generally under the same conditions, as measured
+    at the protein/transcript level (e.g. STRING coexpression channel).
   is_a: expression
   biolink_predicate: "biolink:coexpressed_with"
   inherit_properties: true
@@ -1075,10 +1077,11 @@ protein to protein coexpression association:
     subject_category: "biolink:Protein"
     object_category: "biolink:Protein"
     knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
+    agent_type: "automated_agent"
   properties:
     coexpression_score:
       type: float
+      biolink: has_quantitative_value
 
 post translational interaction:
   is_a: expression
