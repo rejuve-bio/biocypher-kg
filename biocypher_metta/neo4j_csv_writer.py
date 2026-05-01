@@ -350,13 +350,13 @@ class Neo4jCSVWriter(BaseWriter):
         return edge_freq
 
     def write_node_cypher(self, label, csv_path, cypher_path):
-        absolute_path = csv_path.resolve().as_posix()
-    
+        relative_path = csv_path.relative_to(self.output_path).as_posix()
+
         cypher_query = f"""
 CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
 
 CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "LOAD CSV WITH HEADERS FROM 'file:///{relative_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
     "MERGE (n:{label} {{id: row.id}})
     SET n += apoc.map.removeKeys(row, ['id'])",
     {{batchSize:1000, parallel:true, concurrency:4}}
@@ -368,11 +368,11 @@ RETURN batches, total;
             f.write(cypher_query)
 
     def write_edge_cypher(self, edge_label, source_type, target_type, csv_path, cypher_path):
-        absolute_path = csv_path.resolve().as_posix()
-    
+        relative_path = csv_path.relative_to(self.output_path).as_posix()
+
         cypher_query = f"""
 CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "LOAD CSV WITH HEADERS FROM 'file:///{relative_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
     "MATCH (source:{source_type} {{id: row.source_id}})
     MATCH (target:{target_type} {{id: row.target_id}})
     MERGE (source)-[r:{edge_label}]->(target)
