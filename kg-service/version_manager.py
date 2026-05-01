@@ -318,7 +318,7 @@ class VersionManager:
         current_hashes = self.hash_all_datasets()
         if not current_hashes:
             logger.error("No CSV files found!")
-            return (None, None, None)
+            return (None, None, None, None)
 
         # Step 2: Get stored hashes
         stored_hashes = self.get_stored_hashes()
@@ -348,7 +348,7 @@ class VersionManager:
         # Step 5: No changes?
         if not changed_datasets:
             logger.info("✅ No changes detected - nothing to load!")
-            return (None, None, None)
+            return (None, None, None, None)
 
         # Step 6: Discover sources
         logger.info("Discovering source names from CSV files...")
@@ -366,8 +366,16 @@ class VersionManager:
 
         logger.info(f"AtomSpace version: {current_atomspace_version or 'None'} → {new_atomspace_version}")
 
+        # Build per-file list for changed datasets (relative paths like "gaf/edges_foo.csv")
+        # neo4j_loader uses these for per-relationship surgical deletes and file-level loading.
+        changed_files = []
+        for dataset in changed_datasets:
+            folder = self.output_dir / dataset
+            for csv_file in sorted(folder.rglob("*.csv")):
+                changed_files.append(str(csv_file.relative_to(self.output_dir)))
+
         # Return tuple format expected by neo4j_loader.py
-        return (new_atomspace_version, new_dataset_versions, changed_datasets)
+        return (new_atomspace_version, new_dataset_versions, changed_datasets, changed_files)
 
     def finalize_version(self, output_dir, atomspace_version, dataset_versions, 
                          changed_datasets, build_id):
