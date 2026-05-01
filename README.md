@@ -129,7 +129,9 @@ The project template is structured as follows:
 ├── docker
 │   ├── biocypher_entrypoint_patch.sh
 │   ├── create_table.sh
-│   └── import.sh
+│   ├── import.sh
+│   ├── neo4j.env                  # Neo4j config (image, ports, paths, memory)
+│   └── docker-compose.neo4j.yml   # Parameterized Neo4j compose file
 ├── docker-compose.yml
 ├── docker-variables.env
 │
@@ -145,8 +147,10 @@ The project template is structured as follows:
 │ # Scripts
 ├── scripts
 │   ├── metta_space_import.py
-│   ├── neo4j_loader.py
 │   └── ...
+├── kg-service
+│   ├── neo4j_loader.py            # Load CSV/Cypher output into Neo4j
+│   └── version_manager.py
 │
 ├── config
 │   ├── adapters_config_sample.yaml
@@ -179,26 +183,56 @@ The project supports multiple output formats for the knowledge graph:
 2. **Prolog Writer (`prolog_writer.py`)**: Generates knowledge graph data in the Prolog format.
 3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
 
-### Neo4j Loader
-To load the generated knowledge graph into a Neo4j database, use the `neo4j_loader.py` script:
+### Neo4j Deployment & Loading
+
+Configure everything in `docker/neo4j.env` (image, ports, auth, data paths, memory), then use the Makefile targets:
 
 ```bash
-python scripts/neo4j_loader.py --output-dir <path_to_output_directory>
+# Start Neo4j Docker container
+make neo4j-up
+
+# Load data (reads connection settings from docker/neo4j.env)
+make neo4j-load
+
+# Other lifecycle commands
+make neo4j-status
+make neo4j-logs
+make neo4j-down
+
+# Override the env file
+make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env
 ```
 
-#### Neo4j Loader Options
-- `--output-dir`: **Required**. Path to the directory containing the generated Cypher query files.
-- `--uri`: Optional. Neo4j database URI (default: `bolt://localhost:7687`)
-- `--username`: Optional. Neo4j username (default: `neo4j`)
+To run the loader directly:
 
-When you run the script, you'll be prompted to enter your Neo4j database password securely.
+```bash
+# Using an env file (recommended)
+python kg-service/neo4j_loader.py --env-file docker/neo4j.env
+
+# Or pass each argument explicitly
+python kg-service/neo4j_loader.py \
+  --output-dir <path_to_neo4j_output> \
+  --archive-dir <path_to_archive_dir> \
+  --uri bolt://localhost:7887 \
+  --username neo4j \
+  --password <password>
+```
+
+#### Loader options
+| Flag | Env var | Description |
+|---|---|---|
+| `--env-file` | — | Load all settings from a `neo4j.env` file |
+| `--output-dir` | `NEO4J_OUTPUT_DIR` | Directory with generated CSV + Cypher files |
+| `--archive-dir` | `NEO4J_ARCHIVE_DIR` | Archive directory for version management |
+| `--uri` | `NEO4J_URI` | Neo4j bolt URI |
+| `--username` | `NEO4J_USERNAME` | Neo4j username (default: `neo4j`) |
+| `--password` | `NEO4J_PASSWORD` | Neo4j password |
+| `--import-batch-size` | `NEO4J_IMPORT_BATCH_SIZE` | APOC batch size (default: `50000`) |
+| `--import-dir` | — | Absolute path prefix for `file:///` URLs (non-Docker use only) |
 
 **Notes:**
-- Ensure your Neo4j database is running before executing the loader.
-- The script will automatically find and process all Cypher query files (node and edge files) in the specified output directory.
-- It supports processing multiple directories containing Cypher files.
-- The loader creates constraints and loads data in a single session.
-- Logging is provided to help you track the loading process.
+- The loader detects changed files via hash comparison and only reloads what changed.
+- Edges use `CREATE` (not `MERGE`) — the loader surgically deletes changed edges before reloading, so the existence check is unnecessary and very slow on large files.
 
 ## ⬇ Downloading data
 The `downloader` directory contains code for downloading data from various sources.
