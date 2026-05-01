@@ -1,5 +1,5 @@
 .PHONY: help setup check-uv run run-interactive run-sample run-direct test clean distclean \
-        neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load
+        neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
 
 # Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
 NEO4J_ENV_FILE ?= docker/neo4j.env
@@ -16,11 +16,12 @@ help:
 	@echo "  make distclean      - Full clean including virtual environment"
 	@echo ""
 	@echo "Neo4j deployment (configure via $(NEO4J_ENV_FILE)):"
-	@echo "  make neo4j-up       - Start Neo4j Docker container"
-	@echo "  make neo4j-down     - Stop and remove Neo4j Docker container"
-	@echo "  make neo4j-logs     - Stream Neo4j container logs"
-	@echo "  make neo4j-status   - Show Neo4j container status"
-	@echo "  make neo4j-load     - Load data into Neo4j (reads settings from NEO4J_ENV_FILE)"
+	@echo "  make neo4j-up           - Start Neo4j Docker container"
+	@echo "  make neo4j-down         - Stop and remove Neo4j Docker container"
+	@echo "  make neo4j-logs         - Stream Neo4j container logs"
+	@echo "  make neo4j-status       - Show Neo4j container status"
+	@echo "  make neo4j-load         - Load data with version tracking (incremental)"
+	@echo "  make neo4j-load-direct  - Load ALL data directly, skipping version check"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make run            - Interactive mode (recommended)"
@@ -209,7 +210,7 @@ neo4j-logs: ## Stream Neo4j container logs
 neo4j-status: ## Show Neo4j container status
 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
 
-neo4j-load: check-uv ## Load data into Neo4j (reads connection settings from NEO4J_ENV_FILE)
+neo4j-load: check-uv ## Load data with version tracking (incremental — only reloads changed datasets)
 	@set -a; . $(NEO4J_ENV_FILE); set +a; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python kg-service/neo4j_loader.py \
@@ -219,6 +220,12 @@ neo4j-load: check-uv ## Load data into Neo4j (reads connection settings from NEO
 		--username "$$NEO4J_USERNAME" \
 		--password "$$NEO4J_PASSWORD" \
 		--import-batch-size "$${NEO4J_IMPORT_BATCH_SIZE:-50000}"
+
+neo4j-load-direct: check-uv ## Load ALL data directly, skipping version check
+	@set -a; . $(NEO4J_ENV_FILE); set +a; \
+	export PATH="$$HOME/.local/bin:$$PATH"; \
+	uv run python scripts/neo4j_loader.py \
+		--env-file $(NEO4J_ENV_FILE)
 
 # ─── Tests ───────────────────────────────────────────────────────────────────
 

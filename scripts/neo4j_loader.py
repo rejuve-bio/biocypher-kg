@@ -108,28 +108,53 @@ class Neo4jLoader:
             'edges': sorted(directory.glob("edges_*.cypher"))
         }
 
+def _load_env_file(path):
+    env = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, _, v = line.partition('=')
+            env[k.strip()] = v.strip()
+    return env
+
+
 def get_neo4j_credentials():
     parser = argparse.ArgumentParser(description='Load data into Neo4j database')
-    parser.add_argument('--output-dir', required=True, help='Path to the output directory')
-    parser.add_argument('--uri', default="bolt://localhost:7687", help='Neo4j URI (default: bolt://localhost:7687)')
-    parser.add_argument('--username', default="neo4j", help='Neo4j username (default: neo4j)')
-    
+    parser.add_argument('--output-dir', help='Path to the output directory')
+    parser.add_argument('--uri', default="bolt://localhost:7687", help='Neo4j URI')
+    parser.add_argument('--username', default="neo4j", help='Neo4j username')
+    parser.add_argument('--password', default=None, help='Neo4j password (falls back to interactive prompt)')
+    parser.add_argument('--env-file', default=None, help='Path to neo4j.env to load connection settings from')
+
+    # Pre-parse to detect --env-file, then set argparse defaults from it
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument('--env-file', default=None)
+    pre_args, _ = pre.parse_known_args()
+    if pre_args.env_file:
+        env = _load_env_file(pre_args.env_file)
+        parser.set_defaults(
+            uri=env.get('NEO4J_URI', 'bolt://localhost:7687'),
+            username=env.get('NEO4J_USERNAME', 'neo4j'),
+            password=env.get('NEO4J_PASSWORD'),
+            output_dir=env.get('NEO4J_OUTPUT_DIR'),
+        )
+
     args = parser.parse_args()
-    
-    max_attempts = 3
-    for attempt in range(max_attempts):
-        password = getpass.getpass('Enter Neo4j password: ')
-        loader = Neo4jLoader(args.uri, args.username, password)
-        
-        if loader.connect():
-            loader.close()  # Close the test connection
-            return args.uri, args.username, password, args.output_dir
-        
-        if attempt < max_attempts - 1:
-            logger.error(f"Authentication failed. {max_attempts - attempt - 1} attempts remaining.")
-    
-    logger.error("Maximum authentication attempts reached. Exiting.")
-    sys.exit(1)
+
+    if not args.output_dir:
+        parser.error('--output-dir is required (or set NEO4J_OUTPUT_DIR in --env-file)')
+
+    password = args.password or getpass.getpass('Enter Neo4j password: ')
+
+    loader = Neo4jLoader(args.uri, args.username, password)
+    if not loader.connect():
+        logger.error("Failed to connect to Neo4j.")
+        sys.exit(1)
+    loader.close()
+
+    return args.uri, args.username, password, args.output_dir
 
 def process_output_directory(output_dir):
     output_path = Path(output_dir)

@@ -148,8 +148,11 @@ The project template is structured as follows:
 ├── scripts
 │   ├── metta_space_import.py
 │   └── ...
+├── scripts
+│   ├── neo4j_loader.py            # Direct loader — no versioning (make neo4j-load-direct)
+│   └── ...
 ├── kg-service
-│   ├── neo4j_loader.py            # Load CSV/Cypher output into Neo4j
+│   ├── neo4j_loader.py            # Versioned/incremental loader (make neo4j-load)
 │   └── version_manager.py
 │
 ├── config
@@ -191,7 +194,10 @@ Configure everything in `docker/neo4j.env` (image, ports, auth, data paths, memo
 # Start Neo4j Docker container
 make neo4j-up
 
-# Load data (reads connection settings from docker/neo4j.env)
+# Load ALL data directly — no version checking (use for first run or fresh container)
+make neo4j-load-direct
+
+# Load incrementally — only reloads datasets whose files have changed
 make neo4j-load
 
 # Other lifecycle commands
@@ -203,13 +209,16 @@ make neo4j-down
 make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env
 ```
 
-To run the loader directly:
+To run the loaders directly:
 
 ```bash
-# Using an env file (recommended)
+# Direct load (no versioning) — using an env file
+python scripts/neo4j_loader.py --env-file docker/neo4j.env
+
+# Versioned/incremental load — using an env file
 python kg-service/neo4j_loader.py --env-file docker/neo4j.env
 
-# Or pass each argument explicitly
+# Versioned load — explicit args
 python kg-service/neo4j_loader.py \
   --output-dir <path_to_neo4j_output> \
   --archive-dir <path_to_archive_dir> \
