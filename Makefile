@@ -1,4 +1,8 @@
-.PHONY: help setup check-uv run run-interactive run-sample run-direct test clean distclean
+.PHONY: help setup check-uv run run-interactive run-sample run-direct test clean distclean \
+        neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load
+
+# Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
+NEO4J_ENV_FILE ?= docker/neo4j.env
 
 # Default target
 help:
@@ -11,11 +15,19 @@ help:
 	@echo "  make clean          - Clean temporary files"
 	@echo "  make distclean      - Full clean including virtual environment"
 	@echo ""
+	@echo "Neo4j deployment (configure via $(NEO4J_ENV_FILE)):"
+	@echo "  make neo4j-up       - Start Neo4j Docker container"
+	@echo "  make neo4j-down     - Stop and remove Neo4j Docker container"
+	@echo "  make neo4j-logs     - Stream Neo4j container logs"
+	@echo "  make neo4j-status   - Show Neo4j container status"
+	@echo "  make neo4j-load     - Load data into Neo4j (reads settings from NEO4J_ENV_FILE)"
+	@echo ""
 	@echo "Usage examples:"
 	@echo "  make run            - Interactive mode (recommended)"
 	@echo "  make run-interactive - Same as 'make run'"
-	@echo "  make run-sample                         - Run with sample data (default: metta writer)"
-	@echo "  make run-sample WRITER_TYPE=prolog       - Run with sample data using prolog writer"
+	@echo "  make run-sample                    - Run with sample data (default: metta writer)"
+	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
+	@echo "  make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env"
 
 # Check if UV is installed, install via pip if not
 check-uv:
@@ -181,6 +193,35 @@ run-sample: check-uv
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG
 	@echo "✅ Sample run completed! Check the ./output directory for results."
+# ─── Neo4j deployment targets ────────────────────────────────────────────────
+
+neo4j-up: ## Start Neo4j Docker container (reads docker/neo4j.env)
+	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
+	@echo "✅ Neo4j starting — check status with: make neo4j-status"
+
+neo4j-down: ## Stop and remove Neo4j Docker container
+	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
+	@echo "✅ Neo4j stopped"
+
+neo4j-logs: ## Stream Neo4j container logs
+	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
+
+neo4j-status: ## Show Neo4j container status
+	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
+
+neo4j-load: check-uv ## Load data into Neo4j (reads connection settings from NEO4J_ENV_FILE)
+	@set -a; . $(NEO4J_ENV_FILE); set +a; \
+	export PATH="$$HOME/.local/bin:$$PATH"; \
+	uv run python kg-service/neo4j_loader.py \
+		--output-dir "$$NEO4J_OUTPUT_DIR" \
+		--archive-dir "$$NEO4J_ARCHIVE_DIR" \
+		--uri "$$NEO4J_URI" \
+		--username "$$NEO4J_USERNAME" \
+		--password "$$NEO4J_PASSWORD" \
+		--import-batch-size "$${NEO4J_IMPORT_BATCH_SIZE:-50000}"
+
+# ─── Tests ───────────────────────────────────────────────────────────────────
+
 # Run tests
 test: check-uv
 	@export PATH="$$HOME/.local/bin:$$PATH"; uv run pytest -v

@@ -14,11 +14,15 @@ logger = logging.getLogger(__name__)
 
 class Neo4jLoader:
     def __init__(self, uri, username, password, output_dir, archive_dir,
-                 import_batch_size: int = 50000):
+                 import_batch_size: int = 50000, import_dir: str = None):
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
         self.output_dir = Path(output_dir)
         self.archive_dir = Path(archive_dir)
         self.import_batch_size = import_batch_size
+        # Optional: absolute path prefix injected into file:/// URLs.
+        # Use when Neo4j's import dir is NOT configured to the output dir
+        # (e.g. non-Docker Neo4j). Leave None for Docker (where /import is mounted).
+        self.import_dir = import_dir.rstrip('/') if import_dir else None
         
         self.version_manager = VersionManager(
             archive_dir=archive_dir,      
@@ -259,11 +263,18 @@ class Neo4jLoader:
             with open(cypher_file, 'r') as f:
                 content = f.read()
 
-            # FIX PATHS
-            content = content.replace(
-                f'file:///{str(self.output_dir)}/',
-                'file:///'
-            )
+            # BACKWARD COMPAT: old-style cypher files embed the absolute host path
+            # (file:////absolute/path/to/output/subdir/file.csv). Strip it down to a
+            # relative path so the same logic below applies to both old and new files.
+            old_prefix = f'file:///{str(self.output_dir)}/'
+            if old_prefix in content:
+                content = content.replace(old_prefix, 'file:///')
+
+            # INJECT IMPORT DIR: for non-Docker Neo4j where the import dir is not
+            # configured to the output dir, prepend the absolute path so Neo4j can
+            # resolve the file. Leave as-is for Docker (file:///relative → /import/relative).
+            if self.import_dir:
+                content = content.replace('file:///', f'file:///{self.import_dir}/')
 
             # BOOST BATCH SIZE: dynamically replace whatever small batchSize was baked
             # into the .cypher file with the configured import_batch_size.
@@ -584,41 +595,80 @@ class Neo4jLoader:
         return len(failed_files) == 0
 
 
+def _load_env_file(path: str) -> dict:
+    """Parse a simple KEY=VALUE env file, ignoring comments and blanks."""
+    env = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, _, value = line.partition('=')
+            env[key.strip()] = value.strip()
+    return env
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Load BioCypher data to Neo4j with version management"
     )
-    parser.add_argument("--output-dir", required=True,
-                        help="BioCypher output directory")
-    parser.add_argument("--archive-dir", 
-                        default="/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives",
-                        help="Archive directory")
-    parser.add_argument("--uri", 
-                        default="bolt://localhost:27688",
-                        help="Neo4j URI")
-    parser.add_argument("--username", 
-                        default="neo4j",
-                        help="Neo4j username")
-    parser.add_argument("--password", 
-                        required=True,
-                        help="Neo4j password")
+    parser.add_argument("--env-file",
+                        default=None,
+                        help="Path to a neo4j.env file. Values are used as defaults "
+                             "and can be overridden by explicit CLI flags.")
+    parser.add_argument("--output-dir",
+                        help="BioCypher output directory (env: NEO4J_OUTPUT_DIR)")
+    parser.add_argument("--archive-dir",
+                        help="Archive directory for version management (env: NEO4J_ARCHIVE_DIR)")
+    parser.add_argument("--uri",
+                        help="Neo4j bolt URI, e.g. bolt://localhost:7887 (env: NEO4J_URI)")
+    parser.add_argument("--username",
+                        help="Neo4j username (env: NEO4J_USERNAME, default: neo4j)")
+    parser.add_argument("--password",
+                        help="Neo4j password (env: NEO4J_PASSWORD)")
     parser.add_argument("--build-id",
                         default=f"build-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
                         help="Build ID")
     parser.add_argument("--import-batch-size",
                         type=int,
-                        default=50000,
-                        help="APOC batchSize for LOAD CSV and metadata operations (default: 50000). "
+                        help="APOC batchSize for LOAD CSV and metadata operations "
+                             "(env: NEO4J_IMPORT_BATCH_SIZE, default: 50000). "
                              "Increase for faster loading on high-memory servers.")
+    parser.add_argument("--import-dir",
+                        default=None,
+                        help="Absolute host path to inject into file:/// URLs. "
+                             "Use for non-Docker Neo4j where the import dir is not "
+                             "configured to the output dir. Omit when running via Docker.")
     args = parser.parse_args()
 
+    # Merge env-file values: CLI flags take precedence over env-file
+    env = {}
+    if args.env_file:
+        env = _load_env_file(args.env_file)
+        logger.info(f"Loaded config from {args.env_file}")
+
+    def resolve(cli_val, env_key, default=None, required=False):
+        val = cli_val or env.get(env_key) or default
+        if required and not val:
+            parser.error(f"--{env_key.lower().replace('_', '-')} is required "
+                         f"(or set {env_key} in --env-file)")
+        return val
+
+    output_dir  = resolve(args.output_dir,  "NEO4J_OUTPUT_DIR",  required=True)
+    archive_dir = resolve(args.archive_dir, "NEO4J_ARCHIVE_DIR", required=True)
+    uri         = resolve(args.uri,         "NEO4J_URI",         required=True)
+    username    = resolve(args.username,    "NEO4J_USERNAME",    default="neo4j")
+    password    = resolve(args.password,    "NEO4J_PASSWORD",    required=True)
+    batch_size  = int(resolve(args.import_batch_size, "NEO4J_IMPORT_BATCH_SIZE", default=50000))
+
     loader = Neo4jLoader(
-        args.uri,
-        args.username,
-        args.password,
-        args.output_dir,
-        args.archive_dir,
-        import_batch_size=args.import_batch_size
+        uri,
+        username,
+        password,
+        output_dir,
+        archive_dir,
+        import_batch_size=batch_size,
+        import_dir=args.import_dir,
     )
 
     try:
@@ -630,6 +680,7 @@ def main():
 
     finally:
         loader.close()
+
 
 
 if __name__ == "__main__":
