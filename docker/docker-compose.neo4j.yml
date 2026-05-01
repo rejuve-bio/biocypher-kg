@@ -1,0 +1,51 @@
+version: "3.9"
+
+# Load defaults from docker/neo4j.env via:
+#   docker compose --env-file docker/neo4j.env -f docker/docker-compose.neo4j.yml up -d
+# Or use the Makefile targets:
+#   make neo4j-up / neo4j-down / neo4j-load / neo4j-logs / neo4j-status
+
+services:
+  neo4j:
+    image: ${NEO4J_IMAGE:-neo4j:5.21}
+    container_name: ${NEO4J_CONTAINER:-neo4j_bio_atomspace}
+    restart: always
+    ports:
+      - "${NEO4J_HTTP_PORT:-7674}:7474"
+      - "${NEO4J_BOLT_PORT:-7887}:7687"
+
+    environment:
+      NEO4J_AUTH: "${NEO4J_AUTH:-neo4j/neo4j}"
+
+      # APOC plugin
+      NEO4JLABS_PLUGINS: '["apoc"]'
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      # Allow APOC LOAD CSV to resolve file:///relative.csv against /import
+      # (rather than the internal Neo4j home path)
+      NEO4J_apoc_import_file_use__neo4j__config: "false"
+
+      # Procedure permissions
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      NEO4J_dbms_security_procedures_allowlist: "apoc.*"
+
+      # Map /import as the LOAD CSV root
+      NEO4J_dbms_directories_import: "/import"
+
+      # Memory tuning
+      NEO4J_dbms_memory_pagecache_size: "${NEO4J_PAGECACHE:-4G}"
+      NEO4J_dbms_memory_heap_initial__size: "${NEO4J_HEAP_INIT:-2G}"
+      NEO4J_dbms_memory_heap_max__size: "${NEO4J_HEAP_MAX:-4G}"
+
+    volumes:
+      # Neo4j output dir is mounted read-only as the LOAD CSV import root
+      - ${NEO4J_OUTPUT_DIR}:/import:ro
+      # Persistent storage
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_plugins:/plugins
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_plugins:
