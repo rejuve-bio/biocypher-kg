@@ -109,15 +109,18 @@ class Neo4jLoader:
         }
 
 def _load_env_file(path):
-    env = {}
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            k, _, v = line.partition('=')
-            env[k.strip()] = v.strip()
-    return env
+    try:
+        env = {}
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                k, _, v = line.partition('=')
+                env[k.strip()] = v.strip()
+        return env
+    except OSError as e:
+        raise SystemExit(f"error: cannot read env file '{path}': {e}")
 
 
 def get_neo4j_credentials():

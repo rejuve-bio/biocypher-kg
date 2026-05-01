@@ -211,15 +211,9 @@ neo4j-status: ## Show Neo4j container status
 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
 
 neo4j-load: check-uv ## Load data with version tracking (incremental — only reloads changed datasets)
-	@set -a; . $(NEO4J_ENV_FILE); set +a; \
-	export PATH="$$HOME/.local/bin:$$PATH"; \
+	@export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python kg-service/neo4j_loader.py \
-		--output-dir "$$NEO4J_OUTPUT_DIR" \
-		--archive-dir "$$NEO4J_ARCHIVE_DIR" \
-		--uri "$$NEO4J_URI" \
-		--username "$$NEO4J_USERNAME" \
-		--password "$$NEO4J_PASSWORD" \
-		--import-batch-size "$${NEO4J_IMPORT_BATCH_SIZE:-50000}"
+		--env-file $(NEO4J_ENV_FILE)
 
 neo4j-load-direct: check-uv ## Load ALL data directly, skipping version check
 	@set -a; . $(NEO4J_ENV_FILE); set +a; \

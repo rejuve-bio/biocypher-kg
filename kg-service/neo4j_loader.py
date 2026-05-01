@@ -591,15 +591,18 @@ class Neo4jLoader:
 
 def _load_env_file(path: str) -> dict:
     """Parse a simple KEY=VALUE env file, ignoring comments and blanks."""
-    env = {}
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            key, _, value = line.partition('=')
-            env[key.strip()] = value.strip()
-    return env
+    try:
+        env = {}
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                key, _, value = line.partition('=')
+                env[key.strip()] = value.strip()
+        return env
+    except OSError as e:
+        raise SystemExit(f"error: cannot read env file '{path}': {e}")
 
 
 def main():
@@ -641,19 +644,23 @@ def main():
         env = _load_env_file(args.env_file)
         logger.info(f"Loaded config from {args.env_file}")
 
-    def resolve(cli_val, env_key, default=None, required=False):
-        val = cli_val or env.get(env_key) or default
-        if required and not val:
-            parser.error(f"--{env_key.lower().replace('_', '-')} is required "
-                         f"(or set {env_key} in --env-file)")
+    def resolve(cli_val, env_key, flag, default=None, required=False):
+        if cli_val is not None:
+            val = cli_val
+        elif env_key in env:
+            val = env[env_key]
+        else:
+            val = default
+        if required and (val is None or val == ""):
+            parser.error(f"{flag} is required (or set {env_key} in --env-file)")
         return val
 
-    output_dir  = resolve(args.output_dir,  "NEO4J_OUTPUT_DIR",  required=True)
-    archive_dir = resolve(args.archive_dir, "NEO4J_ARCHIVE_DIR", required=True)
-    uri         = resolve(args.uri,         "NEO4J_URI",         required=True)
-    username    = resolve(args.username,    "NEO4J_USERNAME",    default="neo4j")
-    password    = resolve(args.password,    "NEO4J_PASSWORD",    required=True)
-    batch_size  = int(resolve(args.import_batch_size, "NEO4J_IMPORT_BATCH_SIZE", default=50000))
+    output_dir  = resolve(args.output_dir,         "NEO4J_OUTPUT_DIR",         "--output-dir",         required=True)
+    archive_dir = resolve(args.archive_dir,         "NEO4J_ARCHIVE_DIR",        "--archive-dir",        required=True)
+    uri         = resolve(args.uri,                 "NEO4J_URI",                "--uri",                required=True)
+    username    = resolve(args.username,            "NEO4J_USERNAME",           "--username",           default="neo4j")
+    password    = resolve(args.password,            "NEO4J_PASSWORD",           "--password",           required=True)
+    batch_size  = int(resolve(args.import_batch_size, "NEO4J_IMPORT_BATCH_SIZE", "--import-batch-size", default=50000))
 
     loader = Neo4jLoader(
         uri,

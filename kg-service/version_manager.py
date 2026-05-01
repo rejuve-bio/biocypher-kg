@@ -371,8 +371,12 @@ class VersionManager:
         changed_files = []
         for dataset in changed_datasets:
             folder = self.output_dir / dataset
-            for csv_file in sorted(folder.rglob("*.csv")):
-                changed_files.append(str(csv_file.relative_to(self.output_dir)))
+            if dataset == "root":
+                for csv_file in sorted(self.output_dir.glob("*.csv")):
+                    changed_files.append(str(csv_file.relative_to(self.output_dir)))
+            else:
+                for csv_file in sorted(folder.rglob("*.csv")):
+                    changed_files.append(str(csv_file.relative_to(self.output_dir)))
 
         # Return tuple format expected by neo4j_loader.py
         return (new_atomspace_version, new_dataset_versions, changed_datasets, changed_files)
@@ -467,7 +471,7 @@ if __name__ == "__main__":
         result = vm.check_and_version(args.output_dir)
 
         if result[0] is not None:
-            new_version, dataset_versions, changed = result
+            new_version, dataset_versions, changed, _changed_files = result
             print("\n" + "="*60)
             print("VERSION CHECK RESULT:")
             print("="*60)

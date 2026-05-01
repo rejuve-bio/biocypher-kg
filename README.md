@@ -146,10 +146,8 @@ The project template is structured as follows:
 │ 
 │ # Scripts
 ├── scripts
-│   ├── metta_space_import.py
-│   └── ...
-├── scripts
 │   ├── neo4j_loader.py            # Direct loader — no versioning (make neo4j-load-direct)
+│   ├── metta_space_import.py
 │   └── ...
 ├── kg-service
 │   ├── neo4j_loader.py            # Versioned/incremental loader (make neo4j-load)
