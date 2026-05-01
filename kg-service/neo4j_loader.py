@@ -291,12 +291,6 @@ class Neo4jLoader:
                 content
             )
 
-            # USE CREATE INSTEAD OF MERGE FOR EDGE FILES
-            # Edges are always surgically deleted before reloading, so MERGE's
-            # expensive existence check is unnecessary and causes Java heap OOM
-            # on large files (e.g. gtex eqtl: 67M rows). CREATE is correct here.
-            if cypher_file.name.startswith("edges_"):
-                content = re.sub(r'\bMERGE\s*\((\w+)\)-\[', r'CREATE (\1)-[', content)
 
             queries = []
             current_query = []

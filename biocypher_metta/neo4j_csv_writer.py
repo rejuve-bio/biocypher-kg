@@ -375,7 +375,7 @@ CALL apoc.periodic.iterate(
     "LOAD CSV WITH HEADERS FROM 'file:///{relative_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
     "MATCH (source:{source_type} {{id: row.source_id}})
     MATCH (target:{target_type} {{id: row.target_id}})
-    MERGE (source)-[r:{edge_label}]->(target)
+    CREATE (source)-[r:{edge_label}]->(target)
     SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
     {{batchSize:1000}}
 )
