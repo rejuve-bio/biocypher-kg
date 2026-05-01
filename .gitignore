@@ -162,6 +162,9 @@ cython_debug/
 #VSCode
 .vscode/
 
+# Neo4j env (contains credentials and host-specific paths — use docker/neo4j.env.example as template)
+docker/neo4j.env
+
 #project specific
 metta_out/
 metta_out_*/
