@@ -209,7 +209,7 @@ prompt-toolkit==3.0.52
     #   biocypher-metta (pyproject.toml)
     #   ipython
     #   questionary
-proto-plus==1.27.1
+proto-plus==1.27.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-api-core
