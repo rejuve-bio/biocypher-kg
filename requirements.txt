@@ -97,7 +97,7 @@ google-resumable-media==2.7.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-cloud-storage
-googleapis-common-protos==1.73.0
+googleapis-common-protos==1.74.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-api-core
