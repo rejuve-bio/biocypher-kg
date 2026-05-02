@@ -33,7 +33,7 @@ dependencies = [
     "google-crc32c==1.8.0",
     "google-resumable-media==2.7.2",
     "googleapis-common-protos==1.73.0",
-    "hgvs==1.5.4",
+    "hgvs==1.5.7",
     "humanfriendly==10.0",
     "idna==3.11",
     "importlib-metadata==8.7.1",
