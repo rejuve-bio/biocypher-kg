@@ -19,7 +19,7 @@ biocommons-seqrepo==0.6.11
     #   hgvs
 biocypher==0.12.5
     # via biocypher-metta (pyproject.toml)
-biopython==1.86
+biopython==1.87
     # via biocypher-metta (pyproject.toml)
 bioutils==0.6.1
     # via
