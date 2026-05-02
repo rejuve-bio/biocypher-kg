@@ -350,7 +350,7 @@ treelib==1.6.4
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
-typer==0.20.0
+typer==0.25.1
     # via biocypher-metta (pyproject.toml)
 typing-extensions==4.15.0
     # via
