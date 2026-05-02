@@ -93,7 +93,7 @@ google-crc32c==1.8.0
     #   biocypher-metta (pyproject.toml)
     #   google-cloud-storage
     #   google-resumable-media
-google-resumable-media==2.7.2
+google-resumable-media==2.8.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-cloud-storage
