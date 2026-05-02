@@ -368,7 +368,7 @@ urllib3==2.6.3
     #   biocypher-metta (pyproject.toml)
     #   liftover
     #   requests
-wcwidth==0.2.14
+wcwidth==0.6.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   prompt-toolkit
