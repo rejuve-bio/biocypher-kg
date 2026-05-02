@@ -8,7 +8,7 @@ asttokens==3.0.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   stack-data
-attrs==25.4.0
+attrs==26.1.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   bioutils
