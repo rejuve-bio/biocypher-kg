@@ -58,7 +58,8 @@ class DBSNPProcessor:
         )
 
         started = time.time()
-        self._conn = sqlite3.connect(str(self.db_file))
+        db_uri = f"file:{self.db_file}?immutable=1"
+        self._conn = sqlite3.connect(db_uri, uri=True)
         self._conn.execute("PRAGMA query_only=ON")
         self._backend = 'sqlite'
         logger.info(f"{self.name}: SQLite connection ready in {time.time() - started:.1f}s")

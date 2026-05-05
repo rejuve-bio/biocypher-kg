@@ -1,4 +1,4 @@
-.PHONY: help setup check-uv run run-interactive run-sample test clean distclean
+.PHONY: help setup check-uv run run-interactive run-sample run-direct test clean distclean
 
 # Default target
 help:
@@ -14,8 +14,8 @@ help:
 	@echo "Usage examples:"
 	@echo "  make run            - Interactive mode (recommended)"
 	@echo "  make run-interactive - Same as 'make run'"
-	@echo "  make run-sample                    - Run with sample data (default: metta writer)"
-	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
+	@echo "  make run-sample                         - Run with sample data (default: metta writer)"
+	@echo "  make run-sample WRITER_TYPE=prolog       - Run with sample data using prolog writer"
 
 # Check if UV is installed, install via pip if not
 check-uv:
@@ -65,6 +65,15 @@ run-interactive: check-uv
 	DBSNP_CACHE_ROOT=$${DBSNP_CACHE_ROOT:-./aux_files/hsa/sample_dbsnp}; \
 	echo "Using dbSNP cache root: $$DBSNP_CACHE_ROOT"; \
 	echo ""; \
+	read -p "🧬 Enter dbSNP variant (common/full/leave blank for sample) []: " DBSNP_VARIANT; \
+	if [ -n "$$DBSNP_VARIANT" ]; then \
+		DBSNP_VARIANT_FLAG="--dbsnp-variant $$DBSNP_VARIANT"; \
+		echo "Using dbSNP variant: $$DBSNP_VARIANT"; \
+	else \
+		DBSNP_VARIANT_FLAG=""; \
+		echo "dbSNP variant: not set (sample mode)"; \
+	fi; \
+	echo ""; \
 	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
 	echo "Using writer type: $$WRITER_TYPE"; \
@@ -108,6 +117,7 @@ run-interactive: check-uv
 		--adapters-config "$$ADAPTERS_CONFIG" \
 		--schema-config "$$SCHEMA_CONFIG" \
 		--dbsnp-cache-root "$$DBSNP_CACHE_ROOT" \
+		$$DBSNP_VARIANT_FLAG \
 		--writer-type "$$WRITER_TYPE" \
 		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
