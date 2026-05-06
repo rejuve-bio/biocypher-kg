@@ -88,8 +88,7 @@ class BgeeAdapter(Adapter):
 
             # Yield deduplicated edges
             for (source_id, target_id), edge_data in edge_dict.items():
-                node_type = 'cell_type' if target_id.startswith('CL_') else 'anatomy'
-                yield source_id, (node_type, target_id), self.label, edge_data["props"]
+                yield source_id, ('anatomy', target_id), self.label, edge_data["props"]
                 dev_stage_id = edge_data['props'].get('developmental_stage')
                 if dev_stage_id:
                     dev_props = {k: v for k, v in edge_data["props"].items() if k != 'developmental_stage'}
