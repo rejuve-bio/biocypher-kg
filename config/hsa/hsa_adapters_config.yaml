@@ -1951,7 +1951,7 @@ string_coexpression:
     cls: StringCoexpressionAdapter
     args:
       filepath: ./samples/hsa/string/9606.protein.links.detailed.v12.0.txt.gz
-      label: coexpressed_with
+      label: protein_coexpressed_with
       coexpression_threshold: 400
       taxon_id: 9606
   outdir: string/coexpression
