@@ -41,9 +41,6 @@ class CellOntologyAdapter(OntologyAdapter):
         
         return super().should_include_edge(from_node, to_node, predicate, edge_type)
 
-    def should_include_node(self, node):
-        return self.is_term_of_type(node, 'primary')
-
     def get_nodes(self):
         self.update_graph()
         self.cache_node_properties()
@@ -152,7 +149,7 @@ class CellOntologyAdapter(OntologyAdapter):
                     for bto_key in bto_targets:
                         props = {}
                         if self.write_properties:
-                            props['rel_type'] = self.predicate_name(predicate)
+                            # props['rel_type'] = self.predicate_name(predicate)
                             if self.add_provenance:
                                 props['source'] = self.source
                                 props['source_url'] = self.source_url
@@ -168,7 +165,7 @@ class CellOntologyAdapter(OntologyAdapter):
 
                 props = {}
                 if self.write_properties:
-                    props['rel_type'] = self.predicate_name(predicate)
+                    # props['rel_type'] = self.predicate_name(predicate)
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
