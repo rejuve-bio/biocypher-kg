@@ -299,6 +299,7 @@ def process_adapters(
     completed_adapters = list(
         checkpoint_manager.completed_adapters if checkpoint_manager else []
     )
+    empty_output_adapters: list[tuple[str, str]] = []
     total_start = time.time()
 
     for adapter_name in adapters_dict:
@@ -350,6 +351,9 @@ def process_adapters(
             if write_nodes:
                 nodes = adapter.get_nodes()
                 freq, props = writer.write_nodes(nodes, path_prefix=outdir)
+                if not freq:
+                    logger.warning(f"Adapter '{adapter_name}' produced 0 nodes.")
+                    empty_output_adapters.append((adapter_name, "nodes"))
                 for node_label, node_count in freq.items():
                     nodes_count[node_label] += node_count
                     if dataset_name is not None:
@@ -360,6 +364,9 @@ def process_adapters(
             if write_edges:
                 edges = adapter.get_edges()
                 freq = writer.write_edges(edges, path_prefix=outdir)
+                if not freq:
+                    logger.warning(f"Adapter '{adapter_name}' produced 0 edges.")
+                    empty_output_adapters.append((adapter_name, "edges"))
                 for edge_label_key, edge_count in freq.items():
                     edges_count[edge_label_key] += edge_count
 
@@ -408,6 +415,13 @@ def process_adapters(
             )
             logger.info(f"Checkpoint updated after adapter: {adapter_name}")
 
+    if empty_output_adapters:
+        empty_adapter_count = len({name for name, _ in empty_output_adapters})
+        logger.warning(
+            f"{empty_adapter_count} adapter(s) produced empty output:"
+        )
+        for name, output_type in empty_output_adapters:
+            logger.warning(f"  - {name} ({output_type}: 0)")
     logger.info(f"All adapters completed in {_fmt_elapsed(time.time() - total_start)}")
     return nodes_count, nodes_props, edges_count, datasets_dict
 
