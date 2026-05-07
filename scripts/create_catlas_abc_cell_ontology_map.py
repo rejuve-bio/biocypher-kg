@@ -7,6 +7,14 @@ which has three columns:
     ontology_id   — CL: or UBERON: ID           (e.g. "CL:0002370")
     cre_key       — corresponding cCRE pkl key  (e.g. "Airway_Goblet_Cell")
 
+Curation note:
+    Ontology IDs are sourced from Cell_ontology.tsv
+    (https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv).
+    The ABC dataset uses abbreviated cell type labels (e.g. "Vasc Sm Muscle 1") while
+    Cell_ontology.tsv uses full names (e.g. "Vascular_Smooth_Muscle_1"). Name matching
+    between the two was performed using claude-opus-4-6; the ontology IDs themselves
+    were taken directly from Cell_ontology.tsv without LLM modification.
+
 Output pkl: dict  {abc_stem: "CL:XXXXXXX" or "UBERON:XXXXXXX"}
 
 Usage:

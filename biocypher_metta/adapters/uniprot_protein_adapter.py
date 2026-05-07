@@ -50,6 +50,9 @@ class UniprotProteinAdapter(Adapter):
                     if item != '-':
                         id = database_name + ':' + item.split('. ')[0]
                         dbxrefs.append(id)
+            elif database_name == 'GO':
+                # cross_reference[1] is already in "GO:XXXXXXX" format
+                dbxrefs.append(cross_reference[1])
             else:
                 id = cross_reference[0].upper() + ':' + cross_reference[1]
                 dbxrefs.append(id)
@@ -263,10 +266,7 @@ class UniprotProteinAdapter(Adapter):
                     elif self.dbxref == "STRING":
                         syn = "STRING:" + syn.split('.')[1]
                     elif self.dbxref == "GO":
-                        prefix, id_local = syn.split(':',1)
-                        go_id = f"GO:{id_local}"
-                        syn = id_local
-
+                        go_id = syn  # syn is already "GO:XXXXXXX"
                         subontology = self.go_subontology_mapping.get(go_id, None)
                         if subontology is None or subontology not in self.label:
                             continue

@@ -56,6 +56,7 @@ class CellLineOntologyAdapter(OntologyAdapter):
         for term_id, label, props in super().get_nodes():
             if self.write_properties and self.add_description and 'description' in props:
                 props['description'] = props['description'].replace('"', '')
+
             yield term_id, label, props
 
     def get_uri_prefixes(self):
@@ -104,7 +105,7 @@ class CellLineOntologyAdapter(OntologyAdapter):
 
             props = {}
             if self.write_properties:
-                props['rel_type'] = 'subclass'
+                # props['rel_type'] = 'subclass'
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -143,7 +144,7 @@ class CellLineOntologyAdapter(OntologyAdapter):
 
             props = {}
             if self.write_properties:
-                props['rel_type'] = 'subclass'
+                # props['rel_type'] = 'subclass'
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url

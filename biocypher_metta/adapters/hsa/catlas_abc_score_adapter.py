@@ -32,6 +32,10 @@ _MASTER_TSV_URL = (
 #   hgnc_mapping.pkl (gzipped)      — {symbol_to_ensembl: {symbol: ENSG_ID, ...}, ...}
 #   catlas_abc_cell_ontology_map.pkl — {abc_stem: "CL:XXXXXXX" | "UBERON:XXXXXXX"}
 #                                     produced by scripts/create_catlas_abc_cell_ontology_map.py
+#                                     Ontology IDs sourced from Cell_ontology.tsv (CATLAS).
+#                                     ABC's abbreviated names (e.g. "Vasc Sm Muscle 1") were
+#                                     matched to Cell_ontology.tsv entries using claude-opus-4-6;
+#                                     IDs were taken directly from Cell_ontology.tsv unchanged.
 #
 # Edge label is chosen from the cCRE class:
 #   enhancer cCRE  →  enhancer_activity_by_contact  (enhancer → gene)
