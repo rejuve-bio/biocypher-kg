@@ -17,11 +17,6 @@ COLUMNS = {
     'gene2_symbol': 5,
     'gene2_taxon': 6,
     'gene2_species_name': 7,
-    'algorithms': 8,
-    'algorithms_match': 9,
-    'out_of_algorithms': 10,
-    'is_best_score': 11,
-    'is_best_rev_score': 12,
 }
 
 SUPPORTED_TAXA = {
@@ -54,15 +49,11 @@ class AllianceGeneOrthologyAdapter(Adapter):
 
     def get_edges(self):
         """
-        Yields edges between genes.
+        Yields edges between genes indicating orthology.
         
-        Filters by:
-        - Gene1SpeciesTaxonID = self.taxon_id
-        - Gene2SpeciesTaxonID in SUPPORTED_TAXA (excluding Gene1 species?)
-          Wait, the request says: 
-          Gene1SpeciesTaxonID = NCBITaxon:7227
-          and
-          Gene2SpeciesTaxonID in [NCBITaxon:6239, NCBITaxon:9606, NCBITaxon:10090, NCBITaxon:10116]
+        Filters the data to only include orthology relationships where:
+        - The source gene (Gene1) belongs to the taxon specified in self.taxon_id.
+        - The target gene (Gene2) belongs to any of the other supported taxa.
         """
         target_taxon = f"NCBITaxon:{self.taxon_id}"
         other_taxa = [f"NCBITaxon:{t}" for t in SUPPORTED_TAXA.keys() if t != self.taxon_id]
@@ -94,12 +85,6 @@ class AllianceGeneOrthologyAdapter(Adapter):
                 gene1_species = row[COLUMNS['gene1_species_name']]
                 gene2_species = row[COLUMNS['gene2_species_name']]
 
-                algorithms = row[COLUMNS['algorithms']]
-                algorithms_match = row[COLUMNS['algorithms_match']]
-                out_of_algorithms = row[COLUMNS['out_of_algorithms']]
-                is_best_score = row[COLUMNS['is_best_score']]
-                is_best_rev_score = row[COLUMNS['is_best_rev_score']]
-
                 # ID handling for human genes
                 if gene1_taxon == "NCBITaxon:9606":
                     gene1_id = self.hgnc_processor.get_ensembl_id(gene1_id)
@@ -116,11 +101,9 @@ class AllianceGeneOrthologyAdapter(Adapter):
                 
                 if self.write_properties:
                     _props = {
-                        "algorithms": algorithms,
-                        "algorithms_match": algorithms_match,
-                        "out_of_algorithms": out_of_algorithms,
-                        "is_best_score": is_best_score,
-                        "is_best_rev_score": is_best_rev_score,
+                        "source_organism": gene1_species,
+                        "taxon_id": int(gene1_taxon.split(":")[1]),
+                        "target_organism_taxon_id": int(gene2_taxon.split(":")[1]),
                     }
                          
                 if self.add_provenance:

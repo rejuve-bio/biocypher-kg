@@ -1853,6 +1853,7 @@ orthology association:
   is_a: related to at instance level
   represented_as: edge
   input_label: orthologs_genes
+  output_label: ortholog_of
   biolink_predicate: biolink:ortholog_of
   source: gene
   target: gene
@@ -1860,20 +1861,6 @@ orthology association:
     DIOPT_score:
       type: int
       biolink: has_quantitative_value
-    algorithms:
-      type: str
-    algorithms_match:
-      type: int
-    out_of_algorithms:
-      type: int
-    is_best_score:
-      type: str
-    is_best_rev_score:
-      type: str
-    gene1_symbol:
-      type: str
-    gene2_symbol:
-      type: str
     hsa_hgnc_id:
       type: str
       biolink: id
@@ -1889,11 +1876,13 @@ orthology association:
     source_organism:
       type: str
       biolink: in_taxon
-    target_organism:
-      type: str
-      biolink: in_taxon
+    target_organism_taxon_id:
+      description: Taxon ID for the "target organism"
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
     taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      description: Taxon ID for the "source organism"
       type: int
       biolink: taxon
       range: biolink:OrganismTaxon

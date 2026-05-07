@@ -1306,3 +1306,15 @@ alliance_gene_disease_is_marker_for:
   outdir: disease
   nodes: False
   edges: True
+
+alliance_gene_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_orthology_adapter
+    cls: AllianceGeneOrthologyAdapter
+    args:
+      filepath: ./samples/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: orthologs_genes
+  outdir: alliance/orthology
+  nodes: False
+  edges: True

@@ -1240,3 +1240,15 @@ epd_promoter_regulates_gene_dmel:
   outdir: epd
   nodes: False
   edges: True
+
+alliance_gene_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_orthology_adapter
+    cls: AllianceGeneOrthologyAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: orthologs_genes
+  outdir: alliance/orthology
+  nodes: False
+  edges: True
