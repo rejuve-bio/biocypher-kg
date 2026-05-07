@@ -779,12 +779,12 @@ cellular component:
     category: "biolink:CellularComponent" 
 
 orthology association:
-  description: >-
-    Non-directional association between two genes indicating that there is an orthology relation among them:  “Historical homology that involves genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)"
+  description: Non-directional association between two genes indicating that there is an orthology relation among them. It  is a historical homology that involves genes that diverged after a speciation event (purl.obolibrary.org/obo/RO_HOM0000017)
   is_a: related to at instance level
   represented_as: edge
   input_label: orthologs_genes
-  biolink_predicate: "biolink:ortholog_of"
+  output_label: ortholog_of
+  biolink_predicate: biolink:ortholog_of
   source: gene
   target: gene
   properties:
@@ -806,19 +806,21 @@ orthology association:
     source_organism:
       type: str
       biolink: in_taxon
-    target_organism:
-      type: str
-      biolink: in_taxon
+    target_organism_taxon_id:
+      description: Taxon ID for the "target organism"
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
     taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      description: Taxon ID for the "source organism"
       type: int
       biolink: taxon
       range: biolink:OrganismTaxon
   kgx_properties:
-    subject_category: "biolink:Gene"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
+    subject_category: biolink:Gene
+    object_category: biolink:Gene
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
 
 paralogy association:
   description: >-

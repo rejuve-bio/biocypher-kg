@@ -88,6 +88,7 @@ class OrthologyAssociationAdapter(Adapter):
             props['hsa_omim_phenotype_ids'] = row[6]
             props['hsa_omim_phenotype_ids_names'] = row[7]
             props['source_organism'] = 'Drosophila melanogaster'
-            props['target_organism'] = 'Homo sapiens'
+            props['taxon_id'] = 7227
+            props['target_organism_taxon_id'] = 9606
 
             yield f'FlyBase:{source}', f'Ensembl:{target}', self.label, props
