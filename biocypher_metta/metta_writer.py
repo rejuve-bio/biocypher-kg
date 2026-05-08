@@ -84,18 +84,8 @@ class MeTTaWriter(BaseWriter):
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         
-        def edge_data_constructor(edge_type, source_types, target_types, label):
-            if isinstance(source_types, list):
-                source_str = ' '.join([st.upper() for st in source_types])
-            else:
-                source_str = source_types.upper()
-                
-            if isinstance(target_types, list):
-                target_str = ' '.join([tt.upper() for tt in target_types])
-            else:
-                target_str = target_types.upper()
-                
-            return f"(: {label.lower()} (-> {source_str} {target_str} {edge_type.upper()}))"
+        def edge_data_constructor(edge_type, source_type, target_type, label):
+            return f"(: {label.lower()} (-> {source_type.upper()} {target_type.upper()} {edge_type.upper()}))"
 
         def node_data_constructor(node_type, node_label):
             return f"(: {node_label.lower()} (-> $x {node_type.upper()}))"
@@ -105,23 +95,29 @@ class MeTTaWriter(BaseWriter):
                 edge_type = self.normalize_text(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
-        
+
                 if source_type is not None and target_type is not None:
-                    label = self.normalize_text(v["input_label"])
+                    input_label = self.normalize_text(v["input_label"])
                     source_type_normalized = self.normalize_text(source_type)
                     target_type_normalized = self.normalize_text(target_type)
-            
+
                     output_label = v.get("output_label", None)
+                    constructor_label = self.normalize_text(output_label) if output_label else input_label
 
                     if '.' not in k:
-                        out_str = edge_data_constructor(edge_type, source_type_normalized, target_type_normalized, label)
-                        file.write(out_str + "\n")
-                
-                        self.edge_node_types[label] = {
-                            "source": source_type_normalized, 
-                            "target": target_type_normalized,
-                            "output_label": output_label
-                        }
+                        src_list = source_type_normalized if isinstance(source_type_normalized, list) else [source_type_normalized]
+                        tgt_list = target_type_normalized if isinstance(target_type_normalized, list) else [target_type_normalized]
+                        for src in src_list:
+                            for tgt in tgt_list:
+                                out_str = edge_data_constructor(edge_type, src, tgt, constructor_label)
+                                file.write(out_str + "\n")
+
+                        if input_label not in self.edge_node_types:
+                            self.edge_node_types[input_label] = {
+                                "source": source_type_normalized,
+                                "target": target_type_normalized,
+                                "output_label": output_label
+                            }
 
             elif v["represented_as"] == "node":
                 label = self.normalize_text(v["input_label"])
@@ -237,6 +233,9 @@ class MeTTaWriter(BaseWriter):
                     target_type = edge_info.get("target", "unknown")
                     if isinstance(target_type, list):
                         target_type = target_type[0]
+
+                if isinstance(source_id, tuple) or isinstance(target_id, tuple):
+                    self.validate_edge_types(label, source_type, target_type)
 
                 file_key = (label, source_type, target_type)
 

@@ -321,6 +321,14 @@ class ParquetWriter(BaseWriter):
                     source_types = edge_info["source"]
                     target_types = edge_info["target"]
 
+                    # Validate adapter-provided types against schema when tuples are present
+                    has_typed_source = isinstance(source_id_raw, tuple)
+                    has_typed_target = isinstance(target_id_raw, tuple)
+                    if has_typed_source or has_typed_target:
+                        typed_src = source_id_raw[0] if has_typed_source else (source_types[0] if isinstance(source_types, list) else source_types)
+                        typed_tgt = target_id_raw[0] if has_typed_target else (target_types[0] if isinstance(target_types, list) else target_types)
+                        self.validate_edge_types(label, typed_src, typed_tgt)
+
                     # Filter props per user exclusion before writing
                     filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}
 

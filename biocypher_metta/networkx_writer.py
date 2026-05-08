@@ -236,6 +236,9 @@ class NetworkXWriter(BaseWriter):
             else:
                 _, target_type = self._get_edge_type_info(label, source_id, target_id)
                 target_clean = self._preprocess_id(target_id, label=target_type)
+
+            if isinstance(source_id, tuple) or isinstance(target_id, tuple):
+                self.validate_edge_types(label, source_type, target_type)
             
             if edges_skipped < 5: 
                 if source_clean not in self.node_mapping or target_clean not in self.node_mapping:

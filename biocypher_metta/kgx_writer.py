@@ -451,6 +451,13 @@ class KGXWriter(BaseWriter):
                 typed_target_type = target_id[0] if has_typed_target else None
                 typed_target_id = target_id[1] if has_typed_target else target_id
 
+                if has_typed_source and has_typed_target:
+                    self.validate_edge_types(normalized_label, typed_source_type, typed_target_type)
+                elif has_typed_source and target_types:
+                    self.validate_edge_types(normalized_label, typed_source_type, target_types[0])
+                elif has_typed_target and source_types:
+                    self.validate_edge_types(normalized_label, source_types[0], typed_target_type)
+
                 for src_type in source_types:
                     for tgt_type in target_types:
                         # Start from schema-declared types
