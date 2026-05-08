@@ -904,7 +904,7 @@ def main(
                         resume=resume,
                     )
 
-                    nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+                    nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
                         sp_adapters_dict,
                         sp_dbsnp_rsids_dict,
                         sp_dbsnp_pos_dict,
@@ -939,9 +939,25 @@ def main(
 
                     delete_temp_schema(sp_schema_config)
 
-                    logger.info(f"Done with {sp}")
-                    logger.info(f"Total nodes processed for {sp}: {sum(nodes_count.values())}")
-                    logger.info(f"Total edges processed for {sp}: {sum(edges_count.values())}")
+                    logger.info("")
+                    logger.info("#" * 60)
+                    logger.info(f"  PIPELINE COMPLETE [{sp}]")
+                    logger.info(f"  Total time  : {_fmt_elapsed(time.time() - total_start)}")
+                    logger.info(f"  Total nodes : {sum(nodes_count.values()):,}")
+                    logger.info(f"  Total edges : {sum(edges_count.values()):,}")
+                    if adapter_times:
+                        top = sorted(adapter_times.items(), key=lambda x: x[1], reverse=True)[:5]
+                        logger.info("")
+                        logger.info("  Top slowest adapters:")
+                        for rank, (name, secs) in enumerate(top, 1):
+                            logger.info(f"    {rank}. {name}: {_fmt_elapsed(secs)}")
+                    if empty_output_adapters:
+                        logger.info("")
+                        logger.info(f"  Empty output ({len({n for n, _ in empty_output_adapters})} adapter(s)):")
+                        for name, output_type in empty_output_adapters:
+                            logger.info(f"    - {name} ({output_type}: 0)")
+                    logger.info("#" * 60)
+                    logger.info("")
 
                 logger.info("\n" + "=" * 60)
                 logger.info("All species processed successfully!")
