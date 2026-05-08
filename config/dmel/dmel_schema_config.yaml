@@ -312,47 +312,9 @@ cellular component gene part of dmel:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-gene expressed in anatomy:
-  represented_as: edge
-  input_label: expressed_in
-  output_label: expressed_in
-  is_a: annotation
-  biolink_predicate: biolink:expressed_in
-  source: gene
-  target: anatomy
-  properties:
-    taxon_id:
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    subject_category: biolink:Gene
-    object_category: biolink:GrossAnatomicalStructure
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-gene expressed in developmental stage:
-  represented_as: edge
-  input_label: expressed_in
-  output_label: expressed_in
-  is_a: annotation
-  biolink_predicate: biolink:expressed_in
-  source: gene
-  target: developmental stage
-  properties:
-    taxon_id:
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    subject_category: biolink:Gene
-    object_category: biolink:LifeStage
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
 gene expressed in phenotype:
   represented_as: edge
-  input_label: expressed_in
+  input_label: gene_expressed_in_phenotype
   output_label: expressed_in
   is_a: annotation
   biolink_predicate: biolink:expressed_in
@@ -371,7 +333,7 @@ gene expressed in phenotype:
 
 gene expressed in biological process:
   represented_as: edge
-  input_label: expressed_in
+  input_label: gene_expressed_in_biological_process
   output_label: expressed_in
   is_a: annotation
   biolink_predicate: biolink:expressed_in
@@ -390,7 +352,7 @@ gene expressed in biological process:
 
 gene expressed in molecular function:
   represented_as: edge
-  input_label: expressed_in
+  input_label: gene_expressed_in_molecular_function
   output_label: expressed_in
   is_a: annotation
   biolink_predicate: biolink:expressed_in
@@ -409,7 +371,7 @@ gene expressed in molecular function:
 
 gene expressed in cellular component:
   represented_as: edge
-  input_label: expressed_in
+  input_label: gene_expressed_in_cellular_component
   output_label: expressed_in
   is_a: annotation
   biolink_predicate: biolink:expressed_in
