@@ -1,6 +1,7 @@
 # BioCypher KG
 
 A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher) knowledge graphs with multiple output formats.
+
 ## Prerequisites
 
 - Python 3.9+  
@@ -9,6 +10,7 @@ A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher
 ## Quick Start (Option 1)
 
 ### 1. Clone and Setup
+
 ```bash
 git clone https://github.com/rejuve-bio/biocypher-kg.git
 cd biocypher-kg
@@ -18,17 +20,21 @@ make setup
 ### 2. Run the Application
 
 #### Option 1: Interactive Mode (Recommended for new users)
+
 ```bash
 make run
 ```
+
 This will guide you through all parameters step by step with sensible defaults.
 
 #### Option 2: Quick Sample Run
+
 ```bash
 make run-sample WRITER_TYPE=<metta,neo4j,prolog>
 ```
 
 #### Option 3: Direct Run with Parameters
+
 ```bash
 make run-direct OUTPUT_DIR=./output \
                ADAPTERS_CONFIG=./config.yaml \
@@ -38,8 +44,11 @@ make run-direct OUTPUT_DIR=./output \
                WRITE_PROPERTIES=no \
                ADD_PROVENANCE=no
 ```
+
 ### Interactive Mode Example
+
 When you run `make run`, you'll see:
+
 ```
 🚀 Starting interactive knowledge graph creation...
 
@@ -53,6 +62,7 @@ When you run `make run`, you'll see:
 ```
 
 ### Available Make Commands
+
 ```bash
 make help           # Show all commands
 make setup          # Install UV and dependencies
@@ -64,7 +74,6 @@ make test           # Run tests
 make clean          # Clean temporary files
 make distclean      # Full clean
 ```
-
 
 ## BioCypher Knowledge Graph CLI Tool (Option 2)
 
@@ -78,7 +87,6 @@ A user-friendly command line interface for generating knowledge graphs using Bio
 - 📊 Interactive menu system with rich visual interface  
 - 🔍 Multiple output formats (Neo4j, MeTTa, Prolog)  
 - 📈 Progress tracking and logging  
-
 
 ### Setup
 
@@ -113,7 +121,9 @@ uv run python biocypher_cli/cli.py
 ## 🛠 Usage
 
 ### Structure
+
 The project template is structured as follows:
+
 ```
 .
 .
@@ -170,9 +180,10 @@ The project template is structured as follows:
 The main components of the BioCypher pipeline are the
 `create_knowledge_graph.py`, the configuration in the `config` directory, and
 the adapter module in the `biocypher_metta` directory. The input adapters are used for preprocessing biomedical
-databases and converting them into BioCypher nodes and edges. 
+databases and converting them into BioCypher nodes and edges.
 
 ### Writers
+
 The project supports multiple output formats for the knowledge graph:
 
 1. **MeTTa Writer (`metta_writer.py`)**: Generates knowledge graph data in the MeTTa format.
@@ -180,6 +191,7 @@ The project supports multiple output formats for the knowledge graph:
 3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
 
 ### Neo4j Loader
+
 To load the generated knowledge graph into a Neo4j database, use the `neo4j_loader.py` script:
 
 ```bash
@@ -187,6 +199,7 @@ python scripts/neo4j_loader.py --output-dir <path_to_output_directory>
 ```
 
 #### Neo4j Loader Options
+
 - `--output-dir`: **Required**. Path to the directory containing the generated Cypher query files.
 - `--uri`: Optional. Neo4j database URI (default: `bolt://localhost:7687`)
 - `--username`: Optional. Neo4j username (default: `neo4j`)
@@ -194,6 +207,7 @@ python scripts/neo4j_loader.py --output-dir <path_to_output_directory>
 When you run the script, you'll be prompted to enter your Neo4j database password securely.
 
 **Notes:**
+
 - Ensure your Neo4j database is running before executing the loader.
 - The script will automatically find and process all Cypher query files (node and edge files) in the specified output directory.
 - It supports processing multiple directories containing Cypher files.
@@ -201,15 +215,18 @@ When you run the script, you'll be prompted to enter your Neo4j database passwor
 - Logging is provided to help you track the loading process.
 
 ## ⬇ Downloading data
+
 The `downloader` directory contains code for downloading data from various sources.
 The `download.yaml` file contains the configuration for the data sources.
 
 To download the data, run the `download_data.py` script with the following command:
+
 ```{bash}
 python downloader/download_data.py --output_dir <output_directory>
 ```
 
 To download data from a specific source, run the script with the following command:
+
 ```{bash}
 python downloader/download_data.py --output_dir <output_directory> --source <source_name>
 ```
