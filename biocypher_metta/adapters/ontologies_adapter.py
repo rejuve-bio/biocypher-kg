@@ -123,6 +123,10 @@ class OntologyAdapter(Adapter):
                     if not cache_expired:
                         use_cached = True
                         print("Using cached data as version information is incomplete and cache is not expired")
+                    elif remote_version is None:
+                        # Remote is unreachable (network error). Fall back to expired cache rather than failing.
+                        use_cached = True
+                        print("Warning: Cannot reach remote server to check version. Using expired cached data as fallback.")
                     else:
                         print("Cache has expired and version information is incomplete. Updating data.")
                 elif remote_version == current_version:
