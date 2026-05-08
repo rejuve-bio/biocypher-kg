@@ -1,4 +1,4 @@
-.PHONY: help setup check-uv run run-interactive run-sample run-direct test clean distclean \
+.PHONY: help setup check-uv run run-interactive run-sample run-direct check-paths test clean distclean \
         neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
 
 # Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
@@ -11,6 +11,7 @@ help:
 	@echo "  make run            - Run with interactive prompts for parameters"
 	@echo "  make run-sample     - Run with sample configuration and data"
 	@echo "  make run-direct     - Run with explicit parameters (non-interactive)"
+	@echo "  make check-paths    - Validate file paths in an adapters config (no adapters run)"
 	@echo "  make test           - Run tests"
 	@echo "  make clean          - Clean temporary files"
 	@echo "  make distclean      - Full clean including virtual environment"
@@ -28,6 +29,9 @@ help:
 	@echo "  make run-interactive - Same as 'make run'"
 	@echo "  make run-sample                    - Run with sample data (default: metta writer)"
 	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
+	@echo "  make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"
+	@echo "  make run-direct ... SKIP_PREFLIGHT=yes   - Skip pre-flight file path validation"
+	@echo "  make run-sample     SKIP_PREFLIGHT=yes   - Same, for sample runs"
 	@echo "  make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env"
 	@echo "  make run-sample INCLUDE_TAXON_ID=no   - Run without taxon_id in output (single-species KG)"
 
@@ -134,6 +138,16 @@ run-interactive: check-uv
 		echo "taxon_id will be written to output"; \
 	fi; \
 	echo ""; \
+	read -p "🚦 Skip pre-flight path validation? (yes/no) [no]: " SKIP_PREFLIGHT; \
+	SKIP_PREFLIGHT=$${SKIP_PREFLIGHT:-no}; \
+	if [ "$$SKIP_PREFLIGHT" = "yes" ]; then \
+		SKIP_PREFLIGHT_FLAG="--skip-preflight"; \
+		echo "Pre-flight validation will be skipped"; \
+	else \
+		SKIP_PREFLIGHT_FLAG=""; \
+		echo "Pre-flight validation enabled"; \
+	fi; \
+	echo ""; \
 	echo "🎯 Starting knowledge graph creation..."; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
@@ -146,7 +160,8 @@ run-interactive: check-uv
 		$$INCLUDE_ADAPTERS_FLAG \
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
-		$$INCLUDE_TAXON_ID_FLAG && \
+		$$INCLUDE_TAXON_ID_FLAG \
+		$$SKIP_PREFLIGHT_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
@@ -182,7 +197,8 @@ run-direct: check-uv
 		$(if $(WRITER_TYPE),--writer-type $(WRITER_TYPE),--writer-type metta) \
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
-		$$INCLUDE_TAXON_ID_FLAG
+		$$INCLUDE_TAXON_ID_FLAG \
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
 
 # Run with sample configuration and data (with optional writer type)
 run-sample: check-uv
@@ -218,8 +234,29 @@ run-sample: check-uv
 		--writer-type $(if $(WRITER_TYPE),$(WRITER_TYPE),metta) \
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
-		$$INCLUDE_TAXON_ID_FLAG
+		$$INCLUDE_TAXON_ID_FLAG \
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
 	@echo "✅ Sample run completed! Check the ./output directory for results."
+# Validate file paths in an adapters config without running any adapters
+check-paths: check-uv
+	@if [ -z "$(ADAPTERS_CONFIG)" ]; then \
+		echo "❌ Error: ADAPTERS_CONFIG is required"; \
+		echo "Usage: make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"; \
+		echo "       make check-paths ADAPTERS_CONFIG=... INCLUDE_ADAPTERS='gencode_gene uniprotkb_sprot'"; \
+		exit 1; \
+	fi
+	@export PATH="$$HOME/.local/bin:$$PATH"; \
+	INCLUDE_ADAPTERS_FLAG=""; \
+	if [ -n "$(INCLUDE_ADAPTERS)" ]; then \
+		for adapter in $(INCLUDE_ADAPTERS); do \
+			INCLUDE_ADAPTERS_FLAG="$$INCLUDE_ADAPTERS_FLAG --include-adapters $$adapter"; \
+		done; \
+	fi; \
+	uv run python create_knowledge_graph.py \
+		--adapters-config $(ADAPTERS_CONFIG) \
+		$$INCLUDE_ADAPTERS_FLAG \
+		--check-only
+
 # ─── Neo4j deployment targets ────────────────────────────────────────────────
 
 neo4j-up: ## Start Neo4j Docker container (reads docker/neo4j.env)

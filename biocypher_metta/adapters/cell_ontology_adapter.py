@@ -51,7 +51,7 @@ class CellOntologyAdapter(OntologyAdapter):
                 continue
             
             if self.is_deprecated(node):
-                print(f"Skipping deprecated node: {self.to_key(node)}")
+                # print(f"Skipping deprecated node: {self.to_key(node)}")
                 continue
 
             term_id = self.to_key(node)

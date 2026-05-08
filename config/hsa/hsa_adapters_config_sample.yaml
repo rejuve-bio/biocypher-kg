@@ -232,7 +232,6 @@ chebi_small_molecule_to_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
-
       label: small_molecule_to_pathway
       taxon_id: 9606
   outdir: reactome
@@ -245,7 +244,6 @@ chebi_small_molecule_to_reactions:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
-
       label: small_molecule_to_reaction
       taxon_id: 9606
   outdir: reactome
@@ -281,7 +279,7 @@ reactome_ppi:
     module: biocypher_metta.adapters.reactome_ppi_adapter
     cls: ReactomePPIAdapter
     args:
-      filepath: ./samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt.gz
+      filepath: ./samples/reactome/interactors/reactome.homo_sapiens.interactions.tab-delimited_sample.txt
       label: interacts_with
       taxon_id: 9606
   outdir: reactome/ppi
@@ -570,6 +568,19 @@ string:
       label: interacts_with
       taxon_id: 9606
   outdir: string
+  nodes: False
+  edges: True
+
+string_coexpression:
+  adapter:
+    module: biocypher_metta.adapters.string_coexpression_adapter
+    cls: StringCoexpressionAdapter
+    args:
+      filepath: ./samples/hsa/string/9606.protein.links.detailed.v12.0_sample.txt.gz
+      label: protein_coexpressed_with
+      coexpression_threshold: 400
+      taxon_id: 9606
+  outdir: string/coexpression
   nodes: False
   edges: True
 
@@ -1019,7 +1030,7 @@ enhancer_atlas_enhancer:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      enhancer_filepath: ./samples/hsa/enhancer_atlas/hs_sample.bed
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       label: enhancer
@@ -1033,7 +1044,7 @@ enhancer_atlas_enhancer_regulates:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: ./samples/hsa/enhancer_atlas/enhancer.bed.gz
+      enhancer_filepath: ./samples/hsa/enhancer_atlas/hs_sample.bed
       enhancer_gene_filepath: ./samples/hsa/enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
@@ -1578,6 +1589,10 @@ catlas_enhancer_accessible_in:
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
       cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: enhancer
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/enhancer_accessible_in
   nodes: False
   edges: True
@@ -1593,6 +1608,10 @@ catlas_promoter_accessible_in:
       cell_ontology_pkl: ./aux_files/hsa/catlas/catlas_cell_ontology_map.pkl
       cell_ontology_tsv: ./samples/hsa/catlasv1/Cell_ontology.tsv
       ccre_type: promoter
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/promoter_accessible_in
   nodes: False
   edges: True
@@ -1610,6 +1629,10 @@ catlas_abc_enhancer_to_gene:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: enhancer_activity_by_contact
       # score_threshold: 0.015  # optional: filter low-confidence predictions
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/abc_enhancer_to_gene
   nodes: False
   edges: True
@@ -1627,6 +1650,10 @@ catlas_abc_promoter_to_gene:
       abc_aliases_tsv: ./aux_files/hsa/catlas/catlas_abc_cell_type_aliases.tsv
       edge_type: promoter_gene
       # score_threshold: 0.015  # optional: filter low-confidence predictions
+  optional_paths:
+    - ccre_label_pkl      # generated from ccre_master_tsv on first run
+    - cell_ontology_pkl   # generated from cell_ontology_tsv on first run
+    - ccre_master_tsv     # downloaded automatically if absent
   outdir: catlas_ccre/abc_promoter_to_gene
   nodes: False
   edges: True

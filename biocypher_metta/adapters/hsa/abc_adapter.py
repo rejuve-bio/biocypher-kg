@@ -59,7 +59,7 @@ class ABCAdapter(Adapter):
                             _target = self.hgnc_processor.get_ensembl_id(target_gene)
                             if _target is None:
                                 not_processed += 1
-                                logger.warning(f"Couldn't find Ensembl ID for gene {target_gene}")
+                                # logger.warning(f"Couldn't find Ensembl ID for gene {target_gene}")
                                 continue
                             props = {
                                 "score": to_float(row[COL_DICT['abc_score']]),

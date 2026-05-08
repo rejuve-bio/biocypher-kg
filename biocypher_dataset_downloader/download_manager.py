@@ -71,6 +71,8 @@ class DownloadManager:
                 self._handle_catlas_download(source_config, save_dir)
             elif source_id == 'roadmap':
                 self._handle_roadmap_download(source_config, save_dir)
+            elif source_id == 'enhancer_atlas':
+                self._handle_enhancer_atlas_download(source_config, save_dir)
             elif 'bucket' in source_config:
                 self._handle_gcp_download(source_config, save_dir)
             elif isinstance(source_config.get('url'), (list, dict)):
@@ -194,6 +196,48 @@ class DownloadManager:
                 self.download_file(url, filepath)
             except Exception as e:
                 logger.warning(f"Failed to download {file_name}: {str(e)}")
+
+    def _handle_enhancer_atlas_download(self, config: dict, save_dir: Path):
+        """Download EnhancerAtlas BED archive and per-tissue EP files."""
+        import tarfile
+
+        bed_url = config['bed_url']
+        tar_path = save_dir / 'species_enh_bed.tar.gz'
+        bed_path = save_dir / 'hs.bed'
+
+        if bed_path.exists():
+            logger.info("Already exists, skipping: hs.bed")
+        else:
+            self.download_file(bed_url, tar_path)
+            logger.info("Extracting hs.bed from archive...")
+            with tarfile.open(tar_path, 'r:gz') as tar:
+                try:
+                    member = tar.getmember('hs.bed')
+                    tar.extract(member, path=save_dir)
+                except KeyError:
+                    for m in tar.getmembers():
+                        if m.name.endswith('hs.bed'):
+                            m.name = 'hs.bed'
+                            tar.extract(m, path=save_dir)
+                            break
+            tar_path.unlink()
+
+        ep_base_url = config['ep_base_url'].rstrip('/')
+        tissues = config.get('tissues', [])
+        ep_dir = save_dir / 'enhancer_gene'
+        ep_dir.mkdir(parents=True, exist_ok=True)
+
+        for tissue in tissues:
+            filename = f"{tissue}_EP.txt"
+            filepath = ep_dir / filename
+            if filepath.exists():
+                logger.info(f"Already exists, skipping: {filename}")
+                continue
+            url = f"{ep_base_url}/{filename}"
+            try:
+                self.download_file(url, filepath)
+            except Exception as e:
+                logger.warning(f"Failed to download {filename}: {e}")
 
     def download_source(self, source_id: str):
         """Download a specific source"""
