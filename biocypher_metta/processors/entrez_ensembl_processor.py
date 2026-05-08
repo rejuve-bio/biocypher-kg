@@ -95,9 +95,9 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
                 if chunk:
                     f.write(chunk)
                     downloaded += len(chunk)
-                    mb_downloaded = downloaded // (1024 * 1024)
-                    if mb_downloaded > 0 and downloaded % (1024 * 1024) < chunk_size:
-                        logger.info(f"{self.name}: Downloaded {mb_downloaded} MB...")
+                    # mb_downloaded = downloaded // (1024 * 1024)
+                    # if mb_downloaded > 0 and downloaded % (1024 * 1024) < chunk_size:
+                    #     logger.info(f"{self.name}: Downloaded {mb_downloaded} MB...")
 
         logger.info(f"{self.name}: NCBI Gene Info downloaded successfully")
 
@@ -113,9 +113,9 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
                 if chunk:
                     f.write(chunk)
                     downloaded += len(chunk)
-                    mb_downloaded = downloaded // (1024 * 1024)
-                    if mb_downloaded > 0 and mb_downloaded % 10 == 0 and downloaded % (10 * 1024 * 1024) < chunk_size:
-                        logger.info(f"{self.name}: Downloaded {mb_downloaded} MB...")
+                    # mb_downloaded = downloaded // (1024 * 1024)
+                    # if mb_downloaded > 0 and mb_downloaded % 10 == 0 and downloaded % (10 * 1024 * 1024) < chunk_size:
+                    #     logger.info(f"{self.name}: Downloaded {mb_downloaded} MB...")
 
         logger.info(f"{self.name}: GENCODE annotations downloaded successfully ({downloaded // (1024 * 1024)} MB)")
 
@@ -140,8 +140,8 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
                     if line.startswith('#') or not line.strip():
                         continue
 
-                    if line_num % 10000 == 0:
-                        logger.info(f"{self.name}: Processed {line_num:,} lines from Gene Info...")
+                    # if line_num % 10000 == 0:
+                    #     logger.info(f"{self.name}: Processed {line_num:,} lines from Gene Info...")
 
                     fields = line.split('\t')
                     if len(fields) < 16:
@@ -201,8 +201,8 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
                     if line.startswith('#') or not line.strip():
                         continue
 
-                    if line_num % 100000 == 0:
-                        logger.info(f"{self.name}: Processed {line_num:,} lines from GENCODE...")
+                    # if line_num % 100000 == 0:
+                    #     logger.info(f"{self.name}: Processed {line_num:,} lines from GENCODE...")
 
                     fields = line.split('\t')
                     if len(fields) < 9:
