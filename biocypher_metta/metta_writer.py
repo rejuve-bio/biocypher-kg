@@ -193,7 +193,7 @@ class MeTTaWriter(BaseWriter):
                 except Exception:
                     pass
 
-        logger.info("Finished writing out nodes")
+        # logger.info("Finished writing out nodes")
         return self.node_freq, self.node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):

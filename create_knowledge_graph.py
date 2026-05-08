@@ -371,15 +371,21 @@ def process_adapters(
     )
     empty_output_adapters: list[tuple[str, str]] = []
     total_start = time.time()
+    total_adapters = len(adapters_dict)
+    current_adapter_idx = 0
 
     for adapter_name in adapters_dict:
+        current_adapter_idx += 1
         if adapter_name in completed_adapters:
             logger.info(f"Skipping adapter (already completed): {adapter_name}")
             continue
 
         adapter_start = time.time()
         writer.clear_counts()
-        logger.info(f"Running adapter: {adapter_name}")
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info(f"  >> [{current_adapter_idx}/{total_adapters}] Running adapter: {adapter_name}")
+        logger.info("=" * 60)
 
         adapter_config = adapters_dict[adapter_name]["adapter"]
         adapter_module = importlib.import_module(adapter_config["module"])
@@ -487,7 +493,7 @@ def process_adapters(
                 datasets_dict=datasets_dict,
                 failed_adapter=None,
             )
-            logger.info(f"Checkpoint updated after adapter: {adapter_name}")
+            # logger.info(f"Checkpoint updated after adapter: {adapter_name}")
 
     if empty_output_adapters:
         empty_adapter_count = len({name for name, _ in empty_output_adapters})
