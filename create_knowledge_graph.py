@@ -158,11 +158,13 @@ def preprocess_schema(schema_config_path: Path):
     return edge_node_types
 
 
-def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir):
+def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output_dir, kg_format: str = ""):
     graph_info = {
         "node_count": sum(nodes_count.values()),
         "edge_count": sum(edges_count.values()),
         "dataset_count": 0,
+        "last_updated_at": str(date.today()),
+        "kg_format": kg_format,
         "data_size": "",
         "top_entities": [{"name": node, "count": count} for node, count in nodes_count.items()],
         "top_connections": [],
@@ -214,7 +216,7 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
 
     for node, props in nodes_props.items():
         graph_info["schema"]["nodes"].append(
-            {"data": {"name": node, "properties": list(props)}}
+            {"data": {"id": node, "properties": list(props)}}
         )
 
     for conn, pos_connections in possible_connections.items():
@@ -370,9 +372,11 @@ def process_adapters(
         checkpoint_manager.completed_adapters if checkpoint_manager else []
     )
     empty_output_adapters: list[tuple[str, str]] = []
-    total_start = time.time()
+    elapsed_offset = checkpoint_manager.restore_elapsed() if checkpoint_manager else 0.0
+    total_start = time.time() - elapsed_offset
     total_adapters = len(adapters_dict)
     current_adapter_idx = 0
+    adapter_times: dict[str, float] = {}
 
     for adapter_name in adapters_dict:
         current_adapter_idx += 1
@@ -384,7 +388,7 @@ def process_adapters(
         writer.clear_counts()
         logger.info("")
         logger.info("=" * 60)
-        logger.info(f"  >> [{current_adapter_idx}/{total_adapters}] Running adapter: {adapter_name}")
+        logger.info(f"  >> [{current_adapter_idx}/{total_adapters}] Running adapter: {adapter_name}  [total: {_fmt_elapsed(time.time() - total_start)}]")
         logger.info("=" * 60)
 
         adapter_config = adapters_dict[adapter_name]["adapter"]
@@ -474,15 +478,19 @@ def process_adapters(
                     edges_count=edges_count,
                     datasets_dict=datasets_dict,
                     failed_adapter=adapter_name,
+                    elapsed_seconds=time.time() - total_start,
                 )
                 logger.info(
                     f"Checkpoint saved. Re-run the pipeline to resume from adapter '{adapter_name}'."
                 )
             raise
 
+        adapter_elapsed = time.time() - adapter_start
+        adapter_times[adapter_name] = adapter_elapsed
         completed_adapters.append(adapter_name)
         logger.info(
-            f"Adapter '{adapter_name}' completed in {_fmt_elapsed(time.time() - adapter_start)}"
+            f"Adapter '{adapter_name}' completed in {_fmt_elapsed(adapter_elapsed)}"
+            f"  [total: {_fmt_elapsed(time.time() - total_start)}]"
         )
         if checkpoint_manager is not None:
             checkpoint_manager.save(
@@ -492,26 +500,20 @@ def process_adapters(
                 edges_count=edges_count,
                 datasets_dict=datasets_dict,
                 failed_adapter=None,
+                elapsed_seconds=time.time() - total_start,
             )
             # logger.info(f"Checkpoint updated after adapter: {adapter_name}")
 
-    if empty_output_adapters:
-        empty_adapter_count = len({name for name, _ in empty_output_adapters})
-        logger.warning(
-            f"{empty_adapter_count} adapter(s) produced empty output:"
-        )
-        for name, output_type in empty_output_adapters:
-            logger.warning(f"  - {name} ({output_type}: 0)")
     logger.info(f"All adapters completed in {_fmt_elapsed(time.time() - total_start)}")
-    return nodes_count, nodes_props, edges_count, datasets_dict
+    return nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start
 
 
 def _write_graph_info(
-    nodes_count, nodes_props, edges_count, schema_dict, output_dir, datasets_dict
+    nodes_count, nodes_props, edges_count, schema_dict, output_dir, datasets_dict, kg_format: str = ""
 ):
     """Build and write graph_info.json."""
     graph_info = gather_graph_info(
-        nodes_count, nodes_props, edges_count, schema_dict, output_dir
+        nodes_count, nodes_props, edges_count, schema_dict, output_dir, kg_format=kg_format
     )
     for dataset_name in datasets_dict:
         datasets_dict[dataset_name]["nodes"] = list(datasets_dict[dataset_name]["nodes"])
@@ -929,6 +931,7 @@ def main(
                         schema_dict,
                         sp_output_dir,
                         datasets_dict,
+                        kg_format=writer_type,
                     )
 
                     if ckpt is not None:
@@ -1070,7 +1073,7 @@ def main(
             resume=resume,
         )
 
-        nodes_count, nodes_props, edges_count, datasets_dict = process_adapters(
+        nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
             adapters_dict,
             dbsnp_rsids_dict,
             dbsnp_pos_dict,
@@ -1097,14 +1100,31 @@ def main(
             schema_dict,
             output_dir,
             datasets_dict,
+            kg_format=writer_type,
         )
 
         if ckpt is not None:
             ckpt.delete()
 
-        logger.info("Done")
-        logger.info(f"Total nodes processed: {sum(nodes_count.values())}")
-        logger.info(f"Total edges processed: {sum(edges_count.values())}")
+        logger.info("")
+        logger.info("#" * 60)
+        logger.info("  PIPELINE COMPLETE")
+        logger.info(f"  Total time  : {_fmt_elapsed(time.time() - total_start)}")
+        logger.info(f"  Total nodes : {sum(nodes_count.values()):,}")
+        logger.info(f"  Total edges : {sum(edges_count.values()):,}")
+        if adapter_times:
+            top = sorted(adapter_times.items(), key=lambda x: x[1], reverse=True)[:5]
+            logger.info("")
+            logger.info("  Top slowest adapters:")
+            for rank, (name, secs) in enumerate(top, 1):
+                logger.info(f"    {rank}. {name}: {_fmt_elapsed(secs)}")
+        if empty_output_adapters:
+            logger.info("")
+            logger.info(f"  Empty output ({len({n for n, _ in empty_output_adapters})} adapter(s)):")
+            for name, output_type in empty_output_adapters:
+                logger.info(f"    - {name} ({output_type}: 0)")
+        logger.info("#" * 60)
+        logger.info("")
     finally:
         if is_merged_schema and temp_schema_to_cleanup is not None:
             delete_temp_schema(temp_schema_to_cleanup)
