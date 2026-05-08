@@ -78,7 +78,8 @@ class CheckpointManager:
         "nodes_count": {...},
         "nodes_props":  {...},    # lists (serialised sets)
         "edges_count":  {...},
-        "datasets_dict": {...}
+        "datasets_dict": {...},
+        "elapsed_seconds": 0.0    # accumulated wall-clock time across all runs
     }
     """
 
