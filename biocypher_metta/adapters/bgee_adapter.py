@@ -32,12 +32,15 @@ class BgeeAdapter(Adapter):
         9606: 'ENSEMBL',
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label):
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label,
+                 anatomy_label=None, developmental_stage_label=None):
         self.filepath = filepath
         self.label = label
+        self.anatomy_label = anatomy_label or 'gene_expressed_in_anatomy'
+        self.developmental_stage_label = developmental_stage_label or 'gene_expressed_in_developmental_stage'
         self.taxon_id = taxon_id
 
-        self.source = 'bgee' 
+        self.source = 'bgee'
         self.source_url = f"https://www.bgee.org/download/gene-expression-calls?id={self.taxon_id}"
         super(BgeeAdapter, self).__init__(write_properties, add_provenance)
     
@@ -88,11 +91,11 @@ class BgeeAdapter(Adapter):
 
             # Yield deduplicated edges
             for (source_id, target_id), edge_data in edge_dict.items():
-                yield source_id, ('anatomy', target_id), self.label, edge_data["props"]
+                yield source_id, target_id, self.anatomy_label, edge_data["props"]
                 dev_stage_id = edge_data['props'].get('developmental_stage')
                 if dev_stage_id:
                     dev_props = {k: v for k, v in edge_data["props"].items() if k != 'developmental_stage'}
-                    yield source_id, ('developmental_stage', dev_stage_id), self.label, dev_props
+                    yield source_id, dev_stage_id, self.developmental_stage_label, dev_props
 
         except OSError as e:
             raise RuntimeError(f"Error opening the bgee file '{self.filepath}': {e}") from e
