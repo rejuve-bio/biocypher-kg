@@ -148,13 +148,16 @@ class ReactomeInferenceEdgesAdapter(Adapter):
                         role_info = roles_to_label_map[protein_role]
                         if role_info is None or role_info[0] != self.label:
                             continue
-                        edges_key = f'{uniprot_id}_{protein_role}_{pathway_id}'
-                        if not edges_key in edges_dict:
-                            props = base_props.copy()
-                            props['relation_ontology_term'] = role_info[1]
-                            props['taxon_id'] = self.taxon_id
-                            edges_dict[edges_key] = True
+                        props = base_props.copy()
+                        props['relation_ontology_term'] = role_info[1]
+                        props['taxon_id'] = self.taxon_id
+                        pathway_key = f'{uniprot_id}_{protein_role}_{pathway_id}'
+                        if pathway_key not in edges_dict:
+                            edges_dict[pathway_key] = True
                             yield uniprot_id, pathway_id, self.pathway_label, props
-                        yield uniprot_id, reaction_id, self.reaction_label, props
+                        reaction_key = f'{uniprot_id}_{protein_role}_{reaction_id}'
+                        if reaction_key not in edges_dict:
+                            edges_dict[reaction_key] = True
+                            yield uniprot_id, reaction_id, self.reaction_label, props
             print(f'Entities not linked: {not_mapped_no_processing} out of {total_in_species_records}')
 
