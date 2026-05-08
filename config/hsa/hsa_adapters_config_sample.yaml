@@ -147,6 +147,8 @@ reactome_input_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: enables
+      pathway_label: protein_enables_pathway
+      reaction_label: protein_enables_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
@@ -159,6 +161,8 @@ reactome_output_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: produced_by
+      pathway_label: protein_produced_by_pathway
+      reaction_label: protein_produced_by_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
@@ -171,6 +175,8 @@ reactome_catalyst_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: regulates
+      pathway_label: protein_regulates_pathway
+      reaction_label: protein_regulates_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
@@ -183,6 +189,8 @@ reactome_negative_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: negatively_regulates
+      pathway_label: protein_negatively_regulates_pathway
+      reaction_label: protein_negatively_regulates_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
@@ -195,6 +203,8 @@ reactome_positive_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: positively_regulates
+      pathway_label: protein_positively_regulates_pathway
+      reaction_label: protein_positively_regulates_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
@@ -628,7 +638,7 @@ gtex_expression:
       filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       label: expressed_in
-
+      anatomy_label: gene_expressed_in_anatomy
   outdir: gtex/expression
   nodes: False
   edges: True
@@ -1353,7 +1363,9 @@ bgee_gene_expressed_in_anatomical_entity:
     args:
       filepath: ./samples/hsa/bgee/Homo_sapiens_expr_sample.tsv.gz
       label: expressed_in
-      taxon_id: 9606      
+      anatomy_label: gene_expressed_in_anatomy
+      developmental_stage_label: gene_expressed_in_developmental_stage
+      taxon_id: 9606
   outdir: bgee
   nodes: False
   edges: True

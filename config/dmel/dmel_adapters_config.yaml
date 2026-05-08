@@ -5,6 +5,8 @@ bgee_gene_expressed_in_anatomical_entity:
     args:
       filepath: /mnt/hdd_1/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
       label: expressed_in
+      anatomy_label: gene_expressed_in_anatomy
+      developmental_stage_label: gene_expressed_in_developmental_stage
       taxon_id: 7227
   outdir: bgee
   nodes: False
@@ -676,6 +678,8 @@ reactome_input_role_protein_to_reaction_or_pathway:
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
       label: enables
+      pathway_label: protein_enables_pathway
+      reaction_label: protein_enables_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -688,6 +692,8 @@ reactome_output_role_protein_to_reaction_or_pathway:
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
       label: produced_by
+      pathway_label: protein_produced_by_pathway
+      reaction_label: protein_produced_by_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -700,6 +706,8 @@ reactome_catalyst_role_protein_to_reaction_or_pathway:
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
       label: regulates
+      pathway_label: protein_regulates_pathway
+      reaction_label: protein_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -712,6 +720,8 @@ reactome_negative_role_protein_to_reaction_or_pathway:
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
       label: negatively_regulates
+      pathway_label: protein_negatively_regulates_pathway
+      reaction_label: protein_negatively_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -724,6 +734,8 @@ reactome_positive_role_protein_to_reaction_or_pathway:
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/reactome_reaction_exporter_All_species.txt
       label: positively_regulates
+      pathway_label: protein_positively_regulates_pathway
+      reaction_label: protein_positively_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False

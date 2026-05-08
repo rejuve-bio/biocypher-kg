@@ -6,7 +6,9 @@ bgee_gene_expressed_in_anatomical_entity:
     args:
       filepath: ./samples/dmel/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
       label: expressed_in
-      taxon_id: 7227      
+      anatomy_label: gene_expressed_in_anatomy
+      developmental_stage_label: gene_expressed_in_developmental_stage
+      taxon_id: 7227
   outdir: bgee
   nodes: False
   edges: True
@@ -781,6 +783,8 @@ reactome_input_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: enables
+      pathway_label: protein_enables_pathway
+      reaction_label: protein_enables_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -793,6 +797,8 @@ reactome_output_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: produced_by
+      pathway_label: protein_produced_by_pathway
+      reaction_label: protein_produced_by_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -805,6 +811,8 @@ reactome_catalyst_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: regulates
+      pathway_label: protein_regulates_pathway
+      reaction_label: protein_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -817,6 +825,8 @@ reactome_negative_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: negatively_regulates
+      pathway_label: protein_negatively_regulates_pathway
+      reaction_label: protein_negatively_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -829,6 +839,8 @@ reactome_positive_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: positively_regulates
+      pathway_label: protein_positively_regulates_pathway
+      reaction_label: protein_positively_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -840,7 +852,7 @@ chebi_small_molecule_to_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: small_molecule_to_pathway
       taxon_id: 7227
   outdir: reactome
@@ -853,7 +865,7 @@ chebi_small_molecule_to_reactions:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: small_molecule_to_reaction
       taxon_id: 7227
   outdir: reactome
