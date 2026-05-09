@@ -78,7 +78,8 @@ class CheckpointManager:
         "nodes_count": {...},
         "nodes_props":  {...},    # lists (serialised sets)
         "edges_count":  {...},
-        "datasets_dict": {...}
+        "datasets_dict": {...},
+        "elapsed_seconds": 0.0    # accumulated wall-clock time across all runs
     }
     """
 
@@ -130,6 +131,7 @@ class CheckpointManager:
         edges_count: Counter,
         datasets_dict: dict,
         failed_adapter: Optional[str] = None,
+        elapsed_seconds: float = 0.0,
     ):
         """Atomically write the checkpoint file."""
         now = datetime.utcnow().isoformat()
@@ -143,6 +145,7 @@ class CheckpointManager:
             "nodes_props": _serialize(nodes_props),
             "edges_count": _serialize(edges_count),
             "datasets_dict": _serialize(datasets_dict),
+            "elapsed_seconds": elapsed_seconds,
         }
         # Write atomically via a temp file
         tmp = self.checkpoint_path.with_suffix(".tmp")
@@ -177,6 +180,12 @@ class CheckpointManager:
             _deserialize_edges_count(self._state.get("edges_count", {})),
             _deserialize_datasets_dict(self._state.get("datasets_dict", {})),
         )
+
+    def restore_elapsed(self) -> float:
+        """Return accumulated elapsed seconds from previous run(s)."""
+        if self._state is None:
+            return 0.0
+        return self._state.get("elapsed_seconds", 0.0)
 
 
 # ---------------------------------------------------------------------------
