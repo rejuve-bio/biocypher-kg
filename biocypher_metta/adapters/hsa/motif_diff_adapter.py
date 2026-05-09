@@ -85,4 +85,4 @@ class MotifDiffAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
 
-                    yield tf_ensembl, variant_rsid, self.label, props
+                    yield variant_rsid, tf_ensembl, self.label, props

@@ -2403,15 +2403,15 @@ located on chain:
 transcription factor to snp association:
   is_a: association
   biolink_predicate: "biolink:affects"
-  description: holds between a HOCOMOCO motif and a snp where the snp causes a gain or loss of transcription factor binding affinity at that motif site
+  description: holds between a snp and a HOCOMOCO motif where the snp causes a gain or loss of transcription factor binding affinity at that motif site
   represented_as: edge
   input_label: tf_snp
-  output_label: binding_affected_by
-  source: motif
-  target: snp
+  output_label: alters_binding
+  source: snp
+  target: motif
   kgx_properties:
-    subject_category: "biolink:NucleicAcidEntity"
-    object_category: "biolink:Snv"
+    subject_category: "biolink:Snv"
+    object_category: "biolink:NucleicAcidEntity"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
