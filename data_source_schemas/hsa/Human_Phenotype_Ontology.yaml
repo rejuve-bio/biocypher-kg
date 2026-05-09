@@ -4,6 +4,7 @@ relationships:
   gene to phenotype association:
     url: https://hpo.jax.org/
     input_label: gene_phenotype
+    output_label: involved_in
     description: An association between a gene and a phenotype (HPO term).
     source: gene
     target: phenotype
@@ -15,6 +16,7 @@ relationships:
   gene to disease association:
     url: https://hpo.jax.org/
     input_label: gene_disease
+    output_label: associated_with
     description: An association between a gene and a disease identifier (e.g., OMIM,
       ORPHA).
     source: gene

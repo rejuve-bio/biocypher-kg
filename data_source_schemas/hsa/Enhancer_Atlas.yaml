@@ -13,6 +13,7 @@ relationships:
   enhancer to gene association:
     url: http://enhanceratlas.org/downloadv2.php
     input_label: enhancer_gene
+    output_label: associated_with
     description: An association between an enhancer and a gene
     source: enhancer
     target: gene

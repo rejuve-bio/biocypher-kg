@@ -35,18 +35,21 @@ relationships:
   transcribes to:
     url: https://www.gencodegenes.org/
     input_label: transcribes_to
+    output_label: transcribes_to
     description: inverse of transcribed from
     source: gene
     target: transcript
   exon part_of transcript:
     url: https://www.gencodegenes.org/
     input_label: part_of_transcript
+    output_label: part_of
     description: An association between an exon and its gene
     source: exon
     target: transcript
   exon part_of gene:
     url: https://www.gencodegenes.org/
     input_label: part_of_gene
+    output_label: part_of
     description: 'Description: For example, a particular exon is part of a particular
       transcript or gene'
     source: exon

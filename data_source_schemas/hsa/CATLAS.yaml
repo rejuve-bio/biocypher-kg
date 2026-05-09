@@ -29,6 +29,7 @@ relationships:
   enhancer activity by contact:
     url: https://catlas.org/
     input_label: enhancer_activity_by_contact
+    output_label: activity_by_contact
     description: An enhancer-to-gene association predicted by the ABC model
       (Activity-By-Contact, Fulco et al. 2019) using CATLAS single-cell
       chromatin accessibility data.
@@ -42,6 +43,7 @@ relationships:
   promoter to gene association:
     url: https://catlas.org/
     input_label: promoter_gene
+    output_label: associated_with
     description: An association between a promoter cCRE and its target gene.
     source: promoter
     target: gene
@@ -51,6 +53,7 @@ relationships:
   enhancer accessible in cell type:
     url: https://catlas.org/
     input_label: enhancer_accessible_in_cell_type
+    output_label: accessible_in
     description: An enhancer cCRE that is chromatin-accessible in a given cell type
       (CL ontology term).
     source: enhancer
@@ -60,6 +63,7 @@ relationships:
   enhancer accessible in tissue:
     url: https://catlas.org/
     input_label: enhancer_accessible_in_tissue
+    output_label: accessible_in
     description: An enhancer cCRE that is chromatin-accessible in a given tissue
       (UBERON ontology term).
     source: enhancer
@@ -69,6 +73,7 @@ relationships:
   promoter accessible in cell type:
     url: https://catlas.org/
     input_label: promoter_accessible_in_cell_type
+    output_label: accessible_in
     description: A promoter cCRE that is chromatin-accessible in a given cell type
       (CL ontology term).
     source: promoter
@@ -78,6 +83,7 @@ relationships:
   promoter accessible in tissue:
     url: https://catlas.org/
     input_label: promoter_accessible_in_tissue
+    output_label: accessible_in
     description: A promoter cCRE that is chromatin-accessible in a given tissue
       (UBERON ontology term).
     source: promoter

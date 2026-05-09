@@ -73,6 +73,7 @@ relationships:
   biological process subclass:
     url: http://www.obofoundry.org/
     input_label: biological_process_subclass_of
+    output_label: is_a
     source: biological process
     target: biological process
     properties:
@@ -80,6 +81,7 @@ relationships:
   molecular function subclass:
     url: http://www.obofoundry.org/
     input_label: molecular_function_subclass_of
+    output_label: is_a
     source: molecular function
     target: molecular function
     properties:
@@ -87,6 +89,7 @@ relationships:
   cellular component subclass:
     url: http://www.obofoundry.org/
     input_label: cellular_component_subclass_of
+    output_label: is_a
     source: cellular component
     target: cellular component
     properties:
@@ -94,6 +97,7 @@ relationships:
   uberon subclass of:
     url: http://www.obofoundry.org/
     input_label: uberon_subclass_of
+    output_label: is_a
     source: anatomy
     target: anatomy
     properties:
@@ -101,6 +105,7 @@ relationships:
   clo subclass of:
     url: http://www.obofoundry.org/
     input_label: clo_subclass_of
+    output_label: is_a
     source: cell line
     target: cell line
     properties:
@@ -108,6 +113,7 @@ relationships:
   cl subclass of:
     url: http://www.obofoundry.org/
     input_label: cl_subclass_of
+    output_label: is_a
     source: cell type
     target: cell type
     properties:
@@ -115,6 +121,7 @@ relationships:
   cl capable of:
     url: http://www.obofoundry.org/
     input_label: cl_capable_of
+    output_label: capable_of
     description: Represents the capability of a cell type (CL term) to carry out or
       be involved in a specific biological process.
     source: cell type
@@ -122,6 +129,7 @@ relationships:
   cl part of:
     url: http://www.obofoundry.org/
     input_label: cl_part_of
+    output_label: part_of
     description: Represents a part-whole relationship between a CL term and an UBERON
       term.
     source: cell type
@@ -129,6 +137,7 @@ relationships:
   efo subclass of:
     url: http://www.obofoundry.org/
     input_label: efo_subclass_of
+    output_label: is_a
     source: experimental factor
     target: experimental factor
     properties:
@@ -136,6 +145,7 @@ relationships:
   bto subclass of:
     url: http://www.obofoundry.org/
     input_label: bto_subclass_of
+    output_label: is_a
     source: tissue
     target: tissue
     properties:
@@ -143,6 +153,7 @@ relationships:
   chebi subclass of:
     url: http://www.obofoundry.org/
     input_label: chebi_subclass_of
+    output_label: is_a
     source: small molecule
     target: small molecule
     properties:
@@ -150,5 +161,6 @@ relationships:
   hpo subclass of:
     url: http://www.obofoundry.org/
     input_label: hpo_subclass_of
+    output_label: is_a
     source: phenotype
     target: phenotype

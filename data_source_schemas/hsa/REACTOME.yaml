@@ -19,6 +19,7 @@ relationships:
   gene to pathway association:
     url: https://reactome.org
     input_label: genes_pathways
+    output_label: participates_in
     description: An interaction between a gene or gene product and a biological process
       or pathway.
     source: [gene, transcript, protein]
@@ -26,6 +27,7 @@ relationships:
   gene to reaction association:
     url: https://reactome.org
     input_label: gene_or_gene_product_reaction
+    output_label: involved_in
     description: An interaction between a gene or a gene product (gogp) and a molecular
       activity.
     source: biolink:GeneOrGeneProduct
@@ -33,6 +35,7 @@ relationships:
   parent pathway of:
     url: https://reactome.org
     input_label: parent_pathway_of
+    output_label: parent_pathway_of
     description: holds between two pathways where the domain class is a parent pathway
       of the range class
     source: pathway
@@ -40,6 +43,7 @@ relationships:
   child pathway of:
     url: https://reactome.org
     input_label: child_pathway_of
+    output_label: child_pathway_of
     description: holds between two pathways where the domain class is a child pathway
       of the range class
     source: pathway
@@ -47,6 +51,7 @@ relationships:
   pathway_to_biological_process:
     url: https://reactome.org
     input_label: pathway_to_biological_process
+    output_label: equivalent_to
     description: An association between a pathway and a biological process, indicating
       that the pathway is involved in the process.
     source: pathway
@@ -57,6 +62,7 @@ relationships:
   post translational interaction:
     url: https://reactome.org/
     input_label: interacts_with
+    output_label: interacts_with
     source: protein
     target: protein
     properties:
