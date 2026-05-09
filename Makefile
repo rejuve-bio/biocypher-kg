@@ -43,16 +43,16 @@ run-interactive: check-uv
 	OUTPUT_DIR=$${OUTPUT_DIR:-./output}; \
 	echo "Using output directory: $$OUTPUT_DIR"; \
 	echo ""; \
-	read -p "⚙️  Enter adapters config path [./config/adapters_config_sample.yaml]: " ADAPTERS_CONFIG; \
-	ADAPTERS_CONFIG=$${ADAPTERS_CONFIG:-./config/adapters_config_sample.yaml}; \
+	read -p "⚙️  Enter adapters config path [./config/species_config.yaml]: " ADAPTERS_CONFIG; \
+	ADAPTERS_CONFIG=$${ADAPTERS_CONFIG:-./config/species_config.yaml}; \
 	echo "Using adapters config: $$ADAPTERS_CONFIG"; \
 	echo ""; \
-	read -p "🧬 Enter dbSNP RSIDs path [./aux_files/sample_dbsnp_rsids.pkl]: " DBSNP_RSIDS; \
-	DBSNP_RSIDS=$${DBSNP_RSIDS:-./aux_files/sample_dbsnp_rsids.pkl}; \
+	read -p "🧬 Enter dbSNP RSIDs path [./aux_files/hsa/sample_dbsnp_rsids.pkl]: " DBSNP_RSIDS; \
+	DBSNP_RSIDS=$${DBSNP_RSIDS:-./aux_files/hsa/sample_dbsnp_rsids.pkl}; \
 	echo "Using dbSNP RSIDs: $$DBSNP_RSIDS"; \
 	echo ""; \
-	read -p "📍 Enter dbSNP positions path [./aux_files/sample_dbsnp_pos.pkl]: " DBSNP_POS; \
-	DBSNP_POS=$${DBSNP_POS:-./aux_files/sample_dbsnp_pos.pkl}; \
+	read -p "📍 Enter dbSNP positions path [./aux_files/hsa/sample_dbsnp_pos.pkl]: " DBSNP_POS; \
+	DBSNP_POS=$${DBSNP_POS:-./aux_files/hsa/sample_dbsnp_pos.pkl}; \
 	echo "Using dbSNP positions: $$DBSNP_POS"; \
 	echo ""; \
 	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
