@@ -614,22 +614,19 @@ gtex_expression:
   nodes: False
   edges: True
 
-# ========================================================================
-# It is commented out because it is an orphane node with no connection.
-# ========================================================================
 
-# hocomoco:
-#   adapter:
-#     module: biocypher_metta.adapters.hocomoco_motif_adapter
-#     cls: HoCoMoCoMotifAdapter
-#     args:
-#       filepath: /mnt/hdd_1/abdu/biocypher_data/hocomoco/pwm
-#       annotation_file: /mnt/hdd_1/abdu/biocypher_data/hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-#       label: motif
-#       taxon_id: 9606
-#   outdir: hocomoco
-#   nodes: True
-#   edges: False
+hocomoco:
+  adapter:
+    module: biocypher_metta.adapters.hocomoco_motif_adapter
+    cls: HoCoMoCoMotifAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/hocomoco/pwm
+      annotation_file: /mnt/hdd_1/abdu/biocypher_data/hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+      label: motif
+      taxon_id: 9606
+  outdir: hocomoco
+  nodes: True
+  edges: False
 
 roadmap_chromatin_state:
   adapter:

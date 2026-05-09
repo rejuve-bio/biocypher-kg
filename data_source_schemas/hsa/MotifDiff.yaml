@@ -4,11 +4,11 @@ relationships:
   transcription factor to snp association:
     url: https://github.com/rezwanhosseini/MotifDiff
     input_label: tf_snp
-    output_label: tf_snp
+    output_label: binding_affected_by
     description: >-
-      holds between a transcription factor and a SNP if the SNP occurs in
-      or disrupts a transcription factor binding site (TFBS)
-    source: gene
+      holds between a HOCOMOCO motif and a SNP where the SNP causes a gain
+      or loss of transcription factor binding affinity at that motif site
+    source: motif
     target: snp
     properties:
       effect: str
