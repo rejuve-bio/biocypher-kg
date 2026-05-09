@@ -40,7 +40,7 @@ class BgeeAdapter(Adapter):
         self.developmental_stage_label = developmental_stage_label or 'gene_expressed_in_developmental_stage'
         self.taxon_id = taxon_id
 
-        self.source = 'bgee'
+        self.source = 'Bgee'
         self.source_url = f"https://www.bgee.org/download/gene-expression-calls?id={self.taxon_id}"
         super(BgeeAdapter, self).__init__(write_properties, add_provenance)
     
