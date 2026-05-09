@@ -778,15 +778,34 @@ bto subclass of:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-catalyst protein to reaction or pathway association:
+catalyst protein to pathway association:
   is_a: annotation
   biolink_predicate: biolink:regulates
   inherit_properties: true
-  description: holds between a protein playing an input role in a reaction and a pathway
+  description: holds between a protein playing a catalyst role in a pathway
   represented_as: edge
-  input_label: regulates
+  input_label: protein_regulates_pathway
+  output_label: regulates
   source: protein
-  target: biolink:BiologicalProcessOrActivity
+  target: pathway
+  properties:
+    relation_ontology_term: str
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+catalyst protein to reaction association:
+  is_a: annotation
+  biolink_predicate: biolink:regulates
+  inherit_properties: true
+  description: holds between a protein playing a catalyst role in a reaction
+  represented_as: edge
+  input_label: protein_regulates_reaction
+  output_label: regulates
+  source: protein
+  target: reaction
   properties:
     relation_ontology_term: str
   kgx_properties:
@@ -1175,20 +1194,46 @@ exon part_of transcript:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-expressed in:
-  description: holds between a gene and an ontology term in which it is expressed
+gene expressed in anatomy:
+  description: holds between a gene and an anatomical entity in which it is expressed
   is_a: expression
   mixins:
   - biolink:GeneToExpressionSiteAssociation
   biolink_predicate: biolink:expressed_in
   inherit_properties: true
   represented_as: edge
-  input_label: expressed_in
+  input_label: gene_expressed_in_anatomy
+  output_label: expressed_in
   source: gene
-  target: ontology term
+  target: anatomy
   kgx_properties:
     subject_category: biolink:Gene
-    object_category: biolink:OntologyClass
+    object_category: biolink:AnatomicalEntity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    score:
+      type: float
+      biolink: has_quantitative_value
+    p_value:
+      type: float
+      biolink: has_quantitative_value
+
+gene expressed in developmental stage:
+  description: holds between a gene and a developmental stage in which it is expressed
+  is_a: expression
+  mixins:
+  - biolink:GeneToExpressionSiteAssociation
+  biolink_predicate: biolink:expressed_in
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_expressed_in_developmental_stage
+  output_label: expressed_in
+  source: gene
+  target: developmental stage
+  kgx_properties:
+    subject_category: biolink:Gene
+    object_category: biolink:LifeStage
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
   properties:
@@ -1564,18 +1609,49 @@ gene to phenotype association:
       type: str
 
 gene to reaction association:
-  description: An interaction between a gene or a gene product (gogp) and a reaction
-    (Reactome).
+  description: An interaction between a gene and a reaction (Reactome).
   is_a: annotation
   biolink_predicate: biolink:participates_in
   inherit_properties: true
   represented_as: edge
   input_label: gene_or_gene_product_reaction
   output_label: involved_in
-  source: biolink:GeneOrGeneProduct
+  source: gene
   target: reaction
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Gene
+    object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+protein to reaction association:
+  description: An interaction between a protein and a reaction (Reactome).
+  is_a: annotation
+  biolink_predicate: biolink:participates_in
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_or_gene_product_reaction
+  output_label: involved_in
+  source: protein
+  target: reaction
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+transcript to reaction association:
+  description: An interaction between a transcript and a reaction (Reactome).
+  is_a: annotation
+  biolink_predicate: biolink:participates_in
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_or_gene_product_reaction
+  output_label: involved_in
+  source: transcript
+  target: reaction
+  kgx_properties:
+    subject_category: biolink:Transcript
     object_category: biolink:MolecularActivity
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -1688,15 +1764,34 @@ has xref:
       type: str[]
       biolink: has_evidence
 
-input role protein to reaction or pathway association:
+input role protein to pathway association:
   is_a: annotation
   biolink_predicate: biolink:is_input_of
   inherit_properties: true
-  description: holds between a protein playing an input role in a reaction and a pathway
+  description: holds between a protein playing an input role in a pathway
   represented_as: edge
-  input_label: enables
+  input_label: protein_enables_pathway
+  output_label: enables
   source: protein
-  target: biolink:BiologicalProcessOrActivity
+  target: pathway
+  properties:
+    relation_ontology_term: str
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+input role protein to reaction association:
+  is_a: annotation
+  biolink_predicate: biolink:is_input_of
+  inherit_properties: true
+  description: holds between a protein playing an input role in a reaction
+  represented_as: edge
+  input_label: protein_enables_reaction
+  output_label: enables
+  source: protein
+  target: reaction
   properties:
     relation_ontology_term: str
   kgx_properties:
@@ -1784,15 +1879,34 @@ molecular function subclass:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-negative role protein to reaction or pathway association:
+negative role protein to pathway association:
   is_a: annotation
   biolink_predicate: biolink:regulates
   inherit_properties: true
-  description: holds between a protein playing an input role in a reaction and a pathway
+  description: holds between a protein negatively regulating a pathway
   represented_as: edge
-  input_label: negatively_regulates
+  input_label: protein_negatively_regulates_pathway
+  output_label: negatively_regulates
   source: protein
-  target: biolink:BiologicalProcessOrActivity
+  target: pathway
+  properties:
+    relation_ontology_term: str
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+negative role protein to reaction association:
+  is_a: annotation
+  biolink_predicate: biolink:regulates
+  inherit_properties: true
+  description: holds between a protein negatively regulating a reaction
+  represented_as: edge
+  input_label: protein_negatively_regulates_reaction
+  output_label: negatively_regulates
+  source: protein
+  target: reaction
   properties:
     relation_ontology_term: str
   kgx_properties:
@@ -1854,15 +1968,34 @@ orthology association:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-output role protein to reaction or pathway association:
+output role protein to pathway association:
   is_a: annotation
   biolink_predicate: biolink:produced_by
   inherit_properties: true
-  description: holds between a protein playing an input role in a reaction and a pathway
+  description: holds between a protein produced by a pathway
   represented_as: edge
-  input_label: produced_by
+  input_label: protein_produced_by_pathway
+  output_label: produced_by
   source: protein
-  target: biolink:BiologicalProcessOrActivity
+  target: pathway
+  properties:
+    relation_ontology_term: str
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+output role protein to reaction association:
+  is_a: annotation
+  biolink_predicate: biolink:produced_by
+  inherit_properties: true
+  description: holds between a protein produced by a reaction
+  represented_as: edge
+  input_label: protein_produced_by_reaction
+  output_label: produced_by
+  source: protein
+  target: reaction
   properties:
     relation_ontology_term: str
   kgx_properties:
@@ -1984,15 +2117,34 @@ pathway_to_molecular_function:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-positive role protein to reaction or pathway association:
+positive role protein to pathway association:
   is_a: annotation
   biolink_predicate: biolink:regulates
   inherit_properties: true
-  description: holds between a protein playing an input role in a reaction and a pathway
+  description: holds between a protein positively regulating a pathway
   represented_as: edge
-  input_label: positively_regulates
+  input_label: protein_positively_regulates_pathway
+  output_label: positively_regulates
   source: protein
-  target: biolink:BiologicalProcessOrActivity
+  target: pathway
+  properties:
+    relation_ontology_term: str
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:BiologicalProcess
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+positive role protein to reaction association:
+  is_a: annotation
+  biolink_predicate: biolink:regulates
+  inherit_properties: true
+  description: holds between a protein positively regulating a reaction
+  represented_as: edge
+  input_label: protein_positively_regulates_reaction
+  output_label: positively_regulates
+  source: protein
+  target: reaction
   properties:
     relation_ontology_term: str
   kgx_properties:

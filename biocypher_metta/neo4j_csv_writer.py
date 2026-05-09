@@ -259,6 +259,9 @@ class Neo4jCSVWriter(BaseWriter):
                 
                 edge_info = self.edge_node_types[label]
                 
+                has_typed_source = isinstance(source_id, tuple)
+                has_typed_target = isinstance(target_id, tuple)
+
                 if isinstance(source_id, tuple):
                     source_type = source_id[0]
                     source_id = source_id[1]
@@ -276,6 +279,9 @@ class Neo4jCSVWriter(BaseWriter):
                         target_type = edge_info["target"][0]
                     else:
                         target_type = edge_info["target"]
+
+                if has_typed_source or has_typed_target:
+                    self.validate_edge_types(label, source_type, target_type)
 
                 if source_type == "ontology_term" and not isinstance(source_id, tuple):
                     source_type = self.preprocess_id(source_id, label=source_type).split('_')[0]

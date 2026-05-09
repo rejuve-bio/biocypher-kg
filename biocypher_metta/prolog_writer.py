@@ -134,6 +134,12 @@ class PrologWriter(BaseWriter):
                 if isinstance(target_type, list):
                     target_type = target_type[0]
 
+                # Use adapter-provided types for validation when tuples are present
+                effective_source_type = source_id[0] if isinstance(source_id, tuple) else source_type
+                effective_target_type = target_id[0] if isinstance(target_id, tuple) else target_type
+                if isinstance(source_id, tuple) or isinstance(target_id, tuple):
+                    self.validate_edge_types(label, effective_source_type, effective_target_type)
+
                 file_key = (label, source_type, target_type)
 
                 if file_key not in file_handles:

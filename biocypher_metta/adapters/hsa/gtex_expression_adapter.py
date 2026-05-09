@@ -21,18 +21,18 @@ class GTExExpressionAdapter(Adapter):
                 "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
     def __init__(self, filepath, gtex_tissue_ontology_map,
                  write_properties, add_provenance, label,
-                 chr=None, start=None, end=None):
-      
+                 chr=None, start=None, end=None, anatomy_label=None):
+
         self.filepath = filepath
         self.gtex_tissue_ontology_map = pickle.load(open(gtex_tissue_ontology_map, 'rb'))
         self.chr = chr
         self.start = start
         self.end = end
         self.label = label
+        self.anatomy_label = anatomy_label or 'gene_expressed_in_anatomy'
         self.source = 'GTEx'
         self.source_url = 'https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz'
         self.version = 'v8'
-
 
         super(GTExExpressionAdapter, self).__init__(write_properties, add_provenance)
 
@@ -50,7 +50,7 @@ class GTExExpressionAdapter(Adapter):
                     if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                         #CURIE ID Format
                         _source = f"ENSEMBL:{gene_id}"
-                        _target = ('anatomy', f"{ontology}")    # includes ontology node type
+                        _target = f"{ontology}"
                         _props = {
                             'p_value': to_float(row[self.index["p_value"]]),
                         }
@@ -59,7 +59,7 @@ class GTExExpressionAdapter(Adapter):
                                 _props['source'] = self.source
                                 _props['source_url'] = self.source_url
 
-                        yield _source, _target, self.label, _props
+                        yield _source, _target, self.anatomy_label, _props
                 except Exception as e:
                     print(row)
                     print(e)

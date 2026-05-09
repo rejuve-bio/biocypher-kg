@@ -38,9 +38,17 @@ class ExpressedInAdapter(Adapter):
         'go': ['biological_process', 'molecular_function', 'cellular_component'],
     }
 
+    TARGET_TYPE_TO_LABEL = {
+        'anatomy': 'gene_expressed_in_anatomy',
+        'developmental_stage': 'gene_expressed_in_developmental_stage',
+        'phenotype': 'gene_expressed_in_phenotype',
+        'biological_process': 'gene_expressed_in_biological_process',
+        'molecular_function': 'gene_expressed_in_molecular_function',
+        'cellular_component': 'gene_expressed_in_cellular_component',
+    }
+
     def __init__(self, write_properties, add_provenance, filepath, go_subontology_processor=None):
         self.filepath = filepath
-        self.label = 'expressed_in'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
 
@@ -85,6 +93,9 @@ class ExpressedInAdapter(Adapter):
             if self.add_provenance:
                 props['source'] = self.source
                 props['source_url'] = self.source_url
-            yield source, (target_type, f'FlyBase:{target}'), self.label, props
+            edge_label = ExpressedInAdapter.TARGET_TYPE_TO_LABEL.get(target_type)
+            if edge_label is None:
+                continue
+            yield source, f'FlyBase:{target}', edge_label, props
 
 

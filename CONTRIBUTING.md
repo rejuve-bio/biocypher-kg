@@ -225,6 +225,7 @@ my relationship:
   is_a: related to
   label_as_edge: my_relationship   # used in graph databases
   input_label: my_relationship     # must match the label you yield in get_edges()
+  output_label: my_relationship    # optional — overrides input_label in output files/graphs
   source: my entity                # must match a declared node input_label
   target: gene                     # must match a declared node input_label
   properties:
@@ -234,6 +235,39 @@ my relationship:
       type: str
     source_url:
       type: str
+```
+
+**Schema enforcement:** Every label yielded by an adapter is validated against the schema at runtime. If the label is not defined, the pipeline raises a `ValueError` immediately. Make sure `input_label` in the schema exactly matches the label string your adapter yields (or the value passed via `label` / `anatomy_label` / `pathway_label` / `reaction_label` args).
+
+**Splitting related edge types:** When a data source covers multiple biologically distinct relationships (e.g. a protein can be an input, output, or catalyst in a reaction), define a separate schema entry for each and give the adapter a dedicated label parameter rather than a single hardcoded label:
+
+```yaml
+# In schema config
+input role protein to pathway association:
+  represented_as: edge
+  input_label: input_role_protein_to_pathway_association
+  source: protein
+  target: pathway
+  ...
+
+catalyst protein to pathway association:
+  represented_as: edge
+  input_label: catalyst_protein_to_pathway_association
+  source: protein
+  target: pathway
+  ...
+```
+
+```yaml
+# In adapters config — one entry per role
+reactome_input_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      label: input
+      pathway_label: input_role_protein_to_pathway_association
+      reaction_label: input_role_protein_to_reaction_association
 ```
 
 ### 5.3 Finding valid Biolink parent classes

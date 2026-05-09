@@ -80,20 +80,23 @@ class ReactomeInferenceEdgesAdapter(Adapter):
 
     ALLOWED_LABELS = ['enables', 'produced_by', 'regulates', 'negatively_regulates', 'positively_regulates']
 
-    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
+    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id,
+                 pathway_label=None, reaction_label=None, ensembl_uniprot_map_path=None):
         """
         Added taxon_id parameter to handle multiple species data.
 
         If taxon_id is None, all pathways defined in organism_taxon_map
         will be translated into Atom space. Otherwise, only data for
         the specified species will be processed.
-        """        
+        """
         if label not in ReactomeInferenceEdgesAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid label. Allowed values: ' +
                              ', '.join(ReactomeInferenceEdgesAdapter.ALLOWED_LABELS))
         self.filepath = filepath
         self.dataset = label
         self.label = label
+        self.pathway_label = pathway_label or f'protein_{label}_pathway'
+        self.reaction_label = reaction_label or f'protein_{label}_reaction'
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
         self.fbpp_to_uniprot = {}               # dict to map FBpp to UniProt ids and to avoid remote connections during runtime
@@ -142,14 +145,19 @@ class ReactomeInferenceEdgesAdapter(Adapter):
                     total_in_species_records += 1
                     protein_roles = protein_roles.replace('[', '').replace(']', '').replace(' ', '').split(',')
                     for protein_role in protein_roles:
-                        label = roles_to_label_map[protein_role][0]
-                        edges_key = f'{uniprot_id}_{protein_role}_{pathway_id}'  
-                        if not edges_key in edges_dict:
-                            props = base_props.copy()
-                            props['relation_ontology_term'] = roles_to_label_map[protein_role][1]
-                            props['taxon_id'] = self.taxon_id
-                            edges_dict[edges_key] = True                                                
-                            yield uniprot_id, ('pathway', pathway_id), label, props
-                        yield uniprot_id, ('reaction', reaction_id), label, props
+                        role_info = roles_to_label_map[protein_role]
+                        if role_info is None or role_info[0] != self.label:
+                            continue
+                        props = base_props.copy()
+                        props['relation_ontology_term'] = role_info[1]
+                        props['taxon_id'] = self.taxon_id
+                        pathway_key = f'{uniprot_id}_{protein_role}_{pathway_id}'
+                        if pathway_key not in edges_dict:
+                            edges_dict[pathway_key] = True
+                            yield uniprot_id, pathway_id, self.pathway_label, props
+                        reaction_key = f'{uniprot_id}_{protein_role}_{reaction_id}'
+                        if reaction_key not in edges_dict:
+                            edges_dict[reaction_key] = True
+                            yield uniprot_id, reaction_id, self.reaction_label, props
             print(f'Entities not linked: {not_mapped_no_processing} out of {total_in_species_records}')
 
