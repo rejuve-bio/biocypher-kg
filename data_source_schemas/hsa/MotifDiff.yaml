@@ -1,7 +1,7 @@
 name: MotifDiff
 website: https://github.com/rezwanhosseini/MotifDiff
 relationships:
-  transcription factor to snp association:
+  snp to motif association:
     url: https://github.com/rezwanhosseini/MotifDiff
     input_label: tf_snp
     output_label: alters_binding
