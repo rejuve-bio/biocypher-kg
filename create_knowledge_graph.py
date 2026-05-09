@@ -4,6 +4,7 @@ Knowledge graph generation through BioCypher script
 
 import importlib
 import json
+import logging
 import os
 import tempfile
 import time
@@ -252,6 +253,19 @@ def _fmt_elapsed(seconds: float) -> str:
     return f"{int(hours)}h {int(minutes)}m {seconds:.1f}s"
 
 
+def _add_file_logger(output_dir: Path) -> logging.FileHandler:
+    log_path = output_dir / "kg_pipeline.log"
+    handler = logging.FileHandler(log_path, encoding="utf-8")
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(logging.Formatter(
+        "%(asctime)s  %(levelname)s -- %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    ))
+    logger.addHandler(handler)
+    logger.info(f"Pipeline log: {log_path}")
+    return handler
+
+
 def _load_adapters_config(config_path: Path, context: str) -> dict:
     with open(config_path, "r") as fp:
         try:
@@ -489,8 +503,8 @@ def process_adapters(
         adapter_times[adapter_name] = adapter_elapsed
         completed_adapters.append(adapter_name)
         logger.info(
-            f"Adapter '{adapter_name}' completed in {_fmt_elapsed(adapter_elapsed)}"
-            f"  [total: {_fmt_elapsed(time.time() - total_start)}]"
+            f"Adapter '{adapter_name}' completed"
+            f"  [time taken: {_fmt_elapsed(adapter_elapsed)}]"
         )
         if checkpoint_manager is not None:
             checkpoint_manager.save(
@@ -827,6 +841,7 @@ def main(
 
     is_merged_schema = False
     temp_schema_to_cleanup = None
+    _log_handlers: list = []
 
     try:
         if species_mode:
@@ -850,6 +865,7 @@ def main(
                     logger.info(f"{'=' * 60}\n")
 
                     sp_output_dir.mkdir(parents=True, exist_ok=True)
+                    _log_handlers.append(_add_file_logger(sp_output_dir))
                     config = species_config[sp][dataset]
 
                     sp_adapters_config = Path(config["adapters_config"])
@@ -1082,6 +1098,7 @@ def main(
             logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
 
         output_dir.mkdir(parents=True, exist_ok=True)
+        _log_handlers.append(_add_file_logger(output_dir))
         ckpt = _setup_checkpoint(
             output_dir,
             pipeline_id=f"{output_dir}::{adapters_config}",
@@ -1142,6 +1159,9 @@ def main(
         logger.info("#" * 60)
         logger.info("")
     finally:
+        for _h in _log_handlers:
+            logger.removeHandler(_h)
+            _h.close()
         if is_merged_schema and temp_schema_to_cleanup is not None:
             delete_temp_schema(temp_schema_to_cleanup)
 
