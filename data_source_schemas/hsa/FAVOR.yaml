@@ -4,6 +4,7 @@ nodes:
   snp:
     url: http://favor.genohub.org/
     input_label: snp
+    output_label: snp
     description: >-
       A variant annotated with FAVOR (Functional Annotation of Variants - Online Resource)
       including APC scores, allele frequencies, CADD scores, and functional predictions.
