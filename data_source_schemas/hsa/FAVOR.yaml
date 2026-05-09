@@ -1,0 +1,16 @@
+name: FAVOR
+website: http://favor.genohub.org
+nodes:
+  snp:
+    url: http://favor.genohub.org/
+    input_label: snp
+    description: >-
+      A variant annotated with FAVOR (Functional Annotation of Variants - Online Resource)
+      including APC scores, allele frequencies, CADD scores, and functional predictions.
+    properties:
+      chr: str
+      start: int
+      end: int
+      ref: str
+      alt: str
+      annotation: dict
