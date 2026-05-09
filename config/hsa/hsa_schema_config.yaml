@@ -2534,36 +2534,6 @@ enhancer activity by contact:
       type: str
       description: Taxon ID for the organism (e.g., 9606 for human)
 
-promoter activity by contact:
-  description: >-
-    An association between a promoter cCRE and a gene predicted by the ABC model
-    (Activity-By-Contact, Fulco et al. 2019) using CATLAS single-cell chromatin
-    accessibility data.
-  is_a: regulatory association
-  mixins: [biolink:association]
-  biolink_predicate: "biolink:affects"
-  inherit_properties: true
-  represented_as: edge
-  input_label: promoter_activity_by_contact
-  output_label: activity_by_contact
-  source: promoter
-  target: gene
-  kgx_properties:
-    subject_category: "biolink:RegulatoryRegion"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-  properties:
-    abc_score:
-      type: float
-      biolink: has_quantitative_value
-    distance:
-      type: int
-      biolink: has_quantitative_value
-    biological_context:
-      type: str
-      biolink: has_biological_sequence
-
 chromatin state snp to anatomy:
   is_a: association
   mixins: [biolink:GenotypeToPhenotypicFeatureAssociation]

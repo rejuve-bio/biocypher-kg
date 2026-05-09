@@ -1764,6 +1764,23 @@ has xref:
       type: str[]
       biolink: has_evidence
 
+hpo subclass of:
+  is_a: subclass of
+  mixins:
+  - biolink:PhenotypicFeatureToPhenotypicFeatureAssociation
+  biolink_predicate: biolink:subclass_of
+  inherit_properties: true
+  represented_as: edge
+  input_label: hpo_subclass_of
+  output_label: is_a
+  source: phenotype
+  target: phenotype
+  kgx_properties:
+    subject_category: biolink:PhenotypicFeature
+    object_category: biolink:PhenotypicFeature
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 input role protein to pathway association:
   is_a: annotation
   biolink_predicate: biolink:is_input_of
