@@ -220,14 +220,61 @@ genes_pathways:
   nodes: False
   edges: True
 
+protein_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/Ensembl2Reactome_All_Levels.txt
+      label: protein_pathways
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+transcript_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/Ensembl2Reactome_All_Levels.txt
+      label: transcript_pathways
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
 gene_or_gene_product_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
-
       label: gene_or_gene_product_reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+protein_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
+      label: protein_reaction
+      taxon_id: 9606
+  outdir: reactome
+  nodes: False
+  edges: True
+
+transcript_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: /mnt/hdd_1/abdu/biocypher_data/reactome/Ensembl2ReactomeReactions.txt
+      label: transcript_reaction
       taxon_id: 9606
   outdir: reactome
   nodes: False
