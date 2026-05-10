@@ -47,6 +47,7 @@ class OntologyAdapter(Adapter):
         self.cache = {}
         self.ontology = ontology
         self.add_description = add_description
+        self.world = None
 
         # Set source and source_url based on the ontology
         self.source, self.source_url = self.get_ontology_source()
@@ -112,7 +113,8 @@ class OntologyAdapter(Adapter):
                     meta = json.load(f)
         
                 cached_date = dt.fromisoformat(meta['date'])
-                cache_expired = dt.now() - cached_date > timedelta(days=self.cache_expiration_days)
+                now = dt.now(cached_date.tzinfo) if cached_date.tzinfo else dt.now()
+                cache_expired = now - cached_date > timedelta(days=self.cache_expiration_days)
         
                 remote_version = self._get_remote_version()
                 current_version = meta.get('version')
@@ -404,7 +406,8 @@ class OntologyAdapter(Adapter):
         if remote_version is None or current_version is None or current_version == "unknown":
             print("Version information is incomplete. Checking cache expiration.")
             cached_date = dt.fromisoformat(meta['date'])
-            if dt.now() - cached_date > timedelta(days=self.cache_expiration_days):
+            now = dt.now(cached_date.tzinfo) if cached_date.tzinfo else dt.now()
+            if now - cached_date > timedelta(days=self.cache_expiration_days):
                 print("Cache has expired. Updating data.")
                 return True
             else:
