@@ -55,6 +55,18 @@ run-interactive: check-uv
 	DBSNP_POS=$${DBSNP_POS:-./aux_files/hsa/sample_dbsnp_pos.pkl}; \
 	echo "Using dbSNP positions: $$DBSNP_POS"; \
 	echo ""; \
+	read -p "Enter species type (cel/dmel/hsa/mmo/rno) [hsa]: " SPECIES_TYPE; \
+	SPECIES_TYPE=$${SPECIES_TYPE:-hsa}; \
+	echo "Using species type: $$SPECIES_TYPE"; \
+	echo ""; \
+	read -p "Enter dataset type (full/sample) [sample]: " DATASET_TYPE; \
+	DATASET_TYPE=$${DATASET_TYPE:-sample}; \
+	echo "Using dataset type: $$DATASET_TYPE"; \
+	echo ""; \
+	read -p "Enter adapters to include [all]: " INCLUDE_ADAPTERS; \
+	INCLUDE_ADAPTERS=$${INCLUDE_ADAPTERS:-all}; \
+	echo "Using dataset type: $$DATASET_TYPE"; \
+	echo ""; \
 	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
 	echo "Using writer type: $$WRITER_TYPE"; \
@@ -85,7 +97,10 @@ run-interactive: check-uv
 		--adapters-config "$$ADAPTERS_CONFIG" \
 		--dbsnp-rsids "$$DBSNP_RSIDS" \
 		--dbsnp-pos "$$DBSNP_POS" \
+		--species "$$SPECIES_TYPE" \
+		--dataset "$$DATASET_TYPE" \
 		--writer-type "$$WRITER_TYPE" \
+		--include-adapters "$$INCLUDE_ADAPTERS"
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG; \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
