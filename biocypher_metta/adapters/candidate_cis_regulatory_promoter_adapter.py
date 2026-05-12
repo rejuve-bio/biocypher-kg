@@ -68,6 +68,7 @@ class PromotercCREAdapter(Adapter):
         return ontology_id if ontology_id else tissue_name
     
     def _preload_data(self):
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id
         try:
             if self.filepath.endswith('.gz'):
                 file = gzip.open(self.filepath, 'rt')
@@ -125,7 +126,7 @@ class PromotercCREAdapter(Adapter):
                     except (ValueError, IndexError):
                         distance = "NA"
                 
-                element_id = f"ENCODE_SCREEN:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{build_regulatory_region_id(chrom, start, end)}"
                 self.accession_to_promoter[accession] = {
                     'chrom': chrom,
                     'start': start,
