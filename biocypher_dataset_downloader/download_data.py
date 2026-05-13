@@ -1,7 +1,7 @@
 import typer
 from pathlib import Path
 from typing_extensions import Annotated
-from downloader import DownloadManager
+from biocypher_dataset_downloader import DownloadManager
 import logging
 
 logging.basicConfig(level=logging.INFO)
