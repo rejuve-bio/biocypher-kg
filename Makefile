@@ -92,7 +92,7 @@ run-interactive: check-uv
 		echo "dbSNP variant: not set (sample mode)"; \
 	fi; \
 	echo ""; \
-	read -p "📝 Enter writer type (metta/prolog/neo4j) [metta]: " WRITER_TYPE; \
+	read -p "📝 Enter writer type (metta/prolog/neo4j/parquet/networkx/KGX) [metta]: " WRITER_TYPE; \
 	WRITER_TYPE=$${WRITER_TYPE:-metta}; \
 	echo "Using writer type: $$WRITER_TYPE"; \
 	echo ""; \

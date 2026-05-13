@@ -46,9 +46,9 @@ When you run `make run`, you'll see:
 
 📁 Enter output directory [./output]: 
 ⚙️  Enter adapters config path [./config/adapters_config_sample.yaml]: 
-🧬 Enter dbSNP RSIDs path [./aux_files/sample_dbsnp_rsids.pkl]: 
-📍 Enter dbSNP positions path [./aux_files/sample_dbsnp_pos.pkl]: 
-📝 Enter writer type (metta/prolog/neo4j) [metta]: 
+🗂️  Enter dbSNP cache root [./aux_files/hsa/sample_dbsnp]: 
+🧬 Enter dbSNP variant (common/full/leave blank for sample) []: 
+📝 Enter writer type (metta/prolog/neo4j/parquet/networkx/KGX) [metta]: 
 📋 Write properties? (yes/no) [no]: 
 🔗 Add provenance? (yes/no) [no]: 
 🧬 Include taxon_id in output? (yes/no) [yes]: 
@@ -295,15 +295,54 @@ python kg-service/neo4j_loader.py \
 - Edges use `CREATE` (not `MERGE`) — the loader surgically deletes changed edges before reloading, so the existence check is unnecessary and very slow on large files.
 
 ## ⬇ Downloading data
-The `downloader` directory contains code for downloading data from various sources.
+The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.
 The `download.yaml` file contains the configuration for the data sources.
 
 To download the data, run the `download_data.py` script with the following command:
 ```{bash}
-python downloader/download_data.py --output_dir <output_directory>
+python biocypher_dataset_downloader/download_data.py --output_dir <output_directory>
 ```
 
 To download data from a specific source, run the script with the following command:
 ```{bash}
-python downloader/download_data.py --output_dir <output_directory> --source <source_name>
+python biocypher_dataset_downloader/download_data.py --output_dir <output_directory> --source <source_name>
+```
+
+## 🧬 dbSNP Cache
+
+The pipeline requires a pre-built dbSNP cache for human (`hsa`) runs. Sample runs use the bundled cache at `aux_files/hsa/sample_dbsnp` automatically.
+
+### Bizon server (pre-built cache available)
+
+If you have access to the Bizon server, the cache is already available — no build step needed:
+```
+dbSNP cache root: /mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/
+dbSNP variant:    common
+```
+
+Pass these when prompted by `make run`, or set them directly:
+```bash
+uv run python create_knowledge_graph.py \
+  --dbsnp-cache-root /mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/ \
+  --dbsnp-variant common \
+  ...
+```
+
+### Building the cache from scratch
+
+Use `scripts/update_dbsnp.py` to generate the cache locally:
+```bash
+# Common variants only (~1–2 GB, recommended)
+python scripts/update_dbsnp.py --cache-dir <root>/common --common-only
+
+# All variants (~35–50 GB)
+python scripts/update_dbsnp.py --cache-dir <root>/full
+```
+
+Then either pass `--dbsnp-cache-root <root>` on the command line, or set `dbsnp_cache_root` in `config/species_config.yaml`:
+```yaml
+hsa:
+  full:
+    dbsnp_cache_root: /path/to/dbsnp/cache
+    dbsnp_variant: common   # or "full"
 ```
