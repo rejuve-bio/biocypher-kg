@@ -1,4 +1,6 @@
-.PHONY: help setup check-uv run run-interactive run-sample run-direct check-paths test clean distclean \
+.PHONY: help setup check-uv run run-interactive run-sample run-direct check-paths \
+        download download-direct \
+        test clean distclean \
         neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
 
 # Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
@@ -12,6 +14,8 @@ help:
 	@echo "  make run-sample     - Run with sample configuration and data"
 	@echo "  make run-direct     - Run with explicit parameters (non-interactive)"
 	@echo "  make check-paths    - Validate file paths in an adapters config (no adapters run)"
+	@echo "  make download       - Download data sources (interactive)"
+	@echo "  make download-direct - Download data sources with explicit parameters"
 	@echo "  make test           - Run tests"
 	@echo "  make clean          - Clean temporary files"
 	@echo "  make distclean      - Full clean including virtual environment"
@@ -34,6 +38,9 @@ help:
 	@echo "  make run-sample     SKIP_PREFLIGHT=yes   - Same, for sample runs"
 	@echo "  make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env"
 	@echo "  make run-sample INCLUDE_TAXON_ID=no   - Run without taxon_id in output (single-species KG)"
+	@echo "  make download                          - Interactive download (recommended)"
+	@echo "  make download-direct OUTPUT_DIR=./input SOURCE=uniprot  - Download a single source"
+	@echo "  make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml"
 
 # Check if UV is installed, install via pip if not
 check-uv:
@@ -283,6 +290,50 @@ neo4j-load-direct: check-uv ## Load ALL data directly, skipping version check
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python scripts/neo4j_loader.py \
 		--env-file $(NEO4J_ENV_FILE)
+
+# ─── Data download ───────────────────────────────────────────────────────────
+
+# Interactive download
+download: check-uv
+	@echo "\n📥 Starting interactive data download..."
+	@echo "Press ENTER to use the default value [in square brackets]...\n"
+	@read -p "📁 Enter output directory [./input]: " OUTPUT_DIR; \
+	OUTPUT_DIR=$${OUTPUT_DIR:-./input}; \
+	echo "Using output directory: $$OUTPUT_DIR"; \
+	echo ""; \
+	read -p "⚙️  Enter config file path [./config/hsa/hsa_data_source_config.yaml]: " CONFIG_FILE; \
+	CONFIG_FILE=$${CONFIG_FILE:-./config/hsa/hsa_data_source_config.yaml}; \
+	echo "Using config file: $$CONFIG_FILE"; \
+	echo ""; \
+	read -p "🔬 Enter source name to download (leave blank to download all): " SOURCE; \
+	if [ -n "$$SOURCE" ]; then \
+		SOURCE_FLAG="--source $$SOURCE"; \
+		echo "Downloading source: $$SOURCE"; \
+	else \
+		SOURCE_FLAG=""; \
+		echo "Downloading all sources"; \
+	fi; \
+	echo ""; \
+	echo "📥 Starting download..."; \
+	export PATH="$$HOME/.local/bin:$$PATH"; \
+	uv run python biocypher_dataset_downloader/download_data.py \
+		--output-dir "$$OUTPUT_DIR" \
+		--config-file "$$CONFIG_FILE" \
+		$$SOURCE_FLAG && \
+	echo "✅ Download completed! Check $$OUTPUT_DIR for results."
+
+# Direct download with explicit parameters
+download-direct: check-uv
+	@if [ -z "$(OUTPUT_DIR)" ]; then \
+		echo "❌ Error: OUTPUT_DIR is required"; \
+		echo "Usage: make download-direct OUTPUT_DIR=./input [CONFIG_FILE=./config/hsa/hsa_data_source_config.yaml] [SOURCE=<source_name>]"; \
+		exit 1; \
+	fi
+	@export PATH="$$HOME/.local/bin:$$PATH"; \
+	uv run python biocypher_dataset_downloader/download_data.py \
+		--output-dir $(OUTPUT_DIR) \
+		--config-file $(if $(CONFIG_FILE),$(CONFIG_FILE),./config/hsa/hsa_data_source_config.yaml) \
+		$(if $(SOURCE),--source $(SOURCE),)
 
 # ─── Tests ───────────────────────────────────────────────────────────────────
 

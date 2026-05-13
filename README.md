@@ -56,16 +56,18 @@ When you run `make run`, you'll see:
 
 ### Available Make Commands
 ```bash
-make help           # Show all commands
-make setup          # Install UV and dependencies
-make run            # Interactive mode (recommended)
+make help            # Show all commands
+make setup           # Install UV and dependencies
+make run             # Interactive mode (recommended)
 make run-interactive # Same as make run
-make run-direct     # Direct mode with parameters
-make run-sample     # Run with sample data
-make check-paths    # Validate file paths in an adapters config (no adapters run)
-make test           # Run tests
-make clean          # Clean temporary files
-make distclean      # Full clean
+make run-direct      # Direct mode with parameters
+make run-sample      # Run with sample data
+make check-paths     # Validate file paths in an adapters config (no adapters run)
+make download        # Download data sources (interactive)
+make download-direct # Download data sources with explicit parameters
+make test            # Run tests
+make clean           # Clean temporary files
+make distclean       # Full clean
 ```
 
 ### Pre-flight File Path Validation
@@ -296,16 +298,37 @@ python kg-service/neo4j_loader.py \
 
 ## ⬇ Downloading data
 The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.
-The `download.yaml` file contains the configuration for the data sources.
+Data source URLs and metadata are configured in the species-specific config files under `config/` (e.g. `config/hsa/hsa_data_source_config.yaml`).
 
-To download the data, run the `download_data.py` script with the following command:
-```{bash}
-python biocypher_dataset_downloader/download_data.py --output_dir <output_directory>
+### Interactive (recommended)
+
+```bash
+make download
 ```
 
-To download data from a specific source, run the script with the following command:
-```{bash}
-python biocypher_dataset_downloader/download_data.py --output_dir <output_directory> --source <source_name>
+You will be prompted for the output directory, config file path, and an optional source name (leave blank to download everything).
+
+### Direct mode
+
+```bash
+# Download all sources for human
+make download-direct OUTPUT_DIR=./input
+
+# Download a single source
+make download-direct OUTPUT_DIR=./input SOURCE=uniprot
+
+# Download all sources for Drosophila
+make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
+```
+
+### Without Make
+
+```bash
+# Download all sources
+python biocypher_dataset_downloader/download_data.py --output-dir <output_directory>
+
+# Download a specific source
+python biocypher_dataset_downloader/download_data.py --output-dir <output_directory> --source <source_name>
 ```
 
 ## 🧬 dbSNP Cache
