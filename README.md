@@ -325,10 +325,10 @@ make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_sour
 
 ```bash
 # Download all sources
-python biocypher_dataset_downloader/download_data.py --output-dir <output_directory>
+python -m biocypher_dataset_downloader.download_data --output-dir <output_directory>
 
 # Download a specific source
-python biocypher_dataset_downloader/download_data.py --output-dir <output_directory> --source <source_name>
+python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --source <source_name>
 ```
 
 ## 🧬 dbSNP Cache
@@ -365,7 +365,7 @@ python scripts/update_dbsnp.py --cache-dir <root>/full
 Then either pass `--dbsnp-cache-root <root>` on the command line, or set `dbsnp_cache_root` in `config/species_config.yaml`:
 ```yaml
 hsa:
-  full:
+  full:                          # dataset type (sample vs full run)
     dbsnp_cache_root: /path/to/dbsnp/cache
-    dbsnp_variant: common   # or "full"
+    dbsnp_variant: common        # SNP variant subset: "common" (~1-2 GB) or "full" (~35-50 GB)
 ```

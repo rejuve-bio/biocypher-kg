@@ -295,8 +295,8 @@ neo4j-load-direct: check-uv ## Load ALL data directly, skipping version check
 
 # Interactive download
 download: check-uv
-	@echo "\n📥 Starting interactive data download..."
-	@echo "Press ENTER to use the default value [in square brackets]...\n"
+	@printf '\n%s\n' "📥 Starting interactive data download..."
+	@printf '%s\n\n' "Press ENTER to use the default value [in square brackets]..."
 	@read -p "📁 Enter output directory [./input]: " OUTPUT_DIR; \
 	OUTPUT_DIR=$${OUTPUT_DIR:-./input}; \
 	echo "Using output directory: $$OUTPUT_DIR"; \
@@ -316,7 +316,7 @@ download: check-uv
 	echo ""; \
 	echo "📥 Starting download..."; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
-	uv run python biocypher_dataset_downloader/download_data.py \
+	uv run python -m biocypher_dataset_downloader.download_data \
 		--output-dir "$$OUTPUT_DIR" \
 		--config-file "$$CONFIG_FILE" \
 		$$SOURCE_FLAG && \
@@ -330,10 +330,10 @@ download-direct: check-uv
 		exit 1; \
 	fi
 	@export PATH="$$HOME/.local/bin:$$PATH"; \
-	uv run python biocypher_dataset_downloader/download_data.py \
-		--output-dir $(OUTPUT_DIR) \
-		--config-file $(if $(CONFIG_FILE),$(CONFIG_FILE),./config/hsa/hsa_data_source_config.yaml) \
-		$(if $(SOURCE),--source $(SOURCE),)
+	uv run python -m biocypher_dataset_downloader.download_data \
+		--output-dir "$(OUTPUT_DIR)" \
+		--config-file "$(if $(CONFIG_FILE),$(CONFIG_FILE),./config/hsa/hsa_data_source_config.yaml)" \
+		$(if $(SOURCE),--source "$(SOURCE)",)
 
 # ─── Tests ───────────────────────────────────────────────────────────────────
 
