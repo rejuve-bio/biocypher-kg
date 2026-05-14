@@ -478,3 +478,134 @@ class TestBiocypherKG:
         assert tested_adapters > 0, "No edge adapters were tested. Adjust smoke-mode filters/cap."
         if test_options["profile"]:
             print_profile_summary("edges", timings)
+
+
+# ---------------------------------------------------------------------------
+# Data source schema consistency tests (no BioCypher setup required)
+# ---------------------------------------------------------------------------
+
+def _load_datasource_schemas(schemas_dir: Path) -> dict:
+    """Load all YAML files under schemas_dir into {filename: parsed_doc}."""
+    schemas = {}
+    for f in sorted(schemas_dir.glob("*.yaml")):
+        doc = yaml.safe_load(f.read_text())
+        if doc:
+            schemas[f.name] = doc
+    return schemas
+
+
+def _collect_node_input_labels(schemas: dict) -> set:
+    """Return the set of all node input_labels declared across all schemas."""
+    labels = set()
+    for doc in schemas.values():
+        for node_name, node_data in (doc.get("nodes") or {}).items():
+            if isinstance(node_data, dict):
+                lbl = node_data.get("input_label") or node_name.replace(" ", "_")
+                labels.add(lbl)
+    return labels
+
+
+@pytest.fixture(scope="module")
+def datasource_schemas(request):
+    root = Path(__file__).resolve().parent.parent
+    schemas_dir = root / "data_source_schemas" / "hsa"
+    assert schemas_dir.is_dir(), f"Data source schemas directory not found: {schemas_dir}"
+    return _load_datasource_schemas(schemas_dir)
+
+
+class TestDataSourceSchemas:
+
+    def test_all_relationship_endpoints_declared_as_nodes(self, datasource_schemas):
+        """
+        Every source and target type used in a relationship must be declared as a
+        node (identified by input_label) in at least one data source schema.
+        Catches the case where a node type is referenced in edges but never
+        documented as a node (e.g. the 'disease' gap that was found in OBO_Foundry).
+        """
+        node_labels = _collect_node_input_labels(datasource_schemas)
+        violations = []
+        for schema_file, doc in datasource_schemas.items():
+            for rel_name, rel in (doc.get("relationships") or {}).items():
+                if not isinstance(rel, dict):
+                    continue
+                for field in ("source", "target"):
+                    val = rel.get(field)
+                    if val and str(val).strip() not in node_labels:
+                        violations.append(
+                            f"{schema_file} — \"{rel_name}\" {field}: '{val}' "
+                            f"is not declared as a node in any data source schema"
+                        )
+        assert not violations, "Undeclared node types in relationships:\n" + "\n".join(violations)
+
+    def test_no_spaces_in_source_or_target(self, datasource_schemas):
+        """
+        source and target values must use underscores, not spaces.
+        Spaces cause mismatches because input_labels always use underscores.
+        """
+        violations = []
+        for schema_file, doc in datasource_schemas.items():
+            for rel_name, rel in (doc.get("relationships") or {}).items():
+                if not isinstance(rel, dict):
+                    continue
+                for field in ("source", "target"):
+                    val = rel.get(field)
+                    if val and " " in str(val):
+                        violations.append(
+                            f"{schema_file} — \"{rel_name}\" {field}: '{val}' contains spaces"
+                        )
+        assert not violations, "source/target values with spaces:\n" + "\n".join(violations)
+
+    def test_all_relationships_have_output_label(self, datasource_schemas):
+        """Every relationship entry must have an output_label field."""
+        violations = []
+        for schema_file, doc in datasource_schemas.items():
+            for rel_name, rel in (doc.get("relationships") or {}).items():
+                if not isinstance(rel, dict):
+                    continue
+                if not rel.get("output_label"):
+                    violations.append(f"{schema_file} — \"{rel_name}\" is missing output_label")
+        assert not violations, "Relationships missing output_label:\n" + "\n".join(violations)
+
+    def test_all_nodes_have_output_label(self, datasource_schemas):
+        """Every node entry must have an output_label field."""
+        violations = []
+        for schema_file, doc in datasource_schemas.items():
+            for node_name, node_data in (doc.get("nodes") or {}).items():
+                if not isinstance(node_data, dict):
+                    continue
+                if not node_data.get("output_label"):
+                    violations.append(f"{schema_file} — node \"{node_name}\" is missing output_label")
+        assert not violations, "Nodes missing output_label:\n" + "\n".join(violations)
+
+    def test_all_relationships_have_source_and_target(self, datasource_schemas):
+        """Every relationship must declare both source and target."""
+        violations = []
+        for schema_file, doc in datasource_schemas.items():
+            for rel_name, rel in (doc.get("relationships") or {}).items():
+                if not isinstance(rel, dict):
+                    continue
+                for field in ("source", "target"):
+                    if not rel.get(field):
+                        violations.append(
+                            f"{schema_file} — \"{rel_name}\" is missing '{field}'"
+                        )
+        assert not violations, "Relationships missing source or target:\n" + "\n".join(violations)
+
+    def test_no_list_sources_or_targets(self, datasource_schemas):
+        """
+        source and target must be scalar strings, not lists.
+        Multi-source relationships must be split into separate entries — one per type.
+        """
+        violations = []
+        for schema_file, doc in datasource_schemas.items():
+            for rel_name, rel in (doc.get("relationships") or {}).items():
+                if not isinstance(rel, dict):
+                    continue
+                for field in ("source", "target"):
+                    val = rel.get(field)
+                    if isinstance(val, list):
+                        violations.append(
+                            f"{schema_file} — \"{rel_name}\" {field} is a list {val}; "
+                            f"split into separate relationship entries"
+                        )
+        assert not violations, "List-valued source/target fields:\n" + "\n".join(violations)

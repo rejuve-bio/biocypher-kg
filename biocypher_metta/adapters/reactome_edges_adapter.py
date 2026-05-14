@@ -69,9 +69,33 @@ from biocypher_metta.processors import EnsemblUniProtProcessor
 class ReactomeEdgesAdapter(Adapter):
 
     ALLOWED_LABELS = ['genes_pathways', 'gene_or_gene_product_reaction',
-                      'small_molecule_to_pathway', 'small_molecule_to_reaction', 
-                      'reaction_to_pathway', 'protein_role_in_reaction'   ,
+                      'protein_pathways', 'transcript_pathways',
+                      'protein_reaction', 'transcript_reaction',
+                      'small_molecule_to_pathway', 'small_molecule_to_reaction',
+                      'reaction_to_pathway', 'protein_role_in_reaction',
                       'parent_pathway_of', 'child_pathway_of']
+
+    # Labels that read pathway/reaction data files and should be filtered by entity type.
+    # genes_pathways → gene only; protein_pathways → protein only; transcript_pathways → transcript only.
+    # Same pattern for reaction variants.
+    _ENTITY_TYPE_FILTER = {
+        'genes_pathways': 'gene',
+        'protein_pathways': 'protein',
+        'transcript_pathways': 'transcript',
+        'gene_or_gene_product_reaction': 'gene',
+        'protein_reaction': 'protein',
+        'transcript_reaction': 'transcript',
+    }
+
+    # Labels that use the genes_pathways / reaction file format (entity → pathway/reaction)
+    _PATHWAY_LABELS = frozenset({
+        'genes_pathways', 'protein_pathways', 'transcript_pathways',
+        'small_molecule_to_pathway',
+    })
+    _REACTION_LABELS = frozenset({
+        'gene_or_gene_product_reaction', 'protein_reaction', 'transcript_reaction',
+        'small_molecule_to_reaction',
+    })
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
         """
@@ -113,6 +137,7 @@ class ReactomeEdgesAdapter(Adapter):
         # this is being used only as a list  :/
         from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
         organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
+        entity_type_filter = self._ENTITY_TYPE_FILTER.get(self.label)
         with open(self.filepath) as input_file:
             base_props = {}
             if self.write_properties and self.add_provenance:
@@ -123,8 +148,7 @@ class ReactomeEdgesAdapter(Adapter):
             for line in input_file:
                 data = line.strip().split('\t')
 
-                # if not (self.label == 'parent_pathway_of' or self.label == 'child_pathway_of'):  # handles pathways or reactions  edges
-                if self.label in ['genes_pathways', 'gene_or_gene_product_reaction', 'small_molecule_to_pathway', 'small_molecule_to_reaction']: 
+                if self.label in self._PATHWAY_LABELS | self._REACTION_LABELS:
                     entity_id, pathway_id = data[0].strip(), data[1].strip()
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
                     pathway_id = f'{pathway_id}'
@@ -135,13 +159,15 @@ class ReactomeEdgesAdapter(Adapter):
                         props['taxon_id'] = f'{self.taxon_id}'
 
                         if self.label.startswith('small_molecule'):  # It seems that this is a mistake in ChEBI data from Reactome
-                            entity_id = f'CHEBI:{entity_id}' 
+                            entity_id = f'CHEBI:{entity_id}'
                         total_in_species_records += 1
                         source_type = self._get_entity_type(entity_id)
                         if source_type is None:
                             # print(f'Invalid type for entity {entity_id}.\nRecord: {data}')
                             not_mapped_no_processing += 1
-                            continue                        
+                            continue
+                        if entity_type_filter and source_type != entity_type_filter:
+                            continue
 
                         # Drosophila only
                         if self.taxon_id == 7227 and (organism_pathway_prefix == 'R-DME' or organism_pathway_prefix == 'R-NUL'):
@@ -149,14 +175,14 @@ class ReactomeEdgesAdapter(Adapter):
                                 uniprot_id = self.ensembl_uniprot_map.get(entity_id)
                                 if uniprot_id is None:
                                     # print(f'{entity_id} not found in Ensembl-to-UniProt map.')
-                                    
+
                                     uniprot_id = self.get_uniprot_id_from_FB(self.connection, entity_id)
                                     if uniprot_id is None:
                                         # print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
                                         not_mapped_no_processing += 1
                                         continue
                                 curie_entity_id = f'UniProtKB:{uniprot_id}'
-                            elif entity_id.lower().startswith('fb'):                                
+                            elif entity_id.lower().startswith('fb'):
                                 curie_entity_id = f'FlyBase:{entity_id}'
                             elif entity_id.startswith('CHEBI'):
                                 curie_entity_id = entity_id
@@ -165,9 +191,6 @@ class ReactomeEdgesAdapter(Adapter):
                                 continue
                             # print(f'ID for protein: {curie_entity_id}, entity: {entity_id}, type {source_type} of dmel.\tReactome {pathway_id}')
                             source = (source_type, curie_entity_id)
-                            # target = pathway_id
-                            # Mandatory property for KGXWriter
-                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
                             yield source, pathway_id, self.label, props
                         # Human only
                         elif self.taxon_id == 9606 and (organism_pathway_prefix == 'R-HSA'  or organism_pathway_prefix == 'R-NUL'):

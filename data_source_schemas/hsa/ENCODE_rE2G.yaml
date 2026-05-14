@@ -4,6 +4,7 @@ nodes:
   enhancer:
     url: https://www.encodeproject.org/
     input_label: enhancer
+    output_label: enhancer
     properties:
       end: int
       start: int
@@ -12,6 +13,7 @@ relationships:
   enhancer activity by contact:
     url: https://www.encodeproject.org/
     input_label: enhancer_activity_by_contact
+    output_label: activity_by_contact
     description: An enhancer-to-gene association predicted by ENCODE rE2G
     source: enhancer
     target: gene

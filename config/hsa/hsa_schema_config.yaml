@@ -1239,7 +1239,7 @@ tissue part of anatomy:
 
 gene to pathway association:
   description: >-
-    An interaction between a gene or gene product and a biological process or pathway.
+    An interaction between a gene and a biological process or pathway.
   is_a: annotation
   mixins: [biolink:GeneToPathwayAssociation]
   biolink_predicate: "biolink:participates_in"
@@ -1247,10 +1247,46 @@ gene to pathway association:
   represented_as: edge
   input_label: genes_pathways
   output_label: participates_in
-  source: [gene, transcript, protein]
+  source: gene
   target: pathway
   kgx_properties:
-    subject_category: "biolink:GeneOrGeneProduct"
+    subject_category: "biolink:Gene"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+protein to pathway association:
+  description: >-
+    An interaction between a protein and a biological process or pathway.
+  is_a: annotation
+  mixins: [biolink:GeneToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_pathways
+  output_label: participates_in
+  source: protein
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:Protein"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+transcript to pathway association:
+  description: >-
+    An interaction between a transcript and a biological process or pathway.
+  is_a: annotation
+  mixins: [biolink:GeneToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: transcript_pathways
+  output_label: participates_in
+  source: transcript
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:Transcript"
     object_category: "biolink:Pathway"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
@@ -1280,7 +1316,7 @@ protein to reaction association:
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
-  input_label: gene_or_gene_product_reaction
+  input_label: protein_reaction
   output_label: involved_in
   source: protein
   target: reaction
@@ -1297,7 +1333,7 @@ transcript to reaction association:
   biolink_predicate: "biolink:participates_in"
   inherit_properties: true
   represented_as: edge
-  input_label: gene_or_gene_product_reaction
+  input_label: transcript_reaction
   output_label: involved_in
   source: transcript
   target: reaction
@@ -2400,17 +2436,18 @@ located on chain:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-transcription factor to snp association:
+snp to motif association:
   is_a: association
   biolink_predicate: "biolink:affects"
-  description: holds between a transcription factor and a snp if the snp occurs in a transcription factor binding site (tfbs)
+  description: holds between a snp and a HOCOMOCO motif where the snp causes a gain or loss of transcription factor binding affinity at that motif site
   represented_as: edge
   input_label: tf_snp
-  source: gene
-  target: snp
+  output_label: alters_binding
+  source: snp
+  target: motif
   kgx_properties:
-    subject_category: "biolink:Gene"
-    object_category: "biolink:Snv"
+    subject_category: "biolink:Snv"
+    object_category: "biolink:TranscriptionFactorBindingSite"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
@@ -2533,36 +2570,6 @@ enhancer activity by contact:
     taxon_id:
       type: str
       description: Taxon ID for the organism (e.g., 9606 for human)
-
-promoter activity by contact:
-  description: >-
-    An association between a promoter cCRE and a gene predicted by the ABC model
-    (Activity-By-Contact, Fulco et al. 2019) using CATLAS single-cell chromatin
-    accessibility data.
-  is_a: regulatory association
-  mixins: [biolink:association]
-  biolink_predicate: "biolink:affects"
-  inherit_properties: true
-  represented_as: edge
-  input_label: promoter_activity_by_contact
-  output_label: activity_by_contact
-  source: promoter
-  target: gene
-  kgx_properties:
-    subject_category: "biolink:RegulatoryRegion"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-  properties:
-    abc_score:
-      type: float
-      biolink: has_quantitative_value
-    distance:
-      type: int
-      biolink: has_quantitative_value
-    biological_context:
-      type: str
-      biolink: has_biological_sequence
 
 chromatin state snp to anatomy:
   is_a: association
