@@ -308,6 +308,10 @@ def _resolve_input_paths(adapters_dict: dict, input_dir: Path) -> None:
 
 def _has_bare_paths(adapters_dict: dict) -> bool:
     """Return True if any path-holding adapter arg has a bare (un-prefixed) value."""
+    def _is_bare(s: str) -> bool:
+        v = s.strip()
+        return bool(v) and not v.startswith("/") and not v.startswith("./") and not v.startswith("../")
+
     for adapter_entry in adapters_dict.values():
         if not isinstance(adapter_entry, dict):
             continue
@@ -316,8 +320,16 @@ def _has_bare_paths(adapters_dict: dict) -> bool:
             if not _is_path_arg(key):
                 continue
             if isinstance(value, str):
-                v = value.strip()
-                if v and not v.startswith("/") and not v.startswith("./") and not v.startswith("../"):
+                if _is_bare(value):
+                    return True
+            elif key == "feature_files" and isinstance(value, list):
+                if any(
+                    isinstance(item, dict) and isinstance(item.get("path"), str) and _is_bare(item["path"])
+                    for item in value
+                ):
+                    return True
+            elif isinstance(value, list):
+                if any(isinstance(v, str) and _is_bare(v) for v in value):
                     return True
     return False
 
@@ -917,6 +929,13 @@ def main(
         )
         logger.error(
             "  2. Provide all manual parameters (--output-dir, --adapters-config, --schema-config)"
+        )
+        raise typer.Exit(1)
+
+    if species == "all" and input_dir:
+        logger.error(
+            "--input-dir cannot be used with --species all: each species requires its own "
+            "input directory. Use the input_dir: field in each species-specific adapter config instead."
         )
         raise typer.Exit(1)
 
