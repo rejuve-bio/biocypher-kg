@@ -1,7 +1,9 @@
 ---
 agr:    #agr: alliance of genome resource
+  name: Alliance Genome Resource
   url:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
+    - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz  # gene orthology
 
 bgee:
   name: Bgee Expression Data
