@@ -77,10 +77,10 @@ Example output when paths are missing:
 ERROR: Pre-flight check failed — 2 adapter(s) have missing file paths:
 
   [gencode_gene]
-    filepath: /mnt/hdd_1/abdu/biocypher_data/gencode/gencode.v49.annotation.gtf.gz
+    filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gencode/gencode.v49.annotation.gtf.gz
 
   [bgee_gene_expressed_in_anatomical_entity]
-    filepath: /mnt/hdd_1/abdu/biocypher_data/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+    filepath: /mnt/hdd_1/biocypher-kg/input/hsa/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
 
 Fix the paths above or run with --skip-preflight to bypass this check.
 ```
