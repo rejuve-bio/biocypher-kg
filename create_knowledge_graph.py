@@ -269,7 +269,7 @@ def _add_file_logger(output_dir: Path) -> logging.FileHandler:
 # Suffixes and exact names that identify path-holding adapter args.
 # Only these are resolved against input_dir; all other string args are left untouched.
 _PATH_ARG_SUFFIXES = ("filepath", "dirpath", "_file", "_path", "_tsv", "_pkl")
-_PATH_ARG_NAMES = {"filepaths", "data_filepaths", "aux_filepaths", "feature_files"}
+_PATH_ARG_NAMES = {"filepaths", "data_filepaths", "aux_filepaths", "feature_files", "enhancer_gene_link"}
 
 
 def _is_path_arg(name: str) -> bool:
