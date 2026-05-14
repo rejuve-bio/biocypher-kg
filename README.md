@@ -45,27 +45,32 @@ When you run `make run`, you'll see:
 🚀 Starting interactive knowledge graph creation...
 
 📁 Enter output directory [./output]: 
-⚙️  Enter adapters config path [./config/adapters_config_sample.yaml]: 
-🧬 Enter dbSNP RSIDs path [./aux_files/sample_dbsnp_rsids.pkl]: 
-📍 Enter dbSNP positions path [./aux_files/sample_dbsnp_pos.pkl]: 
-📝 Enter writer type (metta/prolog/neo4j) [metta]: 
-📋 Write properties? (yes/no) [no]: 
+⚙️  Enter adapters config path [./config/hsa/hsa_adapters_config_sample.yaml]: 
+📊 Enter schema config path [./config/hsa/hsa_schema_config.yaml]: 
+🗂️  Enter dbSNP cache root [./aux_files/hsa/sample_dbsnp]: 
+🧬 Enter dbSNP variant (common/full/leave blank for sample) []: 
+📝 Enter writer type (metta/prolog/neo4j/parquet/networkx/KGX) [metta]: 
+🔌 Enter adapters to include [all]: 
+📋 Write properties? (yes/no) [yes]: 
 🔗 Add provenance? (yes/no) [no]: 
 🧬 Include taxon_id in output? (yes/no) [yes]: 
+🚦 Skip pre-flight path validation? (yes/no) [no]: 
 ```
 
 ### Available Make Commands
 ```bash
-make help           # Show all commands
-make setup          # Install UV and dependencies
-make run            # Interactive mode (recommended)
+make help            # Show all commands
+make setup           # Install UV and dependencies
+make run             # Interactive mode (recommended)
 make run-interactive # Same as make run
-make run-direct     # Direct mode with parameters
-make run-sample     # Run with sample data
-make check-paths    # Validate file paths in an adapters config (no adapters run)
-make test           # Run tests
-make clean          # Clean temporary files
-make distclean      # Full clean
+make run-direct      # Direct mode with parameters
+make run-sample      # Run with sample data
+make check-paths     # Validate file paths in an adapters config (no adapters run)
+make download        # Download data sources (interactive)
+make download-direct # Download data sources with explicit parameters
+make test            # Run tests
+make clean           # Clean temporary files
+make distclean       # Full clean
 ```
 
 ### Pre-flight File Path Validation
@@ -295,15 +300,75 @@ python kg-service/neo4j_loader.py \
 - Edges use `CREATE` (not `MERGE`) — the loader surgically deletes changed edges before reloading, so the existence check is unnecessary and very slow on large files.
 
 ## ⬇ Downloading data
-The `downloader` directory contains code for downloading data from various sources.
-The `download.yaml` file contains the configuration for the data sources.
+The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.
+Data source URLs and metadata are configured in the species-specific config files under `config/` (e.g. `config/hsa/hsa_data_source_config.yaml`).
 
-To download the data, run the `download_data.py` script with the following command:
-```{bash}
-python downloader/download_data.py --output_dir <output_directory>
+### Interactive (recommended)
+
+```bash
+make download
 ```
 
-To download data from a specific source, run the script with the following command:
-```{bash}
-python downloader/download_data.py --output_dir <output_directory> --source <source_name>
+You will be prompted for the output directory, config file path, and an optional source name (leave blank to download everything).
+
+### Direct mode
+
+```bash
+# Download all sources for human
+make download-direct OUTPUT_DIR=./input
+
+# Download a single source
+make download-direct OUTPUT_DIR=./input SOURCE=uniprot
+
+# Download all sources for Drosophila
+make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
+```
+
+### Without Make
+
+```bash
+# Download all sources
+python -m biocypher_dataset_downloader.download_data --output-dir <output_directory>
+
+# Download a specific source
+python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --source <source_name>
+```
+
+## 🧬 dbSNP Cache
+
+The pipeline requires a pre-built dbSNP cache for human (`hsa`) runs. Sample runs use the bundled cache at `aux_files/hsa/sample_dbsnp` automatically.
+
+### Bizon server (pre-built cache available)
+
+If you have access to the Bizon server, the cache is already available — no build step needed:
+```
+dbSNP cache root: /mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/
+dbSNP variant:    common
+```
+
+Pass these when prompted by `make run`, or set them directly:
+```bash
+uv run python create_knowledge_graph.py \
+  --dbsnp-cache-root /mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/ \
+  --dbsnp-variant common \
+  ...
+```
+
+### Building the cache from scratch
+
+Use `scripts/update_dbsnp.py` to generate the cache locally:
+```bash
+# Common variants only (~1–2 GB, recommended)
+python scripts/update_dbsnp.py --cache-dir <root>/common --common-only
+
+# All variants (~35–50 GB)
+python scripts/update_dbsnp.py --cache-dir <root>/full
+```
+
+Then either pass `--dbsnp-cache-root <root>` on the command line, or set `dbsnp_cache_root` in `config/species_config.yaml`:
+```yaml
+hsa:
+  full:                          # dataset type (sample vs full run)
+    dbsnp_cache_root: /path/to/dbsnp/cache
+    dbsnp_variant: common        # SNP variant subset: "common" (~1-2 GB) or "full" (~35-50 GB)
 ```
