@@ -45,13 +45,16 @@ When you run `make run`, you'll see:
 🚀 Starting interactive knowledge graph creation...
 
 📁 Enter output directory [./output]: 
-⚙️  Enter adapters config path [./config/adapters_config_sample.yaml]: 
+⚙️  Enter adapters config path [./config/hsa/hsa_adapters_config_sample.yaml]: 
+📊 Enter schema config path [./config/hsa/hsa_schema_config.yaml]: 
 🗂️  Enter dbSNP cache root [./aux_files/hsa/sample_dbsnp]: 
 🧬 Enter dbSNP variant (common/full/leave blank for sample) []: 
 📝 Enter writer type (metta/prolog/neo4j/parquet/networkx/KGX) [metta]: 
-📋 Write properties? (yes/no) [no]: 
+🔌 Enter adapters to include [all]: 
+📋 Write properties? (yes/no) [yes]: 
 🔗 Add provenance? (yes/no) [no]: 
 🧬 Include taxon_id in output? (yes/no) [yes]: 
+🚦 Skip pre-flight path validation? (yes/no) [no]: 
 ```
 
 ### Available Make Commands
