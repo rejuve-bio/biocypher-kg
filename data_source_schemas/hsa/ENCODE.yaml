@@ -4,12 +4,12 @@ nodes:
   transcription binding site:
     url: https://genome.ucsc.edu/cgi-bin/hgTables
     input_label: tfbs
-    output_label: tfbs
+    output_label: transcription binding site
     description: A region of DNA where a transcription factor binds to regulate gene
       expression
     properties:
-      taxon_id: int
       end: int
+      taxon_id: int
       start: int
       chr: str
   promoter:
@@ -17,10 +17,10 @@ nodes:
     input_label: promoter
     output_label: promoter
     properties:
-      biological_context: str
       end: int
       start: int
       chr: str
+      biological_context: str
   enhancer:
     url: https://screen.wenglab.org/downloads
     input_label: enhancer

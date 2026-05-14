@@ -1,16 +1,16 @@
 name: dbSuper
 website: https://asntech.org
 nodes:
-  super_enhancer:
+  super enhancer:
     url: https://asntech.org/dbsuper/download.php
     input_label: super_enhancer
-    output_label: super_enhancer
+    output_label: super enhancer
     properties:
       end: int
-      biological_context: str
       start: int
-      chr: str
       se_id: str
+      chr: str
+      biological_context: str
 relationships:
   super enhancer to gene association:
     url: https://asntech.org/dbsuper/download.php

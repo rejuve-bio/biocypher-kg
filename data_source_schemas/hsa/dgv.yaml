@@ -10,8 +10,8 @@ nodes:
       translocations.
     properties:
       end: int
-      evidence: str
       start: int
-      chr: str
-      variant_accession: str
       variant_type: str
+      variant_accession: str
+      chr: str
+      evidence: str

@@ -4,27 +4,30 @@ nodes:
   biological process:
     url: http://www.obofoundry.org/
     input_label: biological_process
-    output_label: biological_process
+    output_label: biological process
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   molecular function:
     url: http://www.obofoundry.org/
     input_label: molecular_function
-    output_label: molecular_function
+    output_label: molecular function
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   cellular component:
     url: http://www.obofoundry.org/
     input_label: cellular_component
-    output_label: cellular_component
+    output_label: cellular component
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   anatomy:
     url: http://www.obofoundry.org/
     input_label: anatomy
@@ -33,30 +36,34 @@ nodes:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   cell line:
     url: http://www.obofoundry.org/
     input_label: cell_line
-    output_label: cell_line
+    output_label: cell line
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   cell type:
     url: http://www.obofoundry.org/
     input_label: cell_type
-    output_label: cell_type
+    output_label: cell type
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   experimental factor:
     url: http://www.obofoundry.org/
     input_label: experimental_factor
-    output_label: experimental_factor
+    output_label: experimental factor
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   tissue:
     url: http://www.obofoundry.org/
     input_label: tissue
@@ -65,20 +72,25 @@ nodes:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   small molecule:
     url: http://www.obofoundry.org/
     input_label: small_molecule
-    output_label: small_molecule
+    output_label: small molecule
     properties:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   phenotype:
     url: http://www.obofoundry.org/
     input_label: phenotype
     output_label: phenotype
     properties:
       description: str
+      term_name: str
+      synonym: str[]
+      alternative_ids: str[]
   disease:
     url: http://www.obofoundry.org/
     input_label: disease
@@ -87,6 +99,7 @@ nodes:
       synonym: str[]
       term_name: str
       description: str
+      alternative_ids: str[]
   developmental_stage:
     url: http://www.obofoundry.org/
     input_label: developmental_stage
@@ -198,3 +211,26 @@ relationships:
     target: disease
     properties:
       rel_type: str
+  cell line is a cell type:
+    url: http://www.obofoundry.org/
+    input_label: cell_line_is_a_cell_type
+    output_label: is_a
+    description: Cross-ontology relation linking a Cell Line Ontology (CLO) term to
+      a Cell Ontology (CL) term.
+    source: cell line
+    target: cell type
+  cell type part of tissue:
+    url: http://www.obofoundry.org/
+    input_label: cell_type_part_of_tissue
+    output_label: part_of
+    description: Cross-ontology relation linking a CL cell type to a BTO tissue term.
+    source: cell type
+    target: tissue
+  tissue part of anatomy:
+    url: http://www.obofoundry.org/
+    input_label: tissue_part_of_anatomy
+    output_label: part_of
+    description: Cross-ontology relation linking a BRENDA Tissue Ontology (BTO) term
+      to an UBERON anatomy term.
+    source: tissue
+    target: anatomy

@@ -11,5 +11,5 @@ nodes:
     properties:
       end: int
       start: int
-      chr: str
       variant_type: str
+      chr: str

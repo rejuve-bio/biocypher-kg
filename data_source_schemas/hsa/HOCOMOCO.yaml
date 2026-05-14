@@ -6,10 +6,10 @@ nodes:
     input_label: motif
     output_label: motif
     properties:
+      pwm_G: float[]
       taxon_id: int
+      pwm_A: float[]
       pwm_C: float[]
       length: int
-      pwm_T: float[]
       tf_name: str
-      pwm_G: float[]
-      pwm_A: float[]
+      pwm_T: float[]

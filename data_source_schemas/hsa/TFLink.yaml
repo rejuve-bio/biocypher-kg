@@ -10,7 +10,13 @@ relationships:
     source: gene
     target: gene
     properties:
-      evidence: str
+      detection_method: str
       evidence_type: str
       database: str
-      detection_method: str
+      evidence: str
+  post translational interaction:
+    url: tflink.net
+    input_label: interacts_with
+    output_label: interacts_with
+    source: protein
+    target: protein

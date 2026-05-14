@@ -6,8 +6,8 @@ nodes:
     input_label: promoter
     output_label: promoter
     properties:
-      taxon_id: int
       end: int
+      taxon_id: str
       start: int
       chr: str
 relationships:

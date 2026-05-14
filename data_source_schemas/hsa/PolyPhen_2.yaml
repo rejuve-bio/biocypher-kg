@@ -9,8 +9,8 @@ nodes:
       substitutions on protein structure and function
     properties:
       polyphen2_humdiv_score: float
-      polyphen2_humdiv_prediction: str
       alt: str
+      polyphen2_humvar_score: float
+      polyphen2_humdiv_prediction: str
       ref: str
       polyphen2_humvar_prediction: str
-      polyphen2_humvar_score: float

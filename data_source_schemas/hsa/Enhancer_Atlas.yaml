@@ -6,10 +6,10 @@ nodes:
     input_label: enhancer
     output_label: enhancer
     properties:
-      biological_context: str
       end: int
       start: int
       chr: str
+      biological_context: str
 relationships:
   enhancer to gene association:
     url: http://enhanceratlas.org/downloadv2.php

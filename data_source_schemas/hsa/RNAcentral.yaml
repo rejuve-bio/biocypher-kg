@@ -1,16 +1,16 @@
 name: RNAcentral
 website: https://rnacentral.org
 nodes:
-  non_coding_rna:
+  non coding rna:
     url: https://rnacentral.org/downloads
     input_label: non_coding_rna
-    output_label: non_coding_rna
+    output_label: non coding rna
     properties:
-      taxon_id: int
-      rna_type: str
       end: int
+      taxon_id: int
       start: int
       chr: str
+      rna_type: str
 relationships:
   biological process rna:
     url: https://rnacentral.org/downloads

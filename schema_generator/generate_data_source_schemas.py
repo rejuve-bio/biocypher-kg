@@ -15,13 +15,19 @@ Key features:
 """
 
 import argparse
-import yaml
 import ast
 import sys
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Set, Any, Optional
 import urllib.parse
+
+import yaml
+
+try:
+    from config.yaml_loader import load_yaml_with_includes
+except ImportError:  # pragma: no cover
+    load_yaml_with_includes = yaml.safe_load
 
 
 class FlowStyleListDumper(yaml.SafeDumper):
@@ -55,13 +61,54 @@ class AdapterAnalyzer:
                                 if isinstance(item.value, ast.Dict):
                                     dict_value = {}
                                     for key, value in zip(item.value.keys, item.value.values):
-                                        if isinstance(key, ast.Constant) and isinstance(value, ast.Constant):
+                                        if not isinstance(value, ast.Constant):
+                                            continue
+                                        if isinstance(key, ast.Constant):
                                             dict_value[key.value] = value.value
+                                        elif isinstance(key, ast.Tuple):
+                                            key_parts = []
+                                            for elt in key.elts:
+                                                if isinstance(elt, ast.Constant):
+                                                    key_parts.append(elt.value)
+                                            if len(key_parts) == len(key.elts):
+                                                dict_value[tuple(key_parts)] = value.value
                                     if dict_value:
                                         class_attrs[target.id] = dict_value
                                 elif isinstance(item.value, ast.Constant):
                                     class_attrs[target.id] = item.value.value
         return class_attrs
+
+    def get_class_dict_string_values(self) -> Set[str]:
+        """Return string values from class-level dictionaries used as label maps."""
+        values = set()
+        for attr_value in self.class_attributes.values():
+            if isinstance(attr_value, dict):
+                for value in attr_value.values():
+                    if isinstance(value, str):
+                        values.add(value)
+        return values
+
+    def get_yield_string_labels(self, method_name: str, tuple_index: int) -> Set[str]:
+        """Extract constant string labels yielded at a tuple position in a method."""
+        labels = set()
+        for node in ast.walk(self.tree):
+            if isinstance(node, ast.FunctionDef) and node.name == method_name:
+                for stmt in ast.walk(node):
+                    if isinstance(stmt, (ast.Yield, ast.YieldFrom)):
+                        value = stmt.value
+                        if isinstance(value, ast.Tuple) and len(value.elts) > tuple_index:
+                            label_node = value.elts[tuple_index]
+                            if isinstance(label_node, ast.Constant) and isinstance(label_node.value, str):
+                                labels.add(label_node.value)
+        return labels
+
+    def get_string_literals(self) -> Set[str]:
+        """Return string literals from executable adapter code."""
+        literals = set()
+        for node in ast.walk(self.tree):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                literals.add(node.value)
+        return literals
 
     def inherits_from_ontology_adapter(self) -> bool:
         for node in ast.walk(self.tree):
@@ -123,37 +170,101 @@ class AdapterAnalyzer:
                     properties.add(key.value)
         return properties
 
-    def get_properties_from_method(self, method_name: str) -> Set[str]:
+    @staticmethod
+    def _is_property_var_name(name: str) -> bool:
+        return name in ['props', '_props', 'properties'] or name.endswith('_props')
+
+    def get_property_variables_from_method(self, method_node: ast.FunctionDef, tuple_index: int) -> Set[str]:
+        property_vars = set()
+        for stmt in ast.walk(method_node):
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Name) and self._is_property_var_name(target.id):
+                        property_vars.add(target.id)
+
+            if isinstance(stmt, (ast.Yield, ast.YieldFrom)):
+                value = stmt.value
+                if isinstance(value, ast.Tuple) and len(value.elts) > tuple_index:
+                    props_node = value.elts[tuple_index]
+                    if isinstance(props_node, ast.Name):
+                        property_vars.add(props_node.id)
+
+        return property_vars
+
+    def extract_properties_for_vars_from_method(
+        self,
+        method_node: ast.FunctionDef,
+        property_vars: Set[str],
+    ) -> Set[str]:
+        properties = set()
+        for stmt in ast.walk(method_node):
+            # Pattern 1: props = {...}
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Name) and target.id in property_vars:
+                        if isinstance(stmt.value, ast.Dict):
+                            properties.update(self.extract_properties_from_dict(stmt.value))
+
+            # Pattern 2: props['key'] = value
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Subscript):
+                        if isinstance(target.value, ast.Name) and target.value.id in property_vars:
+                            if isinstance(target.slice, ast.Constant):
+                                prop_name = target.slice.value
+                                if prop_name not in ['source', 'source_url']:
+                                    properties.add(prop_name)
+
+            # Pattern 3: props.update({...})
+            if isinstance(stmt, ast.Expr):
+                if isinstance(stmt.value, ast.Call):
+                    if isinstance(stmt.value.func, ast.Attribute):
+                        if (stmt.value.func.attr == 'update' and
+                            isinstance(stmt.value.func.value, ast.Name) and
+                            stmt.value.func.value.id in property_vars):
+                            if stmt.value.args and isinstance(stmt.value.args[0], ast.Dict):
+                                properties.update(self.extract_properties_from_dict(stmt.value.args[0]))
+        return properties
+
+    def get_properties_from_method(self, method_name: str, tuple_index: int) -> Set[str]:
         properties = set()
         for node in ast.walk(self.tree):
             if isinstance(node, ast.FunctionDef) and node.name == method_name:
-                for stmt in ast.walk(node):
-                    # Pattern 1: props = {...}
-                    if isinstance(stmt, ast.Assign):
-                        for target in stmt.targets:
-                            if isinstance(target, ast.Name) and target.id in ['props', '_props', 'properties']:
-                                if isinstance(stmt.value, ast.Dict):
-                                    properties.update(self.extract_properties_from_dict(stmt.value))
+                property_vars = self.get_property_variables_from_method(node, tuple_index)
+                properties.update(self.extract_properties_for_vars_from_method(node, property_vars))
+        return properties
 
-                    # Pattern 2: props['key'] = value
-                    if isinstance(stmt, ast.Assign):
-                        for target in stmt.targets:
-                            if isinstance(target, ast.Subscript):
-                                if isinstance(target.value, ast.Name) and target.value.id in ['props', '_props', 'properties']:
-                                    if isinstance(target.slice, ast.Constant):
-                                        prop_name = target.slice.value
-                                        if prop_name not in ['source', 'source_url']:
-                                            properties.add(prop_name)
+    def get_properties_for_label(
+        self,
+        method_name: str,
+        label: str,
+        label_index: int,
+        props_index: int,
+    ) -> Set[str]:
+        properties = set()
+        for node in ast.walk(self.tree):
+            if not isinstance(node, ast.FunctionDef) or node.name != method_name:
+                continue
 
-                    # Pattern 3: props.update({...})
-                    if isinstance(stmt, ast.Expr):
-                        if isinstance(stmt.value, ast.Call):
-                            if isinstance(stmt.value.func, ast.Attribute):
-                                if (stmt.value.func.attr == 'update' and
-                                    isinstance(stmt.value.func.value, ast.Name) and
-                                    stmt.value.func.value.id in ['props', '_props', 'properties']):
-                                    if stmt.value.args and isinstance(stmt.value.args[0], ast.Dict):
-                                        properties.update(self.extract_properties_from_dict(stmt.value.args[0]))
+            property_vars = set()
+            for stmt in ast.walk(node):
+                if not isinstance(stmt, (ast.Yield, ast.YieldFrom)):
+                    continue
+                value = stmt.value
+                if not isinstance(value, ast.Tuple) or len(value.elts) <= max(label_index, props_index):
+                    continue
+                label_node = value.elts[label_index]
+                props_node = value.elts[props_index]
+                if (
+                    isinstance(label_node, ast.Constant)
+                    and label_node.value == label
+                    and isinstance(props_node, ast.Name)
+                ):
+                    property_vars.add(props_node.id)
+
+            if property_vars:
+                properties.update(self.extract_properties_for_vars_from_method(node, property_vars))
+
         return properties
 
     def get_all_class_properties(self) -> Set[str]:
@@ -167,7 +278,7 @@ class AdapterAnalyzer:
                             # Pattern 1: props = {...}
                             if isinstance(stmt, ast.Assign):
                                 for target in stmt.targets:
-                                    if isinstance(target, ast.Name) and target.id in ['props', '_props', 'properties']:
+                                    if isinstance(target, ast.Name) and self._is_property_var_name(target.id):
                                         if isinstance(stmt.value, ast.Dict):
                                             properties.update(self.extract_properties_from_dict(stmt.value))
 
@@ -175,7 +286,7 @@ class AdapterAnalyzer:
                             if isinstance(stmt, ast.Assign):
                                 for target in stmt.targets:
                                     if isinstance(target, ast.Subscript):
-                                        if isinstance(target.value, ast.Name) and target.value.id in ['props', '_props', 'properties']:
+                                        if isinstance(target.value, ast.Name) and self._is_property_var_name(target.value.id):
                                             if isinstance(target.slice, ast.Constant):
                                                 prop_name = target.slice.value
                                                 if prop_name not in ['source', 'source_url']:
@@ -187,20 +298,20 @@ class AdapterAnalyzer:
                                     if isinstance(stmt.value.func, ast.Attribute):
                                         if (stmt.value.func.attr == 'update' and
                                             isinstance(stmt.value.func.value, ast.Name) and
-                                            stmt.value.func.value.id in ['props', '_props', 'properties']):
+                                            self._is_property_var_name(stmt.value.func.value.id)):
                                             if stmt.value.args and isinstance(stmt.value.args[0], ast.Dict):
                                                 properties.update(self.extract_properties_from_dict(stmt.value.args[0]))
         return properties
 
     def get_node_properties(self) -> Set[str]:
         """Get properties from get_nodes method and all helper methods."""
-        main_props = self.get_properties_from_method('get_nodes')
+        main_props = self.get_properties_from_method('get_nodes', 2)
         all_props = self.get_all_class_properties()
         return main_props.union(all_props)
 
     def get_edge_properties(self) -> Set[str]:
         """Get properties from get_edges method and all helper methods."""
-        main_props = self.get_properties_from_method('get_edges')
+        main_props = self.get_properties_from_method('get_edges', 3)
         all_props = self.get_all_class_properties()
         return main_props.union(all_props)
 
@@ -209,27 +320,98 @@ class AdapterAnalyzer:
             return set()
         try:
             parent_analyzer = AdapterAnalyzer(parent_adapter_path)
-            return parent_analyzer.get_properties_from_method(method_name)
+            tuple_index = 2 if method_name == 'get_nodes' else 3
+            return parent_analyzer.get_properties_from_method(method_name, tuple_index)
         except Exception as e:
             print(f"Warning: Could not analyze parent class {parent_adapter_path}: {e}")
             return set()
 
 
 class SchemaGenerator:
-    def __init__(self, schema_config_path: str, adapter_config_path: str,
-                 adapters_dir: str, output_dir: str):
+    def __init__(
+        self,
+        schema_config_path: str,
+        adapter_config_path: str,
+        adapters_dir: str,
+        output_dir: str,
+        adapter_config_data: Optional[Dict] = None,
+    ):
         self.schema_config_path = Path(schema_config_path)
         self.adapter_config_path = Path(adapter_config_path)
         self.adapters_dir = Path(adapters_dir)
         self.output_dir = Path(output_dir)
 
         with open(self.schema_config_path) as f:
-            self.schema_config = yaml.safe_load(f)
-        with open(self.adapter_config_path) as f:
-            self.adapter_config = yaml.safe_load(f)
+            self.schema_config = load_yaml_with_includes(f)
+        if adapter_config_data is not None:
+            self.adapter_config = adapter_config_data
+        else:
+            with open(self.adapter_config_path) as f:
+                self.adapter_config = load_yaml_with_includes(f)
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.adapter_cache = {}
+
+    def get_adapter_file_from_module(self, module: str) -> str:
+        """Resolve a configured adapter module to a path relative to adapters_dir."""
+        adapter_prefix = 'biocypher_metta.adapters.'
+        if module.startswith(adapter_prefix):
+            return module.removeprefix(adapter_prefix).replace('.', '/') + '.py'
+        return module.split('.')[-1] + '.py'
+
+    def get_labels_for_adapter_config(
+        self,
+        adapter_name: str,
+        adapter_cfg: Dict,
+        adapter_data: Dict,
+    ) -> List[str]:
+        """Resolve schema input labels represented by one adapter config entry."""
+        adapter_info = adapter_cfg.get('adapter', {})
+        adapter_args = adapter_info.get('args', {})
+        writes_nodes = adapter_cfg.get('nodes', False)
+        writes_edges = adapter_cfg.get('edges', False)
+        analyzer = adapter_data['analyzer']
+
+        label = adapter_args.get('label')
+        if label:
+            return [label]
+
+        candidates = []
+
+        metadata_label = adapter_data['metadata'].get('label')
+        if metadata_label:
+            candidates.append(metadata_label)
+
+        for value in adapter_args.values():
+            if isinstance(value, str):
+                candidates.append(value)
+
+        candidates.extend(analyzer.get_class_dict_string_values())
+        candidates.extend(analyzer.get_string_literals())
+
+        if writes_nodes:
+            candidates.extend(analyzer.get_yield_string_labels('get_nodes', 1))
+        if writes_edges:
+            candidates.extend(analyzer.get_yield_string_labels('get_edges', 2))
+
+        candidates.append(adapter_name)
+
+        labels = []
+        for candidate in candidates:
+            if candidate in labels:
+                continue
+
+            type_info = self.get_schema_type_info(candidate)
+            if not type_info:
+                continue
+
+            represented_as = type_info['config'].get('represented_as')
+            if writes_nodes and represented_as == 'node':
+                labels.append(candidate)
+            elif writes_edges and represented_as == 'edge':
+                labels.append(candidate)
+
+        return labels or [adapter_name]
 
     def get_schema_type_info(self, input_label: str) -> Optional[Dict]:
         for type_name, type_config in self.schema_config.items():
@@ -368,7 +550,7 @@ class SchemaGenerator:
             if filter_modules and module_name not in filter_modules:
                 continue
 
-            adapter_file = module_name + '.py'
+            adapter_file = self.get_adapter_file_from_module(module)
             adapter_data = self.analyze_adapter_file(adapter_file)
             if not adapter_data:
                 continue
@@ -435,89 +617,95 @@ class SchemaGenerator:
             is_ontology_adapter = analyzer.inherits_from_ontology_adapter()
             adapter_args = adapter_cfg.get('adapter', {}).get('args', {})
 
-            label = adapter_args.get('label')
-            if not label:
-                label = adapter_data['metadata'].get('label', adapter_name)
-
             if is_ontology_adapter:
                 ontology_type = adapter_args.get('type', '')
                 if ontology_type == 'node':
                     pass
 
-            type_info = self.get_schema_type_info(label)
-            if not type_info:
-                print(f"  Warning: No schema config found for label: {label} (adapter: {adapter_name})")
-                continue
-
-            type_config = type_info['config']
-            type_name = type_info['name']
-            is_edge = type_config.get('represented_as') == 'edge'
-
             adapter_source_url = adapter_data['source_url'] if adapter_data['source_url'] else ''
 
-            # Process nodes
-            if writes_nodes and not is_edge:
-                node_props = analyzer.get_node_properties()
+            for label in self.get_labels_for_adapter_config(adapter_name, adapter_cfg, adapter_data):
+                type_info = self.get_schema_type_info(label)
+                if not type_info:
+                    print(f"  Warning: No schema config found for label: {label} (adapter: {adapter_name})")
+                    continue
 
-                if is_ontology_adapter:
-                    ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
-                    parent_props = analyzer.get_parent_class_properties('get_nodes', ontology_adapter_path)
-                    node_props = node_props.union(parent_props)
+                type_config = type_info['config']
+                type_name = type_info['name']
+                output_label = type_config.get('output_label') or type_name
+                is_edge = type_config.get('represented_as') == 'edge'
 
-                valid_props = self.get_valid_properties(label, node_props)
-                description = type_config.get('description', '')
+                # Process nodes
+                if writes_nodes and not is_edge:
+                    node_props = analyzer.get_properties_for_label('get_nodes', label, 1, 2)
+                    if not node_props:
+                        node_props = analyzer.get_node_properties()
 
-                # Add or update node
-                if type_name not in nodes:
-                    nodes[type_name] = {
-                        'url': adapter_source_url,
-                        'input_label': label,
-                    }
-                    if description:
-                        nodes[type_name]['description'] = description.strip()
-                    if valid_props:
-                        nodes[type_name]['properties'] = valid_props
-                else:
-                    # Merge properties if node already exists
-                    if valid_props:
-                        if 'properties' not in nodes[type_name]:
-                            nodes[type_name]['properties'] = {}
-                        nodes[type_name]['properties'].update(valid_props)
+                    if is_ontology_adapter:
+                        ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
+                        parent_props = analyzer.get_parent_class_properties('get_nodes', ontology_adapter_path)
+                        node_props = node_props.union(parent_props)
 
-            # Process edges
-            elif writes_edges and is_edge:
-                edge_props = analyzer.get_edge_properties()
+                    valid_props = self.get_valid_properties(label, node_props)
+                    description = type_config.get('description', '')
 
-                if is_ontology_adapter:
-                    ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
-                    parent_props = analyzer.get_parent_class_properties('get_edges', ontology_adapter_path)
-                    edge_props = edge_props.union(parent_props)
+                    # Add or update node
+                    if type_name not in nodes:
+                        nodes[type_name] = {
+                            'url': adapter_source_url,
+                            'input_label': label,
+                            'output_label': output_label,
+                        }
+                        if description:
+                            nodes[type_name]['description'] = description.strip()
+                        if valid_props:
+                            nodes[type_name]['properties'] = valid_props
+                    else:
+                        nodes[type_name]['output_label'] = output_label
+                        # Merge properties if node already exists
+                        if valid_props:
+                            if 'properties' not in nodes[type_name]:
+                                nodes[type_name]['properties'] = {}
+                            nodes[type_name]['properties'].update(valid_props)
 
-                valid_props = self.get_valid_properties(label, edge_props)
-                description = type_config.get('description', '')
-                source = type_config.get('source')
-                target = type_config.get('target')
+                # Process edges
+                elif writes_edges and is_edge:
+                    edge_props = analyzer.get_properties_for_label('get_edges', label, 2, 3)
+                    if not edge_props:
+                        edge_props = analyzer.get_edge_properties()
 
-                # Add or update relationship
-                if type_name not in relationships:
-                    relationships[type_name] = {
-                        'url': adapter_source_url,
-                        'input_label': label,
-                    }
-                    if description:
-                        relationships[type_name]['description'] = description.strip()
-                    if source:
-                        relationships[type_name]['source'] = source
-                    if target:
-                        relationships[type_name]['target'] = target
-                    if valid_props:
-                        relationships[type_name]['properties'] = valid_props
-                else:
-                    # Merge properties if relationship already exists
-                    if valid_props:
-                        if 'properties' not in relationships[type_name]:
-                            relationships[type_name]['properties'] = {}
-                        relationships[type_name]['properties'].update(valid_props)
+                    if is_ontology_adapter:
+                        ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
+                        parent_props = analyzer.get_parent_class_properties('get_edges', ontology_adapter_path)
+                        edge_props = edge_props.union(parent_props)
+
+                    valid_props = self.get_valid_properties(label, edge_props)
+                    description = type_config.get('description', '')
+                    source = type_config.get('source')
+                    target = type_config.get('target')
+
+                    # Add or update relationship
+                    if type_name not in relationships:
+                        relationships[type_name] = {
+                            'url': adapter_source_url,
+                            'input_label': label,
+                            'output_label': output_label,
+                        }
+                        if description:
+                            relationships[type_name]['description'] = description.strip()
+                        if source:
+                            relationships[type_name]['source'] = source
+                        if target:
+                            relationships[type_name]['target'] = target
+                        if valid_props:
+                            relationships[type_name]['properties'] = valid_props
+                    else:
+                        relationships[type_name]['output_label'] = output_label
+                        # Merge properties if relationship already exists
+                        if valid_props:
+                            if 'properties' not in relationships[type_name]:
+                                relationships[type_name]['properties'] = {}
+                            relationships[type_name]['properties'].update(valid_props)
 
         if nodes:
             schema['nodes'] = nodes

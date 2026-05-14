@@ -9,6 +9,7 @@ nodes:
       pathway_name: str
       taxon_id: str
       evidence: str
+      pathway_url: str
   reaction:
     url: https://reactome.org
     input_label: reaction
@@ -17,6 +18,8 @@ nodes:
       taxon_id: str
       evidence: str
       reaction_url: str
+      pubmed_url: str
+      reaction_name: str
 relationships:
   gene to pathway association:
     url: https://reactome.org
@@ -63,7 +66,7 @@ relationships:
   parent pathway of:
     url: https://reactome.org
     input_label: parent_pathway_of
-    output_label: parent_pathway_of
+    output_label: parent pathway of
     description: holds between two pathways where the domain class is a parent pathway
       of the range class
     source: pathway
@@ -71,7 +74,7 @@ relationships:
   child pathway of:
     url: https://reactome.org
     input_label: child_pathway_of
-    output_label: child_pathway_of
+    output_label: child pathway of
     description: holds between two pathways where the domain class is a child pathway
       of the range class
     source: pathway
@@ -90,9 +93,30 @@ relationships:
   post translational interaction:
     url: https://reactome.org/
     input_label: interacts_with
-    output_label: interacts_with
+    output_label: post translational interaction
     source: protein
     target: protein
     properties:
       interaction_type: str
       reactome_pathway: str
+  reaction to pathway association:
+    url: https://reactome.org
+    input_label: reaction_to_pathway
+    output_label: part_of
+    description: holds between a reaction and a pathway
+    source: reaction
+    target: pathway
+  small molecule to pathway association:
+    url: https://reactome.org
+    input_label: small_molecule_to_pathway
+    output_label: participates_in
+    description: An interaction between a small molecule (ChEBI) and a pathway (Reactome).
+    source: small molecule
+    target: pathway
+  small molecule to reaction association:
+    url: https://reactome.org
+    input_label: small_molecule_to_reaction
+    output_label: participates_in
+    description: An interaction between a small molecule (ChEBI) and a reaction (Reactome).
+    source: small molecule
+    target: reaction
