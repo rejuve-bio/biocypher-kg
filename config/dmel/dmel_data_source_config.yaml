@@ -41,10 +41,7 @@ flybase:
     - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2026_01.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/orthologs/dmel_paralogs_fb_2026_01.tsv.gz
     - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
-    
-goa:
-  name: GO Annotation File (GAF) from Flybase
-  url: https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/go/gene_association.fb.gz
+    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/go/gene_association.fb.gz  # GOA (GO annotation)
 
 gencode:
   name: GENCODE v54
