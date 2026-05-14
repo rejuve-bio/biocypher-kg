@@ -382,7 +382,7 @@ coexpression:
       filepath: /mnt/hdd_1/biocypher-kg/input/dmel/coxpressdb/
       entrez_to_ensemble_path: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
       label: coexpressed_with
-      taxon_id: 9606
+      taxon_id: 7227
   outdir: coxpressdb
   nodes: False
   edges: True
