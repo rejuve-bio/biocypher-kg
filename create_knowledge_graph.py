@@ -266,14 +266,22 @@ def _add_file_logger(output_dir: Path) -> logging.FileHandler:
     return handler
 
 
+# Suffixes and exact names that identify path-holding adapter args.
+# Only these are resolved against input_dir; all other string args are left untouched.
+_PATH_ARG_SUFFIXES = ("filepath", "dirpath", "_file", "_path", "_tsv", "_pkl")
+_PATH_ARG_NAMES = {"filepaths", "data_filepaths", "aux_filepaths", "feature_files"}
+
+
+def _is_path_arg(name: str) -> bool:
+    return name in _PATH_ARG_NAMES or any(name.endswith(s) for s in _PATH_ARG_SUFFIXES)
+
+
 def _maybe_prepend(value: str, input_dir: Path) -> str:
     """Prepend input_dir to a bare path string (no leading /, ./, ../)."""
     v = value.strip()
-    if v.startswith("/") or v.startswith("./") or v.startswith("../"):
+    if not v or v.startswith("/") or v.startswith("./") or v.startswith("../"):
         return v
-    if "/" in v or ("." in v.split("/")[-1]):
-        return str(input_dir / v)
-    return v
+    return str(input_dir / v)
 
 
 def _resolve_input_paths(adapters_dict: dict, input_dir: Path) -> None:
@@ -283,6 +291,8 @@ def _resolve_input_paths(adapters_dict: dict, input_dir: Path) -> None:
             continue
         args = (adapter_entry.get("adapter") or {}).get("args") or {}
         for key, value in list(args.items()):
+            if not _is_path_arg(key):
+                continue
             if key == "feature_files" and isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict) and isinstance(item.get("path"), str):
@@ -297,17 +307,18 @@ def _resolve_input_paths(adapters_dict: dict, input_dir: Path) -> None:
 
 
 def _has_bare_paths(adapters_dict: dict) -> bool:
-    """Return True if any adapter arg looks like a bare relative path (no / ./ ../ prefix)."""
+    """Return True if any path-holding adapter arg has a bare (un-prefixed) value."""
     for adapter_entry in adapters_dict.values():
         if not isinstance(adapter_entry, dict):
             continue
         args = (adapter_entry.get("adapter") or {}).get("args") or {}
-        for value in args.values():
+        for key, value in args.items():
+            if not _is_path_arg(key):
+                continue
             if isinstance(value, str):
                 v = value.strip()
                 if v and not v.startswith("/") and not v.startswith("./") and not v.startswith("../"):
-                    if "/" in v or ("." in v.split("/")[-1]):
-                        return True
+                    return True
     return False
 
 

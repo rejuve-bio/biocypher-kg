@@ -83,7 +83,8 @@ run-interactive: check-uv
 	OUTPUT_DIR=$${OUTPUT_DIR:-./output}; \
 	echo "Using output directory: $$OUTPUT_DIR"; \
 	echo ""; \
-	read -p "📂 Enter base input directory (leave blank to use config default): " INPUT_DIR_VAL; \
+	read -p "📂 Enter base input directory [$(INPUT_DIR)]: " INPUT_DIR_VAL; \
+	INPUT_DIR_VAL=$${INPUT_DIR_VAL:-$(INPUT_DIR)}; \
 	if [ -n "$$INPUT_DIR_VAL" ]; then \
 		INPUT_DIR_FLAG="--input-dir $$INPUT_DIR_VAL"; \
 		echo "Using input directory: $$INPUT_DIR_VAL"; \
