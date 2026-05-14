@@ -6,6 +6,9 @@
 # Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
 NEO4J_ENV_FILE ?= docker/neo4j.env
 
+# Base input directory for resolving adapter config paths; overrides the input_dir: field in the YAML
+INPUT_DIR ?=
+
 # Default target
 help:
 	@echo "Available commands:"
@@ -33,11 +36,13 @@ help:
 	@echo "  make run-interactive - Same as 'make run'"
 	@echo "  make run-sample                    - Run with sample data (default: metta writer)"
 	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
-	@echo "  make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"
-	@echo "  make run-direct ... SKIP_PREFLIGHT=yes   - Skip pre-flight file path validation"
 	@echo "  make run-sample     SKIP_PREFLIGHT=yes   - Same, for sample runs"
-	@echo "  make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env"
 	@echo "  make run-sample INCLUDE_TAXON_ID=no   - Run without taxon_id in output (single-species KG)"
+	@echo "  make run-direct ... SKIP_PREFLIGHT=yes   - Skip pre-flight file path validation"
+	@echo "  make run-direct ... INPUT_DIR=/data/hsa - Override base input directory from the YAML config"
+	@echo "  make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"
+	@echo "  make check-paths ADAPTERS_CONFIG=... INPUT_DIR=/data/hsa"
+	@echo "  make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env"
 	@echo "  make download                          - Interactive download (recommended)"
 	@echo "  make download-direct OUTPUT_DIR=./input SOURCE=uniprot  - Download a single source"
 	@echo "  make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml"
@@ -77,6 +82,15 @@ run-interactive: check-uv
 	@read -p "📁 Enter output directory [./output]: " OUTPUT_DIR; \
 	OUTPUT_DIR=$${OUTPUT_DIR:-./output}; \
 	echo "Using output directory: $$OUTPUT_DIR"; \
+	echo ""; \
+	read -p "📂 Enter base input directory (leave blank to use config default): " INPUT_DIR_VAL; \
+	if [ -n "$$INPUT_DIR_VAL" ]; then \
+		INPUT_DIR_FLAG="--input-dir $$INPUT_DIR_VAL"; \
+		echo "Using input directory: $$INPUT_DIR_VAL"; \
+	else \
+		INPUT_DIR_FLAG=""; \
+		echo "Using input directory from config"; \
+	fi; \
 	echo ""; \
 	read -p "⚙️  Enter adapters config path [./config/hsa/hsa_adapters_config_sample.yaml]: " ADAPTERS_CONFIG; \
 	ADAPTERS_CONFIG=$${ADAPTERS_CONFIG:-./config/hsa/hsa_adapters_config_sample.yaml}; \
@@ -168,7 +182,8 @@ run-interactive: check-uv
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
-		$$SKIP_PREFLIGHT_FLAG && \
+		$$SKIP_PREFLIGHT_FLAG \
+		$$INPUT_DIR_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
@@ -205,7 +220,8 @@ run-direct: check-uv
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
-		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
+		$(if $(INPUT_DIR),--input-dir $(INPUT_DIR),)
 
 # Run with sample configuration and data (with optional writer type)
 run-sample: check-uv
@@ -262,6 +278,7 @@ check-paths: check-uv
 	uv run python create_knowledge_graph.py \
 		--adapters-config $(ADAPTERS_CONFIG) \
 		$$INCLUDE_ADAPTERS_FLAG \
+		$(if $(INPUT_DIR),--input-dir $(INPUT_DIR),) \
 		--check-only
 
 # ─── Neo4j deployment targets ────────────────────────────────────────────────
