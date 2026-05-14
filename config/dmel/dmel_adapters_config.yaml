@@ -652,7 +652,7 @@ reactome_reaction:
     cls: ReactomeAdapter
     args:
       filepath: /mnt/hdd_1/biocypher-kg/input/dmel/reactome/Ensembl2ReactomeReactions.txt
-      pubmed_map_path: ./samples/reactome/ReactionPMIDS.txt
+      pubmed_map_path: /mnt/hdd_1/biocypher-kg/input/dmel/reactome/ReactionPMIDS.txt
       label: reaction
       taxon_id: 7227
   outdir: reactome
