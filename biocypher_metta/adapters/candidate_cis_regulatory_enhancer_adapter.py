@@ -31,6 +31,7 @@ class EnhancercCREAdapter(Adapter):
         super(EnhancercCREAdapter, self).__init__(write_properties, add_provenance)
 
     def get_nodes(self):
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id
         try:
             if self.filepath.endswith('.gz'):
                 file = gzip.open(self.filepath, 'rt')
@@ -72,7 +73,7 @@ class EnhancercCREAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
-                element_id = f"ENCODE_SCREEN:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{build_regulatory_region_id(chrom, start, end)}"
                 yield element_id, self.label, props
             
             file.close()                
@@ -84,6 +85,7 @@ class EnhancercCREAdapter(Adapter):
             raise
     
     def get_edges(self):
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id
         try:
             if self.filepath.endswith('.gz'):
                 file = gzip.open(self.filepath, 'rt')
@@ -141,7 +143,7 @@ class EnhancercCREAdapter(Adapter):
                     props['source'] = self.source
                     props['source_url'] = self.source_url
 
-                element_id = f"ENCODE_SCREEN:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{build_regulatory_region_id(chrom, start, end)}"
                 yield element_id, gene_id, self.label, props
             
             file.close()
