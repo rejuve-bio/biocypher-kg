@@ -5,6 +5,7 @@ import re
 import json
 import os
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import GOSubontologyProcessor
 from Bio import SwissProt
 
 # Data file is uniprot_sprot_human.dat.gz and uniprot_trembl_human.dat.gz at https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/.
@@ -20,10 +21,14 @@ class UniprotProteinAdapter(Adapter):
         self.dataset = 'UniProtKB_protein'
         self.label = label
         self.dbxref = dbxref
-        self.go_subontology_mapping = pickle.load(open(mapping_file, 'rb')) if mapping_file else None 
-        
-        if self.dbxref == 'GO' and not self.go_subontology_mapping:
-            raise ValueError("GO subontology mapping file must be provided for GO dbxref edges.")
+        if mapping_file:
+            self.go_subontology_mapping = pickle.load(open(mapping_file, 'rb'))
+        elif self.dbxref == 'GO':
+            go_processor = GOSubontologyProcessor()
+            go_processor.load_or_update()
+            self.go_subontology_mapping = go_processor.mapping
+        else:
+            self.go_subontology_mapping = None
         
         self.source = "UniProt"
         self.source_url = "https://www.uniprot.org/"
@@ -45,6 +50,9 @@ class UniprotProteinAdapter(Adapter):
                     if item != '-':
                         id = database_name + ':' + item.split('. ')[0]
                         dbxrefs.append(id)
+            elif database_name == 'GO':
+                # cross_reference[1] is already in "GO:XXXXXXX" format
+                dbxrefs.append(cross_reference[1])
             else:
                 id = cross_reference[0].upper() + ':' + cross_reference[1]
                 dbxrefs.append(id)
@@ -258,11 +266,9 @@ class UniprotProteinAdapter(Adapter):
                     elif self.dbxref == "STRING":
                         syn = "STRING:" + syn.split('.')[1]
                     elif self.dbxref == "GO":
-                        prefix, id_local = syn.split(':',1)
-                        syn = id_local
-                        
-                        subontology = self.go_subontology_mapping.get(syn, None)   
-                        if subontology not in self.label:
+                        go_id = syn  # syn is already "GO:XXXXXXX"
+                        subontology = self.go_subontology_mapping.get(go_id, None)
+                        if subontology is None or subontology not in self.label:
                             continue
                     props = {}
                     if self.write_properties:

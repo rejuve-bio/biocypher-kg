@@ -24,16 +24,17 @@ class ParquetWriter(BaseWriter):
         buffer_size: int = 10000,
         overwrite: bool = False,
         excluded_properties: Optional[List[str]] = None,
+        include_curie: bool = False,
     ):
         """
         Initialize the Parquet writer.
-        
+
         Args:
             schema_config: BioCypher schema configuration
             biocypher_config: BioCypher main configuration
             output_dir: Directory to write Parquet files to
         """
-        super().__init__(schema_config, biocypher_config, output_dir)
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
 
         # Configure serialization settings
         self.batch_size = buffer_size
@@ -130,44 +131,37 @@ class ParquetWriter(BaseWriter):
 
     def preprocess_id(self, prev_id):
         """
-        Normalize IDs for Parquet output:
-        - Accept (type, id) tuples and strings
-        - Remove provider prefixes like 'ensembl_' or 'react_' or 'ensembl:' / 'react:'
-        - Remove surrounding parentheses
-        - Remove leading 'gene'/'protein'/'transcript' tokens if attached
-        - Return a lowercase, normalized id (e.g. 'ensg00000000419' or 'r-hsa-162699')
+        Normalize IDs for Parquet output.
+
+        When include_curie is False (default): strips known namespace prefixes
+        (ENSEMBL:, REACT:) and returns a bare lowercase local ID.
+        When include_curie is True: retains the namespace prefix, joining it to
+        the local part with an underscore (e.g. 'ensembl_ensg00000000419').
         """
         if prev_id is None:
             return None
 
-        # If tuple like ("GENE", "ENSEMBL:ENSG...") take second element
         if isinstance(prev_id, tuple):
-            # typical tuple is (type, id)
             prev_id = prev_id[1] if len(prev_id) > 1 else prev_id[0]
 
-        # ensure string
         prev_id = str(prev_id).strip()
 
-        # remove surrounding parentheses if any
         if prev_id.startswith("(") and prev_id.endswith(")"):
             prev_id = prev_id[1:-1].strip()
 
-        # remove a leading type token e.g. "gene " or "GENE " that may have been prepended
         prev_id = re.sub(r'^(gene|protein|transcript)\s*', '', prev_id, flags=re.IGNORECASE)
 
-        # unify separators and lowercase
         normalized = prev_id.strip()
 
-        # remove common provider prefixes and separators
-        # examples to handle:
-        #   "ensembl_ensg00000000419" -> "ensg00000000419"
-        #   "ensembl:ENSG00000000419" -> "ensg00000000419"
-        #   "react_r-hsa-162699" or "REACT:R-HSA-162699" -> "r-hsa-162699"
-        normalized = normalized.replace("ENSEMBL:", "").replace("ensembl:", "")
-        normalized = normalized.replace("REACT:", "").replace("react:", "")
-        normalized = normalized.replace("ensembl_", "").replace("react_", "")
+        if self.include_curie:
+            # Normalise separator to underscore, keep prefix
+            normalized = re.sub(r'[:_]', '_', normalized).lower()
+        else:
+            # Strip known namespace prefixes
+            normalized = normalized.replace("ENSEMBL:", "").replace("ensembl:", "")
+            normalized = normalized.replace("REACT:", "").replace("react:", "")
+            normalized = normalized.replace("ensembl_", "").replace("react_", "")
 
-        # replace spaces with underscore, keep hyphens as-is, lowercase
         normalized = normalized.replace(" ", "_").lower()
 
         return normalized
@@ -235,6 +229,8 @@ class ParquetWriter(BaseWriter):
             for node in nodes:
                 try:
                     id, label, properties = node
+                    if not self.check_node_label(label):
+                        raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                     if "." in label:
                         label = label.split(".")[1]
                     label = label.lower()
@@ -311,6 +307,8 @@ class ParquetWriter(BaseWriter):
             for edge in edges:
                 try:
                     source_id_raw, target_id_raw, label, properties = edge
+                    if not self.check_edge_label(label):
+                        raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                     label = label.lower()
                     edge_freq[label] += 1
 
@@ -322,6 +320,14 @@ class ParquetWriter(BaseWriter):
                     edge_info = self.edge_node_types[label]
                     source_types = edge_info["source"]
                     target_types = edge_info["target"]
+
+                    # Validate adapter-provided types against schema when tuples are present
+                    has_typed_source = isinstance(source_id_raw, tuple)
+                    has_typed_target = isinstance(target_id_raw, tuple)
+                    if has_typed_source or has_typed_target:
+                        typed_src = source_id_raw[0] if has_typed_source else (source_types[0] if isinstance(source_types, list) else source_types)
+                        typed_tgt = target_id_raw[0] if has_typed_target else (target_types[0] if isinstance(target_types, list) else target_types)
+                        self.validate_edge_types(label, typed_src, typed_tgt)
 
                     # Filter props per user exclusion before writing
                     filtered_props = {k: v for k, v in properties.items() if k not in self.excluded_properties}

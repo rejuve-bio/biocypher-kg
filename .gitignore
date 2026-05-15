@@ -162,6 +162,9 @@ cython_debug/
 #VSCode
 .vscode/
 
+# Neo4j env (contains credentials and host-specific paths — use docker/neo4j.env.example as template)
+docker/neo4j.env
+
 #project specific
 metta_out/
 metta_out_*/
@@ -174,3 +177,8 @@ output/
 output_cli/
 output_fly/
 output_human/
+
+# CATLAS generated/downloaded files (large, not committed)
+aux_files/hsa/catlas/*.pkl
+samples/hsa/catlasv1/cCRE_hg38.tsv.gz
+samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt

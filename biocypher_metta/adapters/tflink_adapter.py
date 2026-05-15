@@ -1,6 +1,7 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
 import pickle
+from biocypher_metta.processors import EntrezEnsemblProcessor
 import csv
 import gzip
 
@@ -25,20 +26,37 @@ import gzip
 
 
 class TFLinkAdapter(Adapter):
-    INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
+    INDEX = {'UniprotID.TF': 0, 'UniprotID.Target': 1, 'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 
+             'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
 
-    def __init__(self, filepath, entrez_to_ensemble_map, label,
-                 write_properties, add_provenance, taxon_id):
+    def __init__(self, filepath, label, taxon_id, entrez_to_ensemble_map=None,
+                 write_properties=None, add_provenance=None,
+                 entrez_ensembl_processor=None):
         """
         Constructs TFLink adapter that returns edges between TFs and their target gene
         :param filepath: Path to the TSV file downloaded from tflink
-        :param entrez_to_ensemble_map: file containing pickled dictionary mapping NCBI Entrez IDs to Ensemble IDs -
-        this b/c we use Ensemble IDs to identify genes where TFLink uses Entrez Ids
+        :param label: Interaction type (tf_gene or interacts_with)
+        :param taxon_id: Taxon ID (default: 9606 for Human)
+        :param entrez_to_ensemble_map: DEPRECATED - use entrez_ensembl_processor instead
+        :param write_properties: Whether to write properties to edges
+        :param add_provenance: Whether to add provenance to edges
+        :param entrez_ensembl_processor: EntrezEnsemblProcessor instance for ID mapping
         """
         self.filepath = filepath
 
-        with open(entrez_to_ensemble_map, "rb") as f:
-            self.entrez2ensemble = pickle.load(f)
+        # Use provided processor or create new one; fallback to pickle for non-human
+        if entrez_ensembl_processor is not None:
+            self.processor = entrez_ensembl_processor
+        elif entrez_to_ensemble_map is not None and taxon_id != 9606:
+            self.processor = None
+            with open(entrez_to_ensemble_map, "rb") as f:
+                self.entrez2ensemble = pickle.load(f)
+        else:
+            self.processor = EntrezEnsemblProcessor()
+            self.processor.load_or_update()
+
+        if hasattr(self, 'processor') and self.processor is not None:
+            self.entrez2ensemble = self.processor.entrez_to_ensembl
 
         self.label = label
         self.source = "TFLink"
@@ -50,33 +68,47 @@ class TFLinkAdapter(Adapter):
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as fp:
             table = csv.reader(fp, delimiter="\t", quotechar='"')
+            next(table) # skip header
             for row in table:
-                tf_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.TF']]
-                target_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.Target']]
-                if tf_entrez_id in self.entrez2ensemble and target_entrez_id in self.entrez2ensemble:
-                    tf_ensemble_id = self.entrez2ensemble[tf_entrez_id]
-                    target_ensemble_id = self.entrez2ensemble[target_entrez_id]
-                    _source = f"{tf_ensemble_id}"
-                    _target = f"{target_ensemble_id}"
-                    pubmed_ids_str = row[TFLinkAdapter.INDEX['PubmedID']]
-                    pubmed_ids = [f"pubmed:{i}" for i in pubmed_ids_str.split(";")]
-                    sources = row[TFLinkAdapter.INDEX['Source.database']].split(";")
-                    small_scale_evidence = row[TFLinkAdapter.INDEX['Small-scale.evidence']]
-                    if small_scale_evidence == "Yes":
-                        evidence_type = "small_scale_evidence"
+                if self.label == 'tf_gene':
+                    tf_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.TF']]
+                    target_entrez_id = row[TFLinkAdapter.INDEX['NCBI.GeneID.Target']]
+                    if tf_entrez_id in self.entrez2ensemble and target_entrez_id in self.entrez2ensemble:
+                        tf_ensemble_id = self.entrez2ensemble[tf_entrez_id]
+                        target_ensemble_id = self.entrez2ensemble[target_entrez_id]
+                        _source = f"{tf_ensemble_id}"
+                        _target = f"{target_ensemble_id}"
                     else:
-                        evidence_type = "large_scale_evidence"
-                    _props = {}
-                    if self.write_properties:
-                        _props = {
-                            "evidence": pubmed_ids,
-                            "database": sources,
-                            "evidence_type": evidence_type,
-                            "detection_method": row[TFLinkAdapter.INDEX['Detection.method']],
-                            "taxon_id": f'{self.taxon_id}',
-                        }
-                        if self.add_provenance:
-                            _props['source'] = self.source
-                            _props['source_url'] = self.source_url
+                        continue
+                elif self.label == 'interacts_with':
+                    tf_uniprot_id = row[TFLinkAdapter.INDEX['UniprotID.TF']]
+                    target_uniprot_id = row[TFLinkAdapter.INDEX['UniprotID.Target']]
+                    if tf_uniprot_id == '-' or target_uniprot_id == '-':
+                        continue
+                    _source = f"{tf_uniprot_id}"
+                    _target = f"{target_uniprot_id}"
+                else:
+                    continue
 
-                    yield _source, _target, self.label, _props
+                pubmed_ids_str = row[TFLinkAdapter.INDEX['PubmedID']]
+                pubmed_ids = [f"PMID_{i.strip()}" for i in pubmed_ids_str.split(";") if i.strip()]
+                sources = row[TFLinkAdapter.INDEX['Source.database']].split(";")
+                small_scale_evidence = row[TFLinkAdapter.INDEX['Small-scale.evidence']]
+                if small_scale_evidence == "Yes":
+                    evidence_type = "small_scale_evidence"
+                else:
+                    evidence_type = "large_scale_evidence"
+                _props = {}
+                if self.write_properties:
+                    _props = {
+                        "evidence": pubmed_ids,
+                        "database": sources,
+                        "evidence_type": evidence_type,
+                        "detection_method": row[TFLinkAdapter.INDEX['Detection.method']],
+                        "taxon_id": f'{self.taxon_id}',
+                    }
+                    if self.add_provenance:
+                        _props['source'] = self.source
+                        _props['source_url'] = self.source_url
+
+                yield _source, _target, self.label, _props

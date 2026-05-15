@@ -47,26 +47,28 @@ class ReactomeAdapter(Adapter):
                         if species == 'Homo sapiens':
                             props = {}
                             if self.write_properties:
-                                props['pathway_name'] = name                             
+                                props['pathway_name'] = name
+                                props['pathway_url'] = f"https://reactome.org/content/detail/{id}"
                                 pubmed_id = self.pubmed_map.get(id, None)
                                 if pubmed_id is not None:
                                     pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
                                     props['evidence'] = pubmed_url
-                                
+
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
                                     props['taxon_id'] = f'{self.taxon_id}'
                             yield pathway_id, self.label, props
-                    elif self.taxon_id == 7227:           
+                    elif self.taxon_id == 7227:
                         if species == 'Drosophila melanogaster':
                             props = {}
                             if self.write_properties:
-                                props['pathway_name'] = name                        
+                                props['pathway_name'] = name
+                                props['pathway_url'] = f"https://reactome.org/content/detail/{id}"
                                 pubmed_id = self.pubmed_map.get(id, None)
                                 if pubmed_id is not None:
                                     pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
-                                    props['evidence'] = pubmed_url                                
+                                    props['evidence'] = pubmed_url
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
@@ -74,14 +76,8 @@ class ReactomeAdapter(Adapter):
 
                             yield pathway_id, self.label, props
         elif self.label == 'reaction':
-            organism_taxon_map = {
-                'R-DME': 7227,  # Drosophila melanogaster (dmel)
-                'R-HSA': 9606,  # Homo sapiens (hsa)
-                'R-CEL': 6239,  # Caenorhabditis elegans (cel)
-                # Add more organisms here as needed
-                'R-MMU': 10090,   # Mus musculus (mmu)
-                'R-RNO': 10116,   # Rattus norvegicus
-            }   
+            from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+            organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
             # nodes = set()   
             with open(self.filepath) as input_file:
                 base_props = {}                
@@ -98,7 +94,7 @@ class ReactomeAdapter(Adapter):
         with open(self.pubmed_map_path, "r") as f:
             reader = csv.reader(f, delimiter="\t")
             for row in reader:
-                pathway_id, pubmed_id = row[0], row[0]
+                pathway_id, pubmed_id = row[0], row[1]
                 self.pubmed_map[pathway_id] = pubmed_id
 
 

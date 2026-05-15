@@ -1,6 +1,5 @@
-import os
-import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import GOSubontologyProcessor
 
 # Example Pathways2GoTerms_Human  TXT input files
 # Identifier	Name	GO_Term
@@ -19,7 +18,7 @@ class ReactomePathwayGOAdapter(Adapter):
     """
     
     def __init__(self, filepath, write_properties, add_provenance, label, taxon_id,
-                 subontology, mapping_file='aux_files/go_subontology_mapping.pkl'):
+                 subontology, go_subontology_processor=None):
         super().__init__(write_properties, add_provenance)
 
         if subontology not in ['biological_process', 'molecular_function', 'cellular_component']:
@@ -29,18 +28,19 @@ class ReactomePathwayGOAdapter(Adapter):
         self.label = label
         self.taxon_id = taxon_id
         self.subontology = subontology
-        # Use provided label or generate from subontology
         self.label = label if label else f"pathway_to_{subontology}"
         self.source = "REACTOME"
         self.source_url = "https://reactome.org"
         self.skip_first_line = True
-        
-        # Load GO subontology mapping
-        if not os.path.exists(mapping_file):
-            raise FileNotFoundError(f"Mapping file not found: {mapping_file}")
-            
-        with open(mapping_file, 'rb') as f:
-            self.subontology_mapping = pickle.load(f)
+
+        # Use provided GO subontology processor or create new one
+        if go_subontology_processor is None:
+            self.go_subontology_processor = GOSubontologyProcessor()
+            self.go_subontology_processor.load_or_update()
+        else:
+            self.go_subontology_processor = go_subontology_processor
+
+        self.subontology_mapping = self.go_subontology_processor.mapping
 
     def get_edges(self):
         with open(self.filepath) as f:
@@ -52,7 +52,7 @@ class ReactomePathwayGOAdapter(Adapter):
                 if len(parts) < 3:
                     continue
                     
-                pathway_id, pathway_name, go_term = parts[0], parts[1], parts[2]
+                pathway_id, go_term = parts[0], parts[2]
                 
                 # Clean and standardize GO term
                 clean_go_term = go_term.replace('GO:', '').replace('go:', '')
@@ -73,12 +73,8 @@ class ReactomePathwayGOAdapter(Adapter):
                     continue
                 
                 # Prepare base properties
-                properties = {
-                    'pathway_name': pathway_name,
-                    'go_term_id': full_go_term,
-                    'subontology': go_type, 
-                }
-                
+                properties = {}
+
                 if self.add_provenance:  
                     properties.update({
                         'source': self.source,

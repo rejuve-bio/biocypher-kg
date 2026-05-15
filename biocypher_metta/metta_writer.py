@@ -11,8 +11,8 @@ from biocypher_metta import BaseWriter
 class MeTTaWriter(BaseWriter):
 
     def __init__(self, schema_config, biocypher_config,
-                 output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+                 output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
 
         # Initialize edge node types for tuple handling
         self.edge_node_types = {}
@@ -21,7 +21,6 @@ class MeTTaWriter(BaseWriter):
         self.label_is_ontology = self._build_label_types_map()
         self.create_type_hierarchy()
         self.excluded_properties = []
-        self.type_hierarchy = self._type_hierarchy()
 
     def _build_label_types_map(self):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
@@ -79,24 +78,14 @@ class MeTTaWriter(BaseWriter):
                     f.write(f"(<: {node.upper()} {ancestor.upper()})\n")
 
             self.create_data_constructors(f)
-
         logger.info("Type hierarchy created successfully.")
+
 
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()
         
-        def edge_data_constructor(edge_type, source_types, target_types, label):
-            if isinstance(source_types, list):
-                source_str = ' '.join([st.upper() for st in source_types])
-            else:
-                source_str = source_types.upper()
-                
-            if isinstance(target_types, list):
-                target_str = ' '.join([tt.upper() for tt in target_types])
-            else:
-                target_str = target_types.upper()
-                
-            return f"(: {label.lower()} (-> {source_str} {target_str} {edge_type.upper()}))"
+        def edge_data_constructor(edge_type, source_type, target_type, label):
+            return f"(: {label.lower()} (-> {source_type.upper()} {target_type.upper()} {edge_type.upper()}))"
 
         def node_data_constructor(node_type, node_label):
             return f"(: {node_label.lower()} (-> $x {node_type.upper()}))"
@@ -106,23 +95,29 @@ class MeTTaWriter(BaseWriter):
                 edge_type = self.normalize_text(k)
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
-        
+
                 if source_type is not None and target_type is not None:
-                    label = self.normalize_text(v["input_label"])
+                    input_label = self.normalize_text(v["input_label"])
                     source_type_normalized = self.normalize_text(source_type)
                     target_type_normalized = self.normalize_text(target_type)
-            
+
                     output_label = v.get("output_label", None)
+                    constructor_label = self.normalize_text(output_label) if output_label else input_label
 
                     if '.' not in k:
-                        out_str = edge_data_constructor(edge_type, source_type_normalized, target_type_normalized, label)
-                        file.write(out_str + "\n")
-                
-                        self.edge_node_types[label] = {
-                            "source": source_type_normalized, 
-                            "target": target_type_normalized,
-                            "output_label": output_label
-                        }
+                        src_list = source_type_normalized if isinstance(source_type_normalized, list) else [source_type_normalized]
+                        tgt_list = target_type_normalized if isinstance(target_type_normalized, list) else [target_type_normalized]
+                        for src in src_list:
+                            for tgt in tgt_list:
+                                out_str = edge_data_constructor(edge_type, src, tgt, constructor_label)
+                                file.write(out_str + "\n")
+
+                        if input_label not in self.edge_node_types:
+                            self.edge_node_types[input_label] = {
+                                "source": source_type_normalized,
+                                "target": target_type_normalized,
+                                "output_label": output_label
+                            }
 
             elif v["represented_as"] == "node":
                 label = self.normalize_text(v["input_label"])
@@ -139,58 +134,129 @@ class MeTTaWriter(BaseWriter):
 
     def preprocess_id(self, prev_id, label=None):
         """
-        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        Clean ID, preserving CURIE prefixes for ontology terms or when include_curie is True.
         """
         prev_id = str(prev_id)
-        
+
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
-            
-            if label and self._is_ontology_label(label):
+
+            if (label and self._is_ontology_label(label)) or self.include_curie:
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                # For non-ontology terms, just return the local ID part without prefix
                 return local_id.strip().replace(' ', '_').upper()
-        
+
         return prev_id.strip().replace(' ', '_').upper()
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
+        # Set up output directory
         if path_prefix is not None:
-            file_path = f"{self.output_path}/{path_prefix}/nodes.metta"
+            output_dir = f"{self.output_path}/{path_prefix}"
             if create_dir:
-                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
-                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
+                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
         else:
-            file_path = f"{self.output_path}/nodes.metta"
-        
-        with open(file_path, "a") as f:
+            output_dir = self.output_path
+
+        # Each unique node label gets its own file handle
+        file_handles = {}
+
+        try:
             for node in nodes:
+                id, label, properties = node
+                if not self.check_node_label(label):
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)  # Count nodes and extract node properties
+
+                if "." in label:
+                    label = label.split(".")[-1]
+                label = label.lower()
+
+                if label not in file_handles:
+                    file_path = f"{output_dir}/nodes_{label}.metta"
+                    file_handles[label] = open(file_path, "w")
+
                 out_str = self.write_node(node)
                 for s in out_str:
-                    f.write(s + "\n")
-            f.write("\n")
+                    file_handles[label].write(s + "\n")
 
-        logger.info("Finished writing out nodes")
+        finally:
+            # Always close all open file handles, even if an exception occurs
+            for fh in file_handles.values():
+                try:
+                    fh.write("\n")
+                    fh.close()
+                except Exception:
+                    pass
+
+        # logger.info("Finished writing out nodes")
         return self.node_freq, self.node_props
 
     def write_edges(self, edges, path_prefix=None, create_dir=True):
         if path_prefix is not None:
-            file_path = f"{self.output_path}/{path_prefix}/edges.metta"
+            output_dir = f"{self.output_path}/{path_prefix}"
             if create_dir:
-                if not os.path.exists(f"{self.output_path}/{path_prefix}"):
-                    pathlib.Path(f"{self.output_path}/{path_prefix}").mkdir(parents=True, exist_ok=True)
+                pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
         else:
-            file_path = f"{self.output_path}/edges.metta"
+            output_dir = self.output_path
 
-        with open(file_path, "a") as f:
+        # Each unique (label, source_type, target_type) gets its own file handle
+        file_handles = {}
+
+        try:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_edge_info(edge)  # Count edges
+
+                label = label.lower()
+                if label in self.edge_node_types and self.edge_node_types[label]["output_label"] is not None:
+                    output_label = self.edge_node_types[label]["output_label"]
+                    label_to_use = output_label
+                else:
+                    label_to_use = label
+
+                # Resolve source and target types
+                if isinstance(source_id, tuple):
+                    source_type = source_id[0]
+                else:
+                    edge_info = self.edge_node_types.get(label, {})
+                    source_type = edge_info.get("source", "unknown")
+                    if isinstance(source_type, list):
+                        source_type = source_type[0]
+
+                if isinstance(target_id, tuple):
+                    target_type = target_id[0]
+                else:
+                    edge_info = self.edge_node_types.get(label, {})
+                    target_type = edge_info.get("target", "unknown")
+                    if isinstance(target_type, list):
+                        target_type = target_type[0]
+
+                if isinstance(source_id, tuple) or isinstance(target_id, tuple):
+                    self.validate_edge_types(label, source_type, target_type)
+
+                file_key = (label, source_type, target_type)
+
+                if file_key not in file_handles:
+                    file_suffix = f"{source_type}_{label_to_use}_{target_type}"
+                    file_path = f"{output_dir}/edges_{file_suffix}.metta"
+                    file_handles[file_key] = open(file_path, "w")
+
                 out_str = self.write_edge(edge)
                 for s in out_str:
-                    f.write(s + "\n")
-            f.write("\n")
+                    file_handles[file_key].write(s + "\n")
+
+        finally:
+            # Always close all open file handles, even if an exception occurs
+            for fh in file_handles.values():
+                try:
+                    fh.write("\n")
+                    fh.close()
+                except Exception:
+                    pass
+
         return self.edge_freq
 
     def write_node(self, node):
@@ -205,35 +271,6 @@ class MeTTaWriter(BaseWriter):
         def_out = f"({self.normalize_text(label)} {id})"
         return self.write_property(def_out, properties)
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
-            'pathway': frozenset({'pathway'}),
-            'reaction': frozenset({'reaction'}),
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            'snp': frozenset({'snp'}),
-            'phenotype_set': frozenset({'phenotype_set'}),
-                        
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
@@ -245,14 +282,6 @@ class MeTTaWriter(BaseWriter):
             source_type = source_id[0]
             # Pass label for ontology-aware processing
             source_id_processed = self.preprocess_id(str(source_id[1]), label=source_type)
-            if label in self.edge_node_types:
-                valid_source_types = self.edge_node_types[label]["source"]
-                if isinstance(valid_source_types, list):
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be one of {valid_source_types}")
-                else:
-                    if source_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{source_type}' must be '{valid_source_types}'")
         else:
             if label in self.edge_node_types:
                 source_type_info = self.edge_node_types[label]["source"]
@@ -269,14 +298,6 @@ class MeTTaWriter(BaseWriter):
             target_type = target_id[0]
             # Pass label for ontology-aware processing
             target_id_processed = self.preprocess_id(str(target_id[1]), label=target_type)
-            if label in self.edge_node_types:
-                valid_target_types = self.edge_node_types[label]["target"]
-                if isinstance(valid_target_types, list):
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be one of {valid_target_types}")
-                else:
-                    if target_type not in self.type_hierarchy:
-                        raise TypeError(f"Type '{target_type}' must be '{valid_target_types}'")
         else:
             if label in self.edge_node_types:
                 target_type_info = self.edge_node_types[label]["target"]
@@ -314,13 +335,8 @@ class MeTTaWriter(BaseWriter):
                 continue
             
             if k == 'biological_context':
-                try:
-                    ontology_id = self.check_property(v).upper().replace('_', ':')
-                    ontology_name = ontology_id.split(':')[0].lower()
-                    out_str.append(f'({k} {def_out} ({ontology_name} {ontology_id}))')
-                except Exception as e:
-                    print(f"An error occurred while processing the biological context '{v}': {e}.")
-                    continue
+                out_str.append(f'({k} {def_out} {self.check_biological_context(v)})')
+                    
             elif isinstance(v, list):
                 # Handle lists by decomposing into individual facts
                 for item in v:
@@ -360,8 +376,8 @@ class MeTTaWriter(BaseWriter):
         ):
             return raw
 
-        # Strip CURIE prefixes from property values
-        if ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
+        # Strip CURIE prefixes from property values (unless include_curie is set)
+        if not self.include_curie and ':' in raw and not raw.startswith(('http://', 'https://', 'ftp://', 'ftps://')):
             _, local_part = raw.split(':', 1)
             raw = local_part.strip()
 
@@ -370,6 +386,20 @@ class MeTTaWriter(BaseWriter):
         prop = re.sub(r"[^a-zA-Z0-9_:\.-]", "", prop)
 
         return prop
+    
+    def check_biological_context(self, context):
+        if context is None or context == "":
+            return None
+        try:
+            ontology_id = context.upper().replace('_', ':')
+            ontology_name = ontology_id.split(':')[0].lower()
+            ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+            ontology_name = ontology_dict.get(ontology_name, None)
+            ontology_id = ontology_id.replace(':', '_')
+            return f'({ontology_name} {ontology_id})'
+        except Exception as e:
+            # print(f"An error occurred while processing the biological context '{context}': {e}.")
+            return self.check_property(context)
 
     # def check_property(self, prop):
     #     if isinstance(prop, str):

@@ -2,6 +2,7 @@
 
 import psycopg2
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import EnsemblUniProtProcessor
 
 # Data file for genes_pathways: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
 # data format:
@@ -68,9 +69,33 @@ from biocypher_metta.adapters import Adapter
 class ReactomeEdgesAdapter(Adapter):
 
     ALLOWED_LABELS = ['genes_pathways', 'gene_or_gene_product_reaction',
-                      'small_molecule_to_pathway', 'small_molecule_to_reaction', 
-                      'reaction_to_pathway', 'protein_role_in_reaction'   ,
+                      'protein_pathways', 'transcript_pathways',
+                      'protein_reaction', 'transcript_reaction',
+                      'small_molecule_to_pathway', 'small_molecule_to_reaction',
+                      'reaction_to_pathway', 'protein_role_in_reaction',
                       'parent_pathway_of', 'child_pathway_of']
+
+    # Labels that read pathway/reaction data files and should be filtered by entity type.
+    # genes_pathways → gene only; protein_pathways → protein only; transcript_pathways → transcript only.
+    # Same pattern for reaction variants.
+    _ENTITY_TYPE_FILTER = {
+        'genes_pathways': 'gene',
+        'protein_pathways': 'protein',
+        'transcript_pathways': 'transcript',
+        'gene_or_gene_product_reaction': 'gene',
+        'protein_reaction': 'protein',
+        'transcript_reaction': 'transcript',
+    }
+
+    # Labels that use the genes_pathways / reaction file format (entity → pathway/reaction)
+    _PATHWAY_LABELS = frozenset({
+        'genes_pathways', 'protein_pathways', 'transcript_pathways',
+        'small_molecule_to_pathway',
+    })
+    _REACTION_LABELS = frozenset({
+        'gene_or_gene_product_reaction', 'protein_reaction', 'transcript_reaction',
+        'small_molecule_to_reaction',
+    })
 
     def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
         """
@@ -92,31 +117,27 @@ class ReactomeEdgesAdapter(Adapter):
         self.taxon_id = taxon_id
         if self.taxon_id == 7227:
             self.connection = self.connect_to_flybase()
-        # Load the Ensembl to UniProt mapping if provided
+        # Load the Ensembl to UniProt mapping
         self.ensembl_uniprot_map = {}
-        if ensembl_uniprot_map_path:
+        if ensembl_uniprot_map_path and taxon_id != 9606:
             try:
                 import pickle
-                # with open(ensembl_uniprot_map_path, 'rb') as f:
-                #     self.ensembl_uniprot_map = pickle.load(f)
-                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb')) if ensembl_uniprot_map_path else None 
-                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings")
+                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb'))
+                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings from pickle")
             except Exception as e:
                 print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
                 self.ensembl_uniprot_map = {}
+        else:
+            processor = EnsemblUniProtProcessor()
+            processor.load_or_update()
+            self.ensembl_uniprot_map = processor.mapping
         super(ReactomeEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
         # this is being used only as a list  :/
-        organism_taxon_map = {
-            'R-CEL': 6239,  # Caenorhabditis elegans (cel)
-            'R-DME': 7227,  # Drosophila melanogaster (dmel)
-            # 'R-NUL': 7227,  # some reactions of Drosophila melanogaster (dmel)  <----:: CAUTION: some other reactome entities use R-NULL
-            'R-HSA': 9606,  # Homo sapiens (hsa)
-            # Add more organisms here as needed
-            'R-MMU': 10090,   # Mus musculus (mmu)
-            'R-RNO': 10116,   # Rattus norvegicus
-        }
+        from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+        organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
+        entity_type_filter = self._ENTITY_TYPE_FILTER.get(self.label)
         with open(self.filepath) as input_file:
             base_props = {}
             if self.write_properties and self.add_provenance:
@@ -127,30 +148,26 @@ class ReactomeEdgesAdapter(Adapter):
             for line in input_file:
                 data = line.strip().split('\t')
 
-                # if not (self.label == 'parent_pathway_of' or self.label == 'child_pathway_of'):  # handles pathways or reactions  edges
-                if self.label in ['genes_pathways', 'gene_or_gene_product_reaction', 'small_molecule_to_pathway', 'small_molecule_to_reaction']: 
+                if self.label in self._PATHWAY_LABELS | self._REACTION_LABELS:
                     entity_id, pathway_id = data[0].strip(), data[1].strip()
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
-                    an_url = data[2].replace("PathwayBrowser/#", "content/detail")                    
                     pathway_id = f'{pathway_id}'
                     if organism_pathway_prefix in organism_taxon_map or organism_pathway_prefix.startswith('R-NUL'):
                         # taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()
-                        if self.label == 'genes_pathways':
-                            props['pathway_url'] = an_url
-                        else:
-                            props['reaction_url'] = an_url                        
                         props['evidence'] = data[4]
                         props['taxon_id'] = f'{self.taxon_id}'
 
                         if self.label.startswith('small_molecule'):  # It seems that this is a mistake in ChEBI data from Reactome
-                            entity_id = f'CHEBI:{entity_id}' 
+                            entity_id = f'CHEBI:{entity_id}'
                         total_in_species_records += 1
                         source_type = self._get_entity_type(entity_id)
                         if source_type is None:
                             # print(f'Invalid type for entity {entity_id}.\nRecord: {data}')
                             not_mapped_no_processing += 1
-                            continue                        
+                            continue
+                        if entity_type_filter and source_type != entity_type_filter:
+                            continue
 
                         # Drosophila only
                         if self.taxon_id == 7227 and (organism_pathway_prefix == 'R-DME' or organism_pathway_prefix == 'R-NUL'):
@@ -158,14 +175,14 @@ class ReactomeEdgesAdapter(Adapter):
                                 uniprot_id = self.ensembl_uniprot_map.get(entity_id)
                                 if uniprot_id is None:
                                     # print(f'{entity_id} not found in Ensembl-to-UniProt map.')
-                                    
+
                                     uniprot_id = self.get_uniprot_id_from_FB(self.connection, entity_id)
                                     if uniprot_id is None:
                                         # print(f'No UniProt ID for protein {entity_id} of dmel.\nReactome {pathway_id} will not be linked.')
                                         not_mapped_no_processing += 1
                                         continue
                                 curie_entity_id = f'UniProtKB:{uniprot_id}'
-                            elif entity_id.lower().startswith('fb'):                                
+                            elif entity_id.lower().startswith('fb'):
                                 curie_entity_id = f'FlyBase:{entity_id}'
                             elif entity_id.startswith('CHEBI'):
                                 curie_entity_id = entity_id
@@ -174,9 +191,6 @@ class ReactomeEdgesAdapter(Adapter):
                                 continue
                             # print(f'ID for protein: {curie_entity_id}, entity: {entity_id}, type {source_type} of dmel.\tReactome {pathway_id}')
                             source = (source_type, curie_entity_id)
-                            # target = pathway_id
-                            # Mandatory property for KGXWriter
-                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
                             yield source, pathway_id, self.label, props
                         # Human only
                         elif self.taxon_id == 9606 and (organism_pathway_prefix == 'R-HSA'  or organism_pathway_prefix == 'R-NUL'):

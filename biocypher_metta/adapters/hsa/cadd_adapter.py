@@ -37,6 +37,8 @@ class CADDAdapter(Adapter):
         with gzip.open(self.file_path, "rt") as fp:
             next(fp)
             reader = csv.reader(fp, delimiter=",")
+            not_processed = 0
+            processed = 0
             for row in reader:
                 try:
                     rsid = row[0]
@@ -52,10 +54,14 @@ class CADDAdapter(Adapter):
                             if self.add_provenance:
                                 _props['source'] = self.source
                                 _props['source_url'] = self.source_url
+                        processed += 1
                         yield rsid, self.label, _props
+                    else:
+                        not_processed += 1
                 except KeyError as e:
-                    logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
+                    # logger.error(f"rsid {rsid} not found in dbsnp_rsid_map, skipping...")
                     continue
-
+        print(f"Not processed records: {not_processed} out of {processed + not_processed} records")
+        
     def get_edges(self):
         pass

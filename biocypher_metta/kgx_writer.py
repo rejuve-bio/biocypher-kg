@@ -8,9 +8,14 @@ import re
 
 
 class KGXWriter(BaseWriter):
-    
-    def __init__(self, schema_config, biocypher_config, output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+
+    _ONTOLOGY_PREFIXES = frozenset({
+        'CL', 'UBERON', 'CLO', 'EFO', 'BTO', 'GO', 'HP', 'MONDO', 'DOID',
+        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO',
+    })
+
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.csv_delimiter = ','
         self.array_delimiter = ';'
         self.translation_table = str.maketrans({
@@ -240,26 +245,30 @@ class KGXWriter(BaseWriter):
     
 
     def preprocess_id(self, prev_id):
-        """Clean ID to remove parentheses and type prefixes like gene/protein/transcript"""
         if prev_id is None:
             return None
 
-        # If prev_id is a tuple, get the actual string (usually the second element)
         if isinstance(prev_id, tuple):
             prev_id = prev_id[1]
 
-        # Ensure we are working with a string
         prev_id = str(prev_id).strip()
 
-        # Remove surrounding parentheses if present
         if prev_id.startswith("(") and prev_id.endswith(")"):
             prev_id = prev_id[1:-1].strip()
 
-        # Remove type prefixes like gene/protein/transcript at the start
         prev_id = re.sub(r"^(gene|protein|transcript)\s*", "", prev_id, flags=re.IGNORECASE)
-
-        # Strip any remaining whitespace
         prev_id = prev_id.strip()
+
+        if ':' in prev_id:
+            prefix, local_id = prev_id.split(':', 1)
+            prefix_upper = prefix.strip().upper()
+            local_id = local_id.strip()
+            # Ontology prefixes are always kept as CURIEs (KGX is a CURIE-native format)
+            if prefix_upper in self._ONTOLOGY_PREFIXES:
+                return f"{prefix_upper}:{local_id}"
+            if self.include_curie:
+                return f"{prefix_upper}:{local_id}"
+            return local_id
 
         return prev_id
 
@@ -318,6 +327,8 @@ class KGXWriter(BaseWriter):
         try:
             for node in nodes:
                 node_id, label, properties = node
+                if not self.check_node_label(label):
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 normalized_label = self._normalize_label(label)
                 node_freq[normalized_label] += 1
                 
@@ -411,6 +422,8 @@ class KGXWriter(BaseWriter):
         try:
             for edge in edges:
                 source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 normalized_label = self._normalize_label(label)
                 edge_freq[normalized_label] += 1
 
@@ -437,6 +450,13 @@ class KGXWriter(BaseWriter):
                 typed_source_id = source_id[1] if has_typed_source else source_id
                 typed_target_type = target_id[0] if has_typed_target else None
                 typed_target_id = target_id[1] if has_typed_target else target_id
+
+                if has_typed_source and has_typed_target:
+                    self.validate_edge_types(normalized_label, typed_source_type, typed_target_type)
+                elif has_typed_source and target_types:
+                    self.validate_edge_types(normalized_label, typed_source_type, target_types[0])
+                elif has_typed_target and source_types:
+                    self.validate_edge_types(normalized_label, source_types[0], typed_target_type)
 
                 for src_type in source_types:
                     for tgt_type in target_types:

@@ -6,10 +6,11 @@ import os
 
 
 class BaseWriter(ABC):
-    def __init__(self, schema_config, biocypher_config, output_dir):
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
         self.schema_config = schema_config
         self.biocypher_config = biocypher_config
         self.output_path = pathlib.Path(output_dir)
+        self.include_curie = include_curie
         self.bcy = BioCypher(schema_config_path=schema_config,
                              biocypher_config_path=biocypher_config)
         if not os.path.exists(output_dir):
@@ -19,6 +20,74 @@ class BaseWriter(ABC):
         self.node_freq = Counter()
         self.node_props = defaultdict(set)
         self.edge_freq = Counter()
+
+        self.valid_node_labels = set()
+        self.valid_edge_labels = set()
+        self._get_valid_labels()
+
+        self._valid_edge_type_combos = defaultdict(set)
+        self._build_edge_type_combos()
+
+    def _get_valid_labels(self):
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        for k, v in schema.items():
+            input_label = v.get("input_label")
+            if input_label:
+                labels = [input_label] if isinstance(input_label, str) else input_label
+                for label in labels:
+                    normalized_label = self.normalize_label(label)
+                    if v.get("represented_as") == "node":
+                        self.valid_node_labels.add(normalized_label)
+                    elif v.get("represented_as") == "edge":
+                        self.valid_edge_labels.add(normalized_label)
+
+    def normalize_label(self, label):
+        if not label:
+            return ""
+        if "." in label:
+            label = label.split(".")[-1]
+        return label.lower().replace(" ", "_")
+
+    def check_node_label(self, label):
+        normalized_label = self.normalize_label(label)
+        return normalized_label in self.valid_node_labels
+
+    def check_edge_label(self, label):
+        normalized_label = self.normalize_label(label)
+        return normalized_label in self.valid_edge_labels
+
+    def _build_edge_type_combos(self):
+        schema = self.bcy._get_ontology_mapping()._extend_schema()
+        for k, v in schema.items():
+            if v.get("represented_as") != "edge":
+                continue
+            raw_label = v.get("input_label", "")
+            labels = raw_label if isinstance(raw_label, list) else [raw_label]
+            source = v.get("source")
+            target = v.get("target")
+            if source and target:
+                src_list = source if isinstance(source, list) else [source]
+                tgt_list = target if isinstance(target, list) else [target]
+                for lbl in labels:
+                    for src in src_list:
+                        for tgt in tgt_list:
+                            self._valid_edge_type_combos[self.normalize_label(lbl)].add(
+                                (self.normalize_label(src), self.normalize_label(tgt))
+                            )
+
+    def validate_edge_types(self, label, source_type, target_type):
+        """Raise ValueError when (source_type, target_type) is not a valid schema combo for label."""
+        combos = self._valid_edge_type_combos.get(self.normalize_label(label))
+        if not combos:
+            return
+        norm = (self.normalize_label(source_type), self.normalize_label(target_type))
+        if norm not in combos:
+            valid_str = ", ".join(f"({s}, {t})" for s, t in sorted(combos))
+            raise ValueError(
+                f"Edge '{label}': types (source='{source_type}', target='{target_type}') "
+                f"are not defined in the schema. Valid combos: {valid_str}. "
+                f"Update the adapter to use a defined input_label, or add a schema definition."
+            )
 
     @abstractmethod
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):

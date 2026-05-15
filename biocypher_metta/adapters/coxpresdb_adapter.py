@@ -1,6 +1,7 @@
 
 from biocypher_metta.adapters import Adapter
 import pickle
+from biocypher_metta.processors import EntrezEnsemblProcessor
 import os
 
 # All organisms data can be acessed from:
@@ -35,19 +36,31 @@ import os
 
 class CoxpresdbAdapter(Adapter):
 
-    def __init__(self, filepath, entrez_to_ensemble_path, label,
-                 write_properties, add_provenance, taxon_id):  
+    def __init__(self, filepath, entrez_to_ensemble_path=None, label='coexpressed_with',
+                 write_properties=None, add_provenance=None, taxon_id=9606,
+                 entrez_ensembl_processor=None):
 
         self.file_path = filepath
-        self.entrez_to_ensemble_dict_path = entrez_to_ensemble_path
         self.dataset = 'coxpresdb'
         self.label = label
         self.source = 'CoXPresdb'
         self.source_url = 'https://coxpresdb.jp/'
         self.version = 'v8'
-        self.label = label 
         self.taxon_id = taxon_id
         assert os.path.isdir(self.file_path), "coxpresdb file path is not a directory"
+
+        # Use provided processor or create new one; fallback to pickle for non-human
+        if entrez_ensembl_processor is not None:
+            self.processor = entrez_ensembl_processor
+            self.entrez_to_ensemble_dict_path = None
+        elif entrez_to_ensemble_path is not None and taxon_id != 9606:
+            self.entrez_to_ensemble_dict_path = entrez_to_ensemble_path
+            self.processor = None
+        else:
+            self.processor = EntrezEnsemblProcessor()
+            self.processor.load_or_update()
+            self.entrez_to_ensemble_dict_path = None
+
         super(CoxpresdbAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
@@ -57,11 +70,14 @@ class CoxpresdbAdapter(Adapter):
         # every gene has ensembl id in gencode file, every gene has hgnc id if available.
         # every gene has entrez gene id in gene_info file, every gene has ensembl id or hgcn id if available
 
-        # gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f))]
         gene_ids = [f for f in os.listdir(self.file_path) if os.path.isfile(os.path.join(self.file_path, f)) and f.isdigit()]
 
-        with open(self.entrez_to_ensemble_dict_path, 'rb') as f:
-            entrez_ensembl_dict = pickle.load(f)
+        # Use processor mapping or load from pickle
+        if self.processor is not None:
+            entrez_ensembl_dict = self.processor.entrez_to_ensembl
+        else:
+            with open(self.entrez_to_ensemble_dict_path, 'rb') as f:
+                entrez_ensembl_dict = pickle.load(f)
         for gene_id in gene_ids:
             gene_file_path = os.path.join(self.file_path, gene_id)
             entrez_id = gene_id

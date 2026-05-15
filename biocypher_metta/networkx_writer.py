@@ -7,8 +7,8 @@ from typing import Optional, Dict, List, Tuple, Union
 from biocypher_metta import BaseWriter
 
 class NetworkXWriter(BaseWriter):
-    def __init__(self, schema_config, biocypher_config, output_dir, directed=True):
-        super().__init__(schema_config, biocypher_config, output_dir)
+    def __init__(self, schema_config, biocypher_config, output_dir, directed=True, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.directed = directed
         self.graph = nx.DiGraph() if directed else nx.Graph()
         self.node_id_counter = 0
@@ -115,8 +115,8 @@ class NetworkXWriter(BaseWriter):
 
         if ':' in id_str:
             prefix, local_id = id_str.split(':', 1)
-            if label and self._is_ontology_label(label):
-                # Ontology terms: keep prefix (e.g., "GO:0005515" -> "go_0005515")
+            if (label and self._is_ontology_label(label)) or self.include_curie:
+                # Ontology terms or include_curie mode: keep prefix
                 id_str = f"{prefix}_{local_id}".lower().replace(' ', '_')
             else:
                 # Non-ontology terms: strip prefix (e.g., "UniProtKB:P12345" -> "p12345")
@@ -165,8 +165,10 @@ class NetworkXWriter(BaseWriter):
         sample_ids = []
         
         for i, node in enumerate(nodes):
-            self.extract_node_info(node)  
-            original_id, label, properties = node  
+            original_id, label, properties = node
+            if not self.check_node_label(label):
+                raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
+            self.extract_node_info(node)
             
             if i < 10:
                 sample_ids.append(str(original_id))
@@ -212,8 +214,10 @@ class NetworkXWriter(BaseWriter):
         edges_skipped = 0
         
         for edge in edges:
-            self.extract_edge_info(edge)  
-            source_id, target_id, label, properties = edge  
+            source_id, target_id, label, properties = edge
+            if not self.check_edge_label(label):
+                raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
+            self.extract_edge_info(edge)
             label = label.lower()
             
             edge_info = self.edge_node_types.get(label, {})
@@ -232,6 +236,9 @@ class NetworkXWriter(BaseWriter):
             else:
                 _, target_type = self._get_edge_type_info(label, source_id, target_id)
                 target_clean = self._preprocess_id(target_id, label=target_type)
+
+            if isinstance(source_id, tuple) or isinstance(target_id, tuple):
+                self.validate_edge_types(label, source_type, target_type)
             
             if edges_skipped < 5: 
                 if source_clean not in self.node_mapping or target_clean not in self.node_mapping:

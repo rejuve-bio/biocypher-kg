@@ -1,7 +1,7 @@
 import os
-import pickle
 import csv
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import HGNCProcessor
 
 # Human data:
 # https://hocomoco11.autosome.org/downloads_v11
@@ -25,12 +25,19 @@ from biocypher_metta.adapters import Adapter
 # https://hocomoco11.autosome.org/downloads_v11_mouse
 
 class HoCoMoCoMotifAdapter(Adapter):
-    def __init__(self, filepath, annotation_file, hgnc_to_ensembl_map, label,
-                 write_properties, add_provenance, taxon_id):
+    def __init__(self, filepath, annotation_file, hgnc_to_ensembl_map=None, label='motif',
+                 write_properties=None, add_provenance=None, taxon_id=9606,
+                 hgnc_processor=None):
 
         self.filepath = filepath
         assert os.path.isdir(self.filepath), f"{self.filepath} is not a directory"
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one
+        if hgnc_processor is not None:
+            self.hgnc_processor = hgnc_processor
+        else:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
         self.model_tf_path = annotation_file
         self.taxon_id = taxon_id
         self.label = label
@@ -68,10 +75,11 @@ class HoCoMoCoMotifAdapter(Adapter):
                 length = len(pwm["pmw_A"])
 
                 tf_name = self.model_tf_map.get(model_name)
-                #CURIE ID Format
-                _id = f"{self.hgnc_to_ensembl_map.get(tf_name)}"
-                if _id is None:
+                #CURIE ID Format - Get Ensembl ID from HGNC symbol
+                ensembl_id = self.hgnc_processor.get_ensembl_id(tf_name)
+                if ensembl_id is None:
                     continue
+                _id = f"ENSEMBL:{ensembl_id}"
 
                 props = {}
                 if self.write_properties:

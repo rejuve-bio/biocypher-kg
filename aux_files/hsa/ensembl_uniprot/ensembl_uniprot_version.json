@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-09T11:32:13.308222",
+  "processor": "ensembl_uniprot",
+  "entries": 246171,
+  "remote_metadata": {
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz": {
+      "url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz",
+      "last_modified": "Wed, 28 Jan 2026 23:00:00 GMT",
+      "etag": "\"21ae3d5-6497ab31b1c00\"",
+      "content_length": "35316693",
+      "checked_at": "2026-03-09T11:32:14.326260"
+    }
+  }
+}

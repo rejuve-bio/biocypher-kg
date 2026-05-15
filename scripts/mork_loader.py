@@ -2,7 +2,7 @@ import os
 import glob
 import time
 from pathlib import Path
-from mork_client import ManagedMORK
+from mork_client import ManagedMORK, WalMORK
 
 
 def get_user_input():
@@ -24,9 +24,9 @@ def get_user_input():
     
     # Get MORK port
     while True:
-        mork_port_input = input("Enter MORK server port (default: 8080): ").strip()
+        mork_port_input = input("Enter MORK server port (default: 8027): ").strip()
         if not mork_port_input:
-            mork_port = 8080
+            mork_port = 8027
             break
         try:
             mork_port = int(mork_port_input)
@@ -122,7 +122,10 @@ def load_metta_dataset(dataset_path, mork_port, space, clear_before_load=True):
         print(f"Connecting to MORK server at {mork_url}...")
         
         server = ManagedMORK.connect(url=mork_url)
-        print("Connected to MORK server successfully")
+        # Enable WAL durability with host path resolution
+        abs_dataset_path = str(Path(dataset_path).resolve())
+        server = WalMORK(server, host_data_dir=abs_dataset_path)
+        print("Connected to MORK server (WAL enabled)")
         
         # Clear existing data if requested
         if clear_before_load:
@@ -142,11 +145,15 @@ def load_metta_dataset(dataset_path, mork_port, space, clear_before_load=True):
                     print(f"Skiping {file_path}")
                     continue
                 path_obj = Path(file_path)
-                file_url = path_obj.resolve().as_uri()
+                abs_path = str(path_obj.resolve())
                 
-                # Docker volume mount adjustments
-                file_url = file_url.replace("/mnt/hdd_1/abdu/metta_out_v5", "/shared/output")
-                file_url = file_url.replace("/mnt/hdd_1/dawit/metta_sample/output", "/shared/output")
+                # Construct path for server (inside container)
+                # We avoid .as_uri() here because MORK doesn't automatically decode percent-encoded colons
+                if Path(abs_path).is_relative_to(Path(abs_dataset_path)):
+                    container_path = "/app/data/" + str(Path(abs_path).relative_to(Path(abs_dataset_path))).lstrip("/")
+                    file_url = f"file://{container_path}"
+                else:
+                    file_url = path_obj.resolve().as_uri()
                 
                 print(f"  [{i:3d}/{len(metta_files)}] Loading: {file_path}")
                 

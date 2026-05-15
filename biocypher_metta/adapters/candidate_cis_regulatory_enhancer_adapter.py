@@ -31,6 +31,7 @@ class EnhancercCREAdapter(Adapter):
         super(EnhancercCREAdapter, self).__init__(write_properties, add_provenance)
 
     def get_nodes(self):
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id
         try:
             if self.filepath.endswith('.gz'):
                 file = gzip.open(self.filepath, 'rt')
@@ -72,16 +73,19 @@ class EnhancercCREAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
 
-                #  SO:000165 for enhancer (Sequence Ontology term)
-                element_id = f"SO:000165:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{build_regulatory_region_id(chrom, start, end)}"
                 yield element_id, self.label, props
             
-            file.close()
-                
+            file.close()                
+        except OSError as e:
+            print(f"Error loading enhancer data: {e}")
+            raise
         except Exception as e:
             print(f"Error loading enhancer data: {e}")
+            raise
     
     def get_edges(self):
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id
         try:
             if self.filepath.endswith('.gz'):
                 file = gzip.open(self.filepath, 'rt')
@@ -139,11 +143,11 @@ class EnhancercCREAdapter(Adapter):
                     props['source'] = self.source
                     props['source_url'] = self.source_url
 
-                # SO:000165 for enhancer (Sequence Ontology term)
-                element_id = f"SO:000165:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{build_regulatory_region_id(chrom, start, end)}"
                 yield element_id, gene_id, self.label, props
             
             file.close()
                 
         except Exception as e:
             print(f"Error processing enhancer edges: {e}")
+            raise

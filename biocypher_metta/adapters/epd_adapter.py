@@ -2,6 +2,8 @@ import csv
 import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import HGNCProcessor
+from biocypher._logger import logger
 
 # Human data:
 # https://epd.expasy.org/ftp/epdnew/H_sapiens/
@@ -23,7 +25,7 @@ from biocypher_metta.adapters import Adapter
 # chr2L 59231 59291 Cda5_1 900 - 59231 59242
 
 # CEL data:
-# 
+# https://epd.expasy.org/ftp/epdnew/C_elegans/current/
 
 # Mouse data:
 # https://epd.expasy.org/ftp/epdnew/M_musculus/ 
@@ -41,10 +43,22 @@ class EPDAdapter(Adapter):
         9606: 'ENSEMBL'
     }
 
-    def __init__(self, filepath, hgnc_to_ensembl_map, write_properties, add_provenance, taxon_id,
-                 type='promoter', label='promoter', delimiter=' ', chr=None, start=None, end=None):
+    def __init__(self, filepath, label, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
+                 type='promoter', delimiter=' ', chr=None, start=None, end=None,
+                 hgnc_processor=None):
         self.filepath = filepath
-        self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        # Use provided processor or create new one for human; fallback to pickle for other species
+        if hgnc_processor is not None:
+            self.hgnc_processor = hgnc_processor
+            self.hgnc_to_ensembl_map = None
+        elif hgnc_to_ensembl_map is not None and taxon_id != 9606:
+            self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+            self.hgnc_processor = None
+        else:
+            self.hgnc_processor = HGNCProcessor()
+            self.hgnc_processor.load_or_update()
+            self.hgnc_to_ensembl_map = None
         self.type = type
         self.label = label
         self.delimiter = delimiter
@@ -67,15 +81,14 @@ class EPDAdapter(Adapter):
         """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
-        with gzip.open(self.filepath, 'rt') as f:
+        opener = gzip.open if self.filepath.endswith('.gz') else open
+        with opener(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
-                #CURIE ID Format
-                # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
-                promoter_id = f"SO:{build_regulatory_region_id(chr, coord_start, coord_end)}"
+                promoter_id = f"EPD:{build_regulatory_region_id(chr, coord_start, coord_end)}"
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
                     props = {}
@@ -97,7 +110,8 @@ class EPDAdapter(Adapter):
         """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
-        with gzip.open(self.filepath, 'rt') as f:
+        opener = gzip.open if self.filepath.endswith('.gz') else open
+        with opener(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             not_found_symbols = 0
             for line in reader:
@@ -105,25 +119,27 @@ class EPDAdapter(Adapter):
                 coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
-                if self.taxon_id == 7227:
+                if self.hgnc_processor is not None:
+                    ensembl_id = self.hgnc_processor.get_ensembl_id(gene_id)
+                    if ensembl_id is None:
+                        continue
+                    ensembl_gene_id = f"ENSEMBL:{ensembl_id}"
+                elif self.taxon_id == 7227:
                     fbgn = self.hgnc_to_ensembl_map.get(gene_id, None)
                     ensembl_gene_id = f"FlyBase:{fbgn}" if fbgn else None
-                elif self.taxon_id == 9606:
-                    ensembl_gene_id = f"ENSEMBL:{self.hgnc_to_ensembl_map.get(gene_id, None)}"
+                else:
+                    mapped_id = self.hgnc_to_ensembl_map.get(gene_id, None)
+                    ensembl_gene_id = f"ENSEMBL:{mapped_id}" if mapped_id else None
                 if ensembl_gene_id is None:
                     continue
                 
                 # if ensembl_gene_id is None:
                 #     not_found_symbols += 1
                     # print(f"gene_id: {gene_id}  // {ensembl_gene_id}   --->  {self.taxon_id}")                       
-                #CURIE ID Format
-                # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
                 ensembl_gene_id = f"{ensembl_gene_id}"
-                
+
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
-                    #CURIE ID Format
-                    # for promoter SO:0000167 is the exact Sequence Ontology (SO) term for a promoter
-                    promoter_id = f"SO:{build_regulatory_region_id(chr, coord_start, coord_end)}"
+                    promoter_id = f"EPD:{build_regulatory_region_id(chr, coord_start, coord_end)}"
                     props = {}
                     if self.write_properties:
                         if self.add_provenance:
@@ -131,12 +147,3 @@ class EPDAdapter(Adapter):
                             props['source_url'] = self.source_url
 
                     yield promoter_id, ensembl_gene_id, self.label, props
-            # print(f"not found symbols: {not_found_symbols}")
-                    props = {}
-                    if self.write_properties:
-                        if self.add_provenance:
-                            props['source'] = self.source
-                            props['source_url'] = self.source_url
-
-                    yield promoter_id, ensembl_gene_id, self.label, props
-            # print(f"not found symbols: {not_found_symbols}")

@@ -1,96 +1,46 @@
-# MORK Persistence Integration
+# MORK BioAtomSpace Integration
 
-This directory contains the integration of **MORK**, a high-performance reasoning engine designed for large-scale biological knowledge graphs.
+This directory provides a high-performance reasoning layer for BioCypher data, optimized for unified spacename querying using MORK.
 
-Our implementation focuses on a **"Convert-then-Load" workflow**, which transforms BioCypher's text-based .metta exports into optimized binary `.paths` indices. This approach allows us to:
-1.  **Bypass Parsing Overhead**: Skip the expensive text parsing step on subsequent loads.
-2.  **Achieve MM2-Scale Performance**: Load large number of atoms in seconds rather than hours.
-3.  **Enable Persistent Reasoning**: Query the graph instantly via a high-speed Rust server.
+## Core Advatanges
+
+1.  **Direct Memory Mapping (mmap)**: Data is indexed in ArenaCompactTree (.act). 
+    - Queries map the file directly from disk into memory, loading only the specific fragments needed. 
+    - **Zero-Footprint**: RAM is used only on-demand, this allows for massive graphs to be searched on standard hardware.
+2.  **One Spacename Architecture**: All adapter outputs (Reactome, Uniprot, Gencode, etc.) are compiled into a **single, unified binary** (`annotation.act`).
+    - You can query across the entire knowledge graph in a single pattern without switching files.
+3.  **Dependency-Order Build**: The build process automatically handles the required loading order (Types -> Nodes -> Edges) to ensure the engine always knows the graph structure.
 
 ---
 
-# 1. Setup Environment
+## Step-by-Step Guide
 
-We configured the MORK service to use a persistent volume, ensuring data access across container restarts.
+### 1. Unified Strategy (ACT)
+*Best for production & sharing. Single file, memory-mapped.*
+- **Build**: `bash scripts/build_act.sh output_human` (Produces `annotation.act`)
+- **Query**: `MORK_DATA_DIR=./output_human python3 scripts/mork_repl.py`
 
-*   **Docker Configuration**: Modified `docker-compose.yml` to mount the local `output/` directory (containing BioCypher exports) to `/app/data` inside the MORK container.
-*   **Networking**: Exposed host port `8027` mapped to container port `8027` to allow external HTTP API access.
-
-## 2. Loading Strategy (The "Convert & Load" Workflow)
-
-To solve the performance bottleneck of parsing `.metta` files on every restart, we implemented a two-step loading process:
-
-**(A) Conversion (One-time)**
-We created a script (`scripts/convert_topaths.py`) that compiles text-based `.metta` files into optimized binary `.paths` indices.
-*   **Why**: Bypasses the expensive text parser on subsequent loads.
-*   **How**: It checks file timestamps and only re-compiles files that have changed since the last run (incremental build).
-
-**(B) Persistence (Every restart)**
-We created a loader script (`scripts/load_paths.py`) that instructs MORK to memory-map these binary files.
-*   **How**: It iterates through the `.paths` files and calls the MORK API to load them into the `annotation` namespace.
-*   **Result**: The entire graph becomes available for querying almost instantly (microseconds per file) because it is mapped directly from disk to memory.
-
-## 3. Execution of Queries
-
-Once loaded, we query the graph using the MORK HTTP API, wrapped in a Python client.
-
-*   **Mechanism**: The `mork.download(pattern, template)` method sends a request to the `/export/` endpoint.
-*   **Scope**: Queries are executed against the `annotation` namespace where all binary paths are merged.
-
-**Example Query Pattern:**
-To find a specific transcript entity, we use the following Python code:
-
-```python
-# 1. Define the Pattern to match
-pattern = "(transcript ENST00000353224)"
-
-# 2. Define the Template (what to return)
-template = "$x" # Return the matching atom itself
-
-# 3. Execute the Query
-result = scope.download(pattern, template)
-```
-
-## 4. How to Execute (The Workflow)
-
-To run the full end-to-end process, execute these commands in order:
-
-### A. Start MORK Service
-Initialize the high-performance Rust server.
-```bash
-docker-compose up -d mork
-```
-
-### B. Convert MeTTa to Binary
-Pre-process the BioCypher exports into optimized indices (only needed when data changes).
-```bash
-python3 scripts/convert_topaths.py [--input-dir <dir>] [--mork-url <url>]
-```
--   `--input-dir`: Directory containing `.metta` files (default: `output`)
--   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
-
-#### Switching Data Directories
-By default, MORK looks at `./output`. To use a different folder (e.g., `output_human`), you **must** prefix the docker command with the `MORK_DATA_DIR` variable:
+### 2. Querying the Knowledge Graph (REPL)
+The `mork_repl.py` script provides an interactive interface to query your data. It supports all three formats and is designed for **benchmarking**.
 
 ```bash
-# 1. Start MORK with the specific variable for directory
-MORK_DATA_DIR=./output_human docker-compose up -d mork
+# ACT Strategy (Persistent/memory-mapped)
+python scripts/mork_repl.py --format act
 
-# 2. Run conversion pointing to the same directory
-python3 scripts/convert_topaths.py --input-dir output_human
+# PATHS Strategy (Benchmarking .paths Load)
+python scripts/mork_repl.py --format paths
+
+# meTTa Strategy (Benchmarking .metta Load)
+python scripts/mork_repl.py --format metta
 ```
 
-### C. Load into MORK
-Map the binary files into the server's memory.
-```bash
-python3 scripts/load_paths.py [--input-dir <dir>] [--mork-url <url>]
-```
--   `--input-dir`: Directory containing `.paths` files (default: `output`)
--   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
+> [!NOTE]
+> For `paths` and `metta` formats, the REPL performs a **fresh native load** for every query. This allows you to accurately benchmark the loading time vs. the query execution time for each format.
 
-### D. Run a Query
-Test the connection and verify queries using the internal REPL tool.
-```bash
-python3 scripts/mork_repl.py [--mork-url <url>]
-```
--   `--mork-url`: MORK service URL (default: `http://localhost:8027`)
+---
+
+## Technical Details
+
+- **`scripts/build_act.sh`**: Cascades all `.metta` fragments into a dependency-ordered stream before compilation into a single `.act` file.
+- **`scripts/build_paths.sh`**: Iteratively converts each `.metta` file into a binary `.paths` format using the MORK CLI. Incremental build ensures only new/changed files are converted.
+- **`scripts/mork_repl.py`**: A unified interactive loop for all three formats. For `paths` and `metta` modes, it performs a **pure native load** (text parsing or binary deserialization) for every query to enable accurate benchmarking of MORK's internal loading performance.

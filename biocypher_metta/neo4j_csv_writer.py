@@ -8,8 +8,8 @@ from pathlib import Path
 from biocypher_metta import BaseWriter
 
 class Neo4jCSVWriter(BaseWriter):
-    def __init__(self, schema_config, biocypher_config, output_dir):
-        super().__init__(schema_config, biocypher_config, output_dir)
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
+        super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
         self.csv_delimiter = '|'
         self.array_delimiter = ';'
         self.translation_table = str.maketrans({
@@ -20,7 +20,6 @@ class Neo4jCSVWriter(BaseWriter):
         })
 
         self.label_is_ontology = self._build_label_types_map()
-        self.type_hierarchy = self._type_hierarchy()
 
         self.create_edge_types()
         self._node_writers = {}
@@ -123,18 +122,17 @@ class Neo4jCSVWriter(BaseWriter):
 
     def preprocess_id(self, prev_id, label=None):
         """
-        Clean ID, preserving ontology prefixes when the label represents an ontology term.
+        Clean ID, preserving CURIE prefixes for ontology terms or when include_curie is True.
         """
         prev_id = str(prev_id)
 
         if ':' in prev_id:
             prefix, local_id = prev_id.split(':', 1)
 
-            if label and self._is_ontology_label(label):
+            if (label and self._is_ontology_label(label)) or self.include_curie:
                 clean_id = f"{prefix.strip().upper()}_{local_id.strip().replace(' ', '_').upper()}"
                 return clean_id
             else:
-                # For non-ontology terms, return the local ID part without prefix
                 return local_id.strip().replace(' ', '_').upper()
 
         return prev_id.strip().replace(' ', '_').upper()
@@ -181,11 +179,13 @@ class Neo4jCSVWriter(BaseWriter):
         
         try:
             for node in nodes:
+                id, label, properties = node
+                if not self.check_node_label(label):
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)
                 
-                id, label, properties = node
                 if "." in label:
-                    label = label.split(".")[1]
+                    label = label.split(".")[-1]
                 label = label.lower()
                 node_freq[label] += 1
                 
@@ -239,35 +239,6 @@ class Neo4jCSVWriter(BaseWriter):
         return node_freq, self._node_headers
 
 
-    def _type_hierarchy(self):
-        # to use Biolink-compatible schema
-        # to not use  ontologies names but the ontologies types if their IDs occur  in edge's source/target
-        return {
-            'biolink:Biologicalprocessoractivity': frozenset({'pathway', 'reaction'}),
-            'pathway': frozenset({'pathway'}),
-            'reaction': frozenset({'reaction'}),
-            'biolink:geneorgeneproduct': frozenset({'gene', 'transcript', 'protein'}),
-            'gene': frozenset({'gene'}),
-            'transcript': frozenset({'transcript'}),
-            'protein': frozenset({'protein'}),
-            'snp': frozenset({'snp'}),
-            'phenotype_set': frozenset({'phenotype_set'}),
-                        
-            'ontology_term': frozenset({'ontology_term', 'anatomy', 'developmental_stage', 'cell_type', 'cell_line', 'small_molecule', 'experimental_factor', 'phenotype', 'disease', 'sequence_type', 'tissue', }),
-            'anatomy': frozenset({'anatomy'}),
-            'developmental_stage': frozenset({'developmental_stage'}),
-            'cell_type': frozenset({'cell_type'}),
-            'cell_line': frozenset({'cell_line'}),
-            'experimental_factor': frozenset({'experimental_factor'}),
-            'phenotype': frozenset({'phenotype'}),
-            'disease': frozenset({'disease'}),
-            'sequence_type': frozenset({'sequence_type'}),
-            'small_molecule': frozenset({'small_molecule'}),
-            'biological_process': frozenset({'biological_process'}),
-            'molecular_function': frozenset({'molecular_function'}),
-            'cellular_component': frozenset({'cellular_component'}),
-            'tissue': frozenset({'tissue'}),
-        }
 
     def write_edges(self, edges, path_prefix=None, adapter_name=None):
         self.temp_buffer.clear()
@@ -278,23 +249,21 @@ class Neo4jCSVWriter(BaseWriter):
         
         try:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 # Extract edge info for counting (from BaseWriter)
                 self.extract_edge_info(edge)
                 
-                source_id, target_id, label, properties = edge
                 label = label.lower()
                 
                 edge_info = self.edge_node_types[label]
                 
+                has_typed_source = isinstance(source_id, tuple)
+                has_typed_target = isinstance(target_id, tuple)
+
                 if isinstance(source_id, tuple):
                     source_type = source_id[0]
-                    if isinstance(edge_info["source"], list):
-                        if source_type not in edge_info["source"]:
-                            raise TypeError(f"Type '{source_type}' must be one of {edge_info['source']}")
-                    else:
-                        # if source_type != edge_info["source"]:
-                        if source_type not in self.type_hierarchy:
-                            raise TypeError(f"Type '{source_type}' must be '{edge_info['source']}'")
                     source_id = source_id[1]
                 else:
                     if isinstance(edge_info["source"], list):
@@ -304,19 +273,15 @@ class Neo4jCSVWriter(BaseWriter):
 
                 if isinstance(target_id, tuple):
                     target_type = target_id[0]
-                    if isinstance(edge_info["target"], list):
-                        if target_type not in edge_info["target"]:
-                            raise TypeError(f"Type '{target_type}' must be one of {edge_info['target']}")
-                    else:
-                        # if target_type != edge_info["target"]:
-                        if target_type not in self.type_hierarchy:
-                            raise TypeError(f"Type '{target_type}' must be '{edge_info['target']}'")
                     target_id = target_id[1]
                 else:
                     if isinstance(edge_info["target"], list):
                         target_type = edge_info["target"][0]
                     else:
                         target_type = edge_info["target"]
+
+                if has_typed_source or has_typed_target:
+                    self.validate_edge_types(label, source_type, target_type)
 
                 if source_type == "ontology_term" and not isinstance(source_id, tuple):
                     source_type = self.preprocess_id(source_id, label=source_type).split('_')[0]
@@ -350,7 +315,7 @@ class Neo4jCSVWriter(BaseWriter):
                 input_label, source_type, target_type = key
                 edge_label = self.edge_node_types[input_label].get("output_label") or input_label 
             
-                file_suffix = f"{input_label}_{source_type}_{target_type}".lower()
+                file_suffix = f"{source_type}_{edge_label}_{target_type}".lower()
                 csv_file_path = output_dir / f"edges_{file_suffix}.csv"
                 cypher_file_path = output_dir / f"edges_{file_suffix}.cypher"
             
@@ -391,13 +356,13 @@ class Neo4jCSVWriter(BaseWriter):
         return edge_freq
 
     def write_node_cypher(self, label, csv_path, cypher_path):
-        absolute_path = csv_path.resolve().as_posix()
-    
+        relative_path = csv_path.relative_to(self.output_path).as_posix()
+
         cypher_query = f"""
 CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
 
 CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "LOAD CSV WITH HEADERS FROM 'file:///{relative_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
     "MERGE (n:{label} {{id: row.id}})
     SET n += apoc.map.removeKeys(row, ['id'])",
     {{batchSize:1000, parallel:true, concurrency:4}}
@@ -409,14 +374,14 @@ RETURN batches, total;
             f.write(cypher_query)
 
     def write_edge_cypher(self, edge_label, source_type, target_type, csv_path, cypher_path):
-        absolute_path = csv_path.resolve().as_posix()
-    
+        relative_path = csv_path.relative_to(self.output_path).as_posix()
+
         cypher_query = f"""
 CALL apoc.periodic.iterate(
-    "LOAD CSV WITH HEADERS FROM 'file:///{absolute_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
+    "LOAD CSV WITH HEADERS FROM 'file:///{relative_path}' AS row FIELDTERMINATOR '{self.csv_delimiter}' RETURN row",
     "MATCH (source:{source_type} {{id: row.source_id}})
     MATCH (target:{target_type} {{id: row.target_id}})
-    MERGE (source)-[r:{edge_label}]->(target)
+    CREATE (source)-[r:{edge_label}]->(target)
     SET r += apoc.map.removeKeys(row, ['source_id', 'target_id', 'label', 'source_type', 'target_type'])",
     {{batchSize:1000}}
 )

@@ -1,0 +1,8 @@
+uvicorn
+fastapi
+neo4j
+pydantic-settings
+streamlit
+plotly
+networkx
+apscheduler

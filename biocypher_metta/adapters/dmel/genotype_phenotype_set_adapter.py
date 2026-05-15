@@ -2,6 +2,7 @@
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 #from flybase_tsv_reader import FlybasePrecomputedTable
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import GOSubontologyProcessor
 #from biocypher._logger import logger
 import re
 import pickle
@@ -263,7 +264,7 @@ class GenotypePhenotypeAdapter(Adapter):
         return fbrf_to_refs_dict
     
     def go_subontology(self, go_id):
-        go_mapping_file = './aux_files/go_subontology_mapping.pkl'
-        with open(go_mapping_file, 'rb') as f:
-            go_subontology_mapping = pickle.load(f)
-        return go_subontology_mapping[go_id]
+        if not hasattr(self, '_go_processor'):
+            self._go_processor = GOSubontologyProcessor()
+            self._go_processor.load_or_update()
+        return self._go_processor.get_subontology(go_id)

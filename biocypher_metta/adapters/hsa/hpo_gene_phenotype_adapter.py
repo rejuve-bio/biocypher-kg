@@ -3,6 +3,7 @@ import pickle
 from typing import Dict, Iterator, Optional, Tuple
 
 from biocypher_metta.adapters import Adapter
+from biocypher_metta.processors import EntrezEnsemblProcessor
 
 # Expected header for HPO phenotype files
 EXPECTED_HEADER = "ncbi_gene_id\tgene_symbol\thpo_id\thpo_name\tfrequency\tdisease_id"
@@ -43,24 +44,23 @@ class HPOAdapter(Adapter):
         filepath: str,
         write_properties: bool,
         add_provenance: bool,
-        entrez_to_ensembl_map: str,
+        entrez_to_ensembl_map: str = None,
         label: str = "gene_phenotype",
+        entrez_ensembl_processor=None,
     ):
-        """Initialize the HPO adapter.
-
-        Args:
-            filepath: Path to the HPO phenotype annotation file
-            write_properties: Whether to include properties in output
-            add_provenance: Whether to add source metadata
-            entrez_to_ensembl_map: Path to Entrez-to-Ensembl mapping pickle file
-            label: Edge label for the relationships
-        """
         self.filepath = filepath
         self.label = label
         self.source = "Human Phenotype Ontology"
         self.source_url = "https://hpo.jax.org/"
 
-        self.entrez_to_ensembl = _load_pickle_map(entrez_to_ensembl_map)
+        if entrez_ensembl_processor is not None:
+            self.entrez_to_ensembl = entrez_ensembl_processor.entrez_to_ensembl
+        elif entrez_to_ensembl_map is not None:
+            self.entrez_to_ensembl = _load_pickle_map(entrez_to_ensembl_map)
+        else:
+            processor = EntrezEnsemblProcessor()
+            processor.load_or_update()
+            self.entrez_to_ensembl = processor.entrez_to_ensembl
 
         super().__init__(write_properties, add_provenance)
 

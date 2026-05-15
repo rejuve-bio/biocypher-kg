@@ -23,9 +23,7 @@ def build_default_human_command() -> List[str]:
         sys.executable, str(PROJECT_ROOT / "create_knowledge_graph.py"),
         "--output-dir", str(PROJECT_ROOT / "output_human"),
         "--adapters-config", str(PROJECT_ROOT / "config/hsa/hsa_adapters_config_sample.yaml"),
-        "--schema-config", str(PROJECT_ROOT / "config/hsa/hsa_schema_config.yaml"),
-        "--dbsnp-rsids", str(PROJECT_ROOT / "aux_files/hsa/sample_dbsnp_rsids.pkl"),
-        "--dbsnp-pos", str(PROJECT_ROOT / "aux_files/hsa/sample_dbsnp_pos.pkl"),
+        "--schema-config", str(PROJECT_ROOT / "config/primer_schema_config.yaml"),
         "--writer-type", "neo4j", "--no-add-provenance"
     ]
 
@@ -35,8 +33,6 @@ def build_default_fly_command() -> List[str]:
         "--output-dir", str(PROJECT_ROOT / "output_fly"),
         "--adapters-config", str(PROJECT_ROOT / "config/dmel/dmel_adapters_config_sample.yaml"),
         "--schema-config", str(PROJECT_ROOT / "config/dmel/dmel_schema_config.yaml"),
-        "--dbsnp-rsids", str(PROJECT_ROOT / "aux_files/hsa/sample_dbsnp_rsids.pkl"),
-        "--dbsnp-pos", str(PROJECT_ROOT / "aux_files/hsa/sample_dbsnp_pos.pkl"),
         "--writer-type", "neo4j", "--no-add-provenance"
     ]
 

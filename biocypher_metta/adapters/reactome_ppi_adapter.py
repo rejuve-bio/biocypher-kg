@@ -10,21 +10,38 @@ import gzip
 # uniprotkb:P0DJI8	ENST00000532858|ENST00000672418|ENST00000672712|ENST00000356524|ENST00000405158|ENST00000672662|ENSP00000500281|ENSP00000384906|ENSP00000436866|ENSP00000500630|ENSP00000348918|ENSP00000500639|ENSG00000173432|ENSG00000288411	-	uniprotkb:P0DJI8	ENST00000532858|ENST00000672418|ENST00000672712|ENST00000356524|ENST00000405158|ENST00000672662|ENSP00000500281|ENSP00000384906|ENSP00000436866|ENSP00000500630|ENSP00000348918|ENSP00000500639|ENSG00000173432|ENSG00000288411	-	physical association	reactome:R-HSA-976898	19393650|103558
 # uniprotkb:P06727	ENST00000357780|ENSP00000350425|ENSG00000110244	-	uniprotkb:P06727	ENST00000357780|ENSP00000350425|ENSG00000110244	-	physical association	reactome:R-HSA-976889	15146166
 
+from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+
+
 class ReactomePPIAdapter(Adapter):
-    def __init__(self, filepath, write_properties, add_provenance, label, taxon_id,
+    def __init__(self, filepath, write_properties, add_provenance, label, taxon_id=None,
                  include_self_interactions=True):
-        
         self.filepath = filepath
-        self.include_self_interactions = include_self_interactions
-        self.taxon_id = taxon_id
         self.label = label
+        self.taxon_id = str(taxon_id) if taxon_id else None
+        self.include_self_interactions = include_self_interactions
         self.source = "Reactome"
         self.source_url = "https://reactome.org/"
-        
-        self.seen_interactions = set()        
+        self.seen_interactions = set()
         super(ReactomePPIAdapter, self).__init__(write_properties, add_provenance)
 
-    def _extract_reactome_pathway(self, context):
+    def _get_taxon_id_from_context(self, context):
+        """
+        Infers the NCBI Taxonomy ID from the Reactome identifier prefix.
+        e.g., 'R-HSA' -> '9606' (Human), 'R-MMU' -> '10090' (Mouse)
+        """
+        if not context or not context.startswith('reactome:R-'):
+            return None
+        
+        prefix = context.replace('reactome:', '')[:5]
+        taxon_id = REACTOME_ORGANISM_TAXON_MAP.get(prefix)
+        
+        if not taxon_id and prefix != 'R-NUL':
+             print(f"ReactomePPIAdapter: Unknown species prefix '{prefix}' in context '{context}'")
+             
+        return taxon_id
+
+    def _normalize_reactome_id(self, context):
         if context and context.startswith('reactome:'):
             return context.replace('reactome:', '')
         return context
@@ -37,70 +54,68 @@ class ReactomePPIAdapter(Adapter):
                 file_handle = open(self.filepath, "r")
             
             with file_handle as fp:
-                for line in fp:
-                    if not line.startswith('#'):
-                        fp.seek(0)  
-                        break
-                
                 reader = csv.reader(fp, delimiter='\t')
-                
-                header = next(reader, None)
-                if header and header[0].startswith('#'):
-                    pass  
-                else:
-                    if header:
-                        row = header
-                        if len(row) >= 9:
-                            yield from self._process_row(row)
-                
                 for row in reader:
-                    if len(row) >= 9: 
+                    # Skip empty rows, comments, and the header line
+                    if not row or not row[0] or row[0].startswith('#') or "Interactor 1" in row[0]:
+                        continue
+                    
+                    if len(row) >= 8: 
                         yield from self._process_row(row)
                         
         except Exception as e:
-            print(f"Error processing file {self.filepath}: {e}")
+            print(f"ReactomePPIAdapter: Error processing file {self.filepath}: {e}")
             return
 
     def _process_row(self, row):
-        try:
-            if row[0].startswith('ChEBI:') or row[3].startswith('ChEBI:'):
-                return
-                
-            protein1_uniprot = row[0].replace('uniprotkb:', '') if row[0].startswith('uniprotkb:') else row[0]
-            protein2_uniprot = row[3].replace('uniprotkb:', '') if row[3].startswith('uniprotkb:') else row[3]
-            
-            interaction_type = row[6]
-            interaction_context = row[7]
-            
-            if not self.include_self_interactions and protein1_uniprot == protein2_uniprot:
-                return
-            
-            interaction_key = tuple(sorted([protein1_uniprot, protein2_uniprot]))
-            
-            if interaction_key in self.seen_interactions:
-                return
-            
-            self.seen_interactions.add(interaction_key)
-                
-            _source = f"{protein1_uniprot}"
-            _target = f"{protein2_uniprot}"
-            
-            _props = {}
-            if self.write_properties:
-                pathway_id = self._extract_reactome_pathway(interaction_context)
-                
-                _props = {
-                    "interaction_type": interaction_type,
-                    "reactome_pathway": pathway_id,
-                    "taxon_id": self.taxon_id,
-                }
-                
-                if self.add_provenance:
-                    _props["source"] = self.source
-                    _props["source_url"] = self.source_url
-            
-            yield _source, _target, self.label, _props
-            
-        except Exception as e:
-            print(f"reactome_ppi_adapter: error processing row: {e}")
+        if row[0].startswith('ChEBI:') or row[3].startswith('ChEBI:'):
             return
+            
+        protein1_uniprot = row[0].replace('uniprotkb:', '') if row[0].startswith('uniprotkb:') else row[0]
+        protein2_uniprot = row[3].replace('uniprotkb:', '') if row[3].startswith('uniprotkb:') else row[3]
+        
+        interaction_type = row[6]
+        interaction_context = row[7]
+        pubmed_refs = row[8] if len(row) > 8 else None
+        
+        if not self.include_self_interactions and protein1_uniprot == protein2_uniprot:
+            return
+        
+        interaction_key = (tuple(sorted([protein1_uniprot, protein2_uniprot])), interaction_context)
+        
+        if interaction_key in self.seen_interactions:
+            return
+        
+        self.seen_interactions.add(interaction_key)
+            
+        _source = f"{protein1_uniprot}"
+        _target = f"{protein2_uniprot}"
+        
+        # Determine species (Taxon ID) from context
+        inferred_taxon = self._get_taxon_id_from_context(interaction_context)
+        
+        if self.taxon_id and inferred_taxon != self.taxon_id:
+            return
+            
+        _props = {}
+        if self.write_properties:
+            context_id = self._normalize_reactome_id(interaction_context)
+            
+            _props = {
+                "interaction_type": interaction_type,
+                "interaction_context": context_id,
+            }
+            
+            # Use detected species unless explicitly overridden by configuration
+            final_taxon = self.taxon_id if self.taxon_id else inferred_taxon
+            if final_taxon:
+                _props["taxon_id"] = final_taxon
+
+            if pubmed_refs and pubmed_refs != '-':
+                _props["pubmed_references"] = pubmed_refs.split("|")
+            
+            if self.add_provenance:
+                _props["source"] = self.source
+                _props["source_url"] = self.source_url
+        
+        yield _source, _target, self.label, _props

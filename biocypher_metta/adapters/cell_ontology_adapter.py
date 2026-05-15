@@ -51,7 +51,7 @@ class CellOntologyAdapter(OntologyAdapter):
                 continue
             
             if self.is_deprecated(node):
-                print(f"Skipping deprecated node: {self.to_key(node)}")
+                # print(f"Skipping deprecated node: {self.to_key(node)}")
                 continue
 
             term_id = self.to_key(node)
@@ -149,7 +149,7 @@ class CellOntologyAdapter(OntologyAdapter):
                     for bto_key in bto_targets:
                         props = {}
                         if self.write_properties:
-                            props['rel_type'] = self.predicate_name(predicate)
+                            # props['rel_type'] = self.predicate_name(predicate)
                             if self.add_provenance:
                                 props['source'] = self.source
                                 props['source_url'] = self.source_url
@@ -165,7 +165,7 @@ class CellOntologyAdapter(OntologyAdapter):
 
                 props = {}
                 if self.write_properties:
-                    props['rel_type'] = self.predicate_name(predicate)
+                    # props['rel_type'] = self.predicate_name(predicate)
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url

@@ -123,12 +123,20 @@ class OntologyAdapter(Adapter):
                     if not cache_expired:
                         use_cached = True
                         print("Using cached data as version information is incomplete and cache is not expired")
+                    elif remote_version is None:
+                        # Remote is unreachable (network error). Fall back to expired cache rather than failing.
+                        use_cached = True
+                        print("Warning: Cannot reach remote server to check version. Using expired cached data as fallback.")
                     else:
                         print("Cache has expired and version information is incomplete. Updating data.")
-                elif remote_version == current_version and not cache_expired:
-                    use_cached = True
+                elif remote_version == current_version:
+                    if not cache_expired:
+                        use_cached = True
+                        print("Using cached data: remote and cached ontology versions match and cache is not expired")
+                    else:
+                        print("Cache has expired even though ontology versions match. Updating data.")
                 else:
-                    print(f"Not using cache: Expired: {cache_expired}, New version available: {remote_version != current_version}")
+                    print(f"Not using cache: New version available (remote: {remote_version}, current: {current_version})")
 
         # Create a new World instance for this ontology
         self.world = World()
@@ -210,34 +218,52 @@ class OntologyAdapter(Adapter):
                     print("Attempting to load with rdflib as fallback...")
                     # Fallback to rdflib parsing
                     self.graph = rdflib.Graph()
-                    
+
+                    # Pre-download with requests so rdflib doesn't have to follow
+                    # the OBO PURL redirect chain itself (urllib often gets 502 there).
+                    owl_content = None
+                    try:
+                        dl_response = requests.get(ontology_url, timeout=120)
+                        dl_response.raise_for_status()
+                        owl_content = dl_response.content
+                        print(f"Downloaded {len(owl_content)} bytes from {ontology_url}")
+                    except Exception as dl_e:
+                        print(f"Warning: pre-download failed ({dl_e}), will try URL parsing")
+
                     # Try different parsing formats
                     formats_to_try = ['xml', 'turtle', 'n3', 'nt']
                     rdflib_success = False
-                    
+
                     for fmt in formats_to_try:
                         try:
                             print(f"Trying rdflib with format: {fmt}")
-                            self.graph.parse(ontology_url, format=fmt)
+                            if owl_content is not None:
+                                self.graph.parse(data=owl_content, format=fmt)
+                            else:
+                                self.graph.parse(ontology_url, format=fmt)
                             print(f"Successfully loaded ontology using rdflib with format: {fmt}")
                             rdflib_success = True
                             break
                         except Exception as fmt_e:
                             print(f"Failed with format {fmt}: {fmt_e}")
                             continue
-                    
+
                     if rdflib_success:
                         # Still try to extract version info and cache
                         self._extract_version_info()
-                        
+
                         if self.cache_dir:
                             print(f"Caching ontology to {cached_path}")
-                            # Download and save the raw file for caching
+                            # Reuse already-downloaded bytes if available, otherwise re-fetch
                             try:
-                                response = requests.get(ontology_url, timeout=60)
-                                response.raise_for_status()
+                                if owl_content is not None:
+                                    raw_bytes = owl_content
+                                else:
+                                    response = requests.get(ontology_url, timeout=120)
+                                    response.raise_for_status()
+                                    raw_bytes = response.content
                                 with open(cached_path, 'wb') as f:
-                                    f.write(response.content)
+                                    f.write(raw_bytes)
                             except Exception as cache_e:
                                 print(f"Warning: Could not cache ontology file: {cache_e}")
                             
@@ -489,7 +515,7 @@ class OntologyAdapter(Adapter):
         
             # Skip deprecated nodes
             if self.is_deprecated(node):
-                print(f"Skipping deprecated node: {node_key}")
+                # print(f"Skipping deprecated node: {node_key}")
                 continue
 
             term_name = ', '.join(self.get_all_property_values_from_node(node, 'term_names'))
@@ -584,7 +610,6 @@ class OntologyAdapter(Adapter):
                         continue  
                     props = {}
                     if self.write_properties:
-                        props['rel_type'] = predicate_name
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url

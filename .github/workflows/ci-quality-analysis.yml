@@ -1,0 +1,39 @@
+name: SonarQube Code Quality Analysis
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    types: [opened, synchronize, reopened, closed ]
+    branches: [ main, staging]
+
+jobs:
+  sonarqube-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for better analysis
+    
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v5.0.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      with:
+        args: >
+          -Dsonar.projectKey=Biocypher_KG
+          -Dsonar.sources=.
+          -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/__pycache__/**,**/build/**,**/dist/**,**/target/**,**/.git/**,**/coverage/**,**/*.test.js,**/*.test.py,**/*.spec.js
+          -Dsonar.sourceEncoding=UTF-8
+    
+    - name: SonarQube Quality Gate Check
+      uses: sonarsource/sonarqube-quality-gate-action@v1.2.0
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      continue-on-error: true

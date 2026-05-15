@@ -1,6 +1,7 @@
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
 import pickle
+from biocypher_metta.processors import EnsemblUniProtProcessor
 import csv
 import gzip
 from biocypher_metta.adapters.helpers import to_float
@@ -17,17 +18,31 @@ from biocypher_metta.adapters.helpers import to_float
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
 class StringPPIAdapter(Adapter):
-    def __init__(self, filepath, ensembl_to_uniprot_map, taxon_id, label,
-                 write_properties, add_provenance):
+    def __init__(self, filepath, ensembl_to_uniprot_map=None, taxon_id=9606, label='interacts_with',
+                 write_properties=None, add_provenance=None,
+                 ensembl_uniprot_processor=None):
         """
         Constructs StringPPI adapter that returns edges between proteins
         :param filepath: Path to the TSV file downloaded from String
-        :param ensembl_to_uniprot_map: file containing pickled dictionary mapping Ensemble Protein IDs to Uniprot IDs
+        :param ensembl_to_uniprot_map: DEPRECATED - use ensembl_uniprot_processor instead
+        :param ensembl_uniprot_processor: EnsemblUniProtProcessor instance for ID mapping
         """
         self.filepath = filepath
         self.taxon_id = taxon_id
-        with open(ensembl_to_uniprot_map, "rb") as f:
-            self.ensembl2uniprot = pickle.load(f)
+
+        # Use provided processor or create new one; fallback to pickle for non-human
+        if ensembl_uniprot_processor is not None:
+            self.processor = ensembl_uniprot_processor
+        elif ensembl_to_uniprot_map is not None and taxon_id != 9606:
+            self.processor = None
+            with open(ensembl_to_uniprot_map, "rb") as f:
+                self.ensembl2uniprot = pickle.load(f)
+        else:
+            self.processor = EnsemblUniProtProcessor()
+            self.processor.load_or_update()
+
+        if hasattr(self, 'processor') and self.processor is not None:
+            self.ensembl2uniprot = self.processor.mapping
 
         self.label = label
         self.source = "STRING"

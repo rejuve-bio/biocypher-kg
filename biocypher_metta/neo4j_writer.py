@@ -28,15 +28,18 @@ class Neo4jWriter(BaseWriter):
                 target_type = v.get("target", None)
 
                 if source_type is not None and target_type is not None:
-                    # ## TODO fix this in the scheme config
-                    if isinstance(v["input_label"], list):
-                        label = self.convert_input_labels(v["input_label"][0])
-                        source_type = self.convert_input_labels(source_type[0])
-                        target_type = self.convert_input_labels(target_type[0])
-                    else:
-                        label = self.convert_input_labels(v["input_label"])
-                        source_type = self.convert_input_labels(source_type)
-                        target_type = self.convert_input_labels(target_type)
+                    # Normalize input_label: always take first if it's a list
+                    raw_label = v["input_label"]
+                    label = self.convert_input_labels(
+                        raw_label[0] if isinstance(raw_label, list) else raw_label
+                    )
+                    # Normalize source/target: may be a list regardless of label type
+                    source_type = self.convert_input_labels(
+                        source_type[0] if isinstance(source_type, list) else source_type
+                    )
+                    target_type = self.convert_input_labels(
+                        target_type[0] if isinstance(target_type, list) else target_type
+                    )
                     output_label = v.get("output_label", None)
 
                     self.edge_node_types[label.lower()] = {
@@ -60,6 +63,9 @@ class Neo4jWriter(BaseWriter):
 
         with open(file_path, "a") as f:
             for node in nodes:
+                id, label, properties = node
+                if not self.check_node_label(label):
+                    raise ValueError(f"Invalid node label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_node_info(node)
                     
                 query = self.write_node(node)
@@ -81,6 +87,9 @@ class Neo4jWriter(BaseWriter):
 
         with open(file_path, "a") as f:
             for edge in edges:
+                source_id, target_id, label, properties = edge
+                if not self.check_edge_label(label):
+                    raise ValueError(f"Invalid edge label: {label}. This label is not defined in the schema configuration. Please check your adapter or schema config.")
                 self.extract_edge_info(edge)
                 query = self.write_edge(edge)
                 f.write(query + "\n")

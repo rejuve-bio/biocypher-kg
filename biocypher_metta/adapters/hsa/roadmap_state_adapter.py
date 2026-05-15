@@ -3,7 +3,6 @@ import csv
 import gzip
 import os.path
 import pickle
-from collections import defaultdict
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
 
@@ -50,65 +49,65 @@ class RoadMapChromatinStateAdapter(Adapter):
 
         super(RoadMapChromatinStateAdapter, self).__init__(write_properties, add_provenance)
 
-    def get_edges(self):        
-        edge_dict = defaultdict(lambda: {"props": {}})
+    def get_edges(self):
+        seen_edges = set()
         for file_name in os.listdir(self.filepath):
+            _last_id = _last_chr = _last_pos = None
             with gzip.open(os.path.join(self.filepath, file_name), "rt") as fp:
                 next(fp)
                 reader = csv.reader(fp, delimiter=',')
                 for row in reader:
                     try:
                         _id = row[0]
-                        chr = self.dbsnp_rsid_map.get(_id, {}).get("chr", None) 
-                        pos = self.dbsnp_rsid_map.get(_id, {}).get("pos", None)
-                        if chr == None:
-                            # print(f"roadmap_chromatin_state: chr is None for {_id}. Skipping it {_id}...")
+                        if _id != _last_id:
+                            rsid_data = self.dbsnp_rsid_map.get(_id)
+                            if rsid_data is not None:
+                                _last_chr = rsid_data.get("chr")
+                                _last_pos = rsid_data.get("pos")
+                            else:
+                                _last_chr = _last_pos = None
+                            _last_id = _id
+                        chr, pos = _last_chr, _last_pos
+
+                        if chr is None or pos is None:
                             continue
-                        if pos == None:
-                            # print(f"roadmap_chromatin_state: pos is None for {_id}. Skipping it {_id}...")
+                        if not check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                             continue
+
                         cell_id = row[self.COL_DICT['cell']].split()[0]
                         biological_context = self.cell_to_ontology_id_map.get(cell_id, [None])[-1]
-                        if biological_context == None:
+                        if biological_context is None:
                             print(f"{cell_id} not found in ontology map. Skipping it...")
                             continue
-                        if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
-                            _props = {}                         
-                            _source = _id
-                            prefix = biological_context.split('_')[0]
-                            _target = (self.ONTOLOGIES_PREFIX_TO_TYPE[prefix], biological_context)
 
-                            # for tissue linking, we need to get the tissue id from the biological context
-                            tissue = row[self.COL_DICT['tissue']]
-                            tissue_id = self.tissue_to_ontology_id_map.get(tissue, None)
-                            if tissue_id == None:
-                                print(f"{tissue} not found in ontology map. Skipping it...")
-                                continue
-                            
-                            tissue_type = self.ONTOLOGIES_PREFIX_TO_TYPE[tissue_id.split('_')[0]]
-                            tissue_target = (tissue_type, tissue_id)
-                            if self.write_properties:
-                                _props["state"] = row[self.COL_DICT['datatype']]
-                                if self.add_provenance:
-                                    _props['source'] = self.source
-                                    _props['source_url'] = self.source_url
-                            edge_key = (_source, _target)
-                            edge_key2 = (_source, tissue_target)
-                            if edge_key in edge_dict:
-                                if edge_key2 in edge_dict:
-                                    continue
-                                else:
-                                    edge_dict[edge_key2] = {"props": _props}
-                                    yield _source, tissue_target, self.label, _props
-                            else:
-                                edge_dict[edge_key] = {"props": _props}
-                                yield _source, _target, self.label, _props
-                                if edge_key2  in edge_dict:
-                                    continue
-                                else:
-                                    edge_dict[edge_key2] = {"props": _props}
-                                    yield _source, tissue_target, self.label, _props
+                        _source = _id
+                        prefix = biological_context.split('_')[0]
+                        _target = (self.ONTOLOGIES_PREFIX_TO_TYPE[prefix], biological_context)
+
+                        tissue = row[self.COL_DICT['tissue']]
+                        tissue_id = self.tissue_to_ontology_id_map.get(tissue)
+                        if tissue_id is None:
+                            print(f"{tissue} not found in ontology map. Skipping it...")
+                            continue
+
+                        tissue_type = self.ONTOLOGIES_PREFIX_TO_TYPE[tissue_id.split('_')[0]]
+                        tissue_target = (tissue_type, tissue_id)
+                        _props = {}
+                        if self.write_properties:
+                            _props["state"] = row[self.COL_DICT['datatype']]
+                            if self.add_provenance:
+                                _props['source'] = self.source
+                                _props['source_url'] = self.source_url
+
+                        edge_key = (_source, _target)
+                        edge_key2 = (_source, tissue_target)
+                        if edge_key not in seen_edges:
+                            seen_edges.add(edge_key)
+                            yield _source, _target, self.label, _props
+                        if edge_key2 not in seen_edges:
+                            seen_edges.add(edge_key2)
+                            yield _source, tissue_target, self.label, _props
 
                     except Exception as e:
-                        print(f"error while parsing row: {row}, error: {e.args}. Skipping... {biological_context} / {tissue_id}")
+                        print(f"error while parsing row: {row}, error: {e.args}. Skipping...")
                         continue

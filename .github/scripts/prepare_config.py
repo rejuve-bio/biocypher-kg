@@ -23,7 +23,7 @@ def prepare_config(changed_adapters, config_changed, changed_config_items):
     if not test_config:
         test_config = full_config
     
-    with open('config/test_config.yaml', 'w') as f:
+    with open('config/test_sample_config.yaml', 'w') as f:
         yaml.dump(test_config, f)
 
 if __name__ == "__main__":

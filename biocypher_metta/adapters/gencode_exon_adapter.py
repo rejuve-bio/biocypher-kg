@@ -139,13 +139,10 @@ class GencodeExonAdapter(Adapter):
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             if self.write_properties:
                                 props = {
-                                    'gene_id': gene_id,
-                                    'transcript_id': transcript_id,
                                     'chr': chr,
                                     'start': start,
                                     'end': end,
                                     'exon_number': int(info.get('exon_number', -1)),
-                                    'exon_id': f"{info['exon_id'].split('.')[0].upper()}", #f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{info['exon_id'].split('.')[0].upper()}",
                                 }
                                 
                                 if self.add_provenance:

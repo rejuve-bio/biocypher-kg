@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-04-20T15:04:35.959291",
+  "processor": "dbsnp",
+  "entries": 70,
+  "source": "/home/kedist/dbsnp_updater/data/dbsnp/full/dbsnp_mapping.db",
+  "format": "sqlite",
+  "sample_from_common": true,
+  "filter": "sampled to cover sample adapter inputs"
+}

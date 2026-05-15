@@ -6,7 +6,9 @@ bgee_gene_expressed_in_anatomical_entity:
     args:
       filepath: ./samples/dmel/bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
       label: expressed_in
-      taxon_id: 7227      
+      anatomy_label: gene_expressed_in_anatomy
+      developmental_stage_label: gene_expressed_in_developmental_stage
+      taxon_id: 7227
   outdir: bgee
   nodes: False
   edges: True
@@ -287,7 +289,6 @@ orthology_adapter:
         cls: OrthologyAssociationAdapter
         args:
           dmel_data_filepath: ./samples/dmel/flybase/dmel_human_orthologs_disease_fb_2024_02.tsv.gz
-          hsa_hgnc_to_ensemble_map: ./aux_files/hsa/hgnc_id_to_ensembl_id_map.pkl
     outdir: orthologs
     nodes: False
     edges: True
@@ -749,6 +750,32 @@ genes_pathways:
   nodes: False
   edges: True
 
+protein_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
+      label: protein_pathways
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+transcript_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2Reactome_All_Levels_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
+      label: transcript_pathways
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
 gene_or_gene_product_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
@@ -757,6 +784,32 @@ gene_or_gene_product_reaction:
       filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
       ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: gene_or_gene_product_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+protein_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
+      label: protein_reaction
+      taxon_id: 7227
+  outdir: reactome
+  nodes: False
+  edges: True
+
+transcript_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: ./samples/reactome/Ensembl2ReactomeReactions_sample.txt
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
+      label: transcript_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -782,6 +835,8 @@ reactome_input_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: enables
+      pathway_label: protein_enables_pathway
+      reaction_label: protein_enables_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -794,6 +849,8 @@ reactome_output_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: produced_by
+      pathway_label: protein_produced_by_pathway
+      reaction_label: protein_produced_by_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -806,6 +863,8 @@ reactome_catalyst_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: regulates
+      pathway_label: protein_regulates_pathway
+      reaction_label: protein_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -818,6 +877,8 @@ reactome_negative_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: negatively_regulates
+      pathway_label: protein_negatively_regulates_pathway
+      reaction_label: protein_negatively_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -830,6 +891,8 @@ reactome_positive_role_protein_to_reaction_or_pathway:
     args:
       filepath: ./samples/reactome/reactome_reaction_exporter_All_species_sample.txt
       label: positively_regulates
+      pathway_label: protein_positively_regulates_pathway
+      reaction_label: protein_positively_regulates_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
@@ -841,7 +904,7 @@ chebi_small_molecule_to_pathways:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2Reactome_All_Levels_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: small_molecule_to_pathway
       taxon_id: 7227
   outdir: reactome
@@ -854,7 +917,7 @@ chebi_small_molecule_to_reactions:
     cls: ReactomeEdgesAdapter
     args:
       filepath: ./samples/reactome/ChEBI2ReactomeReactions_sample.txt     # all sampled species data are in this file
-      ensembl_uniprot_map_path: ./aux_files/dmel/string_ensembl_to_uniprot_map.pkl
+      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: small_molecule_to_reaction
       taxon_id: 7227
   outdir: reactome
@@ -1161,7 +1224,6 @@ uniprot_dbxref_biological_process:
       label: protein_has_xref_biological_process
       taxon_id: 7227
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_biological_process
   nodes: False
   edges: True
@@ -1175,7 +1237,6 @@ uniprot_dbxref_cellular_component:
       label: protein_has_xref_cellular_component
       taxon_id: 7227
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_cellular_component
   nodes: False
   edges: True
@@ -1189,7 +1250,6 @@ uniprot_dbxref_molecular_function:
       label: protein_has_xref_molecular_function
       taxon_id: 7227
       dbxref: GO
-      mapping_file: ./aux_files/go_subontology_mapping.pkl
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
@@ -1248,5 +1308,77 @@ epd_promoter_regulates_gene_dmel:
       type: promoter_gene
       taxon_id: 7227
   outdir: epd
+  nodes: False
+  edges: True
+
+alliance_gene_disease_biomarker_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: biomarker_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_implicated_via_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: implicated_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_implicated_in:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_implicated_in
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_model_of:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_model_of
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_marker_for:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_marker_for
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_orthology_adapter
+    cls: AllianceGeneOrthologyAdapter
+    args:
+      filepath: ./samples/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: orthologs_genes
+  outdir: alliance/orthology
   nodes: False
   edges: True

@@ -68,6 +68,7 @@ class PromotercCREAdapter(Adapter):
         return ontology_id if ontology_id else tissue_name
     
     def _preload_data(self):
+        from biocypher_metta.adapters.helpers import build_regulatory_region_id
         try:
             if self.filepath.endswith('.gz'):
                 file = gzip.open(self.filepath, 'rt')
@@ -125,8 +126,7 @@ class PromotercCREAdapter(Adapter):
                     except (ValueError, IndexError):
                         distance = "NA"
                 
-                # Use SO:0000167 for promoter (Sequence Ontology term)
-                element_id = f"SO:0000167:{chrom}_{start}_{end}"
+                element_id = f"ENCODE_SCREEN:{build_regulatory_region_id(chrom, start, end)}"
                 self.accession_to_promoter[accession] = {
                     'chrom': chrom,
                     'start': start,
@@ -140,6 +140,7 @@ class PromotercCREAdapter(Adapter):
                 
         except Exception as e:
             print(f"Error loading promoter data: {e}")
+            raise
         
         if 'eqtl' in self.edge_type:
             try:
@@ -176,10 +177,10 @@ class PromotercCREAdapter(Adapter):
                         'tissue': tissue,
                     })
                 
-                file.close()
-                
-            except Exception as e:
-                print(f"Error loading eQTL data: {e}")
+                file.close()                
+            except OSError as e:
+                print(f"Error loading promoter data: {e}")
+                raise
     
     def get_nodes(self):
         for accession, promoter_data in self.accession_to_promoter.items():
