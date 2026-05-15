@@ -377,6 +377,21 @@ pathway_to_biological_process:
 #   nodes: false
 #   edges: true
 
+reaction to biological process:
+  adapter:
+    module: biocypher_metta.adapters.reactome_pathway_go_adapter
+    cls: ReactomePathwayGOAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/reactome/Reactions2GoTerms_human.txt
+      write_properties: true
+      add_provenance: true
+      label: reaction_to_biological_process
+      subontology: molecular_function
+      taxon_id: 9606      
+  outdir: reactome/molecular_function
+  nodes: false
+  edges: true
+
 go_biological_process:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter

@@ -2363,7 +2363,8 @@ reaction to pathway association:
   is_a: annotation
   biolink_predicate: biolink:part_of
   inherit_properties: true
-  description: holds between a reaction and a pathway
+  description: >-
+    holds between a reaction that is a part of a pathway
   represented_as: edge
   input_label: reaction_to_pathway
   output_label: part_of
