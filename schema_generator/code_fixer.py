@@ -130,7 +130,64 @@ def fix_code_hallucinations(code: str) -> str:
 
 
 def extract_json(text: str) -> dict:
-    """Robustly extract the first valid JSON object from a string."""
+    """Robustly extract the first valid JSON object from a string.
+    Best for column mapper and general JSON responses.
+    """
+    # First, try to extract JSON from markdown code blocks
+    code_block_pattern = r'```(?:json)?\s*(\{.*\})\s*```'
+    code_match = re.search(code_block_pattern, text, re.DOTALL)
+    if code_match:
+        try:
+            return json.loads(code_match.group(1))
+        except json.JSONDecodeError:
+            pass
+    
+    # Walk through the text looking for '{' and try to find matching '}'
+    search_start = 0
+    while True:
+        start_idx = text.find('{', search_start)
+        if start_idx == -1:
+            break
+            
+        stack = 0
+        in_string = False
+        escape_next = False
+        end_idx = -1
+        
+        for i in range(start_idx, len(text)):
+            char = text[i]
+            if escape_next: escape_next = False; continue
+            if char == '\\': escape_next = True; continue
+            if char == '"': in_string = not in_string; continue
+            if not in_string:
+                if char == '{': stack += 1
+                elif char == '}':
+                    stack -= 1
+                    if stack == 0: end_idx = i; break
+        
+        if end_idx != -1:
+            candidate = text[start_idx : end_idx + 1]
+            try:
+                return json.loads(candidate)
+            except json.JSONDecodeError:
+                pass
+        
+        search_start = start_idx + 1
+
+    # Final fallback: greedy regex search for anything between braces
+    json_match = re.search(r'(\{.*\})', text, re.DOTALL)
+    if json_match:
+        try:
+            return json.loads(json_match.group(1))
+        except json.JSONDecodeError:
+            pass
+            
+    return {}
+
+def extract_adapter_json(text: str) -> dict:
+    """Specialized JSON extraction for the adapter generator.
+    Handles 'reasoning' and 'code' fields specifically.
+    """
     # First, try to extract JSON from markdown code blocks
     code_block_pattern = r'```(?:json)?\s*(\{.*\})\s*```'
     code_match = re.search(code_block_pattern, text, re.DOTALL)
