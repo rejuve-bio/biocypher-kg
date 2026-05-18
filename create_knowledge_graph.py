@@ -363,6 +363,23 @@ def _generate_data_source_schemas(
     generator.generate_all_schemas(filter_adapters=list(adapters_dict.keys()))
 
 
+def _try_generate_data_source_schemas(
+    schema_config_path: Path,
+    adapters_config_path: Path,
+    adapters_dict: dict,
+    output_dir: Path,
+) -> None:
+    try:
+        _generate_data_source_schemas(
+            schema_config_path,
+            adapters_config_path,
+            adapters_dict,
+            output_dir,
+        )
+    except Exception:
+        logger.exception("Data source schema generation failed; KG output was already written.")
+
+
 def process_adapters(
     adapters_dict,
     dbsnp_rsids_dict,
@@ -812,7 +829,8 @@ def main(
         help=(
             "Directory for generated data source schemas. Defaults to "
             "data_source_schemas/<species> in species mode, or "
-            "<output-dir>/data_source_schemas in manual mode."
+            "<output-dir>/data_source_schemas in manual mode. "
+            "When --species all is used, each species is written under this directory."
         ),
     ),
     no_checkpoint: bool = typer.Option(
@@ -994,12 +1012,11 @@ def main(
                     )
 
                     if generate_data_source_schemas:
-                        schema_output_dir = (
-                            data_source_schema_output_dir / sp
-                            if data_source_schema_output_dir
-                            else _default_data_source_schema_output_dir(sp, sp_output_dir)
-                        )
-                        _generate_data_source_schemas(
+                        if data_source_schema_output_dir:
+                            schema_output_dir = data_source_schema_output_dir / sp
+                        else:
+                            schema_output_dir = _default_data_source_schema_output_dir(sp, sp_output_dir)
+                        _try_generate_data_source_schemas(
                             sp_schema_config,
                             sp_adapters_config,
                             sp_adapters_dict,
@@ -1200,7 +1217,7 @@ def main(
                     output_dir,
                 )
             )
-            _generate_data_source_schemas(
+            _try_generate_data_source_schemas(
                 schema_config,
                 adapters_config,
                 adapters_dict,
