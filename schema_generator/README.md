@@ -96,7 +96,29 @@ KG run is still allowed to complete.
 You can still run the generator directly when you want to regenerate schemas without
 building a KG.
 
-### Generate All Schemas
+### Generate All Schemas for a Species
+
+Use `--species` for exhaustive generation from the repo's full species adapter
+configuration. This also merges `config/primer_schema_config.yaml`, matching the KG
+pipeline's schema view.
+Species mode also includes commented-out adapter blocks from the adapter config and
+discovers adapter implementations under `biocypher_metta/adapters/<species>`, so it
+can regenerate schemas for species adapters that are not active in the KG build.
+
+```bash
+uv run python schema_generator/generate_data_source_schemas.py --species hsa
+```
+
+```bash
+uv run python schema_generator/generate_data_source_schemas.py --species dmel
+```
+
+The default output directories are:
+
+- `data_source_schemas/hsa`
+- `data_source_schemas/dmel`
+
+### Generate with Explicit Configs
 
 ```bash
 uv run python schema_generator/generate_data_source_schemas.py \
@@ -212,11 +234,13 @@ uv run python schema_generator/generate_data_source_schemas.py \
 
 - `--schema-config`: Path to schema configuration YAML file
 - `--adapter-config`: Path to adapters configuration YAML file
-- `--adapters-dir`: Directory containing adapter Python files
-- `--output-dir`: Output directory for generated schema files
+- `--species`: (Optional) Generate all configured schemas for `hsa` or `dmel` using repo defaults
+- `--adapters-dir`: Directory containing adapter Python files. Defaults to `biocypher_metta/adapters`
+- `--output-dir`: Output directory for generated schema files. Defaults to `data_source_schemas/<species>` when `--species` is used
 - `--adapter`: (Optional) Generate schema only for specific adapter config name(s). Can be used multiple times.
 - `--module`: (Optional) Generate schema for all adapters using specific Python module(s). Recommended for complete schemas with all nodes and edges. Can be used multiple times.
 - `--source`: (Optional) Generate schema only for specific data source(s). Can be used multiple times.
+- `--include-inactive-adapters` / `--no-include-inactive-adapters`: Include commented-out adapter config blocks and discoverable species adapter files. Defaults to enabled with `--species`.
 
 ## Output
 

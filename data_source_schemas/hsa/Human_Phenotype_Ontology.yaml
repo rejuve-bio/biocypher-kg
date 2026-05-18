@@ -9,8 +9,8 @@ relationships:
     source: gene
     target: phenotype
     properties:
-      frequency: str
       disease_id: str
+      frequency: str
       gene_symbol: str
       phenotype_name: str
   gene to disease association:
@@ -22,6 +22,6 @@ relationships:
     source: gene
     target: disease
     properties:
+      association_type: str
       gene_symbol: str
       source_ref: str
-      association_type: str

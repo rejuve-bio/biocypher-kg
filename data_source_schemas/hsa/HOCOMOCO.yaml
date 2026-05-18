@@ -4,12 +4,11 @@ nodes:
   motif:
     url: https://hocomoco11.autosome.org/downloads_v11
     input_label: motif
-    output_label: motif
     properties:
-      pwm_G: float[]
-      taxon_id: int
+      length: int
       pwm_A: float[]
       pwm_C: float[]
-      length: int
-      tf_name: str
+      pwm_G: float[]
       pwm_T: float[]
+      taxon_id: int
+      tf_name: str

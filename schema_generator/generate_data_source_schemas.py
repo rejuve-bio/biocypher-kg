@@ -25,6 +25,10 @@ import urllib.parse
 
 import yaml
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 try:
     from config.yaml_loader import load_yaml_with_includes
 except ImportError as exc:  # pragma: no cover
@@ -55,6 +59,25 @@ class AdapterAnalyzer:
         self.source_code = adapter_path.read_text()
         self.tree = ast.parse(self.source_code)
         self.class_attributes = self._extract_class_attributes()
+        self.label_attributes = self._extract_label_attributes()
+
+    @staticmethod
+    def _is_label_name(name: str) -> bool:
+        label_names = {'label', 'input_label', 'node_label', 'edge_label', 'relationship_label'}
+        return name in label_names or name.endswith('_label')
+
+    @classmethod
+    def _extract_string_values(cls, node: ast.AST) -> Set[str]:
+        values = set()
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            values.add(node.value)
+        elif isinstance(node, ast.BoolOp):
+            for value in node.values:
+                values.update(cls._extract_string_values(value))
+        elif isinstance(node, ast.IfExp):
+            values.update(cls._extract_string_values(node.body))
+            values.update(cls._extract_string_values(node.orelse))
+        return values
 
     def _extract_class_attributes(self) -> Dict[str, Any]:
         class_attrs = {}
@@ -84,6 +107,30 @@ class AdapterAnalyzer:
                                     class_attrs[target.id] = item.value.value
         return class_attrs
 
+    def get_adapter_class_name(self) -> str:
+        for node in ast.walk(self.tree):
+            if isinstance(node, ast.ClassDef):
+                return node.name
+        return self.adapter_path.stem
+
+    def _extract_label_attributes(self) -> Dict[str, Set[str]]:
+        label_attrs = defaultdict(set)
+        for node in ast.walk(self.tree):
+            if not isinstance(node, ast.Assign):
+                continue
+            values = self._extract_string_values(node.value)
+            if not values:
+                continue
+            for target in node.targets:
+                target_name = None
+                if isinstance(target, ast.Name):
+                    target_name = target.id
+                elif isinstance(target, ast.Attribute):
+                    target_name = target.attr
+                if target_name and self._is_label_name(target_name):
+                    label_attrs[target_name].update(values)
+        return dict(label_attrs)
+
     def get_class_dict_string_values(self) -> Set[str]:
         """Return string values from class-level dictionaries used as label maps."""
         values = set()
@@ -106,16 +153,18 @@ class AdapterAnalyzer:
                             label_node = value.elts[tuple_index]
                             if isinstance(label_node, ast.Constant) and isinstance(label_node.value, str):
                                 labels.add(label_node.value)
+                            elif isinstance(label_node, ast.Attribute):
+                                labels.update(self.label_attributes.get(label_node.attr, set()))
         return labels
 
     def get_label_literals(self) -> Set[str]:
         """Return strings assigned to variables or attributes that are explicitly label-like."""
-        label_names = {'label', 'input_label', 'node_label', 'edge_label', 'relationship_label'}
         labels = set()
         for node in ast.walk(self.tree):
-            if not isinstance(node, ast.Assign) or not isinstance(node.value, ast.Constant):
+            if not isinstance(node, ast.Assign):
                 continue
-            if not isinstance(node.value.value, str):
+            values = self._extract_string_values(node.value)
+            if not values:
                 continue
             for target in node.targets:
                 target_name = None
@@ -123,8 +172,22 @@ class AdapterAnalyzer:
                     target_name = target.id
                 elif isinstance(target, ast.Attribute):
                     target_name = target.attr
-                if target_name in label_names or (target_name and target_name.endswith('_label')):
-                    labels.add(node.value.value)
+                if target_name and self._is_label_name(target_name):
+                    labels.update(values)
+        return labels
+
+    def get_feature_overlap_labels(self, feature_labels: List[str], variant_label: str) -> List[str]:
+        """Resolve labels generated from feature overlap templates in the adapter."""
+        labels = []
+        source = self.source_code
+        has_feature_to_variant = "_overlaps_" in source and f"_overlaps_{variant_label}" in source
+        has_variant_to_feature = "_overlaps_{" in source or f"{variant_label}_overlaps_" in source
+
+        for feature_label in feature_labels:
+            if has_feature_to_variant:
+                labels.append(f"{feature_label}_overlaps_{variant_label}")
+            if has_variant_to_feature:
+                labels.append(f"{variant_label}_overlaps_{feature_label}")
         return labels
 
     def inherits_from_ontology_adapter(self) -> bool:
@@ -345,6 +408,85 @@ class AdapterAnalyzer:
 
 
 class SchemaGenerator:
+    SPECIES_CONFIGS = {
+        'hsa': {
+            'schema_config': 'config/hsa/hsa_schema_config.yaml',
+            'adapter_config': 'config/hsa/hsa_adapters_config.yaml',
+            'output_dir': 'data_source_schemas/hsa',
+        },
+        'dmel': {
+            'schema_config': 'config/dmel/dmel_schema_config.yaml',
+            'adapter_config': 'config/dmel/dmel_adapters_config.yaml',
+            'output_dir': 'data_source_schemas/dmel',
+        },
+    }
+    SOURCE_FILENAME_ALIASES = {
+        'HOCOMOCOv11': 'HOCOMOCO',
+        'Reactome': 'REACTOME',
+    }
+    SOURCE_NAME_ALIASES = {
+        'Reactome': 'REACTOME',
+    }
+
+    @staticmethod
+    def load_schema_config(schema_config_path: str, include_primer: bool = False) -> Dict:
+        schema_config = {}
+        if include_primer:
+            primer_path = Path('config/primer_schema_config.yaml')
+            with open(primer_path) as f:
+                primer_config = load_yaml_with_includes(f) or {}
+            schema_config.update(primer_config)
+
+        with open(schema_config_path) as f:
+            species_config = load_yaml_with_includes(f) or {}
+        schema_config.update(species_config)
+        return schema_config
+
+    @staticmethod
+    def load_commented_adapter_config(adapter_config_path: str) -> Dict:
+        """Load adapter entries that are commented out as YAML blocks.
+
+        Species-level schema generation should document all configured human/fly
+        sources, including adapters that are temporarily disabled in the KG build
+        config. This keeps those entries generated from adapter code/config rather
+        than maintaining datasource YAMLs by hand.
+        """
+        inactive_adapters = {}
+        current_block = []
+
+        def flush_block():
+            if not current_block:
+                return
+            text = '\n'.join(current_block)
+            current_block.clear()
+            try:
+                parsed = yaml.safe_load(text)
+            except yaml.YAMLError:
+                return
+            if not isinstance(parsed, dict):
+                return
+            for name, config in parsed.items():
+                if (
+                    isinstance(name, str)
+                    and isinstance(config, dict)
+                    and isinstance(config.get('adapter'), dict)
+                    and ('nodes' in config or 'edges' in config)
+                ):
+                    inactive_adapters[name] = config
+
+        for line in Path(adapter_config_path).read_text().splitlines():
+            stripped = line.lstrip()
+            if stripped.startswith('#'):
+                content = stripped[1:]
+                if content.startswith(' '):
+                    content = content[1:]
+                current_block.append(content)
+            else:
+                flush_block()
+        flush_block()
+
+        return inactive_adapters
+
     def __init__(
         self,
         schema_config_path: str,
@@ -352,14 +494,18 @@ class SchemaGenerator:
         adapters_dir: str,
         output_dir: str,
         adapter_config_data: Optional[Dict] = None,
+        schema_config_data: Optional[Dict] = None,
     ):
         self.schema_config_path = Path(schema_config_path)
         self.adapter_config_path = Path(adapter_config_path)
         self.adapters_dir = Path(adapters_dir)
         self.output_dir = Path(output_dir)
 
-        with open(self.schema_config_path) as f:
-            self.schema_config = load_yaml_with_includes(f)
+        if schema_config_data is not None:
+            self.schema_config = schema_config_data
+        else:
+            with open(self.schema_config_path) as f:
+                self.schema_config = load_yaml_with_includes(f)
         if adapter_config_data is not None:
             self.adapter_config = adapter_config_data
         else:
@@ -408,10 +554,6 @@ class SchemaGenerator:
         writes_edges = adapter_cfg.get('edges', False)
         analyzer = adapter_data['analyzer']
 
-        label = adapter_args.get('label')
-        if label:
-            return [label]
-
         candidates = []
         seen_candidates = set()
 
@@ -419,6 +561,8 @@ class SchemaGenerator:
             if isinstance(value, str) and value not in seen_candidates:
                 candidates.append(value)
                 seen_candidates.add(value)
+
+        add_candidate(adapter_args.get('label'))
 
         metadata_label = adapter_data['metadata'].get('label')
         if metadata_label:
@@ -431,6 +575,16 @@ class SchemaGenerator:
             add_candidate(value)
         for value in sorted(analyzer.get_label_literals()):
             add_candidate(value)
+
+        feature_labels = [
+            feature_config.get('label')
+            for feature_config in adapter_args.get('feature_files', [])
+            if isinstance(feature_config, dict)
+        ]
+        variant_label = adapter_args.get('label')
+        if writes_edges and feature_labels and variant_label:
+            for value in analyzer.get_feature_overlap_labels(feature_labels, variant_label):
+                add_candidate(value)
 
         if writes_nodes:
             for value in sorted(analyzer.get_yield_string_labels('get_nodes', 1)):
@@ -459,7 +613,75 @@ class SchemaGenerator:
                 labels.append(candidate)
                 seen_labels.add(candidate)
 
+        if not labels:
+            labels.extend(self.infer_labels_from_adapter_properties(adapter_cfg, analyzer))
+
         return labels or [adapter_name]
+
+    def infer_labels_from_adapter_properties(self, adapter_cfg: Dict, analyzer: AdapterAnalyzer) -> List[str]:
+        """Infer schema labels when config labels are absent/stale but properties are distinctive."""
+        candidates = []
+        modes = []
+        if adapter_cfg.get('nodes', False):
+            modes.append(('node', analyzer.get_node_properties()))
+
+        for represented_as, adapter_props in modes:
+            if not adapter_props:
+                continue
+            scored = []
+            for type_name, type_config in self.schema_config.items():
+                if not isinstance(type_config, dict):
+                    continue
+                if type_config.get('represented_as') != represented_as:
+                    continue
+                labels = type_config.get('input_label')
+                if labels is None:
+                    continue
+                schema_props = set(self.get_all_properties_for_type(type_name))
+                overlap = adapter_props.intersection(schema_props)
+                if overlap:
+                    label_values = labels if isinstance(labels, list) else [labels]
+                    scored.append((
+                        len(overlap),
+                        self.get_type_depth(type_name),
+                        len(schema_props),
+                        type_name,
+                        label_values,
+                    ))
+            if not scored:
+                continue
+            best_score = max(score for score, _, _, _, _ in scored)
+            best_depth = max(depth for score, depth, _, _, _ in scored if score == best_score)
+            best_schema_size = max(
+                schema_size
+                for score, depth, schema_size, _, _ in scored
+                if score == best_score and depth == best_depth
+            )
+            for score, depth, schema_size, _, label_values in sorted(scored, key=lambda item: item[3]):
+                if score == best_score and depth == best_depth and schema_size == best_schema_size:
+                    for label in label_values:
+                        if label not in candidates:
+                            candidates.append(label)
+
+        return candidates
+
+    def get_type_depth(self, type_name: str, visited: Set[str] = None) -> int:
+        if visited is None:
+            visited = set()
+        if type_name in visited:
+            return 0
+        visited.add(type_name)
+        type_info = self.get_type_by_name(type_name)
+        if not type_info:
+            return 0
+        parents = type_info['config'].get('is_a')
+        if not parents:
+            return 0
+        if isinstance(parents, str):
+            parents = [parents]
+        if not isinstance(parents, list):
+            return 0
+        return 1 + max((self.get_type_depth(parent, visited) for parent in parents), default=0)
 
     def get_schema_type_info(self, input_label: str) -> Optional[Dict]:
         for type_name, type_config in self.schema_config.items():
@@ -582,6 +804,59 @@ class SchemaGenerator:
         self.adapter_cache[adapter_file] = result
         return result
 
+    def discover_species_adapters(
+        self,
+        species: str,
+        existing_adapter_config: Dict,
+    ) -> Dict:
+        existing_modules = {
+            (config.get('adapter') or {}).get('module')
+            for config in existing_adapter_config.values()
+            if isinstance(config, dict)
+        }
+        discovered = {}
+        species_adapter_dir = self.adapters_dir / species
+        if not species_adapter_dir.exists():
+            return discovered
+
+        for adapter_path in sorted(species_adapter_dir.rglob('*_adapter.py')):
+            adapter_file = str(adapter_path.relative_to(self.adapters_dir))
+            module = (
+                'biocypher_metta.adapters.'
+                + adapter_path.relative_to(self.adapters_dir).with_suffix('').as_posix().replace('/', '.')
+            )
+            if module in existing_modules:
+                continue
+
+            adapter_data = self.analyze_adapter_file(adapter_file)
+            if not adapter_data:
+                continue
+
+            analyzer = adapter_data['analyzer']
+            has_nodes = any(
+                isinstance(node, ast.FunctionDef) and node.name == 'get_nodes'
+                for node in ast.walk(analyzer.tree)
+            )
+            has_edges = any(
+                isinstance(node, ast.FunctionDef) and node.name == 'get_edges'
+                for node in ast.walk(analyzer.tree)
+            )
+            if not has_nodes and not has_edges:
+                continue
+
+            adapter_name = adapter_path.stem.removesuffix('_adapter')
+            discovered[adapter_name] = {
+                'adapter': {
+                    'module': module,
+                    'cls': analyzer.get_adapter_class_name(),
+                    'args': {},
+                },
+                'nodes': has_nodes,
+                'edges': has_edges,
+            }
+
+        return discovered
+
     def generate_all_schemas(self, filter_adapters: Optional[List[str]] = None, filter_modules: Optional[List[str]] = None, filter_sources: Optional[List[str]] = None):
         if filter_adapters:
             print(f"Analyzing specific adapters: {', '.join(filter_adapters)}")
@@ -616,7 +891,10 @@ class SchemaGenerator:
             if not adapter_data:
                 continue
 
-            source_name = adapter_data['source_name']
+            source_name = self.SOURCE_NAME_ALIASES.get(
+                adapter_data['source_name'],
+                adapter_data['source_name'],
+            )
 
             # Filter by source name if specified
             if filter_sources and source_name not in filter_sources:
@@ -645,7 +923,8 @@ class SchemaGenerator:
         website = self.extract_base_url(source_urls[0]) if source_urls else ''
 
         # Check if output file already exists
-        output_filename = source_name.replace(' ', '_').replace('-', '_').replace('/', '_') + '.yaml'
+        filename_source = self.SOURCE_FILENAME_ALIASES.get(source_name, source_name)
+        output_filename = filename_source.replace(' ', '_').replace('-', '_').replace('/', '_') + '.yaml'
         output_path = self.output_dir / output_filename
 
         # Load existing schema if it exists
@@ -800,15 +1079,43 @@ def main():
         epilog=__doc__
     )
 
-    parser.add_argument('--schema-config', required=True, help='Path to schema configuration YAML file')
-    parser.add_argument('--adapter-config', required=True, help='Path to adapter configuration YAML file')
-    parser.add_argument('--adapters-dir', required=True, help='Directory containing adapter Python files')
-    parser.add_argument('--output-dir', required=True, help='Output directory for generated schema files')
+    parser.add_argument(
+        '--species',
+        choices=sorted(SchemaGenerator.SPECIES_CONFIGS),
+        help='Generate all configured data source schemas for a species using repo defaults.',
+    )
+    parser.add_argument('--schema-config', help='Path to schema configuration YAML file')
+    parser.add_argument('--adapter-config', help='Path to adapter configuration YAML file')
+    parser.add_argument('--adapters-dir', default='biocypher_metta/adapters', help='Directory containing adapter Python files')
+    parser.add_argument('--output-dir', help='Output directory for generated schema files')
     parser.add_argument('--adapter', action='append', help='Generate schema only for specific adapter(s). Can be used multiple times.')
     parser.add_argument('--module', action='append', help='Generate schema for all adapters using specific module(s). Example: candidate_cis_regulatory_promoter_adapter. Can be used multiple times.')
     parser.add_argument('--source', action='append', help='Generate schema only for specific data source(s). Can be used multiple times.')
+    parser.add_argument(
+        '--include-inactive-adapters',
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help='Also include commented-out adapter blocks from the adapter config. Defaults to on for --species.',
+    )
 
     args = parser.parse_args()
+
+    if args.species:
+        defaults = SchemaGenerator.SPECIES_CONFIGS[args.species]
+        args.schema_config = args.schema_config or defaults['schema_config']
+        args.adapter_config = args.adapter_config or defaults['adapter_config']
+        args.output_dir = args.output_dir or defaults['output_dir']
+
+    missing_args = [
+        name
+        for name in ('schema_config', 'adapter_config', 'adapters_dir', 'output_dir')
+        if not getattr(args, name)
+    ]
+    if missing_args:
+        parser.error(
+            "the following arguments are required unless --species is used: "
+            + ", ".join(f"--{name.replace('_', '-')}" for name in missing_args)
+        )
 
     if not Path(args.schema_config).exists():
         print(f"Error: Schema config not found: {args.schema_config}")
@@ -820,11 +1127,42 @@ def main():
         print(f"Error: Adapters directory not found: {args.adapters_dir}")
         sys.exit(1)
 
+    schema_config_data = None
+    adapter_config_data = None
+    if args.species:
+        schema_config_data = SchemaGenerator.load_schema_config(
+            args.schema_config,
+            include_primer=True,
+        )
+        include_inactive = True if args.include_inactive_adapters is None else args.include_inactive_adapters
+        if include_inactive:
+            with open(args.adapter_config) as f:
+                adapter_config_data = load_yaml_with_includes(f) or {}
+            inactive_adapters = SchemaGenerator.load_commented_adapter_config(args.adapter_config)
+            for adapter_name, adapter_cfg in inactive_adapters.items():
+                adapter_config_data.setdefault(adapter_name, adapter_cfg)
+            discovery_generator = SchemaGenerator(
+                args.schema_config,
+                args.adapter_config,
+                args.adapters_dir,
+                args.output_dir,
+                adapter_config_data=adapter_config_data,
+                schema_config_data=schema_config_data,
+            )
+            discovered_adapters = discovery_generator.discover_species_adapters(
+                args.species,
+                adapter_config_data,
+            )
+            for adapter_name, adapter_cfg in discovered_adapters.items():
+                adapter_config_data.setdefault(adapter_name, adapter_cfg)
+
     generator = SchemaGenerator(
         args.schema_config,
         args.adapter_config,
         args.adapters_dir,
-        args.output_dir
+        args.output_dir,
+        adapter_config_data=adapter_config_data,
+        schema_config_data=schema_config_data,
     )
 
     generator.generate_all_schemas(

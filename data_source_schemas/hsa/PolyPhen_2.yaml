@@ -4,13 +4,12 @@ nodes:
   snp:
     url: https://hgdownload.soe.ucsc.edu/gbdb/hg38/dbNsfp/dbNsfpPolyPhen2.bb
     input_label: snp
-    output_label: snp
-    description: A variant with PolyPhen-2 predictions for the impact of amino acid
-      substitutions on protein structure and function
+    description: A single nucleotide polymorphism (SNP) is a variation in a single
+      nucleotide that occurs at a specific position in the genome
     properties:
-      polyphen2_humdiv_score: float
       alt: str
-      polyphen2_humvar_score: float
       polyphen2_humdiv_prediction: str
-      ref: str
+      polyphen2_humdiv_score: float
       polyphen2_humvar_prediction: str
+      polyphen2_humvar_score: float
+      ref: str

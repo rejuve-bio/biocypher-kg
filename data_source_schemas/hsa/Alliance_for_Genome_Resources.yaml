@@ -9,19 +9,15 @@ relationships:
     source: gene
     target: disease
     properties:
-      date: string
-      species_name: string
-      reference: string
-      disease_name: string
-      with_ortholog: string
-      taxon_id: integer
-      inferred_from_id: string
-      gene_symbol: string
-      evidence_code_name: string
-      evidence_code: string
-      inferred_from_symbol: string
-      data_source: string
-    output_label: gene biomarker via orthology disease
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
   gene implicated via orthology disease:
     url: https://www.alliancegenome.org/
     input_label: implicated_via_orthology
@@ -30,19 +26,15 @@ relationships:
     source: gene
     target: disease
     properties:
-      date: string
-      species_name: string
-      reference: string
-      disease_name: string
-      with_ortholog: string
-      taxon_id: integer
-      inferred_from_id: string
-      gene_symbol: string
-      evidence_code_name: string
-      evidence_code: string
-      inferred_from_symbol: string
-      data_source: string
-    output_label: gene implicated via orthology disease
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
   gene is implicated in disease:
     url: https://www.alliancegenome.org/
     input_label: is_implicated_in
@@ -50,19 +42,15 @@ relationships:
     source: gene
     target: disease
     properties:
-      date: string
-      species_name: string
-      reference: string
-      disease_name: string
-      with_ortholog: string
-      taxon_id: integer
-      inferred_from_id: string
-      gene_symbol: string
-      evidence_code_name: string
-      evidence_code: string
-      inferred_from_symbol: string
-      data_source: string
-    output_label: gene is implicated in disease
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
   gene to disease marker association:
     url: https://www.alliancegenome.org/
     input_label: is_marker_for
@@ -70,19 +58,15 @@ relationships:
     source: gene
     target: disease
     properties:
-      date: string
-      species_name: string
-      reference: string
-      disease_name: string
-      with_ortholog: string
-      taxon_id: integer
-      inferred_from_id: string
-      gene_symbol: string
-      evidence_code_name: string
-      evidence_code: string
-      inferred_from_symbol: string
-      data_source: string
-    output_label: gene to disease marker association
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
   orthology association:
     url: https://www.alliancegenome.org/
     input_label: orthologs_genes
@@ -94,5 +78,21 @@ relationships:
     target: gene
     properties:
       source_organism: str
-      taxon_id: int
       target_organism_taxon_id: int
+      taxon_id: int
+  gene to disease model association:
+    url: https://www.alliancegenome.org/
+    input_label: is_model_of
+    description: Gene is a model for disease
+    source: gene
+    target: disease
+    properties:
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str

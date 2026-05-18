@@ -4,31 +4,28 @@ nodes:
   transcription binding site:
     url: https://genome.ucsc.edu/cgi-bin/hgTables
     input_label: tfbs
-    output_label: transcription binding site
     description: A region of DNA where a transcription factor binds to regulate gene
       expression
     properties:
+      chr: str
       end: int
+      start: int
       taxon_id: int
-      start: int
-      chr: str
-  promoter:
-    url: https://screen.wenglab.org/downloads
-    input_label: promoter
-    output_label: promoter
-    properties:
-      end: int
-      start: int
-      chr: str
-      biological_context: str
   enhancer:
     url: https://screen.wenglab.org/downloads
     input_label: enhancer
-    output_label: enhancer
     properties:
+      chr: str
       end: int
       start: int
+  promoter:
+    url: https://screen.wenglab.org/downloads
+    input_label: promoter
+    properties:
+      biological_context: str
       chr: str
+      end: int
+      start: int
 relationships:
   gene to transcription binding site association:
     url: https://genome.ucsc.edu/cgi-bin/hgTables
@@ -39,6 +36,13 @@ relationships:
     target: tfbs
     properties:
       score: float
+  enhancer to gene association:
+    url: https://screen.wenglab.org/downloads
+    input_label: enhancer_gene
+    output_label: associated_with
+    description: An association between an enhancer and a gene
+    source: enhancer
+    target: gene
   promoter to gene association:
     url: https://screen.wenglab.org/downloads
     input_label: promoter_gene
@@ -48,10 +52,3 @@ relationships:
     target: gene
     properties:
       biological_context: str
-  enhancer to gene association:
-    url: https://screen.wenglab.org/downloads
-    input_label: enhancer_gene
-    output_label: associated_with
-    description: An association between an enhancer and a gene
-    source: enhancer
-    target: gene
