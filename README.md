@@ -31,13 +31,18 @@ make run-sample WRITER_TYPE=<metta,neo4j,prolog> [INCLUDE_TAXON_ID=no]
 #### Option 3: Direct Run with Parameters
 ```bash
 make run-direct OUTPUT_DIR=./output \
-               ADAPTERS_CONFIG=./config.yaml \
-               DBSNP_RSIDS=./rsids.txt \
-               DBSNP_POS=./pos.txt \
+               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
                WRITER_TYPE=metta \
                WRITE_PROPERTIES=no \
                ADD_PROVENANCE=no \
                INCLUDE_TAXON_ID=no
+
+# Override the base input directory (e.g. on a different machine):
+make run-direct OUTPUT_DIR=./output \
+               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
+               INPUT_DIR=/custom/path/to/hsa
 ```
 ### Interactive Mode Example
 When you run `make run`, you'll see:
@@ -98,6 +103,10 @@ To validate an adapters config in isolation — without a schema, output directo
 # Via make (recommended)
 make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml
 
+# Override the base input directory
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+                 INPUT_DIR=/custom/path/to/hsa
+
 # Check only specific adapters
 make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
                  INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot bgee_gene_expressed_in_anatomical_entity"
@@ -105,6 +114,12 @@ make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
 # Directly via the CLI
 uv run python create_knowledge_graph.py \
     --adapters-config ./config/hsa/hsa_adapters_config.yaml \
+    --check-only
+
+# With input-dir override
+uv run python create_knowledge_graph.py \
+    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
+    --input-dir /custom/path/to/hsa \
     --check-only
 ```
 
@@ -122,6 +137,38 @@ make run-sample     SKIP_PREFLIGHT=yes
 # Directly via the CLI
 uv run python create_knowledge_graph.py ... --skip-preflight
 ```
+
+#### Configuring the input data directory
+
+Full adapter configs (e.g. `config/hsa/hsa_adapters_config.yaml`) declare an `input_dir:` field at the top that serves as the base directory for all input data paths:
+
+```yaml
+input_dir: /mnt/hdd_1/biocypher-kg/input/hsa
+
+gencode_gene:
+  adapter:
+    args:
+      filepath: gencode/gencode.v49.annotation.gtf.gz   # resolved as input_dir/gencode/...
+```
+
+To use a different data location without editing the YAML, pass `--input-dir` (CLI) or `INPUT_DIR=` (make):
+
+```bash
+# Makefile
+make run-direct OUTPUT_DIR=./output \
+               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
+               INPUT_DIR=/my/data/hsa
+
+# CLI
+uv run python create_knowledge_graph.py \
+    --output-dir ./output \
+    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
+    --schema-config ./config/hsa/hsa_schema_config.yaml \
+    --input-dir /my/data/hsa
+```
+
+Relative paths starting with `./` or `../` (e.g. `./aux_files/`, `./samples/`) are always treated as repository-relative and are never affected by `input_dir`.
 
 
 ## BioCypher Knowledge Graph CLI Tool (Option 2)
