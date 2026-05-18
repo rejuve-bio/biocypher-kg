@@ -71,6 +71,11 @@ uv run python create_knowledge_graph.py \
   --data-source-schema-output-dir data_source_schemas/hsa
 ```
 
+When `--data-source-schema-output-dir` is provided for a single species, the path is
+used directly. With `--species all`, each species is written under that directory
+as `<data-source-schema-output-dir>/<species>`. The default species-mode path
+remains `data_source_schemas/<species>`.
+
 To disable automatic schema generation:
 
 ```bash
@@ -83,7 +88,8 @@ uv run python create_knowledge_graph.py \
 
 Checkpointing is still responsible for the expensive KG adapter work. Datasource schema
 generation is a final post-processing step. If an adapter fails, schemas are not generated.
-If schema generation fails, the checkpoint remains available so the KG run can be resumed.
+If schema generation fails after the KG has been written, the failure is logged and the
+KG run is still allowed to complete.
 
 ### Standalone Script
 
@@ -178,6 +184,7 @@ uv run python schema_generator/generate_data_source_schemas.py \
 - New nodes are appended to the `nodes` section
 - New relationships are appended to the `relationships` section
 - If a node/relationship already exists, its properties are merged (not overwritten)
+- Existing property types are preserved when an entry is regenerated
 - Existing entries remain in place
 
 ### Generate Schema for Specific Data Source(s)
@@ -229,8 +236,8 @@ relationships:
   relationship_type:
     url: https://datasource.org/download
     input_label: edge_label
-    description: Edge description
     output_label: biolink_predicate
+    description: Edge description
     source: source_node_type
     target: target_node_type
     properties:
@@ -264,7 +271,7 @@ Labels are resolved in the following order:
 3. **Init Assignment**: `self.label = 'value'` in `__init__`
 4. **Dynamic Label Candidates**: Schema-valid string values from adapter args
 5. **Adapter Label Maps**: String values from class-level dictionaries used as label maps
-6. **Adapter Literals**: Schema-valid string literals in adapter code
+6. **Label Assignments**: Schema-valid strings assigned to label-like variables or attributes
 7. **Yielded Labels**: Literal string labels yielded from `get_nodes()` or `get_edges()`
 8. **Adapter Name**: Falls back to adapter name as last resort
 
@@ -278,6 +285,9 @@ schema entries when the adapter emits several labels from a map or branch logic.
 All extracted properties are validated against schema_config.yaml:
 - Properties defined in schema → Use schema type (int, float, str, etc.)
 - Properties not in schema → **Excluded** (strict validation)
+
+`output_label` is included only when the schema configuration explicitly defines it.
+If a schema element has no `output_label`, the datasource schema omits that field.
 - Inherited properties → Included via schema inheritance chain
 
 ### 4. Data Source Grouping

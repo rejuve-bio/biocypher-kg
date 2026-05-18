@@ -17,6 +17,7 @@ Key features:
 import argparse
 import ast
 import sys
+import warnings
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Set, Any, Optional
@@ -26,7 +27,12 @@ import yaml
 
 try:
     from config.yaml_loader import load_yaml_with_includes
-except ImportError:  # pragma: no cover
+except ImportError as exc:  # pragma: no cover
+    warnings.warn(
+        f"Falling back to yaml.safe_load because config.yaml_loader could not be imported: {exc}",
+        RuntimeWarning,
+        stacklevel=2,
+    )
     load_yaml_with_includes = yaml.safe_load
 
 
@@ -102,13 +108,24 @@ class AdapterAnalyzer:
                                 labels.add(label_node.value)
         return labels
 
-    def get_string_literals(self) -> Set[str]:
-        """Return string literals from executable adapter code."""
-        literals = set()
+    def get_label_literals(self) -> Set[str]:
+        """Return strings assigned to variables or attributes that are explicitly label-like."""
+        label_names = {'label', 'input_label', 'node_label', 'edge_label', 'relationship_label'}
+        labels = set()
         for node in ast.walk(self.tree):
-            if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                literals.add(node.value)
-        return literals
+            if not isinstance(node, ast.Assign) or not isinstance(node.value, ast.Constant):
+                continue
+            if not isinstance(node.value.value, str):
+                continue
+            for target in node.targets:
+                target_name = None
+                if isinstance(target, ast.Name):
+                    target_name = target.id
+                elif isinstance(target, ast.Attribute):
+                    target_name = target.attr
+                if target_name in label_names or (target_name and target_name.endswith('_label')):
+                    labels.add(node.value.value)
+        return labels
 
     def inherits_from_ontology_adapter(self) -> bool:
         for node in ast.walk(self.tree):
@@ -357,7 +374,26 @@ class SchemaGenerator:
         adapter_prefix = 'biocypher_metta.adapters.'
         if module.startswith(adapter_prefix):
             return module.removeprefix(adapter_prefix).replace('.', '/') + '.py'
-        return module.split('.')[-1] + '.py'
+
+        module_path = module.replace('.', '/') + '.py'
+        if (self.adapters_dir / module_path).exists():
+            return module_path
+
+        adapter_file = module.split('.')[-1] + '.py'
+        matches = sorted(self.adapters_dir.rglob(adapter_file))
+        if len(matches) == 1:
+            return str(matches[0].relative_to(self.adapters_dir))
+        if len(matches) > 1:
+            print(
+                f"Warning: Adapter module '{module}' matched multiple files; "
+                f"using top-level fallback '{adapter_file}'"
+            )
+        elif '.' in module:
+            print(
+                f"Warning: Adapter module '{module}' does not use the expected "
+                f"'{adapter_prefix}' prefix and no matching subpackage file was found"
+            )
+        return adapter_file
 
     def get_labels_for_adapter_config(
         self,
@@ -377,28 +413,38 @@ class SchemaGenerator:
             return [label]
 
         candidates = []
+        seen_candidates = set()
+
+        def add_candidate(value):
+            if isinstance(value, str) and value not in seen_candidates:
+                candidates.append(value)
+                seen_candidates.add(value)
 
         metadata_label = adapter_data['metadata'].get('label')
         if metadata_label:
-            candidates.append(metadata_label)
+            add_candidate(metadata_label)
 
         for value in adapter_args.values():
-            if isinstance(value, str):
-                candidates.append(value)
+            add_candidate(value)
 
-        candidates.extend(analyzer.get_class_dict_string_values())
-        candidates.extend(analyzer.get_string_literals())
+        for value in sorted(analyzer.get_class_dict_string_values()):
+            add_candidate(value)
+        for value in sorted(analyzer.get_label_literals()):
+            add_candidate(value)
 
         if writes_nodes:
-            candidates.extend(analyzer.get_yield_string_labels('get_nodes', 1))
+            for value in sorted(analyzer.get_yield_string_labels('get_nodes', 1)):
+                add_candidate(value)
         if writes_edges:
-            candidates.extend(analyzer.get_yield_string_labels('get_edges', 2))
+            for value in sorted(analyzer.get_yield_string_labels('get_edges', 2)):
+                add_candidate(value)
 
-        candidates.append(adapter_name)
+        add_candidate(adapter_name)
 
         labels = []
+        seen_labels = set()
         for candidate in candidates:
-            if candidate in labels:
+            if candidate in seen_labels:
                 continue
 
             type_info = self.get_schema_type_info(candidate)
@@ -408,8 +454,10 @@ class SchemaGenerator:
             represented_as = type_info['config'].get('represented_as')
             if writes_nodes and represented_as == 'node':
                 labels.append(candidate)
+                seen_labels.add(candidate)
             elif writes_edges and represented_as == 'edge':
                 labels.append(candidate)
+                seen_labels.add(candidate)
 
         return labels or [adapter_name]
 
@@ -417,7 +465,8 @@ class SchemaGenerator:
         for type_name, type_config in self.schema_config.items():
             if not isinstance(type_config, dict):
                 continue
-            if type_config.get('input_label') == input_label:
+            labels = type_config.get('input_label')
+            if labels == input_label or (isinstance(labels, list) and input_label in labels):
                 return {
                     'name': type_name,
                     'config': type_config
@@ -471,16 +520,28 @@ class SchemaGenerator:
         schema_props = self.get_all_properties_for_type(type_name)
         valid_props = {}
 
-        for prop in adapter_props:
+        for prop in sorted(adapter_props):
             if prop in schema_props:
                 prop_config = schema_props[prop]
                 if isinstance(prop_config, dict):
                     prop_type = prop_config.get('type', 'str')
                 else:
                     prop_type = 'str'
-                valid_props[prop] = prop_type
+                valid_props[prop] = self.normalize_property_type(prop_type)
 
         return valid_props
+
+    @staticmethod
+    def normalize_property_type(prop_type: Any) -> str:
+        """Normalize BioCypher property types to the shorthand used in datasource schemas."""
+        if not isinstance(prop_type, str):
+            return 'str'
+        return {
+            'string': 'str',
+            'integer': 'int',
+            'double': 'float',
+            'boolean': 'bool',
+        }.get(prop_type, prop_type)
 
     def extract_base_url(self, url: str) -> str:
         if not url:
@@ -632,7 +693,7 @@ class SchemaGenerator:
 
                 type_config = type_info['config']
                 type_name = type_info['name']
-                output_label = type_config.get('output_label') or type_name
+                output_label = type_config.get('output_label')
                 is_edge = type_config.get('represented_as') == 'edge'
 
                 # Process nodes
@@ -654,19 +715,24 @@ class SchemaGenerator:
                         nodes[type_name] = {
                             'url': adapter_source_url,
                             'input_label': label,
-                            'output_label': output_label,
                         }
+                        if output_label:
+                            nodes[type_name]['output_label'] = output_label
                         if description:
                             nodes[type_name]['description'] = description.strip()
                         if valid_props:
                             nodes[type_name]['properties'] = valid_props
                     else:
-                        nodes[type_name]['output_label'] = output_label
+                        if output_label:
+                            nodes[type_name]['output_label'] = output_label
+                        else:
+                            nodes[type_name].pop('output_label', None)
                         # Merge properties if node already exists
                         if valid_props:
                             if 'properties' not in nodes[type_name]:
                                 nodes[type_name]['properties'] = {}
-                            nodes[type_name]['properties'].update(valid_props)
+                            for prop, prop_type in valid_props.items():
+                                nodes[type_name]['properties'].setdefault(prop, prop_type)
 
                 # Process edges
                 elif writes_edges and is_edge:
@@ -689,8 +755,9 @@ class SchemaGenerator:
                         relationships[type_name] = {
                             'url': adapter_source_url,
                             'input_label': label,
-                            'output_label': output_label,
                         }
+                        if output_label:
+                            relationships[type_name]['output_label'] = output_label
                         if description:
                             relationships[type_name]['description'] = description.strip()
                         if source:
@@ -700,12 +767,16 @@ class SchemaGenerator:
                         if valid_props:
                             relationships[type_name]['properties'] = valid_props
                     else:
-                        relationships[type_name]['output_label'] = output_label
+                        if output_label:
+                            relationships[type_name]['output_label'] = output_label
+                        else:
+                            relationships[type_name].pop('output_label', None)
                         # Merge properties if relationship already exists
                         if valid_props:
                             if 'properties' not in relationships[type_name]:
                                 relationships[type_name]['properties'] = {}
-                            relationships[type_name]['properties'].update(valid_props)
+                            for prop, prop_type in valid_props.items():
+                                relationships[type_name]['properties'].setdefault(prop, prop_type)
 
         if nodes:
             schema['nodes'] = nodes
