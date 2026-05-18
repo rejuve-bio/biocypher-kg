@@ -2381,7 +2381,7 @@ protein to reaction association:
   description: >-
     An interaction between a protein and a reaction (Reactome).
   is_a: annotation
-  biolink_predicate: "biolink:participates_in"
+  biolink_predicate: biolink:participates_in
   inherit_properties: true
   represented_as: edge
   input_label: protein_reaction
@@ -2389,10 +2389,10 @@ protein to reaction association:
   source: protein
   target: reaction
   kgx_properties:
-    subject_category: "biolink:Protein"
-    object_category: "biolink:MolecularActivity"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
+    subject_category: biolink:Protein
+    object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
 
 reaction to pathway association:
   is_a: annotation
