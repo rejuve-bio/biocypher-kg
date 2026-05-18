@@ -1316,3 +1316,68 @@ alliance_gene_orthology:
   outdir: alliance/orthology
   nodes: False
   edges: True
+
+
+alliance_gene_disease_biomarker_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: biomarker_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_implicated_via_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: implicated_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_implicated_in:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_implicated_in
+  outdir: disease
+  nodes: False
+  edges: True
+
+#=====================================
+# For dmel (7227) config, is_model_of does not have entries in the input file (2026/04/25 version).
+#===================================
+
+# alliance_gene_disease_is_model_of:
+#   adapter:
+#     module: biocypher_metta.adapters.alliance_gene_disease_adapter
+#     cls: AllianceGeneDiseaseAdapter
+#     args:
+#       filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+#       taxon_id: 7227
+#       label: is_model_of
+#   outdir: disease
+#   nodes: False
+#   edges: True
+
+alliance_gene_disease_is_marker_for:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/multi/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_marker_for
+  outdir: disease
+  nodes: False
+  edges: True
