@@ -470,6 +470,64 @@ go_cellular_component_subclass_of:
   nodes: False
   edges: True
 
+hsapdv:
+  adapter:
+    module: biocypher_metta.adapters.hsapdv_ontology_adapter
+    cls: HsapDvOntologyAdapter
+    args:
+      ontology: 'hsapdv'
+      type: node
+      label: developmental_stage
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: hsapdv
+  nodes: True
+  edges: False
+
+hsapdv_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.hsapdv_ontology_adapter
+    cls: HsapDvOntologyAdapter
+    args:
+      ontology: 'hsapdv'
+      type: edge
+      label: hsapdv_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: hsapdv
+  nodes: False
+  edges: True
+
+omim:
+  adapter:
+    module: biocypher_metta.adapters.omim_ontology_adapter
+    cls: OMIMOntologyAdapter
+    args:
+      ontology: 'omim'
+      type: node
+      label: disease
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: omim
+  nodes: True
+  edges: False
+
+omim_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.omim_ontology_adapter
+    cls: OMIMOntologyAdapter
+    args:
+      ontology: 'omim'
+      type: edge
+      label: omim_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: omim
+  nodes: False
+  edges: True
+
 gaf_biological_process_gene_product:
   adapter:
     module: biocypher_metta.adapters.gaf_adapter
