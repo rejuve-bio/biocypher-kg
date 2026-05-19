@@ -15,6 +15,7 @@ from schema_generator.source_inspector import SourceInspector
 
 from schema_generator.inspector_utils import inspect_adapter_files, build_inspection_context
 from schema_generator.code_fixer import fix_code_hallucinations
+from schema_generator.semantic_validator import validate_semantic_correctness, print_semantic_report
 
 
 
@@ -183,6 +184,21 @@ def generate_adapter_from_specification(
 
     print(f"[+] Syntax validation passed")
 
+    # Semantic hallucination validation
+    semantic_report = validate_semantic_correctness(code, spec, inspection)
+    print_semantic_report(semantic_report)
+    if semantic_report["overall_verdict"] == "fail":
+        print("[!] Semantic validation FAILED — the generated code may use wrong columns or produce invalid IDs.")
+        print("[!] Review the issues above, add a Logic Recipe to clarify the mapping, and re-run.")
+        # Save debug trace with semantic report before exiting
+        try:
+            debug_dir = Path("debug_traces")
+            debug_dir.mkdir(exist_ok=True)
+            with open(debug_dir / f"{adapter_name}_semantic_report.json", "w") as f:
+                json.dump(semantic_report, f, indent=2)
+        except Exception:
+            pass
+        sys.exit(1)
 
     import datetime
     if implementation_steps:
