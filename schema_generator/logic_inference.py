@@ -154,7 +154,7 @@ def generate_unified_logic_inference(
                             sample_data = {
                                 "type": "dict",
                                 "sample_size": len(data),
-                                "samples": items,
+                                "samples": [(str(k), str(v)) for k, v in items],
                                 "key_examples": [str(k)[:200] + ('...' if len(str(k)) > 200 else '') for k, v in items],
                                 "value_examples": [str(v)[:200] + ('...' if len(str(v)) > 200 else '') for k, v in items],
                                 "value_structure": value_type_analysis,
@@ -175,10 +175,18 @@ def generate_unified_logic_inference(
                                     relevant_rows.append(row)
                                 if len(relevant_rows) >= 20: break
                             
+                            raw_samples = data[:10] + [r for r in relevant_rows if r not in data[:10]]
+                            serializable_samples = []
+                            for r in raw_samples:
+                                if isinstance(r, (list, tuple)):
+                                    serializable_samples.append([str(x) for x in r])
+                                else:
+                                    serializable_samples.append(str(r))
+
                             sample_data = {
                                 "type": "list",
                                 "sample_size": len(data),
-                                "samples": data[:10] + [r for r in relevant_rows if r not in data[:10]],
+                                "samples": serializable_samples,
                                 "overlap_detected": len(relevant_rows) > 0
                             }
                         else:
@@ -195,7 +203,13 @@ def generate_unified_logic_inference(
                     elif aux_path.endswith(('.csv', '.tsv', '.txt')):
                         opener = gzip.open if aux_path.endswith('.gz') else open
                         with opener(aux_path, 'rt') as f:
-                            sample_data = {"type": "text", "lines": [next(f) for _ in range(10)]}
+                            lines = []
+                            for _ in range(10):
+                                line = f.readline()
+                                if not line:
+                                    break
+                                lines.append(line)
+                            sample_data = {"type": "text", "lines": lines}
                 except Exception as e:
                     print(f"Warning: Could not load auxiliary file {aux_path}: {e}")
                     sample_data = {"error": str(e)}
@@ -342,6 +356,7 @@ def generate_unified_logic_inference(
                     }
             
             target_col = rel.get('target_column', '')
+            tgt_samples = None
             if target_col != '' and target_col != source_col:
                 tgt_samples = get_col_samples(target_col)
             if tgt_samples:

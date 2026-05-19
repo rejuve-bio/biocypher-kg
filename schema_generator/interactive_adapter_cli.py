@@ -124,6 +124,7 @@ def get_manual_config():
         
         adapter_name = list(config.keys())[0]
         config_path = f"data_source_schemas/adapter_configs/{adapter_name}.yaml"
+        Path(config_path).parent.mkdir(parents=True, exist_ok=True)
         with open(config_path, 'w') as f:
             yaml.dump(config, f, sort_keys=False)
         
@@ -165,6 +166,7 @@ def get_guided_config():
     }
     
     config_path = f"data_source_schemas/adapter_configs/{adapter_name}.yaml"
+    Path(config_path).parent.mkdir(parents=True, exist_ok=True)
     with open(config_path, 'w') as f:
         yaml.dump(config, f, sort_keys=False)
         
@@ -390,6 +392,7 @@ def main():
 
     # 7. Generate Adapter Specification
     spec_path = f"data_source_schemas/adapter_specs/{selected_adapter}_specification.yaml"
+    Path(spec_path).parent.mkdir(parents=True, exist_ok=True)
     spec_cmd = [
         "uv", "run", "python3", "-m", "schema_generator.llm_adapter_specification_generator",
         "--adapter-config", selected_config,

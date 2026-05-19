@@ -100,8 +100,10 @@ def generate_adapter_from_specification(
     generate_edges = adapter_type in ['edges_only', 'both']
 
     # Auto-detect if logic inference is needed
-    needs_logic_inference = adapter_type != 'nodes_only'
-    if adapter_type == 'nodes_only':
+    needs_logic_inference = use_logic_inference and (adapter_type != 'nodes_only')
+    if not use_logic_inference:
+        print("[*] Logic inference disabled by parameter/CLI flag")
+    elif adapter_type == 'nodes_only':
         print(f"[*] Adapter is nodes-only - skipping logic inference (no edges to enrich)")
     
     # Run unified logic inference if needed
@@ -281,7 +283,7 @@ def build_adapter_prompt(spec, args, adapter_name, inspection, unified_inference
             if target_col and ',' in str(target_col):
                 target_loc = f"COMPOSITE ID from columns: {target_col}"
             relationships_info += f"  Target ID location: {target_loc}\n"
-            relationships_info += f"  **MANDATORY YIELD FORMAT**: `yield (source_id, ('{target_type_str}', target_id), self.label, props)`\n"
+            relationships_info += f"  **MANDATORY YIELD FORMAT**: `yield (source_id, target_id, self.label, props)`\n"
         else:
             relationships_info += f"  **MANDATORY YIELD FORMAT (NODE)**: `yield (node_id, self.label, props)`\n"
 
@@ -635,7 +637,7 @@ Your class MUST adhere to these structural rules:
 ## FINAL ADHERENCE CHECKLIST (ABSOLUTE MANDATE)
 Before generating the code, verify that you have implemented the following EXACTLY:
 1. **PRESENCE CHECKS**: Did you add `if not source_id or not target_id: continue` (or similar) logic for required fields?
-2. **PROPERTIES & PROVENANCE**: Did you use the `_props['properties'] = properties` structure inside the `if self.write_properties:` block?
+2. **PROPERTIES & PROVENANCE**: Did you put properties directly inside the `_props` dictionary (e.g. `_props.update(properties)`) inside the `if self.write_properties:` block?
 # 3. **FILTERING**: Did you implement all filters from the **MANDATORY DATA FILTERING RULES** section (including column and argument filters)?
 # 4. **NO HARDCODED DATA VALUES**: Did you avoid hardcoding specific data values as filters (e.g., specific cell types, chromosomes, tissues)?
 
@@ -694,7 +696,7 @@ class ExampleAdapter(Adapter):
             # Construct _props with provenance
             _props = {}
             if self.write_properties:
-                _props['properties'] = properties
+                _props.update(properties)
                 if self.add_provenance:
                     _props['source'] = self.source
                     _props['source_url'] = self.source_url
@@ -756,5 +758,6 @@ if __name__ == "__main__":
         args.specification,
         adapter_config,
         args.adapter_name,
-        args.output
+        args.output,
+        use_logic_inference=not args.no_logic_inference
     )

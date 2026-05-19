@@ -64,7 +64,8 @@ def parse_specification_file(spec_path: str) -> dict:
             'expected_columns': spec.get('expected_columns', {}),
             'additional_file_instructions': spec.get('additional_file_instructions', []),
             'implementation_steps': spec.get('implementation_steps', []),
-            'processing_steps': spec.get('processing_steps', [])
+            'processing_steps': spec.get('processing_steps', []),
+            'main_file_param': spec.get('main_file_param')
         }
     except Exception as e:
         return {"error": str(e)}

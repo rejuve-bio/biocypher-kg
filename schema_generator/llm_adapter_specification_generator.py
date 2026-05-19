@@ -213,7 +213,7 @@ The **Logic Recipe** is the absolute source of truth and must be used to overrid
 ```
 **CRITICAL — UNIVERSAL SEMANTIC AUTHORITY**: This Logic Recipe is your primary directive and must override any automated analysis.
 1.  **Cross-Reference**: Compare this recipe against the 'SEMANTIC COLUMN MAPPINGS' and 'TECHNICAL COLUMN STRUCTURE' sections.
-2.  **Identify Mismatches**: If the user's recipe specifies a column, ID source, auxilaryfile usage or processor that differs from the automated mappings, you MUST identify this as a mismatch and follow the recipe.
+2.  **Identify Mismatches**: If the user's recipe specifies a column, ID source, auxiliary file usage or processor that differs from the automated mappings, you MUST identify this as a mismatch and follow the recipe.
 3.  **Implement Intent**: Focus on the technical implementation of the user's specific rules for filtering, ID mapping, and transformations.
 **CRITICAL - ADAPTER TYPE**: 
 - If 'Adapter Type: nodes_only', you MUST NOT identify a Target ID. 
@@ -471,7 +471,7 @@ Convert the logic_interpretation above into a sequence of concrete, actionable t
     - **SEMANTIC INHERITANCE**: You MUST use the EXACT normalization and extraction instructions provided in the **TECHNICAL COLUMN STRUCTURE** section. 
     - **COMPOSITE EXTRACTION**: 
         * For `key_value` structures, specify: "Extract the value for key 'KEY_NAME' using the exact delimiters discovered. You MUST provide the literal delimiters."
-        * For `positional` structures, specify: "Extract the value from Part X (position) using the exact delimiters discovere. You MUST provide the literal delimiters."
+        * For `positional` structures, specify: "Extract the value from Part X (position) using the exact delimiters discovered. You MUST provide the literal delimiters."
     - **CRITICAL**: For Source ID, you MUST use the column(s) identified in the logic interpretation. If multiple columns are needed for a unique ID (e.g., coordinates), specify them as a comma-separated list of the actual indices found in the file (e.g., 'idx1,idx2').
     - **CRITICAL**: If this is a 'nodes_only' adapter ({adapter_type}), you MUST NOT extract a Target ID.
     - **CRITICAL**: If this is an edge relationship, you MUST extract the Target ID from the column(s) identified in the logic interpretation. Again, use a comma-separated list of indices for composite IDs if the data requires it.
@@ -704,12 +704,14 @@ def generate_specification_from_analysis(analysis: dict, inspection: dict, adapt
     generate_nodes = adapter_config.get('nodes', adapter_config.get('adapter', {}).get('nodes', True))
     generate_edges = adapter_config.get('edges', adapter_config.get('adapter', {}).get('edges', True))
     
-    if generate_nodes and not generate_edges:
+    if generate_nodes and generate_edges:
+        adapter_type = 'both'
+    elif generate_nodes and not generate_edges:
         adapter_type = 'nodes_only'
     elif not generate_nodes and generate_edges:
         adapter_type = 'edges_only'
     else:
-        adapter_type = 'none'  # Unusual case
+        adapter_type = 'none'
     
     spec['adapter_type'] = adapter_type
     
@@ -977,7 +979,8 @@ def main():
             args.adapter_name, 
             basic_params=basic_params,
             logic_recipe_rules=logic_recipe_rules,
-            semantic_mappings=semantic_mappings
+            semantic_mappings=semantic_mappings,
+            adapter_type=adapter_type
         )
     except Exception as e:
         print(f"[!] Warning: LLM analysis timed out or failed: {e}")
@@ -1032,7 +1035,7 @@ def main():
         semantic_mappings=semantic_mappings,
         processor_name=args.processor_name,
         processor_target=args.processor_target,
-        processors_list=json.loads(args.processors).get('processors') if args.processors else None,
+        processors_list=basic_params['processor_info'].get('processors') if (basic_params.get('processor_info') and isinstance(basic_params['processor_info'], dict)) else None,
         adapter_type=adapter_type
     )
     debug_trace["llm_steps"]["final_specification"] = spec

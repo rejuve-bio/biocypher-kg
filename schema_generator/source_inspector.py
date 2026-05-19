@@ -180,6 +180,15 @@ class SourceInspector:
                 count += 1
                 continue
 
+            # Skip BED-style track and browser lines
+            if stripped.lower().startswith('track') and (len(stripped) == 5 or stripped[5] in (' ', '\t')):
+                count += 1
+                continue
+
+            if stripped.lower().startswith('browser') and (len(stripped) == 7 or stripped[7] in (' ', '\t')):
+                count += 1
+                continue
+
             if stripped.startswith('#'):
                 break
 
@@ -521,7 +530,7 @@ class SourceInspector:
         path_str = path_str.lower()
         
         valid_extensions = (
-            '.gz', '.zip', '.csv', '.tsv', '.txt',
+            '.gz', '.csv', '.tsv', '.txt',
             '.pkl', '.pickle', '.gtf', '.gff', '.bed', '.dat', '.vcf',
         )
         

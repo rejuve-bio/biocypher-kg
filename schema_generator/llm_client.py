@@ -126,7 +126,8 @@ def make_llm_client(project_root: Path = None, model_override: str = None):
         project_root: Project root path (auto-detected if None)
         model_override: Override the model from .env (useful for fixer models)
     """
-    env = _load_env(find_project_root(Path(__file__)))
+    env_root = Path(project_root) if project_root is not None else find_project_root(Path(__file__))
+    env = _load_env(env_root)
     groq_keys = env.get("_GROQ_API_KEYS", [])
     openrouter_keys = env.get("_OPENROUTER_API_KEYS", [])
     

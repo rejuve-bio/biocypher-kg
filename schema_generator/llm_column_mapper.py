@@ -109,32 +109,38 @@ class LLMColumnMapper:
             return []
         
         is_gzip = file_path.suffix == '.gz'
-        comment_prefix = self.metadata.get("comment_lines")
+        comment_lines = self.metadata.get("comment_lines", 0)
+        if not isinstance(comment_lines, int):
+            comment_lines = 0
         
         try:
             if is_gzip:
                 with gzip.open(file_path, 'rt', encoding='utf-8') as f:
+                    # Skip the counted comment lines first
+                    for _ in range(comment_lines):
+                        f.readline()
+                    
                     lines = []
                     for _ in range(100):
                         line = f.readline()
                         if not line: break
                         line = line.rstrip('\n\r')
-                        if comment_prefix and line.startswith(comment_prefix):
-                            continue
-                        # Also skip empty lines
+                        # Skip empty lines
                         if not line.strip():
                             continue
                         lines.append(line)
                         if len(lines) >= num_samples: break
             else:
                 with open(file_path, 'r', encoding='utf-8') as f:
+                    # Skip the counted comment lines first
+                    for _ in range(comment_lines):
+                        f.readline()
+                    
                     lines = []
                     for _ in range(100):
                         line = f.readline()
                         if not line: break
                         line = line.rstrip('\n\r')
-                        if comment_prefix and line.startswith(comment_prefix):
-                            continue
                         if not line.strip():
                             continue
                         lines.append(line)
