@@ -45,7 +45,7 @@ class UniprotProteinAdapter(Adapter):
                     if item != '-':
                         id = database_name + ':' + item
                         dbxrefs.append(id)
-            elif database_name in ['REFSEQ', 'ENSEMBL', 'MANE-SELECT']:
+            elif database_name in ['REFSEQ', 'ENSEMBL', 'MANE-SELECT',]:
                 for item in cross_reference[1:]:
                     if item != '-':
                         id = database_name + ':' + item.split('. ')[0]

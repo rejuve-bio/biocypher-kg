@@ -2320,7 +2320,7 @@ protein has_xref molecular_function:
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_molecular_function
-  output_label: has_xref
+  output_label: has_molecular_function
   source: protein
   target: molecular function
   kgx_properties:
@@ -2359,11 +2359,47 @@ protein has_xref transcript:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
+protein to pathway association:
+  description: >-
+    An interaction between a protein and a biological process or pathway.
+  is_a: annotation
+  mixins: [biolink:GeneToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_pathways
+  output_label: participates_in
+  source: protein
+  target: pathway
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:Pathway
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+protein to reaction association:
+  description: >-
+    An interaction between a protein and a reaction (Reactome).
+  is_a: annotation
+  biolink_predicate: biolink:participates_in
+  inherit_properties: true
+  represented_as: edge
+  input_label: protein_reaction
+  output_label: involved_in
+  source: protein
+  target: reaction
+  kgx_properties:
+    subject_category: biolink:Protein
+    object_category: biolink:MolecularActivity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
 reaction to pathway association:
   is_a: annotation
   biolink_predicate: biolink:part_of
   inherit_properties: true
-  description: holds between a reaction and a pathway
+  description: >-
+    holds between a reaction that is a part of a pathway
   represented_as: edge
   input_label: reaction_to_pathway
   output_label: part_of
@@ -2599,6 +2635,41 @@ transcription factor to gene association:
     detection_method: str
     database: str[]
     evidence_type: str
+
+transcript to pathway association:
+  description: >-
+    An interaction between a transcript and a biological process or pathway.
+  is_a: annotation
+  mixins: [biolink:GeneToPathwayAssociation]
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: transcript_pathways
+  output_label: participates_in
+  source: transcript
+  target: pathway
+  kgx_properties:
+    subject_category: "biolink:Transcript"
+    object_category: "biolink:Pathway"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+transcript to reaction association:
+  description: >-
+    An interaction between a transcript and a reaction (Reactome).
+  is_a: annotation
+  biolink_predicate: "biolink:participates_in"
+  inherit_properties: true
+  represented_as: edge
+  input_label: transcript_reaction
+  output_label: involved_in
+  source: transcript
+  target: reaction
+  kgx_properties:
+    subject_category: "biolink:Transcript"
+    object_category: "biolink:MolecularActivity"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
 
 translates to:
   is_a: expression
