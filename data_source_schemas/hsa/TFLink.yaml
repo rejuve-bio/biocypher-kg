@@ -10,7 +10,7 @@ relationships:
     source: gene
     target: gene
     properties:
-      evidence: str
-      evidence_type: str
       database: str
       detection_method: str
+      evidence: str
+      evidence_type: str

@@ -4,16 +4,17 @@ relationships:
   post translational interaction:
     url: https://string-db.org/
     input_label: interacts_with
-    output_label: interacts_with
     source: protein
     target: protein
     properties:
       score: float
-  protein coexpression:
+  protein to protein coexpression association:
     url: https://string-db.org/
     input_label: protein_coexpressed_with
     output_label: coexpressed_with
-    description: Proteins whose genes are co-expressed according to STRING coexpression scores.
+    description: Indicates that two proteins are co-expressed, generally under the
+      same conditions, as measured at the protein/transcript level (e.g. STRING coexpression
+      channel).
     source: protein
     target: protein
     properties:

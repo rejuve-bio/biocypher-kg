@@ -26,6 +26,7 @@ from biocypher_metta.processors import DBSNPProcessor
 from biocypher_metta.prolog_writer import PrologWriter
 from checkpoint_manager import CheckpointManager, prompt_resume_or_restart
 from config.yaml_loader import load_yaml_with_includes
+from schema_generator.generate_data_source_schemas import SchemaGenerator
 
 
 app = typer.Typer()
@@ -422,6 +423,50 @@ def _report_missing_paths(missing: dict, include_hint: bool = True) -> None:
     if include_hint:
         logger.error("")
         logger.error("Fix the paths above or run with --skip-preflight to bypass this check.")
+
+
+def _default_data_source_schema_output_dir(
+    species_name: Optional[str],
+    kg_output_dir: Path,
+) -> Path:
+    if species_name:
+        return Path("data_source_schemas") / species_name
+    return kg_output_dir / "data_source_schemas"
+
+
+def _generate_data_source_schemas(
+    schema_config_path: Path,
+    adapters_config_path: Path,
+    adapters_dict: dict,
+    output_dir: Path,
+):
+    """Generate data source schemas for the same adapter set used by the KG run."""
+    logger.info(f"Generating data source schemas in {output_dir}")
+    generator = SchemaGenerator(
+        str(schema_config_path),
+        str(adapters_config_path),
+        "biocypher_metta/adapters",
+        str(output_dir),
+        adapter_config_data=adapters_dict,
+    )
+    generator.generate_all_schemas(filter_adapters=list(adapters_dict.keys()))
+
+
+def _try_generate_data_source_schemas(
+    schema_config_path: Path,
+    adapters_config_path: Path,
+    adapters_dict: dict,
+    output_dir: Path,
+) -> None:
+    try:
+        _generate_data_source_schemas(
+            schema_config_path,
+            adapters_config_path,
+            adapters_dict,
+            output_dir,
+        )
+    except Exception:
+        logger.exception("Data source schema generation failed; KG output was already written.")
 
 
 def process_adapters(
@@ -861,6 +906,22 @@ def main(
         help="Specific adapters to include (space-separated, default: all)",
         case_sensitive=False,
     ),
+    generate_data_source_schemas: bool = typer.Option(
+        True,
+        "--generate-data-source-schemas/--no-generate-data-source-schemas",
+        help="Generate data source schema YAML files for the adapters used in this KG run.",
+    ),
+    data_source_schema_output_dir: Optional[Path] = typer.Option(
+        None,
+        file_okay=False,
+        dir_okay=True,
+        help=(
+            "Directory for generated data source schemas. Defaults to "
+            "data_source_schemas/<species> in species mode, or "
+            "<output-dir>/data_source_schemas in manual mode. "
+            "When --species all is used, each species is written under this directory."
+        ),
+    ),
     no_checkpoint: bool = typer.Option(
         False,
         "--no-checkpoint",
@@ -1054,6 +1115,18 @@ def main(
                         kg_format=writer_type,
                     )
 
+                    if generate_data_source_schemas:
+                        if data_source_schema_output_dir:
+                            schema_output_dir = data_source_schema_output_dir / sp
+                        else:
+                            schema_output_dir = _default_data_source_schema_output_dir(sp, sp_output_dir)
+                        _try_generate_data_source_schemas(
+                            sp_schema_config,
+                            sp_adapters_config,
+                            sp_adapters_dict,
+                            schema_output_dir,
+                        )
+
                     if ckpt is not None:
                         ckpt.delete()
 
@@ -1239,6 +1312,21 @@ def main(
             datasets_dict,
             kg_format=writer_type,
         )
+
+        if generate_data_source_schemas:
+            schema_output_dir = (
+                data_source_schema_output_dir
+                or _default_data_source_schema_output_dir(
+                    species if species_mode else None,
+                    output_dir,
+                )
+            )
+            _try_generate_data_source_schemas(
+                schema_config,
+                adapters_config,
+                adapters_dict,
+                schema_output_dir,
+            )
 
         if ckpt is not None:
             ckpt.delete()

@@ -10,8 +10,8 @@ relationships:
     source: snp
     target: gene
     properties:
-      p_value: float
       distance: int
+      p_value: float
   downstream gene to variant association:
     url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
     input_label: snp_downstream_gene
@@ -21,8 +21,8 @@ relationships:
     source: snp
     target: gene
     properties:
-      p_value: float
       distance: int
+      p_value: float
   in gene to variant association:
     url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
     input_label: snp_in_gene
@@ -32,5 +32,5 @@ relationships:
     source: snp
     target: gene
     properties:
-      p_value: float
       distance: int
+      p_value: float

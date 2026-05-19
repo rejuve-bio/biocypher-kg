@@ -9,15 +9,15 @@ relationships:
     source: snp
     target: gene
     properties:
-      p_value: str
-      maf: str
       biological_context: str
+      maf: str
+      p_value: str
       slope: str
   gene expressed in anatomy:
     url: https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz
     input_label: gene_expressed_in_anatomy
     output_label: expressed_in
-    description: holds between a gene and an anatomy ontology term in which it is expressed
+    description: holds between a gene and an anatomical entity in which it is expressed
     source: gene
     target: anatomy
     properties:

@@ -9,10 +9,10 @@ relationships:
     source: gene
     target: phenotype
     properties:
+      disease_id: str
+      frequency: str
       gene_symbol: str
       phenotype_name: str
-      frequency: str
-      disease_id: str
   gene to disease association:
     url: https://hpo.jax.org/
     input_label: gene_disease

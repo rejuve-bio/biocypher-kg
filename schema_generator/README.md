@@ -18,14 +18,114 @@ This tool analyzes adapter Python files to extract metadata and properties, cros
 
 ## Usage
 
-### Generate All Schemas
+### Automatic Generation During KG Creation
+
+Datasource schemas are generated automatically when you run `create_knowledge_graph.py`.
+The KG pipeline calls this generator after all selected adapters finish successfully and
+after `graph_info.json` is written.
 
 ```bash
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python create_knowledge_graph.py \
+  --species hsa \
+  --dataset sample \
+  --output-dir output/hsa_sample
+```
+
+For a full run:
+
+```bash
+uv run python create_knowledge_graph.py \
+  --species hsa \
+  --dataset full \
+  --output-dir output/hsa_full \
+  --dbsnp-cache-root /path/to/dbsnp \
+  --dbsnp-variant common
+```
+
+The datasource schema generator uses the same adapter config selected by the KG run:
+
+- `--dataset sample` uses `config/<species>/<species>_adapters_config_sample.yaml`
+- `--dataset full` uses `config/<species>/<species>_adapters_config.yaml`
+- `--include-adapters` narrows both the KG generation and datasource schema generation
+- If no `--include-adapters` filter is passed, all adapters in the selected dataset config are analyzed
+
+By default, species-mode output is written to:
+
+```text
+data_source_schemas/<species>
+```
+
+Manual mode writes to:
+
+```text
+<output-dir>/data_source_schemas
+```
+
+To override the schema output directory:
+
+```bash
+uv run python create_knowledge_graph.py \
+  --species hsa \
+  --dataset sample \
+  --output-dir output/hsa_sample \
+  --data-source-schema-output-dir data_source_schemas/hsa
+```
+
+When `--data-source-schema-output-dir` is provided for a single species, the path is
+used directly. With `--species all`, each species is written under that directory
+as `<data-source-schema-output-dir>/<species>`. The default species-mode path
+remains `data_source_schemas/<species>`.
+
+To disable automatic schema generation:
+
+```bash
+uv run python create_knowledge_graph.py \
+  --species hsa \
+  --dataset sample \
+  --output-dir output/hsa_sample \
+  --no-generate-data-source-schemas
+```
+
+Checkpointing is still responsible for the expensive KG adapter work. Datasource schema
+generation is a final post-processing step. If an adapter fails, schemas are not generated.
+If schema generation fails after the KG has been written, the failure is logged and the
+KG run is still allowed to complete.
+
+### Standalone Script
+
+You can still run the generator directly when you want to regenerate schemas without
+building a KG.
+
+### Generate All Schemas for a Species
+
+Use `--species` for exhaustive generation from the repo's full species adapter
+configuration. This also merges `config/primer_schema_config.yaml`, matching the KG
+pipeline's schema view.
+Species mode also includes commented-out adapter blocks from the adapter config and
+discovers adapter implementations under `biocypher_metta/adapters/<species>`, so it
+can regenerate schemas for species adapters that are not active in the KG build.
+
+```bash
+uv run python schema_generator/generate_data_source_schemas.py --species hsa
+```
+
+```bash
+uv run python schema_generator/generate_data_source_schemas.py --species dmel
+```
+
+The default output directories are:
+
+- `data_source_schemas/hsa`
+- `data_source_schemas/dmel`
+
+### Generate with Explicit Configs
+
+```bash
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated
+  --output-dir data_source_schemas/hsa
 ```
 
 ### Generate Schema for Specific Adapter(s)
@@ -34,19 +134,19 @@ Filter by adapter config name (only generates schema for that specific config en
 
 ```bash
 # Single adapter
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --adapter promoter_ccre
 
 # Multiple adapters
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --adapter promoter_ccre \
   --adapter proximal_enhancer_ccre
 ```
@@ -57,19 +157,19 @@ Filter by Python adapter module (generates schema for ALL configs using that ada
 
 ```bash
 # Single module - includes all nodes and edges
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --module candidate_cis_regulatory_promoter_adapter
 
 # Multiple modules
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --module candidate_cis_regulatory_promoter_adapter \
   --module uniprot_protein_adapter
 ```
@@ -82,21 +182,21 @@ The generator supports **incremental/append mode**. If a schema file already exi
 
 ```bash
 # Step 1: Generate schema for promoter adapter
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --module candidate_cis_regulatory_promoter_adapter
 
 # Result: ENCODE.yaml with 1 node (promoter) + 1 relationship
 
 # Step 2: Add enhancer adapter to existing ENCODE.yaml
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --module candidate_cis_regulatory_enhancer_adapter
 
 # Result: ENCODE.yaml now has 2 nodes (promoter, enhancer) + 2 relationships
@@ -106,25 +206,26 @@ python schema_generator/generate_data_source_schemas.py \
 - New nodes are appended to the `nodes` section
 - New relationships are appended to the `relationships` section
 - If a node/relationship already exists, its properties are merged (not overwritten)
+- Existing property types are preserved when an entry is regenerated
 - Existing entries remain in place
 
 ### Generate Schema for Specific Data Source(s)
 
 ```bash
 # Single data source
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --source "REACTOME"
 
 # Multiple data sources
-python schema_generator/generate_data_source_schemas.py \
-  --schema-config config/schema_config.yaml \
-  --adapter-config config/adapters_config.yaml \
+uv run python schema_generator/generate_data_source_schemas.py \
+  --schema-config config/hsa/hsa_schema_config.yaml \
+  --adapter-config config/hsa/hsa_adapters_config.yaml \
   --adapters-dir biocypher_metta/adapters \
-  --output-dir data_source_schemas_generated \
+  --output-dir data_source_schemas/hsa \
   --source "REACTOME" \
   --source "UniProt"
 ```
@@ -133,11 +234,13 @@ python schema_generator/generate_data_source_schemas.py \
 
 - `--schema-config`: Path to schema configuration YAML file
 - `--adapter-config`: Path to adapters configuration YAML file
-- `--adapters-dir`: Directory containing adapter Python files
-- `--output-dir`: Output directory for generated schema files
+- `--species`: (Optional) Generate all configured schemas for `hsa` or `dmel` using repo defaults
+- `--adapters-dir`: Directory containing adapter Python files. Defaults to `biocypher_metta/adapters`
+- `--output-dir`: Output directory for generated schema files. Defaults to `data_source_schemas/<species>` when `--species` is used
 - `--adapter`: (Optional) Generate schema only for specific adapter config name(s). Can be used multiple times.
 - `--module`: (Optional) Generate schema for all adapters using specific Python module(s). Recommended for complete schemas with all nodes and edges. Can be used multiple times.
 - `--source`: (Optional) Generate schema only for specific data source(s). Can be used multiple times.
+- `--include-inactive-adapters` / `--no-include-inactive-adapters`: Include commented-out adapter config blocks and discoverable species adapter files. Defaults to enabled with `--species`.
 
 ## Output
 
@@ -157,8 +260,8 @@ relationships:
   relationship_type:
     url: https://datasource.org/download
     input_label: edge_label
-    description: Edge description
     output_label: biolink_predicate
+    description: Edge description
     source: source_node_type
     target: target_node_type
     properties:
@@ -166,6 +269,11 @@ relationships:
 ```
 
 ## How It Works
+
+When invoked by `create_knowledge_graph.py`, the generator receives the already-loaded
+adapter dictionary from the KG pipeline. This ensures it analyzes the same adapters that
+were used to build the graph. When run as a standalone script, it loads `--adapter-config`
+from disk.
 
 ### 1. Adapter Analysis
 
@@ -185,13 +293,25 @@ Labels are resolved in the following order:
 1. **Config Args**: `adapter.args.label` in adapters_config.yaml
 2. **Init Signature**: Default parameter values in `__init__`
 3. **Init Assignment**: `self.label = 'value'` in `__init__`
-4. **Adapter Name**: Falls back to adapter name as last resort
+4. **Dynamic Label Candidates**: Schema-valid string values from adapter args
+5. **Adapter Label Maps**: String values from class-level dictionaries used as label maps
+6. **Label Assignments**: Schema-valid strings assigned to label-like variables or attributes
+7. **Yielded Labels**: Literal string labels yielded from `get_nodes()` or `get_edges()`
+8. **Adapter Name**: Falls back to adapter name as last resort
+
+Dynamic candidates are filtered against `schema_config.yaml` and the adapter mode. Node
+adapters only keep schema entries represented as nodes, and edge adapters only keep
+schema entries represented as edges. This lets one adapter config produce multiple
+schema entries when the adapter emits several labels from a map or branch logic.
 
 ### 3. Property Validation
 
 All extracted properties are validated against schema_config.yaml:
 - Properties defined in schema → Use schema type (int, float, str, etc.)
 - Properties not in schema → **Excluded** (strict validation)
+
+`output_label` is included only when the schema configuration explicitly defines it.
+If a schema element has no `output_label`, the datasource schema omits that field.
 - Inherited properties → Included via schema inheritance chain
 
 ### 4. Data Source Grouping
@@ -199,6 +319,10 @@ All extracted properties are validated against schema_config.yaml:
 Adapters are grouped by their `source` metadata:
 - Most adapters → Grouped by `self.source` value
 - Ontology adapters → Grouped under "OBO Foundry"
+
+Adapter modules in subpackages, such as `biocypher_metta.adapters.hsa.gwas_adapter`
+or `biocypher_metta.adapters.dmel.gene_group_adapter`, are resolved relative to
+`--adapters-dir`.
 
 ## Special Cases
 
@@ -249,8 +373,8 @@ _props = {'property1': value1}
 
 ## Requirements
 
-- Python 3.7+
-- PyYAML
+- Python 3.10+
+- Project dependencies installed with `uv sync`
 - BioCypher adapters with standard structure
 
 ## Example Output

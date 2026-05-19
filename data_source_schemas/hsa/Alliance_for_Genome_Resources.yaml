@@ -1,0 +1,98 @@
+name: Alliance for Genome Resources
+website: https://www.alliancegenome.org
+relationships:
+  gene biomarker via orthology disease:
+    url: https://www.alliancegenome.org/
+    input_label: biomarker_via_orthology
+    description: A gene is a biomarker for a disease via orthology relationship. From
+      Alliance for Genome Resources.
+    source: gene
+    target: disease
+    properties:
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
+  gene implicated via orthology disease:
+    url: https://www.alliancegenome.org/
+    input_label: implicated_via_orthology
+    description: A gene is implicated in a disease via orthology relationship. From
+      Alliance for Genome Resources.
+    source: gene
+    target: disease
+    properties:
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
+  gene is implicated in disease:
+    url: https://www.alliancegenome.org/
+    input_label: is_implicated_in
+    description: A gene is implicated in a disease. From Alliance for Genome Resources.
+    source: gene
+    target: disease
+    properties:
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
+  gene to disease marker association:
+    url: https://www.alliancegenome.org/
+    input_label: is_marker_for
+    description: Gene is a marker for a disease
+    source: gene
+    target: disease
+    properties:
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
+  orthology association:
+    url: https://www.alliancegenome.org/
+    input_label: orthologs_genes
+    output_label: ortholog_of
+    description: Non-directional association between two genes indicating that there
+      is an orthology relation among them. It  is a historical homology that involves
+      genes that diverged after a speciation event (purl.obolibrary.org/obo/RO_HOM0000017)
+    source: gene
+    target: gene
+    properties:
+      source_organism: str
+      target_organism_taxon_id: int
+      taxon_id: int
+  gene to disease model association:
+    url: https://www.alliancegenome.org/
+    input_label: is_model_of
+    description: Gene is a model for disease
+    source: gene
+    target: disease
+    properties:
+      data_source: str
+      date: str
+      evidence_code: str
+      evidence_code_name: str
+      inferred_from_id: str
+      inferred_from_symbol: str
+      reference: str
+      taxon_id: int
+      with_ortholog: str
