@@ -2320,7 +2320,7 @@ protein has_xref molecular_function:
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_molecular_function
-  output_label: has_xref
+  output_label: has_molecular_function
   source: protein
   target: molecular function
   kgx_properties:
