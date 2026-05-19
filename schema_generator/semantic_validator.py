@@ -299,7 +299,7 @@ def validate_semantic_correctness(
     else:
         if llm_fn is None:
             llm_fn = make_llm_client(
-                find_project_root(Path(__file__)), model_override="llama-3.1-8b-instant"
+                find_project_root(Path(__file__))
             )
 
         print("[*] Running LLM semantic review...")
