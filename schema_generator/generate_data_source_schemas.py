@@ -684,16 +684,21 @@ class SchemaGenerator:
         return 1 + max((self.get_type_depth(parent, visited) for parent in parents), default=0)
 
     def get_schema_type_info(self, input_label: str) -> Optional[Dict]:
+        matches = self.get_schema_type_infos(input_label)
+        return matches[0] if matches else None
+
+    def get_schema_type_infos(self, input_label: str) -> List[Dict]:
+        matches = []
         for type_name, type_config in self.schema_config.items():
             if not isinstance(type_config, dict):
                 continue
             labels = type_config.get('input_label')
             if labels == input_label or (isinstance(labels, list) and input_label in labels):
-                return {
+                matches.append({
                     'name': type_name,
                     'config': type_config
-                }
-        return None
+                })
+        return matches
 
     def get_type_by_name(self, type_name: str) -> Optional[Dict]:
         if type_name in self.schema_config:
@@ -733,8 +738,13 @@ class SchemaGenerator:
         all_props.update(direct_props)
         return all_props
 
-    def get_valid_properties(self, input_label: str, adapter_props: Set[str]) -> Dict[str, str]:
-        type_info = self.get_schema_type_info(input_label)
+    def get_valid_properties(
+        self,
+        input_label: str,
+        adapter_props: Set[str],
+        type_info: Optional[Dict] = None,
+    ) -> Dict[str, str]:
+        type_info = type_info or self.get_schema_type_info(input_label)
         if not type_info:
             return {}
 
@@ -965,97 +975,98 @@ class SchemaGenerator:
             adapter_source_url = adapter_data['source_url'] if adapter_data['source_url'] else ''
 
             for label in self.get_labels_for_adapter_config(adapter_name, adapter_cfg, adapter_data):
-                type_info = self.get_schema_type_info(label)
-                if not type_info:
+                type_infos = self.get_schema_type_infos(label)
+                if not type_infos:
                     print(f"  Warning: No schema config found for label: {label} (adapter: {adapter_name})")
                     continue
 
-                type_config = type_info['config']
-                type_name = type_info['name']
-                output_label = type_config.get('output_label')
-                is_edge = type_config.get('represented_as') == 'edge'
+                for type_info in type_infos:
+                    type_config = type_info['config']
+                    type_name = type_info['name']
+                    output_label = type_config.get('output_label')
+                    is_edge = type_config.get('represented_as') == 'edge'
 
-                # Process nodes
-                if writes_nodes and not is_edge:
-                    node_props = analyzer.get_properties_for_label('get_nodes', label, 1, 2)
-                    if not node_props:
-                        node_props = analyzer.get_node_properties()
+                    # Process nodes
+                    if writes_nodes and not is_edge:
+                        node_props = analyzer.get_properties_for_label('get_nodes', label, 1, 2)
+                        if not node_props:
+                            node_props = analyzer.get_node_properties()
 
-                    if is_ontology_adapter:
-                        ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
-                        parent_props = analyzer.get_parent_class_properties('get_nodes', ontology_adapter_path)
-                        node_props = node_props.union(parent_props)
+                        if is_ontology_adapter:
+                            ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
+                            parent_props = analyzer.get_parent_class_properties('get_nodes', ontology_adapter_path)
+                            node_props = node_props.union(parent_props)
 
-                    valid_props = self.get_valid_properties(label, node_props)
-                    description = type_config.get('description', '')
+                        valid_props = self.get_valid_properties(label, node_props, type_info=type_info)
+                        description = type_config.get('description', '')
 
-                    # Add or update node
-                    if type_name not in nodes:
-                        nodes[type_name] = {
-                            'url': adapter_source_url,
-                            'input_label': label,
-                        }
-                        if output_label:
-                            nodes[type_name]['output_label'] = output_label
-                        if description:
-                            nodes[type_name]['description'] = description.strip()
-                        if valid_props:
-                            nodes[type_name]['properties'] = valid_props
-                    else:
-                        if output_label:
-                            nodes[type_name]['output_label'] = output_label
+                        # Add or update node
+                        if type_name not in nodes:
+                            nodes[type_name] = {
+                                'url': adapter_source_url,
+                                'input_label': label,
+                            }
+                            if output_label:
+                                nodes[type_name]['output_label'] = output_label
+                            if description:
+                                nodes[type_name]['description'] = description.strip()
+                            if valid_props:
+                                nodes[type_name]['properties'] = valid_props
                         else:
-                            nodes[type_name].pop('output_label', None)
-                        # Merge properties if node already exists
-                        if valid_props:
-                            if 'properties' not in nodes[type_name]:
-                                nodes[type_name]['properties'] = {}
-                            for prop, prop_type in valid_props.items():
-                                nodes[type_name]['properties'].setdefault(prop, prop_type)
+                            if output_label:
+                                nodes[type_name]['output_label'] = output_label
+                            else:
+                                nodes[type_name].pop('output_label', None)
+                            # Merge properties if node already exists
+                            if valid_props:
+                                if 'properties' not in nodes[type_name]:
+                                    nodes[type_name]['properties'] = {}
+                                for prop, prop_type in valid_props.items():
+                                    nodes[type_name]['properties'].setdefault(prop, prop_type)
 
-                # Process edges
-                elif writes_edges and is_edge:
-                    edge_props = analyzer.get_properties_for_label('get_edges', label, 2, 3)
-                    if not edge_props:
-                        edge_props = analyzer.get_edge_properties()
+                    # Process edges
+                    elif writes_edges and is_edge:
+                        edge_props = analyzer.get_properties_for_label('get_edges', label, 2, 3)
+                        if not edge_props:
+                            edge_props = analyzer.get_edge_properties()
 
-                    if is_ontology_adapter:
-                        ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
-                        parent_props = analyzer.get_parent_class_properties('get_edges', ontology_adapter_path)
-                        edge_props = edge_props.union(parent_props)
+                        if is_ontology_adapter:
+                            ontology_adapter_path = self.adapters_dir / 'ontologies_adapter.py'
+                            parent_props = analyzer.get_parent_class_properties('get_edges', ontology_adapter_path)
+                            edge_props = edge_props.union(parent_props)
 
-                    valid_props = self.get_valid_properties(label, edge_props)
-                    description = type_config.get('description', '')
-                    source = type_config.get('source')
-                    target = type_config.get('target')
+                        valid_props = self.get_valid_properties(label, edge_props, type_info=type_info)
+                        description = type_config.get('description', '')
+                        source = type_config.get('source')
+                        target = type_config.get('target')
 
-                    # Add or update relationship
-                    if type_name not in relationships:
-                        relationships[type_name] = {
-                            'url': adapter_source_url,
-                            'input_label': label,
-                        }
-                        if output_label:
-                            relationships[type_name]['output_label'] = output_label
-                        if description:
-                            relationships[type_name]['description'] = description.strip()
-                        if source:
-                            relationships[type_name]['source'] = source
-                        if target:
-                            relationships[type_name]['target'] = target
-                        if valid_props:
-                            relationships[type_name]['properties'] = valid_props
-                    else:
-                        if output_label:
-                            relationships[type_name]['output_label'] = output_label
+                        # Add or update relationship
+                        if type_name not in relationships:
+                            relationships[type_name] = {
+                                'url': adapter_source_url,
+                                'input_label': label,
+                            }
+                            if output_label:
+                                relationships[type_name]['output_label'] = output_label
+                            if description:
+                                relationships[type_name]['description'] = description.strip()
+                            if source:
+                                relationships[type_name]['source'] = source
+                            if target:
+                                relationships[type_name]['target'] = target
+                            if valid_props:
+                                relationships[type_name]['properties'] = valid_props
                         else:
-                            relationships[type_name].pop('output_label', None)
-                        # Merge properties if relationship already exists
-                        if valid_props:
-                            if 'properties' not in relationships[type_name]:
-                                relationships[type_name]['properties'] = {}
-                            for prop, prop_type in valid_props.items():
-                                relationships[type_name]['properties'].setdefault(prop, prop_type)
+                            if output_label:
+                                relationships[type_name]['output_label'] = output_label
+                            else:
+                                relationships[type_name].pop('output_label', None)
+                            # Merge properties if relationship already exists
+                            if valid_props:
+                                if 'properties' not in relationships[type_name]:
+                                    relationships[type_name]['properties'] = {}
+                                for prop, prop_type in valid_props.items():
+                                    relationships[type_name]['properties'].setdefault(prop, prop_type)
 
         if nodes:
             schema['nodes'] = nodes
