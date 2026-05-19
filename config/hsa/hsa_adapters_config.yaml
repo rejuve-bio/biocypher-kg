@@ -388,9 +388,9 @@ reaction to biological process:
       write_properties: true
       add_provenance: true
       label: reaction_to_biological_process
-      subontology: molecular_function
+      subontology: biological_process
       taxon_id: 9606      
-  outdir: reactome/molecular_function
+  outdir: reactome/biological_process
   nodes: false
   edges: true
 
