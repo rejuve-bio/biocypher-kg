@@ -401,25 +401,65 @@ def _llm_call_2_requirements(analysis: dict, llm, semantic_mappings: dict = None
     Takes the analysis dict from Call 1 and produces a COMPLETE sequence of
     technical steps, including ID extraction, property mapping, and processor usage.
     """
+    print(f"[DEBUG] _llm_call_2_requirements RECEIVED semantic_mappings: {semantic_mappings is not None}, has structure_analysis: {semantic_mappings.get('structure_analysis') is not None if semantic_mappings else False}")
+
 
     # Add semantic context if available
     semantic_context = ""
     if semantic_mappings and semantic_mappings.get('structure_analysis'):
         struct = semantic_mappings['structure_analysis']
         semantic_context = "\n## TECHNICAL COLUMN STRUCTURE (MANDATORY IMPLEMENTATION DETAILS):\n"
+        print(f"[DEBUG] Building semantic context from structure_analysis: {len(struct.get('columns', {}))} columns")
         
         for col_idx, col_info in struct.get('columns', {}).items():
             if col_info.get('normalization'):
                 semantic_context += f"- **Column {col_idx} NORMALIZATION**: {col_info['normalization']}\n"
             
+            # ONLY add composite instructions if column is actually composite
             if col_info.get('is_composite'):
+                print(f"[DEBUG] Column {col_idx} is COMPOSITE - adding extraction instructions")
+                col_structure = str(col_info.get('structure', '')).lower()
+                is_key_value = 'key-value' in col_structure or 'key_value' in col_structure
                 semantic_context += f"- **Column {col_idx} COMPOSITE STRUCTURE**:\n"
+                semantic_context += f"  - Structure type: {col_info.get('structure', 'unknown')}\n"
                 semantic_context += f"  - Delimiters found: {col_info.get('internal_delimiters', [])}\n"
+                
+                # ONLY add regex requirements for key-value composite columns
+                if is_key_value:
+                    print(f"[DEBUG] Column {col_idx} is KEY-VALUE composite - REGEX PATTERNS REQUIRED")
+                    semantic_context += (
+                        f"  - **EXTRACTION INSTRUCTIONS (CRITICAL - REGEX REQUIRED)**: This column contains KEY-VALUE PAIRS. "
+                        f"For EACH key below, you MUST:\n"
+                        f"    1. Analyze the raw example format to determine the exact regex pattern needed to extract the VALUE (not the key).\n"
+                        f"    2. The pattern MUST match the exact delimiters and structure shown in the example.\n"
+                        f"    3. **MANDATORY**: Your implementation step MUST include the explicit regex pattern in backticks.\n"
+                        f"    4. Format: 'Extract the value for key \"KEY_NAME\" using regex pattern `YOUR_PATTERN_HERE` to match the raw format \"EXAMPLE_FORMAT\". Apply normalization: RULE.'\n"
+                        f"    5. Apply ANY normalization listed (e.g., remove version, remove quotes).\n"
+                        f"    6. Do NOT split the column and index positionally — keys appear in varying order.\n\n"
+                    )
+                else:
+                    print(f"[DEBUG] Column {col_idx} is composite but NOT key-value - no regex patterns required")
+                
                 if col_info.get('parts'):
                     for p_idx, part in enumerate(col_info['parts']):
-                        semantic_context += f"    * Part {p_idx}: {part.get('type')} ({part.get('position')})\n"
-                        if part.get('normalization'):
-                            semantic_context += f"      - **NORMALIZATION REQUIRED**: {part['normalization']}\n"
+                        key_name = part.get('type', '')
+                        example_raw = part.get('example', '')
+                        if is_key_value:
+                            semantic_context += f"    * **Key '{key_name}'**:\n"
+                            semantic_context += f"      - Raw example from data: `{example_raw}`\n"
+                            semantic_context += f"      - Full context example in column: `{key_name} \"{example_raw}\"`\n"
+                            semantic_context += f"      - Your generated step MUST say: 'Extract {key_name} using regex to match `{key_name} \"value\"` format'\n"
+                            semantic_context += f"      - Then apply normalization: "
+                            if part.get('normalization'):
+                                semantic_context += f"{part['normalization']}\n"
+                            else:
+                                semantic_context += f"Keep as-is (no normalization)\n"
+                        else:
+                            semantic_context += f"    * Part {p_idx}: {part.get('type')} ({part.get('position')})\n"
+                            if part.get('normalization'):
+                                semantic_context += f"      - **NORMALIZATION REQUIRED**: {part['normalization']}\n"
+            else:
+                print(f"[DEBUG] Column {col_idx} is NOT composite - no special extraction instructions")
         
         if struct.get('source_id_example'):
             semantic_context += f"- **Source ID Example**: {struct['source_id_example']}\n"
@@ -428,6 +468,12 @@ def _llm_call_2_requirements(analysis: dict, llm, semantic_mappings: dict = None
             
         semantic_context += "\n**CRITICAL**: Your technical steps MUST exactly match the delimiter sequence and column indices described in the technical structure. Do NOT guess the delimiters.\n"
 
+    # Debug: print what semantic context was built
+    if semantic_context:
+        print(f"[DEBUG] Semantic context FINAL - {len(semantic_context)} chars, includes: composite={('COMPOSITE STRUCTURE' in semantic_context)}, key-value={('KEY-VALUE' in semantic_context)}, examples={('Raw example from data' in semantic_context)}")
+        if 'COMPOSITE STRUCTURE' in semantic_context:
+            print(f"[DEBUG] Semantic context PREVIEW (first 500 chars):\n{semantic_context[:500]}")
+    
     prompt = f"""
 ## CONTEXT: Adapter Analysis Already Completed
 
@@ -469,8 +515,10 @@ Convert the logic_interpretation above into a sequence of concrete, actionable t
     - **CRITICAL**: Only Source ID and Target ID are mandatory for row validity. Do NOT generate steps that skip rows solely because a property (score, prediction, etc.) is missing. Instead, map missing property values to `None`.
 4. **ID Extraction & Mapping**: State exactly which columns provide the raw IDs. 
     - **SEMANTIC INHERITANCE**: You MUST use the EXACT normalization and extraction instructions provided in the **TECHNICAL COLUMN STRUCTURE** section. 
-    - **COMPOSITE EXTRACTION**: 
-        * For `key_value` structures, specify: "Extract the value for key 'KEY_NAME' using the exact delimiters discovered. You MUST provide the literal delimiters."
+    - **COMPOSITE EXTRACTION (CRITICAL - REGEX PATTERNS MANDATORY)**: 
+        * For `key_value` structures, you MUST analyze the raw example format and specify the EXPLICIT regex pattern that matches it.
+        * Format: "Extract the value for key 'KEY_NAME' using regex pattern `YOUR_INFERRED_PATTERN` to match the raw format 'ACTUAL_RAW_FORMAT_FROM_DATA'. Apply normalization: NORMALIZATION_RULE."
+        * The regex pattern is NOT optional - it MUST be included in backticks for every key extraction step, and must be inferred from the actual data format.
         * For `positional` structures, specify: "Extract the value from Part X (position) using the exact delimiters discovered. You MUST provide the literal delimiters."
     - **CRITICAL**: For Source ID, you MUST use the column(s) identified in the logic interpretation. If multiple columns are needed for a unique ID (e.g., coordinates), specify them as a comma-separated list of the actual indices found in the file (e.g., 'idx1,idx2').
     - **CRITICAL**: If this is a 'nodes_only' adapter ({adapter_type}), you MUST NOT extract a Target ID.
@@ -510,6 +558,8 @@ Return ONLY valid JSON:
 """
 
     print("[*] LLM Call 2/2 — Generating comprehensive implementation steps...")
+    print(f"[DEBUG] Semantic context length: {len(semantic_context)} chars, includes COMPOSITE: {'COMPOSITE STRUCTURE' in semantic_context}")
+    print(f"[DEBUG] FINAL PROMPT will include semantic_context: {len(semantic_context) > 0}")
     try:
         response = llm(
             prompt,
@@ -769,6 +819,14 @@ def generate_specification_from_analysis(analysis: dict, inspection: dict, adapt
 
         logic_specific_requirements = analysis.get('logic_requirements', [])
         comprehensive_steps.extend(logic_specific_requirements)
+        
+        # Add filename pattern extraction if source or target uses filename
+        filename_pattern = metadata.get('filename_pattern')
+        if filename_pattern and filename_pattern.get('filename_is_data'):
+            if rel_entry.get('source_column') == 'filename':
+                comprehensive_steps.append(f"- Extract source ID from filename using pattern: {filename_pattern.get('filter_code', 'filename')}")
+            if rel_entry.get('target_column') == 'filename':
+                comprehensive_steps.append(f"- Extract target ID from filename using pattern: {filename_pattern.get('filter_code', 'filename')}")
 
         # Standard safety steps
         comprehensive_steps.extend([

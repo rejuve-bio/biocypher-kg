@@ -17,7 +17,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
 from schema_generator.llm_client import make_llm_client, find_project_root
-from schema_generator.code_fixer import extract_json
+from schema_generator.code_fixer import extract_json, extract_code, validate_syntax
 
 
 # Known biological identifier regex patterns keyed by entity type keyword
@@ -162,11 +162,53 @@ def _check_id_patterns(
 
 
 # ---------------------------------------------------------------------------
-# Layer 3 — LLM semantic review
+# Layer 3 — LLM semantic review (+ repair in same call)
 # ---------------------------------------------------------------------------
 
+def _build_spec_context(spec: dict) -> str:
+    """Original specification context block for combined review+repair prompt."""
+    purpose = spec.get("analysis", {}).get("purpose", "N/A")
+    rel_summary = [
+        {
+            "name": r.get("name"),
+            "source": r.get("source"),
+            "source_column": r.get("source_column"),
+            "target": r.get("target"),
+            "target_column": r.get("target_column"),
+        }
+        for r in spec.get("relationships", [])
+    ]
+    steps = []
+    for rel in spec.get("relationships", []):
+        rel_steps = rel.get("implementation", {}).get("steps", [])
+        steps.extend(rel_steps)
+    if not steps:
+        steps = spec.get("implementation_steps", [])
+
+    spec_context = f"""
+## Original Specification Context
+Purpose: {purpose}
+Relationships: {json.dumps(rel_summary, indent=2)}
+Implementation Steps:
+"""
+    for step in steps:
+        spec_context += f"- {step}\n"
+    return spec_context
+
+
+def _build_error_summary(static_warnings: List[str], static_errors: List[str]) -> str:
+    """Semantic errors from static layers for the combined review+repair prompt."""
+    lines = [f"- {e}" for e in static_errors] + [f"- {w}" for w in static_warnings]
+    return "\n".join(lines) if lines else "(none identified by static checks)"
+
+
 def _llm_semantic_review(
-    code: str, spec: dict, inspection: dict, llm_fn
+    code: str,
+    spec: dict,
+    inspection: dict,
+    llm_fn,
+    static_warnings: Optional[List[str]] = None,
+    static_errors: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Ask a lightweight LLM to review whether the generated adapter correctly
@@ -186,32 +228,55 @@ def _llm_semantic_review(
     ]
 
     sample_rows = []
+    expected_delimiter = spec.get("data_format", {}).get("delimiter", "\\t")
     if inspection.get("main_file"):
-        sample_rows = inspection["main_file"].get("sample_rows", [])[:3]
+        sample_rows = inspection["main_file"].get("metadata", {}).get("sample_rows", [])[:3]
 
     # Send only the first 100 lines of code to keep the prompt small
     code_preview = "\n".join(code.splitlines()[:100])
+    revalidation_instructions = ""
+    composite_instructions = ""
 
-    prompt = f"""You are reviewing a generated BioCypher adapter for semantic correctness.
+    spec_context = _build_spec_context(spec)
+    error_summary = _build_error_summary(static_warnings or [], static_errors or [])
+    has_static_issues = bool(static_warnings or static_errors)
+    intro = (
+        "You are an expert BioCypher adapter developer. The following adapter code has "
+        "semantic issues identified by our validator (see below). Review it and repair if needed.\n\n"
+        if has_static_issues
+        else "You are reviewing a generated BioCypher adapter for semantic correctness.\n\n"
+    )
 
-## Spec Intent
+    prompt = f"""{intro}## Spec Intent
 Purpose: {purpose}
 
 ## Expected Relationships / Entities
 {json.dumps(rel_summary, indent=2)}
 
+## Data Format (from specification)
+- Expected Delimiter: {repr(expected_delimiter)}
+- CRITICAL: The code MUST use this delimiter. Do NOT suggest changing it based on sample data appearance.
+
 ## Sample Data Rows (from real file)
-{json.dumps(sample_rows, indent=2)}
+{json.dumps(sample_rows, indent=2)}{revalidation_instructions}{composite_instructions}
+
+{spec_context}
+## Semantic Errors Identified:
+{error_summary}
 
 ## Generated Code (first 100 lines)
 ```python
 {code_preview}
 ```
 
+## Broken Code:
+```python
+{code}
+```
+
 ## Review Checklist
 1. Does the code extract source_id / node_id / target_id from the correct columns declared in the spec?
 2. Do the sample data values at those columns look like valid biological identifiers for the declared entity type?
-3. Is there any obvious mismatch between what the spec asks for and what the code does (wrong column, wrong label, wrong delimiter)?
 
 Return ONLY valid JSON — no markdown, no explanation outside the JSON:
 {{
@@ -220,20 +285,49 @@ Return ONLY valid JSON — no markdown, no explanation outside the JSON:
   "id_extraction_correct": true | false,
   "issues": ["list any specific semantic issues found; empty list if none"],
   "summary": "one sentence"
-}}"""
+}}
+
+If verdict is "warning" or "fail", after the JSON object apply these repair instructions and output the fixed code:
+
+## Instructions:
+1. Analyze the semantic errors.
+2. Fix the Python code so it correctly implements the expected extraction logic (e.g. use the correct column indices, extract correct IDs).
+3. CRITICAL: Make sure you DO NOT accidentally remove other logic from the code that satisfies the original specification (such as stripping version numbers, adding properties, etc). Use the Original Specification Context above to ensure all requirements are met.
+4. Return ONLY the complete fixed Python code inside a ```python block."""
 
     system = (
-        "You are a bioinformatics code reviewer. "
-        "Be concise and precise. Return only valid JSON."
+        "You are a bioinformatics code reviewer and BioCypher adapter developer. "
+        "Be concise and precise. Return valid JSON first; if verdict is warning or fail, "
+        "then return the complete fixed Python code in a ```python block."
     )
     try:
         response = llm_fn(prompt, system=system)
         result = extract_json(response)
-        return result if result else {
-            "verdict": "unknown", "issues": [], "summary": "LLM review returned no parseable JSON"
-        }
+        if not result:
+            return {
+                "verdict": "unknown", "issues": [], "summary": "LLM review returned no parseable JSON"
+            }
+        verdict = result.get("verdict", "unknown")
+        if verdict in ("warning", "fail"):
+            fixed_code = extract_code(response)
+            if fixed_code:
+                is_valid, _ = validate_syntax(fixed_code)
+                if is_valid:
+                    result["fixed_code"] = fixed_code
+        return result
     except Exception as e:
         return {"verdict": "unknown", "issues": [str(e)], "summary": f"LLM review error: {e}"}
+
+
+def apply_semantic_fix_from_report(semantic_report: dict) -> Optional[str]:
+    """
+    Return fixed adapter code from the combined review+repair LLM call, if present and valid.
+    """
+    fixed_code = (semantic_report.get("llm_review") or {}).get("fixed_code")
+    if not fixed_code:
+        return None
+    is_valid, _ = validate_syntax(fixed_code)
+    return fixed_code if is_valid else None
 
 
 # ---------------------------------------------------------------------------
@@ -276,7 +370,7 @@ def validate_semantic_correctness(
     spec_ids = _extract_spec_id_info(spec)
     sample_rows: List[List[str]] = []
     if inspection.get("main_file"):
-        sample_rows = inspection["main_file"].get("sample_rows", [])
+        sample_rows = inspection["main_file"].get("metadata", {}).get("sample_rows", [])
 
     # --- Layer 1: static column reference check ---
     p, w = _check_column_references(code, spec_ids)
@@ -284,14 +378,16 @@ def validate_semantic_correctness(
     results["warnings"].extend(w)
 
     # --- Layer 2: biological ID pattern check ---
-    if sample_rows:
-        p, w = _check_id_patterns(sample_rows, spec_ids)
-        results["passed"].extend(p)
-        results["warnings"].extend(w)
-    else:
-        results["warnings"].append(
-            "No sample rows available in inspection data — skipping ID pattern validation"
-        )
+    # DISABLED: This check causes false positives for structured columns (like GTF attributes)
+    # that need parsing before ID extraction. The raw column value doesn't match ID patterns.
+    # if sample_rows:
+    #     p, w = _check_id_patterns(sample_rows, spec_ids)
+    #     results["passed"].extend(p)
+    #     results["warnings"].extend(w)
+    # else:
+    #     results["warnings"].append(
+    #         "No sample rows available in inspection data — skipping ID pattern validation"
+    #     )
 
     # --- Layer 3: LLM semantic review ---
     if skip_llm:
@@ -303,7 +399,14 @@ def validate_semantic_correctness(
             )
 
         print("[*] Running LLM semantic review...")
-        llm_result = _llm_semantic_review(code, spec, inspection, llm_fn)
+        llm_result = _llm_semantic_review(
+            code,
+            spec,
+            inspection,
+            llm_fn,
+            static_warnings=list(results["warnings"]),
+            static_errors=list(results["errors"]),
+        )
         results["llm_review"] = llm_result
 
         verdict = llm_result.get("verdict", "unknown")

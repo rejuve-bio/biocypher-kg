@@ -52,7 +52,7 @@ def llm_fix_syntax_error(code: str, error_msg: str, llm_fn: Optional[Callable] =
         return None
     
     if llm_fn is None:
-        llm_fn = make_llm_client(find_project_root(Path(__file__)), model_override="llama-3.1-8b-instant")
+        llm_fn = make_llm_client(find_project_root(Path(__file__)))
     
     prompt = f"""You are a Python syntax error fixer. Fix the syntax error in this code.
 

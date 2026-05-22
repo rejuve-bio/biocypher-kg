@@ -15,7 +15,11 @@ from schema_generator.source_inspector import SourceInspector
 
 from schema_generator.inspector_utils import inspect_adapter_files, build_inspection_context
 from schema_generator.code_fixer import fix_code_hallucinations
-from schema_generator.semantic_validator import validate_semantic_correctness, print_semantic_report
+from schema_generator.semantic_validator import (
+    validate_semantic_correctness,
+    print_semantic_report,
+    apply_semantic_fix_from_report,
+)
 
 
 
@@ -148,8 +152,8 @@ def generate_adapter_from_specification(
     llm = make_llm_client()
     response = llm(prompt)
     
-    from schema_generator.code_fixer import extract_json
-    result = extract_json(response)
+    from schema_generator.code_fixer import extract_adapter_json
+    result = extract_adapter_json(response)
     
     reasoning = ""
     if result and 'code' in result:
@@ -186,13 +190,25 @@ def generate_adapter_from_specification(
 
     print(f"[+] Syntax validation passed")
 
-    # Semantic hallucination validation
+    # Semantic validation (review + repair in one LLM call)
     semantic_report = validate_semantic_correctness(code, spec, inspection)
     print_semantic_report(semantic_report)
-    if semantic_report["overall_verdict"] == "fail":
-        print("[!] Semantic validation FAILED — the generated code may use wrong columns or produce invalid IDs.")
-        print("[!] Review the issues above, add a Logic Recipe to clarify the mapping, and re-run.")
-        # Save debug trace with semantic report before exiting
+
+    fixed_code = apply_semantic_fix_from_report(semantic_report)
+    if fixed_code:
+        print("[+] Applying semantic repair from review...")
+        code = fixed_code
+        semantic_report_2 = validate_semantic_correctness(code, spec, inspection, skip_llm=True)
+        print_semantic_report(semantic_report_2)
+        if semantic_report_2["overall_verdict"] == "pass":
+            print("[+] Semantic validation PASSED after repair")
+        elif semantic_report_2["overall_verdict"] == "fail":
+            print("[!] Semantic validation still failed after repair — proceeding anyway")
+        semantic_report = semantic_report_2
+    elif semantic_report["overall_verdict"] == "fail":
+        print("[!] Semantic validation failed and no repair code was produced — proceeding anyway")
+
+    if semantic_report.get("llm_review") or semantic_report["overall_verdict"] != "pass":
         try:
             debug_dir = Path("debug_traces")
             debug_dir.mkdir(exist_ok=True)
@@ -200,7 +216,6 @@ def generate_adapter_from_specification(
                 json.dump(semantic_report, f, indent=2)
         except Exception:
             pass
-        sys.exit(1)
 
     import datetime
     if implementation_steps:
