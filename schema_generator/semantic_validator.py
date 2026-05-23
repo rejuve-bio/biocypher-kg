@@ -2,13 +2,11 @@
 
 Catches hallucinations that pass syntax checks but are biologically wrong:
 - Wrong column used for source_id / target_id / node_id
-- ID values that don't match the expected biological identifier format
 - Structural mismatches between spec intent and generated logic
 
-Three-layer approach:
-  1. Column index static check  — does the code reference the columns the spec declared?
-  2. ID pattern check           — do sample-row values look like the right biological IDs?
-  3. LLM semantic review        — holistic review of spec intent vs generated logic
+Two-layer approach:
+    1. Column index static check  — does the code reference the columns the spec declared?
+    2. LLM semantic review        — holistic review of spec intent vs generated logic
 """
 
 import re
@@ -18,42 +16,6 @@ from pathlib import Path
 
 from schema_generator.llm_client import make_llm_client, find_project_root
 from schema_generator.code_fixer import extract_json, extract_code, validate_syntax
-
-
-# Known biological identifier regex patterns keyed by entity type keyword
-_ID_PATTERNS: Dict[str, List[str]] = {
-    "gene":        [r"^ENSG\d+", r"^\d{4,}$", r"^hsa:\d+", r"^[A-Z][A-Z0-9]{1,}$"],
-    "transcript":  [r"^ENST\d+", r"^ENSR\d+"],
-    "exon":        [r"^ENSE\d+"],
-    "protein":     [r"^[A-Z][0-9][A-Z0-9]{3}[0-9]$", r"^ENSP\d+"],
-    "snp":         [r"^rs\d+"],
-    "variant":     [r"^rs\d+", r"^chr[\dXYxy]+[_:]\d+"],
-    "phenotype":   [r"^HP[_:]\d{5,}", r"^MP[_:]\d+"],
-    "disease":     [r"^OMIM[_:]\d+", r"^MONDO[_:]\d+", r"^DOID[_:]\d+", r"^OMIM:\d+"],
-    "pathway":     [r"^R-[A-Z]{2,4}-\d+", r"^hsa\d+", r"^WP\d+"],
-    "go":          [r"^GO[_:]\d{7}"],
-    "mirna":       [r"^hsa-mi[rR]-", r"^MI\d{7}"],
-    "anatomy":     [r"^UBERON[_:]\d+", r"^CL[_:]\d+", r"^BTO[_:]\d+"],
-    "rna":         [r"^URS[0-9A-F]+", r"^ENSR\d+", r"^RF\d+"],
-    "enhancer":    [r"^chr[\dXY]+[_:]\d+[_:]\d+", r"^EH38E\d+"],
-    "motif":       [r"^[A-Z0-9]+\.\d+$"],
-}
-
-
-def _match_patterns(value: str, entity_type: str) -> bool:
-    """Return True if value matches any known pattern for the entity type."""
-    entity_lower = entity_type.lower()
-    for keyword, patterns in _ID_PATTERNS.items():
-        if keyword in entity_lower or entity_lower in keyword:
-            for pat in patterns:
-                if re.match(pat, value, re.IGNORECASE):
-                    return True
-    return False
-
-
-def _has_known_pattern(entity_type: str) -> bool:
-    entity_lower = entity_type.lower()
-    return any(k in entity_lower or entity_lower in k for k in _ID_PATTERNS)
 
 
 def _extract_spec_id_info(spec: dict) -> List[Dict[str, Any]]:
@@ -68,17 +30,6 @@ def _extract_spec_id_info(spec: dict) -> List[Dict[str, Any]]:
             "target_col": rel.get("target_column"),
         })
     return results
-
-
-def _sample_values(rows: List[List[str]], col) -> List[str]:
-    """Extract non-empty values from rows at col index. col may be int or str."""
-    if col is None:
-        return []
-    try:
-        idx = int(col)
-        return [r[idx].strip() for r in rows if len(r) > idx and r[idx].strip()]
-    except (ValueError, TypeError):
-        return []
 
 
 # ---------------------------------------------------------------------------
@@ -112,57 +63,7 @@ def _check_column_references(code: str, spec_ids: List[Dict[str, Any]]) -> Tuple
 
 
 # ---------------------------------------------------------------------------
-# Layer 2 — Biological ID pattern check
-# ---------------------------------------------------------------------------
-
-def _check_id_patterns(
-    rows: List[List[str]], spec_ids: List[Dict[str, Any]]
-) -> Tuple[List[str], List[str]]:
-    """
-    For each relationship, extract sample values at the declared column and
-    check them against known biological ID patterns.
-    Returns (passed_messages, warning_messages).
-    """
-    passed, warnings = [], []
-    for info in spec_ids:
-        name = info["name"]
-        for role, col, etype in [
-            ("source", info["source_col"], info["source_type"]),
-            ("target", info.get("target_col"), info.get("target_type") or ""),
-        ]:
-            if col is None or not etype:
-                continue
-            values = _sample_values(rows, col)
-            if not values:
-                warnings.append(
-                    f"[{name}] Could not extract {role} IDs from column {col} in sample rows"
-                )
-                continue
-
-            if not _has_known_pattern(etype):
-                passed.append(
-                    f"[{name}] No ID pattern rule for entity type '{etype}' — "
-                    f"sample values look like: {values[:2]}"
-                )
-                continue
-
-            matched = sum(1 for v in values[:5] if _match_patterns(v, etype))
-            total = min(5, len(values))
-            if matched > 0:
-                passed.append(
-                    f"[{name}] {role.capitalize()} ID pattern OK ({matched}/{total} "
-                    f"sample values match '{etype}' format)"
-                )
-            else:
-                warnings.append(
-                    f"[{name}] {role.capitalize()} IDs {values[:3]} do not match "
-                    f"expected '{etype}' identifier format — check column {col}"
-                )
-    return passed, warnings
-
-
-# ---------------------------------------------------------------------------
-# Layer 3 — LLM semantic review (+ repair in same call)
+# Layer 2 — LLM semantic review (+ repair in same call)
 # ---------------------------------------------------------------------------
 
 def _build_spec_context(spec: dict) -> str:
@@ -368,28 +269,13 @@ def validate_semantic_correctness(
     }
 
     spec_ids = _extract_spec_id_info(spec)
-    sample_rows: List[List[str]] = []
-    if inspection.get("main_file"):
-        sample_rows = inspection["main_file"].get("metadata", {}).get("sample_rows", [])
 
     # --- Layer 1: static column reference check ---
     p, w = _check_column_references(code, spec_ids)
     results["passed"].extend(p)
     results["warnings"].extend(w)
 
-    # --- Layer 2: biological ID pattern check ---
-    # DISABLED: This check causes false positives for structured columns (like GTF attributes)
-    # that need parsing before ID extraction. The raw column value doesn't match ID patterns.
-    # if sample_rows:
-    #     p, w = _check_id_patterns(sample_rows, spec_ids)
-    #     results["passed"].extend(p)
-    #     results["warnings"].extend(w)
-    # else:
-    #     results["warnings"].append(
-    #         "No sample rows available in inspection data — skipping ID pattern validation"
-    #     )
-
-    # --- Layer 3: LLM semantic review ---
+    # --- Layer 2: LLM semantic review ---
     if skip_llm:
         results["warnings"].append("LLM semantic review skipped (skip_llm=True)")
     else:
