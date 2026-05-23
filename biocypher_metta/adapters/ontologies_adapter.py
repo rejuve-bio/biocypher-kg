@@ -334,9 +334,12 @@ class OntologyAdapter(Adapter):
         print(f"Graph initialized with {len(self.graph)} triples for {self.ontology}")
 
     def __del__(self):
-        # Clean up the world instance when the adapter is destroyed
-        if self.world is not None:
-            self.world.close()
+        # Clean up the world instance when the adapter is destroyed.
+        # Use getattr to guard against partial initialisation (e.g. when
+        # __init__ raised before self.world was set by super().__init__).
+        world = getattr(self, 'world', None)
+        if world is not None:
+            world.close()
             self.world = None
 
     def _calculate_file_hash(self, file_path):

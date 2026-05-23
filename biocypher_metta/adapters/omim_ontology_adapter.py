@@ -1,11 +1,21 @@
+import os
 from biocypher_metta.adapters.ontologies_adapter import OntologyAdapter
 
 class OMIMOntologyAdapter(OntologyAdapter):
-    ONTOLOGIES = {
-        'omim': 'https://data.bioontology.org/ontologies/OMIM/submissions/29/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb'
-    }
+    @classmethod
+    def _get_ontologies(cls):
+        api_key = os.getenv('BIOPORTAL_API_KEY')
+        if not api_key:
+            raise EnvironmentError(
+                "BIOPORTAL_API_KEY environment variable is not set. "
+                "Please add it to your .env file to download the OMIM ontology."
+            )
+        return {
+            'omim': f'https://data.bioontology.org/ontologies/OMIM/submissions/29/download?apikey={api_key}'
+        }
 
     def __init__(self, write_properties, add_provenance, ontology, type, label='disease', dry_run=False, add_description=False, cache_dir=None):
+        self.ONTOLOGIES = self._get_ontologies()
         super().__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
 
     def get_ontology_source(self):
