@@ -15,11 +15,23 @@ from Bio import SwissProt
 
 class UniprotProteinAdapter(Adapter):
     ALLOWED_SOURCES = ['UniProtKB/Swiss-Prot', 'UniProtKB/TrEMBL']
+    
+  
+    TRANSLATION_CONDITION_MAP = {
+        7227: lambda item: bool(item[0].startswith('EnsemblMetazoa') and 'FBtr' in item[1]),
+        9606: lambda item: bool(item[0].startswith('Ensembl') and 'ENST' in item[1]),
+    }
 
-    def __init__(self, filepath, write_properties, add_provenance,taxon_id, label, dbxref=None, mapping_file=None):
+    CURIE_PREFIX = {
+        7227: 'FlyBase',
+        9606: 'ENSEMBL'
+    }
+
+    def __init__(self, filepath, write_properties, add_provenance, taxon_id, label, type=None, dbxref=None, mapping_file=None):
         self.filepath = filepath
         self.dataset = 'UniProtKB_protein'
         self.label = label
+        self.type = type
         self.dbxref = dbxref
         if mapping_file:
             self.go_subontology_mapping = pickle.load(open(mapping_file, 'rb'))
@@ -32,7 +44,7 @@ class UniprotProteinAdapter(Adapter):
         
         self.source = "UniProt"
         self.source_url = "https://www.uniprot.org/"
-        self.taxon_id = taxon_id
+        self.taxon_id = int(taxon_id)
         
         super(UniprotProteinAdapter, self).__init__(write_properties, add_provenance)
     
@@ -45,16 +57,20 @@ class UniprotProteinAdapter(Adapter):
                     if item != '-':
                         id = database_name + ':' + item
                         dbxrefs.append(id)
-            elif database_name in ['REFSEQ', 'ENSEMBL', 'MANE-SELECT',]:
+            elif database_name in ['REFSEQ', 'ENSEMBL', 'MANE-SELECT', 'ENSEMBLMETAZOA']:
                 for item in cross_reference[1:]:
                     if item != '-':
                         id = database_name + ':' + item.split('. ')[0]
                         dbxrefs.append(id)
             elif database_name == 'GO':
-                # cross_reference[1] is already in "GO:XXXXXXX" format
                 dbxrefs.append(cross_reference[1])
+            elif database_name == 'AGR':
+                dbxrefs.append(f"AGR:{cross_reference[1]}")
             else:
-                id = cross_reference[0].upper() + ':' + cross_reference[1]
+                if cross_reference[1].upper().startswith(database_name + ':'):
+                    id = cross_reference[1]
+                else:
+                    id = cross_reference[0].upper() + ':' + cross_reference[1]
                 dbxrefs.append(id)
         
         return sorted(list(set(dbxrefs)), key=str.casefold)
@@ -90,14 +106,11 @@ class UniprotProteinAdapter(Adapter):
         return False
 
     def get_nodes(self):
-        taxon_to_suffixes = defaultdict(lambda: None)
-        taxon_to_suffixes[7227] ='DROME',
-        taxon_to_suffixes[9606] = 'HUMAN',
-        
         with gzip.open(self.filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
             for record in records:
-                if taxon_to_suffixes[self.taxon_id] == None or not record.entry_name.endswith(taxon_to_suffixes[self.taxon_id]):
+
+                if str(self.taxon_id) not in record.taxonomy_id:
                     continue
                 # dbxrefs = self.get_dbxrefs(record.cross_references)
                 
@@ -138,16 +151,27 @@ class UniprotProteinAdapter(Adapter):
                         break
 
     def get_edges(self):
-        taxon_to_suffixes = defaultdict(lambda: None)
-        taxon_to_suffixes[7227] ='DROME',
-        taxon_to_suffixes[9606] = 'HUMAN',
-                
         with gzip.open(self.filepath, 'rt') as input_file:
             for record in SwissProt.parse(input_file):
-                if taxon_to_suffixes[self.taxon_id] == None or not record.entry_name.endswith(taxon_to_suffixes[self.taxon_id]):
-                    continue                
-                dbxrefs = self.get_dbxrefs(record.cross_references)
+                # Use the exact NCBI Taxonomy ID embedded in the record (OX line).
+                if str(self.taxon_id) not in record.taxonomy_id:
+                    continue
                 base_id = f"UniProtKB:{record.accessions[0].upper()}"
+
+                if self.type == 'translates to' or self.label == 'translates_to':
+                    translation_conditions_hold = self.TRANSLATION_CONDITION_MAP.get(self.taxon_id)
+                    if translation_conditions_hold:
+                        for item in record.cross_references:                 
+                            if translation_conditions_hold(item):
+                                prefix = self.CURIE_PREFIX.get(self.taxon_id, 'ENSEMBL')
+                                ensg_id = f"{prefix}:" + item[1].split(':')[-1].split('.')[0]
+                                props = {}
+                                props['taxon_id'] = f'NCBITaxon:{self.taxon_id}'
+                                if self.write_properties and self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+                                yield ensg_id, base_id, self.label, props
+                    continue
 
                 if self.dbxref == "CHEBI":
                     if self.label == "protein_has_xref_catalytic_activity":
@@ -255,7 +279,7 @@ class UniprotProteinAdapter(Adapter):
                 dbxrefs = self.get_dbxrefs(record.cross_references)
                 for syn in dbxrefs:
                     # Skip if not matching desired dbxref
-                    if not syn.startswith(self.dbxref):
+                    if not self.dbxref or not syn.startswith(self.dbxref):
                         continue
 
                     # ENSEMBL-specific filtering
@@ -263,6 +287,8 @@ class UniprotProteinAdapter(Adapter):
                         if not self._matches_ensembl_label(syn):
                             continue
                         syn = syn.split('.')[0]  # Remove version for ENSEMBL IDs
+                    elif self.dbxref == "AGR":
+                        syn = syn[4:] # Remove AGR:
                     elif self.dbxref == "STRING":
                         syn = "STRING:" + syn.split('.')[1]
                     elif self.dbxref == "GO":
