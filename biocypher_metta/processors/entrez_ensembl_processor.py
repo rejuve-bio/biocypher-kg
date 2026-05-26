@@ -24,20 +24,17 @@ from .base_mapping_processor import BaseMappingProcessor
 
 class EntrezEnsemblProcessor(BaseMappingProcessor):
 
-    NCBI_GENE_INFO_URL = (
-        "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
-    )
-
-    GENCODE_URL = (
-        "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_46/"
-        "gencode.v46.chr_patch_hapl_scaff.annotation.gtf.gz"
-    )
-
     def __init__(
         self,
+        ncbi_gene_info_url: str = "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+        gencode_url: str = "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_46/gencode.v46.chr_patch_hapl_scaff.annotation.gtf.gz",
+        tax_id: str = '9606',
         cache_dir: str = 'aux_files/hsa/entrez_ensembl',
         update_interval_hours: int = 168
     ):
+        self.NCBI_GENE_INFO_URL = ncbi_gene_info_url
+        self.GENCODE_URL = gencode_url
+        self.tax_id = tax_id
         super().__init__(
             name='entrez_ensembl',
             cache_dir=cache_dir,
@@ -148,7 +145,7 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
                         continue
 
                     tax_id = fields[0]
-                    if tax_id != '9606':
+                    if tax_id != self.tax_id:
                         continue
 
                     entrez_id = fields[1]
