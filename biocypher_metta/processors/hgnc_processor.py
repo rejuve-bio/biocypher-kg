@@ -20,18 +20,17 @@ from .base_mapping_processor import BaseMappingProcessor
 
 
 class HGNCProcessor(BaseMappingProcessor):
+    HGNC_API_URL = (
+        "https://www.genenames.org/cgi-bin/download/custom?"
+        "col=gd_hgnc_id&col=gd_app_sym&col=gd_prev_sym&col=gd_aliases&col=gd_pub_ensembl_id"
+        "&status=Approved&hgnc_dbtag=on&order_by=gd_app_sym_sort&format=text&submit=submit"
+    )
 
     def __init__(
         self,
-        hgnc_api_url: str = (
-            "https://www.genenames.org/cgi-bin/download/custom?"
-            "col=gd_hgnc_id&col=gd_app_sym&col=gd_prev_sym&col=gd_aliases&col=gd_pub_ensembl_id"
-            "&status=Approved&hgnc_dbtag=on&order_by=gd_app_sym_sort&format=text&submit=submit"
-        ),
         cache_dir: str = 'aux_files/hsa/hgnc',
         update_interval_hours: Optional[int] = 48  # HGNC needs time-based (no remote metadata)
     ):
-        self.HGNC_API_URL = hgnc_api_url
         super().__init__(
             name='hgnc',
             cache_dir=cache_dir,
