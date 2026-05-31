@@ -461,12 +461,12 @@ class OntologyAdapter(Adapter):
         return self._is_new_version_available(meta)
     
     def is_deprecated(self, node):
-        node_key = OntologyAdapter.to_key(node)
+        node_key = self.to_key(node)
         deprecated_values = self.cache.get(node_key, {}).get('deprecated', [])
         return any(value for value in deprecated_values if value.lower() == 'true')
     
     def get_alternative_ids(self, node):
-        node_key = OntologyAdapter.to_key(node)
+        node_key = self.to_key(node)
         return self.cache.get(node_key, {}).get('alternative_ids', [])
     
     def _process_node_key(self, node):
@@ -583,13 +583,13 @@ class OntologyAdapter(Adapter):
 
                 # Skip deprecated nodes
                 if self.is_deprecated(from_node) or self.is_deprecated(to_node):
-                    print(f"Skipping edge with deprecated node: {OntologyAdapter.to_key(from_node)} -> {OntologyAdapter.to_key(to_node)}")
+                    print(f"Skipping edge with deprecated node: {self.to_key(from_node)} -> {self.to_key(to_node)}")
                     continue
 
                 if self.type == 'edge':
-                    from_node_key = OntologyAdapter.to_key(from_node)
-                    predicate_key = OntologyAdapter.to_key(predicate)
-                    to_node_key = OntologyAdapter.to_key(to_node)
+                    from_node_key = self.to_key(from_node)
+                    predicate_key = self.to_key(predicate)
+                    to_node_key = self.to_key(to_node)
 
                     if predicate == OntologyAdapter.DB_XREF:
                         if to_node.__class__ == rdflib.term.Literal:
@@ -724,7 +724,7 @@ class OntologyAdapter(Adapter):
     def cache_predicate(self, predicate, collection=None):
         triples = list(self.graph.subject_objects(predicate=predicate, unique=True))
         for s, o in triples:
-            s_key = OntologyAdapter.to_key(s)
+            s_key = self.to_key(s)
 
             if s_key not in self.cache:
                 self.cache[s_key] = {}
@@ -744,5 +744,5 @@ class OntologyAdapter(Adapter):
 
 
     def get_all_property_values_from_node(self, node, collection):
-        node_key = OntologyAdapter.to_key(node)
+        node_key = self.to_key(node)
         return self.cache.get(node_key, {}).get(collection, [])
