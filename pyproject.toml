@@ -80,7 +80,7 @@ dependencies = [
     "pyyaml==6.0.3",
     "questionary==2.1.1",
     "rdflib==6.3.2",
-    "requests==2.32.5",
+    "requests==2.34.2",
     "rich==14.2.0",
     "rsa==4.9.1",
     "setuptools==80.9.0",

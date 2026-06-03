@@ -282,7 +282,7 @@ rdflib==6.3.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
-requests==2.32.5
+requests==2.34.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
