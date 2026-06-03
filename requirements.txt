@@ -171,7 +171,7 @@ obonet==1.0.0
     # via biocypher-metta (pyproject.toml)
 owlready2==0.44
     # via biocypher-metta (pyproject.toml)
-packaging==25.0
+packaging==26.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   pooch
