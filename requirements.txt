@@ -346,7 +346,7 @@ traitlets==5.14.3
     #   biocypher-metta (pyproject.toml)
     #   ipython
     #   matplotlib-inline
-treelib==1.6.4
+treelib==1.8.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
