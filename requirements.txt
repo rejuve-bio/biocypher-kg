@@ -76,7 +76,7 @@ google-api-core==2.28.1
     #   biocypher-metta (pyproject.toml)
     #   google-cloud-core
     #   google-cloud-storage
-google-auth==2.42.1
+google-auth==2.53.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-api-core
