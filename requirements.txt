@@ -260,7 +260,7 @@ pytest==8.4.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   pytest-cov
-pytest-cov==5.0.0
+pytest-cov==7.1.0
     # via biocypher-metta (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
