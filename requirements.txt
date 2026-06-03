@@ -248,7 +248,7 @@ pygments==2.19.2
     #   ipython
     #   pytest
     #   rich
-pyparsing==3.2.5
+pyparsing==3.3.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   rdflib
