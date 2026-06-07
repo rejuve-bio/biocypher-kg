@@ -258,7 +258,7 @@ dmel_ptp_pysical_interaction:
     args:
        filepaths: [
           ./samples/dmel/flybase/physical_interactions_mitab_fb_2024_02.tsv.gz,
-          ./samples/dmel/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_02.tsv.gz,
+          ./samples/dmel/flybase/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
           ./samples/dmel/flybase/fbgn_uniprot_fb_2024_02.tsv.gz
        ]
        label: ptp_physically_interacts_with
@@ -274,7 +274,7 @@ dmel_ptt_pysical_interaction:
     args:
        filepaths: [
           ./samples/dmel/flybase/physical_interactions_mitab_fb_2024_02.tsv.gz,
-          ./samples/dmel/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_02.tsv.gz,
+          ./samples/dmel/flybase/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
           ./samples/dmel/flybase/fbgn_uniprot_fb_2024_02.tsv.gz
        ]
        label: ptt_physically_interacts_with
@@ -310,7 +310,7 @@ allele:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
-       dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2024_02.tsv.gz
+       dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
        label: allele
   outdir: allele
   nodes: True
@@ -322,7 +322,7 @@ dmel_allele_to_gene:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
-       dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2024_02.tsv.gz
+       dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
        label: variant_of
   outdir: allele
   nodes: False
@@ -347,7 +347,7 @@ dmel_allele_to_allele_genetic_interaction_adapter:
         args:
           label: allele_to_allele_genetic_interaction
           dmel_data_filepath: ./samples/dmel/flybase/allele_genetic_interactions_fb_2024_02.tsv.gz
-          dmel_fbal_to_fbgn_file: ./samples/dmel/flybase/fbal_to_fbgn_fb_2024_02.tsv.gz
+          dmel_fbal_to_fbgn_file: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
     outdir: flybase/allele_genetic
     nodes: False
     edges: True
@@ -401,7 +401,7 @@ expression_value:
                              ./samples/dmel/afca/afca_afca_annotation_group_by_mean.tsv.gz,
       ]
       aux_filepaths: [
-                             ./aux_files/dmel/fbgn_fbtr_fbpp_expanded_fb_2024_02.tsv.gz,
+                             ./aux_files/dmel/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
       ]      
   outdir: rnaseq
   nodes: False
@@ -512,7 +512,7 @@ gencode_gene:
       # summaries_filepath: ./samples/dmel/flybase/best_gene_summary_fb_2024_02.tsv.gz
       label: gene
       taxon_id: 7227
-  outdir: gencode/gene
+  outdir: ensembl/gene
   nodes: True
   edges: False
 
@@ -526,7 +526,7 @@ gencode_transcripts:
       type: transcript
       label: transcript
       taxon_id: 7227
-  outdir: gencode/transcript
+  outdir: ensembl/transcript
   nodes: True
   edges: False
 
@@ -539,7 +539,7 @@ transcribes_to:
       type: transcribes to
       label: transcribes_to
       taxon_id: 7227
-  outdir: gencode/gene
+  outdir: ensembl/gene
   nodes: False
   edges: True
 
@@ -552,7 +552,7 @@ gencode_exon:
       label: exon
       target_type: None
       taxon_id: 7227
-  outdir: gencode/exon
+  outdir: ensembl/exon
   nodes: True
   edges: False
 
@@ -565,7 +565,7 @@ exon_part_of_transcript:
       label: part_of_transcript
       target_type: transcript
       taxon_id: 7227
-  outdir: gencode/exon
+  outdir: ensembl/exon
   nodes: False
   edges: True
 
@@ -578,7 +578,7 @@ exon_part_of_gene:
       label: part_of_gene
       target_type: gene
       taxon_id: 7227
-  outdir: gencode/exon
+  outdir: ensembl/exon
   nodes: False
   edges: True
 
@@ -963,6 +963,18 @@ string:
   nodes: False
   edges: True
 
+string_coexpression:
+  adapter:
+    module: biocypher_metta.adapters.string_coexpression_adapter
+    cls: StringCoexpressionAdapter
+    args:
+      filepath: ./samples/dmel/string/7227.protein.links.detailed.v12.0_sample.txt.gz
+      label: protein_coexpressed_with
+      coexpression_threshold: 400
+      taxon_id: 7227
+  outdir: string/coexpression
+  nodes: False
+  edges: True
 
 tflink:    
     adapter:
@@ -1316,7 +1328,7 @@ alliance_gene_disease_biomarker_orthology:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: biomarker_via_orthology
   outdir: disease
@@ -1328,7 +1340,7 @@ alliance_gene_disease_implicated_via_orthology:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: implicated_via_orthology
   outdir: disease
@@ -1340,7 +1352,7 @@ alliance_gene_disease_is_implicated_in:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: is_implicated_in
   outdir: disease
@@ -1352,7 +1364,7 @@ alliance_gene_disease_is_model_of:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: is_model_of
   outdir: disease
@@ -1364,7 +1376,7 @@ alliance_gene_disease_is_marker_for:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: is_marker_for
   outdir: disease
@@ -1376,7 +1388,7 @@ alliance_gene_orthology:
     module: biocypher_metta.adapters.alliance_gene_orthology_adapter
     cls: AllianceGeneOrthologyAdapter
     args:
-      filepath: ./samples/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: orthologs_genes
   outdir: alliance/orthology

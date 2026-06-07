@@ -671,6 +671,36 @@ do subclass of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
+hsapdv subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: hsapdv_subclass_of
+  output_label: is_a
+  biolink_predicate: "biolink:subclass_of"
+  source: developmental stage
+  target: developmental stage
+  kgx_properties:
+    subject_category: "biolink:LifeStage"
+    object_category: "biolink:LifeStage"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
+omim subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: omim_subclass_of
+  output_label: is_a
+  biolink_predicate: "biolink:subclass_of"
+  source: disease
+  target: disease
+  kgx_properties:
+    subject_category: "biolink:Disease"
+    object_category: "biolink:Disease"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+
 #chebi
 small molecule:
   is_a: ontology term

@@ -1,58 +1,69 @@
 # ---
-agr:    # agr: alliance of genome resource
+alliance:    # agr: alliance of genome resource
   name: Alliance Genome Resource
+  extract: false
   url:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
-    - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz  # gene orthology
+    - https://download.alliancegenome.org/8.3.0/EXPRESSION-ALLIANCE/COMBINED/EXPRESSION-ALLIANCE_COMBINED_6.tsv.gz  # gene to expression location (ontologies like GO, FBbt, etc) NO HUMAN DATA
+    - https://download.alliancegenome.org/8.3.0/INTERACTION-MOL/COMBINED/INTERACTION-MOL_COMBINED_5.tsv.gz          # Format is like that processed by dmel.dmel_physical_interaction_psimi_adapter
+    - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+    - https://download.alliancegenome.org/8.3.0/VCF/R6/VCF_R6_7.vcf.gz
+    - https://download.alliancegenome.org/8.3.0/VARIANT-ALLELE/NCBITaxon7227/VARIANT-ALLELE_NCBITaxon7227_8.tsv.gz
 
 bgee:
   name: Bgee Expression Data
+  extract: false
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
 
 coxpressdb:
   name: Coxpress DB
   url: https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
 
-enhancer_atlas:
-  name: EnhancerAtlas
-  url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   
+ensembl:
+  name: Ensembl Assembly 54.v62
+  extract: false
+  url: 
+    # - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.chr.gtf.gz
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
+  move_to:
+    - Drosophila_melanogaster.gene_info.gz: ./aux_files/dmel/
+
+epd:
+  name: Eukaryotic Promoter Database
+  compress: gzip
+  url: https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
 
 flybase: 
   name: Flybase 2026_01
+  extract: false
   url: 
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/alleles/allele_genetic_interactions_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/alleles/fbal_to_fbgn_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/alleles/genotype_phenotype_data_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/best_gene_summary_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz
-    # - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2026_01.tsv.gz  nao existe!!!!!!!!!!!!!!
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_genetic_interactions_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_group_data_fb_2026_01.tsv.gz    
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_groups_HGNC_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/gene_rpkm_report_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/high-throughput_gene_expression_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/metabolic_pathway_group_data_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/physical_interactions_mitab_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/genes/signaling_pathway_group_data_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/human_disease/disease_model_annotations_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/orthologs/dmel_paralogs_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
-    - https://s3ftp.flybase.org/releases/FB2026_01/precomputed_files/go/gene_association.fb.gz  # GOA (GO annotation)
-
-gencode:
-  name: GENCODE v54
-  url: 
-    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.chr.gtf.gz
-    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
-    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
-
-uniprot:
-  name: UniProtKB/Swiss-Prot
-  url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/allele_genetic_interactions_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/fbal_to_fbgn_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/genotype_phenotype_data_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/best_gene_summary_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz
+    # - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2026_01.tsv.gz 
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_genetic_interactions_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_group_data_fb_2026_01.tsv.gz    
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_groups_HGNC_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_rpkm_report_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/high-throughput_gene_expression_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/metabolic_pathway_group_data_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/physical_interactions_mitab_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/signaling_pathway_group_data_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/human_disease/disease_model_annotations_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/orthologs/dmel_paralogs_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz  # GOA (GO annotation)
+    - https://s3ftp.flybase.org/releases/current/precomputed_files/synonyms/fb_synonym_fb_2026_01.tsv.gz
+  move_to:
+    - fb_synonym_fb_2026_01.tsv.gz: ./aux_files/dmel/
+    - fbal_to_fbgn_fb_2026_01.tsv.gz: ./aux_files/dmel/
 
 reactome:
   name: Reactome
@@ -63,28 +74,29 @@ reactome:
     - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
     - https://reactome.org/download/current/ReactionPMIDS.txt
     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+    - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
 
 rna_central:
   name: RNA Central
+  extract: false
   url:
-    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
-    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
-
-tflink:
-  name: TFLink
-  url: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv
-
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
 
 string:
   name: STRING PPI
-  url: https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
-
-
-epd:
-  name: Eukaryotic Promoter Database
+  extract: false
   url:
-    - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0
-    # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/
-    - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
+    - https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/7227.protein.links.detailed.v12.0.txt.gz
 
+tflink:
+  name: TFLink
+  compress: gzip
+  url: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv
 
+uniprot:
+  name: UniProtKB/Swiss-Prot
+  extract: false
+  url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz

@@ -45,7 +45,8 @@ class GWASAdapter(Adapter):
         self.end = end
         self.label = label
         self.source = "GWAS"
-        self.source_url = "https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv"
+        # self.source_url = "https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv"
+        self.source_url = "https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip"
 
         super(GWASAdapter, self).__init__(write_properties, add_provenance)
 
