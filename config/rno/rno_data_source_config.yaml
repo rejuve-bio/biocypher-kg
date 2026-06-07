@@ -1,0 +1,82 @@
+# ---
+alliance:    
+  name: Alliance of Genome Resources
+  extract: false
+  url:
+    - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
+    - https://download.alliancegenome.org/8.3.0/EXPRESSION-ALLIANCE/COMBINED/EXPRESSION-ALLIANCE_COMBINED_6.tsv.gz  # gene to expression location (ontologies like GO, FBbt, etc) NO HUMAN DATA
+    - https://download.alliancegenome.org/8.3.0/INTERACTION-MOL/COMBINED/INTERACTION-MOL_COMBINED_5.tsv.gz          # Format is like that processed by dmel.dmel_physical_interaction_psimi_adapter
+    - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+    - https://fms.alliancegenome.org/download/VCF_mRatBN7.2.vcf.gz    # look at EVA  VCF
+    - https://fms.alliancegenome.org/download/VARIANT-ALLELE_NCBITaxon10116.tsv.gz  # variant/allel
+
+bgee:
+  name: Bgee Expression Data
+  extract: false
+  url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz
+
+coxpressdb:
+  name: Coxpress DB
+  extract: true
+  url: https://zenodo.org/record/6861444/files/Rno-u.v22-05.G16521-S21139.combat_pca.subagging.z.d.zip
+
+# enhancer_atlas:
+#   name: EnhancerAtlas
+#   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/10116_all_tissues.bed   
+    
+ensembl:
+  name: Ensembl Assembly 8.v115
+  extract: false
+  url: 
+    - https://ftp.ensembl.org/pub/current/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.115.gtf.gz
+    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz
+
+epd:
+  name: Eukaryotic Promoter Database
+  compress: gzip
+  url:
+    # - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0  # this is not working
+    # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/ 
+    - https://epd.expasy.org/ftp/epdnew/R_norvegicus/current/Rn_EPDnew.bed
+gaf:
+  name: GO Annotation File (GAF) from GO (RGD)
+  extract: false
+  url: http://current.geneontology.org/annotations/rgd.gaf.gz
+
+reactome:
+  name: Reactome
+  url:
+    - https://reactome.org/download/current/ReactomePathways.txt
+    - https://reactome.org/download/current/ReactomePathwaysRelation.txt
+    - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
+    - https://reactome.org/download/current/ReactionPMIDS.txt
+    - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
+    - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+
+rna_central:
+  name: RNA Central
+  extract: false
+  url:
+    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/rattus_norvegicus.mRatBN7.2.bed.gz
+    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+
+string:
+  name: STRING PPI
+  extract: false
+  url: 
+    - https://stringdb-downloads.org/download/protein.links.v12.0/10116.protein.links.v12.0.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/10116.protein.links.detailed.v12.0.txt.gz
+
+
+tflink:
+  name: TFLink
+  compress: gzip
+  url: https://cdn.netbiol.org/tflink/download_files/TFLink_Rattus_norvegicus_interactions_All_simpleFormat_v1.0.tsv
+
+uniprot:
+  name: UniProtKB/Swiss-Prot
+  extract: false
+  url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_rodents.dat.gz
+  

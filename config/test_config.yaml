@@ -1858,7 +1858,7 @@ alliance_gene_disease_biomarker_orthology:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 9606
       label: biomarker_via_orthology
   outdir: disease
@@ -1870,7 +1870,7 @@ alliance_gene_disease_implicated_via_orthology:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 9606
       label: implicated_via_orthology
   outdir: disease
@@ -1882,7 +1882,7 @@ alliance_gene_disease_is_implicated_in:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 9606
       label: is_implicated_in
   outdir: disease
@@ -1898,7 +1898,7 @@ alliance_gene_disease_is_implicated_in:
 #     module: biocypher_metta.adapters.alliance_gene_disease_adapter
 #     cls: AllianceGeneDiseaseAdapter
 #     args:
-#       filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+#       filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
 #       taxon_id: 9606
 #       label: is_model_of
 #   outdir: disease
@@ -1910,7 +1910,7 @@ alliance_gene_disease_is_marker_for:
     module: biocypher_metta.adapters.alliance_gene_disease_adapter
     cls: AllianceGeneDiseaseAdapter
     args:
-      filepath: ./samples/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      filepath: ./samples/alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 9606
       label: is_marker_for
   outdir: disease

@@ -1,145 +1,81 @@
 ---
-agr:    #agr: alliance of genome resource
-  name: Alliance Genome Resource
+abc:
+  name: Activity-By-Contact (ABC)
+  extract: false
+  url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
+
+alliance:  
+  name: agr - alliance of genome resource
+  extract: false
   url:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
-    - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz  # gene orthology
+    - https://download.alliancegenome.org/8.3.0/EXPRESSION-ALLIANCE/COMBINED/EXPRESSION-ALLIANCE_COMBINED_6.tsv.gz  # gene to expression location (ontologies like GO, FBbt, etc) NO HUMAN DATA
+    - https://download.alliancegenome.org/8.3.0/INTERACTION-MOL/COMBINED/INTERACTION-MOL_COMBINED_5.tsv.gz          # Format is like that processed by dmel.dmel_physical_interaction_psimi_adapter
+    - https://download.alliancegenome.org/8.3.0/ORTHOLOGY-ALLIANCE/COMBINED/ORTHOLOGY-ALLIANCE_COMBINED_7.tsv.gz    
 
 bgee:
   name: Bgee Expression Data
-  url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
-
-gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
-  name: GENCODE v49
-  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz       
-
-uniprot:
-  name: UniProtKB/Swiss-Prot
-  url:  https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
-
-reactome:
-  name: Reactome
-  url:
-    - https://reactome.org/download/current/ReactomePathways.txt
-    - https://reactome.org/download/current/ReactomePathwaysRelation.txt
-    - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
-    - https://reactome.org/download/current/ReactionPMIDS.txt
-    - https://reactome.org/download/current/interactors/reactome.homo_sapiens.interactions.tab-delimited.txt
-
-gaf:
-  name: GO Annotation File (GAF)
-  url: http://geneontology.org/gene-associations/goa_human.gaf.gz
-
-coxpressdb:
-  name: Coxpress DB
-  url: https://zenodo.org/record/6861444/files/Hsa-u.v22-05.G16651-S245698.combat_pca.subagging.z.d.zip
-
-tflink:
-  name: TFLink
-  url: https://cdn.netbiol.org/tflink/download_files/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
-
-string:
-  name: STRING PPI
-  url: https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
-
-tadmap:
-  name: TADMap
-  url: https://cb.csail.mit.edu/cb/tadmap/TADMap_geneset_hs.csv
-
-gtex_eqtl:
-  name: GTEx eQTL
-  # bucket: adult-gtex
-  # path: bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
-  url: https://storage.googleapis.com/adult-gtex/bulk-qtl/v10/single-tissue-cis-qtl/GTEx_Analysis_v10_eQTL.tar
-
-topld:
-  name: TopLD
-  url:
-    AFR: http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_xx_no_filter_0.2_1000000_LD.csv.gz
-    EAS: http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_xx_no_filter_0.2_1000000_LD.csv.gz
-    EUR: http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_xx_no_filter_0.2_1000000_LD.csv.gz
-    SAS: http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_xx_no_filter_0.2_1000000_LD.csv.gz
-
-hocomoco:
-  name: HOCOMOCOv11
-  url:
-    annotation: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-    pwm: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
-
-favor:
-  name: FAVOR
-  url:
-    chr16: https://dataverse.harvard.edu/api/access/datafile/6388551/   # file in the url: FAVOR.FullDB.Chr16.tar.gz
+  extract: false
+  # url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
+  url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_all_conditions.tsv.gz
 
 cadd:
   name: Combined Annotation Dependent Depletion (CADD)
+  extract: false
   url: https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
 
-refseq:
-  name: RefSeq Closest Gene
-  url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
-
-tfbs:
-  name: UCSC TFBS Clusters
-  url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
-
-# dbsuper:
-#   name: dbSUPER
-#   url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz       #  no  such file
-
-abc:
-  name: Activity-By-Contact (ABC)
-  url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
-
-# ONLY  these are available for roadmap and they are on Bizon server
-# roadmap:
-#   name: Roadmap Epigenomics Project
-  # url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
-# https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
-# roadmap_dhs:
-#   name: RoadMap DHS
-#   url: https://forgedb.cancer.gov/api/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz  # ACCESS DENIED!
-# roadmap_state:
-#   name: Roadmap Epigenomics State
-#   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/state_calls  # there is no state_calls directory
-# roadmap_h3marks:
-#   name: Roadmap Epigenomics H3 Marks
-#   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/marks  # there is no marks directory
-
-rna_central:
-  name: RNA Central
+catlas:
+  name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
   url:
-    # bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/human.GRCh38.bed.gz
-    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
-    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    cCRE_hg38.tsv.gz: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
+    Cell_ontology.tsv: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
+  directories:
+    cCREs: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCREs/
+    ABC_scores: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/ABC_scores/
 
-dgv:
-  name: Database of Genomic Variants
-  url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
+cCRE:
+  name: Screen candidate Cis-Regulatory Region
+  compress: gzip
+  url:
+    - https://downloads.wenglab.org/GRCh38-Closest-Genes-PC.tsv
+    - https://downloads.wenglab.org/GRCh38-Closest-Genes-All.tsv
+  zip_extract:
+    - url: https://downloads.wenglab.org/Human-Gene-Links.zip
+      files:
+        - V4-hg38.Gene-Links.eQTLs.txt
 
-epd:
-  name: Eukaryotic Promoter Database
-  url: https://epd.expasy.org/ftp/epdnew/H_sapiens/current/Hs_EPDnew.bed
-
-dbvar:
-  name: NCBI dbVar
-  url: https://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh38/vcf/GRCh38.variant_call.all.vcf.gz
+coxpresdb:
+  name: Coxpress DB
+  extract: true
+  url: https://zenodo.org/record/6861444/files/Hsa-u.v22-05.G16651-S245698.combat_pca.subagging.z.d.zip
 
 dbsnp:
   name: dbSNP
-  url: https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
+  extract: false
+  url:
+    - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
+    - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-common_all.vcf.gz
 
-polyphen2:
-  name: PolyPhen-2
-  url: http://genetics.bwh.harvard.edu/pph2/data/polyphen-2.2.2-whess-2011_12.tab.gz
+dbsuper:
+  name: dbsuper
+  compress: gzip
+  # url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz       #  no  such file
+  url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
 
-gwas:
-  name: GWAS Catalog
-  # url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
-  url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2025/09/30/gwas-catalog-associations_ontology-annotated.tsv*
+dbvar:
+  name: NCBI dbVar
+  extract: false
+  url: https://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_assembly/GRCh38/vcf/GRCh38.variant_call.all.vcf.gz
+
+dgv:
+  name: Database of Genomic Variants
+  compress: gzip
+  # url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2020-02-25.txt        # adapters use gzipped version.
+  url: https://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
 
 enhancer_atlas:
   name: EnhancerAtlas (SingleCellDB)
+  extract: false
   bed_url: http://singlecelldb.com/data/download/species_enh_bed.tar.gz
   ep_base_url: http://singlecelldb.com/data/AllEPs/hs
   tissues:
@@ -258,15 +194,137 @@ enhancer_atlas:
 #   name: Fabian
 #   url: https://fabian.bioinf.mpi-inf.mpg.de/downloads/human_grch38.tar.gz
 
-brenda_tissue_ontology:
-  name: BRENDA Tissue Ontology
-  url: http://purl.obolibrary.org/obo/bto.owl
+# there is no favor record in hsa_adapters_config.yaml
+# https://dataverse.harvard.edu/dataverse/favor
+# all datasets there: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/KFUBKG
+# favor:
+#   name: FAVOR
+#   url:
+#     chr16: https://dataverse.harvard.edu/api/access/datafile/6388551/   # file in the url: FAVOR.FullDB.Chr16.tar.gz
 
-catlas:
-  name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
+epd:
+  name: Eukaryotic Promoter Database
+  compress: gzip
+  url: https://epd.expasy.org/ftp/epdnew/H_sapiens/current/Hs_EPDnew.bed        # adapters use gzipped version.
+
+gaf:
+  name: GO Annotation File (GAF)
+  extract: false
+  url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+
+gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
+  name: GENCODE v49
+  extract: false
+  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz       
+
+gtex_eqtl:
+  name: GTEx eQTL
+  # bucket: adult-gtex
+  # path: bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
+  url: https://storage.googleapis.com/adult-gtex/bulk-qtl/v10/single-tissue-cis-qtl/GTEx_Analysis_v10_eQTL.tar
+
+gwas:
+  name: GWAS Catalog
+  url: 
+    - https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip
+    # - https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2025/09/30/gwas-catalog-associations_ontology-annotated.tsv
+
+hocomoco:
+  name: HOCOMOCOv11
+  extract_tar: true
   url:
-    cCRE_hg38.tsv.gz: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
-    Cell_ontology.tsv: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
-  directories:
-    cCREs: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCREs/
-    ABC_scores: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/ABC_scores/
+    annotation: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+    pwm: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
+
+hpo:
+  name: Human Phenotype Ontology Phenotype and disease associations
+  url: 
+  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_disease.txt
+  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_phenotype.txt
+
+polyphen2:
+  name: PolyPhen-2
+  extract: true
+  url: https://genetics.bwh.harvard.edu/downloads/pph2/whess/polyphen-2.2.2-whess-2011_12.tab.gz        
+
+reactome:
+  name: Reactome
+  url:
+    - https://reactome.org/download/current/ReactomePathways.txt
+    - https://reactome.org/download/current/ReactomePathwaysRelation.txt
+    - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
+    - https://reactome.org/download/current/ReactionPMIDS.txt
+    - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
+    - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
+    - https://reactome.org/download/current/Pathways2GoTerms_human.txt
+    - https://reactome.org/download/current/Reactions2GoTerms_human.txt
+    - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+
+refseq:
+  name: RefSeq Closest Gene
+  extract: false
+  url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
+
+rna_central:
+  name: RNA Central
+  extract: false
+  url:
+    homo_sapiens.GRCh38.bed.gz: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
+    rnacentral_rfam_annotations.tsv.gz: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+
+# # ONLY  these are available for roadmap and they are on Bizon server
+# roadmap:
+#   name: Roadmap Epigenomics Project
+#   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
+# # roadmap_dhs:
+# #   name: RoadMap DHS
+# #   url: https://forgedb.cancer.gov/api/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz  # ACCESS DENIED!
+# # roadmap_state:
+# #   name: Roadmap Epigenomics State
+# #   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/state_calls  # there is no state_calls directory
+# # roadmap_h3marks:
+# #   name: Roadmap Epigenomics H3 Marks
+# #   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/marks  # there is no marks directory
+
+string:
+  name: STRING PPI
+  extract: false
+  url:
+    - https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/9606.protein.links.detailed.v12.0.txt.gz
+
+tadmap:
+  name: TADMap
+  url: https://cb.csail.mit.edu/cb/tadmap/TADMap_geneset_hs.csv
+
+tfbs:
+  name: UCSC TFBS Clusters
+  url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+
+tflink:
+  name: TFLink
+  extract: false
+  url: https://cdn.netbiol.org/tflink/download_files/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
+
+topld:
+  name: TopLD
+  extract: false
+  url:
+    AFR: 
+      # - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr1_no_filter_0.2_1000000_LD.csv.gz
+      - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
+    EAS: 
+      - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      # - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+    EUR: 
+      - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz
+      # - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr1_no_filter_0.2_1000000_LD.csv.gz
+    SAS: 
+      - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+      # - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+
+uniprot:
+  name: UniProtKB/Swiss-Prot
+  extract: false
+  url:  https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz

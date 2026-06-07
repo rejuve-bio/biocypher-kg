@@ -21,8 +21,8 @@ import os
 # There are 12208 files. The file name is ENTREZ gene id. The total genes annotated are 12208, one gene per file, each file contain logit score of other 12208 genes.
 # There are two fields in each row: entrez gene id and logit score
 
-# entrez_to_ensembl.pkl (for dmel) is generated using this provisory script: scripts/dmel_create_entrez_to_ensembl_map.py file:
-# Drosophila melanogaster gene info from NCBI: https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
+# entrez_to_ensembl.pkl (for dmel) is generated using the Drosophila melanogaster gene info from NCBI: 
+# https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz file.
 # every gene has entrez gene id in gene_info file, every gene has ensembl ID in the dbXrefs column
 
 # CEL data

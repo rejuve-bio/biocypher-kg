@@ -17,16 +17,17 @@ from .base_mapping_processor import BaseMappingProcessor
 
 
 class EnsemblUniProtProcessor(BaseMappingProcessor):
-    UNIPROT_IDMAPPING_URL = (
-        "https://ftp.uniprot.org/pub/databases/uniprot/current_release/"
-        "knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz"
-    )
-
     def __init__(
         self,
+        organism: str = 'HUMAN_9606',
         cache_dir: str = 'aux_files/hsa/ensembl_uniprot',
         update_interval_hours: Optional[int] = None
     ):
+        self.organism = organism
+        self.UNIPROT_IDMAPPING_URL = (
+            "https://ftp.uniprot.org/pub/databases/uniprot/current_release/"
+            f"knowledgebase/idmapping/by_organism/{self.organism}_idmapping.dat.gz"
+        )
         super().__init__(
             name='ensembl_uniprot',
             cache_dir=cache_dir,

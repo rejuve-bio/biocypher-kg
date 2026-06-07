@@ -47,6 +47,7 @@ class OntologyAdapter(Adapter):
         self.cache = {}
         self.ontology = ontology
         self.add_description = add_description
+        self.world = None
 
         # Set source and source_url based on the ontology
         self.source, self.source_url = self.get_ontology_source()
@@ -112,7 +113,8 @@ class OntologyAdapter(Adapter):
                     meta = json.load(f)
         
                 cached_date = dt.fromisoformat(meta['date'])
-                cache_expired = dt.now() - cached_date > timedelta(days=self.cache_expiration_days)
+                now = dt.now(cached_date.tzinfo) if cached_date.tzinfo else dt.now()
+                cache_expired = now - cached_date > timedelta(days=self.cache_expiration_days)
         
                 remote_version = self._get_remote_version()
                 current_version = meta.get('version')
@@ -332,9 +334,12 @@ class OntologyAdapter(Adapter):
         print(f"Graph initialized with {len(self.graph)} triples for {self.ontology}")
 
     def __del__(self):
-        # Clean up the world instance when the adapter is destroyed
-        if self.world is not None:
-            self.world.close()
+        # Clean up the world instance when the adapter is destroyed.
+        # Use getattr to guard against partial initialisation (e.g. when
+        # __init__ raised before self.world was set by super().__init__).
+        world = getattr(self, 'world', None)
+        if world is not None:
+            world.close()
             self.world = None
 
     def _calculate_file_hash(self, file_path):
@@ -404,7 +409,8 @@ class OntologyAdapter(Adapter):
         if remote_version is None or current_version is None or current_version == "unknown":
             print("Version information is incomplete. Checking cache expiration.")
             cached_date = dt.fromisoformat(meta['date'])
-            if dt.now() - cached_date > timedelta(days=self.cache_expiration_days):
+            now = dt.now(cached_date.tzinfo) if cached_date.tzinfo else dt.now()
+            if now - cached_date > timedelta(days=self.cache_expiration_days):
                 print("Cache has expired. Updating data.")
                 return True
             else:
@@ -455,12 +461,12 @@ class OntologyAdapter(Adapter):
         return self._is_new_version_available(meta)
     
     def is_deprecated(self, node):
-        node_key = OntologyAdapter.to_key(node)
+        node_key = self.to_key(node)
         deprecated_values = self.cache.get(node_key, {}).get('deprecated', [])
         return any(value for value in deprecated_values if value.lower() == 'true')
     
     def get_alternative_ids(self, node):
-        node_key = OntologyAdapter.to_key(node)
+        node_key = self.to_key(node)
         return self.cache.get(node_key, {}).get('alternative_ids', [])
     
     def _process_node_key(self, node):
@@ -577,13 +583,13 @@ class OntologyAdapter(Adapter):
 
                 # Skip deprecated nodes
                 if self.is_deprecated(from_node) or self.is_deprecated(to_node):
-                    print(f"Skipping edge with deprecated node: {OntologyAdapter.to_key(from_node)} -> {OntologyAdapter.to_key(to_node)}")
+                    print(f"Skipping edge with deprecated node: {self.to_key(from_node)} -> {self.to_key(to_node)}")
                     continue
 
                 if self.type == 'edge':
-                    from_node_key = OntologyAdapter.to_key(from_node)
-                    predicate_key = OntologyAdapter.to_key(predicate)
-                    to_node_key = OntologyAdapter.to_key(to_node)
+                    from_node_key = self.to_key(from_node)
+                    predicate_key = self.to_key(predicate)
+                    to_node_key = self.to_key(to_node)
 
                     if predicate == OntologyAdapter.DB_XREF:
                         if to_node.__class__ == rdflib.term.Literal:
@@ -718,7 +724,7 @@ class OntologyAdapter(Adapter):
     def cache_predicate(self, predicate, collection=None):
         triples = list(self.graph.subject_objects(predicate=predicate, unique=True))
         for s, o in triples:
-            s_key = OntologyAdapter.to_key(s)
+            s_key = self.to_key(s)
 
             if s_key not in self.cache:
                 self.cache[s_key] = {}
@@ -738,5 +744,5 @@ class OntologyAdapter(Adapter):
 
 
     def get_all_property_values_from_node(self, node, collection):
-        node_key = OntologyAdapter.to_key(node)
+        node_key = self.to_key(node)
         return self.cache.get(node_key, {}).get(collection, [])

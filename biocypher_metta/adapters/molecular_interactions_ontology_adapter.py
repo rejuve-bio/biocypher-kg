@@ -1,5 +1,5 @@
 # https://purl.obolibrary.org/obo/mi.owl
-# https://data.bioontology.org/ontologies/MI/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb&download_format=rdf
+# Alternative (requires BIOPORTAL_API_KEY): https://data.bioontology.org/ontologies/MI/download?apikey=<BIOPORTAL_API_KEY>&download_format=rdf
 
 from biocypher_metta.adapters.ontologies_adapter import OntologyAdapter
 

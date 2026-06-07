@@ -1,12 +1,12 @@
-"""
-Build a mapping pickle for FlyBase symbol -> FBgn mappings from synonyms table.
+# """
+# Build a mapping pickle for FlyBase symbol -> FBgn mappings from synonyms table.
 
-This script reads fb_synonym_fb_*.tsv.gz and creates a pickle
-containing the mapping dictionary used by EPDAdapter for fly.
+# This script reads fb_synonym_fb_*.tsv.gz and creates a pickle
+# containing the mapping dictionary used by EPDAdapter for fly.
 
-Usage:
-    python build_flybase_synonym_mapping.py /path/to/fb_synonym_fb_2025_05.tsv.gz /path/to/output.pkl
-"""
+# Usage:
+#     python build_flybase_synonym_mapping.py /path/to/fb_synonym_fb_2026_01.tsv.gz /path/to/output.pkl
+# """
 
 import pickle
 import sys

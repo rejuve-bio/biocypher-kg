@@ -2,7 +2,7 @@ name: GWAS
 website: https://ftp.ebi.ac.uk
 relationships:
   upstream gene to variant association:
-    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
+    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip
     input_label: snp_upstream_gene
     output_label: upstream_of
     description: holds between a sequence variant and a gene that is upstream to the
@@ -13,7 +13,7 @@ relationships:
       distance: int
       p_value: float
   downstream gene to variant association:
-    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
+    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip
     input_label: snp_downstream_gene
     output_label: downstream_of
     description: holds between a sequence variant and a gene that is downstream to
@@ -24,7 +24,7 @@ relationships:
       distance: int
       p_value: float
   in gene to variant association:
-    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2024/07/29/gwas-catalog-associations_ontology-annotated.tsv
+    url: https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip
     input_label: snp_in_gene
     output_label: located_in
     description: holds between a sequence variant and a gene that is within the gene

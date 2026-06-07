@@ -497,11 +497,11 @@ gencode_gene:
     module: biocypher_metta.adapters.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
-      filepath: gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+      filepath: ensembl/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       gene_alias_file_path: ./aux_files/dmel/Drosophila_melanogaster.gene_info.gz
       label: gene
       taxon_id: 7227
-  outdir: gencode/gene
+  outdir: ensembl/gene
   nodes: True
   edges: False
 
@@ -510,11 +510,11 @@ gencode_transcripts:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+      filepath: ensembl/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       type: transcript
       label: transcript
       taxon_id: 7227
-  outdir: gencode/transcript
+  outdir: ensembl/transcript
   nodes: True
   edges: False
 
@@ -523,11 +523,11 @@ transcribes_to:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+      filepath: ensembl/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       type: transcribes to
       label: transcribes_to
       taxon_id: 7227
-  outdir: gencode/gene
+  outdir: ensembl/gene
   nodes: False
   edges: True
 
@@ -536,11 +536,11 @@ gencode_exon:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+      filepath: ensembl/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       target_type: None
       label: exon
       taxon_id: 7227
-  outdir: gencode/exon
+  outdir: ensembl/exon
   nodes: True
   edges: False
 
@@ -549,11 +549,11 @@ exon_part_of_transcript:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+      filepath: ensembl/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       label: part_of_transcript
       target_type: transcript
       taxon_id: 7227
-  outdir: gencode/exon
+  outdir: ensembl/exon
   nodes: False
   edges: True
 
@@ -562,11 +562,11 @@ exon_part_of_gene:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: gencode/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+      filepath: ensembl/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
       label: part_of_gene
       target_type: gene      
       taxon_id: 7227
-  outdir: gencode/exon
+  outdir: ensembl/exon
   nodes: False
   edges: True
 
@@ -1080,6 +1080,19 @@ string:
   nodes: False
   edges: True
 
+string_coexpression:
+  adapter:
+    module: biocypher_metta.adapters.string_coexpression_adapter
+    cls: StringCoexpressionAdapter
+    args:
+      filepath: string/7227.protein.links.detailed.v12.0.txt.gz
+      label: protein_coexpressed_with
+      coexpression_threshold: 400
+      taxon_id: 7227
+  outdir: string/coexpression
+  nodes: False
+  edges: True
+
 go_biological_process:
   adapter:
     module: biocypher_metta.adapters.gene_ontology_adapter
@@ -1312,7 +1325,7 @@ alliance_gene_orthology:
     module: biocypher_metta.adapters.alliance_gene_orthology_adapter
     cls: AllianceGeneOrthologyAdapter
     args:
-      filepath: agr/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+      filepath: alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 7227
       label: orthologs_genes
   outdir: alliance/orthology

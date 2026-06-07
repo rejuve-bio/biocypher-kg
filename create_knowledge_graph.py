@@ -2,6 +2,15 @@
 Knowledge graph generation through BioCypher script
 """
 
+# Load environment variables from .env (if present) before anything else,
+# so secrets like BIOPORTAL_API_KEY are available to all adapters.
+try:
+    from dotenv import load_dotenv as _load_dotenv
+    _load_dotenv(override=False)  # don't override vars already set in the shell
+except ImportError:
+    pass  # python-dotenv is optional; set env vars manually if not installed
+
+
 import importlib
 import json
 import logging

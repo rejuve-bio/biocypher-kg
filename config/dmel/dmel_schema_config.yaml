@@ -1,7 +1,5 @@
 Title: BioCypher graph schema configuration file (Biolink-adapted for dmel)
 
-
-
 ##################             NODES   SECTION             ####################
 
 allele:
