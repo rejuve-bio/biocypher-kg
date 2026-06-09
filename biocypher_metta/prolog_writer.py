@@ -12,7 +12,7 @@ class PrologWriter(BaseWriter):
     # All other prefixes (ENSEMBL, HGNC, STRING, …) are stripped.
     _ONTOLOGY_PREFIXES = frozenset({
         'CL', 'UBERON', 'CLO', 'EFO', 'BTO', 'GO', 'HP', 'MONDO', 'DOID',
-        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO',
+        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO', 'WBBT', 'EMAPA',
     })
 
     def __init__(self, schema_config, biocypher_config,
@@ -265,7 +265,7 @@ class PrologWriter(BaseWriter):
                 try:
                     ontology_id = v.upper().replace('_', ':')
                     ontology_prefix = ontology_id.split(':')[0].lower()
-                    ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+                    ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue', 'wbbt': 'anatomy', 'emapa': 'anatomy'}
                     ontology_name = ontology_dict.get(ontology_prefix, ontology_prefix)
                     prop = self.normalize_text(ontology_id)
                     out_str.append(f'{k}({def_out}, {ontology_name}({prop})).')

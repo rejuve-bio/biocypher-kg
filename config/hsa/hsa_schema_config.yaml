@@ -1582,13 +1582,13 @@ efo subclass of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-uberon subclass of:
+anatomy subclass of:
   is_a: subclass of
   mixins: [biolink:AnatomicalEntityToAnatomicalEntityAssociation]
   biolink_predicate: "biolink:subclass_of"
   inherit_properties: true
   represented_as: edge
-  input_label: uberon_subclass_of
+  input_label: anatomy_subclass_of
   output_label: is_a
   source: anatomy
   target: anatomy

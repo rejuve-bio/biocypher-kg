@@ -1,0 +1,29 @@
+
+wbbt:
+  adapter:
+    module: biocypher_metta.adapters.wbbt_adapter
+    cls: WbbtAdapter
+    args:
+      ontology: "wbbt"
+      type: node
+      label: anatomy
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: wbbt
+  nodes: True
+  edges: False
+
+wbbt_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.wbbt_adapter
+    cls: WbbtAdapter
+    args:
+      ontology: "wbbt"
+      type: edge
+      label: anatomy_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: wbbt
+  nodes: False
+  edges: True

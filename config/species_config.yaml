@@ -59,6 +59,13 @@ dmel:
     dbsnp_variant: ""
 
 cel:
+  sample:
+    adapters_config: config/cel/cel_adapters_config_sample.yaml
+    schema_config: config/cel/cel_schema_config.yaml
+    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
+    # Example: dbsnp_variant: common
+    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
+    dbsnp_variant: ""
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml
@@ -67,10 +74,15 @@ cel:
     dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
     dbsnp_variant: ""
 
-mmo:
+mmu:
+  sample:
+    adapters_config: config/mmu/mmu_adapters_config_sample.yaml
+    schema_config: config/mmu/mmu_schema_config.yaml
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
   full:
-    adapters_config: config/mmo/mmo_adapters_config.yaml
-    schema_config: config/mmo/mmo_schema_config.yaml
+    adapters_config: config/mmu/mmu_adapters_config.yaml
+    schema_config: config/mmu/mmu_schema_config.yaml
     # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
     # Example: dbsnp_variant: common
     dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
