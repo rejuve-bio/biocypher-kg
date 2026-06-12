@@ -1,6 +1,6 @@
 wbbt:
   adapter:
-    module: biocypher_metta.adapters.wbbt_adapter
+    module: biocypher_metta.adapters.cel.wbbt_adapter
     cls: WbbtAdapter
     args:
       ontology: "wbbt"
@@ -15,7 +15,7 @@ wbbt:
 
 wbbt_subclass_of:
   adapter:
-    module: biocypher_metta.adapters.wbbt_adapter
+    module: biocypher_metta.adapters.cel.wbbt_adapter
     cls: WbbtAdapter
     args:
       ontology: "wbbt"

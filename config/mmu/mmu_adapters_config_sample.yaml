@@ -1,6 +1,6 @@
 emapa:
   adapter:
-    module: biocypher_metta.adapters.emapa_adapter
+    module: biocypher_metta.adapters.mmu.emapa_adapter
     cls: EmapaAdapter
     args:
       ontology: "emapa"
@@ -15,7 +15,7 @@ emapa:
 
 emapa_subclass_of:
   adapter:
-    module: biocypher_metta.adapters.emapa_adapter
+    module: biocypher_metta.adapters.mmu.emapa_adapter
     cls: EmapaAdapter
     args:
       ontology: "emapa"
