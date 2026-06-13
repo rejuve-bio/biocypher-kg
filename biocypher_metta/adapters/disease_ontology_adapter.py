@@ -23,6 +23,7 @@ class DiseaseOntologyAdapter(OntologyAdapter):
 
     def __init__(self, write_properties, add_provenance, ontology, type, label='disease', dry_run=False, add_description=False, cache_dir=None):
         self.ONTOLOGIES = self._get_ontologies()
+        self._enabled = bool(self.ONTOLOGIES)
         super(DiseaseOntologyAdapter, self).__init__(write_properties, add_provenance, ontology, type, label, dry_run, add_description, cache_dir)
 
     def update_graph(self):
