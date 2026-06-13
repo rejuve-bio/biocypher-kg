@@ -239,13 +239,11 @@ class DownloadManager:
                 'downloaded_at': datetime.now().isoformat(),
             })
 
-        # Attach HEAD metadata for all declared URLs (best-effort). Uses iter_source_urls
-        # so every URL shape is covered — str, list, and the dict forms ({filename: url}
-        # and nested {sub_key: [urls]}) — not just the scalar/list `url` field.
+        # Attach HEAD metadata for the primary declared URL(s) (best-effort).
         remote_metadata = {}
-        for url in iter_source_urls(source_config):
-            if url.startswith('http'):
-                meta = self._head_metadata(url)
+        for url in list(version_info.url if isinstance(version_info.url, list) else [version_info.url]):
+            if isinstance(url, str) and url.startswith('http'):
+                meta = self._head_metadata(url.split('#')[0].strip())
                 if meta:
                     remote_metadata[meta['url']] = meta
 
