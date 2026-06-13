@@ -1,8 +1,8 @@
 """``check-versions`` — report dataset staleness against recorded versions.
 
-Scope (see doc/plans/dataset-versioning-provenance.md, Stage 5): a resolver over a
-*pinned* URL cannot reveal a newer upstream release, so this checker detects only what
-is detectable from the config itself:
+Scope (see docs/knowledge-graph/dataset-versioning.md): a resolver over a *pinned* URL cannot reveal a
+newer upstream release, so this checker detects only what is detectable from the config
+itself:
 
 - ``CHANGED``    — an ``http_head`` source's signature (ETag/Last-Modified/size) differs
                    from what was last recorded (a ``current/`` file was refreshed).
