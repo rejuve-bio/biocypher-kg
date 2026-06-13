@@ -269,3 +269,4 @@ same inputs), then rebuild with `--manifest`. Matching checksums guarantee ident
 
 - [biocypher_dataset_downloader/versioning/README.md](../biocypher_dataset_downloader/versioning/README.md) —
   the resolver framework and how to add a new strategy.
+- [doc/plans/dataset-versioning-provenance.md](plans/dataset-versioning-provenance.md) — the original design plan.
