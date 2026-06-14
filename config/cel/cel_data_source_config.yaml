@@ -74,3 +74,6 @@ uniprot:
   name: UniProtKB/Swiss-Prot
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
 
+eva:
+  name: European Variation Archive (EVA) Release 9
+  url: https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9/by_species/caenorhabditis_elegans/WBcel235/6239_GCA_000002985.3_current_ids.vcf.gz

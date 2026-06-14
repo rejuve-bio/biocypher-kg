@@ -1,0 +1,27 @@
+Title: BioCypher graph schema configuration file (Biolink-adapted for mmu)
+
+
+##################             NODES   SECTION             ####################
+
+
+
+snp:
+  represented_as: node
+  input_label: snp
+  is_a: genomic variant
+  mixins: [biolink:Snv]
+  biolink_category: "biolink:Snv"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:Snv"
+  properties:
+    ref: 
+      type: str
+    alt: 
+      type: str
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+  description: >-
+    A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome

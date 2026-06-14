@@ -59,6 +59,11 @@ dmel:
     dbsnp_variant: ""
 
 cel:
+  sample:
+    adapters_config: config/cel/cel_adapters_config_sample.yaml
+    schema_config: config/cel/cel_schema_config.yaml
+    dbsnp_cache_root: ""       
+    dbsnp_variant: ""
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml
@@ -67,7 +72,12 @@ cel:
     dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
     dbsnp_variant: ""
 
-mmo:
+mmu:
+  sample:
+    adapters_config: config/mmu/mmu_adapters_config_sample.yaml
+    schema_config: config/mmu/mmu_schema_config.yaml
+    dbsnp_cache_root: ""       
+    dbsnp_variant: ""
   full:
     adapters_config: config/mmo/mmo_adapters_config.yaml
     schema_config: config/mmo/mmo_schema_config.yaml
@@ -77,6 +87,11 @@ mmo:
     dbsnp_variant: ""
 
 rno:
+  sample:
+    adapters_config: config/rno/rno_adapters_config_sample.yaml
+    schema_config: config/rno/rno_schema_config.yaml
+    dbsnp_cache_root: ""       
+    dbsnp_variant: ""
   full:
     adapters_config: config/rno/rno_adapters_config.yaml
     schema_config: config/rno/rno_schema_config.yaml
