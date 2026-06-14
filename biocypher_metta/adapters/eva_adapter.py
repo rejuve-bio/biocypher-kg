@@ -37,7 +37,6 @@ except ImportError:
 _SPECIES_META = {
     7227:  {
         "name": "drosophila_melanogaster",
-        "assembly": "Release_6_plus_ISO1_MT",
         "source_url": (
             "https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9"
             "/by_species/drosophila_melanogaster/Release_6_plus_ISO1_MT/"
@@ -45,7 +44,6 @@ _SPECIES_META = {
     },
     6239:  {
         "name": "caenorhabditis_elegans",
-        "assembly": "WBcel235",
         "source_url": (
             "https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9"
             "/by_species/caenorhabditis_elegans/WBcel235/"
@@ -53,7 +51,6 @@ _SPECIES_META = {
     },
     10090: {
         "name": "mus_musculus",
-        "assembly": "GRCm39",
         "source_url": (
             "https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9"
             "/by_species/mus_musculus/GRCm39/"
@@ -61,7 +58,6 @@ _SPECIES_META = {
     },
     10116: {
         "name": "rattus_norvegicus",
-        "assembly": "GRCr8",
         "source_url": (
             "https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9"
             "/by_species/rattus_norvegicus/GRCr8/"
