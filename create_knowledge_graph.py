@@ -1053,6 +1053,13 @@ def main(
                         sp_cache_root = "aux_files/hsa/sample_dbsnp"
                     sp_variant = dbsnp_variant or config.get("dbsnp_variant") or None
 
+                    ckpt = _setup_checkpoint(
+                        sp_output_dir,
+                        pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
+                        no_checkpoint=no_checkpoint,
+                        resume=resume,
+                    )
+
                     sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
                         sp_cache_root, sp_variant, is_sample=sp_is_sample
                     )
@@ -1086,13 +1093,6 @@ def main(
                         logger.info(
                             f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}"
                         )
-
-                    ckpt = _setup_checkpoint(
-                        sp_output_dir,
-                        pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
-                        no_checkpoint=no_checkpoint,
-                        resume=resume,
-                    )
 
                     nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
                         sp_adapters_dict,
@@ -1209,12 +1209,6 @@ def main(
             resolved_cache_root = "aux_files/hsa/sample_dbsnp"
         resolved_variant = dbsnp_variant or cfg_variant
 
-        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(
-            resolved_cache_root,
-            resolved_variant,
-            is_sample=is_sample_config,
-        )
-
         if not species_mode:
             primer_schema_path = Path("config/primer_schema_config.yaml")
             schema_is_primer = (
@@ -1254,6 +1248,16 @@ def main(
                 is_merged_schema = True
                 temp_schema_to_cleanup = schema_config
 
+        output_dir.mkdir(parents=True, exist_ok=True)
+        _log_handlers.append(_add_file_logger(output_dir))
+
+        ckpt = _setup_checkpoint(
+            output_dir,
+            pipeline_id=f"{output_dir}::{adapters_config}",
+            no_checkpoint=no_checkpoint,
+            resume=resume,
+        )
+
         bc = get_writer(
             writer_type,
             output_dir,
@@ -1283,13 +1287,10 @@ def main(
                 raise typer.Exit(1)
             logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
 
-        output_dir.mkdir(parents=True, exist_ok=True)
-        _log_handlers.append(_add_file_logger(output_dir))
-        ckpt = _setup_checkpoint(
-            output_dir,
-            pipeline_id=f"{output_dir}::{adapters_config}",
-            no_checkpoint=no_checkpoint,
-            resume=resume,
+        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(
+            resolved_cache_root,
+            resolved_variant,
+            is_sample=is_sample_config,
         )
 
         nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
