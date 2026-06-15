@@ -1,6 +1,19 @@
 # BioCypher KG
 
 A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher) knowledge graphs with multiple output formats.
+
+## Supported Species
+
+| Species | Code | Status |
+|---|---|---|
+| *Homo sapiens* (human) | `hsa` | Production-ready |
+| *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
+| *Mus musculus* (mouse) | `mmu` | In development — data source config only, no adapters yet |
+| *Caenorhabditis elegans* | `cel` | In development — data source config only, no adapters yet |
+| *Rattus norvegicus* (rat) | `rno` | In development — data source config only, no adapters yet |
+
+Attempting to run `mmu`, `cel`, or `rno` will raise a `FileNotFoundError` because their adapter configs do not yet exist.
+
 ## Prerequisites
 
 - Python 3.9+  
@@ -458,7 +471,7 @@ python -m biocypher_dataset_downloader.download_data --output-dir <output_direct
 
 Every dataset's version and provenance is tracked from a single source of truth — the data-source
 config — and flows through the whole pipeline, so a build is reproducible and citable. Full guide:
-**[doc/dataset-versioning.md](doc/dataset-versioning.md)**.
+**[docs/knowledge-graph/dataset-versioning.md](docs/knowledge-graph/dataset-versioning.md)**.
 
 **Declare a version** in `config/<species>/<species>_data_source_config.yaml` (optional; defaults to
 HTTP-HEAD change tracking):
