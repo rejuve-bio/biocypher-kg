@@ -58,6 +58,30 @@ class GenotypePhenotypeAdapter(Adapter):
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
         super(GenotypePhenotypeAdapter, self).__init__(write_properties, add_provenance)
+        
+        self.snp_fbal_cache = set()
+        if self.label == 'involved_in':
+            self.snp_fbal_cache = self._load_snp_fbal_cache()
+
+    def _load_snp_fbal_cache(self):
+        try:
+            import psycopg2
+            conn = psycopg2.connect(host='chado.flybase.org', database='flybase', user='flybase', password='flybase', connect_timeout=10)
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT f_allele.uniquename
+                FROM feature f_snp
+                JOIN feature_relationship fr ON fr.subject_id = f_snp.feature_id
+                JOIN feature f_allele ON f_allele.feature_id = fr.object_id
+                WHERE f_snp.type_id=733 AND f_snp.is_obsolete=FALSE
+            """)
+            cache = {row[0] for row in cursor.fetchall()}
+            conn.close()
+            return cache
+        except Exception as e:
+            print(f"Warning: Could not connect to FlyBase for SNPs: {e}")
+            return set()
+
 
 
     def get_nodes(self):
@@ -122,7 +146,13 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source_url'] = self.source_url
                 alleles = self.get_alleles(row[1])          # gets a list of allele ids from  genotype's  genotype_ids
                 for allele in alleles:
-                    yield f'FlyBase:{allele.upper()}', f'RejuveBio:phenotype_set{id}', self.label, props    
+                    source_id = f'FlyBase:{allele.upper()}'
+                    target_id = f'RejuveBio:phenotype_set{id}'
+                    yield source_id, target_id, self.label, props    
+                    
+                    if allele in self.snp_fbal_cache:
+                        yield source_id, target_id, 'snp_involved_in', props
+
 
         elif self.label == 'genetically_informed_by':                     # phenotype to genotype schema
             id = -1

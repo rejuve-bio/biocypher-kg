@@ -323,6 +323,17 @@ dmel_allele_to_gene:
   nodes: False
   edges: True
 
+dmel_snp_located_in_gene:
+  adapter:
+    module: biocypher_metta.adapters.dmel.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+       label: snp_in_gene
+  outdir: allele
+  nodes: False
+  edges: True
+
 dmel_gene_genetic_adapter:
     adapter:
         module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter

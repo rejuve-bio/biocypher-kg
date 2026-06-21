@@ -24,6 +24,21 @@ allele:
   kgx_properties:
     category: biolink:Allele
 
+snp:
+  represented_as: node
+  input_label: snp
+  is_a: allele
+  mixins:
+  - biolink:Snv
+  biolink_category: biolink:Snv
+  inherit_properties: true
+  description: >-
+    A single nucleotide polymorphism (SNP) is a variation in a single nucleotide
+    that occurs at a specific position in the genome of a Drosophila melanogaster allele.
+  kgx_properties:
+    category: biolink:Snv
+
+
 dmel disease model:
   represented_as: node
   input_label: dmel_disease_model
@@ -249,6 +264,26 @@ signaling pathway gene group:
 
 
 ##################             EDGES   SECTION             ####################
+
+snp to gene association:
+  is_a: allele to gene association
+  represented_as: edge
+  input_label: snp_variant_of
+  output_label: variant_of
+  biolink_predicate: biolink:variant_of
+  source: snp
+  target: gene
+
+snp to phenotype_set:
+  is_a: allele to phenotype_set
+  represented_as: edge
+  input_label: snp_involved_in
+  output_label: involved_in
+  biolink_predicate: biolink:involved_in
+  source: snp
+  target: phenotype_set
+
+
 
 biological process gene dmel:
   is_a: go gene product
