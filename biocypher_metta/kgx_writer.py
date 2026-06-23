@@ -11,7 +11,7 @@ class KGXWriter(BaseWriter):
 
     _ONTOLOGY_PREFIXES = frozenset({
         'CL', 'UBERON', 'CLO', 'EFO', 'BTO', 'GO', 'HP', 'MONDO', 'DOID',
-        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO',
+        'CHEBI', 'NCBITAXON', 'OBI', 'PATO', 'SO', 'RO', 'IAO', 'WBBT', 'EMAPA',
     })
 
     def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):

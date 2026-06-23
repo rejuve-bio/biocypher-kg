@@ -393,7 +393,7 @@ class MeTTaWriter(BaseWriter):
         try:
             ontology_id = context.upper().replace('_', ':')
             ontology_name = ontology_id.split(':')[0].lower()
-            ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue'}
+            ontology_dict = {'cl': 'cell_type', 'uberon': 'anatomy', 'clo': 'cell_line', 'efo': 'experimental_factor', 'bto': 'tissue', 'wbbt': 'anatomy', 'emapa': 'anatomy'}
             ontology_name = ontology_dict.get(ontology_name, None)
             ontology_id = ontology_id.replace(':', '_')
             return f'({ontology_name} {ontology_id})'

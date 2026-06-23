@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 eva_snp:
   adapter:
     module: biocypher_metta.adapters.eva_adapter
@@ -20,5 +21,33 @@ eva_snp_in_gene:
       taxon_id: 6239
       label: snp_in_gene
   outdir: cel/eva
+=======
+wbbt:
+  adapter:
+    module: biocypher_metta.adapters.cel.wbbt_adapter
+    cls: WbbtAdapter
+    args:
+      ontology: "wbbt"
+      type: node
+      label: anatomy
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: wbbt
+  nodes: True
+  edges: False
+
+wbbt_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.cel.wbbt_adapter
+    cls: WbbtAdapter
+    args:
+      ontology: "wbbt"
+      type: edge
+      label: anatomy_subclass_of
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: wbbt
+>>>>>>> rejuve-bio/main
   nodes: False
   edges: True

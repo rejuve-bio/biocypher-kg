@@ -1237,7 +1237,7 @@ uberon_subclass_of:
       ontology: "uberon"
       type: edge
       dry_run: False
-      label: uberon_subclass_of
+      label: anatomy_subclass_of
       cache_dir: ./ontology_dataset_cache
   outdir: uberon
   nodes: False
