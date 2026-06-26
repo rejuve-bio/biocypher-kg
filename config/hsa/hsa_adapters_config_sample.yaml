@@ -25,7 +25,7 @@ gencode_transcripts:
   edges: False
 
 
-transcribes_to:
+gencode_transcribes_to:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
@@ -51,7 +51,7 @@ gencode_exon:
   nodes: True
   edges: False
 
-exon_part_of_transcript:
+gencode_exon_part_of_transcript:
   adapter:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
@@ -64,7 +64,7 @@ exon_part_of_transcript:
   nodes: False
   edges: True
 
-exon_part_of_gene:
+gencode_exon_part_of_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
@@ -77,7 +77,7 @@ exon_part_of_gene:
   nodes: False
   edges: True
 
-uniprotkb_sprot:
+uniprot_sprot:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
@@ -89,7 +89,7 @@ uniprotkb_sprot:
   nodes: True
   edges: False
 
-uniprotkb_sprot_translates_to:
+uniprot_sprot_translates_to:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
@@ -210,7 +210,7 @@ reactome_positive_role_protein_to_reaction_or_pathway:
   nodes: False
   edges: True
 
-genes_pathways:
+reactome_genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -222,7 +222,7 @@ genes_pathways:
   nodes: False
   edges: True
 
-protein_pathways:
+reactome_protein_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -234,7 +234,7 @@ protein_pathways:
   nodes: False
   edges: True
 
-transcript_pathways:
+reactome_transcript_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -246,7 +246,7 @@ transcript_pathways:
   nodes: False
   edges: True
 
-gene_or_gene_product_reaction:
+reactome_gene_or_gene_product_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -258,7 +258,7 @@ gene_or_gene_product_reaction:
   nodes: False
   edges: True
 
-protein_reaction:
+reactome_protein_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -270,7 +270,7 @@ protein_reaction:
   nodes: False
   edges: True
 
-transcript_reaction:
+reactome_transcript_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -282,7 +282,7 @@ transcript_reaction:
   nodes: False
   edges: True
 
-chebi_small_molecule_to_pathways:
+reactome_chebi_small_molecule_to_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -294,7 +294,7 @@ chebi_small_molecule_to_pathways:
   nodes: False
   edges: True
 
-chebi_small_molecule_to_reactions:
+reactome_chebi_small_molecule_to_reactions:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -306,7 +306,7 @@ chebi_small_molecule_to_reactions:
   nodes: False
   edges: True
 
-parent_pathway_of:
+reactome_parent_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -318,7 +318,7 @@ parent_pathway_of:
   nodes: False
   edges: True
 
-child_pathway_of:
+reactome_child_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
@@ -342,7 +342,7 @@ reactome_ppi:
   nodes: False
   edges: True
 
-pathway_to_biological_process:
+reactome_pathway_to_biological_process:
   adapter:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
@@ -579,7 +579,7 @@ gaf_cellular_component_gene_located_in:
   nodes: False
   edges: True
 
-coexpression:
+coxpresdb_coexpression:
   adapter:
     module: biocypher_metta.adapters.coxpresdb_adapter
     cls: CoxpresdbAdapter
@@ -591,7 +591,7 @@ coexpression:
   nodes: False
   edges: True
 
-tflink:
+tflink_tf_gene:
   adapter:
     module: biocypher_metta.adapters.tflink_adapter
     cls: TFLinkAdapter
@@ -615,7 +615,7 @@ tflink_protein_protein:
   nodes: False
   edges: True
 
-string:
+string_ppi:
   adapter:
     module: biocypher_metta.adapters.string_ppi_adapter
     cls: StringPPIAdapter
@@ -1138,7 +1138,7 @@ uberon_subclass_of:
   nodes: False
   edges: True
 
-cell_line_ontology:
+clo_cell_line_ontology:
   adapter:
     module: biocypher_metta.adapters.cell_line_ontology_adapter
     cls: CellLineOntologyAdapter
@@ -1166,7 +1166,7 @@ clo_subclass_of:
   nodes: False
   edges: True
 
-cell_line_is_a_cell_type:
+clo_cell_line_is_a_cell_type:
   adapter:
     module: biocypher_metta.adapters.cell_line_ontology_adapter
     cls: CellLineOntologyAdapter
@@ -1180,7 +1180,7 @@ cell_line_is_a_cell_type:
   nodes: False
   edges: True
 
-cell_ontology:
+cl_cell_ontology:
   adapter:
     module: biocypher_metta.adapters.cell_ontology_adapter
     cls: CellOntologyAdapter
@@ -1236,7 +1236,7 @@ cl_part_of:
   nodes: False
   edges: True
 
-cell_type_part_of_tissue:
+cl_cell_type_part_of_tissue:
   adapter:
     module: biocypher_metta.adapters.cell_ontology_adapter
     cls: CellOntologyAdapter
@@ -1264,7 +1264,7 @@ cell_type_part_of_tissue:
 #   edges: True
 
 
-experimental_factor_ontology:
+efo_experimental_factor_ontology:
   adapter:
     module: biocypher_metta.adapters.experimental_factor_ontology_adapter
     cls: ExperimentalFactorOntologyAdapter
@@ -1292,7 +1292,7 @@ efo_subclass_of:
   nodes: False
   edges: True
 
-brenda_tissue_ontology:
+bto_brenda_tissue_ontology:
   adapter:
     module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
     cls: BrendaTissueOntologyAdapter
@@ -1320,7 +1320,7 @@ bto_bto_subclass_of:
   nodes: False
   edges: True
 
-tissue_part_of_anatomy:
+bto_tissue_part_of_anatomy:
   adapter:
     module: biocypher_metta.adapters.brenda_tissue_ontology_adapter
     cls: BrendaTissueOntologyAdapter
@@ -1334,7 +1334,7 @@ tissue_part_of_anatomy:
   nodes: False
   edges: True
 
-human_phenotype_ontology:
+hpo_human_phenotype_ontology:
   adapter:
     module: biocypher_metta.adapters.hsa.human_phenotype_ontology_adapter
     cls: HumanPhenotypeOntologyAdapter
@@ -1416,7 +1416,7 @@ bgee_gene_expressed_in_anatomical_entity:
   nodes: False
   edges: True
 
-transcription_factor_binding_site:
+tfbs_transcription_factor_binding_site:
   adapter:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
@@ -1428,7 +1428,7 @@ transcription_factor_binding_site:
   nodes: True
   edges: False
 
-gene_tfbs_association:
+tfbs_gene_association:
   adapter:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
@@ -1440,7 +1440,7 @@ gene_tfbs_association:
   nodes: False
   edges: True
   
-snp_to_upstream_gene:
+gwas_snp_to_upstream_gene:
   adapter:
     module: biocypher_metta.adapters.hsa.gwas_adapter
     cls: GWASAdapter
@@ -1451,7 +1451,7 @@ snp_to_upstream_gene:
   nodes: False
   edges: True
 
-snp_to_downstream_gene:
+gwas_snp_to_downstream_gene:
   adapter:
     module: biocypher_metta.adapters.hsa.gwas_adapter
     cls: GWASAdapter
@@ -1462,7 +1462,7 @@ snp_to_downstream_gene:
   nodes: False
   edges: True
 
-snp_to_in_gene:
+gwas_snp_to_in_gene:
   adapter:
     module: biocypher_metta.adapters.hsa.gwas_adapter
     cls: GWASAdapter
@@ -1473,7 +1473,7 @@ snp_to_in_gene:
   nodes: False
   edges: True
 
-promoter_ccre:
+ccre_promoter:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
@@ -1487,7 +1487,7 @@ promoter_ccre:
   nodes: True
   edges: False
 
-promoter_ccre_associates_with_gene_nearest_gene:
+ccre_promoter_associates_with_gene_nearest_gene:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
@@ -1502,7 +1502,7 @@ promoter_ccre_associates_with_gene_nearest_gene:
   nodes: False
   edges: True
 
-promoter_ccre_associates_with_gene_nearest_gene_coding_only:
+ccre_promoter_associates_with_gene_nearest_gene_coding_only:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
@@ -1517,7 +1517,7 @@ promoter_ccre_associates_with_gene_nearest_gene_coding_only:
   nodes: False
   edges: True
 
-promoter_ccre_associates_with_gene_eqtl:
+ccre_promoter_associates_with_gene_eqtl:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_promoter_adapter
     cls: PromotercCREAdapter
@@ -1532,7 +1532,7 @@ promoter_ccre_associates_with_gene_eqtl:
   nodes: False
   edges: True
 
-proximal_enhancer_ccre:
+ccre_proximal_enhancer:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
     cls: EnhancercCREAdapter
@@ -1545,7 +1545,7 @@ proximal_enhancer_ccre:
   nodes: True
   edges: False
 
-proximal_enhancer_ccre_associates_with_gene:
+ccre_proximal_enhancer_associates_with_gene:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
     cls: EnhancercCREAdapter
@@ -1558,7 +1558,7 @@ proximal_enhancer_ccre_associates_with_gene:
   nodes: False
   edges: True
 
-proximal_enhancer_ccre_associates_with_gene_coding_only:
+ccre_proximal_enhancer_associates_with_gene_coding_only:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
     cls: EnhancercCREAdapter
@@ -1571,7 +1571,7 @@ proximal_enhancer_ccre_associates_with_gene_coding_only:
   nodes: False
   edges: True
 
-distal_enhancer_ccre:
+ccre_distal_enhancer:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
     cls: EnhancercCREAdapter
@@ -1584,7 +1584,7 @@ distal_enhancer_ccre:
   nodes: True
   edges: False
 
-distal_enhancer_ccre_associates_with_gene:
+ccre_distal_enhancer_associates_with_gene:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
     cls: EnhancercCREAdapter
@@ -1597,7 +1597,7 @@ distal_enhancer_ccre_associates_with_gene:
   nodes: False
   edges: True
 
-distal_enhancer_ccre_associates_with_gene_coding_only:
+ccre_distal_enhancer_associates_with_gene_coding_only:
   adapter:
     module: biocypher_metta.adapters.candidate_cis_regulatory_enhancer_adapter
     cls: EnhancercCREAdapter
@@ -1897,7 +1897,7 @@ uniprot_chebi_part_of_chebi:
   nodes: False
   edges: True
 
-disease_ontology:
+do_disease_ontology:
   adapter:
     module: biocypher_metta.adapters.disease_ontology_adapter
     cls: DiseaseOntologyAdapter
@@ -1911,7 +1911,7 @@ disease_ontology:
   nodes: True
   edges: False
 
-disease_do_subclass_of:
+do_disease_do_subclass_of:
   adapter:
     module: biocypher_metta.adapters.disease_ontology_adapter
     cls: DiseaseOntologyAdapter
@@ -2016,7 +2016,7 @@ alliance_gene_orthology:
   edges: True
 
 
-hsapdv:
+hsapdv_developmental_stage:
   adapter:
     module: biocypher_metta.adapters.hsapdv_ontology_adapter
     cls: HsapDvOntologyAdapter
@@ -2045,7 +2045,7 @@ hsapdv_subclass_of:
   nodes: False
   edges: True
 
-omim:
+omim_disease:
   adapter:
     module: biocypher_metta.adapters.omim_ontology_adapter
     cls: OMIMOntologyAdapter

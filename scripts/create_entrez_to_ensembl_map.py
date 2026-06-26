@@ -18,6 +18,8 @@ from urllib.parse import urljoin
 BASE_NCBI_URL = "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/"
 
 # Mapping of organism codes to their NCBI category and gene_info filename
+
+# Mapping of organism codes to their NCBI category and gene_info filename
 ORGANISM_CONFIG = {
     'dmel': {
         'category': 'Invertebrates',
@@ -35,13 +37,19 @@ ORGANISM_CONFIG = {
         'category': 'Mammalia',
         'filename': 'Mus_musculus.gene_info.gz',
         'full_name': 'Mus musculus',
-        'dbxref_prefix': ''
+        'dbxref_prefix': 'Ensembl'
     },
     'cel': {
         'category': 'Invertebrates',
         'filename': 'Caenorhabditis_elegans.gene_info.gz',
         'full_name': 'Caenorhabditis elegans',
-        'dbxref_prefix': ''
+        'dbxref_prefix': 'WormBase'
+    },
+        'rno': {
+        'category': 'Mammalia',
+        'filename': 'Rattus_norvegicus.gene_info.gz',
+        'full_name': 'Rattus norvegicus',
+        'dbxref_prefix': 'RGD'
     },
     # Add more organisms as needed
 }

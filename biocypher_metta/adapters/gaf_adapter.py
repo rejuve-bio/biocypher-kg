@@ -50,9 +50,11 @@ class GAFAdapter(Adapter):
         'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
         # dmel GAF file for GO annotations:
         # Flybase GAF file is updated more frequently than GO one.
-        'flybase': 'https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz'
+        'flybase': 'https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz',
         # other species/organism come here:
-
+        'mgi': 'https://current.geneontology.org/annotations/mgi.gaf.gz',
+        'rgd': 'https://current.geneontology.org/annotations/rgd.gaf.gz',
+        'wormbase': 'https://current.geneontology.org/annotations/wb.gaf.gz',
     }
 
     def __init__(self, filepath, write_properties, add_provenance, label, taxon_id, gaf_type='human',

@@ -1,15 +1,15 @@
-input_dir: /mnt/hdd_1/biocypher-kg/input/cel
+input_dir: /mnt/hdd_1/biocypher-kg/input/rno
 
 bgee_gene_expressed_in_anatomical_entity:
   adapter:
     module: biocypher_metta.adapters.bgee_adapter
     cls: BgeeAdapter
     args:
-      filepath: bgee/Caenorhabditis_elegans_expr_simple_all_conditions.tsv.gz
+      filepath: bgee/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz
       label: expressed_in
       anatomy_label: gene_expressed_in_anatomy
       developmental_stage_label: gene_expressed_in_developmental_stage
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: bgee
   nodes: False
   edges: True
@@ -19,11 +19,11 @@ rna_central_non_coding_rna:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/caenorhabditis_elegans.WBcel235.bed.gz
+      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       label: non_coding_rna
       type: non_coding_rna
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: rna_central
   nodes: True
   edges: False
@@ -33,11 +33,11 @@ rna_central_non_coding_rna_biological_process:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/caenorhabditis_elegans.WBcel235.bed.gz
+      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: rna_central
   nodes: False
   edges: True
@@ -47,11 +47,11 @@ rna_central_non_coding_rna_molecular_function:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/caenorhabditis_elegans.WBcel235.bed.gz
+      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: rna_central
   nodes: False
   edges: True
@@ -61,11 +61,11 @@ rna_central_non_coding_rna_cellular_component:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/caenorhabditis_elegans.WBcel235.bed.gz
+      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: rna_central
   nodes: False
   edges: True
@@ -75,10 +75,10 @@ epd_promoter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: epd/Ce_EPDnew.bed.gz
+      filepath: epd/Rn_EPDnew.bed.gz
       label: promoter
       type: promoter
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: epd
   nodes: True
   edges: False
@@ -88,10 +88,10 @@ epd_promoter_regulates_gene:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
     args:
-      filepath: epd/Ce_EPDnew.bed.gz
+      filepath: epd/Rn_EPDnew.bed.gz
       label: promoter_gene
       type: promoter_gene
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: epd
   nodes: False
   edges: True
@@ -102,7 +102,7 @@ alliance_gene_orthology:
     cls: AllianceGeneOrthologyAdapter
     args:
       filepath: alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 6239
+      taxon_id: 10116
       label: orthologs_genes
   outdir: alliance/orthology
   nodes: False
@@ -114,7 +114,7 @@ alliance_gene_disease_biomarker_orthology:
     cls: AllianceGeneDiseaseAdapter
     args:
       filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 6239
+      taxon_id: 10116
       label: biomarker_via_orthology
   outdir: disease
   nodes: False
@@ -126,7 +126,7 @@ alliance_gene_disease_implicated_via_orthology:
     cls: AllianceGeneDiseaseAdapter
     args:
       filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 6239
+      taxon_id: 10116
       label: implicated_via_orthology
   outdir: disease
   nodes: False
@@ -138,7 +138,7 @@ alliance_gene_disease_is_implicated_in:
     cls: AllianceGeneDiseaseAdapter
     args:
       filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 6239
+      taxon_id: 10116
       label: is_implicated_in
   outdir: disease
   nodes: False
@@ -150,7 +150,7 @@ alliance_gene_disease_is_model_of:
     cls: AllianceGeneDiseaseAdapter
     args:
       filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 6239
+      taxon_id: 10116
       label: is_model_of
   outdir: disease
   nodes: False
@@ -162,7 +162,7 @@ alliance_gene_disease_is_marker_for:
     cls: AllianceGeneDiseaseAdapter
     args:
       filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-      taxon_id: 6239
+      taxon_id: 10116
       label: is_marker_for
   outdir: disease
   nodes: False
@@ -173,10 +173,10 @@ gencode_gene:
     module: biocypher_metta.adapters.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
-      filepath: ensembl/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+      filepath: ensembl/Rattus_norvegicus.GRCr8.116.gtf.gz
       label: gene
-      taxon_id: 6239
-  outdir: ensembl/gene
+      taxon_id: 10116
+  outdir: gencode/gene
   nodes: True
   edges: False
 
@@ -185,11 +185,11 @@ gencode_transcripts:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: ensembl/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+      filepath: ensembl/Rattus_norvegicus.GRCr8.116.gtf.gz
       type: transcript
       label: transcript
-      taxon_id: 6239
-  outdir: ensembl/transcript
+      taxon_id: 10116
+  outdir: gencode/transcript
   nodes: True
   edges: False
 
@@ -198,11 +198,11 @@ gencode_transcribes_to:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: ensembl/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+      filepath: ensembl/Rattus_norvegicus.GRCr8.116.gtf.gz
       type: transcribes to
       label: transcribes_to
-      taxon_id: 6239
-  outdir: ensembl/gene
+      taxon_id: 10116
+  outdir: gencode/gene
   nodes: False
   edges: True
 
@@ -211,11 +211,11 @@ gencode_exon:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: ensembl/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+      filepath: ensembl/Rattus_norvegicus.GRCr8.116.gtf.gz
       target_type: None
       label: exon
-      taxon_id: 6239
-  outdir: ensembl/exon
+      taxon_id: 10116
+  outdir: gencode/exon
   nodes: True
   edges: False
 
@@ -224,11 +224,11 @@ gencode_exon_part_of_transcript:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: ensembl/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+      filepath: ensembl/Rattus_norvegicus.GRCr8.116.gtf.gz
       label: part_of_transcript
       target_type: transcript
-      taxon_id: 6239
-  outdir: ensembl/exon
+      taxon_id: 10116
+  outdir: gencode/exon
   nodes: False
   edges: True
 
@@ -237,11 +237,11 @@ gencode_exon_part_of_gene:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: ensembl/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+      filepath: ensembl/Rattus_norvegicus.GRCr8.116.gtf.gz
       label: part_of_gene
       target_type: gene
-      taxon_id: 6239
-  outdir: ensembl/exon
+      taxon_id: 10116
+  outdir: gencode/exon
   nodes: False
   edges: True
 
@@ -250,10 +250,10 @@ gaf_biological_process_gene_product:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: gaf/wb.gaf.gz
-      gaf_type: wormbase
+      filepath: gaf/rgd.gaf.gz
+      gaf_type: rgd
       label: biological_process_gene_product
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: gaf
   nodes: False
   edges: True
@@ -263,10 +263,10 @@ gaf_molecular_function_gene_product:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: gaf/wb.gaf.gz
-      gaf_type: wormbase
+      filepath: gaf/rgd.gaf.gz
+      gaf_type: rgd
       label: molecular_function_gene_product
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: gaf
   nodes: False
   edges: True
@@ -276,10 +276,10 @@ gaf_cellular_component_gene_product_part_of:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: gaf/wb.gaf.gz
-      gaf_type: wormbase
+      filepath: gaf/rgd.gaf.gz
+      gaf_type: rgd
       label: cellular_component_gene_product_part_of
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: gaf
   nodes: False
   edges: True
@@ -289,10 +289,10 @@ gaf_cellular_component_gene_product_located_in:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
-      filepath: gaf/wb.gaf.gz
-      gaf_type: wormbase
+      filepath: gaf/rgd.gaf.gz
+      gaf_type: rgd
       label: cellular_component_gene_product_located_in
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: gaf
   nodes: False
   edges: True
@@ -304,7 +304,7 @@ coxpresdb_coexpression:
     args:
       filepath: coxpressdb/
       label: coexpressed_with
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: coxpressdb
   nodes: False
   edges: True
@@ -317,10 +317,34 @@ reactome_pathway:
       filepath: reactome/ReactomePathways.txt
       pubmed_map_path: reactome/ReactionPMIDS.txt
       label: pathway
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: True
   edges: False
+
+reactome_parent_pathway_of:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ReactomePathwaysRelation.txt
+      label: parent_pathway_of
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_child_pathway_of:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ReactomePathwaysRelation.txt
+      label: child_pathway_of
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
 
 reactome_reaction:
   adapter:
@@ -330,7 +354,7 @@ reactome_reaction:
       filepath: reactome/Ensembl2ReactomeReactions.txt
       pubmed_map_path: reactome/ReactionPMIDS.txt
       label: reaction
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: True
   edges: False
@@ -342,7 +366,115 @@ reactome_reaction_to_pathway:
     args:
       filepath: reactome/reactome_reaction_exporter_All_species.txt
       label: reaction_to_pathway
-      taxon_id: 6239
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ChEBI2Reactome_All_Levels.txt
+      label: small_molecule_to_pathway
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ChEBI2ReactomeReactions.txt
+      label: small_molecule_to_reaction
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_genes_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2Reactome_All_Levels.txt
+      label: genes_pathways
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: reactome/reactome.all_species.interactions.tab-delimited.txt
+      label: interacts_with
+      taxon_id: 10116
+  outdir: reactome/ppi
+  nodes: False
+  edges: True
+
+reactome_protein_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2Reactome_All_Levels.txt
+      label: protein_pathways
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_transcript_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2Reactome_All_Levels.txt
+      label: transcript_pathways
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_gene_or_gene_product_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      label: gene_or_gene_product_reaction
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_protein_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      label: protein_reaction
+      taxon_id: 10116
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_transcript_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      label: transcript_reaction
+      taxon_id: 10116
   outdir: reactome
   nodes: False
   edges: True
@@ -356,7 +488,7 @@ reactome_input_role_protein_to_reaction_or_pathway:
       label: enables
       pathway_label: protein_enables_pathway
       reaction_label: protein_enables_reaction
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: False
   edges: True
@@ -370,7 +502,7 @@ reactome_output_role_protein_to_reaction_or_pathway:
       label: produced_by
       pathway_label: protein_produced_by_pathway
       reaction_label: protein_produced_by_reaction
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: False
   edges: True
@@ -384,7 +516,7 @@ reactome_catalyst_role_protein_to_reaction_or_pathway:
       label: regulates
       pathway_label: protein_regulates_pathway
       reaction_label: protein_regulates_reaction
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: False
   edges: True
@@ -398,7 +530,7 @@ reactome_negative_role_protein_to_reaction_or_pathway:
       label: negatively_regulates
       pathway_label: protein_negatively_regulates_pathway
       reaction_label: protein_negatively_regulates_reaction
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: False
   edges: True
@@ -412,139 +544,7 @@ reactome_positive_role_protein_to_reaction_or_pathway:
       label: positively_regulates
       pathway_label: protein_positively_regulates_pathway
       reaction_label: protein_positively_regulates_reaction
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_genes_pathways:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/Ensembl2Reactome_All_Levels.txt
-      label: genes_pathways
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_ppi:
-  adapter:
-    module: biocypher_metta.adapters.reactome_ppi_adapter
-    cls: ReactomePPIAdapter
-    args:
-      filepath: reactome/reactome.all_species.interactions.tab-delimited.txt
-      label: interacts_with
-      taxon_id: 6239
-  outdir: reactome/ppi
-  nodes: False
-  edges: True
-
-reactome_protein_pathways:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/Ensembl2Reactome_All_Levels.txt
-      label: protein_pathways
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_transcript_pathways:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/Ensembl2Reactome_All_Levels.txt
-      label: transcript_pathways
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_gene_or_gene_product_reaction:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/Ensembl2ReactomeReactions.txt
-      label: gene_or_gene_product_reaction
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_protein_reaction:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/Ensembl2ReactomeReactions.txt
-      label: protein_reaction
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_transcript_reaction:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/Ensembl2ReactomeReactions.txt
-      label: transcript_reaction
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_chebi_small_molecule_to_pathways:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/ChEBI2Reactome_All_Levels.txt
-      label: small_molecule_to_pathway
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_chebi_small_molecule_to_reactions:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/ChEBI2ReactomeReactions.txt
-      label: small_molecule_to_reaction
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_parent_pathway_of:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/ReactomePathwaysRelation.txt
-      label: parent_pathway_of
-      taxon_id: 6239
-  outdir: reactome
-  nodes: False
-  edges: True
-
-reactome_child_pathway_of:
-  adapter:
-    module: biocypher_metta.adapters.reactome_edges_adapter
-    cls: ReactomeEdgesAdapter
-    args:
-      filepath: reactome/ReactomePathwaysRelation.txt
-      label: child_pathway_of
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: reactome
   nodes: False
   edges: True
@@ -554,9 +554,9 @@ uniprot_sprot:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz   # contains both MMU and RNO entries
       label: protein
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/uniprot
   nodes: True
   edges: False
@@ -566,10 +566,10 @@ uniprot_sprot_translates_to:
     module: biocypher_metta.adapters.uniprot_adapter
     cls: UniprotAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       type: translates to
       label: translates_to
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/uniprot
   nodes: False
   edges: True
@@ -579,10 +579,10 @@ uniprot_dbxref_bgee_gene:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_gene
       dbxref: BGEE
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/protein_has_xref_gene
   nodes: False
   edges: True
@@ -592,10 +592,10 @@ uniprot_dbxref_ensembl_gene:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_gene
       dbxref: ENSEMBL
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/protein_has_xref_gene
   nodes: False
   edges: True
@@ -605,10 +605,10 @@ uniprot_dbxref_ensembl_transcript:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_transcript
       dbxref: ENSEMBL
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/protein_has_xref_transcript
   nodes: False
   edges: True
@@ -618,10 +618,10 @@ uniprot_dbxref_ensembl_protein:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_protein
       dbxref: ENSEMBL
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/protein_has_xref_protein
   nodes: False
   edges: True
@@ -631,10 +631,10 @@ uniprot_dbxref_string_protein:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_protein
       dbxref: STRING
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/has_xref_protein
   nodes: False
   edges: True
@@ -644,10 +644,10 @@ uniprot_dbxref_biological_process:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_biological_process
       dbxref: GO
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/has_xref_biological_process
   nodes: False
   edges: True
@@ -657,10 +657,10 @@ uniprot_dbxref_cellular_component:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_cellular_component
       dbxref: GO
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/has_xref_cellular_component
   nodes: False
   edges: True
@@ -670,10 +670,10 @@ uniprot_dbxref_molecular_function:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_molecular_function
       dbxref: GO
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: uniprot/has_xref_molecular_function
   nodes: False
   edges: True
@@ -683,9 +683,9 @@ uniprot_has_xref_catalytic_activity:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_catalytic_activity
-      taxon_id: 6239
+      taxon_id: 10116
       dbxref: CHEBI
   outdir: uniprot/has_xref_catalytic_activity
   nodes: False
@@ -696,9 +696,9 @@ uniprot_has_xref_cofactor:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_cofactor
-      taxon_id: 6239
+      taxon_id: 10116
       dbxref: CHEBI
   outdir: uniprot/has_xref_cofactor
   nodes: False
@@ -709,9 +709,9 @@ uniprot_has_xref_binding_site_ligand:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: protein_has_xref_binding_site_ligand
-      taxon_id: 6239
+      taxon_id: 10116
       dbxref: CHEBI
   outdir: uniprot/has_xref_binding_site_ligand
   nodes: False
@@ -722,9 +722,9 @@ uniprot_chebi_part_of_chebi:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: uniprot/uniprot_sprot_invertebrates.dat.gz
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
       label: chemical_substance_part_of_chemical_substance
-      taxon_id: 6239
+      taxon_id: 10116
       dbxref: CHEBI
   outdir: uniprot/chebi_part_of
   nodes: False
@@ -735,9 +735,9 @@ tflink_tf_gene:
     module: biocypher_metta.adapters.tflink_adapter
     cls: TFLinkAdapter
     args:
-      filepath: tflink/TFLink_Caenorhabditis_elegans_interactions_All_simpleFormat_v1.0.tsv.gz
+      filepath: tflink/TFLink_Rattus_norvegicus_interactions_All_simpleFormat_v1.0.tsv.gz
       label: tf_gene
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: tflink
   nodes: False
   edges: True
@@ -747,9 +747,9 @@ string_ppi:
     module: biocypher_metta.adapters.string_ppi_adapter
     cls: StringPPIAdapter
     args:
-      filepath: string/6239.protein.links.v12.0.txt.gz
+      filepath: string/10116.protein.links.v12.0.txt.gz
       label: interacts_with
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: string
   nodes: False
   edges: True
@@ -759,10 +759,10 @@ string_coexpression:
     module: biocypher_metta.adapters.string_coexpression_adapter
     cls: StringCoexpressionAdapter
     args:
-      filepath: string/6239.protein.links.detailed.v12.0.txt.gz
+      filepath: string/10116.protein.links.detailed.v12.0.txt.gz
       label: protein_coexpressed_with
       coexpression_threshold: 400
-      taxon_id: 6239
+      taxon_id: 10116
   outdir: string/coexpression
   nodes: False
   edges: True
@@ -935,34 +935,5 @@ chebi_chebi_subclass_of:
       dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: small_molecule
-  nodes: False
-  edges: True
-
-wbbt_anatomy:
-  adapter:
-    module: biocypher_metta.adapters.wbbt_adapter
-    cls: WbbtAdapter
-    args:
-      ontology: "wbbt"
-      type: node
-      label: anatomy
-      dry_run: False
-      add_description: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: wbbt
-  nodes: True
-  edges: False
-
-wbbt_subclass_of:
-  adapter:
-    module: biocypher_metta.adapters.wbbt_adapter
-    cls: WbbtAdapter
-    args:
-      ontology: "wbbt"
-      type: edge
-      label: uberon_subclass_of
-      dry_run: False
-      cache_dir: ./ontology_dataset_cache
-  outdir: wbbt
   nodes: False
   edges: True

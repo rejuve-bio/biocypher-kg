@@ -376,15 +376,19 @@ class ExpressionValueAdapter(Adapter):
     
 
     def get_fbgn_from_flybase(self, gene_symbol: str):
-        # Establish a connection to the FlyBase database
-        conn = psycopg2.connect(
-            host="chado.flybase.org",
-            database="flybase",
-            user="flybase"
-        )    
+        try:
+            conn = psycopg2.connect(
+                host="chado.flybase.org",
+                database="flybase",
+                user="flybase",
+                connect_timeout=30,
+            )
+        except psycopg2.OperationalError as e:
+            logger.warning(f"get_fbgn_from_flybase: could not connect to chado.flybase.org: {e}")
+            return None
         cur = conn.cursor()
         cur.execute(f"SELECT uniquename, name, is_obsolete FROM feature WHERE feature.name LIKE '{gene_symbol}';")
-        results = cur.fetchall() 
+        results = cur.fetchall()
         for gene_data in results:
             if gene_data[-1] == False:    # is uniquename obsolete???
                 return gene_data[0]
@@ -392,44 +396,48 @@ class ExpressionValueAdapter(Adapter):
             if nothing is returned try an alternative query: Flybase appends :1, :2,... to symbols and FBgns
         '''
         cur.execute(f"SELECT uniquename, name, is_obsolete FROM feature WHERE feature.name LIKE '{gene_symbol}:1';")
-        results = cur.fetchall() 
+        results = cur.fetchall()
         #print(f'results for {gene_symbol}:\n{results}')
         for gene_data in results:
             if gene_data[-1] == False:    # uniquename is not obsolete
                 return gene_data[0].split(':')[0]
-            
+
         '''
             if nothing is returned try to get gene_symbol as a synonym...
         '''
         cur.execute(f"SELECT synonym.synonym_id FROM synonym WHERE synonym.name LIKE '{gene_symbol}';")
-        results = cur.fetchall() 
+        results = cur.fetchall()
         results = list(set(results))
         for res in results:
             cur.execute(f"SELECT feature_id FROM feature_synonym WHERE synonym_id={res[0]};")
-            results = cur.fetchall() 
+            results = cur.fetchall()
             results = list(set(results))
             for result in results:
                 cur.execute(f"SELECT uniquename, is_obsolete FROM feature WHERE feature_id={result[0]};")
-                feature_results = cur.fetchall() 
+                feature_results = cur.fetchall()
                 for feature in feature_results:
                     if feature[-1] == False:
                         return feature[0]
         cur.close()
         conn.close()
-        
+
         return None
 
 
     def build_fca2_fb_tissues_libraries_ids_dicts(self, file_path):
         gene_tissue_library_dict = {}
-        transcript_tissue_library_dict = {} 
-            
-        # Establish a connection to the FlyBase database
-        conn = psycopg2.connect(
-            host="chado.flybase.org",
-            database="flybase",
-            user="flybase"
-        )    
+        transcript_tissue_library_dict = {}
+
+        try:
+            conn = psycopg2.connect(
+                host="chado.flybase.org",
+                database="flybase",
+                user="flybase",
+                connect_timeout=30,
+            )
+        except psycopg2.OperationalError as e:
+            logger.warning(f"build_fca2_fb_tissues_libraries_ids_dicts: could not connect to chado.flybase.org: {e}")
+            return gene_tissue_library_dict, transcript_tissue_library_dict
         cur = conn.cursor()
         cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'RNA-Seq_Profile_FlyAtlas2_%';") #RNA-Seq_Profile_FlyAtlas2_
         results = cur.fetchall() 

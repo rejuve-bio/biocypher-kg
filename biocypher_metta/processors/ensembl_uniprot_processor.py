@@ -81,11 +81,13 @@ class EnsemblUniProtProcessor(BaseMappingProcessor):
             id_type = fields[1]
             external_id = fields[2]
 
-            if id_type in ['Ensembl_PRO', 'Ensembl']:
-                if external_id.startswith('ENSP'):
-                    base_ensembl = external_id.split('.')[0]
-                    ensembl_to_uniprot[base_ensembl] = uniprot_id
-                    ensembl_to_uniprot[external_id] = uniprot_id
+            # Vertebrates use Ensembl_PRO / Ensembl; invertebrates (dmel, cel)
+            # use EnsemblGenome_PRO / EnsemblGenome for the same role.
+            if id_type in ['Ensembl_PRO', 'Ensembl',
+                           'EnsemblGenome_PRO', 'EnsemblGenome'] and external_id:
+                base_ensembl = external_id.split('.')[0]
+                ensembl_to_uniprot[base_ensembl] = uniprot_id
+                ensembl_to_uniprot[external_id] = uniprot_id
 
         logger.info(f"{self.name}: Created {len(ensembl_to_uniprot)} Ensembl-UniProt mappings")
 

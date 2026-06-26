@@ -27,12 +27,10 @@ coxpressdb:
 #   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/10116_all_tissues.bed   
     
 ensembl:
-  name: Ensembl Assembly 8.v115
-  version: {strategy: url_regex, pattern: '(GRCr8\.[\d.]+)\.gtf', vtype: other}
+  name: Ensembl Assembly 8.v116
   extract: false
-  url:
-    - https://ftp.ensembl.org/pub/current/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.115.gtf.gz
-    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz
+  url: 
+    - https://ftp.ensembl.org/pub/current/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz
 
 epd:
   name: Eukaryotic Promoter Database
@@ -57,13 +55,14 @@ reactome:
     - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
     - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+    # - local file needs to be created in the download manager: reactome_reaction_exporter_All_species.txt
 
 rna_central:
   name: RNA Central
   extract: false
   url:
-    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/rattus_norvegicus.mRatBN7.2.bed.gz
-    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/rattus_norvegicus.mRatBN7.2.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
 string:
   name: STRING PPI
@@ -72,7 +71,6 @@ string:
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/10116.protein.links.v12.0.txt.gz
     - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/10116.protein.links.detailed.v12.0.txt.gz
-
 
 tflink:
   name: TFLink

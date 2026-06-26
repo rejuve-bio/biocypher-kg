@@ -285,8 +285,8 @@ rna_central:
   name: RNA Central
   extract: false
   url:
-    homo_sapiens.GRCh38.bed.gz: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
-    rnacentral_rfam_annotations.tsv.gz: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
 # # ONLY  these are available for roadmap and they are on Bizon server
 # roadmap:

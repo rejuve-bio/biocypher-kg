@@ -57,7 +57,7 @@ class UniprotProteinAdapter(Adapter):
                     if item != '-':
                         id = database_name + ':' + item
                         dbxrefs.append(id)
-            elif database_name in ['REFSEQ', 'ENSEMBL', 'MANE-SELECT', 'ENSEMBLMETAZOA']:
+            elif database_name in ['REFSEQ', 'ENSEMBL', 'ENSEMBLMETAZOA', 'MANE-SELECT',]:
                 for item in cross_reference[1:]:
                     if item != '-':
                         id = database_name + ':' + item.split('. ')[0]
@@ -95,17 +95,43 @@ class UniprotProteinAdapter(Adapter):
                         break        
         return isoforms
 
+    # Species-specific Ensembl/EnsemblMetazoa ID prefixes.
+    # None means no stable prefix exists (C. elegans transcript/protein use
+    # variable WormBase locus IDs); for those, any non-gene ID is accepted.
+    _ENSEMBL_PREFIXES = {
+        6239:  {'gene': 'WBGene', 'transcript': None,      'protein': None},
+        7227:  {'gene': 'FBgn',   'transcript': 'FBtr',    'protein': 'FBpp'},
+        9606:  {'gene': 'ENSG',   'transcript': 'ENST',    'protein': 'ENSP'},
+        10090: {'gene': 'ENSMUSG','transcript': 'ENSMUST', 'protein': 'ENSMUSP'},
+        10116: {'gene': 'ENSRNOG','transcript': 'ENSRNOT', 'protein': 'ENSRNOP'},
+    }
+
     def _matches_ensembl_label(self, syn):
-        """Return True only if syn matches the label (gene, transcript, protein)."""
-        if "gene" in self.label and "ENSG" in syn:
-            return True
-        if "transcript" in self.label and "ENST" in syn:
-            return True
-        if "_protein" in self.label and "ENSP" in syn:
-            return True
+        """Return True only if syn matches the label (gene, transcript, protein) for this species."""
+        prefixes = self._ENSEMBL_PREFIXES.get(self.taxon_id, self._ENSEMBL_PREFIXES[9606])
+        gene_pfx = prefixes['gene']
+        tx_pfx   = prefixes['transcript']
+        prot_pfx = prefixes['protein']
+        if "gene" in self.label:
+            return bool(gene_pfx and gene_pfx in syn)
+        if "transcript" in self.label:
+            if tx_pfx is None:
+                return bool(gene_pfx and gene_pfx not in syn)
+            return tx_pfx in syn
+        if "_protein" in self.label:
+            if prot_pfx is None:
+                return bool(gene_pfx and gene_pfx not in syn)
+            return prot_pfx in syn
         return False
 
     def get_nodes(self):
+        taxon_to_suffixes = defaultdict(lambda: None)
+        taxon_to_suffixes[6239] = 'CAEEL'
+        taxon_to_suffixes[7227] ='DROME'
+        taxon_to_suffixes[9606] = 'HUMAN'
+        taxon_to_suffixes[10090] = 'MOUSE'
+        taxon_to_suffixes[10116] = 'RAT'
+        
         with gzip.open(self.filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
             for record in records:
@@ -151,6 +177,13 @@ class UniprotProteinAdapter(Adapter):
                         break
 
     def get_edges(self):
+        taxon_to_suffixes = defaultdict(lambda: None)
+        taxon_to_suffixes[6239] = 'CAEEL'
+        taxon_to_suffixes[7227] ='DROME'
+        taxon_to_suffixes[9606] = 'HUMAN'
+        taxon_to_suffixes[10090] = 'MOUSE'
+        taxon_to_suffixes[10116] = 'RAT'
+                
         with gzip.open(self.filepath, 'rt') as input_file:
             for record in SwissProt.parse(input_file):
                 # Use the exact NCBI Taxonomy ID embedded in the record (OX line).

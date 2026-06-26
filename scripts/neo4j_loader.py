@@ -9,12 +9,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Neo4jLoader:
-    def __init__(self, uri, username, password):
+    def __init__(self, uri, username, password, csv_base_path=None):
         self.driver = None
         self.session = None
         self.uri = uri
         self.username = username
         self.password = password
+        # When set, rewrites file:/// URIs in cypher files to use this absolute path
+        # as the root, allowing Neo4j to read CSVs from outside its default import dir.
+        # Requires apoc.import.file.use_neo4j_config=false in apoc.conf.
+        self.csv_base_path = str(csv_base_path).rstrip('/') if csv_base_path else None
 
     def connect(self):
         """Establish connection and verify credentials"""
@@ -66,6 +70,10 @@ class Neo4jLoader:
     def process_cypher_file(self, file_path):
         with open(file_path, 'r') as f:
             content = f.read()
+
+        if self.csv_base_path:
+            content = content.replace("file:///", f"file:///{self.csv_base_path.lstrip('/')}/")
+
 
         queries = []
         current_query = []
@@ -180,7 +188,7 @@ def main():
         loader = Neo4jLoader(neo4j_uri, username, password)
         if not loader.connect():
             return
-        
+
         loader.start_session()
         query_dirs = process_output_directory(output_dir)
         

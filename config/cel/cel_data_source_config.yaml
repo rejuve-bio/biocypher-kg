@@ -15,6 +15,7 @@ alliance:
 
 bgee:
   name: Bgee Expression Data
+  extract: false
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Caenorhabditis_elegans_expr_simple_all_conditions.tsv.gz
 
 coxpressdb:
@@ -27,11 +28,10 @@ coxpressdb:
 #   url: http://www.enhanceratlas.org/data/download/enhancer_atlas_2.0/9606_all_tissues.bed   
 
 ensembl:
-  name: Ensembl Assembly 235.v62
-  version: {strategy: url_regex, pattern: '(WBcel235\.[\d.]+)\.gtf', vtype: other}
-  url:
-    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.62.gtf.gz
-    - https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Caenorhabditis_elegans.gene_info.gz
+  name: Ensembl Assembly 235.v63
+  extract: false
+  url: 
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.63.gtf.gz
 
 epd:
   name: Eukaryotic Promoter Database
@@ -40,6 +40,7 @@ epd:
 
 gaf:
   name: GO Annotation File (GAF) from GO (WormBase-wb)
+  extract: false
   url: http://current.geneontology.org/annotations/wb.gaf.gz
 
 reactome:
@@ -56,13 +57,14 @@ reactome:
 
 rna_central:
   name: RNA Central
+  extract: false
   url:
-    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/caenorhabditis_elegans.WBcel235.bed.gz
-    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/caenorhabditis_elegans.WBcel235.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
 string:
   name: STRING PPI
-  version: {strategy: url_regex, pattern: 'protein\.links\.(?:detailed\.)?(v[\d.]+)', vtype: semver}
+  extract: false
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/6239.protein.links.v12.0.txt.gz
     - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/6239.protein.links.detailed.v12.0.txt.gz  # detailed version
@@ -77,5 +79,6 @@ tflink:
 
 uniprot:
   name: UniProtKB/Swiss-Prot
+  extract: false
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
 
