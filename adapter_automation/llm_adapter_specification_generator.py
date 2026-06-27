@@ -8,7 +8,7 @@ This version integrates:
 3. Self-questioning approach - to understand adapter requirements
 
 Usage:
-    uv run python3 -m schema_generator.llm_adapter_specification_generator \
+    uv run python3 -m adapter_automation.llm_adapter_specification_generator \
         --adapter-config config/hsa/hsa_adapters_config_sample.yaml \
         --adapter-name <adapter_name> \
         --output data_source_schemas/adapter_specs/<adapter_name>_specification.yaml
@@ -28,8 +28,8 @@ import json as _json
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from schema_generator.llm_client import make_llm_client
-from schema_generator.inspector_utils import inspect_adapter_files, build_inspection_context
+from adapter_automation.llm_client import make_llm_client
+from adapter_automation.inspector_utils import inspect_adapter_files, build_inspection_context
 
 
 def save_debug_trace(adapter_name: str, trace_data: dict):

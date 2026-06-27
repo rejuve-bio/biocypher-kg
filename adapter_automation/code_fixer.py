@@ -4,7 +4,7 @@ import ast
 import re
 from typing import Tuple, Optional, Callable, List, Dict, Any
 import json
-from schema_generator.llm_client import make_llm_client, find_project_root
+from adapter_automation.llm_client import make_llm_client, find_project_root
 from pathlib import Path
 
 
@@ -26,16 +26,6 @@ def validate_syntax(code: str) -> Tuple[bool, str]:
 
 def llm_fix_syntax_error(code: str, error_msg: str, llm_fn: Optional[Callable] = None) -> Optional[str]:
     """
-    Use LLM to fix syntax errors in generated code.
-    
-    This is a fallback when automatic fixes fail. The LLM analyzes the error
-    and attempts to fix it intelligently.
-    
-    Uses a lighter/faster model (llama-3.1-8b-instant) to avoid exhausting
-    the main generation model's rate limits.
-    
-    NOTE: This only works for fixable syntax errors. If the code is severely
-    truncated/incomplete, it's better to retry generation.
     
     Args:
         code: The broken Python code

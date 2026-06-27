@@ -14,8 +14,8 @@ import json
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
-from schema_generator.llm_client import make_llm_client, find_project_root
-from schema_generator.code_fixer import extract_json, extract_code, validate_syntax
+from adapter_automation.llm_client import make_llm_client, find_project_root
+from adapter_automation.code_fixer import extract_json, extract_code, validate_syntax
 
 
 def _extract_spec_id_info(spec: dict) -> List[Dict[str, Any]]:

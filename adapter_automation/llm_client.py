@@ -1,4 +1,3 @@
-"""Groq LLM client and project-root / env helpers."""
 
 import os
 import time
@@ -12,7 +11,7 @@ import requests
 
 # LLM Response Cache
 _LLM_CACHE_DIR = None
-_LLM_CACHE_ENABLED = False  # DISABLED - caching can cause issues with iterative development
+_LLM_CACHE_ENABLED = False  
 
 
 def _get_cache_dir() -> Path:

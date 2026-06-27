@@ -8,14 +8,14 @@ from typing import Dict, Any, List
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from schema_generator.llm_client import make_llm_client
-from schema_generator.code_fixer import extract_code, validate_syntax
-from schema_generator.logic_inference import generate_unified_logic_inference
-from schema_generator.source_inspector import SourceInspector
+from adapter_automation.llm_client import make_llm_client
+from adapter_automation.code_fixer import extract_code, validate_syntax
+from adapter_automation.logic_inference import generate_unified_logic_inference
+from adapter_automation.source_inspector import SourceInspector
 
-from schema_generator.inspector_utils import inspect_adapter_files, build_inspection_context
-from schema_generator.code_fixer import fix_code_hallucinations
-from schema_generator.semantic_validator import (
+from adapter_automation.inspector_utils import inspect_adapter_files, build_inspection_context
+from adapter_automation.code_fixer import fix_code_hallucinations
+from adapter_automation.semantic_validator import (
     validate_semantic_correctness,
     print_semantic_report,
     apply_semantic_fix_from_report,
@@ -152,7 +152,7 @@ def generate_adapter_from_specification(
     llm = make_llm_client()
     response = llm(prompt)
     
-    from schema_generator.code_fixer import extract_adapter_json
+    from adapter_automation.code_fixer import extract_adapter_json
     result = extract_adapter_json(response)
     
     reasoning = ""
@@ -179,7 +179,7 @@ def generate_adapter_from_specification(
             print(f"{i:4}: {line}")
         
         print(f"[*] Attempting automatic syntax fix...")
-        from schema_generator.code_fixer import llm_fix_syntax_error
+        from adapter_automation.code_fixer import llm_fix_syntax_error
         fixed_code = llm_fix_syntax_error(code, err)
         if fixed_code:
             code = fixed_code

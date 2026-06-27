@@ -5,7 +5,7 @@ import csv
 import pickle
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
-from schema_generator.llm_client import make_llm_client
+from adapter_automation.llm_client import make_llm_client
 
 def _detect_filename_pattern(filenames: List[str]) -> dict:
     """
@@ -75,11 +75,6 @@ def parse_specification_file(spec_path: str) -> dict:
 def _robust_inspect(path: str) -> dict:
     """
     Delegates all file inspection to SourceInspector (the single source of truth).
-
-    For BED files, SourceInspector correctly handles:
-    - Space and tab delimiters
-    - Comment lines starting with #, browser, or track (via count_comment_lines)
-    - No-header detection
     """
     try:
         from .source_inspector import SourceInspector
@@ -211,7 +206,6 @@ def inspect_adapter_files(adapter_config: dict) -> dict:
                     main_file['param_name'] = key
                     break
         
-        # Priority 3: Last resort - first file found without an error
         if not main_file:
             for key, f in files.items():
                 if 'error' not in f:

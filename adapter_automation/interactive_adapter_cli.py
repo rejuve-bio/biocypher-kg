@@ -394,7 +394,7 @@ def main():
     spec_path = f"data_source_schemas/adapter_specs/{selected_adapter}_specification.yaml"
     Path(spec_path).parent.mkdir(parents=True, exist_ok=True)
     spec_cmd = [
-        "uv", "run", "python3", "-m", "schema_generator.llm_adapter_specification_generator",
+        "uv", "run", "python3", "-m", "adapter_automation.llm_adapter_specification_generator",
         "--adapter-config", selected_config,
         "--adapter-name", selected_adapter,
         "--output", spec_path,
@@ -441,7 +441,7 @@ def main():
     
     if filepath:
         try:
-            from schema_generator.source_inspector import SourceInspector
+            from adapter_automation.source_inspector import SourceInspector
             inspector = SourceInspector(filepath)
             inspection = inspector.inspect()
             
@@ -496,7 +496,7 @@ def main():
     adapter_output = _module.replace('.', '/') + ".py"
     
     adapter_cmd = [
-        "uv", "run", "python3", "-m", "schema_generator.llm_adapter_generator",
+        "uv", "run", "python3", "-m", "adapter_automation.llm_adapter_generator",
         "--specification", spec_path,
         "--adapters-config", selected_config,
         "--adapter-name", selected_adapter,

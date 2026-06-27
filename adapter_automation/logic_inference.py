@@ -3,9 +3,6 @@ Logic Inference for Auxiliary Files
 
 Analyzes auxiliary files alongside the main data file to detect key format
 mismatches and generate the exact transformation logic needed to join them.
-
-This is kept separate from llm_adapter_generator.py so it can be tested,
-reused, and iterated on independently.
 """
 
 import gzip
@@ -15,8 +12,8 @@ import re
 from pathlib import Path
 from typing import Dict, Any
 
-from schema_generator.llm_client import make_llm_client
-from schema_generator.inspector_utils import parse_specification_file
+from adapter_automation.llm_client import make_llm_client
+from adapter_automation.inspector_utils import parse_specification_file
 
 
 
