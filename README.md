@@ -8,11 +8,11 @@ A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmu` | In development — data source config only, no adapters yet |
-| *Caenorhabditis elegans* | `cel` | In development — data source config only, no adapters yet |
-| *Rattus norvegicus* (rat) | `rno` | In development — data source config only, no adapters yet |
+| *Mus musculus* (mouse) | `mmu` | In development — ontology adapters only |
+| *Caenorhabditis elegans* | `cel` | In development — ontology adapters only |
+| *Rattus norvegicus* (rat) | `rno` | In development — config incomplete |
 
-Attempting to run `mmu`, `cel`, or `rno` will raise a `FileNotFoundError` because their adapter configs do not yet exist.
+Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` do not yet exist.
 
 ## Prerequisites
 

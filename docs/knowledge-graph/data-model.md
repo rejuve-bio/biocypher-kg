@@ -293,7 +293,7 @@ Every node declaration in a schema YAML follows this pattern:
 ```yaml
 gene:
   represented_as: node
-  preferred_id: ensemble         # optional CURIE prefix
+  preferred_id: ensembl          # optional CURIE prefix
   input_label: gene              # what adapters yield as the label string
   is_a:                          # parent type(s) — inherits their properties
   - coding element

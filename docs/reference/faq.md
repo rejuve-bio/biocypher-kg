@@ -10,7 +10,7 @@ BioCypher-KG is a pipeline that constructs a unified biological knowledge graph 
 
 **What species are supported?**
 
-Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (`mmo`), C. elegans (`cel`), and rat (`rno`) have data source configurations but not yet adapter implementations. See the species matrix in [system-overview.md](../architecture/system-overview.md).
+Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (`mmu`) and C. elegans (`cel`) have ontology-only adapter configurations. Rat (`rno`) is declared but adapter/schema configs are missing and will raise `FileNotFoundError` if selected. See the species matrix in [system-overview.md](../architecture/system-overview.md).
 
 **What output formats are available?**
 
@@ -149,4 +149,4 @@ uv run pytest test/test.py --adapter-test-mode full
 GitHub Issues at https://github.com/rejuve-bio/biocypher-kg/issues. Key open issues to be aware of:
 - `meta.py` and `entities.py` missing from `kg-service/backend/api/routes/` (service won't start)
 - MORK port mismatch: container exposes `8027`, kg-service defaults to `8432` — set `MORK_URL=http://localhost:8027` in `kg-service/.env`
-- Species `mmo`/`cel`/`rno` declared in `species_config.yaml` but no adapter configs exist
+- Species `rno` declared in `species_config.yaml` but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing

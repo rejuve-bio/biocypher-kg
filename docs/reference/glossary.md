@@ -48,7 +48,7 @@ Definitions for technical and biological terms used throughout the BioCypher-KG 
 
 **Smoke mode** — A faster test mode that skips heavy ontology adapters and limits the number of adapters tested. Used for PR CI runs.
 
-**Species code** — Two-letter or three-letter abbreviation for a species: `hsa` (human), `dmel` (Drosophila), `mmo` (mouse), `cel` (C. elegans), `rno` (rat).
+**Species code** — Two-letter or three-letter abbreviation for a species: `hsa` (human), `dmel` (Drosophila), `mmu` (mouse), `cel` (C. elegans), `rno` (rat).
 
 **UV** — A fast Python package manager from Astral (https://github.com/astral-sh/uv) used instead of pip. Required for this project.
 

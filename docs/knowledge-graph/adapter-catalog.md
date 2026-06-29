@@ -205,7 +205,7 @@ These sources are used for both `hsa` and `dmel` (and potentially other species)
 
 ## Coverage matrix
 
-| Domain | hsa | dmel | mmo | cel | rno |
+| Domain | hsa | dmel | mmu | cel | rno |
 |---|---|---|---|---|---|
 | Gene / transcript / exon | Yes | Yes | - | - | - |
 | Protein | Yes | Yes | - | - | - |

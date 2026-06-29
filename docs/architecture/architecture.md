@@ -141,4 +141,4 @@ graph TD
 
 4. **MORK port discrepancy** — Container exposes `8027`; kg-service defaults to `8432`.
 
-5. **Incomplete species** — `mmo`, `cel`, `rno` declared in `species_config.yaml` but no adapters or schemas implemented.
+5. **Incomplete species** — `rno` is declared in `species_config.yaml` but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing. `mmu` and `cel` have ontology-only adapter configs.

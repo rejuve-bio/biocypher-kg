@@ -110,7 +110,7 @@ biocypher_metta/
 config/
 ├── biocypher_config.yaml           # BioCypher core: offline mode, biolink model path, Neo4j delimiters
 ├── biocypher_docker_config.yaml    # Docker-specific variant
-├── species_config.yaml             # Species registry: maps hsa/dmel/mmo/cel/rno to config paths
+├── species_config.yaml             # Species registry: maps hsa/dmel/mmu/cel/rno to config paths
 ├── primer_schema_config.yaml       # Shared base schema: 36 node types, 108 edge types
 ├── biolink-model.yaml              # Biolink semantic model specification
 ├── biolink-model.owl.ttl           # OWL/TTL representation of Biolink

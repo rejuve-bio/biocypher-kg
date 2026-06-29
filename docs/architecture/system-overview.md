@@ -1,6 +1,6 @@
 # System Overview
 
-BioCypher-KG is a multi-species biological knowledge graph construction pipeline built on the [BioCypher framework](https://github.com/biocypher/biocypher). It reads raw biological data from 40+ data sources, normalises them through typed adapters, and writes a unified knowledge graph in one of six output formats.
+BioCypher-KG is a multi-species biological knowledge graph construction pipeline built on the [BioCypher framework](https://github.com/biocypher/biocypher). It reads raw biological data from 40+ data sources, normalises them through typed adapters, and writes a unified knowledge graph in one of seven output formats.
 
 ---
 
@@ -23,11 +23,11 @@ The result is a consistent, schema-validated knowledge graph that can be loaded 
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmo` | In development — data source config only |
-| *Caenorhabditis elegans* | `cel` | In development — data source config only |
-| *Rattus norvegicus* (rat) | `rno` | In development — data source config only |
+| *Mus musculus* (mouse) | `mmu` | In development — ontology adapters only |
+| *Caenorhabditis elegans* | `cel` | In development — ontology adapters only |
+| *Rattus norvegicus* (rat) | `rno` | In development — config declared, adapters missing |
 
-Source: [`config/species_config.yaml`](../../config/species_config.yaml). Species `mmo`, `cel`, and `rno` have data source configs (e.g., `config/mmu/mmu_data_source_config.yaml`) but no adapter configs or schema configs — attempting to run them raises `FileNotFoundError`.
+Source: [`config/species_config.yaml`](../../config/species_config.yaml). Species `mmu` and `cel` have adapter and schema configs with ontology-only adapters. Species `rno` is declared but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing — attempting to run `rno` raises `FileNotFoundError`.
 
 ---
 

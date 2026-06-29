@@ -58,9 +58,9 @@ Loaded by `load_species_config()` in `create_knowledge_graph.py`. Maps each spec
 |---|---|---|---|
 | `hsa` | *Homo sapiens* | Yes (ships with repo) | Yes (requires local data) |
 | `dmel` | *Drosophila melanogaster* | Yes | Yes |
-| `cel` | *C. elegans* | No | Config exists, no adapters |
-| `mmo` | *Mus musculus* | No | Config exists, no adapters |
-| `rno` | *Rattus norvegicus* | No | Config exists, no adapters |
+| `cel` | *C. elegans* | Yes | Yes (ontology-only adapters) |
+| `mmu` | *Mus musculus* | Yes | Yes (ontology-only adapters) |
+| `rno` | *Rattus norvegicus* | No | Declared, but adapter/schema configs are missing |
 
 ### `dbsnp_cache_root` notes
 
@@ -230,8 +230,8 @@ All flags are defined by `typer.Option()` in `main()`. Run `uv run python create
 
 | Flag | Type | Default | Description |
 |---|---|---|---|
-| `--species` | str | — | Species code (`hsa`, `dmel`, `cel`, `mmo`, `rno`, `all`) |
-| `--dataset` | str | `sample` | `sample` or `full` |
+| `--species` | str | — | Species code (`hsa`, `dmel`, `cel`, `mmu`, `rno`, `all`) |
+| `--dataset` | str | `full` | `sample` or `full` |
 | `--output-dir` | Path | — | **Required.** Output directory |
 | `--adapters-config` | Path | — | Manual mode: path to adapter registry YAML |
 | `--schema-config` | Path | — | Manual mode: path to schema config YAML |
