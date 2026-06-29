@@ -37,7 +37,7 @@ Source: [`config/species_config.yaml`](../../config/species_config.yaml). Specie
 |---|---|---|
 | MeTTa | `MeTTaWriter` | OpenCog Hyperon / MORK query engine |
 | Neo4j CSV | `Neo4jCSVWriter` | Bulk import into Neo4j via `neo4j-admin` |
-| Neo4j (direct) | `Neo4jWriter` | Live writes via the Neo4j Bolt driver |
+| Neo4j (direct) | `Neo4jWriter` | Live writes via the Neo4j Bolt driver — class only, not selectable via `--writer-type` |
 | Prolog | `PrologWriter` | Logic reasoning systems |
 | Apache Parquet | `ParquetWriter` | Analytics and data science workflows |
 | KGX JSON | `KGXWriter` | Knowledge Graph Exchange standard |

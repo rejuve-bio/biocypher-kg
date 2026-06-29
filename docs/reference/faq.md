@@ -14,7 +14,7 @@ Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (
 
 **What output formats are available?**
 
-MeTTa (OpenCog Hyperon), Neo4j CSV (bulk import), Neo4j direct (Bolt driver), Prolog, Apache Parquet, KGX JSON, and NetworkX. See [writers.md](../knowledge-graph/writers.md).
+MeTTa (OpenCog Hyperon), Neo4j CSV (bulk import), Prolog, Apache Parquet, KGX JSON, and NetworkX — all selectable via `--writer-type`. A seventh `Neo4jWriter` (direct Bolt) class exists but is not currently wired to the CLI. See [writers.md](../knowledge-graph/writers.md).
 
 ---
 

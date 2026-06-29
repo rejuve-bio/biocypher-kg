@@ -1,6 +1,6 @@
 # Output Writers
 
-This document describes the seven output format writers available in BioCypher-KG. All writers subclass `BaseWriter` defined in `biocypher_metta/__init__.py`.
+This document describes the output writer classes in BioCypher-KG. All writers subclass `BaseWriter` defined in `biocypher_metta/__init__.py`. Six writers are selectable via `create_knowledge_graph.py --writer-type` (metta, prolog, neo4j, parquet, kgx, networkx); `Neo4jWriter` exists as a class for custom scripts but is not currently wired to the pipeline CLI.
 
 ---
 
@@ -46,6 +46,8 @@ Used by `make neo4j-load` and `make neo4j-load-direct` via `Neo4jLoader.load()`.
 **Output:** Directly writes to a running Neo4j instance via the Bolt driver
 
 Requires Neo4j to be running and accessible. Useful for incremental updates to an existing graph.
+
+> **Note:** `Neo4jWriter` is not currently exposed via `create_knowledge_graph.py --writer-type`. Use it directly in custom scripts or through `kg-service`.
 
 ---
 
