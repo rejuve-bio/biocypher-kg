@@ -16,7 +16,7 @@ Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno
 
 ## Prerequisites
 
-- Python 3.9+  
+- Python 3.10+  
 - [UV](https://github.com/astral-sh/uv) package manager  
 
 ## Quick Start (Option 1)

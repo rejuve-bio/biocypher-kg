@@ -112,7 +112,7 @@ graph TD
 | **Data acquisition** | Download, version tracking, manifest | `biocypher_dataset_downloader/` |
 | **Adaptation** | Raw data → typed nodes/edges | `biocypher_metta/adapters/` |
 | **ID mapping** | Cross-database identifier normalization | `biocypher_metta/processors/` |
-| **Serialization** | Format-specific output writing | `biocypher_metta/Writers/` |
+| **Serialization** | Format-specific output writing | `biocypher_metta/` (writer modules: `*_writer.py`) |
 | **Schema** | Type definitions, Biolink mapping | `config/*_schema_config.yaml` |
 | **Service** | REST API, versioning, live queries | `kg-service/` |
 | **Storage** | Graph database, MeTTa query engine | Neo4j, MORK |

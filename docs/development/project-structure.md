@@ -355,14 +355,14 @@ Generates `data_source_schemas/<species>/*.yaml` from raw data source files. Cal
 
 ---
 
-## `doc/` — Versioning documentation
+## `docs/knowledge-graph/` — Versioning documentation
 
 ```
-doc/
+docs/knowledge-graph/
 └── dataset-versioning.md    # Versioning strategies, manifest format, provenance in Neo4j
 ```
 
-The single existing reference document. Cross-referenced by [ingestion-pipeline.md](../knowledge-graph/ingestion-pipeline.md).
+The versioning guide was moved from `doc/` into the main `docs/` documentation hierarchy. See [ingestion-pipeline.md](../knowledge-graph/ingestion-pipeline.md) for the end-to-end flow.
 
 ---
 
