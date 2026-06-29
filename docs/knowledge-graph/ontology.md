@@ -20,7 +20,7 @@ All ontology adapters extend the base pattern in `biocypher_metta/adapters/ontol
 
 | Ontology | Full name | Adapter | Node type | Edge types | CURIE prefix | Fetch URL |
 |---|---|---|---|---|---|---|
-| **GO** | Gene Ontology | `gene_ontology_adapter.GeneOntologyAdapter` | `biological_process`, `molecular_function`, `cellular_component` | `biological_process_subclass`, `molecular_function_subclass`, `cellular_component_subclass` | `GO:` | `http://purl.obolibrary.org/obo/go.owl` |
+| **GO** | Gene Ontology | `gene_ontology_adapter.GeneOntologyAdapter` | `biological_process`, `molecular_function`, `cellular_component` | `biological_process_subclass_of`, `molecular_function_subclass_of`, `cellular_component_subclass_of` | `GO:` | `http://purl.obolibrary.org/obo/go.owl` |
 | **DO** | Disease Ontology | `disease_ontology_adapter.DiseaseOntologyAdapter` | `disease` | `do_subclass_of` | `DOID:` | BioPortal API (requires `BIOPORTAL_API_KEY`) |
 | **ChEBI** | Chemical Entities of Biological Interest | `chebi_ontology_adapter.ChEBIOntologyAdapter` | `small_molecule` | `chebi_subclass_of`, `chemical_substance_part_of_chemical_substance` | `CHEBI:` | `http://purl.obolibrary.org/obo/chebi.owl` |
 | **CL** | Cell Ontology | `cell_ontology_adapter.CellOntologyAdapter` | `cell_type` | `cl_subclass_of`, `cl_capable_of`, `cl_part_of` | `CL:` | `http://purl.obolibrary.org/obo/cl.owl` |

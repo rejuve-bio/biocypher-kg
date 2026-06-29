@@ -11,7 +11,7 @@ The most important recurring monitoring task is checking whether the integrated 
 **Mechanism:** `.github/workflows/check-dataset-versions.yml` runs every **Monday at 06:00 UTC** and on manual `workflow_dispatch`. It:
 
 1. Runs `uv run python -m biocypher_dataset_downloader.versioning.cli --species <species> --versions-root <dir>`
-2. Compares current HTTP headers / URL content against the committed baseline in `versioning/baselines/<species>/versions.json`
+2. Compares current HTTP headers / URL content against an optional baseline in `versioning/baselines/<species>/versions.json` (if no baseline has been committed yet, the workflow is a no-op pass — seed it by copying a download run's `versions.json` to that path)
 3. Reports: `CHANGED` (ETag/Last-Modified differs), `drift` (version string changed), or `unknown` (static/pinned sources)
 4. Creates a GitHub issue if staleness is detected
 5. Saves `version_report.json` as a workflow artifact

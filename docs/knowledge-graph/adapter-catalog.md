@@ -80,11 +80,11 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for the full adapter development gu
 | **Roadmap Epigenomics** | `hsa/roadmap_h3_marks_adapter.RoadmapH3MarksAdapter` | `epigenomic_feature` | — | same |
 | **Roadmap Epigenomics** | `hsa/roadmap_state_adapter.RoadmapStateAdapter` | `epigenomic_feature` | — | same |
 | **ENCODE RE2G** | `encode_re2g_adapter.EncodeRe2gAdapter` | — | `regulatory_region_gene` | [encodeproject.org](https://www.encodeproject.org/) |
-| **TADMap** | `tadmap_adapter.TADMapAdapter` | `tad` | `gene_in_tad_region` | [cb.csail.mit.edu](https://cb.csail.mit.edu/cb/tadmap/) |
+| **TADMap** | `tadmap_adapter.TADMapAdapter` | `tad` | `in_tad_region` | [cb.csail.mit.edu](https://cb.csail.mit.edu/cb/tadmap/) |
 | **EPD** | `epd_adapter.EPDAdapter` | `promoter` | `promoter_gene` | [epd.expasy.org](https://epd.expasy.org/) |
 | **dbSUPER** | `hsa/dbsuper_adapter.DBSuperAdapter` | `regulatory_region` | `super_enhancer_gene` | [asntech.org/dbsuper](http://asntech.org/dbsuper/) |
 | **TFLink** | `tflink_adapter.TFLinkAdapter` | — | `tf_gene` (TF → gene regulatory) | [tflink.net](http://www.tflink.net/) |
-| **TFBS/HOCOMOCO** | `tfbs_adapter.TFBSAdapter` | `transcription binding site` | `gene_tfbs` | [hgdownload.soe.ucsc.edu](https://hgdownload.soe.ucsc.edu/) |
+| **TFBS/HOCOMOCO** | `tfbs_adapter.TfbsAdapter` | `tfbs` | `gene_tfbs` | [hgdownload.soe.ucsc.edu](https://hgdownload.soe.ucsc.edu/) |
 | **HOCOMOCO motifs** | `hocomoco_motif_adapter.HOCOMOCOMotifAdapter` | `motif` | — | [hocomoco11.autosome.org](https://hocomoco11.autosome.org/) |
 | **RefSeq closest gene** | `hsa/refseq_closest_gene_adapter.RefSeqClosestGeneAdapter` | — | regulatory element → gene | [forgedb.cancer.gov](https://forgedb.cancer.gov/) |
 
