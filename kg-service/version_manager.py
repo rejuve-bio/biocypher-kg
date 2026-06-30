@@ -270,11 +270,38 @@ class VersionManager:
         
         logger.info(f"✅ Created DatasetVersion nodes")
 
+    def read_source_provenance(self, output_dir) -> dict:
+        """Read upstream source provenance from the build's graph_info.json.
+
+        Returns {dataset_name: {upstream_version, source_url, checksums}} captured from
+        the download manifest at build time. Empty dict if graph_info.json is absent or
+        has no datasets — provenance is additive, never required.
+        """
+        graph_info_path = Path(output_dir) / "graph_info.json"
+        try:
+            with open(graph_info_path, "r") as f:
+                graph_info = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logger.warning(f"No usable graph_info.json for provenance ({e}); skipping upstream lineage")
+            return {}
+
+        provenance = {}
+        for dataset in graph_info.get("datasets", []):
+            name = dataset.get("name")
+            if not name:
+                continue
+            provenance[name] = {
+                "upstream_version": dataset.get("version"),
+                "source_url": dataset.get("url"),
+                "checksums": dataset.get("checksums"),
+            }
+        return provenance
+
     def create_version_node(self, version: str, build_id: str,
                             changed: list, unchanged: list,
-                            dataset_versions: dict):
-        """Create global KGVersion node"""
-        
+                            dataset_versions: dict, source_provenance: dict = None):
+        """Create global KGVersion node, recording upstream source provenance (lineage)."""
+
         with self.driver.session() as session:
             session.run("""
                 CREATE (v:KGVersion {
@@ -284,7 +311,8 @@ class VersionManager:
                     created_at: $created_at,
                     changed_datasets: $changed,
                     unchanged_datasets: $unchanged,
-                    dataset_versions_json: $dataset_versions_json
+                    dataset_versions_json: $dataset_versions_json,
+                    source_provenance_json: $source_provenance_json
                 })
             """, version=version,
                  db_type=self.db_type,
@@ -292,7 +320,8 @@ class VersionManager:
                  created_at=datetime.utcnow().isoformat() + 'Z',
                  changed=changed,
                  unchanged=unchanged,
-                 dataset_versions_json=json.dumps(dataset_versions))
+                 dataset_versions_json=json.dumps(dataset_versions),
+                 source_provenance_json=json.dumps(source_provenance or {}))
 
         logger.info(f"✅ Created KGVersion node: {version}")
 
@@ -427,13 +456,17 @@ class VersionManager:
         # Create DatasetVersion nodes
         self.create_dataset_version_nodes(dataset_info)
 
+        # Read upstream source provenance (versions/urls/checksums) from graph_info.json
+        source_provenance = self.read_source_provenance(output_dir)
+
         # Create KGVersion node
         self.create_version_node(
             version=atomspace_version,
             build_id=build_id,
             changed=changed_datasets,
             unchanged=unchanged_datasets,
-            dataset_versions=dataset_versions
+            dataset_versions=dataset_versions,
+            source_provenance=source_provenance,
         )
 
         logger.info(f"✅ Version {atomspace_version} finalized!")

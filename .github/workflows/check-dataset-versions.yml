@@ -1,0 +1,71 @@
+name: Check Dataset Versions
+
+# Bioversions-style staleness check: resolves each input dataset's current version
+# (from its data_source_config) and compares to a committed baseline, flagging sources
+# whose ETag/Last-Modified changed (CHANGED) or whose pinned config URL drifted from the
+# recorded download (drift). Pinned sources with no baseline report 'unknown' (no noise).
+#
+# Baselines are optional and live in versioning/baselines/<species>/versions.json. Seed
+# them by copying a download run's versions.json there; until then the job is a no-op pass.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      species:
+        description: "Species to check (hsa/dmel/cel/mmu/rno or 'all')"
+        default: "all"
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.10
+
+      - name: Run dataset version check
+        id: check
+        run: |
+          set +e
+          uv run python -m biocypher_dataset_downloader.versioning.cli \
+            --species "${{ github.event.inputs.species || 'all' }}" \
+            --config-dir config \
+            --versions-root versioning/baselines \
+            --json > version_report.json
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          echo "----- version report -----"
+          cat version_report.json
+
+      - name: Upload version report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataset-version-report
+          path: version_report.json
+
+      - name: Open issue on staleness
+        if: steps.check.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Dataset version drift detected ($(date +%Y-%m-%d))" \
+            --body "$(printf 'The scheduled dataset version check found CHANGED or drifted sources.\n\nReport (also attached as an artifact):\n\n```json\n%s\n```\n' "$(cat version_report.json)")" \
+            --label "data-versioning" || echo "Could not create issue (label or permissions); see artifact."
+
+      - name: Fail if stale
+        if: steps.check.outputs.exit_code != '0'
+        run: exit 1

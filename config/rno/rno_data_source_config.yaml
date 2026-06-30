@@ -1,6 +1,7 @@
 # ---
-alliance:    
+alliance:
   name: Alliance of Genome Resources
+  version: {strategy: url_regex, pattern: 'alliancegenome\.org/(\d+\.\d+\.\d+)/', vtype: semver}
   extract: false
   url:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
@@ -17,6 +18,7 @@ bgee:
 
 coxpressdb:
   name: Coxpress DB
+  version: {strategy: url_regex, pattern: '\.(v[\d-]+)\.', vtype: other}
   extract: true
   url: https://zenodo.org/record/6861444/files/Rno-u.v22-05.G16521-S21139.combat_pca.subagging.z.d.zip
 
@@ -26,8 +28,9 @@ coxpressdb:
     
 ensembl:
   name: Ensembl Assembly 8.v115
+  version: {strategy: url_regex, pattern: '(GRCr8\.[\d.]+)\.gtf', vtype: other}
   extract: false
-  url: 
+  url:
     - https://ftp.ensembl.org/pub/current/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.115.gtf.gz
     - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz
 
@@ -64,14 +67,16 @@ rna_central:
 
 string:
   name: STRING PPI
+  version: {strategy: url_regex, pattern: 'protein\.links\.(?:detailed\.)?(v[\d.]+)', vtype: semver}
   extract: false
-  url: 
+  url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/10116.protein.links.v12.0.txt.gz
     - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/10116.protein.links.detailed.v12.0.txt.gz
 
 
 tflink:
   name: TFLink
+  version: {strategy: url_regex, pattern: '_(v[\d.]+)\.tsv', vtype: semver}
   compress: gzip
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Rattus_norvegicus_interactions_All_simpleFormat_v1.0.tsv
 

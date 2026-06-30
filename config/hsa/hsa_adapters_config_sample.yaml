@@ -91,8 +91,8 @@ uniprotkb_sprot:
 
 uniprotkb_sprot_translates_to:
   adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
-    cls: UniprotAdapter
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
     args:
       filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       type: translates to

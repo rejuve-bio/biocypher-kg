@@ -345,10 +345,15 @@ python kg-service/neo4j_loader.py \
 **Notes:**
 - The loader detects changed files via hash comparison and only reloads what changed.
 - Edges use `CREATE` (not `MERGE`) — the loader surgically deletes changed edges before reloading, so the existence check is unnecessary and very slow on large files.
+- Each `KGVersion` node records `source_provenance_json` — the upstream version, URL, and checksums of every dataset it was built from. See [Dataset Versioning & Provenance](#-dataset-versioning--provenance).
 
 ## ⬇ Downloading data
 The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.
 Data source URLs and metadata are configured in the species-specific config files under `config/` (e.g. `config/hsa/hsa_data_source_config.yaml`).
+
+Each download also writes a provenance record into the output directory — `download_manifest.json`
+(per-source version, sha256, and HTTP metadata) and an append-only `versions.json` history. See
+[Dataset Versioning & Provenance](#-dataset-versioning--provenance) below.
 
 ### Interactive (recommended)
 
@@ -379,6 +384,43 @@ python -m biocypher_dataset_downloader.download_data --output-dir <output_direct
 
 # Download a specific source
 python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --source <source_name>
+
+# Skip sha256 checksums in the manifest (faster on multi-GB files)
+python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --no-checksum
+```
+
+## 📌 Dataset Versioning & Provenance
+
+Every dataset's version and provenance is tracked from a single source of truth — the data-source
+config — and flows through the whole pipeline, so a build is reproducible and citable. Full guide:
+**[doc/dataset-versioning.md](doc/dataset-versioning.md)**.
+
+**Declare a version** in `config/<species>/<species>_data_source_config.yaml` (optional; defaults to
+HTTP-HEAD change tracking):
+
+```yaml
+gencode:
+  name: GENCODE v49
+  version: {strategy: url_regex, pattern: 'gencode\.(v\d+)\.', vtype: sequential}
+  source_url: https://www.gencodegenes.org/
+  url: https://ftp.ebi.ac.uk/.../gencode.v49.annotation.gtf.gz
+```
+
+Strategies: `url_regex` (version from the URL — covers most sources), `static` (`value: v11`),
+`http_head` (default — tracks `ETag`/`Last-Modified` for `current/` symlinks).
+
+**On download**, `download_manifest.json` + `versions.json` are written per species (version, sha256,
+HTTP metadata). **On build**, pass the manifest so versions flow into `graph_info.json`:
+
+```bash
+uv run python create_knowledge_graph.py ... --manifest <download_dir>/download_manifest.json
+```
+
+**Check for stale/changed sources** (exits non-zero on change; runs weekly in CI via
+`.github/workflows/check-dataset-versions.yml`):
+
+```bash
+uv run python -m biocypher_dataset_downloader.versioning.cli --species all --versions-root <dir>
 ```
 
 ## 🧬 dbSNP Cache
