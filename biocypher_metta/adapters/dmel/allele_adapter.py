@@ -71,8 +71,6 @@ class AlleleAdapter(Adapter):
             props['allele_symbol'] = allele_symbol
             props['taxon_id'] = 7227
 
-            yield allele_id, self.label, props      # here label is 'allele'
-            
             if allele_symbol in self.snp_cache:
                 snp_props = props.copy()
                 fmin = self.snp_cache[allele_symbol]
@@ -80,6 +78,8 @@ class AlleleAdapter(Adapter):
                     snp_props['start'] = fmin
                     snp_props['end'] = fmin + 1
                 yield allele_id, 'snp', snp_props
+            else:
+                yield allele_id, self.label, props      # here label is 'allele'
 
     def get_edges(self):
         fbal_table = FlybasePrecomputedTable(self.dmel_filepath)
@@ -92,8 +92,8 @@ class AlleleAdapter(Adapter):
             props = {}
             fbal_id = row[0]      
             allele_symbol = row[1] # AlleleSymbol e.g. gukh[142] — used as uniquename in FlyBase feature table
-            source = f'FlyBase:{fbal_id.lower()}'
-            target = f'FlyBase:{row[2].lower()}'
+            source = f'FlyBase:{fbal_id}'
+            target = f'FlyBase:{row[2]}'
             props['taxon_id'] = 7227
 
             is_snp = allele_symbol in self.snp_cache
@@ -103,7 +103,7 @@ class AlleleAdapter(Adapter):
                 if is_snp:
                     yield source, target, self.label, props
             else:
-                yield source, target, self.label, props
-                
                 if is_snp:
                     yield source, target, 'snp_variant_of', props
+                else:
+                    yield source, target, self.label, props

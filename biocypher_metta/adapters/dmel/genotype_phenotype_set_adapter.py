@@ -146,12 +146,12 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['source_url'] = self.source_url
                 alleles = self.get_alleles(row[1])          # gets a list of allele ids from  genotype's  genotype_ids
                 for allele in alleles:
-                    source_id = f'FlyBase:{allele.upper()}'
+                    source_id = f'FlyBase:{allele}'
                     target_id = f'RejuveBio:phenotype_set{id}'
-                    yield source_id, target_id, self.label, props    
-                    
                     if allele in self.snp_fbal_cache:
                         yield source_id, target_id, 'snp_involved_in', props
+                    else:
+                        yield source_id, target_id, self.label, props
 
 
         elif self.label == 'genetically_informed_by':                     # phenotype to genotype schema
