@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 input_dir: /mnt/hdd_1/biocypher-kg/input/mmu
 
 eva_snp:
@@ -23,7 +22,8 @@ eva_snp_in_gene:
       taxon_id: 10090
       label: snp_in_gene
   outdir: mmu/eva
-=======
+  nodes: False
+  edges: True
 
 emapa:
   adapter:
@@ -51,6 +51,5 @@ emapa_subclass_of:
       dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: emapa
->>>>>>> rejuve-bio/main
   nodes: False
   edges: True
