@@ -19,7 +19,6 @@ Example VCF record:
 """
 
 import gzip
-import io
 import numpy as np
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
@@ -76,7 +75,12 @@ def _parse_info(info_string: str) -> dict:
     Integer / string values are stored as-is (strings).
     """
     result = {}
+    if not info_string or info_string == ".":
+        return result
+
     for entry in info_string.split(";"):
+        if not entry:
+            continue
         if "=" in entry:
             key, value = entry.split("=", 1)
             result[key] = value
