@@ -182,3 +182,4 @@ output_human/
 aux_files/hsa/catlas/*.pkl
 samples/hsa/catlasv1/cCRE_hg38.tsv.gz
 samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt
+doc/plans

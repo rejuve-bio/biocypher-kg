@@ -639,7 +639,7 @@ uniprotkb_sprot:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein
       taxon_id: 7227
   outdir: uniprot
@@ -648,10 +648,10 @@ uniprotkb_sprot:
 
 uniprotkb_sprot_translates_to:
   adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
-    cls: UniprotAdapter
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       type: translates to
       label: translates_to
       taxon_id: 7227
@@ -664,7 +664,7 @@ uniprot_has_xref_catalytic_activity:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_catalytic_activity
       taxon_id: 7227
       dbxref: CHEBI
@@ -677,7 +677,7 @@ uniprot_has_xref_cofactor:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_cofactor
       taxon_id: 7227
       dbxref: CHEBI
@@ -690,7 +690,7 @@ uniprot_has_xref_binding_site_ligand:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_binding_site_ligand
       taxon_id: 7227
       dbxref: CHEBI
@@ -703,7 +703,7 @@ uniprot_chebi_part_of_chebi:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: chemical_substance_part_of_chemical_substance
       taxon_id: 7227
       dbxref: CHEBI
@@ -1167,7 +1167,7 @@ uniprot_dbxref_bgee_gene:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_gene
       taxon_id: 7227
       dbxref: BGEE
@@ -1180,7 +1180,7 @@ uniprot_dbxref_ensembl_gene:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_gene
       taxon_id: 7227
       dbxref: ENSEMBL
@@ -1193,7 +1193,7 @@ uniprot_dbxref_ensembl_transcript:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_transcript
       taxon_id: 7227
       dbxref: ENSEMBL
@@ -1206,7 +1206,7 @@ uniprot_dbxref_ensembl_protein:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_protein
       taxon_id: 7227
       dbxref: ENSEMBL
@@ -1219,7 +1219,7 @@ uniprot_dbxref_string_protein:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_protein
       taxon_id: 7227
       dbxref: STRING
@@ -1232,7 +1232,7 @@ uniprot_dbxref_biological_process:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_biological_process
       taxon_id: 7227
       dbxref: GO
@@ -1245,7 +1245,7 @@ uniprot_dbxref_cellular_component:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_cellular_component
       taxon_id: 7227
       dbxref: GO
@@ -1258,7 +1258,7 @@ uniprot_dbxref_molecular_function:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates.dat.gz
       label: protein_has_xref_molecular_function
       taxon_id: 7227
       dbxref: GO

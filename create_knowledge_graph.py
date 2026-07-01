@@ -33,6 +33,7 @@ from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.processors import DBSNPProcessor
 from biocypher_metta.prolog_writer import PrologWriter
+from biocypher_metta.provenance import ProvenanceLookup
 from checkpoint_manager import CheckpointManager, prompt_resume_or_restart
 from config.yaml_loader import load_yaml_with_includes
 from schema_generator.generate_data_source_schemas import SchemaGenerator
@@ -345,7 +346,8 @@ def _has_bare_paths(adapters_dict: dict) -> bool:
 
 
 def _load_adapters_config(
-    config_path: Path, context: str, input_dir: Optional[Path] = None
+    config_path: Path, context: str, input_dir: Optional[Path] = None,
+    manifest_path: Optional[Path] = None,
 ) -> dict:
     with open(config_path, "r") as fp:
         try:
@@ -363,6 +365,20 @@ def _load_adapters_config(
             "Adapter config contains bare (un-prefixed) paths but no input_dir was set. "
             "Pass --input-dir or add 'input_dir:' to the config."
         )
+
+    # Attach dataset provenance from the download manifest, if available. Explicit
+    # --manifest wins; otherwise look for download_manifest.json beside input_dir.
+    chosen_manifest = manifest_path
+    if chosen_manifest is None and resolved is not None:
+        candidate = Path(resolved) / "download_manifest.json"
+        if candidate.exists():
+            chosen_manifest = candidate
+    if chosen_manifest is not None:
+        lookup = ProvenanceLookup(chosen_manifest)
+        if lookup:
+            matched = lookup.attach(adapters_dict)
+            logger.info(f"Attached provenance to {matched}/{len(adapters_dict)} adapters for {context}")
+
     return adapters_dict
 
 
@@ -565,9 +581,14 @@ def process_adapters(
         write_edges = adapters_dict[adapter_name]["edges"]
         outdir = adapters_dict[adapter_name]["outdir"]
 
+        # Dataset provenance: prefer the download manifest (single source of truth),
+        # fall back to the adapter's own attributes when no manifest entry exists.
+        # dataset_name stays adapter-derived: it drives the CSV 'source' column and
+        # version_manager's source discovery, so it must match what the adapter writes.
+        prov = adapters_dict[adapter_name].get("provenance") or {}
         dataset_name = getattr(adapter, "source", None)
-        version = getattr(adapter, "version", None)
-        source_url = getattr(adapter, "source_url", None)
+        version = prov.get("version") or getattr(adapter, "version", None)
+        source_url = prov.get("source_url") or getattr(adapter, "source_url", None)
 
         if dataset_name is None:
             logger.warning(
@@ -579,6 +600,10 @@ def process_adapters(
                 "name": dataset_name,
                 "version": version,
                 "url": source_url,
+                "date": prov.get("date"),
+                "citation": prov.get("citation"),
+                "license": prov.get("license"),
+                "checksums": prov.get("checksums"),
                 "nodes": set(),
                 "edges": set(),
                 "imported_on": str(date.today()),
@@ -966,6 +991,15 @@ def main(
             "Overrides the input_dir field declared in the config YAML."
         ),
     ),
+    manifest: Optional[Path] = typer.Option(
+        None,
+        "--manifest",
+        help=(
+            "Path to download_manifest.json for dataset provenance (version/url/checksum). "
+            "If omitted, looks for download_manifest.json beside the resolved input_dir. "
+            "Not used with --species all (each species auto-discovers its own manifest)."
+        ),
+    ),
 ):
     """
     Main function. Call individual adapters to download and process data. Build
@@ -1271,7 +1305,7 @@ def main(
             bc.overwrite = overwrite
 
         schema_dict = preprocess_schema(schema_config)
-        adapters_dict = _load_adapters_config(adapters_config, str(adapters_config), input_dir=input_dir)
+        adapters_dict = _load_adapters_config(adapters_config, str(adapters_config), input_dir=input_dir, manifest_path=manifest)
 
         if include_adapters:
             original_count = len(adapters_dict)

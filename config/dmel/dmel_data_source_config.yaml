@@ -1,6 +1,7 @@
 # ---
 alliance:    # agr: alliance of genome resource
   name: Alliance Genome Resource
+  version: {strategy: url_regex, pattern: 'alliancegenome\.org/(\d+\.\d+\.\d+)/', vtype: semver}
   extract: false
   url:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
@@ -17,14 +18,16 @@ bgee:
 
 coxpressdb:
   name: Coxpress DB
+  version: {strategy: url_regex, pattern: '\.(v[\d-]+)\.', vtype: other}
   url: https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
 
 ensembl:
   name: Ensembl Assembly 54.v62
+  version: {strategy: url_regex, pattern: '(BDGP6\.[\d.]+)\.gtf', vtype: other}
   extract: false
-  url: 
+  url:
     # - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.chr.gtf.gz
-    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.gtf.gz
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.63.gtf.gz
     - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
   move_to:
     - Drosophila_melanogaster.gene_info.gz: ./aux_files/dmel/
@@ -34,10 +37,14 @@ epd:
   compress: gzip
   url: https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
 
-flybase: 
+flybase:
   name: Flybase 2026_01
+  # Replaces the per-adapter FlybasePrecomputedTable.extract_date_string() logic:
+  # the release (fb_2026_01) is parsed from the filename for every FlyBase file.
+  version: {strategy: url_regex, pattern: 'fb_(\d{4}_\d{2})', vtype: date}
+  source_url: https://flybase.org/
   extract: false
-  url: 
+  url:
     - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/allele_genetic_interactions_fb_2026_01.tsv.gz
     - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/fbal_to_fbgn_fb_2026_01.tsv.gz
     - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/genotype_phenotype_data_fb_2026_01.tsv.gz
@@ -86,6 +93,7 @@ rna_central:
 
 string:
   name: STRING PPI
+  version: {strategy: url_regex, pattern: 'protein\.links\.(?:detailed\.)?(v[\d.]+)', vtype: semver}
   extract: false
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
@@ -93,6 +101,7 @@ string:
 
 tflink:
   name: TFLink
+  version: {strategy: url_regex, pattern: '_(v[\d.]+)\.tsv', vtype: semver}
   compress: gzip
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv
 

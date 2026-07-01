@@ -1,6 +1,8 @@
 import io
 import math
 import gzip
+import hashlib
+import json
 import re
 import shutil
 import tarfile
@@ -8,6 +10,7 @@ import time
 import yaml
 import zipfile
 import logging
+from datetime import datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse, urljoin
@@ -17,9 +20,14 @@ from requests.adapters import HTTPAdapter
 from tqdm import tqdm
 from urllib3.util.retry import Retry
 
+from biocypher_dataset_downloader.versioning import resolve_source, iter_source_urls
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_SAMPLE_FRACTION = 0.01
+MANIFEST_FILENAME = "download_manifest.json"
+VERSIONS_FILENAME = "versions.json"
+MANIFEST_VERSION = 1
 
 
 # ---------------------------------------------------------------------------
@@ -89,12 +97,21 @@ class _LinkParser(HTMLParser):
 
 class DownloadManager:
     def __init__(self, config_path: str, output_dir: Path,
-                 sample_fraction: float = DEFAULT_SAMPLE_FRACTION):
+                 sample_fraction: float = DEFAULT_SAMPLE_FRACTION,
+                 compute_checksums: bool = True):
+        self.config_path = config_path
         self.config = self._load_config(config_path)
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.sample_fraction = sample_fraction
         self.sample_root = self.output_dir / 'sample' if sample_fraction > 0 else None
+        self.compute_checksums = compute_checksums
+
+        # Provenance manifest: source_id -> entry. Built as sources are processed.
+        self.manifest_sources: dict[str, dict] = {}
+        # Prior-run manifest (if any) lets us carry forward sha256 for unchanged files
+        # instead of re-hashing multi-GB datasets every run.
+        self._prior_manifest = self._load_prior_manifest()
 
         # Requests session with built-in retry for transient HTTP errors
         self.session = requests.Session()
@@ -114,6 +131,184 @@ class DownloadManager:
     def _load_config(self, config_path: str) -> dict:
         with open(config_path, 'r') as f:
             return yaml.safe_load(f)
+
+    # ------------------------------------------------------------------
+    # Provenance manifest
+    # ------------------------------------------------------------------
+
+    def _manifest_path(self) -> Path:
+        return self.output_dir / MANIFEST_FILENAME
+
+    def _versions_path(self) -> Path:
+        return self.output_dir / VERSIONS_FILENAME
+
+    def _load_prior_manifest(self) -> dict:
+        """Load a previous run's manifest (for sha256 carry-forward); {} if absent/invalid."""
+        path = self.output_dir / MANIFEST_FILENAME
+        try:
+            with open(path, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    def _prior_file_hash(self, rel_path: str, size: int) -> str | None:
+        """Return the recorded sha256 for rel_path from the prior manifest iff size matches."""
+        for entry in self._prior_manifest.get('sources', {}).values():
+            for f in entry.get('files', []):
+                if f.get('rel_path') == rel_path and f.get('size_bytes') == size and f.get('sha256'):
+                    return f['sha256']
+        return None
+
+    def _sha256(self, filepath: Path) -> str:
+        """Streamed sha256 of a file (mirrors version_manager.hash_file, md5 -> sha256)."""
+        h = hashlib.sha256()
+        with open(filepath, 'rb') as f:
+            for chunk in iter(lambda: f.read(8192), b''):
+                h.update(chunk)
+        return h.hexdigest()
+
+    def _head_metadata(self, url: str) -> dict | None:
+        """HTTP HEAD metadata for a URL (Last-Modified / ETag / Content-Length / checked_at).
+
+        Mirrors BaseMappingProcessor.check_remote_version so both sites capture the same shape.
+        """
+        try:
+            resp = self.session.head(url, timeout=10, allow_redirects=True)
+            resp.raise_for_status()
+            return {
+                'url': url,
+                'last_modified': resp.headers.get('Last-Modified'),
+                'etag': resp.headers.get('ETag'),
+                'content_length': resp.headers.get('Content-Length'),
+                'checked_at': datetime.now().isoformat(),
+            }
+        except requests.RequestException as e:
+            logger.warning(f"Could not HEAD {url} for manifest: {e}")
+            return None
+
+    def _iter_source_output_paths(self, source_id: str, source_config: dict):
+        """Yield (rel_path, absolute_path) for every file a source produced on disk.
+
+        Covers the per-source tree under output_dir/source_id plus any files relocated
+        via 'move_to' (which can land outside output_dir, e.g. ./aux_files/dmel/). The
+        sample/ subtree is excluded. rel_path is relative to output_dir where possible,
+        otherwise relative to cwd, so the manifest stays portable.
+        """
+        seen: set[Path] = set()
+        source_dir = self.output_dir / source_id
+        if source_dir.exists():
+            for fp in sorted(source_dir.rglob('*')):
+                if not fp.is_file():
+                    continue
+                if self.sample_root and self.sample_root in fp.parents:
+                    continue
+                seen.add(fp.resolve())
+                yield str(fp.relative_to(self.output_dir)), fp
+
+        # move_to destinations (normalised the same way process_download does)
+        raw_move_to = source_config.get('move_to', {})
+        if isinstance(raw_move_to, list):
+            move_to = {k: v for entry in raw_move_to for k, v in entry.items()}
+        else:
+            move_to = raw_move_to or {}
+        for filename, dest_str in move_to.items():
+            dest = (Path.cwd() / dest_str).resolve()
+            candidate = dest / filename if dest.is_dir() else dest
+            if candidate.is_file() and candidate.resolve() not in seen:
+                try:
+                    rel = str(candidate.relative_to(self.output_dir.resolve()))
+                except ValueError:
+                    rel = str(candidate.relative_to(Path.cwd())) if candidate.is_relative_to(Path.cwd()) else str(candidate)
+                yield rel, candidate
+
+    def _record_source_manifest(self, source_id: str, source_config: dict):
+        """Resolve a source's version and record its per-file provenance into the manifest."""
+        version_info = resolve_source(source_id, source_config, session=self.session)
+
+        files = []
+        for rel_path, abs_path in self._iter_source_output_paths(source_id, source_config):
+            size = abs_path.stat().st_size
+            do_checksum = self.compute_checksums and source_config.get('checksum', True)
+            sha = self._prior_file_hash(rel_path, size) if do_checksum else None
+            if do_checksum and sha is None:
+                sha = self._sha256(abs_path)
+            files.append({
+                'rel_path': rel_path,
+                'sha256': sha,
+                'size_bytes': size,
+                'downloaded_at': datetime.now().isoformat(),
+            })
+
+        # Attach HEAD metadata for all declared URLs (best-effort). Uses iter_source_urls
+        # so every URL shape is covered — str, list, and the dict forms ({filename: url}
+        # and nested {sub_key: [urls]}) — not just the scalar/list `url` field.
+        remote_metadata = {}
+        for url in iter_source_urls(source_config):
+            if url.startswith('http'):
+                meta = self._head_metadata(url)
+                if meta:
+                    remote_metadata[meta['url']] = meta
+
+        self.manifest_sources[source_id] = {
+            'name': source_config.get('name'),
+            'version': version_info.version,
+            'date': version_info.date,
+            'signature': version_info.signature,
+            'vtype': version_info.vtype,
+            'strategy': version_info.strategy,
+            'resolve_error': version_info.error,
+            'source_url': source_config.get('source_url'),
+            'citation': source_config.get('citation'),
+            'license': source_config.get('license'),
+            'declared_url': version_info.url,
+            'remote_metadata': remote_metadata,
+            'files': files,
+        }
+
+    def _write_manifest(self):
+        """Write download_manifest.json and append changed versions to versions.json."""
+        manifest = {
+            'manifest_version': MANIFEST_VERSION,
+            'config_file': str(self.config_path),
+            'generated_at': datetime.now().isoformat(),
+            'sources': self.manifest_sources,
+        }
+        with open(self._manifest_path(), 'w') as f:
+            json.dump(manifest, f, indent=2)
+        logger.info(f"Wrote provenance manifest: {self._manifest_path()}")
+
+        self._append_versions_history()
+
+    def _append_versions_history(self):
+        """Append-only per-source version history (bioversions-style).
+
+        A new release row is appended only when the resolved version/signature differs
+        from the last recorded one, so repeated runs don't bloat the history.
+        """
+        try:
+            with open(self._versions_path(), 'r') as f:
+                history = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            history = {}
+
+        now = datetime.now().isoformat()
+        for source_id, entry in self.manifest_sources.items():
+            token = entry.get('version') or entry.get('signature')
+            if token is None:
+                continue
+            rows = history.setdefault(source_id, [])
+            last = rows[-1] if rows else None
+            if not last or last.get('version') != entry.get('version') or last.get('signature') != entry.get('signature'):
+                rows.append({
+                    'retrieved': now,
+                    'version': entry.get('version'),
+                    'signature': entry.get('signature'),
+                    'date': entry.get('date'),
+                    'vtype': entry.get('vtype'),
+                })
+
+        with open(self._versions_path(), 'w') as f:
+            json.dump(history, f, indent=2)
 
     # ------------------------------------------------------------------
     # Core download primitive
@@ -756,7 +951,12 @@ class DownloadManager:
         """Download a single source by key."""
         if source_id not in self.config:
             raise ValueError(f"Source '{source_id}' not found in config")
-        self.process_download(source_id, self.config[source_id])
+        source_config = self.config[source_id]
+        self.process_download(source_id, source_config)
+        # Preserve other sources' prior manifest entries when refreshing just one.
+        self.manifest_sources = dict(self._prior_manifest.get('sources', {}))
+        self._record_source_manifest(source_id, source_config)
+        self._write_manifest()
 
     def download_all(self):
         """Download all sources defined in the config, then print a grouped error report."""
@@ -771,6 +971,12 @@ class DownloadManager:
             total_skipped    += s
             if f:
                 failed_by_source[source_id] = f
+            try:
+                self._record_source_manifest(source_id, source_config)
+            except Exception as e:
+                logger.warning(f"Could not record manifest entry for '{source_id}': {e}")
+
+        self._write_manifest()
 
         n_failed = sum(len(v) for v in failed_by_source.values())
         summary = (

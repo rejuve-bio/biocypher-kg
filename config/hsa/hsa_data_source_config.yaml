@@ -1,11 +1,13 @@
 ---
 abc:
   name: Activity-By-Contact (ABC)
+  version: {strategy: url_regex, pattern: '/abc/(v[\d.]+)/', vtype: semver}
   extract: false
   url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
 
-alliance:  
+alliance:
   name: agr - alliance of genome resource
+  version: {strategy: url_regex, pattern: 'alliancegenome\.org/(\d+\.\d+\.\d+)/', vtype: semver}
   extract: false
   url:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
@@ -21,11 +23,13 @@ bgee:
 
 cadd:
   name: Combined Annotation Dependent Depletion (CADD)
+  version: {strategy: url_regex, pattern: '/cadd/(v[\d.]+)/', vtype: semver}
   extract: false
   url: https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
 
 catlas:
   name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
+  version: {strategy: url_regex, pattern: 'catlas(v\d+)', vtype: sequential}
   url:
     cCRE_hg38.tsv.gz: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
     Cell_ontology.tsv: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
@@ -44,13 +48,16 @@ cCRE:
       files:
         - V4-hg38.Gene-Links.eQTLs.txt
 
-coxpresdb:
+coxpressdb:
   name: Coxpress DB
+  version: {strategy: url_regex, pattern: '\.(v[\d-]+)\.', vtype: other}
   extract: true
   url: https://zenodo.org/record/6861444/files/Hsa-u.v22-05.G16651-S245698.combat_pca.subagging.z.d.zip
 
 dbsnp:
   name: dbSNP
+  version: {strategy: url_regex, pattern: '_(b\d+)_', vtype: sequential}
+  checksum: false   # multi-GB VCFs — skip sha256 (HEAD metadata + version still recorded)
   extract: false
   url:
     - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
@@ -69,6 +76,7 @@ dbvar:
 
 dgv:
   name: Database of Genomic Variants
+  version: {strategy: url_regex, pattern: 'variants_(\d{4}-\d{2}-\d{2})', vtype: date}
   compress: gzip
   # url: http://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2020-02-25.txt        # adapters use gzipped version.
   url: https://dgv.tcag.ca/dgv/docs/GRCh38_hg38_variants_2025-12-01.txt
@@ -214,11 +222,14 @@ gaf:
 
 gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
   name: GENCODE v49
+  version: {strategy: url_regex, pattern: 'gencode\.(v\d+)\.', vtype: sequential}
+  source_url: https://www.gencodegenes.org/
   extract: false
-  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz       
+  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz
 
 gtex_eqtl:
   name: GTEx eQTL
+  version: {strategy: url_regex, pattern: 'GTEx_Analysis_(v\d+)', vtype: sequential}
   # bucket: adult-gtex
   # path: bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
   url: https://storage.googleapis.com/adult-gtex/bulk-qtl/v10/single-tissue-cis-qtl/GTEx_Analysis_v10_eQTL.tar
@@ -231,6 +242,7 @@ gwas:
 
 hocomoco:
   name: HOCOMOCOv11
+  version: {strategy: static, value: v11}
   extract_tar: true
   url:
     annotation: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
@@ -238,14 +250,16 @@ hocomoco:
 
 hpo:
   name: Human Phenotype Ontology Phenotype and disease associations
-  url: 
+  version: {strategy: url_regex, pattern: 'releases/download/v(\d{4}-\d{2}-\d{2})/', vtype: date}
+  url:
   - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_disease.txt
   - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_phenotype.txt
 
 polyphen2:
   name: PolyPhen-2
+  version: {strategy: url_regex, pattern: 'polyphen-([\d.]+)-whess', vtype: semver}
   extract: true
-  url: https://genetics.bwh.harvard.edu/downloads/pph2/whess/polyphen-2.2.2-whess-2011_12.tab.gz        
+  url: https://genetics.bwh.harvard.edu/downloads/pph2/whess/polyphen-2.2.2-whess-2011_12.tab.gz
 
 reactome:
   name: Reactome
@@ -263,6 +277,7 @@ reactome:
 
 refseq:
   name: RefSeq Closest Gene
+  version: {strategy: url_regex, pattern: '/closest_gene/(v[\d.]+)/', vtype: semver}
   extract: false
   url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
 
@@ -289,6 +304,7 @@ rna_central:
 
 string:
   name: STRING PPI
+  version: {strategy: url_regex, pattern: 'protein\.links\.(?:detailed\.)?(v[\d.]+)', vtype: semver}
   extract: false
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
@@ -304,6 +320,7 @@ tfbs:
 
 tflink:
   name: TFLink
+  version: {strategy: url_regex, pattern: '_(v[\d.]+)\.tsv', vtype: semver}
   extract: false
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
 
