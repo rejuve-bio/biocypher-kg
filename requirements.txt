@@ -336,7 +336,7 @@ tomli==2.3.0
     #   biocypher-metta (pyproject.toml)
     #   coverage
     #   pytest
-tqdm==4.67.3
+tqdm==4.68.3
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
