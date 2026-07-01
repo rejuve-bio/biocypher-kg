@@ -213,7 +213,7 @@ proto-plus==1.27.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-api-core
-protobuf==6.33.5
+protobuf==7.35.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-api-core
