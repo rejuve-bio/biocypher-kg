@@ -107,7 +107,7 @@ humanfriendly==10.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   coloredlogs
-idna==3.11
+idna==3.18
     # via
     #   biocypher-metta (pyproject.toml)
     #   requests

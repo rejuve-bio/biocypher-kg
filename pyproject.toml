@@ -35,7 +35,7 @@ dependencies = [
     "googleapis-common-protos==1.73.0",
     "hgvs==1.5.4",
     "humanfriendly==10.0",
-    "idna==3.11",
+    "idna==3.18",
     "importlib-metadata==8.7.1",
     "iniconfig==2.3.0",
     "ipython==8.38.0",
