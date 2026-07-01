@@ -70,7 +70,7 @@ dependencies = [
     "pyarrow==20.0.0",
     "pyasn1==0.6.2",
     "pyasn1-modules==0.4.2",
-    "pygments==2.19.2",
+    "pygments==2.20.0",
     "pyparsing==3.2.5",
     "pysam==0.23.3",
     "pytest==8.4.2",

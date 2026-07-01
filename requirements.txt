@@ -242,7 +242,7 @@ pyasn1-modules==0.4.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-auth
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   ipython
