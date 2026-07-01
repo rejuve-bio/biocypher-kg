@@ -40,7 +40,7 @@ def generate_unified_logic_inference(
         enable_auxiliary_analysis: Flag to enable/disable auxiliary file transformation analysis
         enable_processor_analysis: Flag to enable/disable processor ID normalization analysis
     """
-    if not parse_specification_file:
+    if not spec_path:
         return {}
 
     spec_info = parse_specification_file(spec_path)

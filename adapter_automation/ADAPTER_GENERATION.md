@@ -1,4 +1,4 @@
-# BioCypher Adapter  Automation
+# BioCypher Adapter Automation
 
 An automated pipeline for generating BioCypher Knowledge Graph adapters using LLMs (OpenRouter). This tool streamlines the process of transforming raw biological data files into production-ready Python adapters with minimal manual coding.
 
@@ -50,14 +50,14 @@ uv run python3 adapter_automation/interactive_adapter_cli.py
 
 - **`interactive_adapter_cli.py`**: The main user interface.
 - **`llm_adapter_generator.py`**: Orchestrates the code generation process.
-- **`logic_inference.py`**: Handles  joining logic for auxiliary files and biological identifiers.
+- **`logic_inference.py`**: Handles joining logic for auxiliary files and biological identifiers.
 - **`code_fixer.py`**: A defensive layer that automatically detects and repairs syntax errors or hallucinations in the generated code.
 - **`source_inspector.py`**: Deterministic analysis of file structure and data types.
 
 ## Debugging
 
 If generation fails, the tool saves diagnostic data to the `debug_traces/` directory. These files contain the full prompts and raw LLM responses used during the failed attempt, allowing for detailed troubleshooting of logic or context errors.
-- if u got 0 output, make sure to check the generated adapter is used the correct processor method and column filter  if any.
+- If you get no output, check that the generated adapter uses the correct processor method and any required column filters.
 
 ## Supported Adapters in the Current Pipeline
 

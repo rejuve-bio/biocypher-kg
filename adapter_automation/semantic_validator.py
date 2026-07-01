@@ -131,7 +131,12 @@ def _llm_semantic_review(
     sample_rows = []
     expected_delimiter = spec.get("data_format", {}).get("delimiter", "\\t")
     if inspection.get("main_file"):
-        sample_rows = inspection["main_file"].get("metadata", {}).get("sample_rows", [])[:3]
+        mf = inspection["main_file"] or {}
+        sample_rows = (
+            (mf.get("metadata") or {}).get("sample_rows")
+            or mf.get("sample_rows")
+            or []
+        )[:3]
 
     # Send only the first 100 lines of code to keep the prompt small
     code_preview = "\n".join(code.splitlines()[:100])

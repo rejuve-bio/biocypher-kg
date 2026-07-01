@@ -16,17 +16,12 @@ Usage:
 
 import argparse
 import json
-import os
 import sys
-import tempfile
 import yaml
-import re, os
 from pathlib import Path
-import yaml
+from typing import Any, Dict, Optional
+
 from .code_fixer import extract_json
-import json as _json
-from pathlib import Path
-from typing import Optional, Dict, Any
 
 from adapter_automation.llm_client import make_llm_client
 from adapter_automation.inspector_utils import inspect_adapter_files, build_inspection_context

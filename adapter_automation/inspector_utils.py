@@ -149,7 +149,6 @@ def inspect_adapter_files(adapter_config: dict) -> dict:
                             'sample_mappings': dict(list(data.items())[:30]) if isinstance(data, dict) else {}
                         }
                         inspection_results['files'][key] = {'path': path, 'type': 'pickle', 'metadata': meta}
-                        inspection_results['files'][key] = {'path': path, 'type': 'pickle', 'metadata': meta}
                 else:
                     meta = _robust_inspect(path)
                     inspection_results['files'][key] = {'path': path, 'type': 'data_file', 'metadata': meta}

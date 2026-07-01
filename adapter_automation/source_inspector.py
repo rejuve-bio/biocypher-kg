@@ -9,13 +9,10 @@ Analyzes data files to extract structural metadata including:
 - Sample data rows
 """
 
-import gzip
-import json
-import sys
-import pickle
-from pathlib import Path
-from typing import List, Tuple, Dict, Any
 import csv
+import gzip
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 
 class SourceInspector:

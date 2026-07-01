@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from schema_generator.semantic_validator import validate_semantic_correctness, print_semantic_report
+from adapter_automation.semantic_validator import validate_semantic_correctness, print_semantic_report
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Shared: mock inspection with realistic sample rows from a gene-expression file
