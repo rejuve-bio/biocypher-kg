@@ -278,7 +278,7 @@ pyyaml==6.0.3
     #   neo4j-utils
 questionary==2.1.1
     # via biocypher-metta (pyproject.toml)
-rdflib==6.3.2
+rdflib==7.6.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
