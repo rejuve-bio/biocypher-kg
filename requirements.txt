@@ -359,7 +359,7 @@ typing-extensions==4.15.0
     #   exceptiongroup
     #   ipython
     #   typer
-tzdata==2025.2
+tzdata==2026.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   pandas
