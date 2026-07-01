@@ -566,8 +566,8 @@ reactome_positive_role_protein_to_reaction_or_pathway:
 
 # uniprotkb_sprot_translates_to:
 #   adapter:
-#     module: biocypher_metta.adapters.uniprot_adapter
-#     cls: UniprotAdapter
+#     module: biocypher_metta.adapters.uniprot_protein_adapter
+#     cls: UniprotProteinAdapter
 #     args:
 #       filepath: uniprot/uniprot_sprot_rodents_MMU.dat.gz
 #       type: translates to

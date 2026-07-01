@@ -216,7 +216,7 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
                         continue
                     ensembl_id = ensembl_match.group(1).split('.')[0]
 
-                    gene_name_match = re.search(r'gene_name "([^"]+)"', attributes)
+                    gene_name_match = re.search(r'(?:gene_name|gene_symbol) "([^"]+)"', attributes)
                     if not gene_name_match:
                         continue
                     gene_name = gene_name_match.group(1)

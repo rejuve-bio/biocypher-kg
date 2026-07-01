@@ -18,13 +18,25 @@ class UniprotProteinAdapter(Adapter):
     
   
     TRANSLATION_CONDITION_MAP = {
-        7227: lambda item: bool(item[0].startswith('EnsemblMetazoa') and 'FBtr' in item[1]),
-        9606: lambda item: bool(item[0].startswith('Ensembl') and 'ENST' in item[1]),
+        6239:  lambda item: bool(item[0].startswith('EnsemblMetazoa') and len(item) > 3 and 'WBGene' in item[3]),
+        7227:  lambda item: bool(item[0].startswith('EnsemblMetazoa') and 'FBtr' in item[1]),
+        9606:  lambda item: bool(item[0].startswith('Ensembl') and 'ENST' in item[1]),
+        10090: lambda item: bool(item[0].startswith('Ensembl') and 'ENSMUST' in item[1]),
+        10116: lambda item: bool(item[0].startswith('Ensembl') and 'ENSRNOT' in item[1]),
+    }
+
+    # Index of the cross-reference tuple field that holds the target gene/transcript ID.
+    # Defaults to 1 for all species except C. elegans, where item[3] is the WBGene ID.
+    TRANSLATION_ID_FIELD = {
+        6239: 3,
     }
 
     CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL'
+        6239:  'WormBase',
+        7227:  'FlyBase',
+        9606:  'ENSEMBL',
+        10090: 'ENSEMBL',
+        10116: 'ENSEMBL',
     }
 
     def __init__(self, filepath, write_properties, add_provenance, taxon_id, label, type=None, dbxref=None, mapping_file=None):
@@ -194,10 +206,11 @@ class UniprotProteinAdapter(Adapter):
                 if self.type == 'translates to' or self.label == 'translates_to':
                     translation_conditions_hold = self.TRANSLATION_CONDITION_MAP.get(self.taxon_id)
                     if translation_conditions_hold:
-                        for item in record.cross_references:                 
+                        id_field = self.TRANSLATION_ID_FIELD.get(self.taxon_id, 1)
+                        for item in record.cross_references:
                             if translation_conditions_hold(item):
                                 prefix = self.CURIE_PREFIX.get(self.taxon_id, 'ENSEMBL')
-                                ensg_id = f"{prefix}:" + item[1].split(':')[-1].split('.')[0]
+                                ensg_id = f"{prefix}:" + item[id_field].split(':')[-1].split('.')[0]
                                 props = {}
                                 props['taxon_id'] = f'NCBITaxon:{self.taxon_id}'
                                 if self.write_properties and self.add_provenance:

@@ -65,7 +65,7 @@ cel:
     # Cel does not use dbSNP data.
     dbsnp_cache_root: ""
     dbsnp_variant: ""
-    
+
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml

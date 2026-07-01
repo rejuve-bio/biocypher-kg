@@ -560,8 +560,8 @@ uniprot_sprot:
 
 uniprot_sprot_translates_to:
   adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
-    cls: UniprotAdapter
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
     args:
       filepath: ./samples/dmel/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
       type: translates to
