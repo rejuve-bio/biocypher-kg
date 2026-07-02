@@ -345,41 +345,7 @@ reactome_pathway_to_biological_process:
   nodes: false
   edges: true
 
-# The following adapters for Molecular Function and Cellular Component are commented out
-# because the current dataset only contains Biological Process edges.
-# Including unused adapters causes the CI to fail due to schema and adapter validation rules.
-# These can be uncommented once corresponding datasets are available.
-
-# pathway_to_molecular_function:
-#   adapter:
-#     module: biocypher_metta.adapters.reactome_pathway_go_adapter  
-#     cls: ReactomePathwayGOAdapter
-#     args:
-#       filepath: reactome/Pathways2GoTerms_human.txt
-#       write_properties: true
-#       add_provenance: true
-#       subontology: molecular_function
-#       mapping_file: aux_files/go_subontology_mapping.pkl
-#       taxon_id: 9606
-#   outdir: reactome/molecular_function
-#   nodes: false
-#   edges: true
-
-# pathway_to_cellular_component:
-#   adapter:
-#     module: biocypher_metta.adapters.reactome_pathway_go_adapter
-#     cls: ReactomePathwayGOAdapter
-#     args:
-#       filepath: reactome/Pathways2GoTerms_human.txt
-#       write_properties: true
-#       add_provenance: true
-#       subontology: cellular_component  
-#       mapping_file: aux_files/go_subontology_mapping.pkl
-#   outdir: reactome/cellular_component
-#   nodes: false
-#   edges: true
-
-reactome_reaction_to_biological_process:
+reactome_reaction_to_molecular_function:
   adapter:
     module: biocypher_metta.adapters.reactome_pathway_go_adapter
     cls: ReactomePathwayGOAdapter
@@ -387,10 +353,10 @@ reactome_reaction_to_biological_process:
       filepath: reactome/Reactions2GoTerms_human.txt
       write_properties: true
       add_provenance: true
-      label: reaction_to_biological_process
-      subontology: biological_process
+      label: reaction_to_molecular_function
+      subontology: molecular_function
       taxon_id: 9606      
-  outdir: reactome/biological_process
+  outdir: reactome/molecular_function
   nodes: false
   edges: true
 
@@ -2110,7 +2076,7 @@ alliance_gene_orthology:
     module: biocypher_metta.adapters.alliance_gene_orthology_adapter
     cls: AllianceGeneOrthologyAdapter
     args:
-      filepath: alliance/ORTHOLOGY-ALLIANCE_COMBINED_7.tsv.gz
+      filepath: alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
       taxon_id: 9606
       label: orthologs_genes
   outdir: alliance/orthology
