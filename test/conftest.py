@@ -1,4 +1,6 @@
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -12,6 +14,17 @@ EXISTING_PATHS = {
 }
 if ROOT_STR not in EXISTING_PATHS:
     sys.path.insert(0, ROOT_STR)
+
+# Make the kg-service FastAPI app importable (`backend.*`) for Console tests.
+KG_SERVICE = ROOT / "kg-service"
+if KG_SERVICE.is_dir() and str(KG_SERVICE) not in EXISTING_PATHS:
+    sys.path.insert(0, str(KG_SERVICE))
+
+# Isolate Console build-job artifacts to a temp dir so tests never write into the
+# repo's kg-service/.builds. Must be set before backend.core.config is imported.
+os.environ.setdefault("BUILDS_DIR", tempfile.mkdtemp(prefix="kg_console_builds_"))
+# The Console reads REPO_ROOT for config introspection / shelling out to the CLI.
+os.environ.setdefault("REPO_ROOT", ROOT_STR)
 
 
 def pytest_addoption(parser):
