@@ -6,8 +6,8 @@
 # whole repository and its pipeline dependencies live in this image.
 #
 # Build:  docker build -t biocypher-kg-console .
-# Run:    docker run -p 8000:8000 biocypher-kg-console
-# Open:   http://localhost:8000/console/
+# Run:    docker run -p 9000:9000 biocypher-kg-console
+# Open:   http://localhost:9000/console/
 
 # ---- Stage 1: build the frontend ----
 FROM node:20-slim AS frontend
@@ -47,10 +47,10 @@ ENV REPO_ROOT=/app \
     BUILDS_DIR=/app/kg-service/.builds \
     UV_BIN=uv \
     SERVE_FRONTEND=true \
-    PORT=8000 \
+    PORT=9000 \
     PYTHONUNBUFFERED=1
 
-EXPOSE 8000
+EXPOSE 9000
 
 # Run uvicorn from kg-service (so `backend.*` imports resolve); the venv's uvicorn
 # is used directly. Build subprocesses still run `uv run ... ` with cwd=REPO_ROOT.

@@ -1,7 +1,7 @@
 # BioCypher KG Console — docker compose.
 #
 #   docker compose -f docker/docker-compose.console.yml up --build
-#   open http://localhost:${CONSOLE_PORT:-8000}/console/
+#   open http://localhost:${CONSOLE_PORT:-9000}/console/
 #
 # The build context is the repo root (..), since the image needs the whole
 # pipeline to launch builds.
@@ -14,9 +14,9 @@ services:
     ports:
       # host:container — change the host side to run on a different port;
       # the frontend uses relative /api URLs so it always finds the backend.
-      - "${CONSOLE_PORT:-8000}:8000"
+      - "${CONSOLE_PORT:-9000}:9000"
     environment:
-      PORT: 8000
+      PORT: 9000
       REPO_ROOT: /app
       BUILDS_DIR: /app/kg-service/.builds
       MAX_CONCURRENT_BUILDS: "1"

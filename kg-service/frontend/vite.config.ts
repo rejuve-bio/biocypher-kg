@@ -9,7 +9,7 @@ import react from "@vitejs/plugin-react";
 //   VITE_API_TARGET=http://localhost:8001 VITE_PORT=5174 npm run dev
 // In production (backend serves the built app) the SPA uses relative /api URLs,
 // so it always hits whatever port the backend runs on — no config needed.
-const API_TARGET = process.env.VITE_API_TARGET || "http://localhost:8000";
+const API_TARGET = process.env.VITE_API_TARGET || "http://localhost:9000";
 const DEV_PORT = Number(process.env.VITE_PORT || 5173);
 
 export default defineConfig({
