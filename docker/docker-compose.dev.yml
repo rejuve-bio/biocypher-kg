@@ -1,0 +1,52 @@
+# BioCypher KG Console — DEV stack: frontend and backend as separate containers,
+# both hot-reloading from your mounted source. One command brings both up.
+#
+#   docker compose -f docker/docker-compose.dev.yml up --build
+#
+#   Frontend (Vite, hot reload): http://localhost:${FRONTEND_PORT:-5173}/console/
+#   Backend  (FastAPI, --reload): http://localhost:${BACKEND_PORT:-9000}/docs
+#
+# The frontend's Vite dev server proxies /api to the backend over the compose
+# network (http://backend:9000), so the browser only ever talks to :5173.
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: runtime
+    # uvicorn --reload watches the mounted source and restarts on change.
+    command: /app/.venv/bin/uvicorn backend.api.main:app --host 0.0.0.0 --port 9000 --reload
+    working_dir: /app/kg-service
+    environment:
+      PORT: "9000"
+      REPO_ROOT: /app
+      # The frontend container serves the UI in dev, so the backend doesn't.
+      SERVE_FRONTEND: "false"
+      BUILDS_DIR: /app/kg-service/.builds
+      MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
+    volumes:
+      - ..:/app                 # live source for --reload and for build subprocesses
+      - /app/.venv              # keep the image's venv (don't let the mount hide it)
+      - console_builds:/app/kg-service/.builds
+    ports:
+      - "${BACKEND_PORT:-9000}:9000"
+
+  frontend:
+    image: node:20-slim
+    working_dir: /fe
+    # install deps (cached in a named volume) then run Vite bound to all interfaces.
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      # Vite proxies /api to the backend service over the compose network.
+      VITE_API_TARGET: "http://backend:9000"
+    volumes:
+      - ../kg-service/frontend:/fe      # live source for HMR
+      - frontend_node_modules:/fe/node_modules   # keep node_modules out of the bind
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    depends_on:
+      - backend
+
+volumes:
+  console_builds:
+  frontend_node_modules:
