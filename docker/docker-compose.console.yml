@@ -12,11 +12,12 @@ services:
       dockerfile: Dockerfile
     image: biocypher-kg-console
     ports:
-      # host:container — change the host side to run on a different port;
-      # the frontend uses relative /api URLs so it always finds the backend.
-      - "${CONSOLE_PORT:-9000}:9000"
+      # Single knob: CONSOLE_PORT drives BOTH the host mapping and the container's
+      # internal bind (below), so the uvicorn log matches the port you chose.
+      # e.g.  CONSOLE_PORT=8080 docker compose -f docker/docker-compose.console.yml up
+      - "${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
     environment:
-      PORT: 9000
+      PORT: "${CONSOLE_PORT:-9000}"
       REPO_ROOT: /app
       BUILDS_DIR: /app/kg-service/.builds
       MAX_CONCURRENT_BUILDS: "1"
