@@ -29,9 +29,9 @@ services:
     volumes:
       # Build jobs/logs/output on the HOST (visible on disk, survives restarts).
       - ${HOST_BUILDS_DIR:-../kg-service/.builds}:/app/kg-service/.builds
-      # Host dir for CUSTOM output paths: set the wizard's "Output directory" to a
-      # path under /output (e.g. /output/my-run) and files land on the host here.
-      - ${HOST_OUTPUT_DIR:-../output}:/output
+      # Host dir for CUSTOM output paths, mounted at the SAME path in the container,
+      # so the folder you type in the wizard is the identical folder on your host.
+      - ${HOST_OUTPUT_DIR:-/data/kg-output}:${HOST_OUTPUT_DIR:-/data/kg-output}
       # For real (full) builds, mount your downloaded input data and point the
       # adapters config / --input-dir at it, e.g.:
       # - /mnt/hdd_1/biocypher-kg/input:/data

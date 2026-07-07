@@ -311,7 +311,8 @@ export default function BuildWizard() {
             />
             <span className="field-hint">
               Absolute path or relative to the repo root. In Docker, use a path
-              under /output (or a relative path) to write to your host machine.
+              under HOST_OUTPUT_DIR (same path on host & container) to write to your
+              host machine. Blank = default per-build folder.
             </span>
           </label>
         </div>
