@@ -32,6 +32,7 @@ export default function BuildDetail() {
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<OutputFile[] | null>(null);
   const [graphInfo, setGraphInfo] = useState<GraphInfoSummary | null>(null);
+  const [fileFilter, setFileFilter] = useState("");
   const logRef = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
 
@@ -184,6 +185,13 @@ export default function BuildDetail() {
       {(graphInfo || (files && files.length > 0)) && (
         <div className="card">
           <h2>Results</h2>
+          <div className="alert ok" style={{ marginBottom: 14 }}>
+            📁 Files were written to <span className="mono">{job.output_dir}</span>
+            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              They're already on disk there — the download links below are just a
+              convenience (useful when the Console runs on a remote server).
+            </div>
+          </div>
           {graphInfo && (
             <div className="row" style={{ gap: 24, marginBottom: 14 }}>
               <Meta label="Nodes" value={fmtNum(graphInfo.node_count)} />
@@ -207,30 +215,51 @@ export default function BuildDetail() {
               </div>
             </div>
           )}
-          {files && files.length > 0 && (
-            <>
-              <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-                Output files ({files.length})
-              </div>
-              <table>
-                <tbody>
-                  {files.map((f) => (
-                    <tr key={f.path}>
-                      <td className="mono">{f.path}</td>
-                      <td className="muted" style={{ whiteSpace: "nowrap" }}>
-                        {humanSize(f.size)}
-                      </td>
-                      <td style={{ textAlign: "right" }}>
-                        <a className="link" href={api.outputDownloadUrl(id, f.path)}>
-                          download
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
+          {files && files.length > 0 && (() => {
+            const fq = fileFilter.trim().toLowerCase();
+            const shown = fq
+              ? files.filter((f) => f.path.toLowerCase().includes(fq))
+              : files;
+            return (
+              <>
+                <div
+                  className="row"
+                  style={{ justifyContent: "space-between", marginBottom: 6 }}
+                >
+                  <span className="muted" style={{ fontSize: 12 }}>
+                    Output files ({fq ? `${shown.length} of ${files.length}` : files.length})
+                  </span>
+                  <input
+                    type="text"
+                    value={fileFilter}
+                    onChange={(e) => setFileFilter(e.target.value)}
+                    placeholder="🔍 Filter files…"
+                    style={{ minWidth: 220 }}
+                  />
+                </div>
+                <table>
+                  <tbody>
+                    {shown.map((f) => (
+                      <tr key={f.path}>
+                        <td className="mono">{f.path}</td>
+                        <td className="muted" style={{ whiteSpace: "nowrap" }}>
+                          {humanSize(f.size)}
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <a className="link" href={api.outputDownloadUrl(id, f.path)}>
+                            download
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!shown.length && (
+                  <span className="muted">No files match “{fileFilter}”.</span>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
     </>
