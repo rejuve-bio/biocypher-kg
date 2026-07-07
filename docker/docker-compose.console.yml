@@ -1,0 +1,36 @@
+# BioCypher KG Console — docker compose.
+#
+#   docker compose -f docker/docker-compose.console.yml up --build
+#   open http://localhost:${CONSOLE_PORT:-8000}/console/
+#
+# The build context is the repo root (..), since the image needs the whole
+# pipeline to launch builds.
+services:
+  console:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: biocypher-kg-console
+    ports:
+      # host:container — change the host side to run on a different port;
+      # the frontend uses relative /api URLs so it always finds the backend.
+      - "${CONSOLE_PORT:-8000}:8000"
+    environment:
+      PORT: 8000
+      REPO_ROOT: /app
+      BUILDS_DIR: /app/kg-service/.builds
+      MAX_CONCURRENT_BUILDS: "1"
+      # Point at a Neo4j for the Observatory endpoints (optional; Console works without it):
+      # NEO4J_URI: bolt://host.docker.internal:7887
+      # NEO4J_USER: neo4j
+      # NEO4J_PASSWORD: your_password
+      # NEO4J_DATABASE: neo4j
+    volumes:
+      # Persist build jobs/logs/output across container restarts.
+      - console_builds:/app/kg-service/.builds
+      # For real (full) builds, mount your downloaded input data and point the
+      # adapters config / --input-dir at it, e.g.:
+      # - /mnt/hdd_1/biocypher-kg/input:/data
+
+volumes:
+  console_builds:
