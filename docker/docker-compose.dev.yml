@@ -35,15 +35,18 @@ services:
     image: node:20-slim
     working_dir: /fe
     # install deps (cached in a named volume) then run Vite bound to all interfaces.
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    # Vite listens on FRONTEND_PORT (via VITE_PORT in vite.config.ts); the host maps
+    # the SAME number, so hot-reload's websocket port matches and HMR works.
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     environment:
       # Vite proxies /api to the backend service over the compose network.
       VITE_API_TARGET: "http://backend:9000"
+      VITE_PORT: "${FRONTEND_PORT:-5173}"
     volumes:
       - ../kg-service/frontend:/fe      # live source for HMR
       - frontend_node_modules:/fe/node_modules   # keep node_modules out of the bind
     ports:
-      - "${FRONTEND_PORT:-5173}:5173"
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
     depends_on:
       - backend
 
