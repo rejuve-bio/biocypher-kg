@@ -310,7 +310,8 @@ export default function BuildWizard() {
               style={{ width: "100%" }}
             />
             <span className="field-hint">
-              Absolute path, or relative to the repo root.
+              Absolute path or relative to the repo root. In Docker, use a path
+              under /output (or a relative path) to write to your host machine.
             </span>
           </label>
         </div>

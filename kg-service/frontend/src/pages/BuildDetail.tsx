@@ -46,17 +46,18 @@ export default function BuildDetail() {
         if (!alive) return;
         setJob(j);
         setLines(l.lines);
+        // Refresh the produced-file list every poll so downloads appear
+        // incrementally as each adapter finishes (checkpoint advances → more
+        // output on disk), not only when the whole build completes.
+        const [out, gi] = await Promise.all([
+          api.listOutput(id).catch(() => null),
+          api.getGraphInfo(id).catch(() => null),
+        ]);
+        if (!alive) return;
+        if (out?.exists) setFiles(out.files);
+        if (gi?.present) setGraphInfo(gi.summary ?? null);
         if (!TERMINAL.has(j.status)) {
           timer = setTimeout(tick, 2000);
-        } else {
-          // Build finished — load its produced files + graph summary (once).
-          const [out, gi] = await Promise.all([
-            api.listOutput(id).catch(() => null),
-            api.getGraphInfo(id).catch(() => null),
-          ]);
-          if (!alive) return;
-          if (out?.exists) setFiles(out.files);
-          if (gi?.present) setGraphInfo(gi.summary ?? null);
         }
       } catch (e) {
         if (alive) setError(String(e));
@@ -184,7 +185,7 @@ export default function BuildDetail() {
 
       {(graphInfo || (files && files.length > 0)) && (
         <div className="card">
-          <h2>Results</h2>
+          <h2>Results {active ? "· updating live" : ""}</h2>
           <div className="alert ok" style={{ marginBottom: 14 }}>
             📁 Files were written to <span className="mono">{job.output_dir}</span>
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>

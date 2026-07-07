@@ -27,11 +27,11 @@ services:
       # NEO4J_PASSWORD: your_password
       # NEO4J_DATABASE: neo4j
     volumes:
-      # Persist build jobs/logs/output across container restarts.
-      - console_builds:/app/kg-service/.builds
+      # Build jobs/logs/output on the HOST (visible on disk, survives restarts).
+      - ${HOST_BUILDS_DIR:-../kg-service/.builds}:/app/kg-service/.builds
+      # Host dir for CUSTOM output paths: set the wizard's "Output directory" to a
+      # path under /output (e.g. /output/my-run) and files land on the host here.
+      - ${HOST_OUTPUT_DIR:-../output}:/output
       # For real (full) builds, mount your downloaded input data and point the
       # adapters config / --input-dir at it, e.g.:
       # - /mnt/hdd_1/biocypher-kg/input:/data
-
-volumes:
-  console_builds:

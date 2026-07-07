@@ -190,3 +190,6 @@ config/tmp*.yaml
 # Local docker env files (may contain secrets); keep the *.env.example templates
 docker/*.env
 !docker/*.env.example
+
+# Host output dir mounted into the Console container (HOST_OUTPUT_DIR)
+/output/
