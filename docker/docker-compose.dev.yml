@@ -27,7 +27,9 @@ services:
     volumes:
       - ..:/app                 # live source for --reload and for build subprocesses
       - /app/.venv              # keep the image's venv (don't let the mount hide it)
-      - console_builds:/app/kg-service/.builds
+      # NOTE: .builds is intentionally NOT a named volume here — it falls under the
+      # ..:/app bind, so build output appears in your host kg-service/.builds folder
+      # (visible on disk, and you can watch files land during a build).
     ports:
       - "${BACKEND_PORT:-9000}:9000"
 
@@ -51,5 +53,4 @@ services:
       - backend
 
 volumes:
-  console_builds:
   frontend_node_modules:
