@@ -23,7 +23,6 @@ export default function BuildWizard() {
   const [adaptersError, setAdaptersError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [writerType, setWriterType] = useState<string>("metta");
-  const [outputDir, setOutputDir] = useState<string>("");
   const [adapterFilter, setAdapterFilter] = useState<string>("");
   const [flagValues, setFlagValues] = useState<Record<string, boolean>>({});
 
@@ -114,8 +113,8 @@ export default function BuildWizard() {
       // omit include_adapters when everything is selected (means "all")
       include_adapters: allSelected ? null : Array.from(selected),
       writer_type: writerType,
-      // empty => let the server assign a default per-build output folder
-      output_dir: outputDir.trim() || null,
+      // Server decides where output goes: DATA_ROOT/<dated> if set, else repo default.
+      output_dir: null,
       write_properties: flagValues.write_properties ?? true,
       add_provenance: flagValues.add_provenance ?? true,
       include_taxon_id: flagValues.include_taxon_id ?? true,
@@ -286,7 +285,7 @@ export default function BuildWizard() {
 
       <div className="card">
         <h2>3 · Output format &amp; options</h2>
-        <div className="row" style={{ marginBottom: 12, alignItems: "flex-start" }}>
+        <div className="row" style={{ marginBottom: 12 }}>
           <label className="field">
             Writer
             <select
@@ -300,21 +299,12 @@ export default function BuildWizard() {
               ))}
             </select>
           </label>
-          <label className="field" style={{ flex: 1, minWidth: 280 }}>
-            Output directory (optional)
-            <input
-              type="text"
-              value={outputDir}
-              onChange={(e) => setOutputDir(e.target.value)}
-              placeholder="Leave empty for a default per-build folder"
-              style={{ width: "100%" }}
-            />
-            <span className="field-hint">
-              Absolute path or relative to the repo root. In Docker, any path under
-              the mounted DATA_ROOT writes straight to your host. Blank = an
-              auto-named dated folder (species-dataset-YYYYMMDD-HHMMSS) under DATA_ROOT.
-            </span>
-          </label>
+        </div>
+        <div className="field-hint" style={{ marginBottom: 12 }}>
+          📁 Output location is automatic: a dated folder
+          <span className="mono"> species-dataset-YYYYMMDD-HHMMSS </span>
+          under <span className="mono">DATA_ROOT</span> if configured, otherwise the
+          default build folder in the repo. The exact path is shown on the build page.
         </div>
         <div className="chips">
           {flags.map((f) => (
