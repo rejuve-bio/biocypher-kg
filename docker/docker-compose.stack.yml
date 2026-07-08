@@ -30,9 +30,9 @@ services:
     volumes:
       # Build jobs/logs/output on the HOST (visible on disk).
       - ${HOST_BUILDS_DIR:-../kg-service/.builds}:/app/kg-service/.builds
-      # Host dir for custom output paths, mounted at the SAME path in the container
-      # (folder you type in the wizard == folder on your host).
-      - ${HOST_OUTPUT_DIR:-/data/kg-output}:${HOST_OUTPUT_DIR:-/data/kg-output}
+      # Broad host data root, mounted same-path. Set DATA_ROOT once; the wizard's
+      # Output directory can be any path under it (never repeated in env).
+      - ${DATA_ROOT:-${HOME}}:${DATA_ROOT:-${HOME}}
     depends_on:
       - neo4j
 

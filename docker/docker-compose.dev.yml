@@ -31,13 +31,13 @@ services:
       # ..:/app bind, so build output appears in your host kg-service/.builds folder
       # (visible on disk, and you can watch files land during a build).
       #
-      # Host output dir for CUSTOM output paths, mounted at the SAME path inside the
-      # container — so whatever folder you type in the wizard is the identical folder
-      # on your host (no translation). Default: /data/kg-output. Override in dev.env.
-      # e.g. wizard "Output directory" = ${HOST_OUTPUT_DIR:-/data/kg-output}/my-run
-      #      -> files on your host at the exact same path.
-      # (Leave the wizard field blank for the default host kg-service/.builds folder.)
-      - ${HOST_OUTPUT_DIR:-/data/kg-output}:${HOST_OUTPUT_DIR:-/data/kg-output}
+      # DATA_ROOT is a BROAD host directory the Console can read/write, mounted at the
+      # SAME path inside the container. Set it ONCE (deploy-time), then the wizard's
+      # "Output directory" can be ANY path under it — you never repeat the path in env.
+      # Default is your host home (${HOME}); set DATA_ROOT in dev.env to override
+      # (required if you run docker via sudo, which resets HOME).
+      # e.g. DATA_ROOT=/home/kedist/biocypher  ->  field = /home/kedist/biocypher/output
+      - ${DATA_ROOT:-${HOME}}:${DATA_ROOT:-${HOME}}
     ports:
       - "${BACKEND_PORT:-9000}:9000"
 
