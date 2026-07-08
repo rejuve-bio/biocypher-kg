@@ -711,6 +711,22 @@ def _write_graph_info(
     logger.info(f"graph_info.json written to {file_path}")
     return graph_info
 
+def _needs_dbsnp(adapters_dict: dict) -> bool:
+    """
+    Return True if at least one active adapter expects 'dbsnp_rsid_map' or 'dbsnp_pos_map' in its args.
+    """
+    for adapter_entry in adapters_dict.values():
+        if not isinstance(adapter_entry, dict):
+            continue
+        
+        adapter_info = adapter_entry.get("adapter") or {}
+        args = adapter_info.get("args") or {}
+        
+        # Checking if either key exists in the arguments
+        if "dbsnp_rsid_map" in args or "dbsnp_pos_map" in args:
+            return True
+            
+    return False
 
 def _load_dbsnp(cache_root: str, variant: Optional[str], is_sample: bool = False) -> tuple:
     """Load dbSNP mappings using DBSNPProcessor."""
@@ -1087,30 +1103,6 @@ def main(
                         sp_cache_root = "aux_files/hsa/sample_dbsnp"
                     sp_variant = dbsnp_variant or config.get("dbsnp_variant") or None
 
-                    ckpt = _setup_checkpoint(
-                        sp_output_dir,
-                        pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
-                        no_checkpoint=no_checkpoint,
-                        resume=resume,
-                    )
-
-                    sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
-                        sp_cache_root, sp_variant, is_sample=sp_is_sample
-                    )
-
-                    bc = get_writer(
-                        writer_type,
-                        sp_output_dir,
-                        sp_schema_config,
-                        include_curie=include_curie,
-                    )
-                    logger.info(f"Using {writer_type} writer for {sp}")
-
-                    if writer_type == "parquet":
-                        bc.buffer_size = buffer_size
-                        bc.overwrite = overwrite
-
-                    schema_dict = preprocess_schema(sp_schema_config)
                     sp_adapters_dict = _load_adapters_config(sp_adapters_config, sp, input_dir=input_dir)
 
                     if include_adapters:
@@ -1127,6 +1119,35 @@ def main(
                         logger.info(
                             f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}"
                         )
+                    ckpt = _setup_checkpoint(
+                        sp_output_dir,
+                        pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
+                        no_checkpoint=no_checkpoint,
+                        resume=resume,
+                    )
+
+                    if _needs_dbsnp(sp_adapters_dict):
+                        sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
+                            sp_cache_root, sp_variant, is_sample=sp_is_sample
+                        )
+                    else:
+                        logger.info(f"[{sp}] dbSNP variant mapping not required; skipping dbSNP cache load.")
+                        sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = {}, {}
+
+                    bc = get_writer(
+                        writer_type,
+                        sp_output_dir,
+                        sp_schema_config,
+                        include_curie=include_curie,
+                    )
+                    logger.info(f"Using {writer_type} writer for {sp}")
+
+                    if writer_type == "parquet":
+                        bc.buffer_size = buffer_size
+                        bc.overwrite = overwrite
+
+                    schema_dict = preprocess_schema(sp_schema_config)
+                    
 
                     nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
                         sp_adapters_dict,
@@ -1321,11 +1342,15 @@ def main(
                 raise typer.Exit(1)
             logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
 
-        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(
-            resolved_cache_root,
-            resolved_variant,
-            is_sample=is_sample_config,
-        )
+        if _needs_dbsnp(adapters_dict):
+            dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(
+                resolved_cache_root,
+                resolved_variant,
+                is_sample=is_sample_config,
+            )
+        else:
+            logger.info("dbSNP variant mapping not required by active adapters; skipping dbSNP cache load.")
+            dbsnp_rsids_dict, dbsnp_pos_dict = {}, {}
 
         nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
             adapters_dict,
