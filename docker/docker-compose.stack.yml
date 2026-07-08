@@ -21,6 +21,8 @@ services:
       PORT: "${CONSOLE_PORT:-9000}"
       REPO_ROOT: /app
       BUILDS_DIR: /app/kg-service/.builds
+      # Same as the DATA_ROOT mount → blank-output builds auto-name a dated dir here.
+      DATA_ROOT: "${DATA_ROOT:-${HOME}}"
       MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
       # Talk to the neo4j service over the compose network (not localhost).
       NEO4J_URI: "bolt://neo4j:7687"

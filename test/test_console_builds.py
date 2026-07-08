@@ -66,6 +66,25 @@ def test_registry_persists_across_reload(tmp_path):
     assert got.status == JobStatus.SUCCEEDED
 
 
+def test_resolve_output_dir_dated_when_blank(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console.job_runner import resolve_output_dir
+    import re
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    req = BuildRequest(species="hsa", dataset="sample")  # no output_dir
+    out = resolve_output_dir(req, tmp_path / "job")
+    assert out.startswith(str(tmp_path))
+    assert re.search(r"/hsa-sample-\d{8}-\d{6}$", out), out
+
+
+def test_resolve_output_dir_explicit_wins(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console.job_runner import resolve_output_dir
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    req = BuildRequest(species="hsa", dataset="sample", output_dir="/custom/out")
+    assert resolve_output_dir(req, tmp_path / "job") == "/custom/out"
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

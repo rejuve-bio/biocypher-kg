@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     # Where build job artifacts (registry.json + per-job logs/output) are stored.
     # Empty string => <REPO_ROOT>/kg-service/.builds (resolved lazily in builds_dir).
     BUILDS_DIR: str = ""
+    # Base dir for auto-named build outputs when the wizard's output field is blank.
+    # When set, a blank output resolves to <DATA_ROOT>/<species>-<dataset>-<timestamp>.
+    # In Docker this is mounted at the same path, so those outputs are host-visible.
+    DATA_ROOT: str = ""
     # Max builds allowed to run concurrently. Default 1: full builds are memory/IO
     # heavy and two at once can OOM a single host. This is the Phase 3 parallel seam.
     MAX_CONCURRENT_BUILDS: int = 1

@@ -23,6 +23,9 @@ services:
       # The frontend container serves the UI in dev, so the backend doesn't.
       SERVE_FRONTEND: "false"
       BUILDS_DIR: /app/kg-service/.builds
+      # Same value as the DATA_ROOT mount below → blank-output builds auto-name a
+      # dated dir under here (host-visible, since it's mounted same-path).
+      DATA_ROOT: "${DATA_ROOT:-${HOME}}"
       MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
     volumes:
       - ..:/app                 # live source for --reload and for build subprocesses

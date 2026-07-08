@@ -311,8 +311,8 @@ export default function BuildWizard() {
             />
             <span className="field-hint">
               Absolute path or relative to the repo root. In Docker, any path under
-              the mounted DATA_ROOT writes straight to your host. Blank = default
-              per-build folder.
+              the mounted DATA_ROOT writes straight to your host. Blank = an
+              auto-named dated folder (species-dataset-YYYYMMDD-HHMMSS) under DATA_ROOT.
             </span>
           </label>
         </div>

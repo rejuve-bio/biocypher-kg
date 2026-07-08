@@ -112,9 +112,18 @@ def check_only_argv(adapters_config_abs: str,
 
 
 def resolve_output_dir(req: BuildRequest, job_dir: Path) -> str:
-    """Where the build writes. Explicit output_dir wins; else <job_dir>/output."""
+    """Where the build writes.
+
+    Priority: explicit output_dir → dated dir under DATA_ROOT → <job_dir>/output.
+    The dated name reuses the repo's build-<timestamp> convention:
+    <species>-<dataset>-<YYYYMMDD-HHMMSS>.
+    """
     if req.output_dir:
         return _abs(req.output_dir)
+    if settings.DATA_ROOT:
+        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+        name = f"{req.species}-{req.dataset}-{ts}" if req.species else f"build-{ts}"
+        return _abs(str(Path(settings.DATA_ROOT) / name))
     return str(job_dir / "output")
 
 

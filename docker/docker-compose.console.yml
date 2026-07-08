@@ -20,6 +20,8 @@ services:
       PORT: "${CONSOLE_PORT:-9000}"
       REPO_ROOT: /app
       BUILDS_DIR: /app/kg-service/.builds
+      # Same as the DATA_ROOT mount → blank-output builds auto-name a dated dir here.
+      DATA_ROOT: "${DATA_ROOT:-${HOME}}"
       MAX_CONCURRENT_BUILDS: "1"
       # Point at a Neo4j for the Observatory endpoints (optional; Console works without it):
       # NEO4J_URI: bolt://host.docker.internal:7887
