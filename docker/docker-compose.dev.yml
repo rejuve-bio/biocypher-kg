@@ -37,7 +37,7 @@ services:
       # DATA_ROOT is a BROAD host directory the Console can read/write, mounted at the
       # SAME path inside the container. Set it ONCE (deploy-time), then the wizard's
       # "Output directory" can be ANY path under it — you never repeat the path in env.
-      # Default is your host home (${HOME}); set DATA_ROOT in dev.env to override
+      # Default is your host home (${HOME}); set DATA_ROOT in console.env to override
       # (required if you run docker via sudo, which resets HOME).
       # e.g. DATA_ROOT=/home/kedist/biocypher  ->  field = /home/kedist/biocypher/output
       - ${DATA_ROOT:-${HOME}}:${DATA_ROOT:-${HOME}}
