@@ -65,6 +65,7 @@ def get_writer(
     output_dir: Path,
     schema_config_path: Path,
     include_curie: bool = False,
+    import_root: Path = None,
 ):
     writer_type = writer_type.lower()
 
@@ -88,6 +89,7 @@ def get_writer(
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir,
             include_curie=include_curie,
+            import_root=import_root,
         )
     if writer_type == "parquet":
         return ParquetWriter(
@@ -1131,6 +1133,7 @@ def main(
                         sp_output_dir,
                         sp_schema_config,
                         include_curie=include_curie,
+                        import_root=output_dir,
                     )
                     logger.info(f"Using {writer_type} writer for {sp}")
 

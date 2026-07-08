@@ -8,8 +8,12 @@ from pathlib import Path
 from biocypher_metta import BaseWriter
 
 class Neo4jCSVWriter(BaseWriter):
-    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False):
+    def __init__(self, schema_config, biocypher_config, output_dir, include_curie: bool = False, import_root=None):
         super().__init__(schema_config, biocypher_config, output_dir, include_curie=include_curie)
+        # Directory that will be mounted as Neo4j's /import at load time. Defaults to
+        # output_dir so single-species runs behave as before; pass the shared parent
+        # directory when multiple species' CSVs are loaded from one Neo4j import mount.
+        self.import_root = Path(import_root) if import_root else self.output_path
         self.csv_delimiter = '|'
         self.array_delimiter = ';'
         self.translation_table = str.maketrans({
@@ -356,7 +360,7 @@ class Neo4jCSVWriter(BaseWriter):
         return edge_freq
 
     def write_node_cypher(self, label, csv_path, cypher_path):
-        relative_path = csv_path.relative_to(self.output_path).as_posix()
+        relative_path = csv_path.relative_to(self.import_root).as_posix()
 
         cypher_query = f"""
 CREATE CONSTRAINT IF NOT EXISTS FOR (n:{label}) REQUIRE n.id IS UNIQUE;
@@ -374,7 +378,7 @@ RETURN batches, total;
             f.write(cypher_query)
 
     def write_edge_cypher(self, edge_label, source_type, target_type, csv_path, cypher_path):
-        relative_path = csv_path.relative_to(self.output_path).as_posix()
+        relative_path = csv_path.relative_to(self.import_root).as_posix()
 
         cypher_query = f"""
 CALL apoc.periodic.iterate(
