@@ -1092,6 +1092,8 @@ def main(
                 logger.info("Generating KG for all species")
                 logger.info(f"Base output directory: {output_dir}")
                 available_species = list(species_config.keys())
+                all_species_start = time.time()
+                species_summary: list[dict] = []
 
                 for sp in available_species:
                     if dataset not in species_config[sp]:
@@ -1214,10 +1216,18 @@ def main(
 
                     delete_temp_schema(sp_schema_config)
 
+                    sp_elapsed = time.time() - total_start
+                    species_summary.append({
+                        "species": sp,
+                        "elapsed": sp_elapsed,
+                        "nodes": sum(nodes_count.values()),
+                        "edges": sum(edges_count.values()),
+                    })
+
                     logger.info("")
                     logger.info("#" * 60)
                     logger.info(f"  PIPELINE COMPLETE [{sp}]")
-                    logger.info(f"  Total time  : {_fmt_elapsed(time.time() - total_start)}")
+                    logger.info(f"  Total time  : {_fmt_elapsed(sp_elapsed)}")
                     logger.info(f"  Total nodes : {sum(nodes_count.values()):,}")
                     logger.info(f"  Total edges : {sum(edges_count.values()):,}")
                     if adapter_times:
@@ -1234,6 +1244,22 @@ def main(
                     logger.info("#" * 60)
                     logger.info("")
 
+                all_species_elapsed = time.time() - all_species_start
+                logger.info("\n" + "=" * 60)
+                logger.info("  SPECIES TIMING SUMMARY")
+                logger.info("=" * 60)
+                if species_summary:
+                    name_width = max(len(s["species"]) for s in species_summary)
+                    for s in species_summary:
+                        logger.info(
+                            f"  {s['species']:<{name_width}} : {_fmt_elapsed(s['elapsed']):>10}"
+                            f"   nodes: {s['nodes']:>12,}   edges: {s['edges']:>12,}"
+                        )
+                else:
+                    logger.info("  (no species were processed)")
+                logger.info("-" * 60)
+                logger.info(f"  Total time (all species): {_fmt_elapsed(all_species_elapsed)}")
+                logger.info("=" * 60)
                 logger.info("\n" + "=" * 60)
                 logger.info("All species processed successfully!")
                 logger.info("=" * 60)

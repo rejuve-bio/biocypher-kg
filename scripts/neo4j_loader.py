@@ -4,9 +4,20 @@ import logging
 import getpass
 import argparse
 import sys
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def _fmt_elapsed(seconds):
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    minutes, seconds = divmod(seconds, 60)
+    if minutes < 60:
+        return f"{int(minutes)}m {seconds:.1f}s"
+    hours, minutes = divmod(minutes, 60)
+    return f"{int(hours)}h {int(minutes)}m {seconds:.1f}s"
 
 class Neo4jLoader:
     def __init__(self, uri, username, password, csv_base_path=None):
@@ -181,9 +192,16 @@ def process_output_directory(output_dir):
 
     return query_dirs
 
+def _dir_label(dir_path, output_path):
+    rel = dir_path.relative_to(output_path)
+    return str(rel) if str(rel) != "." else "(root)"
+
+
 def main():
     neo4j_uri, username, password, output_dir = get_neo4j_credentials()
-    
+    output_path = Path(output_dir)
+    all_start = time.time()
+
     try:
         loader = Neo4jLoader(neo4j_uri, username, password)
         if not loader.connect():
@@ -191,30 +209,46 @@ def main():
 
         loader.start_session()
         query_dirs = process_output_directory(output_dir)
-        
+
         if not query_dirs:
             logger.error(f"No directories containing Cypher query files found in {output_dir}")
             return
-        
+
         logger.info(f"Found {len(query_dirs)} directories containing Cypher queries")
-        
-        all_node_files = []
-        all_edge_files = []
-        
-        for dir_path in query_dirs:
-            files = loader.load_queries_from_directory(dir_path)
-            all_node_files.extend(files['nodes'])
-            all_edge_files.extend(files['edges'])
-        
+
+        dir_files = [(dir_path, loader.load_queries_from_directory(dir_path)) for dir_path in query_dirs]
+        species_time = {_dir_label(dir_path, output_path): 0.0 for dir_path, _ in dir_files}
+
+        all_node_files = [f for _, files in dir_files for f in files['nodes']]
         logger.info(f"Processing {len(all_node_files)} node files across all directories")
-        loader.process_all_files(all_node_files)
-        
+        for dir_path, files in dir_files:
+            label = _dir_label(dir_path, output_path)
+            start = time.time()
+            loader.process_all_files(files['nodes'])
+            species_time[label] += time.time() - start
+
+        all_edge_files = [f for _, files in dir_files for f in files['edges']]
         logger.info(f"Processing {len(all_edge_files)} edge files across all directories")
-        loader.process_all_files(all_edge_files)
-        
+        for dir_path, files in dir_files:
+            label = _dir_label(dir_path, output_path)
+            start = time.time()
+            loader.process_all_files(files['edges'])
+            species_time[label] += time.time() - start
+
+        all_elapsed = time.time() - all_start
+        logger.info("\n" + "=" * 60)
+        logger.info("  SPECIES TIMING SUMMARY")
+        logger.info("=" * 60)
+        name_width = max(len(name) for name in species_time)
+        for label, elapsed in species_time.items():
+            logger.info(f"  {label:<{name_width}} : {_fmt_elapsed(elapsed):>10}")
+        logger.info("-" * 60)
+        logger.info(f"  Total time (all directories): {_fmt_elapsed(all_elapsed)}")
+        logger.info("=" * 60)
+
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
-    
+
     finally:
         loader.close()
 
