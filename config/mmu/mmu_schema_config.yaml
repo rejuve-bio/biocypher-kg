@@ -1,9 +1,7 @@
-Title: BioCypher graph schema configuration file
+Title: BioCypher graph schema configuration file (Biolink-adapted for mmu)
 # ---
 # "Named Things"
 # ---
-
-Title: BioCypher graph schema configuration file (Biolink-adapted for mmu)
 
 mmusdv subclass of:
   is_a: subclass of

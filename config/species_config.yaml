@@ -43,8 +43,8 @@ hsa:
     schema_config: config/hsa/hsa_schema_config.yaml
     # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
     # Example: dbsnp_variant: common   (or "full")
-    dbsnp_cache_root: "/mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/dbsnp/"       # REQUIRED: set here, or pass --dbsnp-cache-root <path>
-    dbsnp_variant: "common"          # REQUIRED: set here, or pass --dbsnp-variant common|full
+    dbsnp_cache_root: ""       # REQUIRED: set here, or pass --dbsnp-cache-root <path>
+    dbsnp_variant: ""          # REQUIRED: set here, or pass --dbsnp-variant common|full
 
 dmel:
   sample:
