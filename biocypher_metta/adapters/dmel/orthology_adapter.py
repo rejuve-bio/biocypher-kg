@@ -44,9 +44,12 @@ from biocypher._logger import logger
 
 class OrthologyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map=None, hgnc_processor=None, label = 'orthologs_genes'):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, hsa_hgnc_to_ensemble_map=None,
+                 hgnc_processor=None, label='orthologs_genes', taxon_id=7227, target_organism_taxon_id=9606):
         self.dmel_data_filepath = dmel_data_filepath
         self.label = label
+        self.taxon_id = taxon_id
+        self.target_organism_taxon_id = target_organism_taxon_id
         self.type = 'orthology association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
@@ -88,7 +91,7 @@ class OrthologyAssociationAdapter(Adapter):
             props['hsa_omim_phenotype_ids'] = row[6]
             props['hsa_omim_phenotype_ids_names'] = row[7]
             props['source_organism'] = 'Drosophila melanogaster'
-            props['taxon_id'] = 7227
-            props['target_organism_taxon_id'] = 9606
+            props['taxon_id'] = self.taxon_id
+            props['target_organism_taxon_id'] = self.target_organism_taxon_id
 
             yield f'FlyBase:{source}', f'Ensembl:{target}', self.label, props

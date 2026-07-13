@@ -21,9 +21,10 @@ class GTExExpressionAdapter(Adapter):
                 "p_value": 13, "tissue": 17, "chr": 18, "pos": 19}
     def __init__(self, filepath, gtex_tissue_ontology_map,
                  write_properties, add_provenance, label,
-                 chr=None, start=None, end=None, anatomy_label=None):
+                 chr=None, start=None, end=None, anatomy_label=None, taxon_id=9606):
 
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.gtex_tissue_ontology_map = pickle.load(open(gtex_tissue_ontology_map, 'rb'))
         self.chr = chr
         self.start = start
@@ -53,6 +54,7 @@ class GTExExpressionAdapter(Adapter):
                         _target = f"{ontology}"
                         _props = {
                             'p_value': to_float(row[self.index["p_value"]]),
+                            'taxon_id': self.taxon_id,
                         }
                         if self.write_properties:
                             if self.add_provenance:

@@ -24,12 +24,13 @@ import re
 
 class AlleleGeneticInteractionAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, label, dmel_data_filepath, dmel_fbal_to_fbgn_file):
+    def __init__(self, write_properties, add_provenance, label, dmel_data_filepath, dmel_fbal_to_fbgn_file, taxon_id=7227):
         self.dmel_data_filepath = dmel_data_filepath
         self.allele_symbol_to_fbal_dict = self.__build_allele_symbol_dict(dmel_fbal_to_fbgn_file)
         self.label = label              #  'allele_genetic_interaction'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(AlleleGeneticInteractionAdapter, self).__init__(write_properties, add_provenance)
 
@@ -48,7 +49,7 @@ class AlleleGeneticInteractionAdapter(Adapter):
             if self.add_provenance:
                 props['source'] = self.source
                 props['source_url'] = self.source_url
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
             source_allele = row[1]
             interacting_alleles = self.__extract_allele_ids(row, source_allele)
             for allele in interacting_alleles:

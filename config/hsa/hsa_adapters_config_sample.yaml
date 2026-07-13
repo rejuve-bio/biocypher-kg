@@ -672,6 +672,7 @@ gtex_eqtl:
       filepath: ./samples/hsa/gtex.forgedb.sample.csv.gz
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       label: gtex_variant_gene
+      taxon_id: 9606
   outdir: gtex/eqtl
   nodes: False
   edges: True
@@ -685,6 +686,7 @@ gtex_expression:
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       label: expressed_in
       anatomy_label: gene_expressed_in_anatomy
+      taxon_id: 9606
   outdir: gtex/expression
   nodes: False
   edges: True
@@ -712,6 +714,7 @@ roadmap_chromatin_state:
       tissue_to_ontology_id_map: ./aux_files/hsa/roadmap_tissues_to_ontology_map.pkl
       label: chromatin_state
       dbsnp_rsid_map: None
+      taxon_id: 9606
   outdir: roadmap/chromatin_state
   nodes: False
   edges: True
@@ -726,6 +729,7 @@ roadmap_h3_mark:
       tissue_to_ontology_id_map: ./aux_files/hsa/roadmap_tissues_to_ontology_map.pkl
       label: histone_modification
       dbsnp_rsid_map: None
+      taxon_id: 9606
   outdir: roadmap/h3_mark
   nodes: False
   edges: True
@@ -740,6 +744,7 @@ roadmap_dhs:
       tissue_to_ontology_id_map: ./aux_files/hsa/roadmap_tissues_to_ontology_map.pkl
       label: in_dnase_I_hotspot
       dbsnp_rsid_map: None
+      taxon_id: 9606
   outdir: roadmap/dhs
   nodes: False
   edges: True
@@ -753,6 +758,7 @@ abc:
       tissue_to_ontology_id_map: ./aux_files/hsa/abc_tissues_to_ontology_map.pkl
       dbsnp_rsid_map: None # will be provided by import script
       label: activity_by_contact
+      taxon_id: 9606
   outdir: abc
   nodes: False
   edges: True
@@ -765,6 +771,7 @@ cadd:
       filepath: ./samples/hsa/cadd.forgedb_sample.csv.gz
       dbsnp_rsid_map: None # will be provided by import script
       label: snp
+      taxon_id: 9606
   outdir: cadd
   nodes: True
   edges: False
@@ -777,6 +784,7 @@ refseq_closest_gene:
       filepath: ./samples/hsa/closest_gene.forgedb_sample.csv.gz
       dbsnp_rsid_map: None # will be provided by import script
       label: closest_gene
+      taxon_id: 9606
   outdir: refseq
   nodes: False
   edges: edge
@@ -791,6 +799,7 @@ topld_eur:
             ancestry: EUR
             dbsnp_pos_map: None # will be provided by import script
             label: in_linkage_disequilibrium_with
+            taxon_id: 9606
     outdir: top_ld/EUR
     nodes: False
     edges: True
@@ -858,6 +867,7 @@ dgv_variant:
     args:
       filepath: ./samples/hsa/dgv_GRCh38_hg38_variants.txt
       label: structural_variant
+      taxon_id: 9606
   outdir: dgv
   nodes: True
   edges: False
@@ -873,6 +883,7 @@ dgv_variant_gene_overlap:
         - path: ./samples/hsa/gencode_sample.gtf.gz
           label: gene
           type: gtf
+      taxon_id: 9606
   outdir: dgv
   nodes: False
   edges: True
@@ -888,6 +899,7 @@ dgv_variant_ncrna_overlap:
         - path: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
           label: non_coding_rna
           type: bed
+      taxon_id: 9606
   outdir: dgv
   nodes: False
   edges: True
@@ -904,6 +916,7 @@ dgv_variant_promoter_overlap:
           label: promoter
           type: bed
           delimiter: ' '
+      taxon_id: 9606
   outdir: dgv
   nodes: False
   edges: True
@@ -928,6 +941,7 @@ hpo_gene_phenotype:
     args:
       filepath: ./samples/hsa/hpo/genes_to_phenotype.txt
 
+      taxon_id: 9606
   outdir: hpo
   nodes: False
   edges: True
@@ -940,6 +954,7 @@ hpo_gene_disease:
     args:
       filepath: ./samples/hsa/hpo/genes_to_disease.txt
 
+      taxon_id: 9606
   outdir: hpo
   nodes: False
   edges: True
@@ -965,6 +980,7 @@ dbvar_variant:
     args:
       filepath: ./samples/hsa/dbvar_sample.vcf.gz
       label: structural_variant
+      taxon_id: 9606
   outdir: dbvar
   nodes: True
   edges: False
@@ -980,6 +996,7 @@ dbvar_variant_gene_overlap:
         - path: ./samples/hsa/gencode_sample.gtf.gz
           label: gene
           type: gtf
+      taxon_id: 9606
   outdir: dbvar
   nodes: False
   edges: True
@@ -995,6 +1012,7 @@ dbvar_variant_ncrna_overlap:
         - path: ./samples/hsa/rna_central/sample_homo_sapiens.GRCh38.bed.gz
           label: non_coding_rna
           type: bed
+      taxon_id: 9606
   outdir: dbvar
   nodes: False
   edges: True
@@ -1011,6 +1029,7 @@ dbvar_variant_promoter_overlap:
           label: promoter
           type: bed
           delimiter: ' '
+      taxon_id: 9606
   outdir: dbvar
   nodes: False
   edges: True
@@ -1025,6 +1044,7 @@ peregrine_enhancer:
       source_file: ./samples/hsa/peregrine/PEREGRINEenhancersources.gz
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       label: enhancer
+      taxon_id: 9606
   outdir: peregrine
   nodes: True
   edges: False
@@ -1041,6 +1061,7 @@ peregrine_enhancer_regulates:
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
       label: enhancer_gene
+      taxon_id: 9606
   outdir: peregrine
   nodes: False
   edges: True
@@ -1053,6 +1074,7 @@ dbsuper_super_enhancer:
       filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       label: super_enhancer
+      taxon_id: 9606
   outdir: dbsuper
   nodes: True
   edges: False
@@ -1066,6 +1088,7 @@ dbsuper_super_enhancer_regulates_gene:
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
       label: super_enhancer_gene
+      taxon_id: 9606
   outdir: dbsuper
   nodes: False
   edges: True
@@ -1077,6 +1100,7 @@ dbsnp_snps:
     args:
       filepath: ./samples/hsa/dbsnp/dbsnp-sample-00-common_all.vcf.gz    
       label: snp
+      taxon_id: 9606
   outdir: dbsnp
   nodes: True
   edges: False
@@ -1398,6 +1422,7 @@ polyphen2:
     args:
       filepath: ./samples/hsa/polyPhen2_sample.bed.gz
       label: snp
+      taxon_id: 9606
   outdir: polyphen-2
   nodes: True
   edges: False
@@ -1447,6 +1472,7 @@ gwas_snp_to_upstream_gene:
     args:
       filepath: ./samples/hsa/gwas-catalog_sample.tsv
       label: snp_upstream_gene
+      taxon_id: 9606
   outdir: gwas/upstream
   nodes: False
   edges: True
@@ -1458,6 +1484,7 @@ gwas_snp_to_downstream_gene:
     args:
       filepath: ./samples/hsa/gwas-catalog_sample.tsv
       label: snp_downstream_gene
+      taxon_id: 9606
   outdir: gwas/downstream
   nodes: False
   edges: True
@@ -1469,6 +1496,7 @@ gwas_snp_to_in_gene:
     args:
       filepath: ./samples/hsa/gwas-catalog_sample.tsv
       label: snp_in_gene
+      taxon_id: 9606
   outdir: gwas/ingene
   nodes: False
   edges: True

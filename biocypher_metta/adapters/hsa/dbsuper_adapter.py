@@ -18,8 +18,9 @@ class DBSuperAdapter(Adapter):
     def __init__(self, filepath, hgnc_to_ensembl_map=None, dbsuper_tissues_map=None, label='super_enhancer',
                  write_properties=None, add_provenance=None,
                  type='super enhancer', delimiter='\t',
-                 chr=None, start=None, end=None, hgnc_processor=None):
+                 chr=None, start=None, end=None, hgnc_processor=None, taxon_id=9606):
         self.filePath = filepath
+        self.taxon_id = taxon_id
 
         # Use provided processor or create new one
         if hgnc_processor is not None:
@@ -62,6 +63,7 @@ class DBSuperAdapter(Adapter):
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     props = {}
                     if self.write_properties:
+                        props['taxon_id'] = self.taxon_id
                         props['se_id'] = se_id
                         props['chr'] = chr
                         props['start'] = start
@@ -98,6 +100,7 @@ class DBSuperAdapter(Adapter):
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     props = {}
                     if self.write_properties:
+                        props['taxon_id'] = self.taxon_id
                         props['biological_context'] = biological_id
                         if self.add_provenance:
                             props['source'] = self.source

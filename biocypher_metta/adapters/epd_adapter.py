@@ -32,16 +32,6 @@ _SOURCE_URLS = {
     10116: 'https://epd.expasy.org/ftp/epdnew/R_norvegicus/',
 }
 
-# Gene ID prefix used in edge target node IDs per species.
-_ENSEMBL_PREFIX = {
-    9606:  'ENSEMBL',
-    7227:  'FlyBase',
-    6239:  'ENSEMBL',
-    10090: 'ENSEMBL',
-    10116: 'ENSEMBL',
-}
-
-
 class EPDAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'gene_id': 3}
 
@@ -129,7 +119,7 @@ class EPDAdapter(Adapter):
 
     def _resolve_symbol(self, gene_symbol: str):
         """Return (ensembl_gene_id, prefix) or (None, None) if not found."""
-        prefix = _ENSEMBL_PREFIX.get(self.taxon_id, 'ENSEMBL')
+        prefix = Adapter.CURIE_PREFIX.get(self.taxon_id, 'ENSEMBL')
 
         if self.hgnc_processor is not None:
             ensembl_id = self.hgnc_processor.get_ensembl_id(gene_symbol)

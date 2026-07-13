@@ -22,7 +22,7 @@ class GTExEQTLAdapter(Adapter):
 
     def __init__(self, filepath, gtex_tissue_ontology_map,
                  write_properties, add_provenance, label,
-                 tissue_names=None, chr=None, start=None, end=None):
+                 tissue_names=None, chr=None, start=None, end=None, taxon_id=9606):
         """
         :type filepath: str
         :type tissue_names: str
@@ -36,6 +36,7 @@ class GTExEQTLAdapter(Adapter):
         :param end: end position
         """
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.gtex_tissue_ontology_map = pickle.load(open(gtex_tissue_ontology_map, 'rb'))
         self.tissue_names = tissue_names
         self.chr = chr
@@ -70,7 +71,8 @@ class GTExEQTLAdapter(Adapter):
                                 'maf': to_float(row[COL_DICT["maf"]]),
                                 'slope': to_float(row[COL_DICT["slope"]]),
                                 'p_value': to_float(row[COL_DICT["p_value"]]),
-                                'biological_context': self.gtex_tissue_ontology_map[tissue_name]
+                                'biological_context': self.gtex_tissue_ontology_map[tissue_name],
+                                'taxon_id': self.taxon_id
                             }
                             if self.add_provenance:
                                 _props['source'] = self.source

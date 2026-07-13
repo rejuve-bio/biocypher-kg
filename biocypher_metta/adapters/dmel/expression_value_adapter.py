@@ -66,7 +66,7 @@ from biocypher._logger import logger
 import gc
 
 class ExpressionValueAdapter(Adapter):
-    def __init__(self, write_properties, add_provenance, data_filepaths, aux_filepaths):
+    def __init__(self, write_properties, add_provenance, data_filepaths, aux_filepaths, taxon_id=7227):
         self.data_filepaths = data_filepaths
         '''
         self.aux_filepaths[0] is used to build the gene symbol to FBgn dictionary in the build_gene_symbol_to_fbgn_dict()
@@ -76,6 +76,7 @@ class ExpressionValueAdapter(Adapter):
         self.label = 'expression_value'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(ExpressionValueAdapter, self).__init__(write_properties, add_provenance)
 
@@ -106,7 +107,7 @@ class ExpressionValueAdapter(Adapter):
                           "Spread"#: is the proportion of cells in the cluster in which the gene is detected"
                         )
                     ]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -132,7 +133,7 @@ class ExpressionValueAdapter(Adapter):
                          str(row[7]).replace('"', '').replace("'", '')         # Expression_Unit
                          ),
                     ]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -167,7 +168,7 @@ class ExpressionValueAdapter(Adapter):
                          "Total_exon_base_count"#: The number of bases in all exons of this gene"
                          ),
                     ]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -216,7 +217,7 @@ class ExpressionValueAdapter(Adapter):
                                 'Enrichment',  # Expression_Unit
                             ),
                         ]                        
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -253,7 +254,7 @@ class ExpressionValueAdapter(Adapter):
                                 'Enrichment',  # Expression_Unit
                             ),
                         ]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -286,7 +287,7 @@ class ExpressionValueAdapter(Adapter):
                                 'SD',          # Expression_Unit
                             ),
                         ]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -319,7 +320,7 @@ class ExpressionValueAdapter(Adapter):
                                 'SD',          # Expression_Unit
                             ),
                         ]   
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -349,7 +350,7 @@ class ExpressionValueAdapter(Adapter):
                                 '?',         # Expression_Unit  TODO: this is not a correct description (look at author's email...)
                             ),                            
                         ]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url

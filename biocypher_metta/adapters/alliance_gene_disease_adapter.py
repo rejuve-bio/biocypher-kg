@@ -105,7 +105,14 @@ class AllianceGeneDiseaseAdapter(Adapter):
         super(AllianceGeneDiseaseAdapter, self).__init__(write_properties, add_provenance)
 
     def _resolve_gene_id(self, gene_id: str) -> Optional[str]:
-        """Convert an Alliance gene ID to the Ensembl ID used in the KG."""
+        """Convert an Alliance gene ID to the CURIE-prefixed gene ID used in the KG."""
+        resolved = self._resolve_bare_gene_id(gene_id)
+        if resolved is None:
+            return None
+        return f"{Adapter.CURIE_PREFIX[int(self.taxon_id)]}:{resolved}"
+
+    def _resolve_bare_gene_id(self, gene_id: str) -> Optional[str]:
+        """Convert an Alliance gene ID to the bare (unprefixed) Ensembl/FlyBase/WormBase ID."""
         if self.taxon_id in _STRIP_PREFIX:
             prefix = _STRIP_PREFIX[self.taxon_id]
             return gene_id[len(prefix):] if gene_id.startswith(prefix) else gene_id

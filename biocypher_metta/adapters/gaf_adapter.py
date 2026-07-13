@@ -178,8 +178,9 @@ class GAFAdapter(Adapter):
                         ensembl_gene_id = self._biomart_processor.get_ensembl_gene(source_raw.split(':', 1)[1])
                     if ensembl_gene_id is None:
                         continue
-                    curie_prefix = 'mgi' if self.type == 'mgi' else 'rgd'
-                    source = ("gene", f"{curie_prefix}:{ensembl_gene_id}")
+                    # ensembl_gene_id is an Ensembl gene ID (resolved via BioMart above),
+                    # so it must use the same CURIE prefix as the gene nodes themselves.
+                    source = ("gene", f"{Adapter.CURIE_PREFIX[self.taxon_id]}:{ensembl_gene_id}")
                 else:
                     # Default to UniProt for protein annotations
                     source = ("protein", f"UniProt:{source_raw}")

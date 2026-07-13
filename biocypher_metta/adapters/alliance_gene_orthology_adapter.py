@@ -92,7 +92,14 @@ class AllianceGeneOrthologyAdapter(Adapter):
         super(AllianceGeneOrthologyAdapter, self).__init__(write_properties, add_provenance)
 
     def _resolve_gene_id(self, gene_id: str, taxon: str) -> Optional[str]:
-        """Convert an Alliance gene ID to the Ensembl ID used in the KG."""
+        """Convert an Alliance gene ID to the CURIE-prefixed gene ID used in the KG."""
+        resolved = self._resolve_bare_gene_id(gene_id, taxon)
+        if resolved is None:
+            return None
+        return f"{Adapter.CURIE_PREFIX[int(taxon)]}:{resolved}"
+
+    def _resolve_bare_gene_id(self, gene_id: str, taxon: str) -> Optional[str]:
+        """Convert an Alliance gene ID to the bare (unprefixed) Ensembl/FlyBase/WormBase ID."""
         if taxon in _STRIP_PREFIX:
             prefix = _STRIP_PREFIX[taxon]
             return gene_id[len(prefix):] if gene_id.startswith(prefix) else gene_id

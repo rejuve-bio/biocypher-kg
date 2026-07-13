@@ -75,7 +75,7 @@ cel:
 
 mmu:
   sample:
-    adapters_config: config/mmu/mmu_adapters_config_full_sample.yaml
+    adapters_config: config/mmu/mmu_adapters_config_sample.yaml
     schema_config: config/mmu/mmu_schema_config.yaml
     dbsnp_cache_root: ""
     dbsnp_variant: ""

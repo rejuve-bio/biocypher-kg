@@ -819,8 +819,6 @@ def _load_dbsnp(cache_root: str, variant: Optional[str], is_sample: bool = False
         variant_label = "sample" if is_sample else variant
         logger.info(f"Preparing dbSNP cache (variant={variant_label}) from {cache_path}")
         dbsnp_proc = DBSNPProcessor(cache_dir=str(cache_path))
-        logger.info("Opening dbSNP mapping backend...")
-        # dbsnp_proc.load_mapping()
         logger.info("Creating dbSNP lookup wrappers...")
         rsids_dict, pos_dict = dbsnp_proc.get_dict_wrappers()
         logger.info(

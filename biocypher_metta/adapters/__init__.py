@@ -6,8 +6,8 @@ class Adapter:
         6239: 'WormBase',
         7227: 'FlyBase',
         9606: 'ENSEMBL',
-        10090: 'mgi',
-        10116: 'rgd',        
+        10090: 'ENSEMBL',
+        10116: 'ENSEMBL',
     }
     
     # Mapping of organism taxon_ids to their NCBI category and gene_info filename
@@ -71,7 +71,7 @@ class Adapter:
             'dbxref_prefix': 'RGD',
             'reactome_prefix': 'R-RNO',
             'ncbi_gene_info_url': "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz",
-            'features_data_url': "https://ftp.ensembl.org/pub/release-115/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.115.chr.gtf.gz",
+            'features_data_url': "https://ftp.ensembl.org/pub/release-116/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz",
             'entrez_ensembl_cache_directory': 'aux_files/rno/entrez_ensembl',
             'ensembl_uniprot_cache_directory': 'aux_files/rno/ensembl_uniprot',
             'ensembl_uniprot_organism': 'RAT_10116',

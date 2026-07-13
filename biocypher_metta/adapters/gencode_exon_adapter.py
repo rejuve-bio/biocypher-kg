@@ -141,8 +141,9 @@ class GencodeExonAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'exon_number': int(info.get('exon_number', -1)),
+                                    'taxon_id': self.taxon_id,
                                 }
-                                
+
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url                                    
@@ -179,9 +180,11 @@ class GencodeExonAdapter(Adapter):
                     exon_id = exon_id + '_PAR_Y'
 
                 _props = {}
-                if self.write_properties and self.add_provenance:
-                    _props['source'] = self.source
-                    _props['source_url'] = self.source_url
+                if self.write_properties:
+                    _props['taxon_id'] = self.taxon_id
+                    if self.add_provenance:
+                        _props['source'] = self.source
+                        _props['source_url'] = self.source_url
 
                 try:
                     _source = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{exon_id}"

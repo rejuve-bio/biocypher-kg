@@ -26,7 +26,7 @@ class RoadMapDHSAdapter(Adapter):
 
     def __init__(self, filepath, cell_to_ontology_id_map, tissue_to_ontology_id_map, label,
                  dbsnp_rsid_map, write_properties, add_provenance,
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None, taxon_id=9606):
         """
         :param filepath: path to the directory containing epigenomic data
         :param dbsnp_rsid_map: a dictionary mapping dbSNP rsid to genomic position
@@ -35,6 +35,7 @@ class RoadMapDHSAdapter(Adapter):
         :param end: end position
         """
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.cell_to_ontology_id_map = pickle.load(open(cell_to_ontology_id_map, 'rb'))
         self.tissue_to_ontology_id_map = pickle.load(open(tissue_to_ontology_id_map, 'rb'))
         self.dbsnp_rsid_map = dbsnp_rsid_map
@@ -88,6 +89,9 @@ class RoadMapDHSAdapter(Adapter):
 
                     tissue_type = self.ONTOLOGIES_PREFIX_TO_TYPE[tissue_id.split('_')[0]]
                     tissue_target = (tissue_type, tissue_id)
+
+                    if self.write_properties:
+                        _props['taxon_id'] = self.taxon_id
 
                     if self.write_properties and self.add_provenance:
                         _props['source'] = self.source

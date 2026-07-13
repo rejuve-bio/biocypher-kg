@@ -172,6 +172,7 @@ class GencodeTranscriptAdapter(Adapter):
                                     'transcript_id': info['transcript_id'].upper(),
                                     'transcript_name': info.get('transcript_name', 'not assigned_by_authority'),
                                     'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],
+                                    'taxon_id': self.taxon_id,
                                 }
 
                                 if self.add_provenance:
@@ -212,9 +213,11 @@ class GencodeTranscriptAdapter(Adapter):
                     gene_key = gene_key + '_PAR_Y'
                
                 _props = {}
-                if self.write_properties and self.add_provenance:
-                    _props['source'] = self.source
-                    _props['source_url'] = self.source_url
+                if self.write_properties:
+                    _props['taxon_id'] = self.taxon_id
+                    if self.add_provenance:
+                        _props['source'] = self.source
+                        _props['source_url'] = self.source_url
                
                 try:
                     if self.type == 'transcribes to':

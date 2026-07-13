@@ -77,7 +77,8 @@ class EnhancerAtlasAdapter(Adapter):
                         props['chr'] = chr
                         props['start'] = start
                         props['end'] = end
-                    
+                        props['taxon_id'] = self.taxon_id
+
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -105,6 +106,7 @@ class EnhancerAtlasAdapter(Adapter):
                             if self.write_properties:
                                 props['biological_context'] = biological_context
                                 props['score'] = score
+                                props['taxon_id'] = self.taxon_id
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url

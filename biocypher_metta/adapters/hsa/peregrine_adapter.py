@@ -37,8 +37,9 @@ class PEREGRINEAdapter(Adapter):
                  source_file, hgnc_ensembl_map=None,
                  tissue_ontology_map=None, write_properties=None, add_provenance=None, label='enhancer',
                  type='enhancer', delimiter='\t',
-                 chr=None, start=None, end=None, hgnc_processor=None):
+                 chr=None, start=None, end=None, hgnc_processor=None, taxon_id=9606):
 
+        self.taxon_id = taxon_id
         self.enhancers_file = enhancers_file
         self.enhancer_gene_link = enhancer_gene_link
         self.source_file = source_file
@@ -101,6 +102,7 @@ class PEREGRINEAdapter(Adapter):
                     props['start'] = start
                     props['end'] = end
                     props['data_source'] = data_source
+                    props['taxon_id'] = self.taxon_id
 
                     if self.add_provenance:
                         props['source'] = self.source
@@ -147,6 +149,7 @@ class PEREGRINEAdapter(Adapter):
                     props['biological_context'] = self.tissue_ontology_map[tissue_id][0]
                     if score:
                         props['score'] = to_float(score)
+                    props['taxon_id'] = self.taxon_id
 
                     if self.add_provenance:
                         props['source'] = self.source

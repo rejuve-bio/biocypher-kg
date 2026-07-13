@@ -51,12 +51,13 @@ class GenotypePhenotypeAdapter(Adapter):
         'so': 'sequence_type',
     }
 
-    def __init__(self, write_properties, add_provenance, label, dmel_filepath, dmel_fbrf_filepath):
+    def __init__(self, write_properties, add_provenance, label, dmel_filepath, dmel_fbrf_filepath, taxon_id=7227):
         self.dmel_filepath = dmel_filepath
         self.fbrf_to_pmid_pmcid_doi_dict = self.__build_fbrf_to_pmid_pmcid_doi_dict(dmel_fbrf_filepath)
-        self.label = label  
+        self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
         super(GenotypePhenotypeAdapter, self).__init__(write_properties, add_provenance)
 
 
@@ -75,7 +76,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 props['genotype_ids'] = row[1].replace(' ', '_').upper()
                 props['genotype_symbols'] = row[0].replace(' ', '_')                    
                 props['reference'] = f'http://flybase.org/reports/{row[6]}.htm'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -87,7 +88,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 props = {}
                 props['phenotype_ontology_id'] = row[3].replace(':', '_').upper()   # onto: fbbt or fbcv  
                 props['reference'] = f'http://flybase.org/reports/{row[6]}.htm'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -116,7 +117,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 else:
                     props['fb_ref'] = row[6]                     # FBrf# only
                 # props['genotype_phenotype_id'] = f'genotype_phenotype_{id}'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -139,7 +140,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 else:
                     props['fb_ref'] = row[6]                     # FBrf# only
                 # props['genotype_phenotype_id'] = f'genotype_phenotype_{id}'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -159,7 +160,7 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['doi'] = ref['doi']
                 else:
                     props['fb_ref'] = row[6]  
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -217,7 +218,7 @@ class GenotypePhenotypeAdapter(Adapter):
                         props['doi'] = ref['doi']
                     else:
                         props['fb_ref'] = row[6]  
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url                

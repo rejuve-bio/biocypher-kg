@@ -685,6 +685,7 @@ gtex_eqtl:
       filepath: gtex/eqtl/gtex.forgedb.csv.gz
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       label: gtex_variant_gene
+      taxon_id: 9606
   outdir: gtex/eqtl
   nodes: False
   edges: True
@@ -698,6 +699,7 @@ gtex_expression:
       gtex_tissue_ontology_map: ./aux_files/hsa/gtex_tissues_to_ontology_map.pkl
       label: expressed_in
       anatomy_label: gene_expressed_in_anatomy
+      taxon_id: 9606
   outdir: gtex/expression
   nodes: False
   edges: True
@@ -728,6 +730,7 @@ roadmap_chromatin_state:
       start: 53000000
       end: 56000000
       label: chromatin_state
+      taxon_id: 9606
   outdir: roadmap/chromatin_state
   nodes: False
   edges: True
@@ -745,6 +748,7 @@ roadmap_h3_mark:
       start: 53000000
       end: 56000000
       label: histone_modification
+      taxon_id: 9606
   outdir: roadmap/h3_mark
   nodes: False
   edges: True
@@ -762,6 +766,7 @@ roadmap_dhs:
       start: 53000000
       end: 56000000
       label: in_dnase_I_hotspot
+      taxon_id: 9606
   outdir: roadmap/dhs
   nodes: False
   edges: True
@@ -776,6 +781,7 @@ abc:
       dbsnp_rsid_map: None # will be provided by import script
       chr: chr16
       label: activity_by_contact
+      taxon_id: 9606
   outdir: abc
   nodes: False
   edges: True
@@ -789,6 +795,7 @@ cadd:
       dbsnp_rsid_map: None # will be provided by import script
       chr: chr16
       label: snp
+      taxon_id: 9606
   outdir: cadd
   nodes: True
   edges: False
@@ -801,6 +808,7 @@ refseq_closest_gene:
       filepath: refseq/closest_gene.forgedb.csv.gz
       dbsnp_rsid_map: None # will be provided by import script
       label: closest_gene
+      taxon_id: 9606
   outdir: refseq
   nodes: False
   edges: True
@@ -818,6 +826,7 @@ topld_afr:
       start: 53000000
       end:  56000000
       label: in_linkage_disequilibrium_with
+      taxon_id: 9606
   outdir: top_ld/afr
   nodes: False
   edges: True
@@ -834,6 +843,7 @@ topld_eas:
       start: 53000000
       end:  56000000
       label: in_linkage_disequilibrium_with
+      taxon_id: 9606
   outdir: top_ld/EAS
   nodes: False
   edges: True
@@ -850,6 +860,7 @@ topld_eur:
       start: 53000000
       end: 56000000
       label: in_linkage_disequilibrium_with
+      taxon_id: 9606
   outdir: top_ld/EUR
   nodes: False
   edges: True
@@ -866,6 +877,7 @@ topld_sas:
            start: 53000000
            end:  56000000
            label: in_linkage_disequilibrium_with
+           taxon_id: 9606
    outdir: top_ld/SAS
    nodes: False
    edges: True
@@ -990,6 +1002,7 @@ hpo_gene_phenotype:
     args:  
       filepath: hpo/genes_to_phenotype.txt
       # entrez_to_ensembl_map: None #./aux_files/hsa/entrez_ensembl/entrez_ensembl_mapping.pkl
+      taxon_id: 9606
   outdir: human_phenotype_ontology
   nodes: False  
   edges: True
@@ -1001,6 +1014,7 @@ hpo_gene_disease:
     args:
       filepath: hpo/genes_to_disease.txt
       # entrez_to_ensembl_map: None #./aux_files/hsa/entrez_ensembl/entrez_ensembl_mapping.pkl
+      taxon_id: 9606
   outdir: human_phenotype_ontology
   nodes: False
   edges: True
@@ -1097,6 +1111,7 @@ peregrine_enhancer:
       source_file: peregrine/PEREGRINEenhancersources.gz
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       label: enhancer
+      taxon_id: 9606
   outdir: peregrine
   nodes: True
   edges: False
@@ -1112,6 +1127,7 @@ peregrine_enhancer_regulates:
       tissue_ontology_map: ./aux_files/hsa/peregrine_tissues_to_ontology_map.pkl
       type: enhancer to gene association
       label: enhancer_gene
+      taxon_id: 9606
   outdir: peregrine
   nodes: False
   edges: True
@@ -1124,6 +1140,7 @@ dbsuper_super_enhancer:
       filepath: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       label: super_enhancer      
+      taxon_id: 9606
   outdir: dbsuper
   nodes: True
   edges: False
@@ -1137,6 +1154,7 @@ dbsuper_super_enhancer_regulates_gene:
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       type: super enhancer to gene association
       label: super_enhancer_gene
+      taxon_id: 9606
   outdir: dbsuper
   nodes: False
   edges: True
@@ -1148,6 +1166,7 @@ dbsnp_snps:
     args:
       filepath: dbsnp/00-common_all.vcf.gz
       label: snp
+      taxon_id: 9606
   outdir: dbsnp
   nodes: True
   edges: False
@@ -1328,6 +1347,7 @@ motif_diff_tf_snp:
     args:
       filepath: motif_diff/_mono_probNorm_average.diff
       label: tf_snp
+      taxon_id: 9606
   outdir: MotifDiff
   nodes: False
   edges: True
@@ -1514,6 +1534,7 @@ gwas_snp_to_upstream_gene:
     args:
       filepath: gwas/gwas-catalog-download-associations-v1.0-full.tsv
       label: snp_upstream_gene
+      taxon_id: 9606
   outdir: gwas/upstream
   nodes: False
   edges: True
@@ -1525,6 +1546,7 @@ gwas_snp_to_downstream_gene:
     args:
       filepath: gwas/gwas-catalog-download-associations-v1.0-full.tsv
       label: snp_downstream_gene
+      taxon_id: 9606
   outdir: gwas/downstream
   nodes: False
   edges: True
@@ -1536,6 +1558,7 @@ gwas_snp_to_in_gene:
     args:
       filepath: gwas/gwas-catalog-download-associations-v1.0-full.tsv
       label: snp_in_gene
+      taxon_id: 9606
   outdir: gwas/ingene
   nodes: False
   edges: True

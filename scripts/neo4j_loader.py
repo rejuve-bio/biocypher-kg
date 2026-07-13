@@ -149,6 +149,11 @@ def get_neo4j_credentials():
     parser.add_argument('--username', default="neo4j", help='Neo4j username')
     parser.add_argument('--password', default=None, help='Neo4j password (falls back to interactive prompt)')
     parser.add_argument('--env-file', default=None, help='Path to neo4j.env to load connection settings from')
+    parser.add_argument('--csv-base-path', default=None,
+                         help='Absolute host path to prepend to file:/// URIs in the .cypher files. '
+                              'Use when Neo4j\'s import dir is not configured to the output dir '
+                              '(requires apoc.import.file.use_neo4j_config=false). '
+                              'Omit for the default Docker setup where /import is bind-mounted to output-dir.')
 
     # Pre-parse to detect --env-file, then set argparse defaults from it
     pre = argparse.ArgumentParser(add_help=False)
@@ -161,6 +166,7 @@ def get_neo4j_credentials():
             username=env.get('NEO4J_USERNAME', 'neo4j'),
             password=env.get('NEO4J_PASSWORD'),
             output_dir=env.get('NEO4J_OUTPUT_DIR'),
+            csv_base_path=env.get('CSV_BASE_PATH'),
         )
 
     args = parser.parse_args()
@@ -176,7 +182,7 @@ def get_neo4j_credentials():
         sys.exit(1)
     loader.close()
 
-    return args.uri, args.username, password, args.output_dir
+    return args.uri, args.username, password, args.output_dir, args.csv_base_path
 
 def process_output_directory(output_dir):
     output_path = Path(output_dir)
@@ -198,12 +204,12 @@ def _dir_label(dir_path, output_path):
 
 
 def main():
-    neo4j_uri, username, password, output_dir = get_neo4j_credentials()
+    neo4j_uri, username, password, output_dir, csv_base_path = get_neo4j_credentials()
     output_path = Path(output_dir)
     all_start = time.time()
 
     try:
-        loader = Neo4jLoader(neo4j_uri, username, password)
+        loader = Neo4jLoader(neo4j_uri, username, password, csv_base_path=csv_base_path)
         if not loader.connect():
             return
 
