@@ -24,6 +24,8 @@ export default function BuildWizard() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [writerType, setWriterType] = useState<string>("metta");
   const [adapterFilter, setAdapterFilter] = useState<string>("");
+  const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
+  const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
   const [flagValues, setFlagValues] = useState<Record<string, boolean>>({});
 
   const [validating, setValidating] = useState(false);
@@ -60,6 +62,13 @@ export default function BuildWizard() {
     const preferred = usable.find((d) => d.name === "sample") ?? usable[0];
     setSelDataset(preferred ? preferred.name : "");
   }, [datasets]);
+
+  // Prefill dbSNP fields from the selected dataset's species_config defaults.
+  useEffect(() => {
+    const d = datasets.find((x) => x.name === selDataset);
+    setDbsnpCacheRoot(d?.dbsnp_cache_root ?? "");
+    setDbsnpVariant(d?.dbsnp_variant || "common");
+  }, [selDataset, datasets]);
 
   // Load adapters when species/dataset change.
   useEffect(() => {
@@ -115,6 +124,10 @@ export default function BuildWizard() {
       writer_type: writerType,
       // Server decides where output goes: DATA_ROOT/<dated> if set, else repo default.
       output_dir: null,
+      // dbSNP only applies to non-sample runs; sample uses the bundled cache.
+      dbsnp_cache_root:
+        selDataset !== "sample" ? dbsnpCacheRoot.trim() || null : null,
+      dbsnp_variant: selDataset !== "sample" ? dbsnpVariant || null : null,
       write_properties: flagValues.write_properties ?? true,
       add_provenance: flagValues.add_provenance ?? true,
       include_taxon_id: flagValues.include_taxon_id ?? true,
@@ -244,6 +257,35 @@ export default function BuildWizard() {
             </select>
           </label>
         </div>
+
+        {selDataset && selDataset !== "sample" && (
+          <div className="row" style={{ marginTop: 14, alignItems: "flex-start" }}>
+            <label className="field">
+              dbSNP variant
+              <select
+                value={dbsnpVariant}
+                onChange={(e) => setDbsnpVariant(e.target.value)}
+              >
+                <option value="common">common</option>
+                <option value="full">full</option>
+              </select>
+            </label>
+            <label className="field" style={{ flex: 1, minWidth: 300 }}>
+              dbSNP cache path (required)
+              <input
+                type="text"
+                value={dbsnpCacheRoot}
+                onChange={(e) => setDbsnpCacheRoot(e.target.value)}
+                placeholder="/path/to/dbsnp  (root containing common/ and/or full/)"
+                style={{ width: "100%" }}
+              />
+              <span className="field-hint">
+                Required for non-sample runs — the dbSNP mapping cache built by
+                scripts/update_dbsnp.py. The chosen variant subfolder must exist under it.
+              </span>
+            </label>
+          </div>
+        )}
       </div>
 
       <div className="card">

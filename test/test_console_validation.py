@@ -38,6 +38,36 @@ def test_validate_unknown_adapter():
     assert any("Unknown adapters" in e for e in body["static_errors"])
 
 
+def test_validate_full_requires_dbsnp():
+    """Non-sample run without dbSNP cache/variant must be flagged invalid."""
+    r = client.post("/api/console/builds/validate", json={
+        "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
+    })
+    body = r.json()
+    assert body["valid"] is False
+    joined = " ".join(body["static_errors"])
+    assert "dbSNP cache root is required" in joined
+    assert "dbSNP variant is required" in joined
+
+
+def test_validate_full_with_dbsnp_clears_dbsnp_errors():
+    """Providing cache root + variant removes the dbSNP errors (paths may still fail)."""
+    r = client.post("/api/console/builds/validate", json={
+        "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
+        "dbsnp_cache_root": "/tmp/dbsnp", "dbsnp_variant": "common",
+    })
+    joined = " ".join(r.json()["static_errors"])
+    assert "dbSNP" not in joined
+
+
+def test_validate_bad_dbsnp_variant():
+    r = client.post("/api/console/builds/validate", json={
+        "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
+        "dbsnp_cache_root": "/tmp/dbsnp", "dbsnp_variant": "rare",
+    })
+    assert any("must be 'common' or 'full'" in e for e in r.json()["static_errors"])
+
+
 def test_validate_cmd_preview_present():
     r = client.post("/api/console/builds/validate", json={
         "species": "hsa", "dataset": "sample", "include_adapters": ["gencode_gene"],
@@ -61,9 +91,14 @@ def test_validate_sample_passes():
 
 @requires_uv
 def test_validate_full_reports_missing_paths():
-    """Full dataset input files aren't present locally; expect missing paths."""
+    """Full dataset input files aren't present locally; expect missing paths.
+
+    dbSNP cache/variant are supplied so validation gets past the dbSNP requirement
+    and actually runs the --check-only path check.
+    """
     r = client.post("/api/console/builds/validate", json={
         "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
+        "dbsnp_cache_root": "/tmp/dbsnp", "dbsnp_variant": "common",
     })
     body = r.json()
     assert body["valid"] is False

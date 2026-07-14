@@ -120,12 +120,30 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
                      {a.lower() for a in req.include_adapters}]
                 )
 
-    # --- dbSNP soft warning ---
-    if req.dataset != "sample" and not req.dbsnp_cache_root:
-        static_warnings.append(
-            "Non-sample dataset with no dbsnp_cache_root: builds that touch dbSNP "
-            "adapters will fail unless the cache root is set here or in species_config.yaml."
-        )
+    # --- dbSNP requirement for non-sample species-mode runs ---
+    # The pipeline calls _load_dbsnp unconditionally in species mode and hard-exits
+    # for a non-sample run unless BOTH the cache root and a common|full variant are
+    # set (from the request or species_config.yaml). Enforce that up front.
+    if req.species and req.dataset != "sample":
+        try:
+            entry = ci._dataset_entry(req.species, req.dataset)
+        except ci.ConfigError:
+            entry = {}
+        eff_root = (req.dbsnp_cache_root or entry.get("dbsnp_cache_root") or "").strip()
+        eff_variant = (req.dbsnp_variant or entry.get("dbsnp_variant") or "").strip()
+        if not eff_root:
+            static_errors.append(
+                "dbSNP cache root is required for non-sample runs — provide the dbSNP "
+                "cache path (or set dbsnp_cache_root in species_config.yaml)."
+            )
+        if not eff_variant:
+            static_errors.append(
+                "dbSNP variant is required for non-sample runs — choose 'common' or 'full'."
+            )
+        elif eff_variant not in ("common", "full"):
+            static_errors.append(
+                f"dbSNP variant must be 'common' or 'full' (got '{eff_variant}')."
+            )
 
     # --- authoritative path check via --check-only ---
     ran_check_only = False
