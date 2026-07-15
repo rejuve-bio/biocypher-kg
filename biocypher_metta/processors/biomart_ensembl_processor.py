@@ -118,7 +118,8 @@ class BioMartEnsemblProcessor(BaseMappingProcessor):
     def fetch_data(self) -> str:
         logger.info(f"{self.name}: Querying Ensembl BioMart ({self.dataset})...")
 
-        temp_file = Path(tempfile.mktemp(suffix='.tsv'))
+        with tempfile.NamedTemporaryFile(suffix='.tsv', delete=False) as tmp:
+            temp_file = Path(tmp.name)
         try:
             response = requests.get(
                 BIOMART_URL,

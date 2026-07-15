@@ -20,7 +20,7 @@ allele:
       biolink: taxon
       range: biolink:OrganismTaxon
   description: Different versions of the same variant (in a specific  locus) are called
-    alleles[1, 2]. Most commonly used referring to genes.
+    alleles. Most commonly used referring to genes.
   kgx_properties:
     category: biolink:Allele
 
