@@ -25,11 +25,10 @@ class UniprotProteinAdapter(Adapter):
         10116: lambda item: bool(item[0].startswith('Ensembl') and 'ENSRNOT' in item[1]),
     }
 
-    # Index of the cross-reference tuple field that holds the target gene/transcript ID.
-    # Defaults to 1 for all species except C. elegans, where item[3] is the WBGene ID.
-    TRANSLATION_ID_FIELD = {
-        6239: 3,
-    }
+    # Index of the cross-reference tuple field that holds the target transcript ID.
+    # For every supported species, including C. elegans (DR EnsemblMetazoa; <transcript>;
+    # <protein>; <gene>.), item[1] is the transcript ID, so no per-species override is needed.
+    TRANSLATION_ID_FIELD = {}
 
     CURIE_PREFIX = {
         6239:  'WormBase',
