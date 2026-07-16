@@ -1706,7 +1706,7 @@ reaction_to_molecular_function:
       An association between a reaction and a molecular function, indicating that the reaction is involved in the function.
     properties: {}
     kgx_properties:
-      subject_category: "biolink:Pathway"
+      subject_category: "biolink:MolecularActivity"
       object_category: "biolink:MolecularActivity"
       knowledge_level: "knowledge_assertion"
       agent_type: "manual_agent"
