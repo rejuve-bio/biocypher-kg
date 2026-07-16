@@ -99,12 +99,14 @@ class ReactomeAdapter(Adapter):
                     props['pubmed_url'] = pubmed_url
                 yield reaction_id, self.label, props
         elif organism_pathway_prefix == 'R-NUL':
-            # Drosophila only
+            # R-NUL reactions carry no organism-specific prefix; fall back to matching
+            # the species name column against the current taxon's full name.
             props = base_props.copy()
             props['evidence'] = data[4]
             props['reaction_url'] = data[2].replace("PathwayBrowser/#", "content/detail")
             props['taxon_id'] = f'{self.taxon_id}'
-            if self.taxon_id == 7227 and data[5] == 'Drosophila melanogaster' and data[0].startswith('FB'):
+            species_full_name = Adapter.SPECIES_INFO.get(self.taxon_id, {}).get('full_name')
+            if species_full_name and data[5] == species_full_name:
                 yield reaction_id, self.label, props
 
 
