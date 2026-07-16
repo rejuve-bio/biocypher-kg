@@ -59,12 +59,12 @@ dmel:
     dbsnp_variant: ""
 
 cel:
-  sample:
-    adapters_config: config/cel/cel_adapters_config_sample.yaml
-    schema_config: config/cel/cel_schema_config.yaml
-    # Cel does not use dbSNP data.
-    dbsnp_cache_root: ""
-    dbsnp_variant: ""
+  # sample:
+  #   adapters_config: config/cel/cel_adapters_config_sample.yaml
+  #   schema_config: config/cel/cel_schema_config.yaml
+  #   # Cel does not use dbSNP data.
+  #   dbsnp_cache_root: ""
+  #   dbsnp_variant: ""
 
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
@@ -74,11 +74,11 @@ cel:
     dbsnp_variant: ""
 
 mmu:
-  sample:
-    adapters_config: config/mmu/mmu_adapters_config_sample.yaml
-    schema_config: config/mmu/mmu_schema_config.yaml
-    dbsnp_cache_root: ""
-    dbsnp_variant: ""
+  # sample:
+  #   adapters_config: config/mmu/mmu_adapters_config_sample.yaml
+  #   schema_config: config/mmu/mmu_schema_config.yaml
+  #   dbsnp_cache_root: ""
+  #   dbsnp_variant: ""
   full:
     adapters_config: config/mmu/mmu_adapters_config.yaml
     schema_config: config/mmu/mmu_schema_config.yaml
