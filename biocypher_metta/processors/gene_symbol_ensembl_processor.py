@@ -181,6 +181,7 @@ class GeneSymbolEnsemblProcessor(BaseMappingProcessor):
 
         header_seen = False
         row_count = 0
+        rows = []
 
         for line in raw_data.split('\n'):
             line = line.strip()
@@ -204,12 +205,18 @@ class GeneSymbolEnsemblProcessor(BaseMappingProcessor):
                 continue
 
             row_count += 1
+            rows.append((ensembl_gene, gene_name, synonym))
 
-            # setdefault: current symbol wins over synonym if there's a collision
-            if gene_name:
-                symbol_to_ensembl.setdefault(gene_name, ensembl_gene)
+        # Two passes so a current symbol always wins over a synonym on collision,
+        # regardless of which row the BioMart dump happens to list first: synonyms
+        # are filled in with setdefault (first-wins, no better tiebreaker exists),
+        # then every current gene_name is applied with a direct overwrite.
+        for ensembl_gene, gene_name, synonym in rows:
             if synonym:
                 symbol_to_ensembl.setdefault(synonym, ensembl_gene)
+        for ensembl_gene, gene_name, synonym in rows:
+            if gene_name:
+                symbol_to_ensembl[gene_name] = ensembl_gene
 
         logger.info(f"{self.name}: Parsed {row_count:,} BioMart rows")
         logger.info(f"{self.name}: symbol→Ensembl gene: {len(symbol_to_ensembl):,} entries")
