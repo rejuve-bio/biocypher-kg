@@ -66,6 +66,9 @@ class EntrezEnsemblProcessor(BaseMappingProcessor):
             last_update = datetime.fromisoformat(version_info["timestamp"])
             time_since_update = datetime.now() - last_update
             if time_since_update <= self.update_interval:
+                if version_info.get('entries', -1) == 0:
+                    logger.warning(f"{self.name}: Cached mapping is empty. Forcing update.")
+                    return True
                 days = time_since_update.days
                 hours = time_since_update.seconds // 3600
                 logger.info(
