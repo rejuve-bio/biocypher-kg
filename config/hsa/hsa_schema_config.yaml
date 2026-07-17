@@ -636,32 +636,6 @@ do subclass of:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
 
-# Evidence & Conclusion Ontology (ECO)
-evidence:
-  is_a: ontology term
-  represented_as: node
-  input_label: evidence
-  mixins: [biolink:OntologyClass]
-  biolink_category: "biolink:OntologyClass"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:OntologyClass"
-
-eco subclass of:
-  is_a: subclass of
-  inherit_properties: true
-  represented_as: edge
-  input_label: eco_subclass_of
-  output_label: is_a
-  biolink_predicate: "biolink:subclass_of"
-  source: evidence
-  target: evidence
-  kgx_properties:
-    subject_category: "biolink:OntologyClass"
-    object_category: "biolink:OntologyClass"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
 hsapdv subclass of:
   is_a: subclass of
   inherit_properties: true
