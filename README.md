@@ -43,6 +43,18 @@ make run-direct OUTPUT_DIR=./output \
                ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
                SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
                INPUT_DIR=/custom/path/to/hsa
+
+# Run only a subset of adapters (exact names, space-separated):
+make run-direct OUTPUT_DIR=./output \
+               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
+               INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot"
+
+# Run only a subset of adapters (wildcard — matches all adapters starting with 'uniprot'):
+make run-direct OUTPUT_DIR=./output \
+               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
+               INCLUDE_ADAPTERS="uniprot*"
 ```
 ### Interactive Mode Example
 When you run `make run`, you'll see:
@@ -107,9 +119,13 @@ make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml
 make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
                  INPUT_DIR=/custom/path/to/hsa
 
-# Check only specific adapters
+# Check only specific adapters (exact names)
 make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
                  INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot bgee_gene_expressed_in_anatomical_entity"
+
+# Check only specific adapters (wildcard — all adapters whose name starts with 'uniprot')
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+                 INCLUDE_ADAPTERS="uniprot*"
 
 # Directly via the CLI
 uv run python create_knowledge_graph.py \
@@ -173,11 +189,11 @@ Relative paths starting with `./` or `../` (e.g. `./aux_files/`, `./samples/`) a
 
 ## BioCypher Knowledge Graph CLI Tool (Option 2)
 
-A user-friendly command line interface for generating knowledge graphs using BioCypher, with support for both Human and Drosophila melanogaster (Fly) data.
+A user-friendly command line interface for generating knowledge graphs using BioCypher, with support for multiple species: Human, Drosophila melanogaster (Fly), Mus musculus (Mouse), Rattus norvegicus (Rat), and Caenorhabditis elegans (Worm).
 
 ### Features
 
-- 🧬 Human and 🪰 Fly organism support  
+- 🧬 Multi-species support: Human (`hsa`), Fly (`dmel`), Mouse (`mmu`), Rat (`rno`), and C. elegans (`cel`)  
 - ⚡ Default configurations for quick start  
 - 🛠️ Custom configuration options  
 - 📊 Interactive menu system with rich visual interface  
@@ -203,10 +219,13 @@ uv run python biocypher_cli/cli.py
 # biocypher-kg/
 # ├── biocypher_cli/            # CLI source code
 # │   └── cli.py
-# ├── config/                   # Configuration files or (Custom Config files)
-# │   ├── adapters_config.yaml/adapters_config_sample.yaml
-# │   ├── dmel_adapters_config.yaml/dmel_adapters_config_sample.yaml
-# │   └── biocypher_config.yaml
+# ├── config/                   # Configuration files (per species)
+# │   ├── hsa/                  # Human
+# │   ├── dmel/                 # Drosophila melanogaster
+# │   ├── mmu/                  # Mus musculus (Mouse)
+# │   ├── rno/                  # Rattus norvegicus (Rat)
+# │   ├── cel/                  # C. elegans
+# │   └── species_config.yaml
 # ├── aux_files/                # Auxiliary data files (or Custom config files)
 # │   ├── gene_mapping.pkl/abc_tissues_to_ontology_map.pkl
 # │   └── sample_dbsnp_rsids.pkl
@@ -259,11 +278,14 @@ The project template is structured as follows:
 │   └── version_manager.py
 │
 ├── config
-│   ├── adapters_config_sample.yaml
+│   ├── hsa/                       # Human configs
+│   ├── dmel/                      # Drosophila melanogaster configs
+│   ├── mmu/                       # Mus musculus (Mouse) configs
+│   ├── rno/                       # Rattus norvegicus (Rat) configs
+│   ├── cel/                       # C. elegans configs
+│   ├── species_config.yaml        # Per-species defaults (adapters, schema, dbSNP)
 │   ├── biocypher_config.yaml
-│   ├── biocypher_docker_config.yaml
-│   ├── download.yaml
-│   └── schema_config.yaml
+│   └── biocypher_docker_config.yaml
 │
 │ # Downloading data
 ├── biocypher_dataset_downloader/
@@ -291,61 +313,95 @@ The project supports multiple output formats for the knowledge graph:
 
 ### Neo4j Deployment & Loading
 
-Configure everything in `docker/neo4j.env` (image, ports, auth, data paths, memory), then use the Makefile targets:
+#### 1. Configure `docker/neo4j.env`
+
+Copy the example file and fill in your values:
 
 ```bash
-# Start Neo4j Docker container
-make neo4j-up
-
-# Load ALL data directly — no version checking (use for first run or fresh container)
-make neo4j-load-direct
-
-# Load incrementally — only reloads datasets whose files have changed
-make neo4j-load
-
-# Other lifecycle commands
-make neo4j-status
-make neo4j-logs
-make neo4j-down
-
-# Override the env file
-make neo4j-up NEO4J_ENV_FILE=docker/my-custom.env
+cp docker/neo4j.env.example docker/neo4j.env
 ```
 
-To run the loaders directly:
+Key settings:
+
+```ini
+NEO4J_OUTPUT_DIR=/path/to/output/<species>   # e.g. /mnt/hdd_1/biocypher-kg/output/cel
+NEO4J_AUTH=neo4j/your_password
+NEO4J_BOLT_PORT=7887
+NEO4J_HTTP_PORT=7674
+```
+
+> `NEO4J_OUTPUT_DIR` is mounted read-only as `/import` inside the container.
+> Cypher files use `file:///subdir/file.csv`, which Neo4j resolves against `/import`.
+> APOC is pre-configured to allow this (`apoc.import.file.use_neo4j_config=false`).
+
+#### 2. Start the container
+
+```bash
+make neo4j-up                                   # start with fresh volumes
+make neo4j-up NEO4J_ENV_FILE=docker/my.env     # use a custom env file
+```
+
+#### 3. Load data
+
+```bash
+# First run or after regenerating output — loads everything
+make neo4j-load-direct
+
+# Subsequent runs — only reloads files that changed (hash-based)
+make neo4j-load
+```
+
+#### 4. Other lifecycle commands
+
+```bash
+make neo4j-status    # show container status
+make neo4j-logs      # stream container logs
+make neo4j-down      # stop and remove container
+```
+
+#### Running the loader directly
 
 ```bash
 # Direct load (no versioning) — using an env file
-python scripts/neo4j_loader.py --env-file docker/neo4j.env
+uv run python scripts/neo4j_loader.py --env-file docker/neo4j.env
 
-# Versioned/incremental load — using an env file
-python kg-service/neo4j_loader.py --env-file docker/neo4j.env
-
-# Versioned load — explicit args
-python kg-service/neo4j_loader.py \
-  --output-dir <path_to_neo4j_output> \
-  --archive-dir <path_to_archive_dir> \
+# Explicit args
+uv run python scripts/neo4j_loader.py \
+  --output-dir /path/to/output/cel \
   --uri bolt://localhost:7887 \
   --username neo4j \
   --password <password>
 ```
 
 #### Loader options
+
 | Flag | Env var | Description |
 |---|---|---|
 | `--env-file` | — | Load all settings from a `neo4j.env` file |
 | `--output-dir` | `NEO4J_OUTPUT_DIR` | Directory with generated CSV + Cypher files |
-| `--archive-dir` | `NEO4J_ARCHIVE_DIR` | Archive directory for version management |
-| `--uri` | `NEO4J_URI` | Neo4j bolt URI |
+| `--uri` | `NEO4J_URI` | Neo4j bolt URI (default: `bolt://localhost:7687`) |
 | `--username` | `NEO4J_USERNAME` | Neo4j username (default: `neo4j`) |
 | `--password` | `NEO4J_PASSWORD` | Neo4j password |
-| `--import-batch-size` | `NEO4J_IMPORT_BATCH_SIZE` | APOC batch size (default: `50000`) |
-| `--import-dir` | — | Absolute path prefix for `file:///` URLs (non-Docker use only) |
 
-**Notes:**
-- The loader detects changed files via hash comparison and only reloads what changed.
-- Edges use `CREATE` (not `MERGE`) — the loader surgically deletes changed edges before reloading, so the existence check is unnecessary and very slow on large files.
-- Each `KGVersion` node records `source_provenance_json` — the upstream version, URL, and checksums of every dataset it was built from. See [Dataset Versioning & Provenance](#-dataset-versioning--provenance).
+#### Manual `docker run` (without docker compose)
+
+If you prefer to start the container manually instead of `make neo4j-up`, you **must** mount the output directory as `/var/lib/neo4j/import` and enable APOC file access:
+
+```bash
+docker run -d \
+  -p <http_port>:7474 \
+  -p <bolt_port>:7687 \
+  --name neo4j_bio \
+  -v /path/to/output/<species>:/var/lib/neo4j/import:ro \
+  -e NEO4J_AUTH=neo4j/<password> \
+  -e NEO4JLABS_PLUGINS='["apoc"]' \
+  -e NEO4J_apoc_import_file_enabled=true \
+  -e NEO4J_apoc_import_file_use__neo4j__config=false \
+  -e NEO4J_dbms_security_procedures_unrestricted="apoc.*" \
+  neo4j:5.21
+```
+
+Without the `/var/lib/neo4j/import` mount, `LOAD CSV` calls in the Cypher files will fail with `NoSuchFileException`.
 
 ## ⬇ Downloading data
 The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.
@@ -374,6 +430,15 @@ make download-direct OUTPUT_DIR=./input SOURCE=uniprot
 
 # Download all sources for Drosophila
 make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
+
+# Download all sources for Mouse
+make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/mmu/mmu_data_source_config.yaml
+
+# Download all sources for Rat
+make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/rno/rno_data_source_config.yaml
+
+# Download all sources for C. elegans
+make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/cel/cel_data_source_config.yaml
 ```
 
 ### Without Make
@@ -425,7 +490,7 @@ uv run python -m biocypher_dataset_downloader.versioning.cli --species all --ver
 
 ## 🧬 dbSNP Cache
 
-The pipeline requires a pre-built dbSNP cache for human (`hsa`) runs. Sample runs use the bundled cache at `aux_files/hsa/sample_dbsnp` automatically.
+The pipeline requires a pre-built dbSNP cache only for human (`hsa`) runs. The pipeline automatically detects whether any adapter needs dbSNP and skips loading it for species that don't use it (`dmel`, `mmu`, `rno`, `cel`). Sample runs use the bundled cache at `aux_files/hsa/sample_dbsnp` automatically.
 
 ### Bizon server (pre-built cache available)
 
@@ -460,4 +525,14 @@ hsa:
   full:                          # dataset type (sample vs full run)
     dbsnp_cache_root: /path/to/dbsnp/cache
     dbsnp_variant: common        # SNP variant subset: "common" (~1-2 GB) or "full" (~35-50 GB)
+```
+
+Non-human species (`dmel`, `mmu`, `rno`, `cel`) do not require dbSNP — leave `dbsnp_cache_root` and `dbsnp_variant` empty and the pipeline will skip the dbSNP load step automatically:
+```yaml
+mmu:
+  full:
+    adapters_config: config/mmu/mmu_adapters_config.yaml
+    schema_config: config/mmu/mmu_schema_config.yaml
+    dbsnp_cache_root: ""
+    dbsnp_variant: ""
 ```

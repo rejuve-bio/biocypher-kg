@@ -1,5 +1,944 @@
+input_dir: /mnt/hdd_1/biocypher-kg/input/mmu
 
-emapa:
+bgee_gene_expressed_in_anatomical_entity:
+  adapter:
+    module: biocypher_metta.adapters.bgee_adapter
+    cls: BgeeAdapter
+    args:
+      filepath: bgee/Mus_musculus_expr_simple_all_conditions.tsv.gz
+      label: expressed_in
+      anatomy_label: gene_expressed_in_anatomy
+      developmental_stage_label: gene_expressed_in_developmental_stage
+      taxon_id: 10090
+  outdir: bgee
+  nodes: False
+  edges: True
+
+rna_central_non_coding_rna:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: rna_central/mus_musculus.GRCm39.bed.gz
+      rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
+      label: non_coding_rna
+      type: non_coding_rna
+      taxon_id: 10090
+  outdir: rna_central
+  nodes: True
+  edges: False
+
+rna_central_non_coding_rna_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: rna_central/mus_musculus.GRCm39.bed.gz
+      rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
+      type: biological process rna
+      label: biological_process_rna
+      taxon_id: 10090
+  outdir: rna_central
+  nodes: False
+  edges: True
+
+rna_central_non_coding_rna_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: rna_central/mus_musculus.GRCm39.bed.gz
+      rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
+      type: molecular function rna
+      label: molecular_function_rna
+      taxon_id: 10090
+  outdir: rna_central
+  nodes: False
+  edges: True
+
+rna_central_non_coding_rna_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.rna_central_adapter
+    cls: RNACentralAdapter
+    args:
+      filepath: rna_central/mus_musculus.GRCm39.bed.gz
+      rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
+      type: cellular component rna
+      label: cellular_component_rna
+      taxon_id: 10090
+  outdir: rna_central
+  nodes: False
+  edges: True
+
+epd_promoter:
+  adapter:
+    module: biocypher_metta.adapters.epd_adapter
+    cls: EPDAdapter
+    args:
+      filepath: epd/Mm_EPDnew.bed.gz
+      label: promoter
+      type: promoter
+      taxon_id: 10090
+  outdir: epd
+  nodes: True
+  edges: False
+
+epd_promoter_regulates_gene:
+  adapter:
+    module: biocypher_metta.adapters.epd_adapter
+    cls: EPDAdapter
+    args:
+      filepath: epd/Mm_EPDnew.bed.gz
+      label: promoter_gene
+      type: promoter_gene
+      taxon_id: 10090
+  outdir: epd
+  nodes: False
+  edges: True
+
+alliance_gene_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_orthology_adapter
+    cls: AllianceGeneOrthologyAdapter
+    args:
+      filepath: alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 10090
+      label: orthologs_genes
+  outdir: alliance/orthology
+  nodes: False
+  edges: True
+
+alliance_gene_disease_biomarker_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 10090
+      label: biomarker_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_implicated_via_orthology:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 10090
+      label: implicated_via_orthology
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_implicated_in:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 10090
+      label: is_implicated_in
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_model_of:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 10090
+      label: is_model_of
+  outdir: disease
+  nodes: False
+  edges: True
+
+alliance_gene_disease_is_marker_for:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 10090
+      label: is_marker_for
+  outdir: disease
+  nodes: False
+  edges: True
+
+gencode_gene:
+  adapter:
+    module: biocypher_metta.adapters.gencode_gene_adapter
+    cls: GencodeGeneAdapter
+    args:
+      filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz      
+      label: gene
+      taxon_id: 10090
+  outdir: gencode/gene
+  nodes: True
+  edges: False
+
+gencode_transcripts:
+  adapter:
+    module: biocypher_metta.adapters.gencode_transcript_adapter
+    cls: GencodeTranscriptAdapter
+    args:
+      filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
+      type: transcript
+      label: transcript
+      taxon_id: 10090
+  outdir: gencode/transcript
+  nodes: True
+  edges: False
+
+gencode_transcribes_to:
+  adapter:
+    module: biocypher_metta.adapters.gencode_transcript_adapter
+    cls: GencodeTranscriptAdapter
+    args:
+      filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
+      type: transcribes to
+      label: transcribes_to
+      taxon_id: 10090
+  outdir: gencode/gene
+  nodes: False
+  edges: True
+
+gencode_exon:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
+      target_type: None
+      label: exon
+      taxon_id: 10090
+  outdir: gencode/exon
+  nodes: True
+  edges: False
+
+gencode_exon_part_of_transcript:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
+      label: part_of_transcript
+      target_type: transcript
+      taxon_id: 10090
+  outdir: gencode/exon
+  nodes: False
+  edges: True
+
+gencode_exon_part_of_gene:
+  adapter:
+    module: biocypher_metta.adapters.gencode_exon_adapter
+    cls: GencodeExonAdapter
+    args:
+      filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
+      label: part_of_gene
+      target_type: gene
+      taxon_id: 10090
+  outdir: gencode/exon
+  nodes: False
+  edges: True
+
+gaf_biological_process_gene_product:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: gaf/mgi.gaf.gz
+      gaf_type: mgi
+      label: biological_process_gene_product
+      taxon_id: 10090
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_molecular_function_gene_product:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: gaf/mgi.gaf.gz
+      gaf_type: mgi
+      label: molecular_function_gene_product
+      taxon_id: 10090
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_product_part_of:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: gaf/mgi.gaf.gz
+      gaf_type: mgi
+      label: cellular_component_gene_product_part_of
+      taxon_id: 10090
+  outdir: gaf
+  nodes: False
+  edges: True
+
+gaf_cellular_component_gene_product_located_in:
+  adapter:
+    module: biocypher_metta.adapters.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: gaf/mgi.gaf.gz
+      gaf_type: mgi
+      label: cellular_component_gene_product_located_in
+      taxon_id: 10090
+  outdir: gaf
+  nodes: False
+  edges: True
+
+coxpresdb_coexpression:
+  adapter:
+    module: biocypher_metta.adapters.coxpresdb_adapter
+    cls: CoxpresdbAdapter
+    args:
+      filepath: coxpressdb/
+      label: coexpressed_with
+      taxon_id: 10090
+  outdir: coxpressdb
+  nodes: False
+  edges: True
+
+reactome_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
+    args:
+      filepath: reactome/ReactomePathways.txt
+      pubmed_map_path: reactome/ReactionPMIDS.txt
+      label: pathway
+      taxon_id: 10090
+  outdir: reactome
+  nodes: True
+  edges: False
+
+reactome_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_adapter
+    cls: ReactomeAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      pubmed_map_path: reactome/ReactionPMIDS.txt
+      label: reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: True
+  edges: False
+
+reactome_reaction_to_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/reactome_reaction_exporter_All_species.txt
+      label: reaction_to_pathway
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_input_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: reactome/reactome_reaction_exporter_All_species.txt
+      label: enables
+      pathway_label: protein_enables_pathway
+      reaction_label: protein_enables_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_output_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: reactome/reactome_reaction_exporter_All_species.txt
+      label: produced_by
+      pathway_label: protein_produced_by_pathway
+      reaction_label: protein_produced_by_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_catalyst_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: reactome/reactome_reaction_exporter_All_species.txt
+      label: regulates
+      pathway_label: protein_regulates_pathway
+      reaction_label: protein_regulates_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_negative_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: reactome/reactome_reaction_exporter_All_species.txt
+      label: negatively_regulates
+      pathway_label: protein_negatively_regulates_pathway
+      reaction_label: protein_negatively_regulates_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_positive_role_protein_to_reaction_or_pathway:
+  adapter:
+    module: biocypher_metta.adapters.reactome_inference_edges_adapter
+    cls: ReactomeInferenceEdgesAdapter
+    args:
+      filepath: reactome/reactome_reaction_exporter_All_species.txt
+      label: positively_regulates
+      pathway_label: protein_positively_regulates_pathway
+      reaction_label: protein_positively_regulates_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_genes_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2Reactome_All_Levels.txt
+      label: genes_pathways
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: reactome/reactome.all_species.interactions.tab-delimited.txt
+      label: interacts_with
+      taxon_id: 10090
+  outdir: reactome/ppi
+  nodes: False
+  edges: True
+
+reactome_protein_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2Reactome_All_Levels.txt
+      label: protein_pathways
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_transcript_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2Reactome_All_Levels.txt
+      label: transcript_pathways
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_gene_or_gene_product_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      label: gene_or_gene_product_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_protein_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      label: protein_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_transcript_reaction:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/Ensembl2ReactomeReactions.txt
+      label: transcript_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_chebi_small_molecule_to_pathways:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ChEBI2Reactome_All_Levels.txt
+      label: small_molecule_to_pathway
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_chebi_small_molecule_to_reactions:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ChEBI2ReactomeReactions.txt
+      label: small_molecule_to_reaction
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_parent_pathway_of:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ReactomePathwaysRelation.txt
+      label: parent_pathway_of
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+reactome_child_pathway_of:
+  adapter:
+    module: biocypher_metta.adapters.reactome_edges_adapter
+    cls: ReactomeEdgesAdapter
+    args:
+      filepath: reactome/ReactomePathwaysRelation.txt
+      label: child_pathway_of
+      taxon_id: 10090
+  outdir: reactome
+  nodes: False
+  edges: True
+
+uniprot_sprot:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein
+      taxon_id: 10090
+  outdir: uniprot/uniprot
+  nodes: True
+  edges: False
+
+uniprot_sprot_translates_to:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      type: translates to
+      label: translates_to
+      taxon_id: 10090
+  outdir: uniprot/uniprot
+  nodes: False
+  edges: True
+
+uniprot_dbxref_bgee_gene:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_gene
+      dbxref: BGEE
+      taxon_id: 10090
+  outdir: uniprot/protein_has_xref_gene
+  nodes: False
+  edges: True
+
+uniprot_dbxref_ensembl_gene:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_gene
+      dbxref: ENSEMBL
+      taxon_id: 10090
+  outdir: uniprot/protein_has_xref_gene
+  nodes: False
+  edges: True
+
+uniprot_dbxref_ensembl_transcript:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_transcript
+      dbxref: ENSEMBL
+      taxon_id: 10090
+  outdir: uniprot/protein_has_xref_transcript
+  nodes: False
+  edges: True
+
+uniprot_dbxref_ensembl_protein:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_protein
+      dbxref: ENSEMBL
+      taxon_id: 10090
+  outdir: uniprot/protein_has_xref_protein
+  nodes: False
+  edges: True
+
+uniprot_dbxref_string_protein:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_protein
+      dbxref: STRING
+      taxon_id: 10090
+  outdir: uniprot/has_xref_protein
+  nodes: False
+  edges: True
+
+uniprot_dbxref_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_biological_process
+      dbxref: GO
+      taxon_id: 10090
+  outdir: uniprot/has_xref_biological_process
+  nodes: False
+  edges: True
+
+uniprot_dbxref_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_cellular_component
+      dbxref: GO
+      taxon_id: 10090
+  outdir: uniprot/has_xref_cellular_component
+  nodes: False
+  edges: True
+
+uniprot_dbxref_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_molecular_function
+      dbxref: GO
+      taxon_id: 10090
+  outdir: uniprot/has_xref_molecular_function
+  nodes: False
+  edges: True
+
+uniprot_has_xref_catalytic_activity:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_catalytic_activity
+      taxon_id: 10090
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_catalytic_activity
+  nodes: False
+  edges: True
+
+uniprot_has_xref_cofactor:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_cofactor
+      taxon_id: 10090
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_cofactor
+  nodes: False
+  edges: True
+
+uniprot_has_xref_binding_site_ligand:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: protein_has_xref_binding_site_ligand
+      taxon_id: 10090
+      dbxref: CHEBI
+  outdir: uniprot/has_xref_binding_site_ligand
+  nodes: False
+  edges: True
+
+uniprot_chebi_part_of_chebi:
+  adapter:
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
+    args:
+      filepath: uniprot/uniprot_sprot_rodents.dat.gz
+      label: chemical_substance_part_of_chemical_substance
+      taxon_id: 10090
+      dbxref: CHEBI
+  outdir: uniprot/chebi_part_of
+  nodes: False
+  edges: True
+
+tflink_tf_gene:
+  adapter:
+    module: biocypher_metta.adapters.tflink_adapter
+    cls: TFLinkAdapter
+    args:
+      filepath: tflink/TFLink_Mus_musculus_interactions_All_simpleFormat_v1.0.tsv.gz
+      label: tf_gene
+      taxon_id: 10090
+  outdir: tflink
+  nodes: False
+  edges: True
+
+string_ppi:
+  adapter:
+    module: biocypher_metta.adapters.string_ppi_adapter
+    cls: StringPPIAdapter
+    args:
+      filepath: string/10090.protein.links.v12.0.txt.gz
+      label: interacts_with
+      taxon_id: 10090
+  outdir: string
+  nodes: False
+  edges: True
+
+string_coexpression:
+  adapter:
+    module: biocypher_metta.adapters.string_coexpression_adapter
+    cls: StringCoexpressionAdapter
+    args:
+      filepath: string/10090.protein.links.detailed.v12.0.txt.gz
+      label: protein_coexpressed_with
+      coexpression_threshold: 400
+      taxon_id: 10090
+  outdir: string/coexpression
+  nodes: False
+  edges: True
+
+go_biological_process:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: biological_process
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/biological_process
+  nodes: True
+  edges: False
+
+go_biological_process_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: biological_process_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/biological_process
+  nodes: False
+  edges: True
+
+go_molecular_function:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: molecular_function
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/molecular_function
+  nodes: True
+  edges: False
+
+go_molecular_function_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: molecular_function_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/molecular_function
+  nodes: False
+  edges: True
+
+go_cellular_component:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: node
+      label: cellular_component
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/cellular_component
+  nodes: True
+  edges: False
+
+go_cellular_component_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      type: edge
+      label: cellular_component_subclass_of
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: gene_ontology/cellular_component
+  nodes: False
+  edges: True
+
+# so_sequence_ontology:
+#   adapter:
+#     module: biocypher_metta.adapters.sequence_ontology_adapter
+#     cls: SequenceOntologyAdapter
+#     args:
+#       ontology: 'so'
+#       type: node
+#       dry_run: False
+#       add_description: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: sequence_type
+#   nodes: True
+#   edges: False
+
+# so_sequence_subclass_of:
+#   adapter:
+#     module: biocypher_metta.adapters.sequence_ontology_adapter
+#     cls: SequenceOntologyAdapter
+#     args:
+#       ontology: 'so'
+#       label: so_subclass_of
+#       type: edge
+#       dry_run: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: sequence_type
+#   nodes: False
+#   edges: True
+
+do_disease_ontology:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: disease
+  nodes: True
+  edges: False
+
+do_disease_do_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      label: do_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: disease
+  nodes: False
+  edges: True
+
+chebi_ontology:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: small_molecule
+  nodes: True
+  edges: False
+
+chebi_chebi_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.chebi_ontology_adapter
+    cls: ChEBIAdapter
+    args:
+      ontology: 'chebi'
+      label: chebi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: small_molecule
+  nodes: False
+  edges: True
+
+emapa_anatomy:
   adapter:
     module: biocypher_metta.adapters.mmu.emapa_adapter
     cls: EmapaAdapter
@@ -25,5 +964,174 @@ emapa_subclass_of:
       dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: emapa
+  nodes: False
+  edges: True
+
+mmusdv_development_ontology:
+  adapter:
+    module: biocypher_metta.adapters.mmu.mmusdv_adapter
+    cls: MmusDvAdapter
+    args:
+      ontology: 'mmus_dv'
+      type: node
+      label: developmental_stage
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: dev_stage
+  nodes: True
+  edges: False
+
+mmusdv_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.mmu.mmusdv_adapter
+    cls: MmusDvAdapter
+    args:
+      ontology: 'mmus_dv'
+      label: mmusdv_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: dev_stage
+  nodes: False
+  edges: True
+
+uberon:
+  adapter:
+    module: biocypher_metta.adapters.uberon_adapter
+    cls: UberonAdapter
+    args:
+      ontology: "uberon"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: uberon
+  nodes: True
+  edges: False
+
+uberon_anatomy_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.uberon_adapter
+    cls: UberonAdapter
+    args:
+      ontology: "uberon"
+      type: edge
+      dry_run: False
+      label: anatomy_subclass_of
+      cache_dir: ./ontology_dataset_cache
+  outdir: uberon
+  nodes: False
+  edges: True
+
+# clo_cell_line_ontology:
+#   adapter:
+#     module: biocypher_metta.adapters.cell_line_ontology_adapter
+#     cls: CellLineOntologyAdapter
+#     args:
+#       ontology: "clo"
+#       type: node
+#       dry_run: False
+#       add_description: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: cell_line_ontology
+#   nodes: True
+#   edges: False
+
+# clo_subclass_of:
+#   adapter:
+#     module: biocypher_metta.adapters.cell_line_ontology_adapter
+#     cls: CellLineOntologyAdapter
+#     args:
+#       ontology: "clo"
+#       label: clo_subclass_of
+#       type: edge
+#       dry_run: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: cell_line_ontology
+#   nodes: False
+#   edges: True
+
+# clo_cell_line_is_a_cell_type:
+#   adapter:
+#     module: biocypher_metta.adapters.cell_line_ontology_adapter
+#     cls: CellLineOntologyAdapter
+#     args:
+#       ontology: "clo"
+#       label: cell_line_is_a_cell_type
+#       type: edge
+#       dry_run: False
+#       cache_dir: ./ontology_dataset_cache
+#   outdir: cell_line_ontology
+#   nodes: False
+#   edges: True
+
+cl_cell_ontology:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: True
+  edges: False
+
+cl_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cl_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cl_capable_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cl_capable_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cl_part_of:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cl_part_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
+  nodes: False
+  edges: True
+
+cl_cell_type_part_of_tissue:
+  adapter:
+    module: biocypher_metta.adapters.cell_ontology_adapter
+    cls: CellOntologyAdapter
+    args:
+      ontology: "cl"
+      label: cell_type_part_of_tissue
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: cell_ontology
   nodes: False
   edges: True

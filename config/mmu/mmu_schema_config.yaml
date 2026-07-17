@@ -1,2 +1,19 @@
 Title: BioCypher graph schema configuration file (Biolink-adapted for mmu)
+# ---
+# "Named Things"
+# ---
 
+mmusdv subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: mmusdv_subclass_of
+  output_label: is_a
+  biolink_predicate: "biolink:subclass_of"
+  source: developmental stage
+  target: developmental stage
+  kgx_properties:
+    subject_category: "biolink:LifeStage"
+    object_category: "biolink:LifeStage"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"

@@ -19,8 +19,9 @@ class CADDAdapter(Adapter):
     """
     def __init__(self, filepath, dbsnp_rsid_map,
                  write_properties, add_provenance,  label,
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None, taxon_id=9606):
         self.file_path = filepath
+        self.taxon_id = taxon_id
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
@@ -49,7 +50,8 @@ class CADDAdapter(Adapter):
                         if self.write_properties:
                             _props = {
                                 'raw_cadd_score': float(row[5]),
-                                'phred_score': float(row[6])
+                                'phred_score': float(row[6]),
+                                'taxon_id': self.taxon_id
                             }
                             if self.add_provenance:
                                 _props['source'] = self.source

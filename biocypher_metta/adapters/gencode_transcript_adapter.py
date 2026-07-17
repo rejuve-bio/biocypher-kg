@@ -35,10 +35,6 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 
 
 class GencodeTranscriptAdapter(Adapter):
-    CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL'
-    }
     ALLOWED_TYPES = ['transcript',
                      'transcribes to', ]
     ALLOWED_LABELS = ['transcript',
@@ -91,7 +87,11 @@ class GencodeTranscriptAdapter(Adapter):
         self.taxon_id = taxon_id
 
         self.source = 'GENCODE'
-        self.version = 'v44'
+        self.version = 'v49'                                # this should be exttracted from the file
+        version = str(filepath).split('/')[-1]
+        version = version.split('.')[1]
+        if version.startswith('v'):
+            self.version = version
         self.source_url = 'https://www.gencodegenes.org/'
 
         super(GencodeTranscriptAdapter, self).__init__(write_properties, add_provenance)
@@ -133,6 +133,7 @@ class GencodeTranscriptAdapter(Adapter):
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as input:
             not_processed = 0
+            total = 0
             for line in input:
                 if line.startswith('#'):
                     continue
@@ -141,9 +142,10 @@ class GencodeTranscriptAdapter(Adapter):
                 if data_line[GencodeTranscriptAdapter.INDEX['type']] != 'transcript':
                     continue
 
+                total += 1
                 data = data_line[:GencodeTranscriptAdapter.INDEX['info']]
                 info = self.parse_info_metadata(data_line[GencodeTranscriptAdapter.INDEX['info']:])
-                
+
                 # Skip if we don't want to keep this transcript
                 if not self.should_keep_transcript(info.get('transcript_type', ''), info.get('tags', [])):
                     continue
@@ -155,11 +157,11 @@ class GencodeTranscriptAdapter(Adapter):
                 gene_key = f"{info['gene_id'].split('.')[0]}"
                 if info['gene_id'].endswith('_PAR_Y'):
                     gene_key = gene_key + '_PAR_Y'
-                
+
                 chr = data[GencodeTranscriptAdapter.INDEX['chr']]
                 start = int(data[GencodeTranscriptAdapter.INDEX['coord_start']])
                 end = int(data[GencodeTranscriptAdapter.INDEX['coord_end']])
-            
+
                 props = {}
                 try:
                     if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
@@ -168,8 +170,9 @@ class GencodeTranscriptAdapter(Adapter):
                                 transcript_type_val = info.get('transcript_type')
                                 props = {
                                     'transcript_id': info['transcript_id'].upper(),
-                                    'transcript_name': info['transcript_name'],
+                                    'transcript_name': info.get('transcript_name', 'not assigned_by_authority'),
                                     'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],
+                                    'taxon_id': self.taxon_id,
                                 }
 
                                 if self.add_provenance:
@@ -178,21 +181,22 @@ class GencodeTranscriptAdapter(Adapter):
 
                             yield transcript_key, self.label, props
                 except Exception as e:
-                    print(f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-                    print(f'Error: {str(e)}')
+                    # print(f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                    # print(f'Error: {str(e)}')
                     not_processed += 1
-        print(f"Not processed records: {not_processed}")
+            print(f"Not processed records: {not_processed} out of {total} transcripts.")
 
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as input:
             not_processed = 0
+            total = 0
             for line in input:
                 if line.startswith('#'):
                     continue
-
                 data_line = line.strip().split()
                 if data_line[GencodeTranscriptAdapter.INDEX['type']] != 'transcript':
                     continue
+                total += 1
 
                 info = self.parse_info_metadata(data_line[GencodeTranscriptAdapter.INDEX['info']:])
                 
@@ -209,9 +213,11 @@ class GencodeTranscriptAdapter(Adapter):
                     gene_key = gene_key + '_PAR_Y'
                
                 _props = {}
-                if self.write_properties and self.add_provenance:
-                    _props['source'] = self.source
-                    _props['source_url'] = self.source_url
+                if self.write_properties:
+                    _props['taxon_id'] = self.taxon_id
+                    if self.add_provenance:
+                        _props['source'] = self.source
+                        _props['source_url'] = self.source_url
                
                 try:
                     if self.type == 'transcribes to':
@@ -222,7 +228,7 @@ class GencodeTranscriptAdapter(Adapter):
                         yield _source, _target, self.label, _props
 
                 except Exception as e:
-                    print(f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-                    print(f'Error: {str(e)}')
+                    # print(f'Failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                    # print(f'Error: {str(e)}')
                     not_processed += 1
-        print(f"Not processed records: {not_processed}")
+            print(f"Not processed records: {not_processed} out of {total} transcripts.")

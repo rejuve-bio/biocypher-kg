@@ -78,11 +78,12 @@ import gc
 
 class RnaseqLibraryAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, filepaths: list[str]):
+    def __init__(self, write_properties, add_provenance, filepaths: list[str], taxon_id=7227):
         self.filepaths = filepaths
         self.label = 'rnaseq_library'
         self.source = 'FLYBASE'                     # this will be set for each data file in the get_nodes method
         self.source_url = 'https://flybase.org/'    # this will be set for each data file in the get_nodes method
+        self.taxon_id = taxon_id
 
         super(RnaseqLibraryAdapter, self).__init__(write_properties, add_provenance)
 
@@ -105,7 +106,7 @@ class RnaseqLibraryAdapter(Adapter):
                         "experiment_info": [row[2], row[3]],        # Clustering_Analysis_ID, Clustering_Analysis_Name
                         "tissue_info": [row[i] for i in [4,5,6] if row[i] != ''],    # Source_Tissue_Sex	Source_Tissue_Stage, Source_Tissue_Anatomy
                         "cell_type_id": row[9].replace(':', '_').upper(),     # Cluster_Cell_Type_ID (Flybase ontology FBbt:#)
-                        "taxon_id": 7227,
+                        "taxon_id": self.taxon_id,
                         "source": self.source,
                         "source_url": self.source_url
                     }
@@ -126,7 +127,7 @@ class RnaseqLibraryAdapter(Adapter):
                     props = {
                         "name": row[4],         # Sample_Name
                         "experiment_info": [row[1], row[2]],        # Dataset_ID	Dataset_Name
-                        "taxon_id": 7227,
+                        "taxon_id": self.taxon_id,
                         "source": self.source,
                         "source_url": self.source_url
                     }
@@ -143,7 +144,7 @@ class RnaseqLibraryAdapter(Adapter):
                     props = {
                         "name": row[6],         # RNASource_name
                         "experiment_info": [row[0], row[3], row[4]],        # Release_ID	Parent_library_FBlc Parent_library_name
-                        "taxon_id": 7227,
+                        "taxon_id": self.taxon_id,
                         "source": self.source,
                         "source_url": self.source_url
                     }
@@ -172,7 +173,7 @@ class RnaseqLibraryAdapter(Adapter):
                     props = {
                         "name": library_data[2],
                         "experiment_info": [library_data[0], tissue_key.split('_')[0]], #, f'FCA2 tissue {row[2]}'],        # FB Tissue, Tissue Stage, Tissue Sex
-                        "taxon_id": 7227,
+                        "taxon_id": self.taxon_id,
                         "source": self.source,
                         "source_url": self.source_url
                     }
@@ -191,7 +192,7 @@ class RnaseqLibraryAdapter(Adapter):
                     props = {
                         "name": lib_name,
                         "experiment_info": ["Expression is the averaged log values in each cluster (cell type). Appended to the cell type is the time point (5, 30, 50 or 70 days)."],
-                        "taxon_id": 7227,
+                        "taxon_id": self.taxon_id,
                         "source": self.source,
                         "source_url": self.source_url
                     }

@@ -23,11 +23,12 @@ import psycopg2
 
 class AlleleAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_filepath=None, label='allele'):
+    def __init__(self, write_properties, add_provenance, dmel_filepath=None, label='allele', taxon_id=7227):
         self.dmel_filepath = dmel_filepath
         self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
         super(AlleleAdapter, self).__init__(write_properties, add_provenance)
         self.snp_cache = self._load_snp_cache()
         
@@ -69,7 +70,7 @@ class AlleleAdapter(Adapter):
             allele_symbol = row[1] # AlleleSymbol e.g. gukh[142] — used as uniquename in FlyBase feature table
             allele_id = f'FlyBase:{fbal_id}'
             props['allele_symbol'] = allele_symbol
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
 
             if allele_symbol in self.snp_cache:
                 snp_props = props.copy()
@@ -94,7 +95,7 @@ class AlleleAdapter(Adapter):
             allele_symbol = row[1] # AlleleSymbol e.g. gukh[142] — used as uniquename in FlyBase feature table
             source = f'FlyBase:{fbal_id}'
             target = f'FlyBase:{row[2]}'
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
 
             is_snp = allele_symbol in self.snp_cache
 

@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-10T22:29:44.702764",
+  "processor": "entrez_ensembl",
+  "entries": 0,
+  "remote_metadata": {
+    "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz": {
+      "url": "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz",
+      "last_modified": "Wed, 10 Jun 2026 09:28:37 GMT",
+      "etag": null,
+      "content_length": "1403868",
+      "checked_at": "2026-06-10T22:29:46.311402"
+    },
+    "https://s3ftp.flybase.org/genomes/Drosophila_melanogaster/current/gtf/dmel-all-r6.67.gtf.gz": {
+      "url": "https://s3ftp.flybase.org/genomes/Drosophila_melanogaster/current/gtf/dmel-all-r6.67.gtf.gz",
+      "last_modified": null,
+      "etag": null,
+      "content_length": "0",
+      "checked_at": "2026-06-10T22:29:46.444199"
+    }
+  }
+}

@@ -11,6 +11,7 @@ except ImportError:
     pass  # python-dotenv is optional; set env vars manually if not installed
 
 
+import fnmatch
 import importlib
 import json
 import logging
@@ -64,6 +65,7 @@ def get_writer(
     output_dir: Path,
     schema_config_path: Path,
     include_curie: bool = False,
+    import_root: Path = None,
 ):
     writer_type = writer_type.lower()
 
@@ -87,6 +89,7 @@ def get_writer(
             biocypher_config="config/biocypher_config.yaml",
             output_dir=output_dir,
             include_curie=include_curie,
+            import_root=import_root,
         )
     if writer_type == "parquet":
         return ParquetWriter(
@@ -450,6 +453,12 @@ def _report_missing_paths(missing: dict, include_hint: bool = True) -> None:
         logger.error("Fix the paths above or run with --skip-preflight to bypass this check.")
 
 
+def _adapter_matches(key: str, patterns: List[str]) -> bool:
+    """Return True if key matches any pattern. Supports * wildcard (e.g. 'uniprot*')."""
+    key_lower = key.lower()
+    return any(fnmatch.fnmatch(key_lower, p) for p in patterns)
+
+
 def _default_data_source_schema_output_dir(
     species_name: Optional[str],
     kg_output_dir: Path,
@@ -609,6 +618,9 @@ def process_adapters(
                 "imported_on": str(date.today()),
             }
 
+        adapter_nodes = 0
+        adapter_edges = 0
+
         try:
             if write_nodes:
                 nodes = adapter.get_nodes()
@@ -618,6 +630,8 @@ def process_adapters(
                 if not freq:
                     logger.warning(f"Adapter '{adapter_name}' produced 0 nodes.")
                     empty_output_adapters.append((adapter_name, "nodes"))
+                else:
+                    adapter_nodes = sum(freq.values())
                 for node_label, node_count in freq.items():
                     nodes_count[node_label] += node_count
                     if dataset_name is not None:
@@ -633,6 +647,8 @@ def process_adapters(
                 if not freq:
                     logger.warning(f"Adapter '{adapter_name}' produced 0 edges.")
                     empty_output_adapters.append((adapter_name, "edges"))
+                else:
+                    adapter_edges = sum(freq.values())
                 for edge_label_key, edge_count in freq.items():
                     edges_count[edge_label_key] += edge_count
 
@@ -670,9 +686,15 @@ def process_adapters(
         adapter_elapsed = time.time() - adapter_start
         adapter_times[adapter_name] = adapter_elapsed
         completed_adapters.append(adapter_name)
+        counts_parts = []
+        if write_nodes:
+            counts_parts.append(f"nodes: {adapter_nodes:,}")
+        if write_edges:
+            counts_parts.append(f"edges: {adapter_edges:,}")
+        counts_str = (", ".join(counts_parts) + " | ") if counts_parts else ""
         logger.info(
             f"Adapter '{adapter_name}' completed"
-            f"  [time taken: {_fmt_elapsed(adapter_elapsed)}]"
+            f"  [{counts_str}time: {_fmt_elapsed(adapter_elapsed)}]"
         )
         if checkpoint_manager is not None:
             checkpoint_manager.save(
@@ -710,6 +732,15 @@ def _write_graph_info(
 
     logger.info(f"graph_info.json written to {file_path}")
     return graph_info
+
+
+def _adapters_need_dbsnp(adapters_dict: dict) -> bool:
+    """Return True if any adapter in the dict requires dbSNP lookup maps."""
+    for entry in adapters_dict.values():
+        args = entry.get("adapter", {}).get("args", {})
+        if "dbsnp_rsid_map" in args or "dbsnp_pos_map" in args:
+            return True
+    return False
 
 
 def _load_dbsnp(cache_root: str, variant: Optional[str], is_sample: bool = False) -> tuple:
@@ -788,8 +819,6 @@ def _load_dbsnp(cache_root: str, variant: Optional[str], is_sample: bool = False
         variant_label = "sample" if is_sample else variant
         logger.info(f"Preparing dbSNP cache (variant={variant_label}) from {cache_path}")
         dbsnp_proc = DBSNPProcessor(cache_dir=str(cache_path))
-        logger.info("Opening dbSNP mapping backend...")
-        dbsnp_proc.load_mapping()
         logger.info("Creating dbSNP lookup wrappers...")
         rsids_dict, pos_dict = dbsnp_proc.get_dict_wrappers()
         logger.info(
@@ -937,7 +966,10 @@ def main(
     overwrite: bool = typer.Option(True, help="Overwrite existing Parquet files"),
     include_adapters: Optional[List[str]] = typer.Option(
         None,
-        help="Specific adapters to include (space-separated, default: all)",
+        help=(
+            "Adapters to include (space-separated, default: all). "
+            "Supports * wildcards, e.g. 'uniprot*' matches all adapters whose name starts with 'uniprot'."
+        ),
         case_sensitive=False,
     ),
     generate_data_source_schemas: bool = typer.Option(
@@ -1012,7 +1044,7 @@ def main(
         adapters_dict = _load_adapters_config(adapters_config, str(adapters_config), input_dir=input_dir)
         if include_adapters:
             include_lower = [a.lower() for a in include_adapters]
-            adapters_dict = {k: v for k, v in adapters_dict.items() if k.lower() in include_lower}
+            adapters_dict = {k: v for k, v in adapters_dict.items() if _adapter_matches(k, include_lower)}
         missing = _check_adapter_file_paths(adapters_dict)
         if missing:
             _report_missing_paths(missing, include_hint=False)
@@ -1058,6 +1090,8 @@ def main(
                 logger.info("Generating KG for all species")
                 logger.info(f"Base output directory: {output_dir}")
                 available_species = list(species_config.keys())
+                all_species_start = time.time()
+                species_summary: list[dict] = []
 
                 for sp in available_species:
                     if dataset not in species_config[sp]:
@@ -1094,15 +1128,12 @@ def main(
                         resume=resume,
                     )
 
-                    sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
-                        sp_cache_root, sp_variant, is_sample=sp_is_sample
-                    )
-
                     bc = get_writer(
                         writer_type,
                         sp_output_dir,
                         sp_schema_config,
                         include_curie=include_curie,
+                        import_root=output_dir,
                     )
                     logger.info(f"Using {writer_type} writer for {sp}")
 
@@ -1119,7 +1150,7 @@ def main(
                         sp_adapters_dict = {
                             key: value
                             for key, value in sp_adapters_dict.items()
-                            if key.lower() in include_lower
+                            if _adapter_matches(key, include_lower)
                         }
                         if not sp_adapters_dict:
                             logger.error(f"No matching adapters found for {sp}.")
@@ -1127,6 +1158,14 @@ def main(
                         logger.info(
                             f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}"
                         )
+
+                    if _adapters_need_dbsnp(sp_adapters_dict):
+                        sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
+                            sp_cache_root, sp_variant, is_sample=sp_is_sample
+                        )
+                    else:
+                        logger.info(f"No adapters for {sp} require dbSNP, skipping dbSNP load.")
+                        sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = {}, {}
 
                     nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
                         sp_adapters_dict,
@@ -1175,10 +1214,18 @@ def main(
 
                     delete_temp_schema(sp_schema_config)
 
+                    sp_elapsed = time.time() - total_start
+                    species_summary.append({
+                        "species": sp,
+                        "elapsed": sp_elapsed,
+                        "nodes": sum(nodes_count.values()),
+                        "edges": sum(edges_count.values()),
+                    })
+
                     logger.info("")
                     logger.info("#" * 60)
                     logger.info(f"  PIPELINE COMPLETE [{sp}]")
-                    logger.info(f"  Total time  : {_fmt_elapsed(time.time() - total_start)}")
+                    logger.info(f"  Total time  : {_fmt_elapsed(sp_elapsed)}")
                     logger.info(f"  Total nodes : {sum(nodes_count.values()):,}")
                     logger.info(f"  Total edges : {sum(edges_count.values()):,}")
                     if adapter_times:
@@ -1195,6 +1242,22 @@ def main(
                     logger.info("#" * 60)
                     logger.info("")
 
+                all_species_elapsed = time.time() - all_species_start
+                logger.info("\n" + "=" * 60)
+                logger.info("  SPECIES TIMING SUMMARY")
+                logger.info("=" * 60)
+                if species_summary:
+                    name_width = max(len(s["species"]) for s in species_summary)
+                    for s in species_summary:
+                        logger.info(
+                            f"  {s['species']:<{name_width}} : {_fmt_elapsed(s['elapsed']):>10}"
+                            f"   nodes: {s['nodes']:>12,}   edges: {s['edges']:>12,}"
+                        )
+                else:
+                    logger.info("  (no species were processed)")
+                logger.info("-" * 60)
+                logger.info(f"  Total time (all species): {_fmt_elapsed(all_species_elapsed)}")
+                logger.info("=" * 60)
                 logger.info("\n" + "=" * 60)
                 logger.info("All species processed successfully!")
                 logger.info("=" * 60)
@@ -1313,7 +1376,7 @@ def main(
             adapters_dict = {
                 key: value
                 for key, value in adapters_dict.items()
-                if key.lower() in include_lower
+                if _adapter_matches(key, include_lower)
             }
             if not adapters_dict:
                 available = "\n".join(f" - {adapter}" for adapter in adapters_dict.keys())
@@ -1321,11 +1384,15 @@ def main(
                 raise typer.Exit(1)
             logger.info(f"Filtered to {len(adapters_dict)}/{original_count} adapters")
 
-        dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(
-            resolved_cache_root,
-            resolved_variant,
-            is_sample=is_sample_config,
-        )
+        if _adapters_need_dbsnp(adapters_dict):
+            dbsnp_rsids_dict, dbsnp_pos_dict = _load_dbsnp(
+                resolved_cache_root,
+                resolved_variant,
+                is_sample=is_sample_config,
+            )
+        else:
+            logger.info("No adapters require dbSNP, skipping dbSNP load.")
+            dbsnp_rsids_dict, dbsnp_pos_dict = {}, {}
 
         nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
             adapters_dict,

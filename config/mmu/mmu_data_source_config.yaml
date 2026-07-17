@@ -29,10 +29,8 @@ coxpressdb:
 epd:
   name: Eukaryotic Promoter Database
   compress: gzip
-  url:
-    # - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0  # this is not working
-    # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/ 
-    - https://epd.expasy.org/ftp/epdnew/M_musculus/current/Mm_EPDnew.bed
+  url: https://epd.expasy.org/ftp/epdnew/M_musculus/current/Mm_EPDnew.bed
+
 gaf:
   name: GO Annotation File (GAF) from MGI
   extract: false
@@ -45,7 +43,6 @@ gencode:
   extract: false
   url:
     - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M38/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
-    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Mus_musculus.gene_info.gz
 
 reactome:
   name: Reactome
@@ -64,8 +61,8 @@ rna_central:
   name: RNA Central
   extract: false
   url:
-    bed: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/mus_musculus.GRCm39.bed.gz
-    rfam: https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/mus_musculus.GRCm39.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
 string:
   name: STRING PPI

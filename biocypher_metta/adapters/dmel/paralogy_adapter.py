@@ -41,12 +41,13 @@ from biocypher._logger import logger
 
 class ParalogyAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'paralogs_genes'):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'paralogs_genes', taxon_id=7227):
         self.dmel_data_filepath = dmel_data_filepath
         self.label = label
         self.type = 'paralogy association'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(ParalogyAssociationAdapter, self).__init__(write_properties, add_provenance)
 
@@ -65,7 +66,7 @@ class ParalogyAssociationAdapter(Adapter):
                 target = row[5]
                 props['target_symbol'] = row[6]
                 props['DIOPT_score'] = int(row[10])
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
             except Exception as e:
                 print(f'\nDeffective ROW:\n{row}\nException: {e}')
                 continue

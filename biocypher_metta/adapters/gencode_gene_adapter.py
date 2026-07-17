@@ -36,13 +36,8 @@ from biocypher_metta.processors import HGNCProcessor, EntrezEnsemblProcessor
 
 
 class GencodeGeneAdapter(Adapter):
-    CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL'
-    }
-
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_biotype', 'gene_name',
-                    'transcript_id', 'transcript_type', 'transcript_name', 'hgnc_id']
+                    'transcript_id', 'transcript_type', 'transcript_name', 'hgnc_id', 'mgi_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
     def __init__(self, write_properties, add_provenance, taxon_id, filepath, label,
@@ -67,15 +62,20 @@ class GencodeGeneAdapter(Adapter):
         self.hgnc_processor = HGNCProcessor()
         self.hgnc_processor.load_or_update()
 
-        # Pre-load gene aliases: use processor for human, file-based for other species
+        # Pre-load gene aliases: use processor if no NCBI gene_info file is provided
         if gene_alias_file_path:
             self.gene_aliases = self.get_gene_alias()
-        elif taxon_id == 9606:
-            processor = EntrezEnsemblProcessor()
+        else:
+            species_info = Adapter.SPECIES_INFO[taxon_id]
+            processor = EntrezEnsemblProcessor(
+                ncbi_gene_info_url=species_info['ncbi_gene_info_url'],
+                gencode_url=species_info['features_data_url'],
+                tax_id=str(taxon_id),
+                cache_dir=species_info['entrez_ensembl_cache_directory'],
+                update_interval_hours=species_info['update_interval_hours']
+            )
             processor.load_or_update()
             self.gene_aliases = processor.gene_aliases
-        else:
-            self.gene_aliases = {}
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
  
@@ -171,12 +171,13 @@ class GencodeGeneAdapter(Adapter):
 
                     if self.taxon_id == 9606:       # human
                         result = self.hgnc_processor.process_identifier(gene_name)
-                    elif self.taxon_id == 7227:     # fly  I'll change this soon  --> TODO: fly and other organisms don't have HGNC IDs
+                    else:
                         result = {
                             'status': 'current',
                             'original': gene_name,
                             'current': gene_name
-                        }                    
+                        }
+
                     props = {}
                     try:
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
@@ -188,7 +189,8 @@ class GencodeGeneAdapter(Adapter):
                                     'start': start if start else 'unknown',
                                     'end': end if end else 'unknown',
                                     'gene_name': 'unknown' if result['status'] == 'unknown' or result['status'] == 'ensembl_only' else result['current'],
-                                    'synonym': alias
+                                    'synonym': alias,
+                                    'taxon_id': self.taxon_id,
                                 }
                                 if result['status'] == 'updated':
                                     props['old_gene_name'] = result['original']
@@ -202,4 +204,4 @@ class GencodeGeneAdapter(Adapter):
                     except Exception as e:
                         print(f'Failed to process line: {line}\nError: {str(e)}')
                         not_processed += 1
-        print(f"Not processed records: {not_processed} out of {processed_records} genes included in the BioAS.")
+        

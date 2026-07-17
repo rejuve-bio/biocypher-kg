@@ -1,4 +1,4 @@
-wbbt:
+wbbt_anatomy:
   adapter:
     module: biocypher_metta.adapters.cel.wbbt_adapter
     cls: WbbtAdapter

@@ -7,9 +7,20 @@ import logging
 import argparse
 import re
 import sys
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def _fmt_elapsed(seconds):
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    minutes, seconds = divmod(seconds, 60)
+    if minutes < 60:
+        return f"{int(minutes)}m {seconds:.1f}s"
+    hours, minutes = divmod(minutes, 60)
+    return f"{int(hours)}h {int(minutes)}m {seconds:.1f}s"
 
 
 class Neo4jLoader:
@@ -496,6 +507,8 @@ class Neo4jLoader:
         logger.info("STARTING NEO4J LOAD WORKFLOW")
         logger.info("="*60)
 
+        overall_start = time.time()
+
         # Step 1: Check versions
         logger.info("\nSTEP 1: Checking versions...")
         result = self.version_manager.check_and_version(self.output_dir)
@@ -534,10 +547,13 @@ class Neo4jLoader:
 
         failed_files = {}   # file_path -> error (populated by load_single_file logging)
         loaded_datasets = set()
+        dataset_time = {}   # dataset (top-level folder, e.g. species name in multi-species mode) -> seconds
 
         for file_path in ordered_files:
-            success = self.load_single_file(file_path)
             dataset = Path(file_path).parts[0]  # e.g. "gtex/eqtl/edges_..." → "gtex"
+            file_start = time.time()
+            success = self.load_single_file(file_path)
+            dataset_time[dataset] = dataset_time.get(dataset, 0.0) + (time.time() - file_start)
 
             if not success:
                 failed_files[file_path] = "see error above"
@@ -574,6 +590,20 @@ class Neo4jLoader:
                 timestamp=timestamp,
                 build_id=build_id
             )
+
+        overall_elapsed = time.time() - overall_start
+        logger.info("\n" + "="*60)
+        logger.info("  DATASET TIMING SUMMARY")
+        logger.info("="*60)
+        if dataset_time:
+            name_width = max(len(name) for name in dataset_time)
+            for name, elapsed in sorted(dataset_time.items(), key=lambda x: x[1], reverse=True):
+                logger.info(f"  {name:<{name_width}} : {_fmt_elapsed(elapsed):>10}")
+        else:
+            logger.info("  (no datasets were loaded)")
+        logger.info("-"*60)
+        logger.info(f"  Total time: {_fmt_elapsed(overall_elapsed)}")
+        logger.info("="*60)
 
         logger.info("\n" + "="*60)
         if failed_files:
