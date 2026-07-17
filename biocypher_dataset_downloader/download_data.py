@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 from typing_extensions import Annotated
 from biocypher_dataset_downloader.download_manager import DownloadManager
+from biocypher_dataset_downloader.reactome_exporter import export_reactome_reactions
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 app = typer.Typer()
@@ -36,6 +37,25 @@ def download_data(
             manager.download_all()
     except Exception as e:
         logging.error(f"Download failed: {e}")
+        raise
+
+
+@app.command()
+def export_reactome(
+    output_dir: Annotated[Path, typer.Option(dir_okay=True)],
+    neo4j_uri: str = typer.Option("bolt://localhost:7687", help="Neo4j URI"),
+    neo4j_user: str = typer.Option("neo4j", help="Neo4j username"),
+    neo4j_password: str = typer.Option("neo4j", help="Neo4j password"),
+    ref_db: str = typer.Option("UniProt", help="Reference database display name")
+):
+    """
+    Connect to a Reactome Neo4j graph database and generate the reactome_reaction_exporter_All_species.txt file.
+    """
+    output_file = output_dir / "reactome_reaction_exporter_All_species.txt"
+    try:
+        export_reactome_reactions(output_file, neo4j_uri, neo4j_user, neo4j_password, ref_db)
+    except Exception as e:
+        logging.error(f"Reactome export failed: {e}")
         raise
 
 
