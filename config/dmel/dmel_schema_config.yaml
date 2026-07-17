@@ -2,42 +2,6 @@ Title: BioCypher graph schema configuration file (Biolink-adapted for dmel)
 
 ##################             NODES   SECTION             ####################
 
-allele:
-  represented_as: node
-  input_label: allele
-  is_a: genomic variant
-  mixins:
-  - biolink:Allele
-  - biolink:SequenceVariant
-  biolink_category: biolink:Allele
-  inherit_properties: true
-  properties:
-    allele_symbol:
-      type: str
-      biolink: symbol
-    taxon_id:
-      type: int
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  description: Different versions of the same variant (in a specific  locus) are called
-    alleles[1, 2]. Most commonly used referring to genes.
-  kgx_properties:
-    category: biolink:Allele
-
-snp:
-  represented_as: node
-  input_label: snp
-  is_a: allele
-  mixins:
-  - biolink:Snv
-  biolink_category: biolink:Snv
-  inherit_properties: true
-  description: >-
-    A single nucleotide polymorphism (SNP) is a variation in a single nucleotide
-    that occurs at a specific position in the genome of a Drosophila melanogaster allele.
-  kgx_properties:
-    category: biolink:Snv
-
 
 dmel disease model:
   represented_as: node
