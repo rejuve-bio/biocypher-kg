@@ -45,10 +45,27 @@ export default function BuildWizard() {
       .catch((e) => setLoadError(String(e)));
   }, []);
 
-  const datasets = useMemo(
-    () => species.find((s) => s.species === selSpecies)?.datasets ?? [],
-    [species, selSpecies],
-  );
+  const isAll = selSpecies === "all";
+
+  const datasets = useMemo(() => {
+    if (isAll) {
+      // Union of dataset names across all species (sample/full); each species runs
+      // with its own config, skipping ones that lack the chosen dataset.
+      const names = Array.from(
+        new Set(species.flatMap((s) => s.datasets.map((d) => d.name))),
+      );
+      return names.map((name) => ({
+        name,
+        adapters_config: "",
+        schema_config: "",
+        dbsnp_cache_root: "",
+        dbsnp_variant: "",
+        adapters_config_exists: true,
+        schema_config_exists: true,
+      }));
+    }
+    return species.find((s) => s.species === selSpecies)?.datasets ?? [];
+  }, [species, selSpecies, isAll]);
 
   // Pick a default dataset (prefer 'sample', prefer ones whose config exists).
   useEffect(() => {
@@ -74,7 +91,8 @@ export default function BuildWizard() {
   useEffect(() => {
     setValidation(null);
     setAdaptersError(null);
-    if (!selSpecies || !selDataset) {
+    // "all" has no single config to introspect — every adapter of each species runs.
+    if (isAll || !selSpecies || !selDataset) {
       setAdapters([]);
       setSelected(new Set());
       return;
@@ -119,8 +137,9 @@ export default function BuildWizard() {
     return {
       species: selSpecies,
       dataset: selDataset,
-      // omit include_adapters when everything is selected (means "all")
-      include_adapters: allSelected ? null : Array.from(selected),
+      // For an all-species run every adapter of each species runs. Otherwise, omit
+      // include_adapters when everything is selected (means "all adapters").
+      include_adapters: isAll || allSelected ? null : Array.from(selected),
       writer_type: writerType,
       // Server decides where output goes: DATA_ROOT/<dated> if set, else repo default.
       output_dir: null,
@@ -236,6 +255,7 @@ export default function BuildWizard() {
                   {s.species}
                 </option>
               ))}
+              <option value="all">all species (sequential)</option>
             </select>
           </label>
           <label className="field">
@@ -289,9 +309,14 @@ export default function BuildWizard() {
       </div>
 
       <div className="card">
-        <h2>
-          2 · Adapters ({nSelected}/{adapters.length})
-        </h2>
+        <h2>2 · Adapters {isAll ? "" : `(${nSelected}/${adapters.length})`}</h2>
+        {isAll ? (
+          <div className="alert warn">
+            All-species run: every adapter in each species is included automatically —
+            per-adapter selection isn’t available for “all”.
+          </div>
+        ) : (
+        <>
         <div className="row" style={{ marginBottom: 10 }}>
           <input
             type="text"
@@ -322,6 +347,8 @@ export default function BuildWizard() {
           )}
         {!adapters.length && selDataset && !adaptersError && (
           <span className="muted">No adapters loaded.</span>
+        )}
+        </>
         )}
       </div>
 
@@ -377,7 +404,7 @@ export default function BuildWizard() {
           <button
             className="primary"
             onClick={onBuild}
-            disabled={submitting || !nSelected}
+            disabled={submitting || (!isAll && !nSelected)}
           >
             {submitting ? "Launching…" : "Launch build"}
           </button>

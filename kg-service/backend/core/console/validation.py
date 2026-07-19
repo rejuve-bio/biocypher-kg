@@ -74,7 +74,17 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
     adapters_dict: Optional[dict] = None
     num_adapters: Optional[int] = None
 
-    if req.species:
+    if req.species and req.species.lower() == "all":
+        # All-species run: each species uses its own config, so there's no single
+        # adapters config to introspect. The CLI validates per species at run time.
+        if req.dataset not in ("sample", "full"):
+            static_errors.append("dataset must be 'sample' or 'full' for an all-species run.")
+        static_warnings.append(
+            "All-species run: adapters and input-path validation are skipped here; "
+            "each species runs sequentially with its own config, and species without "
+            f"the '{req.dataset}' dataset are skipped."
+        )
+    elif req.species:
         try:
             adapters_config_abs = str(ci.resolve_adapters_config_path(req.species, req.dataset))
             schema_config_abs = str(ci.resolve_schema_config_path(req.species, req.dataset))

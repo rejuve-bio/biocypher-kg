@@ -68,6 +68,19 @@ def test_validate_bad_dbsnp_variant():
     assert any("must be 'common' or 'full'" in e for e in r.json()["static_errors"])
 
 
+def test_validate_all_species_skips_config_introspection():
+    """species='all' must not try to resolve a single config; it validates lightly."""
+    r = client.post("/api/console/builds/validate", json={
+        "species": "all", "dataset": "sample",
+    })
+    body = r.json()
+    # no "unknown species"/config errors; a note about per-species validation
+    assert not any("Unknown species" in e for e in body["static_errors"])
+    assert any("All-species run" in w for w in body["static_warnings"])
+    preview = body["resolved"]["cmd_preview"]
+    assert "--species" in preview and "all" in preview
+
+
 def test_validate_cmd_preview_present():
     r = client.post("/api/console/builds/validate", json={
         "species": "hsa", "dataset": "sample", "include_adapters": ["gencode_gene"],
