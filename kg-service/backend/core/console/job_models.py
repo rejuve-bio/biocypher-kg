@@ -61,6 +61,7 @@ class BuildJob:
     cwd: str                          # REPO_ROOT
     output_dir: str
     log_path: str
+    kind: str = "build"              # "build" | "load-neo4j" | "load-mork"
     total_adapters: Optional[int] = None
     pid: Optional[int] = None
     return_code: Optional[int] = None

@@ -34,13 +34,36 @@ def _job_or_404(job_id: str) -> BuildJob:
 def _enrich(job: BuildJob) -> dict:
     """Job dict + checkpoint summary + resumable flag (shared by list & detail)."""
     data = job.to_dict()
-    checkpoint = job_runner.read_checkpoint(job.output_dir)
+    # Checkpoint/resume only apply to build jobs, not load jobs.
+    checkpoint = job_runner.read_checkpoint(job.output_dir) if job.kind == "build" else None
     data["checkpoint"] = checkpoint
     data["resumable"] = checkpoint is not None and job.status in {
         JobStatus.FAILED,
         JobStatus.CANCELLED,
     }
     return data
+
+
+@router.post("/builds/{job_id}/load/{target}", status_code=201)
+def load_build(job_id: str, target: str):
+    """Load a succeeded build's output into Neo4j or MORK (surgical/versioned)."""
+    job = _job_or_404(job_id)
+    if target not in ("neo4j", "mork"):
+        raise HTTPException(status_code=400, detail="target must be 'neo4j' or 'mork'.")
+    if job.status != JobStatus.SUCCEEDED:
+        raise HTTPException(status_code=400, detail="Only a succeeded build can be loaded.")
+    writer = (job.params or {}).get("writer_type")
+    if target == "neo4j" and writer != "neo4j":
+        raise HTTPException(status_code=400,
+                            detail="Neo4j load needs a build made with writer_type 'neo4j'.")
+    if target == "mork" and writer != "metta":
+        raise HTTPException(status_code=400,
+                            detail="MORK load needs a build made with writer_type 'metta'.")
+    load_job = job_runner.launch_load(job_id, target)
+    if load_job is None:
+        raise HTTPException(status_code=404, detail="Source build not found.")
+    return {"id": load_job.id, "status": load_job.status.value,
+            "kind": load_job.kind, "job": load_job.to_dict()}
 
 
 @router.post("/builds/validate")

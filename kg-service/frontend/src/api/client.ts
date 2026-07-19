@@ -84,6 +84,11 @@ export const api = {
       fetch(`${BASE}/builds/${id}/resume`, { method: "POST" }),
     ),
 
+  loadBuild: (id: string, target: "neo4j" | "mork") =>
+    json<{ id: string; status: string; kind: string }>(
+      fetch(`${BASE}/builds/${id}/load/${target}`, { method: "POST" }),
+    ),
+
   listOutput: (id: string) =>
     json<{
       output_dir: string;

@@ -85,6 +85,32 @@ def test_resolve_output_dir_explicit_wins(monkeypatch, tmp_path):
     assert resolve_output_dir(req, tmp_path / "job") == "/custom/out"
 
 
+def test_build_load_argv_targets():
+    from backend.core.console.job_runner import build_load_argv
+    n = build_load_argv("neo4j", "/out")
+    assert "kg-service/neo4j_loader.py" in n
+    assert "--output-dir" in n and "/out" in n and "--uri" in n
+    m = build_load_argv("mork", "/out")
+    assert "kg-service/mork_loader.py" in m
+    assert "--data-dir" in m and "/out" in m
+
+
+def test_launch_load_creates_tracked_load_job(monkeypatch):
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "print('loaded')"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+
+    load = job_runner.launch_load(src.id, "neo4j")
+    assert load is not None and load.kind == "load-neo4j"
+    assert load.output_dir == src.output_dir       # loads the build's output
+    final = _wait_for(load.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    assert final.status == JobStatus.SUCCEEDED
+    assert "loaded" in open(final.log_path).read()
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

@@ -258,6 +258,70 @@ def _run_job(job_id: str, argv: list[str], log_path: str) -> None:
         _reap_orphan_temp_schemas()
 
 
+def _mork_host_port() -> tuple[str, str]:
+    from urllib.parse import urlparse
+    u = urlparse(settings.MORK_URL)
+    return (u.hostname or "localhost", str(u.port or 8432))
+
+
+def build_load_argv(target: str, output_dir: str) -> list[str]:
+    """argv to load a build's output into Neo4j or MORK via the existing loaders.
+
+    Mirrors the Makefile invocation; the loaders run version_manager internally
+    (surgical/incremental update). Credentials/paths come from settings so no
+    env-file is needed.
+    """
+    if target == "neo4j":
+        return [settings.UV_BIN, "run", "python", "kg-service/neo4j_loader.py",
+                "--output-dir", output_dir,
+                "--archive-dir", settings.ARCHIVE_BASE,
+                "--uri", settings.NEO4J_URI,
+                "--username", settings.NEO4J_USER,
+                "--password", settings.NEO4J_PASSWORD]
+    if target == "mork":
+        host, port = _mork_host_port()
+        return [settings.UV_BIN, "run", "python", "kg-service/mork_loader.py",
+                "--data-dir", output_dir,
+                "--archive-dir", settings.ARCHIVE_BASE,
+                "--host", host, "--port", port]
+    raise ValueError(f"unknown load target: {target!r}")
+
+
+def launch_load(build_job_id: str, target: str) -> Optional[BuildJob]:
+    """Launch a tracked load job that pushes a build's output into Neo4j/MORK.
+
+    Reuses the build's output_dir as the loader input. Returns None if the source
+    build is unknown.
+    """
+    src = registry.get(build_job_id)
+    if src is None:
+        return None
+    output_dir = src.output_dir
+    job_id = uuid.uuid4().hex
+    job_dir = registry.job_dir(job_id)
+    job_dir.mkdir(parents=True, exist_ok=True)
+    log_path = str(job_dir / "load.log")
+    argv = build_load_argv(target, output_dir)
+    job = BuildJob(
+        id=job_id,
+        status=JobStatus.QUEUED,
+        kind=f"load-{target}",
+        params={"source_build": build_job_id, "target": target,
+                "output_dir": output_dir, "species": (src.params or {}).get("species"),
+                "dataset": (src.params or {}).get("dataset")},
+        cmd=argv,
+        cwd=str(settings.repo_root_path),
+        output_dir=output_dir,
+        log_path=log_path,
+        created_at=_now_iso(),
+    )
+    registry.add(job)
+    registry.prune()
+    worker = threading.Thread(target=_run_job, args=(job_id, argv, log_path), daemon=True)
+    worker.start()
+    return job
+
+
 def resume(job_id: str) -> Optional[BuildJob]:
     """Launch a new job that continues a prior failed/cancelled build's checkpoint.
 

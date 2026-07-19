@@ -69,6 +69,11 @@ export default function BuildHistory() {
                     {ACTIVE.has(b.status) ? " ⏳" : ""}
                   </td>
                   <td>
+                    {b.kind && b.kind !== "build" && (
+                      <span className="tag edge" style={{ marginRight: 6 }}>
+                        {b.kind.replace("load-", "load→")}
+                      </span>
+                    )}
                     {String(p.species ?? "—")} / {String(p.dataset ?? "—")}
                   </td>
                   <td>{String(p.writer_type ?? "—")}</td>

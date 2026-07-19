@@ -93,10 +93,23 @@ export default function BuildDetail() {
     }
   }
 
+  async function onLoad(target: "neo4j" | "mork") {
+    try {
+      const res = await api.loadBuild(id, target);
+      navigate(`/builds/${res.id}`);
+    } catch (e) {
+      setError(String(e));
+    }
+  }
+
   if (error) return <div className="alert err">{error}</div>;
   if (!job) return <div className="muted">Loading…</div>;
 
   const active = !TERMINAL.has(job.status);
+  const isBuild = (job.kind ?? "build") === "build";
+  const writer = (job.params as { writer_type?: string })?.writer_type;
+  const canLoadNeo4j = isBuild && job.status === "succeeded" && writer === "neo4j";
+  const canLoadMork = isBuild && job.status === "succeeded" && writer === "metta";
 
   return (
     <>
@@ -104,6 +117,9 @@ export default function BuildDetail() {
         <div className="row" style={{ justifyContent: "space-between" }}>
           <div className="row">
             <JobStatusBadge status={job.status} />
+            {!isBuild && (
+              <span className="tag edge">{(job.kind ?? "").replace("load-", "load→")}</span>
+            )}
             <span className="mono muted">{job.id}</span>
           </div>
           <div className="row">
@@ -118,6 +134,16 @@ export default function BuildDetail() {
             {job.resumable && (
               <button className="secondary" onClick={onResume}>
                 ⟲ Resume
+              </button>
+            )}
+            {canLoadNeo4j && (
+              <button className="secondary" onClick={() => onLoad("neo4j")}>
+                ⇪ Load to Neo4j
+              </button>
+            )}
+            {canLoadMork && (
+              <button className="secondary" onClick={() => onLoad("mork")}>
+                ⇪ Load to MORK
               </button>
             )}
           </div>
