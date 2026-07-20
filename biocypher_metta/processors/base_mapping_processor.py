@@ -140,6 +140,10 @@ class BaseMappingProcessor(ABC):
             self.last_check_result = True
             return True
         elif remote_update is False:
+            if version_info and version_info.get('entries', -1) == 0:
+                logger.warning(f"{self.name}: Remote source unchanged but cache is empty. Forcing update.")
+                self.last_check_result = True
+                return True
             logger.info(f"{self.name}: Remote source unchanged. No update needed.")
             self.last_check_result = False
             return False

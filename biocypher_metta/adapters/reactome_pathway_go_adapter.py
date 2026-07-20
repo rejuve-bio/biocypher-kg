@@ -73,9 +73,9 @@ class ReactomePathwayGOAdapter(Adapter):
                     continue
                 
                 # Prepare base properties
-                properties = {}
+                properties = {'taxon_id': self.taxon_id}
 
-                if self.add_provenance:  
+                if self.add_provenance:
                     properties.update({
                         'source': self.source,
                         'source_url': self.source_url

@@ -21,8 +21,9 @@ class ABCAdapter(Adapter):
     """
     def __init__(self, filepath, hgnc_to_ensembl_map=None, tissue_to_ontology_id_map=None,
                  dbsnp_rsid_map=None, write_properties=None, add_provenance=None, label='abc',
-                 chr=None, start=None, end=None, hgnc_processor=None):
+                 taxon_id=9606, chr=None, start=None, end=None, hgnc_processor=None):
         self.file_path = filepath
+        self.taxon_id = taxon_id
 
         # Use provided processor or create new one
         if hgnc_processor is not None:
@@ -63,7 +64,8 @@ class ABCAdapter(Adapter):
                                 continue
                             props = {
                                 "score": to_float(row[COL_DICT['abc_score']]),
-                                "biological_context": self.tissue_to_ontology_id_map[row[COL_DICT['cell_type']]]
+                                "biological_context": self.tissue_to_ontology_id_map[row[COL_DICT['cell_type']]],
+                                "taxon_id": self.taxon_id,
                             }
                             processed += 1
                             yield _source, _target, self.label, props

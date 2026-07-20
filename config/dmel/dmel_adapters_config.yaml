@@ -78,6 +78,7 @@ dmel_gene_group:
       label: gene_group
       dmel_filepath: flybase/gene_group_data_fb_2026_01.tsv.gz
       dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/gene_groups
   nodes: True
   edges: False
@@ -90,6 +91,7 @@ dmel_gene_to_gene_group:
       label: grouped_into
       dmel_filepath: flybase/gene_group_data_fb_2026_01.tsv.gz
       dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/gene_groups
   nodes: False
   edges: True
@@ -102,6 +104,7 @@ dmel_signaling_pathway_gene_group:
       label: signaling_pathway_gene_group
       dmel_filepath: flybase/signaling_pathway_group_data_fb_2026_01.tsv.gz
       dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: True
   edges: False
@@ -114,6 +117,7 @@ dmel_gene_to_signaling_pathway_gene_group:
       label: signaling_pathway_grouped_into
       dmel_filepath: flybase/signaling_pathway_group_data_fb_2026_01.tsv.gz
       dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: False
   edges: True
@@ -126,6 +130,7 @@ dmel_metabolic_pathway_gene_group:
       label: metabolic_pathway_gene_group
       dmel_filepath: flybase/metabolic_pathway_group_data_fb_2026_01.tsv.gz
       dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: True
   edges: False
@@ -138,6 +143,7 @@ dmel_gene_to_metabolic_pathway_gene_group:
       label: metabolic_pathway_grouped_into
       dmel_filepath: flybase/metabolic_pathway_group_data_fb_2026_01.tsv.gz
       dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: False
   edges: True
@@ -149,6 +155,7 @@ dmel_disease_model:
     args:
       label: dmel_disease_model
       dmel_filepath: flybase/disease_model_annotations_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/disease_model
   nodes: True
   edges: False
@@ -161,6 +168,7 @@ dmel_gene_to_disease_model:
     args:
        label: modelled_to_human_disease
        dmel_filepath: flybase/disease_model_annotations_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/disease_model
   nodes: False
   edges: True
@@ -172,6 +180,7 @@ dmel_gene_to_do_term:
     args:
        label: modelled_to_do_term
        dmel_filepath: flybase/disease_model_annotations_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/disease_model
   nodes: False
   edges: True
@@ -184,6 +193,7 @@ dmel_genotype:
        label: genotype
        dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
        dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: True
   edges: False
@@ -196,6 +206,7 @@ dmel_phenotype_set:
       label: phenotype_set
       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: True
   edges: False
@@ -208,6 +219,7 @@ dmel_allele_to_phenotype_set:
        label: involved_in
        dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
        dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -220,10 +232,10 @@ dmel_phenotype_set_to_genotype:
        label: genetically_informed_by
        dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
        dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
-
 
 dmel_phenotype_set_to_ontology:
   adapter:
@@ -233,6 +245,7 @@ dmel_phenotype_set_to_ontology:
        label: characterized_by
        dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
        dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -245,6 +258,7 @@ dmel_phenotype_set_to_cellular_component:
        label: inheres_in
        dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
        dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
   edges: True
@@ -281,33 +295,37 @@ dmel_ptt_physical_interaction:
   nodes: False
   edges: True
 
-orthology_adapter:
+dmel_orthology_association:
     adapter:
         module: biocypher_metta.adapters.dmel.orthology_adapter
         cls: OrthologyAssociationAdapter
         args:
           dmel_data_filepath: flybase/dmel_human_orthologs_disease_fb_2026_01.tsv.gz
+          taxon_id: 7227
+          target_organism_taxon_id: 9606
     outdir: orthologs
     nodes: False
     edges: True
 
-paralogy_adapter:
+dmel_paralogy_association:
     adapter:
         module: biocypher_metta.adapters.dmel.paralogy_adapter
         cls: ParalogyAssociationAdapter
         args:
           dmel_data_filepath: flybase/dmel_paralogs_fb_2026_01.tsv.gz
+          taxon_id: 7227
     outdir: paralogs
     nodes: False
     edges: True
 
-allele:
+dmel_allele:
   adapter:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
        dmel_filepath: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
        label: allele
+       taxon_id: 7227
   outdir: allele
   nodes: True
   edges: False
@@ -319,6 +337,7 @@ dmel_allele_to_gene:
     args:
        dmel_filepath: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
        label: variant_of
+       taxon_id: 7227
   outdir: allele
   nodes: False
   edges: True
@@ -329,6 +348,7 @@ dmel_gene_genetic_adapter:
         cls: GeneGeneticAssociationAdapter
         args:
           dmel_data_filepath: flybase/gene_genetic_interactions_fb_2026_01.tsv.gz
+          taxon_id: 7227
     outdir: flybase/gene_genetic
     nodes: False
     edges: True
@@ -341,6 +361,7 @@ dmel_allele_to_allele_genetic_interaction_adapter:
           label: allele_to_allele_genetic_interaction
           dmel_data_filepath: flybase/allele_genetic_interactions_fb_2026_01.tsv.gz
           dmel_fbal_to_fbgn_file: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+          taxon_id: 7227
     outdir: flybase/allele_genetic
     nodes: False
     edges: True
@@ -351,6 +372,7 @@ dmel_expressed_in:
     cls: ExpressedInAdapter
     args:
       filepath: flybase/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz
+      taxon_id: 7227
   outdir: expressed_in
   nodes: False
   edges: True
@@ -361,11 +383,12 @@ dmel_gene_to_sequence_ontology:
     cls: GeneToSequenceOntologyAdapter
     args:
        filepath: flybase/dmel_gene_sequence_ontology_annotations_fb_2026_01.tsv.gz
+       taxon_id: 7227
   outdir: so_classified_as
   nodes: False
   edges: True
 
-RNASeq_library:
+dmel_rnaseq_library:
   adapter:
     module: biocypher_metta.adapters.dmel.RNASeq_library_adapter
     cls: RnaseqLibraryAdapter
@@ -380,12 +403,13 @@ RNASeq_library:
                              fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
                              afca/afca_afca_annotation_group_by_mean.tsv.gz,
       ]
+      taxon_id: 7227
   outdir: rnaseq
   nodes: True
   edges: False
 
 # too much waste of space with this representation...
-expression_value:
+dmel_expression_value:
   adapter:
     module: biocypher_metta.adapters.dmel.expression_value_adapter
     cls: ExpressionValueAdapter
@@ -403,11 +427,12 @@ expression_value:
       aux_filepaths: [
                         flybase/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
       ]      
+      taxon_id: 7227
   outdir: rnaseq
   nodes: False
   edges: True
 
-FB_development_ontology:
+fbdv_development_ontology:
   adapter:
     module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
     cls: FBDevelopmentOntologyAdapter
@@ -417,11 +442,11 @@ FB_development_ontology:
       dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: dev_stage
   nodes: True
   edges: False
 
-FBdv_subclass_of:
+fbdv_subclass_of:
   adapter:
     module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
     cls: FBDevelopmentOntologyAdapter
@@ -431,11 +456,11 @@ FBdv_subclass_of:
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: dev_stage
   nodes: False
   edges: True
 
-FB_gross_anatomy_ontology:
+fbbt_gross_anatomy_ontology:
   adapter:
     module: biocypher_metta.adapters.dmel.FBgross_anatomy_ontology_adapter
     cls: FBGrossAnatomyAdapter
@@ -445,11 +470,11 @@ FB_gross_anatomy_ontology:
       dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: anatomy
   nodes: True
   edges: False
 
-FBbt_subclass_of:
+fbbt_subclass_of:
   adapter:
     module: biocypher_metta.adapters.dmel.FBgross_anatomy_ontology_adapter
     cls: FBGrossAnatomyAdapter
@@ -459,11 +484,11 @@ FBbt_subclass_of:
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: anatomy
   nodes: False
   edges: True
 
-FB_controlled_vocabulary_ontology:
+fbcv_controlled_vocabulary_ontology:
   adapter:
     module: biocypher_metta.adapters.dmel.FBcontrolled_vocabulary_ontology_adapter
     cls: FBControlledVocabularyOntologyAdapter
@@ -474,11 +499,11 @@ FB_controlled_vocabulary_ontology:
       dry_run: False
       add_description: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: fbcv_phenotype
   nodes: True
   edges: False
 
-FBcv_subclass_of:
+fbcv_subclass_of:
   adapter:
     module: biocypher_metta.adapters.dmel.FBcontrolled_vocabulary_ontology_adapter
     cls: FBControlledVocabularyOntologyAdapter
@@ -488,7 +513,7 @@ FBcv_subclass_of:
       label: FBcv_subclass_of      
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: fbcv_phenotype
   nodes: False
   edges: True
 
@@ -498,7 +523,6 @@ gencode_gene:
     cls: GencodeGeneAdapter
     args:
       filepath: ensembl/Drosophila_melanogaster.BDGP6.54.63.gtf.gz
-      gene_alias_file_path: ./aux_files/dmel/Drosophila_melanogaster.gene_info.gz
       label: gene
       taxon_id: 7227
   outdir: ensembl/gene
@@ -518,7 +542,7 @@ gencode_transcripts:
   nodes: True
   edges: False
 
-transcribes_to:
+gencode_transcribes_to:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
@@ -544,7 +568,7 @@ gencode_exon:
   nodes: True
   edges: False
 
-exon_part_of_transcript:
+gencode_exon_part_of_transcript:
   adapter:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
@@ -557,7 +581,7 @@ exon_part_of_transcript:
   nodes: False
   edges: True
 
-exon_part_of_gene:
+gencode_exon_part_of_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
@@ -622,20 +646,19 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
-coexpression:
-  adapter:
-    module: biocypher_metta.adapters.coxpresdb_adapter
-    cls: CoxpresdbAdapter
-    args:
-      filepath: coxpressdb/
-      entrez_to_ensemble_path: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
-      label: coexpressed_with
-      taxon_id: 7227
-  outdir: coxpressdb
-  nodes: False
-  edges: True
+# coexpression:
+#   adapter:
+#     module: biocypher_metta.adapters.coxpresdb_adapter
+#     cls: CoxpresdbAdapter
+#     args:
+#       filepath: coxpressdb/
+#       label: coexpressed_with
+#       taxon_id: 7227
+#   outdir: coxpressdb
+#   nodes: False
+#   edges: True
 
-pathway:
+reactome_pathway:
   adapter:
     module: biocypher_metta.adapters.reactome_adapter
     cls: ReactomeAdapter
@@ -743,137 +766,139 @@ reactome_positive_role_protein_to_reaction_or_pathway:
   nodes: False
   edges: True
 
-genes_pathways:
+reactome_genes_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/Ensembl2Reactome_All_Levels.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: genes_pathways
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-protein_pathways:
+reactome_ppi:
+  adapter:
+    module: biocypher_metta.adapters.reactome_ppi_adapter
+    cls: ReactomePPIAdapter
+    args:
+      filepath: reactome/reactome.all_species.interactions.tab-delimited.txt
+      label: interacts_with
+      taxon_id: 7227
+  outdir: reactome/ppi
+  nodes: False
+  edges: True
+
+reactome_protein_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/Ensembl2Reactome_All_Levels.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: protein_pathways
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-transcript_pathways:
+reactome_transcript_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/Ensembl2Reactome_All_Levels.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: transcript_pathways
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-gene_or_gene_product_reaction:
+reactome_gene_or_gene_product_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/Ensembl2ReactomeReactions.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: gene_or_gene_product_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-protein_reaction:
+reactome_protein_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/Ensembl2ReactomeReactions.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: protein_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-transcript_reaction:
+reactome_transcript_reaction:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/Ensembl2ReactomeReactions.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: transcript_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-chebi_small_molecule_to_pathways:
+reactome_chebi_small_molecule_to_pathways:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/ChEBI2Reactome_All_Levels.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: small_molecule_to_pathway
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-chebi_small_molecule_to_reactions:
+reactome_chebi_small_molecule_to_reactions:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/ChEBI2ReactomeReactions.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: small_molecule_to_reaction
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-parent_pathway_of:
+reactome_parent_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/ReactomePathwaysRelation.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: parent_pathway_of
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-child_pathway_of:
+reactome_child_pathway_of:
   adapter:
     module: biocypher_metta.adapters.reactome_edges_adapter
     cls: ReactomeEdgesAdapter
     args:
       filepath: reactome/ReactomePathwaysRelation.txt
-      ensembl_uniprot_map_path: ./aux_files/dmel/dmel_string_ensembl_to_uniprot_map.pkl
       label: child_pathway_of
       taxon_id: 7227
   outdir: reactome
   nodes: False
   edges: True
 
-uniprotkb_sprot:
+uniprot_sprot:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
@@ -885,7 +910,7 @@ uniprotkb_sprot:
   nodes: True
   edges: False
 
-uniprotkb_sprot_translates_to:
+uniprot_sprot_translates_to:
   adapter:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
@@ -1054,20 +1079,19 @@ uniprot_chebi_part_of_chebi:
   nodes: False
   edges: True
 
-tflink:     
+tflink_tf_gene:     
     adapter:
         module: biocypher_metta.adapters.tflink_adapter
         cls: TFLinkAdapter
         args:
           filepath: tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv.gz
-          entrez_to_ensemble_map: ./aux_files/dmel/dmel_entrez_to_ensembl.pkl
           label: tf_gene
           taxon_id: 7227
     outdir: tflink
     nodes: False
     edges: True
 
-string:
+string_ppi:
   adapter:
     module: biocypher_metta.adapters.string_ppi_adapter
     cls: StringPPIAdapter
@@ -1180,7 +1204,7 @@ go_cellular_component_subclass_of:
   nodes: False
   edges: True
 
-sequence_ontology:
+so_sequence_ontology:
   adapter:
     module: biocypher_metta.adapters.sequence_ontology_adapter
     cls: SequenceOntologyAdapter
@@ -1204,39 +1228,39 @@ so_sequence_subclass_of:
       type: edge
       dry_run: False
       cache_dir: ./ontology_dataset_cache
-  outdir: flybase_ontologies
+  outdir: sequence_type
   nodes: False
   edges: True
 
-# # molecular_interactions_ontology:
-# #   adapter:
-# #     module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
-# #     cls: MolecularInteractionsOntologyAdapter
-# #     args:
-# #       ontology: 'mi'
-# #       type: node
-# #       dry_run: False
-# #       add_description: False
-# #       cache_dir: ./ontology_dataset_cache
-# #   outdir: molecular_interactions
-# #   nodes: True
-# #   edges: False
+mi_molecular_interactions_ontology:
+  adapter:
+    module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
+    cls: MolecularInteractionsOntologyAdapter
+    args:
+      ontology: 'mi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: molecular_interactions
+  nodes: True
+  edges: False
 
-# # molecular_interactions_subclass_of:
-# #   adapter:
-# #     module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
-# #     cls: MolecularInteractionsOntologyAdapter
-# #     args:
-# #       ontology: 'mi'
-# #       label: mi_subclass_of
-# #       type: edge
-# #       dry_run: False
-# #       cache_dir: ./ontology_dataset_cache
-# #   outdir: flybase_ontologies
-# #   nodes: False
-# #   edges: True
+mi_molecular_interactions_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
+    cls: MolecularInteractionsOntologyAdapter
+    args:
+      ontology: 'mi'
+      label: mi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: molecular_interactions
+  nodes: False
+  edges: True
 
-disease_ontology:
+do_disease_ontology:
   adapter:
     module: biocypher_metta.adapters.disease_ontology_adapter
     cls: DiseaseOntologyAdapter
@@ -1250,7 +1274,7 @@ disease_ontology:
   nodes: True
   edges: False
 
-disease_do_subclass_of:
+do_disease_do_subclass_of:
   adapter:
     module: biocypher_metta.adapters.disease_ontology_adapter
     cls: DiseaseOntologyAdapter
@@ -1292,7 +1316,7 @@ chebi_chebi_subclass_of:
   nodes: False
   edges: True
 
-epd_promoter_dmel:
+epd_promoter:
   adapter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
@@ -1306,7 +1330,7 @@ epd_promoter_dmel:
   nodes: True
   edges: False
 
-epd_promoter_regulates_gene_dmel:
+epd_promoter_regulates_gene:
   adapter:
     module: biocypher_metta.adapters.epd_adapter
     cls: EPDAdapter
@@ -1373,17 +1397,17 @@ alliance_gene_disease_is_implicated_in:
 # For dmel (7227) config, is_model_of does not have entries in the input file (2026/04/25 version).
 #===================================
 
-# alliance_gene_disease_is_model_of:
-#   adapter:
-#     module: biocypher_metta.adapters.alliance_gene_disease_adapter
-#     cls: AllianceGeneDiseaseAdapter
-#     args:
-#       filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
-#       taxon_id: 7227
-#       label: is_model_of
-#   outdir: disease
-#   nodes: False
-#   edges: True
+alliance_gene_disease_is_model_of:
+  adapter:
+    module: biocypher_metta.adapters.alliance_gene_disease_adapter
+    cls: AllianceGeneDiseaseAdapter
+    args:
+      filepath: alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz
+      taxon_id: 7227
+      label: is_model_of
+  outdir: disease
+  nodes: False
+  edges: True
 
 alliance_gene_disease_is_marker_for:
   adapter:

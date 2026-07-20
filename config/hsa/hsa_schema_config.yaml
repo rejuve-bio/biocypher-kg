@@ -477,41 +477,6 @@ pathway:
       range: biolink:OrganismTaxon
   kgx_properties:
     category: "biolink:Pathway"
-
-reaction:
-  is_a: molecular function
-  narrow_mappings:
-    - GO:0003674
-  represented_as: node
-  input_label: reaction
-  mixins: [biolink:MolecularActivity]
-  biolink_category: "biolink:MolecularActivity"
-  properties:
-    reaction_name:
-      type: str
-      biolink: name
-    reaction_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
-      type: str
-      biolink: source_record_urls
-    evidence:
-      type: str
-      biolink: has_evidence
-    pubmed_url:        
-      type: str
-      biolink: source_record_urls      
-    source:
-      type: str
-      biolink: knowledge_source
-    source_url:
-      type: str
-      biolink: source_web_page
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: str
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: "biolink:MolecularActivity"
   
 regulatory region:
   represented_as: node
@@ -1730,18 +1695,18 @@ pathway_to_biological_process:
       knowledge_level: "knowledge_assertion"
       agent_type: "manual_agent"
 
-pathway_to_molecular_function:
+reaction_to_molecular_function:
     is_a: association
-    source: pathway
+    source: reaction
     target: molecular function
     biolink_predicate: "biolink:related_to"
     represented_as: edge
-    input_label: pathway_to_molecular_function
+    input_label: reaction_to_molecular_function
     description: >-
-      An association between a pathway and a molecular function, indicating that the pathway is involved in the function.
+      An association between a reaction and a molecular function, indicating that the reaction is involved in the function.
     properties: {}
     kgx_properties:
-      subject_category: "biolink:Pathway"
+      subject_category: "biolink:MolecularActivity"
       object_category: "biolink:MolecularActivity"
       knowledge_level: "knowledge_assertion"
       agent_type: "manual_agent"

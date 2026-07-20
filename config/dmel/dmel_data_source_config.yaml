@@ -25,12 +25,8 @@ ensembl:
   name: Ensembl Assembly 54.v62
   version: {strategy: url_regex, pattern: '(BDGP6\.[\d.]+)\.gtf', vtype: other}
   extract: false
-  url:
-    # - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.62.chr.gtf.gz
+  url: 
     - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.63.gtf.gz
-    - https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Drosophila_melanogaster.gene_info.gz
-  move_to:
-    - Drosophila_melanogaster.gene_info.gz: ./aux_files/dmel/
 
 epd:
   name: Eukaryotic Promoter Database
@@ -89,7 +85,7 @@ rna_central:
   extract: false
   url:
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
-    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
 string:
   name: STRING PPI

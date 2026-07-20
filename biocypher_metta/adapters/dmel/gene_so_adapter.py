@@ -3,11 +3,12 @@ from biocypher_metta.adapters import Adapter
 
 class GeneToSequenceOntologyAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, filepath=None):
+    def __init__(self, write_properties, add_provenance, filepath=None, taxon_id=7227):
         self.filepath = filepath
         self.label = 'sequence_classified_as'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
         super(GeneToSequenceOntologyAdapter, self).__init__(write_properties, add_provenance)
 
 
@@ -19,6 +20,6 @@ class GeneToSequenceOntologyAdapter(Adapter):
             props = {}
             source = row[0].upper()     #gene
             target = row[3].upper().replace(':', '_')
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
 
             yield f'FlyBase:{source}', ('sequence_type', target), self.label, props

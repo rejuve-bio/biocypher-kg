@@ -10,8 +10,9 @@ from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 class DBSNPAdapter(Adapter):
     INDEX = {'chr': 0, 'pos': 1, 'id': 2, 'ref': 3, 'alt': 4, 'info': 7}
     def __init__(self, filepath, write_properties, add_provenance, label,
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None, taxon_id=9606):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.chr = chr
         self.start = start
         self.end = end
@@ -53,6 +54,7 @@ class DBSNPAdapter(Adapter):
                 if check_genomic_location(self.chr, self.start, self.end, chr, pos, pos):
                     props = {}
                     if self.write_properties:
+                        props['taxon_id'] = self.taxon_id
                         props['chr'] = 'chr'+chr
                         props['start'] = pos
                         props['end'] = pos

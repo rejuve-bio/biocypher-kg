@@ -17,6 +17,8 @@ from .entrez_ensembl_processor import EntrezEnsemblProcessor
 from .ensembl_uniprot_processor import EnsemblUniProtProcessor
 from .go_subontology_processor import GOSubontologyProcessor
 from .dbsnp_processor import DBSNPProcessor
+from .biomart_ensembl_processor import BioMartEnsemblProcessor
+from .gene_symbol_ensembl_processor import GeneSymbolEnsemblProcessor
 
 __all__ = [
     'BaseMappingProcessor',
@@ -25,4 +27,6 @@ __all__ = [
     'EnsemblUniProtProcessor',
     'GOSubontologyProcessor',
     'DBSNPProcessor',
+    'BioMartEnsemblProcessor',
+    'GeneSymbolEnsemblProcessor',
 ]

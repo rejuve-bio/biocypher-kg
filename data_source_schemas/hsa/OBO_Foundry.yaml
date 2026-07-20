@@ -110,7 +110,7 @@ relationships:
     target: molecular function
   uberon subclass of:
     url: http://www.obofoundry.org/
-    input_label: uberon_subclass_of
+    input_label: anatomy_subclass_of
     output_label: is_a
     source: anatomy
     target: anatomy

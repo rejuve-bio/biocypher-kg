@@ -1,0 +1,18 @@
+name: OBO Foundry
+website: http://www.obofoundry.org
+nodes:
+  developmental stage:
+    url: http://www.obofoundry.org/
+    input_label: developmental_stage
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+relationships:
+  mmusdv subclass of:
+    url: http://www.obofoundry.org/
+    input_label: mmusdv_subclass_of
+    output_label: is_a
+    source: developmental stage
+    target: developmental stage

@@ -22,11 +22,12 @@ from biocypher_metta.adapters import Adapter
 
 class AlleleAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_filepath=None, label='allele'):
+    def __init__(self, write_properties, add_provenance, dmel_filepath=None, label='allele', taxon_id=7227):
         self.dmel_filepath = dmel_filepath
         self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
         super(AlleleAdapter, self).__init__(write_properties, add_provenance)
  
 
@@ -40,7 +41,7 @@ class AlleleAdapter(Adapter):
             props = {}
             allele_id = f'FlyBase:{row[0]}'
             props['allele_symbol'] = row[1]
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
 
             yield allele_id, self.label, props      # here label is 'allele'
 
@@ -54,6 +55,6 @@ class AlleleAdapter(Adapter):
             props = {}
             source = f'FlyBase:{row[0].lower()}' # allele
             target = f'FlyBase:{row[2].lower()}' # gene
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
 
             yield source, target, self.label, props     # here label is 'variant_of'

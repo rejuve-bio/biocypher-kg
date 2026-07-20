@@ -66,7 +66,7 @@ from biocypher._logger import logger
 import gc
 
 class ExpressionValueAdapter(Adapter):
-    def __init__(self, write_properties, add_provenance, data_filepaths, aux_filepaths):
+    def __init__(self, write_properties, add_provenance, data_filepaths, aux_filepaths, taxon_id=7227):
         self.data_filepaths = data_filepaths
         '''
         self.aux_filepaths[0] is used to build the gene symbol to FBgn dictionary in the build_gene_symbol_to_fbgn_dict()
@@ -76,6 +76,7 @@ class ExpressionValueAdapter(Adapter):
         self.label = 'expression_value'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(ExpressionValueAdapter, self).__init__(write_properties, add_provenance)
 
@@ -106,7 +107,7 @@ class ExpressionValueAdapter(Adapter):
                           "Spread"#: is the proportion of cells in the cluster in which the gene is detected"
                         )
                     ]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -132,7 +133,7 @@ class ExpressionValueAdapter(Adapter):
                          str(row[7]).replace('"', '').replace("'", '')         # Expression_Unit
                          ),
                     ]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -167,7 +168,7 @@ class ExpressionValueAdapter(Adapter):
                          "Total_exon_base_count"#: The number of bases in all exons of this gene"
                          ),
                     ]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
@@ -216,7 +217,7 @@ class ExpressionValueAdapter(Adapter):
                                 'Enrichment',  # Expression_Unit
                             ),
                         ]                        
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -253,7 +254,7 @@ class ExpressionValueAdapter(Adapter):
                                 'Enrichment',  # Expression_Unit
                             ),
                         ]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -286,7 +287,7 @@ class ExpressionValueAdapter(Adapter):
                                 'SD',          # Expression_Unit
                             ),
                         ]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -319,7 +320,7 @@ class ExpressionValueAdapter(Adapter):
                                 'SD',          # Expression_Unit
                             ),
                         ]   
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -349,7 +350,7 @@ class ExpressionValueAdapter(Adapter):
                                 '?',         # Expression_Unit  TODO: this is not a correct description (look at author's email...)
                             ),                            
                         ]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -376,15 +377,19 @@ class ExpressionValueAdapter(Adapter):
     
 
     def get_fbgn_from_flybase(self, gene_symbol: str):
-        # Establish a connection to the FlyBase database
-        conn = psycopg2.connect(
-            host="chado.flybase.org",
-            database="flybase",
-            user="flybase"
-        )    
+        try:
+            conn = psycopg2.connect(
+                host="chado.flybase.org",
+                database="flybase",
+                user="flybase",
+                connect_timeout=30,
+            )
+        except psycopg2.OperationalError as e:
+            logger.warning(f"get_fbgn_from_flybase: could not connect to chado.flybase.org: {e}")
+            return None
         cur = conn.cursor()
         cur.execute(f"SELECT uniquename, name, is_obsolete FROM feature WHERE feature.name LIKE '{gene_symbol}';")
-        results = cur.fetchall() 
+        results = cur.fetchall()
         for gene_data in results:
             if gene_data[-1] == False:    # is uniquename obsolete???
                 return gene_data[0]
@@ -392,44 +397,48 @@ class ExpressionValueAdapter(Adapter):
             if nothing is returned try an alternative query: Flybase appends :1, :2,... to symbols and FBgns
         '''
         cur.execute(f"SELECT uniquename, name, is_obsolete FROM feature WHERE feature.name LIKE '{gene_symbol}:1';")
-        results = cur.fetchall() 
+        results = cur.fetchall()
         #print(f'results for {gene_symbol}:\n{results}')
         for gene_data in results:
             if gene_data[-1] == False:    # uniquename is not obsolete
                 return gene_data[0].split(':')[0]
-            
+
         '''
             if nothing is returned try to get gene_symbol as a synonym...
         '''
         cur.execute(f"SELECT synonym.synonym_id FROM synonym WHERE synonym.name LIKE '{gene_symbol}';")
-        results = cur.fetchall() 
+        results = cur.fetchall()
         results = list(set(results))
         for res in results:
             cur.execute(f"SELECT feature_id FROM feature_synonym WHERE synonym_id={res[0]};")
-            results = cur.fetchall() 
+            results = cur.fetchall()
             results = list(set(results))
             for result in results:
                 cur.execute(f"SELECT uniquename, is_obsolete FROM feature WHERE feature_id={result[0]};")
-                feature_results = cur.fetchall() 
+                feature_results = cur.fetchall()
                 for feature in feature_results:
                     if feature[-1] == False:
                         return feature[0]
         cur.close()
         conn.close()
-        
+
         return None
 
 
     def build_fca2_fb_tissues_libraries_ids_dicts(self, file_path):
         gene_tissue_library_dict = {}
-        transcript_tissue_library_dict = {} 
-            
-        # Establish a connection to the FlyBase database
-        conn = psycopg2.connect(
-            host="chado.flybase.org",
-            database="flybase",
-            user="flybase"
-        )    
+        transcript_tissue_library_dict = {}
+
+        try:
+            conn = psycopg2.connect(
+                host="chado.flybase.org",
+                database="flybase",
+                user="flybase",
+                connect_timeout=30,
+            )
+        except psycopg2.OperationalError as e:
+            logger.warning(f"build_fca2_fb_tissues_libraries_ids_dicts: could not connect to chado.flybase.org: {e}")
+            return gene_tissue_library_dict, transcript_tissue_library_dict
         cur = conn.cursor()
         cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'RNA-Seq_Profile_FlyAtlas2_%';") #RNA-Seq_Profile_FlyAtlas2_
         results = cur.fetchall() 

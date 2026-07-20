@@ -8,7 +8,6 @@ version: "3.9"
 services:
   neo4j:
     image: ${NEO4J_IMAGE:-neo4j:5.21}
-    container_name: ${NEO4J_CONTAINER:-neo4j_bio_atomspace}
     restart: always
     ports:
       - "${NEO4J_HTTP_PORT:-7674}:7474"
@@ -49,3 +48,4 @@ volumes:
   neo4j_data:
   neo4j_logs:
   neo4j_plugins:
+

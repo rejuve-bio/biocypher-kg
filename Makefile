@@ -1,10 +1,11 @@
 .PHONY: help setup check-uv run run-interactive run-sample run-direct check-paths \
         download download-direct \
         test clean distclean \
-        neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
+        neo4j-up neo4j-reset neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
 
 # Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
 NEO4J_ENV_FILE ?= docker/neo4j.env
+NEO4J_PROJECT_NAME ?= biocypher_neo4j
 
 # Base input directory for resolving adapter config paths; overrides the input_dir: field in the YAML
 INPUT_DIR ?=
@@ -24,7 +25,8 @@ help:
 	@echo "  make distclean      - Full clean including virtual environment"
 	@echo ""
 	@echo "Neo4j deployment (configure via $(NEO4J_ENV_FILE)):"
-	@echo "  make neo4j-up           - Start Neo4j Docker container"
+	@echo "  make neo4j-up           - Start Neo4j Docker container (idempotent, preserves data)"
+	@echo "  make neo4j-reset        - Wipe Neo4j volumes and start fresh from env"
 	@echo "  make neo4j-down         - Stop and remove Neo4j Docker container"
 	@echo "  make neo4j-logs         - Stream Neo4j container logs"
 	@echo "  make neo4j-status       - Show Neo4j container status"
@@ -284,19 +286,39 @@ check-paths: check-uv
 
 # ─── Neo4j deployment targets ────────────────────────────────────────────────
 
+# neo4j-up: ## Start Neo4j Docker container (reads docker/neo4j.env)
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
+# 	@echo "✅ Neo4j starting — check status with: make neo4j-status"
+
+# neo4j-down: ## Stop and remove Neo4j Docker container
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
+# 	@echo "✅ Neo4j stopped"
+
+# neo4j-logs: ## Stream Neo4j container logs
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
+
+# neo4j-status: ## Show Neo4j container status
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
+
 neo4j-up: ## Start Neo4j Docker container (reads docker/neo4j.env)
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
 	@echo "✅ Neo4j starting — check status with: make neo4j-status"
 
+neo4j-reset: ## Wipe Neo4j volumes and start fresh from env (DESTROYS existing graph data)
+	@echo "♻️  Resetting Neo4j volumes so env settings are re-applied..."
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down --volumes
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d --force-recreate neo4j
+	@echo "✅ Neo4j started with fresh state from $(NEO4J_ENV_FILE) — check status with: make neo4j-status"
+
 neo4j-down: ## Stop and remove Neo4j Docker container
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
 	@echo "✅ Neo4j stopped"
 
 neo4j-logs: ## Stream Neo4j container logs
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
 
 neo4j-status: ## Show Neo4j container status
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
 
 neo4j-load: check-uv ## Load data with version tracking (incremental — only reloads changed datasets)
 	@export PATH="$$HOME/.local/bin:$$PATH"; \

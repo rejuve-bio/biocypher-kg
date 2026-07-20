@@ -16,36 +16,48 @@ nodes:
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
   molecular function:
     url: http://www.obofoundry.org/
     input_label: molecular_function
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
   cellular component:
     url: http://www.obofoundry.org/
     input_label: cellular_component
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
   sequence type:
     url: http://www.obofoundry.org/
     input_label: sequence_type
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
   molecular interaction:
     url: http://www.obofoundry.org/
     input_label: molecular_interaction
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
   disease:
     url: http://www.obofoundry.org/
     input_label: disease
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
   small molecule:
     url: http://www.obofoundry.org/
     input_label: small_molecule
@@ -75,6 +87,7 @@ relationships:
     target: biological process
     properties:
       rel_type: str
+    output_label: is_a
   molecular function subclass:
     url: http://www.obofoundry.org/
     input_label: molecular_function_subclass_of
@@ -82,6 +95,7 @@ relationships:
     target: molecular_function
     properties:
       rel_type: str
+    output_label: is_a
   cellular component subclass:
     url: http://www.obofoundry.org/
     input_label: cellular_component_subclass_of
@@ -89,6 +103,7 @@ relationships:
     target: cellular_component
     properties:
       rel_type: str
+    output_label: is_a
   so subclass of:
     url: http://www.obofoundry.org/
     input_label: so_subclass_of
@@ -96,6 +111,7 @@ relationships:
     target: sequence type
     properties:
       rel_type: str
+    output_label: is_a
   mi subclass of:
     url: http://www.obofoundry.org/
     input_label: mi_subclass_of
@@ -103,6 +119,7 @@ relationships:
     target: molecular interaction
     properties:
       rel_type: str
+    output_label: is_a
   do subclass of:
     url: http://www.obofoundry.org/
     input_label: do_subclass_of
@@ -110,6 +127,7 @@ relationships:
     target: disease
     properties:
       rel_type: str
+    output_label: is_a
   chebi subclass of:
     url: http://www.obofoundry.org/
     input_label: chebi_subclass_of

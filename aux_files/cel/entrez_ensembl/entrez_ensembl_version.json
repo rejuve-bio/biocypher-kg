@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-07-02T16:52:19.592879",
+  "processor": "entrez_ensembl",
+  "entries": 43332,
+  "remote_metadata": {
+    "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Caenorhabditis_elegans.gene_info.gz": {
+      "url": "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/Caenorhabditis_elegans.gene_info.gz",
+      "last_modified": "Thu, 02 Jul 2026 17:23:56 GMT",
+      "etag": null,
+      "content_length": "1303073",
+      "checked_at": "2026-07-02T16:52:21.290538"
+    },
+    "https://ftp.ensemblgenomes.ebi.ac.uk/pub/metazoa/release-63/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.63.gtf.gz": {
+      "url": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/metazoa/release-63/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.63.gtf.gz",
+      "last_modified": "Wed, 18 Mar 2026 10:11:21 GMT",
+      "etag": "\"8535ac-64d49ac773c93\"",
+      "content_length": "8730028",
+      "checked_at": "2026-07-02T16:52:22.211775"
+    }
+  }
+}
