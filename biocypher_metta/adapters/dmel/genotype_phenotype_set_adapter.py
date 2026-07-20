@@ -59,7 +59,7 @@ class GenotypePhenotypeAdapter(Adapter):
         self.source_url = 'https://flybase.org/'
         self.taxon_id = taxon_id
         super(GenotypePhenotypeAdapter, self).__init__(write_properties, add_provenance)
-        
+
         self.snp_fbal_cache = set()
         if self.label == 'involved_in':
             self.snp_fbal_cache = self._load_snp_fbal_cache()
@@ -67,22 +67,28 @@ class GenotypePhenotypeAdapter(Adapter):
     def _load_snp_fbal_cache(self):
         try:
             import psycopg2
-            conn = psycopg2.connect(host='chado.flybase.org', database='flybase', user='flybase', password='flybase', connect_timeout=10)
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT f_allele.uniquename
-                FROM feature f_snp
-                JOIN feature_relationship fr ON fr.subject_id = f_snp.feature_id
-                JOIN feature f_allele ON f_allele.feature_id = fr.object_id
-                WHERE f_snp.type_id=733 AND f_snp.is_obsolete=FALSE
-            """)
-            cache = {row[0] for row in cursor.fetchall()}
-            conn.close()
-            return cache
+            conn = psycopg2.connect(
+                host='chado.flybase.org', database='flybase',
+                user='flybase', password='flybase', connect_timeout=10
+            )
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT f_allele.uniquename
+                    FROM feature f_snp
+                    JOIN feature_relationship fr ON fr.subject_id = f_snp.feature_id
+                    JOIN feature f_allele ON f_allele.feature_id = fr.object_id
+                    WHERE f_snp.type_id=733
+                      AND f_snp.is_obsolete=FALSE
+                      AND f_snp.is_analysis=FALSE
+                      AND f_snp.organism_id=1
+                """)
+                return {row[0] for row in cursor.fetchall()}
         except Exception as e:
             print(f"Warning: Could not connect to FlyBase for SNPs: {e}")
             return set()
-
+        finally:
+            if conn is not None:
+                conn.close()
 
 
     def get_nodes(self):
@@ -153,7 +159,6 @@ class GenotypePhenotypeAdapter(Adapter):
                         yield source_id, target_id, 'snp_involved_in', props
                     else:
                         yield source_id, target_id, self.label, props
-
 
         elif self.label == 'genetically_informed_by':                     # phenotype to genotype schema
             id = -1

@@ -31,30 +31,33 @@ class AlleleAdapter(Adapter):
         self.taxon_id = taxon_id
         super(AlleleAdapter, self).__init__(write_properties, add_provenance)
         self.snp_cache = self._load_snp_cache()
-        
+
     def _load_snp_cache(self):
         """Fetch all SNPs and their locations from FlyBase in one fast query."""
         snp_cache = {}
+        conn = None
         try:
             conn = psycopg2.connect(
                 host="chado.flybase.org",
                 database="flybase",
                 user="flybase",
-                password="flybase" 
+                password="flybase",
+                connect_timeout=10
             )
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT f.uniquename, fl.fmin
-                FROM feature f
-                LEFT JOIN featureloc fl ON f.feature_id = fl.feature_id
-                WHERE f.type_id=733 AND f.is_obsolete=FALSE AND f.is_analysis=FALSE AND f.organism_id=1
-            """)
-            for row in cursor.fetchall():
-                uniquename, fmin = row
-                snp_cache[uniquename] = fmin
-            conn.close()
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT f.uniquename, fl.fmin
+                    FROM feature f
+                    LEFT JOIN featureloc fl ON f.feature_id = fl.feature_id
+                    WHERE f.type_id=733 AND f.is_obsolete=FALSE AND f.is_analysis=FALSE AND f.organism_id=1
+                """)
+                for uniquename, fmin in cursor.fetchall():
+                    snp_cache[uniquename] = fmin
         except Exception as e:
             print(f"Error connecting to or querying FlyBase: {e}")
+        finally:
+            if conn is not None:
+                conn.close()
         return snp_cache
 
     def get_nodes(self):
@@ -63,7 +66,7 @@ class AlleleAdapter(Adapter):
         #header:
         #AlleleID	AlleleSymbol	GeneID	GeneSymbol
         rows = fbal_table.get_rows()
-            
+
         for row in rows:
             props = {}
             fbal_id = row[0]       # AlleleID e.g. FBal0137236
@@ -88,11 +91,11 @@ class AlleleAdapter(Adapter):
         #header:
         #AlleleID	AlleleSymbol	GeneID	GeneSymbol
         rows = fbal_table.get_rows()
-            
+
         for row in rows:
             props = {}
-            fbal_id = row[0]      
-            allele_symbol = row[1] # AlleleSymbol e.g. gukh[142] — used as uniquename in FlyBase feature table
+            fbal_id = row[0]
+            allele_symbol = row[1] # AlleleSymbol — used as uniquename in FlyBase feature table
             source = f'FlyBase:{fbal_id}'
             target = f'FlyBase:{row[2]}'
             props['taxon_id'] = self.taxon_id
@@ -104,6 +107,7 @@ class AlleleAdapter(Adapter):
                 if is_snp:
                     yield source, target, self.label, props
             else:
+                # variant_of: mutually exclusive — SNPs get snp_variant_of, others get variant_of
                 if is_snp:
                     yield source, target, 'snp_variant_of', props
                 else:

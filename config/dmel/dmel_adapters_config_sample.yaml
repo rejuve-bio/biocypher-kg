@@ -200,17 +200,17 @@
 #   nodes: True
 #   edges: False
 
-# dmel_allele_to_phenotype_set:
-#   adapter:
-#     module: biocypher_metta.adapters.dmel.genotype_phenotype_set_adapter
-#     cls: GenotypePhenotypeAdapter
-#     args:
-#        label: involved_in
-#        dmel_filepath: ./samples/dmel/flybase/genotype_phenotype_data_fb_2024_02.tsv.gz
-#        dmel_fbrf_filepath: ./samples/dmel/flybase/fbrf_pmid_pmcid_doi_fb_2024_02.tsv.gz
-#   outdir: flybase/genotype_phenotype_set
-#   nodes: False
-#   edges: True
+dmel_allele_to_phenotype_set:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_set_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+       label: involved_in
+       dmel_filepath: ./samples/dmel/flybase/genotype_phenotype_data_fb_2024_02.tsv.gz
+       dmel_fbrf_filepath: ./samples/dmel/flybase/fbrf_pmid_pmcid_doi_fb_2024_02.tsv.gz
+  outdir: flybase/genotype_phenotype_set
+  nodes: False
+  edges: True
 
 
 # dmel_phenotype_set_to_genotype:
@@ -305,28 +305,29 @@
 #     edges: True
 
 
-# allele:
-#   adapter:
-#     module: biocypher_metta.adapters.dmel.allele_adapter
-#     cls: AlleleAdapter
-#     args:
-#        dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
-#        label: allele
-#   outdir: allele
-#   nodes: True
-#   edges: False
+allele:
+  adapter:
+    module: biocypher_metta.adapters.dmel.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+       label: allele
+  outdir: allele
+  nodes: True
+  edges: False
 
 
-# dmel_allele_to_gene:
-#   adapter:
-#     module: biocypher_metta.adapters.dmel.allele_adapter
-#     cls: AlleleAdapter
-#     args:
-#        dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
-#        label: variant_of
-#   outdir: allele
-#   nodes: False
-#   edges: True
+dmel_allele_to_gene:
+  adapter:
+    module: biocypher_metta.adapters.dmel.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: ./samples/dmel/flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+       label: variant_of
+  outdir: allele
+  nodes: False
+  edges: True
+
 
 dmel_snp_located_in_gene:
   adapter:
