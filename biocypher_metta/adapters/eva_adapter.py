@@ -31,7 +31,10 @@ try:
     _NCLS_AVAILABLE = True
 except ImportError:
     _NCLS_AVAILABLE = False
-    logger.warning("ncls package not found — EVA edge generation will be disabled.")
+    logger.warning(
+        "ncls package not found — EVA edge generation will fail if enabled. "
+        "Install it with: pip install ncls"
+    )
 
 _SPECIES_META = {
     7227:  {

@@ -1384,7 +1384,6 @@ uniprot_dbxref_molecular_function:
 #   nodes: False
 #   edges: True
 
-<<<<<<< HEAD
 alliance_gene_orthology:
   adapter:
     module: biocypher_metta.adapters.alliance_gene_orthology_adapter
@@ -1404,7 +1403,7 @@ eva_snp:
     module: biocypher_metta.adapters.eva_adapter
     cls: EVAAdapter
     args:
-      filepath: ./samples/dmel/eva/7227_GCA_000001215.4_current_ids.vcf
+      filepath: ./samples/dmel/eva/7227_GCA_000001215.4_current_ids.vcf.gz
       taxon_id: 7227
       label: snp
   outdir: dmel/eva
@@ -1416,23 +1415,10 @@ eva_snp_in_gene:
     module: biocypher_metta.adapters.eva_adapter
     cls: EVAAdapter
     args:
-      filepath: ./samples/dmel/eva/7227_GCA_000001215.4_current_ids.vcf
+      filepath: ./samples/dmel/eva/7227_GCA_000001215.4_current_ids.vcf.gz
       gene_filepath: ./samples/dmel/gencode_Drosophila_melanogaster.BDGP6.46.60.chr.gtf.gz
       taxon_id: 7227
       label: snp_in_gene
   outdir: dmel/eva
   nodes: False
   edges: True
-=======
-# alliance_gene_orthology:
-#   adapter:
-#     module: biocypher_metta.adapters.alliance_gene_orthology_adapter
-#     cls: AllianceGeneOrthologyAdapter
-#     args:
-#       filepath: ./samples/alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
-#       taxon_id: 7227
-#       label: orthologs_genes
-#   outdir: alliance/orthology
-#   nodes: False
-#   edges: True
->>>>>>> rejuve-bio/main
