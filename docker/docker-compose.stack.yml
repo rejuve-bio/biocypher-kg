@@ -29,6 +29,9 @@ services:
       NEO4J_USER: "${NEO4J_USER:-neo4j}"
       NEO4J_PASSWORD: "${NEO4J_PASSWORD:-neo4jpassword}"
       NEO4J_DATABASE: "${NEO4J_DATABASE:-neo4j}"
+      # Used by "Load to Neo4j/MORK" (version_manager archive dir + MORK server).
+      ARCHIVE_BASE: "${ARCHIVE_BASE:-${DATA_ROOT:-${HOME}}/archives}"
+      MORK_URL: "${MORK_URL:-http://localhost:8432}"
     volumes:
       # Build jobs/logs/output on the HOST (visible on disk).
       - ${HOST_BUILDS_DIR:-../kg-service/.builds}:/app/kg-service/.builds

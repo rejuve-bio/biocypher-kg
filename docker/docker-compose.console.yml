@@ -23,11 +23,14 @@ services:
       # Same as the DATA_ROOT mount → blank-output builds auto-name a dated dir here.
       DATA_ROOT: "${DATA_ROOT:-${HOME}}"
       MAX_CONCURRENT_BUILDS: "1"
-      # Point at a Neo4j for the Observatory endpoints (optional; Console works without it):
-      # NEO4J_URI: bolt://host.docker.internal:7887
-      # NEO4J_USER: neo4j
-      # NEO4J_PASSWORD: your_password
-      # NEO4J_DATABASE: neo4j
+      # Point at an external Neo4j/MORK for the Observatory + "Load to Neo4j/MORK".
+      # (Console works without them; loading needs them set.)
+      NEO4J_URI: "${NEO4J_URI:-bolt://host.docker.internal:7687}"
+      NEO4J_USER: "${NEO4J_USER:-neo4j}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD:-neo4jpassword}"
+      NEO4J_DATABASE: "${NEO4J_DATABASE:-neo4j}"
+      ARCHIVE_BASE: "${ARCHIVE_BASE:-${DATA_ROOT:-${HOME}}/archives}"
+      MORK_URL: "${MORK_URL:-http://localhost:8432}"
     volumes:
       # Build jobs/logs/output on the HOST (visible on disk, survives restarts).
       - ${HOST_BUILDS_DIR:-../kg-service/.builds}:/app/kg-service/.builds
