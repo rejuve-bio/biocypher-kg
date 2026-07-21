@@ -9,3 +9,4 @@ nodes:
     properties:
       phred_score: float
       raw_cadd_score: float
+      taxon_id: int

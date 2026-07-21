@@ -880,6 +880,9 @@ class SchemaGenerator:
         by_source = defaultdict(list)
 
         for adapter_name, config in self.adapter_config.items():
+            if not isinstance(config, dict):
+                continue
+
             # Filter by adapter name if specified
             if filter_adapters and adapter_name not in filter_adapters:
                 continue

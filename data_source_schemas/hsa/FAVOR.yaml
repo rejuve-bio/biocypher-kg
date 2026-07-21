@@ -12,3 +12,4 @@ nodes:
       end: int
       ref: str
       start: int
+      taxon_id: int

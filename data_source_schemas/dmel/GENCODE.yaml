@@ -10,6 +10,8 @@ nodes:
       start: int
       gene_type: str
       gene_name: str
+      synonym: str[]
+      taxon_id: int
   transcript:
     url: https://www.gencodegenes.org/
     input_label: transcript
@@ -19,6 +21,7 @@ nodes:
       transcript_name: str
       gene_name: str
       transcript_id: str
+      taxon_id: int
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon
@@ -30,6 +33,7 @@ nodes:
       exon_number: int
       start: int
       transcript_id: str
+      taxon_id: int
 relationships:
   transcribes to:
     url: https://www.gencodegenes.org/
@@ -45,6 +49,9 @@ relationships:
       example, a particular exon is part of a particular transcript or gene
     source: exon
     target: transcript
+    output_label: part_of
+    properties:
+      taxon_id: int
   exon part_of gene:
     url: https://www.gencodegenes.org/
     input_label: part_of_gene
@@ -52,3 +59,6 @@ relationships:
       example, a particular exon is part of a particular transcript or gene
     source: exon
     target: gene
+    output_label: part_of
+    properties:
+      taxon_id: int

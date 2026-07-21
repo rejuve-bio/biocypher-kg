@@ -18,3 +18,4 @@ relationships:
     target: gene
     properties:
       taxon_id: int
+    output_label: associated_with

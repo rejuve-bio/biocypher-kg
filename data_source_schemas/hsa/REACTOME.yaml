@@ -215,3 +215,10 @@ relationships:
       that the pathway is associated with the component.
     source: pathway
     target: cellular component
+  reaction_to_molecular_function:
+    url: https://reactome.org
+    input_label: reaction_to_molecular_function
+    description: An association between a reaction and a molecular function, indicating
+      that the reaction is involved in the function.
+    source: reaction
+    target: molecular function

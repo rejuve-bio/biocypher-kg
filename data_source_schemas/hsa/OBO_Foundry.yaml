@@ -89,6 +89,14 @@ nodes:
       description: str
       synonym: str[]
       term_name: str
+  developmental stage:
+    url: http://www.obofoundry.org/
+    input_label: developmental_stage
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
 relationships:
   biological process subclass:
     url: http://www.obofoundry.org/
@@ -195,3 +203,21 @@ relationships:
     output_label: is_a
     source: disease
     target: disease
+  hsapdv subclass of:
+    url: http://www.obofoundry.org/
+    input_label: hsapdv_subclass_of
+    output_label: is_a
+    source: developmental stage
+    target: developmental stage
+  omim subclass of:
+    url: http://www.obofoundry.org/
+    input_label: omim_subclass_of
+    output_label: is_a
+    source: disease
+    target: disease
+  anatomy subclass of:
+    url: http://www.obofoundry.org/
+    input_label: anatomy_subclass_of
+    output_label: is_a
+    source: anatomy
+    target: anatomy
