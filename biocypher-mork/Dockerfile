@@ -13,6 +13,13 @@ RUN apt-get update && apt-get install -y \
 # Set working dir
 WORKDIR /app
 
+# gxhash (a PathMap/MORK dependency) needs CPU intrinsics enabled at build time
+# (aes+neon on ARM / aes on x86). Without this, the build fails with:
+#   "Gxhash requires aes and neon intrinsics ... build with RUSTFLAGS=..."
+# target-cpu=native enables whatever the build host supports (works on Apple
+# Silicon and x86 alike for a locally-built image).
+ENV RUSTFLAGS="-C target-cpu=native"
+
 # Build PathMap
 RUN git clone --depth=1 https://github.com/Adam-Vandervorst/PathMap.git /app/PathMap && \
     cd /app/PathMap && \
