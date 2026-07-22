@@ -11,14 +11,18 @@ except ImportError:
     pass  # python-dotenv is optional; set env vars manually if not installed
 
 
+import copy
 import fnmatch
 import importlib
 import json
 import logging
+import multiprocessing as mp
 import os
 import tempfile
 import time
+import traceback
 from collections import Counter, defaultdict
+from concurrent.futures import ProcessPoolExecutor, as_completed, CancelledError
 from datetime import date
 from pathlib import Path
 from typing import List, Optional
@@ -181,7 +185,7 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
         "last_updated_at": str(date.today()),
         "kg_format": kg_format,
         "data_size": "",
-        "top_entities": [{"name": node, "count": count} for node, count in nodes_count.items()],
+        "top_entities": [{"name": node, "count": count} for node, count in sorted(nodes_count.items())],
         "top_connections": [],
         "frequent_relationships": [],
         "schema": {"nodes": [], "edges": []},
@@ -220,28 +224,31 @@ def gather_graph_info(nodes_count, nodes_props, edges_count, schema_dict, output
                 relations_frequency[f"{source_type}|{target_type}"] += count
                 possible_connections[f"{source_type}|{target_type}"].add(label)
 
+    # Sort all list outputs so graph_info.json is deterministic regardless of
+    # adapter completion order (which varies under parallel execution) and set
+    # iteration order.
     graph_info["top_connections"] = [
         {"name": predicate, "count": count}
-        for predicate, count in predicate_count.items()
+        for predicate, count in sorted(predicate_count.items())
     ]
     graph_info["frequent_relationships"] = [
         {"entities": rel.split("|"), "count": count}
-        for rel, count in relations_frequency.items()
+        for rel, count in sorted(relations_frequency.items())
     ]
 
-    for node, props in nodes_props.items():
+    for node, props in sorted(nodes_props.items()):
         graph_info["schema"]["nodes"].append(
-            {"data": {"id": node, "properties": list(props)}}
+            {"data": {"id": node, "properties": sorted(props)}}
         )
 
-    for conn, pos_connections in possible_connections.items():
+    for conn, pos_connections in sorted(possible_connections.items()):
         source, target = conn.split("|")
         graph_info["schema"]["edges"].append(
             {
                 "data": {
                     "source": source,
                     "target": target,
-                    "possible_connections": list(pos_connections),
+                    "possible_connections": sorted(pos_connections),
                 }
             }
         )
@@ -503,6 +510,407 @@ def _try_generate_data_source_schemas(
         logger.exception("Data source schema generation failed; KG output was already written.")
 
 
+# ---------------------------------------------------------------------------
+# Parallel adapter execution
+# ---------------------------------------------------------------------------
+#
+# Each worker process builds its own writer once (in the pool initializer) and
+# reuses it across the adapters it runs — writer construction parses the biolink
+# ontology, so a fresh writer per adapter would be far too costly. Adapters write
+# to distinct output dirs, so per-worker writers never touch the same files
+# (adapters sharing an outdir are coalesced onto one worker; see
+# _process_adapters_parallel). The main process alone owns the checkpoint and the
+# accumulators, merging each worker's returned result as it completes.
+
+_WORKER_WRITER = None
+
+
+def _worker_init(writer_kwargs):
+    """Pool initializer: construct this worker process's single writer."""
+    global _WORKER_WRITER
+    kwargs = dict(writer_kwargs)
+    buffer_size = kwargs.pop("buffer_size", None)
+    overwrite = kwargs.pop("overwrite", None)
+    writer = get_writer(**kwargs)
+    if str(kwargs.get("writer_type", "")).lower() == "parquet":
+        if buffer_size is not None:
+            writer.buffer_size = buffer_size
+        if overwrite is not None:
+            writer.overwrite = overwrite
+    _WORKER_WRITER = writer
+
+
+def _worker_noop():
+    """Health-check task: forces a worker to spawn and run _worker_init."""
+    return _WORKER_WRITER is not None
+
+
+def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_id):
+    """Run one adapter in a worker process and return a picklable result dict.
+
+    ctr_args (dbSNP maps, write_properties, add_provenance) are injected by the
+    main process before submission, mirroring the sequential path.
+    """
+    writer = _WORKER_WRITER
+    writer.clear_counts()
+
+    adapter_config = adapter_entry["adapter"]
+    adapter_module = importlib.import_module(adapter_config["module"])
+    adapter_cls = getattr(adapter_module, adapter_config["cls"])
+    ctr_args = adapter_config["args"]
+    adapter = adapter_cls(**ctr_args)
+
+    write_nodes = adapter_entry["nodes"]
+    write_edges = adapter_entry["edges"]
+    outdir = adapter_entry["outdir"]
+    prov = adapter_entry.get("provenance") or {}
+
+    dataset_name = getattr(adapter, "source", None)
+    version = prov.get("version") or getattr(adapter, "version", None)
+    source_url = prov.get("source_url") or getattr(adapter, "source_url", None)
+
+    adapter_start = time.time()
+    freq_nodes, props, freq_edges = {}, {}, {}
+    empty = []
+    adapter_nodes = adapter_edges = 0
+
+    if write_nodes:
+        nodes = adapter.get_nodes()
+        if not include_taxon_id:
+            nodes = _strip_taxon_id(nodes, is_edge=False)
+        freq_nodes, props = writer.write_nodes(nodes, path_prefix=outdir)
+        if not freq_nodes:
+            empty.append((adapter_name, "nodes"))
+        else:
+            adapter_nodes = sum(freq_nodes.values())
+
+    if write_edges:
+        edges = adapter.get_edges()
+        if not include_taxon_id:
+            edges = _strip_taxon_id(edges, is_edge=True)
+        freq_edges = writer.write_edges(edges, path_prefix=outdir)
+        if not freq_edges:
+            empty.append((adapter_name, "edges"))
+        else:
+            adapter_edges = sum(freq_edges.values())
+
+    return {
+        "adapter_name": adapter_name,
+        "freq_nodes": dict(freq_nodes),
+        "props": {k: set(v) for k, v in (props or {}).items()},
+        "freq_edges": dict(freq_edges),
+        "dataset_name": dataset_name,
+        "version": version,
+        "source_url": source_url,
+        "prov": prov,
+        "write_nodes": write_nodes,
+        "write_edges": write_edges,
+        "adapter_nodes": adapter_nodes,
+        "adapter_edges": adapter_edges,
+        "empty": empty,
+        "elapsed": time.time() - adapter_start,
+        "error": None,
+    }
+
+
+def _run_adapter_group(group, schema_dict, include_taxon_id):
+    """Run a group of adapters (sharing one output dir) sequentially in a worker.
+
+    Each adapter is guarded independently so a single failure doesn't lose the
+    others' completion status; the failed one is reported via its 'error' field.
+    """
+    results = []
+    for adapter_name, adapter_entry in group:
+        try:
+            results.append(
+                _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_id)
+            )
+        except Exception:
+            # Capture the full traceback (not just the exception line) so failures
+            # in a worker are as debuggable as in the sequential path.
+            results.append({
+                "adapter_name": adapter_name,
+                "error": traceback.format_exc().strip(),
+            })
+    return results
+
+
+def _apply_result_to_datasets(res, datasets_dict, schema_dict):
+    """Merge one adapter result's provenance + label sets into datasets_dict.
+
+    Mirrors the sequential path's datasets_dict assembly.
+    """
+    dataset_name = res["dataset_name"]
+    if dataset_name is None:
+        return
+    if dataset_name not in datasets_dict:
+        prov = res["prov"]
+        datasets_dict[dataset_name] = {
+            "name": dataset_name,
+            "version": res["version"],
+            "url": res["source_url"],
+            "date": prov.get("date"),
+            "citation": prov.get("citation"),
+            "license": prov.get("license"),
+            "checksums": prov.get("checksums"),
+            "nodes": set(),
+            "edges": set(),
+            "imported_on": str(date.today()),
+        }
+    for node_label in res["freq_nodes"]:
+        datasets_dict[dataset_name]["nodes"].add(node_label)
+    for edge_label_key in res["freq_edges"]:
+        edge_type = edge_label_key.split("|")[0]
+        if edge_type.lower() in schema_dict:
+            output_label = schema_dict[edge_type.lower()]["output_label"] or edge_type
+        else:
+            output_label = edge_type
+        datasets_dict[dataset_name]["edges"].add(output_label)
+
+
+def _adapter_output_key(adapter_name, adapter_entry):
+    """Collision key: adapters with the same key resolve to the same output file.
+
+    A safe proxy for the real per-writer output filename (see the note in
+    _process_adapters_parallel). Adapters without a declared label get a unique key
+    so they never coalesce with others.
+    """
+    args = adapter_entry.get("adapter", {}).get("args", {})
+    label = args.get("label")
+    if label is None:
+        label_key = f"__adapter__::{adapter_name}"
+    elif isinstance(label, list):
+        label_key = tuple(label)
+    else:
+        label_key = label
+    return (adapter_entry["outdir"], label_key)
+
+
+def _rebuild_datasets_dict(base_snapshot, results, schema_dict):
+    """Deterministically rebuild datasets_dict from a base + this run's results.
+
+    Results are applied in sorted adapter-name order so that first-touch provenance
+    metadata is reproducible regardless of worker completion order.
+    """
+    datasets_dict = copy.deepcopy(base_snapshot)
+    for res in sorted(results, key=lambda r: r["adapter_name"]):
+        _apply_result_to_datasets(res, datasets_dict, schema_dict)
+    return datasets_dict
+
+
+def _process_adapters_parallel(
+    adapters_dict,
+    dbsnp_rsids_dict,
+    dbsnp_pos_dict,
+    write_properties,
+    add_provenance,
+    schema_dict,
+    checkpoint_manager,
+    include_taxon_id,
+    writer_kwargs,
+    max_workers,
+    nodes_count,
+    nodes_props,
+    edges_count,
+    datasets_dict,
+    completed_adapters,
+    empty_output_adapters,
+    total_start,
+):
+    """Run adapters concurrently across a process pool. Returns the same 7-tuple
+    as process_adapters()."""
+    total_adapters = len(adapters_dict)
+    pending = [name for name in adapters_dict if name not in completed_adapters]
+    adapter_times: dict = {}
+
+    if not pending:
+        logger.info("All adapters already completed (from checkpoint).")
+        return (
+            nodes_count, nodes_props, edges_count, datasets_dict,
+            adapter_times, empty_output_adapters, total_start,
+        )
+
+    # Inject runtime ctr_args (dbSNP maps, write/provenance flags), mirroring the
+    # sequential path. dbSNP wrappers are picklable and reopen read-only per worker.
+    for name in pending:
+        ctr_args = adapters_dict[name]["adapter"]["args"]
+        if "dbsnp_rsid_map" in ctr_args:
+            ctr_args["dbsnp_rsid_map"] = dbsnp_rsids_dict
+        if "dbsnp_pos_map" in ctr_args:
+            ctr_args["dbsnp_pos_map"] = dbsnp_pos_dict
+        ctr_args["write_properties"] = write_properties
+        ctr_args["add_provenance"] = add_provenance
+
+    # Coalesce adapters that resolve to the same output file — i.e. same outdir and
+    # same label — into one sequential task, so two workers never rewrite the same
+    # file concurrently (which would corrupt it). Adapters with distinct labels in a
+    # shared outdir write distinct files and stay fully parallel. Adapters without a
+    # declared label get a unique key so they never coalesce. A collision (>1 in a
+    # group) is warned about: it already yields last-writer-wins today.
+    #
+    # NOTE: (outdir, label) is a safe proxy for the real per-writer output filename,
+    # which holds for all current writers (they key the filename on outdir + label,
+    # optionally with source/target types that are themselves determined by the
+    # label). If a future writer or adapter maps two *distinct* labels to the same
+    # file, revisit this key so such a collision is still coalesced.
+    file_groups: dict = defaultdict(list)
+    for name in pending:
+        file_groups[_adapter_output_key(name, adapters_dict[name])].append(name)
+    for (outdir, label_key), names in file_groups.items():
+        if len(names) > 1:
+            logger.warning(
+                f"{len(names)} adapters resolve to the same output "
+                f"(outdir='{outdir}', label='{label_key}'): {names}. "
+                "They will run sequentially in one worker to avoid file corruption; "
+                "later ones overwrite earlier ones (pre-existing last-writer-wins behavior)."
+            )
+    group_list = [
+        [(name, adapters_dict[name]) for name in names]
+        for names in file_groups.values()
+    ]
+
+    restored_datasets_snapshot = copy.deepcopy(datasets_dict)
+    run_results: list = []
+    failed_adapters: list = []
+    first_exc = None
+    aborting = False
+
+    logger.info(
+        f"Running {len(pending)} adapter(s) in {len(group_list)} task group(s) "
+        f"with up to {max_workers} worker process(es)..."
+    )
+
+    ctx = mp.get_context("fork")
+    executor = ProcessPoolExecutor(
+        max_workers=max_workers,
+        mp_context=ctx,
+        initializer=_worker_init,
+        initargs=(writer_kwargs,),
+    )
+    try:
+        # Health check: force all workers to spawn and run the initializer now, so
+        # a bad writer/schema config fails clearly instead of as an opaque
+        # BrokenProcessPool once real work is dispatched.
+        health = [executor.submit(_worker_noop) for _ in range(max_workers)]
+        try:
+            for h in health:
+                h.result()
+        except Exception as exc:
+            raise RuntimeError(
+                f"Worker initialization failed while constructing the writer: {exc}. "
+                "Check the writer type and schema config path."
+            ) from exc
+
+        future_to_group = {
+            executor.submit(_run_adapter_group, group, schema_dict, include_taxon_id): group
+            for group in group_list
+        }
+
+        for fut in as_completed(future_to_group):
+            group = future_to_group[fut]
+            try:
+                group_results = fut.result()
+            except CancelledError:
+                continue  # cancelled by the abort path below; not a failure
+            except Exception as exc:
+                names = [n for n, _ in group]
+                failed_adapters.extend(names)
+                logger.error(f"Adapter group {names} crashed: {exc}")
+                if first_exc is None:
+                    first_exc = exc
+                group_results = []
+
+            for res in group_results:
+                name = res["adapter_name"]
+                if res.get("error"):
+                    failed_adapters.append(name)
+                    logger.error(f"Adapter '{name}' failed: {res['error']}")
+                    if first_exc is None:
+                        first_exc = RuntimeError(f"Adapter '{name}' failed: {res['error']}")
+                    continue
+
+                # Merge commutative accumulators.
+                for label, cnt in res["freq_nodes"].items():
+                    nodes_count[label] += cnt
+                for label, propset in res["props"].items():
+                    nodes_props[label] = nodes_props[label].union(propset)
+                for key, cnt in res["freq_edges"].items():
+                    edges_count[key] += cnt
+                for empty_name, empty_kind in res["empty"]:
+                    logger.warning(f"Adapter '{empty_name}' produced 0 {empty_kind}.")
+                    empty_output_adapters.append((empty_name, empty_kind))
+                adapter_times[name] = res["elapsed"]
+                if res["dataset_name"] is None:
+                    logger.warning(
+                        f"Dataset name is None for adapter: {name}. "
+                        "Ensure 'source' is defined in the adapter constructor."
+                    )
+
+                run_results.append(res)
+                completed_adapters.append(name)
+                # Rebuild datasets_dict deterministically (sorted) for reproducibility.
+                datasets_dict = _rebuild_datasets_dict(
+                    restored_datasets_snapshot, run_results, schema_dict
+                )
+
+                counts_parts = []
+                if res["write_nodes"]:
+                    counts_parts.append(f"nodes: {res['adapter_nodes']:,}")
+                if res["write_edges"]:
+                    counts_parts.append(f"edges: {res['adapter_edges']:,}")
+                counts_str = (", ".join(counts_parts) + " | ") if counts_parts else ""
+                logger.info(
+                    f"  >> [{len(completed_adapters)}/{total_adapters}] Adapter '{name}' completed"
+                    f"  [{counts_str}time: {_fmt_elapsed(res['elapsed'])}]"
+                )
+
+                if checkpoint_manager is not None:
+                    checkpoint_manager.save(
+                        completed_adapters=completed_adapters,
+                        nodes_count=nodes_count,
+                        nodes_props=nodes_props,
+                        edges_count=edges_count,
+                        datasets_dict=datasets_dict,
+                        failed_adapters=None,
+                        elapsed_seconds=time.time() - total_start,
+                    )
+
+            # On the first failure: stop starting new groups, but keep draining and
+            # merging those already running so completed work isn't discarded.
+            if first_exc is not None and not aborting:
+                aborting = True
+                logger.warning(
+                    "A failure occurred; cancelling queued adapters and draining "
+                    "in-flight ones before aborting."
+                )
+                executor.shutdown(wait=False, cancel_futures=True)
+    finally:
+        executor.shutdown(wait=True)
+
+    if first_exc is not None:
+        if checkpoint_manager is not None:
+            checkpoint_manager.save(
+                completed_adapters=completed_adapters,
+                nodes_count=nodes_count,
+                nodes_props=nodes_props,
+                edges_count=edges_count,
+                datasets_dict=datasets_dict,
+                failed_adapters=failed_adapters,
+                elapsed_seconds=time.time() - total_start,
+            )
+            logger.info(
+                "Checkpoint saved. Re-run the pipeline to resume "
+                f"failed/pending adapter(s): {failed_adapters}"
+            )
+        raise first_exc
+
+    logger.info(f"All adapters completed in {_fmt_elapsed(time.time() - total_start)}")
+    return (
+        nodes_count, nodes_props, edges_count, datasets_dict,
+        adapter_times, empty_output_adapters, total_start,
+    )
+
+
 def process_adapters(
     adapters_dict,
     dbsnp_rsids_dict,
@@ -514,6 +922,8 @@ def process_adapters(
     checkpoint_manager: Optional[CheckpointManager] = None,
     include_taxon_id: bool = True,
     skip_preflight: bool = False,
+    writer_kwargs: Optional[dict] = None,
+    max_workers: int = 1,
 ):
     """
     Iterate over all adapters, write nodes/edges, and accumulate statistics.
@@ -525,6 +935,10 @@ def process_adapters(
     - If an adapter raises an exception the checkpoint is saved with the
       failing adapter name before re-raising, so the user can fix the data
       and resume without losing prior progress.
+
+    When max_workers > 1 (and writer_kwargs is provided and the writer is not
+    networkx), adapters run concurrently across a process pool; each worker builds
+    its own writer from writer_kwargs. Otherwise the sequential path below is used.
     """
     if not skip_preflight:
         completed = set(checkpoint_manager.completed_adapters if checkpoint_manager else [])
@@ -559,6 +973,33 @@ def process_adapters(
     total_adapters = len(adapters_dict)
     current_adapter_idx = 0
     adapter_times: dict[str, float] = {}
+
+    run_parallel = (
+        max_workers is not None
+        and max_workers > 1
+        and writer_kwargs is not None
+        and str(writer_kwargs.get("writer_type", "")).lower() != "networkx"
+    )
+    if run_parallel:
+        return _process_adapters_parallel(
+            adapters_dict,
+            dbsnp_rsids_dict,
+            dbsnp_pos_dict,
+            write_properties,
+            add_provenance,
+            schema_dict,
+            checkpoint_manager,
+            include_taxon_id,
+            writer_kwargs,
+            max_workers,
+            nodes_count,
+            nodes_props,
+            edges_count,
+            datasets_dict,
+            completed_adapters,
+            empty_output_adapters,
+            total_start,
+        )
 
     for adapter_name in adapters_dict:
         current_adapter_idx += 1
@@ -675,7 +1116,7 @@ def process_adapters(
                     nodes_props=nodes_props,
                     edges_count=edges_count,
                     datasets_dict=datasets_dict,
-                    failed_adapter=adapter_name,
+                    failed_adapters=[adapter_name],
                     elapsed_seconds=time.time() - total_start,
                 )
                 logger.info(
@@ -703,7 +1144,7 @@ def process_adapters(
                 nodes_props=nodes_props,
                 edges_count=edges_count,
                 datasets_dict=datasets_dict,
-                failed_adapter=None,
+                failed_adapters=None,
                 elapsed_seconds=time.time() - total_start,
             )
             # logger.info(f"Checkpoint updated after adapter: {adapter_name}")
@@ -719,9 +1160,11 @@ def _write_graph_info(
     graph_info = gather_graph_info(
         nodes_count, nodes_props, edges_count, schema_dict, output_dir, kg_format=kg_format
     )
-    for dataset_name in datasets_dict:
-        datasets_dict[dataset_name]["nodes"] = list(datasets_dict[dataset_name]["nodes"])
-        datasets_dict[dataset_name]["edges"] = list(datasets_dict[dataset_name]["edges"])
+    # Sort by dataset name so the output is deterministic regardless of adapter
+    # completion order (adapters can complete out of order under parallel execution).
+    for dataset_name in sorted(datasets_dict):
+        datasets_dict[dataset_name]["nodes"] = sorted(datasets_dict[dataset_name]["nodes"])
+        datasets_dict[dataset_name]["edges"] = sorted(datasets_dict[dataset_name]["edges"])
         graph_info["datasets"].append(datasets_dict[dataset_name])
 
     graph_info["dataset_count"] = len(graph_info["datasets"])
@@ -1032,6 +1475,15 @@ def main(
             "Not used with --species all (each species auto-discovers its own manifest)."
         ),
     ),
+    max_workers: Optional[int] = typer.Option(
+        None,
+        "--max-workers",
+        help=(
+            "Number of parallel worker processes for running adapters within a species. "
+            "Defaults to min(8, CPU count). Use 1 to run adapters sequentially. "
+            "The networkx writer always runs sequentially."
+        ),
+    ),
 ):
     """
     Main function. Call individual adapters to download and process data. Build
@@ -1056,6 +1508,16 @@ def main(
 
     manual_mode = all([adapters_config, schema_config])
     species_mode = species is not None
+
+    # Resolve worker count: default to a modest cap; 1 = sequential.
+    if max_workers is None:
+        max_workers = min(8, os.cpu_count() or 1)
+    max_workers = max(1, max_workers)
+    if writer_type.lower() == "networkx" and max_workers > 1:
+        logger.info("networkx writer builds a single in-memory graph; running adapters sequentially.")
+        max_workers = 1
+    elif max_workers > 1:
+        logger.info(f"Adapter execution: up to {max_workers} parallel worker process(es).")
 
     if not manual_mode and not species_mode:
         logger.error("You must either:")
@@ -1128,18 +1590,37 @@ def main(
                         resume=resume,
                     )
 
-                    bc = get_writer(
-                        writer_type,
-                        sp_output_dir,
-                        sp_schema_config,
-                        include_curie=include_curie,
-                        import_root=output_dir,
+                    # The main process only needs its own writer for the sequential
+                    # path or networkx (which can't be parallelized). In parallel mode
+                    # each worker builds its own, so skip this (ontology-parsing)
+                    # construction here to avoid a wasted parse per species.
+                    writer_needed_in_main = max_workers == 1 or writer_type == "networkx"
+                    bc = (
+                        get_writer(
+                            writer_type,
+                            sp_output_dir,
+                            sp_schema_config,
+                            include_curie=include_curie,
+                            import_root=output_dir,
+                        )
+                        if writer_needed_in_main
+                        else None
                     )
                     logger.info(f"Using {writer_type} writer for {sp}")
 
-                    if writer_type == "parquet":
+                    if bc is not None and writer_type == "parquet":
                         bc.buffer_size = buffer_size
                         bc.overwrite = overwrite
+
+                    sp_writer_kwargs = {
+                        "writer_type": writer_type,
+                        "output_dir": sp_output_dir,
+                        "schema_config_path": sp_schema_config,
+                        "include_curie": include_curie,
+                        "import_root": output_dir,
+                        "buffer_size": buffer_size,
+                        "overwrite": overwrite,
+                    }
 
                     schema_dict = preprocess_schema(sp_schema_config)
                     sp_adapters_dict = _load_adapters_config(sp_adapters_config, sp, input_dir=input_dir)
@@ -1178,13 +1659,15 @@ def main(
                         checkpoint_manager=ckpt,
                         include_taxon_id=include_taxon_id,
                         skip_preflight=skip_preflight,
+                        writer_kwargs=sp_writer_kwargs,
+                        max_workers=max_workers,
                     )
 
                     if writer_type == "networkx":
                         bc.write_graph()
                         logger.info(f"NetworkX graph saved for {sp}")
 
-                    if hasattr(bc, "finalize"):
+                    if bc is not None and hasattr(bc, "finalize"):
                         bc.finalize()
 
                     _write_graph_info(
@@ -1355,17 +1838,35 @@ def main(
             resume=resume,
         )
 
-        bc = get_writer(
-            writer_type,
-            output_dir,
-            schema_config,
-            include_curie=include_curie,
+        # Only construct the main-process writer when it's actually used: the
+        # sequential path or networkx. In parallel mode each worker builds its own,
+        # so skip this (ontology-parsing) construction to avoid a wasted parse.
+        writer_needed_in_main = max_workers == 1 or writer_type == "networkx"
+        bc = (
+            get_writer(
+                writer_type,
+                output_dir,
+                schema_config,
+                include_curie=include_curie,
+            )
+            if writer_needed_in_main
+            else None
         )
         logger.info(f"Using {writer_type} writer")
 
-        if writer_type == "parquet":
+        if bc is not None and writer_type == "parquet":
             bc.buffer_size = buffer_size
             bc.overwrite = overwrite
+
+        writer_kwargs = {
+            "writer_type": writer_type,
+            "output_dir": output_dir,
+            "schema_config_path": schema_config,
+            "include_curie": include_curie,
+            "import_root": None,
+            "buffer_size": buffer_size,
+            "overwrite": overwrite,
+        }
 
         schema_dict = preprocess_schema(schema_config)
         adapters_dict = _load_adapters_config(adapters_config, str(adapters_config), input_dir=input_dir, manifest_path=manifest)
@@ -1405,13 +1906,15 @@ def main(
             checkpoint_manager=ckpt,
             include_taxon_id=include_taxon_id,
             skip_preflight=skip_preflight,
+            writer_kwargs=writer_kwargs,
+            max_workers=max_workers,
         )
 
         if writer_type == "networkx":
             bc.write_graph()
             logger.info("NetworkX graph saved successfully")
 
-        if hasattr(bc, "finalize"):
+        if bc is not None and hasattr(bc, "finalize"):
             bc.finalize()
 
         _write_graph_info(
