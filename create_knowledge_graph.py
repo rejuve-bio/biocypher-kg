@@ -668,13 +668,19 @@ def _apply_result_to_datasets(res, datasets_dict, schema_dict):
         datasets_dict[dataset_name]["edges"].add(output_label)
 
 
-def _adapter_output_key(adapter_name, adapter_entry):
+def _adapter_output_key(adapter_name, adapter_entry, writer_type=""):
     """Collision key: adapters with the same key resolve to the same output file.
 
-    A safe proxy for the real per-writer output filename (see the note in
-    _process_adapters_parallel). Adapters without a declared label get a unique key
-    so they never coalesce with others.
+    A proxy for the real per-writer output filename. Most writers name files by
+    label (nodes_{label}.*, {label}_nodes.*), so (outdir, label) is a safe key.
+    The prolog writer is the exception: it writes fixed nodes.pl/edges.pl per
+    outdir regardless of label, so any two prolog adapters sharing an outdir
+    collide — key them by outdir alone. Adapters without a declared label get a
+    unique key so they never coalesce with others.
     """
+    outdir = adapter_entry["outdir"]
+    if str(writer_type).lower() == "prolog":
+        return (outdir, "__prolog__")
     args = adapter_entry.get("adapter", {}).get("args", {})
     label = args.get("label")
     if label is None:
@@ -683,7 +689,7 @@ def _adapter_output_key(adapter_name, adapter_entry):
         label_key = tuple(label)
     else:
         label_key = label
-    return (adapter_entry["outdir"], label_key)
+    return (outdir, label_key)
 
 
 def _rebuild_datasets_dict(base_snapshot, results, schema_dict):
@@ -748,14 +754,15 @@ def _process_adapters_parallel(
     # declared label get a unique key so they never coalesce. A collision (>1 in a
     # group) is warned about: it already yields last-writer-wins today.
     #
-    # NOTE: (outdir, label) is a safe proxy for the real per-writer output filename,
-    # which holds for all current writers (they key the filename on outdir + label,
-    # optionally with source/target types that are themselves determined by the
-    # label). If a future writer or adapter maps two *distinct* labels to the same
-    # file, revisit this key so such a collision is still coalesced.
+    # NOTE: for most writers (outdir, label) is a safe proxy for the real output
+    # filename (they key the filename on outdir + label). The prolog writer is the
+    # exception — it writes fixed nodes.pl/edges.pl per outdir regardless of label —
+    # so _adapter_output_key coalesces prolog adapters by outdir alone. If a future
+    # writer maps two *distinct* labels to the same file, extend that helper.
+    writer_type = str(writer_kwargs.get("writer_type", "")).lower()
     file_groups: dict = defaultdict(list)
     for name in pending:
-        file_groups[_adapter_output_key(name, adapters_dict[name])].append(name)
+        file_groups[_adapter_output_key(name, adapters_dict[name], writer_type)].append(name)
     for (outdir, label_key), names in file_groups.items():
         if len(names) > 1:
             logger.warning(

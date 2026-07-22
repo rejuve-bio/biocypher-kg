@@ -167,18 +167,30 @@ def _entry(outdir, label=None):
 
 
 def test_collision_key_same_outdir_and_label_collide():
-    k1 = ck._adapter_output_key("uniprot_dbxref_bgee_gene", _entry("uniprot/has_xref_gene", "protein_has_xref_gene"))
-    k2 = ck._adapter_output_key("uniprot_dbxref_ensembl_gene", _entry("uniprot/has_xref_gene", "protein_has_xref_gene"))
+    k1 = ck._adapter_output_key("uniprot_dbxref_bgee_gene", _entry("uniprot/has_xref_gene", "protein_has_xref_gene"), "neo4j")
+    k2 = ck._adapter_output_key("uniprot_dbxref_ensembl_gene", _entry("uniprot/has_xref_gene", "protein_has_xref_gene"), "neo4j")
     assert k1 == k2  # coalesced
 
 
 def test_collision_key_distinct_labels_do_not_collide():
-    k1 = ck._adapter_output_key("reactome_a", _entry("reactome", "pathway"))
-    k2 = ck._adapter_output_key("reactome_b", _entry("reactome", "reaction"))
+    k1 = ck._adapter_output_key("reactome_a", _entry("reactome", "pathway"), "neo4j")
+    k2 = ck._adapter_output_key("reactome_b", _entry("reactome", "reaction"), "neo4j")
     assert k1 != k2  # stay parallel
 
 
 def test_collision_key_labelless_adapters_never_collide():
-    k1 = ck._adapter_output_key("adapter_a", _entry("shared"))
-    k2 = ck._adapter_output_key("adapter_b", _entry("shared"))
+    k1 = ck._adapter_output_key("adapter_a", _entry("shared"), "neo4j")
+    k2 = ck._adapter_output_key("adapter_b", _entry("shared"), "neo4j")
     assert k1 != k2
+
+
+def test_collision_key_prolog_coalesces_by_outdir():
+    # Prolog writes fixed nodes.pl/edges.pl per outdir, so distinct-label adapters
+    # sharing an outdir must coalesce (they'd otherwise corrupt the same file)...
+    a = _entry("reactome", "pathway")
+    b = _entry("reactome", "reaction")
+    assert ck._adapter_output_key("reactome_a", a, "prolog") == ck._adapter_output_key("reactome_b", b, "prolog")
+    # ...but the same pair stays parallel under a label-keyed writer.
+    assert ck._adapter_output_key("reactome_a", a, "neo4j") != ck._adapter_output_key("reactome_b", b, "neo4j")
+    # Different outdirs never coalesce, even for prolog.
+    assert ck._adapter_output_key("x", _entry("dirA", "l"), "prolog") != ck._adapter_output_key("y", _entry("dirB", "l"), "prolog")
