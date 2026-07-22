@@ -273,45 +273,6 @@ exon:
     exon_number:
       type: int
 
-# ---
-# genomic variants
-snp:
-  represented_as: node
-  input_label: snp
-  is_a: genomic variant
-  mixins: [biolink:Snv]
-  biolink_category: "biolink:Snv"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:Snv"
-  properties:
-    ref: 
-      type: str
-    alt: 
-      type: str
-    caf_ref: 
-      type: str
-    caf_alt:
-      type: str
-    polyphen2_humdiv_score:
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humdiv_prediction:
-      type: str
-    polyphen2_humvar_score:
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humvar_prediction:
-      type: str
-    raw_cadd_score:
-      type: float
-      biolink: has_quantitative_value
-    phred_score:
-      type: float
-      biolink: has_quantitative_value
-  description: >-
-    A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
-
 structural variant:
   represented_as: node
   input_label: structural_variant
@@ -2259,27 +2220,7 @@ downstream gene to variant association:
       type: float
       biolink: has_quantitative_value
 
-in gene to variant association:
-  is_a: closest gene to variant association
-  mixins: [biolink:VariantToGeneAssociation]
-  biolink_predicate: "biolink:located_in"
-  inherit_properties: true
-  description: >-
-    holds between a sequence variant and a gene that is within the gene body
-  represented_as: edge
-  input_label: snp_in_gene
-  output_label: located_in
-  source: snp
-  target: gene
-  kgx_properties:
-    subject_category: "biolink:Snv"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-  properties:
-    p_value: 
-      type: float
-      biolink: has_quantitative_value
+
 
 topld in linkage disequilibrium with:
   is_a: association

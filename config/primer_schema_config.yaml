@@ -655,6 +655,28 @@ transcription binding site:
 
 
 ##################             EDGES   SECTION             ####################
+in gene to variant association:
+  is_a: association
+  mixins: [biolink:VariantToGeneAssociation]
+  biolink_predicate: "biolink:located_in"
+  inherit_properties: true
+  description: >-
+    holds between a sequence variant and a gene that is within the gene body
+  represented_as: edge
+  input_label: snp_in_gene
+  output_label: located_in
+  source: snp
+  target: gene
+  kgx_properties:
+    subject_category: "biolink:Snv"
+    object_category: "biolink:Gene"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    p_value: 
+      type: float
+      biolink: has_quantitative_value
+
 
 annotation:
   is_a: related to at concept level
@@ -2717,3 +2739,64 @@ anatomy subclass of:
     object_category: biolink:AnatomicalEntity
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
+
+
+# genomic variants — species-agnostic (hsa, dmel, cel, mmu, rno, ...)
+allele:
+  represented_as: node
+  input_label: allele
+  is_a: genomic variant
+  mixins:
+    - biolink:SequenceVariant
+  biolink_category: biolink:Allele
+  inherit_properties: true      # inherits chr/start/end/taxon_id (position entity) + source/source_url (genomic variant)
+  properties:
+    allele_symbol:
+      type: str
+      biolink: symbol
+  description: >-
+    Different versions of the same variant at a specific locus are called alleles.
+    The species is given by the inherited taxon_id (9606 hsa, 7227 dmel, 6239 cel,
+    10090 mmu, 10116 rno, ...) and is mandatory, so this definition serves any species.
+  kgx_properties:
+    category: biolink:Allele
+
+snp:
+  represented_as: node
+  input_label: snp
+  is_a: allele
+  mixins:
+    - biolink:Snv
+  biolink_category: biolink:Snv
+  inherit_properties: true
+  properties:
+    ref:
+      type: str
+    alt:
+      type: str
+    caf_ref:
+      type: str
+    caf_alt:
+      type: str
+    # human-derived functional annotations (dbSNP); left empty for other species
+    polyphen2_humdiv_score:
+      type: float
+      biolink: has_quantitative_value
+    polyphen2_humdiv_prediction:
+      type: str
+    polyphen2_humvar_score:
+      type: float
+      biolink: has_quantitative_value
+    polyphen2_humvar_prediction:
+      type: str
+    raw_cadd_score:
+      type: float
+      biolink: has_quantitative_value
+    phred_score:
+      type: float
+      biolink: has_quantitative_value
+  description: >-
+    A single nucleotide polymorphism (SNP): a single-nucleotide variation at a
+    specific genomic position, for any species. Subtype of allele.
+  kgx_properties:
+    category: biolink:Snv
