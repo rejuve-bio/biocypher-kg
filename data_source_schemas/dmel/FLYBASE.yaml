@@ -68,6 +68,8 @@ nodes:
     properties:
       allele_symbol: str
       taxon_id: int
+      end: int
+      start: int
   rnaseq library:
     url: https://flybase.org/
     input_label: rnaseq_library
@@ -91,6 +93,14 @@ nodes:
   sequence type:
     url: https://flybase.org/
     input_label: sequence_type
+  snp:
+    url: https://flybase.org/
+    input_label: snp
+    description: 'A single nucleotide polymorphism (SNP): a single-nucleotide variation
+      at a specific genomic position, for any species. Subtype of allele.'
+    properties:
+      end: int
+      start: int
 relationships:
   gene to group association:
     url: https://flybase.org/
@@ -466,3 +476,23 @@ relationships:
     properties:
       taxon_id: int
       value_and_description: list[tuple]
+  snp to phenotype_set:
+    url: https://flybase.org/
+    input_label: snp_involved_in
+    output_label: involved_in
+    source: snp
+    target: phenotype_set
+  snp to gene association:
+    url: https://flybase.org/
+    input_label: snp_variant_of
+    output_label: variant_of
+    source: snp
+    target: gene
+  in gene to variant association:
+    url: https://flybase.org/
+    input_label: snp_in_gene
+    output_label: located_in
+    description: holds between a sequence variant and a gene that is within the gene
+      body
+    source: snp
+    target: gene
