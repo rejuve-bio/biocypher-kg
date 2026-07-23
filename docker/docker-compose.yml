@@ -84,11 +84,16 @@ services:
       - SNAPSHOT_INTERVAL_SECONDS=${SNAPSHOT_INTERVAL_SECONDS:-300}
     volumes:
       - "${DATA_ROOT}:${DATA_ROOT}:ro"   # read the Console's .metta output (same path)
-      - ../biocypher-mork/mork_persist:/app/persist
-      - ../biocypher-mork/reports:/app/reports
+      # Docker-managed volumes for MORK's writable dirs. A host bind mount fails with
+      # "Permission denied" because the host dir isn't owned by the container's mork
+      # user (UID 1000); named volumes are created with the right ownership.
+      - mork_persist:/app/persist
+      - mork_reports:/app/reports
       - ../biocypher-mork/entrypoint.sh:/app/entrypoint.sh:ro
     restart: unless-stopped
 
 volumes:
   neo4j_data:
   neo4j_logs:
+  mork_persist:
+  mork_reports:
