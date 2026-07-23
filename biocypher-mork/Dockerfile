@@ -33,8 +33,11 @@ RUN git clone --depth=1 -b server https://github.com/Abdu1964/MORK.git /app/MORK
 #     cd /app/MORK/kernel && \
 #     cargo build --release
 
-# Create data, reports, and benchmarks directories
-RUN mkdir -p /app/data /app/reports /app/benchmarks
+# Create data, reports, benchmarks, and persist directories. /app/persist must exist
+# and be mork-owned so a named volume mounted there inherits that ownership (a fresh
+# named volume copies the image dir's ownership; otherwise it comes up root-owned and
+# the entrypoint can't write its snapshot/WAL).
+RUN mkdir -p /app/data /app/reports /app/benchmarks /app/persist
 
 # Link the server binary to a stable location
 RUN ln -s /app/MORK_SERVER/target/release/mork-server /app/mork-server
@@ -46,7 +49,7 @@ RUN chmod +x /app/entrypoint.sh
 # Create a user with UID 1000 (common default user ID)
 RUN useradd -r -u 1000 -s /bin/false mork && \
     chown -R mork:mork /app && \
-    chmod 755 /app/data /app/reports /app/benchmarks
+    chmod 755 /app/data /app/reports /app/benchmarks /app/persist
 
 # Switch to non-root user
 USER mork
