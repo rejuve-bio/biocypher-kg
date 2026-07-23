@@ -655,6 +655,28 @@ transcription binding site:
 
 
 ##################             EDGES   SECTION             ####################
+in gene to variant association:
+  is_a: association
+  mixins: [biolink:VariantToGeneAssociation]
+  biolink_predicate: "biolink:located_in"
+  inherit_properties: true
+  description: >-
+    holds between a sequence variant and a gene that is within the gene body
+  represented_as: edge
+  input_label: snp_in_gene
+  output_label: located_in
+  source: snp
+  target: gene
+  kgx_properties:
+    subject_category: "biolink:Snv"
+    object_category: "biolink:Gene"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    p_value: 
+      type: float
+      biolink: has_quantitative_value
+
 
 annotation:
   is_a: related to at concept level
