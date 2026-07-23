@@ -71,10 +71,11 @@ def test_resolve_output_dir_dated_when_blank(monkeypatch, tmp_path):
     from backend.core.console.job_runner import resolve_output_dir
     import re
     monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
-    req = BuildRequest(species="hsa", dataset="sample")  # no output_dir
+    req = BuildRequest(species="hsa", dataset="sample")  # no output_dir; writer_type defaults
     out = resolve_output_dir(req, tmp_path / "job")
     assert out.startswith(str(tmp_path))
-    assert re.search(r"/hsa-sample-\d{8}-\d{6}$", out), out
+    # Grouped by writer type: <DATA_ROOT>/<writer>/<species>-<dataset>-<timestamp>
+    assert re.search(rf"/{req.writer_type}/hsa-sample-\d{{8}}-\d{{6}}$", out), out
 
 
 def test_resolve_output_dir_explicit_wins(monkeypatch, tmp_path):
@@ -87,12 +88,17 @@ def test_resolve_output_dir_explicit_wins(monkeypatch, tmp_path):
 
 def test_build_load_argv_targets():
     from backend.core.console.job_runner import build_load_argv
+    from backend.core.config import settings
     n = build_load_argv("neo4j", "/out")
     assert "kg-service/neo4j_loader.py" in n
     assert "--output-dir" in n and "/out" in n and "--uri" in n
+    # ARCHIVE_BASE is passed verbatim; the loader appends the target subdir itself
+    # (…/neo4j, …/mork) — matching what versions.py reads. Do NOT pre-append target.
+    assert n[n.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
     m = build_load_argv("mork", "/out")
     assert "kg-service/mork_loader.py" in m
     assert "--data-dir" in m and "/out" in m
+    assert m[m.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
 
 
 def test_launch_load_creates_tracked_load_job(monkeypatch):

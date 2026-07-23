@@ -115,15 +115,15 @@ def resolve_output_dir(req: BuildRequest, job_dir: Path) -> str:
     """Where the build writes.
 
     Priority: explicit output_dir → dated dir under DATA_ROOT → <job_dir>/output.
-    The dated name reuses the repo's build-<timestamp> convention:
-    <species>-<dataset>-<YYYYMMDD-HHMMSS>.
+    Builds are grouped by writer type so a target's history lives in one place:
+    <DATA_ROOT>/<writer_type>/<species>-<dataset>-<YYYYMMDD-HHMMSS>.
     """
     if req.output_dir:
         return _abs(req.output_dir)
     if settings.DATA_ROOT:
         ts = datetime.now().strftime("%Y%m%d-%H%M%S")
         name = f"{req.species}-{req.dataset}-{ts}" if req.species else f"build-{ts}"
-        return _abs(str(Path(settings.DATA_ROOT) / name))
+        return _abs(str(Path(settings.DATA_ROOT) / req.writer_type / name))
     return str(job_dir / "output")
 
 
@@ -271,6 +271,10 @@ def build_load_argv(target: str, output_dir: str) -> list[str]:
     (surgical/incremental update). Credentials/paths come from settings so no
     env-file is needed.
     """
+    # ARCHIVE_BASE is a single, cross-build historical store per target: the loaders
+    # append the target subdir themselves (…/neo4j, …/mork) and versions.py reads
+    # from that same shape, so we pass ARCHIVE_BASE verbatim (do NOT append target).
+    archive_dir = settings.ARCHIVE_BASE
     if target == "neo4j":
         return [settings.UV_BIN, "run", "python", "kg-service/neo4j_loader.py",
                 "--output-dir", output_dir,
@@ -278,7 +282,7 @@ def build_load_argv(target: str, output_dir: str) -> list[str]:
                 # so the build loads from ANY directory (Neo4j is configured with import
                 # root "/" + a broad same-path mount). No fixed /import match needed.
                 "--import-dir", output_dir,
-                "--archive-dir", settings.ARCHIVE_BASE,
+                "--archive-dir", archive_dir,
                 "--uri", settings.NEO4J_URI,
                 "--username", settings.NEO4J_USER,
                 "--password", settings.NEO4J_PASSWORD]
@@ -286,7 +290,7 @@ def build_load_argv(target: str, output_dir: str) -> list[str]:
         host, port = _mork_host_port()
         return [settings.UV_BIN, "run", "python", "kg-service/mork_loader.py",
                 "--data-dir", output_dir,
-                "--archive-dir", settings.ARCHIVE_BASE,
+                "--archive-dir", archive_dir,
                 "--host", host, "--port", port]
     raise ValueError(f"unknown load target: {target!r}")
 
