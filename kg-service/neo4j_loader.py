@@ -554,26 +554,34 @@ class Neo4jLoader:
         # Datasets that had at least one file succeed
         ok_datasets = set(changed_datasets) - failed_datasets
 
-        # Step 5: Finalize version (store hashes, create metadata nodes)
-        logger.info("\nSTEP 5: Finalizing version metadata...")
-        self.version_manager.finalize_version(
-            self.output_dir,
-            new_atomspace_version,
-            new_dataset_versions,
-            list(ok_datasets),
-            build_id
-        )
-
-        # Step 6: Add metadata to successfully loaded datasets only
-        logger.info("\nSTEP 6: Adding metadata...")
-        for dataset in ok_datasets:
-            self.add_metadata_to_dataset(
-                folder_name=dataset,
-                atomspace_version=new_atomspace_version,
-                dataset_version=new_dataset_versions[dataset],
-                timestamp=timestamp,
-                build_id=build_id
+        # Steps 5 & 6: Finalize version + stamp metadata — ONLY for datasets that
+        # actually loaded. If NOTHING loaded, skip entirely: bumping the AtomSpace
+        # version or storing hashes with zero loaded data poisons change detection so
+        # the next run sees "no changes" and refuses to retry (leaving the graph empty).
+        if ok_datasets:
+            # Step 5: Finalize version (store hashes, create metadata nodes)
+            logger.info("\nSTEP 5: Finalizing version metadata...")
+            self.version_manager.finalize_version(
+                self.output_dir,
+                new_atomspace_version,
+                new_dataset_versions,
+                list(ok_datasets),
+                build_id
             )
+
+            # Step 6: Add metadata to successfully loaded datasets only
+            logger.info("\nSTEP 6: Adding metadata...")
+            for dataset in ok_datasets:
+                self.add_metadata_to_dataset(
+                    folder_name=dataset,
+                    atomspace_version=new_atomspace_version,
+                    dataset_version=new_dataset_versions[dataset],
+                    timestamp=timestamp,
+                    build_id=build_id
+                )
+        else:
+            logger.info("\nSTEP 5-6: Skipped — no datasets loaded successfully. "
+                        "Version NOT bumped and hashes NOT stored, so a retry re-attempts.")
 
         logger.info("\n" + "="*60)
         if failed_files:

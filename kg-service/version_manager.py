@@ -435,14 +435,22 @@ class VersionManager:
         
         # Get folder sources
         folder_sources = self.discover_all_sources()
-        
-        # Get current hashes
+
+        # Hash every dataset on disk (used below to compute the unchanged set)...
         current_hashes = self.hash_all_datasets()
-        
-        # Calculate unchanged
+
+        # ...but only PERSIST hashes for datasets that actually loaded this run.
+        # `changed_datasets` here is the loader's set of successfully-loaded datasets.
+        # Storing a FAILED dataset's hash would make the next run see it as "unchanged"
+        # and skip loading it — leaving the graph incomplete while the version claims
+        # success. Leaving it unstored keeps the dataset "changed" so a retry re-attempts.
+        loaded = set(changed_datasets)
+        hashes_to_store = {d: h for d, h in current_hashes.items() if d in loaded}
+
+        # Calculate unchanged (informational, for the KGVersion provenance node)
         all_datasets = set(current_hashes.keys())
-        unchanged_datasets = list(all_datasets - set(changed_datasets))
-        
+        unchanged_datasets = list(all_datasets - loaded)
+
         logger.info("="*60)
         logger.info("Finalizing version metadata...")
         logger.info("="*60)
@@ -450,8 +458,8 @@ class VersionManager:
         # Store mappings
         self.store_folder_source_mapping(folder_sources, atomspace_version)
 
-        # Store hashes
-        self.store_hashes(current_hashes, dataset_versions)
+        # Store hashes (only for successfully-loaded datasets — see above)
+        self.store_hashes(hashes_to_store, dataset_versions)
 
         # Create DatasetVersion nodes
         self.create_dataset_version_nodes(dataset_info)
