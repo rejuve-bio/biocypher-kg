@@ -202,6 +202,7 @@ dependencies = [
     { name = "questionary" },
     { name = "rdflib" },
     { name = "requests" },
+    { name = "requests-sse" },
     { name = "rich" },
     { name = "rsa" },
     { name = "setuptools" },
@@ -306,6 +307,7 @@ requires-dist = [
     { name = "questionary", specifier = "==2.1.1" },
     { name = "rdflib", specifier = "==6.3.2" },
     { name = "requests", specifier = "==2.32.5" },
+    { name = "requests-sse", specifier = ">=0.5.3" },
     { name = "rich", specifier = "==14.2.0" },
     { name = "rsa", specifier = "==4.9.1" },
     { name = "setuptools", specifier = "==80.9.0" },
@@ -1864,6 +1866,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c9/74/b3ff8e6c8446842c3f5c837e9c3dfcfe2018ea6ecef224c710c85ef728f4/requests-2.32.5.tar.gz", hash = "sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf", size = 134517, upload-time = "2025-08-18T20:46:02.573Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl", hash = "sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6", size = 64738, upload-time = "2025-08-18T20:46:00.542Z" },
+]
+
+[[package]]
+name = "requests-sse"
+version = "0.5.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/13/94/f0f29584c3ca24c29a72e19a28136f73ed08adddc93fb8a0c998577c9085/requests_sse-0.5.3.tar.gz", hash = "sha256:107c63afb2a2292b422ab2504849f3adb54b4c884700646ebe9f6e4178ba375c", size = 9057, upload-time = "2026-03-11T15:35:49.303Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5a/87/3704da8cc1cb91cc0ccee8fb03d8ed11217afcd028352f3b1242fee2f4f1/requests_sse-0.5.3-py3-none-any.whl", hash = "sha256:dc3e053e22fdcf002ca1fbd1794967d42b82b24539f5b7fe0e807301dd4ef4ec", size = 10198, upload-time = "2026-03-11T15:35:47.872Z" },
 ]
 
 [[package]]

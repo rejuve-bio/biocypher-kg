@@ -1,0 +1,94 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# BioCypher KG Console — the whole system in ONE compose file.
+#
+#   cp docker/console.env.example docker/console.env      # edit once (DATA_ROOT + password)
+#   docker compose --env-file docker/console.env -f docker/docker-compose.yml up --build
+#
+#   → Console UI : http://localhost:${CONSOLE_PORT}/console/
+#   → Neo4j UI   : http://localhost:${NEO4J_HTTP_PORT}
+#
+# Add MORK (compiles a Rust server from source — slow first build):
+#   docker compose --env-file docker/console.env -f docker/docker-compose.yml --profile mork up --build
+#
+# How it fits together: all services share the compose network, so the Console
+# reaches Neo4j/MORK by service name (no host.docker.internal). DATA_ROOT is the
+# ONLY path you set — it's bind-mounted at the SAME path into every service, so a
+# build the Console writes there is readable by Neo4j/MORK for loading.
+# ─────────────────────────────────────────────────────────────────────────────
+# Own project name so this stack never collides with the standalone Makefile Neo4j
+# (docker/docker-compose.neo4j.yml), which shares this directory.
+name: biocypher-console
+
+services:
+  console:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: biocypher-kg-console
+    ports:
+      - "${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
+    environment:
+      PORT: "${CONSOLE_PORT:-9000}"
+      REPO_ROOT: /app
+      BUILDS_DIR: /app/kg-service/.builds
+      DATA_ROOT: "${DATA_ROOT:?set DATA_ROOT in docker/console.env}"
+      MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
+      # Reach the other services by name over the compose network.
+      NEO4J_URI: "bolt://neo4j:7687"
+      NEO4J_USER: "${NEO4J_USER:-neo4j}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
+      NEO4J_DATABASE: "${NEO4J_DATABASE:-neo4j}"
+      ARCHIVE_BASE: "${DATA_ROOT}/archives"
+      MORK_URL: "http://mork:8027"
+    volumes:
+      # Build output + archives on the HOST, mounted at the SAME path. The Console
+      # writes builds here; Neo4j/MORK read them from the identical path (below).
+      - "${DATA_ROOT}:${DATA_ROOT}"
+    depends_on:
+      - neo4j
+
+  neo4j:
+    image: ${NEO4J_IMAGE:-neo4j:5.21}
+    ports:
+      - "${NEO4J_HTTP_PORT:-7474}:7474"
+      - "${NEO4J_BOLT_PORT:-7687}:7687"
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
+      # APOC — the loader uses apoc.periodic.iterate / apoc.map.removeKeys. The file
+      # export/import toggles are the proven-working defaults (overridable via env).
+      NEO4JLABS_PLUGINS: '["apoc"]'
+      NEO4J_apoc_export_file_enabled: "${NEO4J_APOC_EXPORT_FILE:-true}"
+      NEO4J_apoc_import_file_enabled: "${NEO4J_APOC_IMPORT_FILE:-true}"
+      NEO4J_apoc_import_file_use__neo4j__config: "${NEO4J_APOC_IMPORT_USE_CONFIG:-false}"
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      # Import from ANY directory: absolute file:/// URLs resolve against "/", and
+      # DATA_ROOT is mounted same-path (below), so the loader's --import-dir works.
+      NEO4J_dbms_security_allow__csv__import__from__file__urls: "true"
+      NEO4J_server_directories_import: "/"
+      NEO4J_server_memory_pagecache_size: "${NEO4J_PAGECACHE:-1G}"
+      NEO4J_server_memory_heap_max__size: "${NEO4J_HEAP_MAX:-1G}"
+    volumes:
+      - "${DATA_ROOT}:${DATA_ROOT}:ro"   # read the Console's build output (same path)
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+
+  mork:
+    profiles: ["mork"]
+    build:
+      context: ../biocypher-mork
+    ports:
+      - "${MORK_HOST_PORT:-8432}:8027"
+    environment:
+      - RUST_LOG=info
+      - SNAPSHOT_DIR=/app/persist
+      - SNAPSHOT_INTERVAL_SECONDS=${SNAPSHOT_INTERVAL_SECONDS:-300}
+    volumes:
+      - "${DATA_ROOT}:${DATA_ROOT}:ro"   # read the Console's .metta output (same path)
+      - ../biocypher-mork/mork_persist:/app/persist
+      - ../biocypher-mork/reports:/app/reports
+      - ../biocypher-mork/entrypoint.sh:/app/entrypoint.sh:ro
+    restart: unless-stopped
+
+volumes:
+  neo4j_data:
+  neo4j_logs:

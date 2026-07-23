@@ -10,6 +10,11 @@ services:
       - "${HOST_PORT:-8027}:8027"
     volumes:
       - ${MORK_DATA_DIR:-./data}:/app/data
+      # Broad host root mounted at the SAME path (read-only) so the loader can import
+      # from ANY directory via absolute file://<abs> URIs (not just /app/data).
+      # Set MORK_IMPORT_ROOT to the parent that contains your .metta outputs; defaults
+      # to MORK_DATA_DIR so the mount is always valid.
+      - ${MORK_IMPORT_ROOT:-${MORK_DATA_DIR:-./data}}:${MORK_IMPORT_ROOT:-${MORK_DATA_DIR:-./data}}:ro
       - ./reports:/app/reports
       # Persistent snapshot volume — graph state survives restarts
       - ./mork_persist:/app/persist

@@ -9,7 +9,9 @@ from pathlib import Path
 from datetime import datetime
 import argparse
 
-sys.path.insert(0, str(Path(__file__).parent / "biocypher-mork"))
+# The vendored MORK client lives at the repo root (biocypher-mork/client.py),
+# not under kg-service/. Resolve to the repo root (parents[1]).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "biocypher-mork"))
 from client import MORK
 
 
@@ -250,11 +252,13 @@ def load_metta_files(server, data_dir):
     successful_files = 0
     failed_files = 0
     
+    data_dir_abs = Path(data_dir).resolve()
     with server.work_at("annotation") as scope:
         for file_path in files:
-            relative_path = file_path.relative_to(data_dir)
-            container_file_path = Path("/app/data") / relative_path
-            file_uri = f"file://{container_file_path}"
+            # Send the ABSOLUTE host path so MORK can import from ANY directory
+            # (that path is bind-mounted at the same location in the MORK container).
+            file_uri = f"file://{file_path.resolve()}"
+            relative_path = file_path.relative_to(data_dir_abs)
             
             folder_path = file_path.parent.name
             print(f"  ...Importing {folder_path}/{file_path.name}")

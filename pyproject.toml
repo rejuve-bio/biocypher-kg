@@ -86,6 +86,7 @@ dependencies = [
     "questionary==2.1.1",
     "rdflib==6.3.2",
     "requests==2.32.5",
+    "requests-sse>=0.5.3",
     "rich==14.2.0",
     "rsa==4.9.1",
     "setuptools==80.9.0",

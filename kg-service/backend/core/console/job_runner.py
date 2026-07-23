@@ -274,6 +274,10 @@ def build_load_argv(target: str, output_dir: str) -> list[str]:
     if target == "neo4j":
         return [settings.UV_BIN, "run", "python", "kg-service/neo4j_loader.py",
                 "--output-dir", output_dir,
+                # --import-dir makes LOAD CSV use absolute file:///<output_dir>/... URLs,
+                # so the build loads from ANY directory (Neo4j is configured with import
+                # root "/" + a broad same-path mount). No fixed /import match needed.
+                "--import-dir", output_dir,
                 "--archive-dir", settings.ARCHIVE_BASE,
                 "--uri", settings.NEO4J_URI,
                 "--username", settings.NEO4J_USER,
