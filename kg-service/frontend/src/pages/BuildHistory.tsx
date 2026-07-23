@@ -37,6 +37,16 @@ export default function BuildHistory() {
     }
   }
 
+  async function onRetry(e: MouseEvent, jobId: string) {
+    e.stopPropagation();
+    try {
+      const res = await api.retryLoad(jobId);
+      navigate(`/builds/${res.id}`);
+    } catch (err) {
+      setError(String(err));
+    }
+  }
+
   if (error) return <div className="alert err">{error}</div>;
 
   return (
@@ -87,6 +97,14 @@ export default function BuildHistory() {
                         title="Resume from checkpoint"
                       >
                         ⟲ Resume
+                      </button>
+                    ) : b.retryable ? (
+                      <button
+                        className="secondary btn-sm"
+                        onClick={(e) => onRetry(e, b.id)}
+                        title="Re-run this load"
+                      >
+                        ⟲ Retry
                       </button>
                     ) : (b.status === "failed" || b.status === "cancelled") ? (
                       <span

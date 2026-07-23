@@ -102,6 +102,15 @@ export default function BuildDetail() {
     }
   }
 
+  async function onRetry() {
+    try {
+      const res = await api.retryLoad(id);
+      navigate(`/builds/${res.id}`);
+    } catch (e) {
+      setError(String(e));
+    }
+  }
+
   if (error) return <div className="alert err">{error}</div>;
   if (!job) return <div className="muted">Loading…</div>;
 
@@ -134,6 +143,11 @@ export default function BuildDetail() {
             {job.resumable && (
               <button className="secondary" onClick={onResume}>
                 ⟲ Resume
+              </button>
+            )}
+            {job.retryable && (
+              <button className="secondary" onClick={onRetry}>
+                ⟲ Retry load
               </button>
             )}
             {canLoadNeo4j && (

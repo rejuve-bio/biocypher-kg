@@ -291,16 +291,8 @@ def build_load_argv(target: str, output_dir: str) -> list[str]:
     raise ValueError(f"unknown load target: {target!r}")
 
 
-def launch_load(build_job_id: str, target: str) -> Optional[BuildJob]:
-    """Launch a tracked load job that pushes a build's output into Neo4j/MORK.
-
-    Reuses the build's output_dir as the loader input. Returns None if the source
-    build is unknown.
-    """
-    src = registry.get(build_job_id)
-    if src is None:
-        return None
-    output_dir = src.output_dir
+def _start_load(target: str, output_dir: str, params: dict) -> BuildJob:
+    """Create + start a tracked load job for the given target + output dir."""
     job_id = uuid.uuid4().hex
     job_dir = registry.job_dir(job_id)
     job_dir.mkdir(parents=True, exist_ok=True)
@@ -310,9 +302,7 @@ def launch_load(build_job_id: str, target: str) -> Optional[BuildJob]:
         id=job_id,
         status=JobStatus.QUEUED,
         kind=f"load-{target}",
-        params={"source_build": build_job_id, "target": target,
-                "output_dir": output_dir, "species": (src.params or {}).get("species"),
-                "dataset": (src.params or {}).get("dataset")},
+        params={"target": target, "output_dir": output_dir, **params},
         cmd=argv,
         cwd=str(settings.repo_root_path),
         output_dir=output_dir,
@@ -324,6 +314,44 @@ def launch_load(build_job_id: str, target: str) -> Optional[BuildJob]:
     worker = threading.Thread(target=_run_job, args=(job_id, argv, log_path), daemon=True)
     worker.start()
     return job
+
+
+def launch_load(build_job_id: str, target: str) -> Optional[BuildJob]:
+    """Launch a load job that pushes a build's output into Neo4j/MORK.
+
+    Reuses the build's output_dir as the loader input. Returns None if the source
+    build is unknown.
+    """
+    src = registry.get(build_job_id)
+    if src is None:
+        return None
+    return _start_load(target, src.output_dir, {
+        "source_build": build_job_id,
+        "species": (src.params or {}).get("species"),
+        "dataset": (src.params or {}).get("dataset"),
+    })
+
+
+def retry_load(job_id: str) -> Optional[BuildJob]:
+    """Re-run a failed/cancelled load job with the same target + output dir.
+
+    Returns None if the job isn't a load job. Does not require the source build to
+    still exist (uses the load job's recorded target/output_dir).
+    """
+    prior = registry.get(job_id)
+    if prior is None or not (prior.kind or "").startswith("load-"):
+        return None
+    p = prior.params or {}
+    target = p.get("target") or (prior.kind or "").removeprefix("load-")
+    output_dir = p.get("output_dir") or prior.output_dir
+    if target not in ("neo4j", "mork") or not output_dir:
+        return None
+    return _start_load(target, output_dir, {
+        "source_build": p.get("source_build"),
+        "species": p.get("species"),
+        "dataset": p.get("dataset"),
+        "retry_of": job_id,
+    })
 
 
 def resume(job_id: str) -> Optional[BuildJob]:

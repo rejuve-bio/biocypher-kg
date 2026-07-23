@@ -41,7 +41,25 @@ def _enrich(job: BuildJob) -> dict:
         JobStatus.FAILED,
         JobStatus.CANCELLED,
     }
+    # Load jobs can be retried (re-run the same loader) when they didn't succeed.
+    data["retryable"] = (job.kind or "").startswith("load-") and job.status in {
+        JobStatus.FAILED,
+        JobStatus.CANCELLED,
+    }
     return data
+
+
+@router.post("/builds/{job_id}/retry", status_code=201)
+def retry_load(job_id: str):
+    """Re-run a failed/cancelled load job (same target + output dir) as a new job."""
+    job = _job_or_404(job_id)
+    if not (job.kind or "").startswith("load-"):
+        raise HTTPException(status_code=400, detail="Retry is only for load jobs.")
+    new_job = job_runner.retry_load(job_id)
+    if new_job is None:
+        raise HTTPException(status_code=400, detail="Could not retry this load.")
+    return {"id": new_job.id, "status": new_job.status.value,
+            "kind": new_job.kind, "retry_of": job_id, "job": new_job.to_dict()}
 
 
 @router.post("/builds/{job_id}/load/{target}", status_code=201)

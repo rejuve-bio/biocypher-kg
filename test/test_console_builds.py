@@ -111,6 +111,43 @@ def test_launch_load_creates_tracked_load_job(monkeypatch):
     assert "loaded" in open(final.log_path).read()
 
 
+def test_retry_load_reruns_same_target_and_dir(monkeypatch):
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "import sys; sys.exit(1)"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+
+    load = job_runner.launch_load(src.id, "mork")
+    failed = _wait_for(load.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    assert failed.status == JobStatus.FAILED  # loader exited non-zero
+
+    # Retry a passing loader this time.
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "print('retried')"])
+    retry = job_runner.retry_load(load.id)
+    assert retry is not None
+    assert retry.id != load.id
+    assert retry.kind == "load-mork"
+    assert retry.output_dir == load.output_dir
+    assert (retry.params or {}).get("retry_of") == load.id
+    final = _wait_for(retry.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    assert final.status == JobStatus.SUCCEEDED
+    assert "retried" in open(final.log_path).read()
+
+
+def test_retry_load_rejects_build_jobs(monkeypatch):
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    # A build job isn't a load job → not retryable.
+    assert job_runner.retry_load(src.id) is None
+    # Unknown id → None.
+    assert job_runner.retry_load("does-not-exist") is None
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

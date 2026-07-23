@@ -100,6 +100,7 @@ export interface BuildJob {
   // present on GET /builds/{id}
   checkpoint?: CheckpointInfo | null;
   resumable?: boolean;
+  retryable?: boolean; // failed/cancelled load job → can be re-run
 }
 
 export interface CheckpointInfo {
