@@ -281,6 +281,14 @@ def load_metta_files(server, data_dir):
     return successful_files, failed_files
 
 
+def count_loaded_atoms(server, cap=100000):
+    with server.work_at("annotation") as scope:
+        data = scope.download_(max_results=cap)
+        data.block()
+        text = data.data or ""
+    return sum(1 for line in text.split("\n") if line.strip())
+
+
 def show_summary(server):
     """Show a detailed summary of data in MORK."""
     print(f"\n🔍 Verifying data in MORK...")
@@ -360,14 +368,41 @@ def main():
     
     # Step 6: Load ALL data
     successful, failed = load_metta_files(server, args.data_dir)
-    
-    # Step 7: Store version metadata (JSON file + MORK atoms)
+
+    # Step 6b: Verify REAL ingestion by counting atoms in MORK (source of truth).
+    # Done BEFORE metadata atoms are written so the count excludes the marker atom.
+    print(f"\n🔎 Verifying ingestion (querying annotation namespace)...")
+    try:
+        loaded_atoms = count_loaded_atoms(server)
+    except Exception as e:
+        # Fail closed: if we can't confirm data landed, don't claim success.
+        loaded_atoms = 0
+        print(f"  ⚠️  Could not verify ingestion: {e}")
+    sampled = " (sampled)" if loaded_atoms >= 100000 else ""
+    print(f"  → {loaded_atoms} atom(s) in MORK{sampled}")
+
+    # Success requires a COMPLETE load with verified atoms. If any file failed, or no
+    # atoms landed, DO NOT store metadata: recording the dataset hash would make the
+    # next run see it as "unchanged" and skip loading, leaving MORK empty/incomplete
+    # while the metadata claims success. Leaving metadata untouched keeps the dataset
+    # "changed" so a retry re-attempts it. Exit non-zero so the Console marks the job
+    # FAILED (→ Retry button) instead of a fake ✅.
+    if loaded_atoms == 0 or failed > 0:
+        print("\n" + "="*60)
+        print(f"❌ MORK LOAD FAILED")
+        print(f"   Files loaded: {successful} / {successful + failed}   (failed: {failed})")
+        print(f"   Atoms in MORK: {loaded_atoms}")
+        print(f"   Version metadata NOT updated — fix the cause above and retry.")
+        print("="*60 + "\n")
+        sys.exit(1)
+
+    # Step 7: Store version metadata (JSON file + MORK atoms) — only after a verified load
     version_manager.store_metadata(version_info, args.build_id)
-    
+
     # Step 8: Verify (optional)
     if args.verify:
         show_summary(server)
-    
+
     # Final summary
     print("\n" + "="*60)
     print(f"✅ MORK LOAD COMPLETE")
@@ -376,8 +411,7 @@ def main():
     print(f"   Changed datasets: {len(version_info['changed_datasets'])}")
     print(f"   Unchanged datasets: {len(version_info['unchanged_datasets'])}")
     print(f"   Files loaded: {successful}")
-    if failed > 0:
-        print(f"   ⚠️  Failed files: {failed}")
+    print(f"   Atoms in MORK: {loaded_atoms}{sampled}")
     print(f"\n   Metadata: {version_manager.metadata_file}")
     print("="*60 + "\n")
 
