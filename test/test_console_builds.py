@@ -154,6 +154,26 @@ def test_retry_load_rejects_build_jobs(monkeypatch):
     assert job_runner.retry_load("does-not-exist") is None
 
 
+def test_load_summarized_on_build_not_a_separate_build(monkeypatch):
+    """A load is an action on a build: it's a load-kind job (the /builds list filters
+    those out), and the build reports it via loads_for()."""
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "print('loaded')"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    load = job_runner.launch_load(src.id, "neo4j")
+    _wait_for(load.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+
+    # The load is a load-kind job → excluded from the build list by the route.
+    assert (load.kind or "").startswith("load-")
+    # The build reports where it was loaded.
+    summary = job_runner.loads_for(src.id)
+    assert summary["neo4j"]["job_id"] == load.id
+    assert summary["neo4j"]["status"] == "succeeded"
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

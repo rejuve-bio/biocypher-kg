@@ -46,6 +46,9 @@ def _enrich(job: BuildJob) -> dict:
         JobStatus.FAILED,
         JobStatus.CANCELLED,
     }
+    # Builds report where they've been loaded (so loads aren't separate history rows).
+    if (job.kind or "build") == "build":
+        data["loads"] = job_runner.loads_for(job.id)
     return data
 
 
@@ -108,8 +111,14 @@ def create_build(req: BuildRequest):
 
 @router.get("/builds")
 def list_builds(status: Optional[str] = Query(default=None)):
-    """List build jobs, newest first. Optional ?status= filter."""
-    return {"builds": [_enrich(j) for j in registry.list(status=status)]}
+    """List BUILD jobs, newest first (optional ?status= filter).
+
+    Load jobs are excluded — a load is an action on a build, surfaced via each
+    build's ``loads`` field rather than as its own history row. Load jobs remain
+    reachable individually at GET /builds/{id} (for their log and retry).
+    """
+    builds = [j for j in registry.list(status=status) if (j.kind or "build") == "build"]
+    return {"builds": [_enrich(j) for j in builds]}
 
 
 @router.get("/builds/{job_id}")

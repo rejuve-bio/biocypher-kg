@@ -358,6 +358,30 @@ def retry_load(job_id: str) -> Optional[BuildJob]:
     })
 
 
+def loads_for(build_id: str) -> dict:
+    """Latest load job per target (neo4j/mork) that loaded this build's output.
+
+    A load is an action ON a build, not a build of its own — this lets each build
+    report where it's been loaded instead of loads appearing as separate history rows.
+    """
+    out: dict = {}
+    for j in registry.list():
+        if not (j.kind or "").startswith("load-"):
+            continue
+        p = j.params or {}
+        if p.get("source_build") != build_id:
+            continue
+        target = p.get("target") or (j.kind or "").removeprefix("load-")
+        cur = out.get(target)
+        if cur is None or (j.created_at or "") > (cur["created_at"] or ""):
+            out[target] = {
+                "job_id": j.id,
+                "status": j.status.value,
+                "created_at": j.created_at,
+            }
+    return out
+
+
 def resume(job_id: str) -> Optional[BuildJob]:
     """Launch a new job that continues a prior failed/cancelled build's checkpoint.
 
