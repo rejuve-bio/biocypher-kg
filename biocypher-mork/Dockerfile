@@ -20,6 +20,17 @@ WORKDIR /app
 # Silicon and x86 alike for a locally-built image).
 ENV RUSTFLAGS="-C target-cpu=native"
 
+# Pin the nightly toolchain. `rustlang/rust:nightly` is UNPINNED — every build rides
+# whatever nightly is latest, so a broken nightly rustc silently breaks the build even
+# though our code never changed. (2026-07: latest nightly ICEs compiling tokio —
+# "internal compiler error: rustc_codegen_ssa/.../operand.rs: not immediate".) Install
+# and default to a fixed dated nightly via rustup so the build is reproducible.
+# Bisect if a date regresses or lacks a needed feature:
+#   docker build --build-arg RUST_NIGHTLY=2026-06-15 ...   (or set RUST_NIGHTLY in console.env)
+ARG RUST_NIGHTLY=2026-07-01
+RUN rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal && \
+    rustup default "nightly-${RUST_NIGHTLY}"
+
 # Build PathMap
 RUN git clone --depth=1 https://github.com/Adam-Vandervorst/PathMap.git /app/PathMap && \
     cd /app/PathMap && \

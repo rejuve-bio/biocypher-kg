@@ -2,13 +2,18 @@
 # BioCypher KG Console — the whole system in ONE compose file.
 #
 #   cp docker/console.env.example docker/console.env      # edit once (DATA_ROOT + password)
-#   docker compose --env-file docker/console.env -f docker/docker-compose.yml up --build
+#   ./docker/up.sh                                          # attach-or-create DBs, then Console
 #
 #   → Console UI : http://localhost:${CONSOLE_PORT}/console/
-#   → Neo4j UI   : http://localhost:${NEO4J_HTTP_PORT}
+#   → Neo4j UI   : http://localhost:${NEO4J_HTTP_PORT}   (if the bundled Neo4j was started)
 #
-# Add MORK (compiles a Rust server from source — slow first build):
-#   docker compose --env-file docker/console.env -f docker/docker-compose.yml --profile mork up --build
+# docker/up.sh decides, per database: reuse the bundled service if it's already up;
+# else attach to an existing instance (a remote NEO4J_HOST/MORK_HOST, or one already
+# listening on the local port); else create the bundled service. neo4j and mork are
+# behind profiles so they're only created when up.sh (or you) enable them.
+#
+# Manual escape hatch — force the fully-bundled stack without the launcher:
+#   docker compose --env-file docker/console.env -f docker/docker-compose.yml --profile neo4j --profile mork up --build
 #
 # How it fits together: all services share the compose network, so the Console
 # reaches Neo4j/MORK by service name (no host.docker.internal). DATA_ROOT is the
@@ -33,21 +38,31 @@ services:
       BUILDS_DIR: /app/kg-service/.builds
       DATA_ROOT: "${DATA_ROOT:?set DATA_ROOT in docker/console.env}"
       MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
-      # Reach the other services by name over the compose network.
-      NEO4J_URI: "bolt://neo4j:7687"
+      # DB endpoints are set by docker/up.sh: bundled service → compose service name;
+      # attach to existing → host.docker.internal:<port> (same host) or host:<port>
+      # (remote). Defaults here keep a manual `--profile neo4j --profile mork up` working.
+      NEO4J_URI: "${NEO4J_URI:-bolt://neo4j:7687}"
       NEO4J_USER: "${NEO4J_USER:-neo4j}"
       NEO4J_PASSWORD: "${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
       NEO4J_DATABASE: "${NEO4J_DATABASE:-neo4j}"
       ARCHIVE_BASE: "${DATA_ROOT}/archives"
-      MORK_URL: "http://mork:8027"
+      MORK_URL: "${MORK_URL:-http://mork:8027}"
     volumes:
       # Build output + archives on the HOST, mounted at the SAME path. The Console
       # writes builds here; Neo4j/MORK read them from the identical path (below).
       - "${DATA_ROOT}:${DATA_ROOT}"
-    depends_on:
-      - neo4j
+      # Build-job registry + logs (BUILDS_DIR). Kept on a named volume so build
+      # HISTORY survives `up --build`/recreate — otherwise it lives in the container's
+      # ephemeral layer and is wiped every time the image is rebuilt.
+      - console_builds:/app/kg-service/.builds
+    # Lets the Console reach a Neo4j/MORK published on the host (attach case) on Linux.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   neo4j:
+    # Optional: docker/up.sh enables this profile only when no Neo4j already exists
+    # on the target endpoint. Same pattern as mork below.
+    profiles: ["neo4j"]
     image: ${NEO4J_IMAGE:-neo4j:5.21}
     ports:
       - "${NEO4J_HTTP_PORT:-7474}:7474"
@@ -76,6 +91,10 @@ services:
     profiles: ["mork"]
     build:
       context: ../biocypher-mork
+      args:
+        # Pinned nightly toolchain (see biocypher-mork/Dockerfile). Override to bisect
+        # a broken nightly: set RUST_NIGHTLY=YYYY-MM-DD in docker/console.env.
+        RUST_NIGHTLY: "${RUST_NIGHTLY:-2026-07-01}"
     ports:
       - "${MORK_HOST_PORT:-8432}:8027"
     environment:
@@ -93,6 +112,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  console_builds:
   neo4j_data:
   neo4j_logs:
   mork_persist:
