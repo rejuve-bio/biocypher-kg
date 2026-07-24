@@ -168,6 +168,21 @@ export default function BuildDetail() {
           <Meta label="Finished" value={fmt(job.finished_at)} />
           <Meta label="PID" value={job.pid ?? "—"} />
         </div>
+        {isBuild && job.loads && Object.keys(job.loads).length > 0 && (
+          <div className="row" style={{ marginTop: 14, gap: 8, alignItems: "center" }}>
+            <span className="muted" style={{ fontSize: 12 }}>Loaded into</span>
+            {Object.entries(job.loads).map(([target, l]) => (
+              <span
+                key={target}
+                className={loadPillClass(l.status)}
+                title={`${l.status} — view load log`}
+                onClick={() => navigate(`/builds/${l.job_id}`)}
+              >
+                {target === "neo4j" ? "Neo4j" : "MORK"} {loadIcon(l.status)}
+              </span>
+            ))}
+          </div>
+        )}
         {job.total_adapters != null &&
           (job.checkpoint || job.status === "running") && (
             <div style={{ marginTop: 12 }}>
@@ -316,6 +331,17 @@ function Meta({ label, value }: { label: string; value: unknown }) {
       <div className="mono">{String(value)}</div>
     </div>
   );
+}
+
+function loadPillClass(status: string): string {
+  if (status === "succeeded") return "loadpill ok";
+  if (status === "failed" || status === "cancelled") return "loadpill err";
+  return "loadpill run"; // queued / running
+}
+function loadIcon(status: string): string {
+  if (status === "succeeded") return "✓";
+  if (status === "failed" || status === "cancelled") return "⟲";
+  return "…";
 }
 
 function fmt(iso: string | null): string {

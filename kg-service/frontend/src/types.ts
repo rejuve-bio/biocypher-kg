@@ -101,6 +101,14 @@ export interface BuildJob {
   checkpoint?: CheckpointInfo | null;
   resumable?: boolean;
   retryable?: boolean; // failed/cancelled load job → can be re-run
+  // On build jobs: where this build has been loaded (latest load per target).
+  loads?: Record<string, LoadSummary>;
+}
+
+export interface LoadSummary {
+  job_id: string;
+  status: JobStatus;
+  created_at: string | null;
 }
 
 export interface CheckpointInfo {

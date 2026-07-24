@@ -1,10 +1,22 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
-import type { BuildJob } from "../types";
+import type { BuildJob, JobStatus } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
 
 const ACTIVE = new Set(["queued", "running"]);
+const TARGET_LABEL: Record<string, string> = { neo4j: "Neo4j", mork: "MORK" };
+
+function loadPillClass(status: JobStatus): string {
+  if (status === "succeeded") return "loadpill ok";
+  if (status === "failed" || status === "cancelled") return "loadpill err";
+  return "loadpill run"; // queued / running
+}
+function loadIcon(status: JobStatus): string {
+  if (status === "succeeded") return "✓";
+  if (status === "failed" || status === "cancelled") return "⟲";
+  return "…";
+}
 
 export default function BuildHistory() {
   const navigate = useNavigate();
@@ -19,7 +31,7 @@ export default function BuildHistory() {
         .then((b) => alive && setBuilds(b))
         .catch((e) => alive && setError(String(e)));
     load();
-    // Poll while any build is active.
+    // Poll while any build is active (also refreshes each build's load status).
     const timer = setInterval(load, 3000);
     return () => {
       alive = false;
@@ -31,16 +43,6 @@ export default function BuildHistory() {
     e.stopPropagation(); // don't trigger the row's navigate-to-detail
     try {
       const res = await api.resumeBuild(jobId);
-      navigate(`/builds/${res.id}`);
-    } catch (err) {
-      setError(String(err));
-    }
-  }
-
-  async function onRetry(e: MouseEvent, jobId: string) {
-    e.stopPropagation();
-    try {
-      const res = await api.retryLoad(jobId);
       navigate(`/builds/${res.id}`);
     } catch (err) {
       setError(String(err));
@@ -60,6 +62,7 @@ export default function BuildHistory() {
               <th>Status</th>
               <th>Species / Dataset</th>
               <th>Writer</th>
+              <th>Loaded</th>
               <th>Created</th>
               <th>ID</th>
               <th></th>
@@ -68,6 +71,8 @@ export default function BuildHistory() {
           <tbody>
             {builds.map((b) => {
               const p = b.params as Record<string, unknown>;
+              const loads = b.loads ?? {};
+              const loadEntries = Object.entries(loads);
               return (
                 <tr
                   key={b.id}
@@ -79,14 +84,32 @@ export default function BuildHistory() {
                     {ACTIVE.has(b.status) ? " ⏳" : ""}
                   </td>
                   <td>
-                    {b.kind && b.kind !== "build" && (
-                      <span className="tag edge" style={{ marginRight: 6 }}>
-                        {b.kind.replace("load-", "load→")}
-                      </span>
-                    )}
                     {String(p.species ?? "—")} / {String(p.dataset ?? "—")}
                   </td>
                   <td>{String(p.writer_type ?? "—")}</td>
+                  <td>
+                    {loadEntries.length ? (
+                      <span className="row" style={{ gap: 6 }}>
+                        {loadEntries.map(([target, l]) => (
+                          <span
+                            key={target}
+                            className={loadPillClass(l.status)}
+                            title={`Load → ${TARGET_LABEL[target] ?? target}: ${l.status} — click for log`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/builds/${l.job_id}`);
+                            }}
+                          >
+                            {TARGET_LABEL[target] ?? target} {loadIcon(l.status)}
+                          </span>
+                        ))}
+                      </span>
+                    ) : (
+                      <span className="muted" style={{ fontSize: 12 }}>
+                        —
+                      </span>
+                    )}
+                  </td>
                   <td className="muted">{fmt(b.created_at)}</td>
                   <td className="mono muted">{b.id.slice(0, 8)}</td>
                   <td>
@@ -97,14 +120,6 @@ export default function BuildHistory() {
                         title="Resume from checkpoint"
                       >
                         ⟲ Resume
-                      </button>
-                    ) : b.retryable ? (
-                      <button
-                        className="secondary btn-sm"
-                        onClick={(e) => onRetry(e, b.id)}
-                        title="Re-run this load"
-                      >
-                        ⟲ Retry
                       </button>
                     ) : (b.status === "failed" || b.status === "cancelled") ? (
                       <span

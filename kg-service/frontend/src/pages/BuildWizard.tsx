@@ -242,7 +242,7 @@ export default function BuildWizard() {
   return (
     <>
       <div className="card">
-        <h2>1 · Species &amp; Dataset</h2>
+        <h2><span className="step">1</span> Species &amp; Dataset</h2>
         <div className="row">
           <label className="field">
             Species
@@ -309,7 +309,7 @@ export default function BuildWizard() {
       </div>
 
       <div className="card">
-        <h2>2 · Adapters {isAll ? "" : `(${nSelected}/${adapters.length})`}</h2>
+        <h2><span className="step">2</span> Adapters {isAll ? "" : `(${nSelected}/${adapters.length})`}</h2>
         {isAll ? (
           <div className="alert warn">
             All-species run: every adapter in each species is included automatically —
@@ -353,7 +353,7 @@ export default function BuildWizard() {
       </div>
 
       <div className="card">
-        <h2>3 · Output format &amp; options</h2>
+        <h2><span className="step">3</span> Output format &amp; options</h2>
         <div className="row" style={{ marginBottom: 12 }}>
           <label className="field">
             Writer
