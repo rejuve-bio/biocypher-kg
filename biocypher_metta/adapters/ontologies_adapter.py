@@ -484,11 +484,7 @@ class OntologyAdapter(Adapter):
             if not alt_id_str:
                 continue
 
-            if alt_id_str.startswith('http://') or alt_id_str.startswith('https://'):
-                key = self.to_key(alt_id_str)
-                if key:
-                    formatted_alt_ids.append(key.replace(':', '_'))
-            elif ':' in alt_id_str or '_' in alt_id_str:
+            if ':' in alt_id_str or '_' in alt_id_str:
                 formatted_alt_ids.append(alt_id_str.replace(':', '_'))
             elif prefix:
                 formatted_alt_ids.append(f"{prefix}_{alt_id_str}")
