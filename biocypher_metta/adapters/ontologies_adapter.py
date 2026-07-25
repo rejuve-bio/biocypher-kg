@@ -467,7 +467,35 @@ class OntologyAdapter(Adapter):
     
     def get_alternative_ids(self, node):
         node_key = self.to_key(node)
-        return self.cache.get(node_key, {}).get('alternative_ids', [])
+        raw_alt_ids = self.cache.get(node_key, {}).get('alternative_ids', [])
+        if not raw_alt_ids:
+            return []
+
+        prefix = None
+        if node_key:
+            if ':' in node_key:
+                prefix = node_key.split(':')[0]
+            elif '_' in node_key:
+                prefix = node_key.split('_')[0]
+
+        formatted_alt_ids = []
+        for alt_id in raw_alt_ids:
+            alt_id_str = str(alt_id).strip()
+            if not alt_id_str:
+                continue
+
+            if alt_id_str.startswith('http://') or alt_id_str.startswith('https://'):
+                key = self.to_key(alt_id_str)
+                if key:
+                    formatted_alt_ids.append(key.replace(':', '_'))
+            elif ':' in alt_id_str or '_' in alt_id_str:
+                formatted_alt_ids.append(alt_id_str.replace(':', '_'))
+            elif prefix:
+                formatted_alt_ids.append(f"{prefix}_{alt_id_str}")
+            else:
+                formatted_alt_ids.append(alt_id_str)
+
+        return formatted_alt_ids
     
     def _process_node_key(self, node):
         """
