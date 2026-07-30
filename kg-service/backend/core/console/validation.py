@@ -1,11 +1,4 @@
-"""Validate a proposed build before it runs.
-
-Two layers:
-  1. static  — in-process, fast: mode/writer/config-existence/adapter-name checks.
-  2. authoritative — shells out to `create_knowledge_graph.py --check-only`
-     (runs no adapters) to verify every declared input path exists, exactly as a
-     real build would. This is the source of truth for ``missing_paths``.
-"""
+"""Validate a proposed build before it runs (static checks + `--check-only` path check)."""
 from __future__ import annotations
 
 import logging
@@ -75,8 +68,7 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
     num_adapters: Optional[int] = None
 
     if req.species and req.species.lower() == "all":
-        # All-species run: each species uses its own config, so there's no single
-        # adapters config to introspect. The CLI validates per species at run time.
+        # All-species run has no single adapters config; the CLI validates per species.
         if req.dataset not in ("sample", "full"):
             static_errors.append("dataset must be 'sample' or 'full' for an all-species run.")
         static_warnings.append(
@@ -131,9 +123,7 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
                 )
 
     # --- dbSNP requirement for non-sample species-mode runs ---
-    # The pipeline calls _load_dbsnp unconditionally in species mode and hard-exits
-    # for a non-sample run unless BOTH the cache root and a common|full variant are
-    # set (from the request or species_config.yaml). Enforce that up front.
+    # The pipeline hard-exits on a non-sample run without both cache root and variant.
     if req.species and req.dataset != "sample":
         try:
             entry = ci._dataset_entry(req.species, req.dataset)

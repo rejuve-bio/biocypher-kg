@@ -32,7 +32,6 @@ export default function BuildWizard() {
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Initial load: species, writers, flags.
   useEffect(() => {
     Promise.all([api.listSpecies(), api.listWriters(), api.listFlags()])
       .then(([sp, w, fl]) => {
@@ -49,8 +48,7 @@ export default function BuildWizard() {
 
   const datasets = useMemo(() => {
     if (isAll) {
-      // Union of dataset names across all species (sample/full); each species runs
-      // with its own config, skipping ones that lack the chosen dataset.
+      // All-species: union of dataset names; each species uses its own config.
       const names = Array.from(
         new Set(species.flatMap((s) => s.datasets.map((d) => d.name))),
       );
@@ -74,8 +72,7 @@ export default function BuildWizard() {
       return;
     }
     const usable = datasets.filter((d) => d.adapters_config_exists);
-    // Only auto-select a dataset whose config actually exists. If none do, leave
-    // it unset so the adapters section shows a friendly notice instead of erroring.
+    // Leave unset when no config exists so the UI shows a notice instead of erroring.
     const preferred = usable.find((d) => d.name === "sample") ?? usable[0];
     setSelDataset(preferred ? preferred.name : "");
   }, [datasets]);
@@ -87,7 +84,6 @@ export default function BuildWizard() {
     setDbsnpVariant(d?.dbsnp_variant || "common");
   }, [selDataset, datasets]);
 
-  // Load adapters when species/dataset change.
   useEffect(() => {
     setValidation(null);
     setAdaptersError(null);
@@ -137,8 +133,7 @@ export default function BuildWizard() {
     return {
       species: selSpecies,
       dataset: selDataset,
-      // For an all-species run every adapter of each species runs. Otherwise, omit
-      // include_adapters when everything is selected (means "all adapters").
+      // null = all adapters (always for all-species runs).
       include_adapters: isAll || allSelected ? null : Array.from(selected),
       writer_type: writerType,
       // Server decides where output goes: DATA_ROOT/<dated> if set, else repo default.

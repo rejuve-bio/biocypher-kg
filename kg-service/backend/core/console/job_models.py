@@ -20,18 +20,12 @@ TERMINAL_STATUSES = {JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED}
 
 
 class BuildRequest(BaseModel):
-    """A proposed knowledge-graph build. Shared by /validate and POST /builds.
-
-    Two modes (mirroring create_knowledge_graph.py):
-      * species mode  — set ``species`` (+ ``dataset``); configs come from
-        species_config.yaml.
-      * manual mode   — set ``adapters_config`` and ``schema_config`` explicitly.
-    """
+    """A proposed knowledge-graph build (species mode or manual adapters/schema config)."""
     # species mode
     species: Optional[str] = None
     dataset: str = "sample"
 
-    # manual mode (repo-relative or absolute paths, confined under REPO_ROOT)
+    # manual mode (paths confined under REPO_ROOT)
     adapters_config: Optional[str] = None
     schema_config: Optional[str] = None
 
@@ -56,9 +50,9 @@ class BuildRequest(BaseModel):
 class BuildJob:
     id: str
     status: JobStatus
-    params: dict                      # the submitted BuildRequest
-    cmd: list[str]                    # exact argv used to launch the build
-    cwd: str                          # REPO_ROOT
+    params: dict
+    cmd: list[str]
+    cwd: str
     output_dir: str
     log_path: str
     kind: str = "build"              # "build" | "load-neo4j" | "load-mork"

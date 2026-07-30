@@ -8,9 +8,7 @@ from backend.core.neo4j_client import neo4j_client
 from backend.api.routes import updates, summary, graph_info
 from backend.api.routes import console_config, builds
 
-# `meta` and `entities` routers are referenced by the original Observatory but were
-# never committed to this branch. Import them optionally so their absence doesn't
-# prevent the app (and the Console) from starting.
+# `meta`/`entities` routers may be absent on this branch; import optionally.
 try:
     from backend.api.routes import meta  # type: ignore
 except ImportError:
@@ -33,7 +31,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Background scheduler for auto-refresh
 scheduler = BackgroundScheduler()
 
 def refresh_graph_info():
@@ -45,7 +42,6 @@ def refresh_graph_info():
     except Exception as e:
         logger.error(f"❌ Auto-refresh failed: {e}")
 
-# Schedule refresh every 72 hour
 scheduler.add_job(refresh_graph_info, 'interval', hours=72, id='graph_info_refresh')
 
 
@@ -54,7 +50,6 @@ async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle (replaces deprecated @app.on_event handlers)."""
     logger.info(f"Starting {settings.APP_NAME}")
 
-    # Background scheduler for graph_info refresh (Observatory).
     logger.info("🚀 Starting background scheduler...")
     scheduler.start()
     logger.info("✅ Background scheduler started (refresh every 72 hours)")
@@ -69,7 +64,6 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("✓ Existing cache file found, using it")
 
-    # Console: repair build jobs left RUNNING by a previous process instance.
     try:
         build_registry.reconcile()
         logger.info("✅ Build registry reconciled")
@@ -101,7 +95,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register routes
 if meta is not None:
     app.include_router(meta.router, prefix="/api", tags=["Meta"])
 if entities is not None:
@@ -111,8 +104,7 @@ app.include_router(summary.router, prefix="/api", tags=["Summary"])
 app.include_router(versions.router)
 app.include_router(graph_info.router, prefix="/api", tags=["graph-info"])
 
-# Console (configuration + build management). Routers already carry the
-# /api/console prefix and the "Console" tag.
+# Console routers already carry the /api/console prefix and "Console" tag.
 app.include_router(console_config.router)
 app.include_router(builds.router)
 
@@ -134,11 +126,7 @@ def health():
     }
 
 class SPAStaticFiles(StaticFiles):
-    """StaticFiles that falls back to index.html for unknown paths.
-
-    Without this, client-side routes (e.g. /console/history, /console/builds/<id>)
-    would 404 on a direct visit or page refresh, since no matching file exists.
-    """
+    """StaticFiles that falls back to index.html so client-side routes don't 404 on refresh."""
     async def get_response(self, path, scope):
         try:
             response = await super().get_response(path, scope)
@@ -151,8 +139,7 @@ class SPAStaticFiles(StaticFiles):
         return response
 
 
-# Serve the built Console SPA at /console (mounted last so /api/* and the JSON
-# routes above always win). No-op in dev, where Vite serves the app itself.
+# Serve the Console SPA at /console (mounted last so /api/* routes win). No-op in dev.
 if settings.SERVE_FRONTEND:
     _frontend_dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
     if _frontend_dist.is_dir():

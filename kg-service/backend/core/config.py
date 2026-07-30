@@ -2,9 +2,7 @@ from pathlib import Path
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
-# Repo root = the biocypher-kg checkout that contains create_knowledge_graph.py.
-# config.py lives at <repo>/kg-service/backend/core/config.py, so parents[3] is <repo>.
-# The build CLI must run with this as its cwd (it hardcodes repo-root-relative paths).
+# Repo root (contains create_knowledge_graph.py); config.py is 3 levels under it.
 _REPO_ROOT_DEFAULT = str(Path(__file__).resolve().parents[3])
 
 class Settings(BaseSettings):
@@ -30,21 +28,15 @@ class Settings(BaseSettings):
     APP_VERSION: str = "0.1.0"
 
     # ===== Console (build management) =====
-    # Absolute path to the biocypher-kg checkout. Builds shell out to
-    # `create_knowledge_graph.py` with this as cwd. Override via REPO_ROOT env var.
+    # Absolute path to the checkout; override via REPO_ROOT env var.
     REPO_ROOT: str = _REPO_ROOT_DEFAULT
-    # Where build job artifacts (registry.json + per-job logs/output) are stored.
-    # Empty string => <REPO_ROOT>/kg-service/.builds (resolved lazily in builds_dir).
+    # Build artifacts dir; empty => <REPO_ROOT>/kg-service/.builds.
     BUILDS_DIR: str = ""
-    # Base dir for auto-named build outputs when the wizard's output field is blank.
-    # When set, a blank output resolves to <DATA_ROOT>/<species>-<dataset>-<timestamp>.
-    # In Docker this is mounted at the same path, so those outputs are host-visible.
+    # Base dir for auto-named build outputs when the output field is blank.
     DATA_ROOT: str = ""
-    # Max builds allowed to run concurrently. Default 1: full builds are memory/IO
-    # heavy and two at once can OOM a single host. This is the Phase 3 parallel seam.
+    # Max concurrent builds; default 1 (two full builds can OOM a single host).
     MAX_CONCURRENT_BUILDS: int = 1
-    # Retention: keep at most this many finished (terminal) build jobs; older ones
-    # are pruned (registry entry + artifacts dir) when a new build is launched.
+    # Keep at most this many finished build jobs; older ones are pruned.
     MAX_BUILD_HISTORY: int = 50
     # Executable used to launch the build (`uv run python create_knowledge_graph.py`).
     UV_BIN: str = "uv"

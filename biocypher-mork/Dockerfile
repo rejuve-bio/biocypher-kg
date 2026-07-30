@@ -1,6 +1,6 @@
 FROM rustlang/rust:nightly
 
-# Install dependencies including curl for healthcheck
+# Build deps (curl for the healthcheck).
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -10,33 +10,20 @@ RUN apt-get update && apt-get install -y \
     curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Set working dir
 WORKDIR /app
 
-# gxhash (a PathMap/MORK dependency) needs CPU intrinsics enabled at build time
-# (aes+neon on ARM / aes on x86). Without this, the build fails with:
-#   "Gxhash requires aes and neon intrinsics ... build with RUSTFLAGS=..."
-# target-cpu=native enables whatever the build host supports (works on Apple
-# Silicon and x86 alike for a locally-built image).
+# gxhash (a MORK dep) needs CPU intrinsics; target-cpu=native enables them on ARM/x86.
 ENV RUSTFLAGS="-C target-cpu=native"
 
-# Pin the nightly toolchain. `rustlang/rust:nightly` is UNPINNED — every build rides
-# whatever nightly is latest, so a broken nightly rustc silently breaks the build even
-# though our code never changed. (2026-07: latest nightly ICEs compiling tokio —
-# "internal compiler error: rustc_codegen_ssa/.../operand.rs: not immediate".) Install
-# and default to a fixed dated nightly via rustup so the build is reproducible.
-# Bisect if a date regresses or lacks a needed feature:
-#   docker build --build-arg RUST_NIGHTLY=2026-06-15 ...   (or set RUST_NIGHTLY in console.env)
+# Pin nightly: rustlang/rust:nightly is unpinned, so a broken nightly can break the build.
 ARG RUST_NIGHTLY=2026-07-01
 RUN rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal && \
     rustup default "nightly-${RUST_NIGHTLY}"
 
-# Build PathMap
 RUN git clone --depth=1 https://github.com/Adam-Vandervorst/PathMap.git /app/PathMap && \
     cd /app/PathMap && \
     cargo build --release
 
-# Build MORK Server (server branch)
 RUN git clone --depth=1 -b server https://github.com/Abdu1964/MORK.git /app/MORK_SERVER && \
     cd /app/MORK_SERVER/server && cargo build --release
 
@@ -44,28 +31,20 @@ RUN git clone --depth=1 -b server https://github.com/Abdu1964/MORK.git /app/MORK
 #     cd /app/MORK/kernel && \
 #     cargo build --release
 
-# Create data, reports, benchmarks, and persist directories. /app/persist must exist
-# and be mork-owned so a named volume mounted there inherits that ownership (a fresh
-# named volume copies the image dir's ownership; otherwise it comes up root-owned and
-# the entrypoint can't write its snapshot/WAL).
+# /app/persist must be mork-owned so a named volume mounted there inherits that ownership.
 RUN mkdir -p /app/data /app/reports /app/benchmarks /app/persist
 
-# Link the server binary to a stable location
 RUN ln -s /app/MORK_SERVER/target/release/mork-server /app/mork-server
 
-# Copy entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# Create a user with UID 1000 (common default user ID)
 RUN useradd -r -u 1000 -s /bin/false mork && \
     chown -R mork:mork /app && \
     chmod 755 /app/data /app/reports /app/benchmarks /app/persist
 
-# Switch to non-root user
 USER mork
 
-# Expose the server port
 EXPOSE 8027
 
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -1,21 +1,5 @@
 #!/usr/bin/env bash
-# docker/up.sh — bring up the BioCypher KG Console, attaching to existing Neo4j/MORK
-# instances or creating bundled ones as needed.
-#
-# For EACH of Neo4j and MORK, the launcher decides in this order:
-#   1. our bundled service is already running   -> reuse it (compose service name)
-#   2. a remote host is configured (NEO4J_HOST / MORK_HOST is non-local)
-#                                               -> attach to it (error if unreachable;
-#                                                  we can't create a DB on another box)
-#   3. something is already listening on the local port
-#                                               -> attach via host.docker.internal
-#   4. nothing is there                         -> create the bundled service
-# ...then bring up the console pointing at whatever was chosen.
-#
-# Config comes from docker/console.env:
-#   NEO4J_HOST (blank = this host), NEO4J_BOLT_PORT (default 7687)
-#   MORK_HOST  (blank = this host), MORK_HOST_PORT  (default 8432)
-# Extra args are passed through to `docker compose up` (e.g. --build, --force-recreate).
+# docker/up.sh — bring up the Console, attaching to existing Neo4j/MORK or creating bundled ones.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -29,7 +13,6 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
-# Load env so we can read host/port config (and pass it on to compose).
 set -a; . "$ENV_FILE"; set +a
 
 NEO4J_HOST="${NEO4J_HOST:-}"
@@ -41,23 +24,18 @@ is_local() {  # blank / loopback counts as "this host"
   case "$1" in ""|localhost|127.0.0.1|0.0.0.0|::1) return 0 ;; *) return 1 ;; esac
 }
 
-port_open() {  # host port  → 0 if a TCP connection succeeds within 2s
+port_open() {
   timeout 2 bash -c "exec 3<>/dev/tcp/$1/$2" 2>/dev/null
 }
 
-port_taken() {  # host port → 0 if ANY container publishes it, or something answers TCP
-  # Docker refuses to bind a host port that any container already maps — even one from
-  # another project (e.g. a standalone MORK). The TCP probe alone misses that (the app
-  # may not be answering on 127.0.0.1 at probe time), so we'd wrongly try to create a
-  # bundled service and hit "port is already allocated". Checking `docker ps --filter
-  # publish` matches Docker's own view, so we attach instead of colliding.
+port_taken() {
+  # Docker refuses to bind a host port any container already maps, so match Docker's view.
   [ -n "$(docker ps --filter "publish=$1" --format '{{.ID}}' 2>/dev/null)" ] && return 0
   port_open 127.0.0.1 "$1"
 }
 
-service_running() {  # compose service name → 0 if it's up in THIS project
-  # Enable both profiles for the query so profiled services (neo4j/mork) that are
-  # already running are listed — `ps` otherwise filters to active profiles only.
+service_running() {
+  # Enable both profiles so already-running profiled services are listed (ps filters to active profiles).
   "${COMPOSE[@]}" --profile neo4j --profile mork ps --status running --services 2>/dev/null \
     | grep -qx "$1"
 }
@@ -112,12 +90,5 @@ echo "  profiles  = ${PROFILES[*]:-<console only>}"
 echo "─────────────────────────────────────────────"
 echo
 
-# Bring up the chosen DB services + the console.
-#   --build          keeps the console image current with the latest code
-#   --remove-orphans clears stray containers from THIS project left by a prior run —
-#                    e.g. a bundled mork we no longer start because we're now attaching
-#                    to an existing one. Scoped to this compose project, so it never
-#                    touches foreign stacks (that's why we attach to, never delete, a
-#                    MORK/Neo4j owned by another project).
-#   $@               extra args pass through (e.g. --force-recreate)
+# --remove-orphans is scoped to this project, so it never touches foreign stacks.
 exec "${COMPOSE[@]}" "${PROFILES[@]}" up -d --build --remove-orphans "$@"

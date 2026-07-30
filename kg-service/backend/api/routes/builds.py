@@ -34,19 +34,16 @@ def _job_or_404(job_id: str) -> BuildJob:
 def _enrich(job: BuildJob) -> dict:
     """Job dict + checkpoint summary + resumable flag (shared by list & detail)."""
     data = job.to_dict()
-    # Checkpoint/resume only apply to build jobs, not load jobs.
     checkpoint = job_runner.read_checkpoint(job.output_dir) if job.kind == "build" else None
     data["checkpoint"] = checkpoint
     data["resumable"] = checkpoint is not None and job.status in {
         JobStatus.FAILED,
         JobStatus.CANCELLED,
     }
-    # Load jobs can be retried (re-run the same loader) when they didn't succeed.
     data["retryable"] = (job.kind or "").startswith("load-") and job.status in {
         JobStatus.FAILED,
         JobStatus.CANCELLED,
     }
-    # Builds report where they've been loaded (so loads aren't separate history rows).
     if (job.kind or "build") == "build":
         data["loads"] = job_runner.loads_for(job.id)
     return data
@@ -111,12 +108,7 @@ def create_build(req: BuildRequest):
 
 @router.get("/builds")
 def list_builds(status: Optional[str] = Query(default=None)):
-    """List BUILD jobs, newest first (optional ?status= filter).
-
-    Load jobs are excluded — a load is an action on a build, surfaced via each
-    build's ``loads`` field rather than as its own history row. Load jobs remain
-    reachable individually at GET /builds/{id} (for their log and retry).
-    """
+    """List BUILD jobs, newest first (optional ?status= filter); load jobs excluded."""
     builds = [j for j in registry.list(status=status) if (j.kind or "build") == "build"]
     return {"builds": [_enrich(j) for j in builds]}
 
@@ -179,7 +171,7 @@ async def stream_logs(job_id: str):
             job = registry.get(job_id)
             if job is None or job.status in {JobStatus.SUCCEEDED, JobStatus.FAILED,
                                              JobStatus.CANCELLED}:
-                # one last flush of anything written after the final read
+                # final flush of anything written after the last read
                 if log_path.exists():
                     with open(log_path, "r", errors="replace") as fh:
                         fh.seek(pos)

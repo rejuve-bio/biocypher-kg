@@ -1,27 +1,5 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# BioCypher KG Console — the whole system in ONE compose file.
-#
-#   cp docker/console.env.example docker/console.env      # edit once (DATA_ROOT + password)
-#   ./docker/up.sh                                          # attach-or-create DBs, then Console
-#
-#   → Console UI : http://localhost:${CONSOLE_PORT}/console/
-#   → Neo4j UI   : http://localhost:${NEO4J_HTTP_PORT}   (if the bundled Neo4j was started)
-#
-# docker/up.sh decides, per database: reuse the bundled service if it's already up;
-# else attach to an existing instance (a remote NEO4J_HOST/MORK_HOST, or one already
-# listening on the local port); else create the bundled service. neo4j and mork are
-# behind profiles so they're only created when up.sh (or you) enable them.
-#
-# Manual escape hatch — force the fully-bundled stack without the launcher:
-#   docker compose --env-file docker/console.env -f docker/docker-compose.yml --profile neo4j --profile mork up --build
-#
-# How it fits together: all services share the compose network, so the Console
-# reaches Neo4j/MORK by service name (no host.docker.internal). DATA_ROOT is the
-# ONLY path you set — it's bind-mounted at the SAME path into every service, so a
-# build the Console writes there is readable by Neo4j/MORK for loading.
-# ─────────────────────────────────────────────────────────────────────────────
-# Own project name so this stack never collides with the standalone Makefile Neo4j
-# (docker/docker-compose.neo4j.yml), which shares this directory.
+# BioCypher KG Console — the whole system in one compose file (driven by docker/up.sh).
+# Own project name so this stack never collides with the standalone Makefile Neo4j in this dir.
 name: biocypher-console
 
 services:
@@ -38,9 +16,7 @@ services:
       BUILDS_DIR: /app/kg-service/.builds
       DATA_ROOT: "${DATA_ROOT:?set DATA_ROOT in docker/console.env}"
       MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
-      # DB endpoints are set by docker/up.sh: bundled service → compose service name;
-      # attach to existing → host.docker.internal:<port> (same host) or host:<port>
-      # (remote). Defaults here keep a manual `--profile neo4j --profile mork up` working.
+      # Set by docker/up.sh; defaults keep a manual `--profile neo4j --profile mork up` working.
       NEO4J_URI: "${NEO4J_URI:-bolt://neo4j:7687}"
       NEO4J_USER: "${NEO4J_USER:-neo4j}"
       NEO4J_PASSWORD: "${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
@@ -48,20 +24,16 @@ services:
       ARCHIVE_BASE: "${DATA_ROOT}/archives"
       MORK_URL: "${MORK_URL:-http://mork:8027}"
     volumes:
-      # Build output + archives on the HOST, mounted at the SAME path. The Console
-      # writes builds here; Neo4j/MORK read them from the identical path (below).
+      # Mounted at the same path so Neo4j/MORK read builds where the Console writes them.
       - "${DATA_ROOT}:${DATA_ROOT}"
-      # Build-job registry + logs (BUILDS_DIR). Kept on a named volume so build
-      # HISTORY survives `up --build`/recreate — otherwise it lives in the container's
-      # ephemeral layer and is wiped every time the image is rebuilt.
+      # Named volume so build history survives image rebuilds.
       - console_builds:/app/kg-service/.builds
     # Lets the Console reach a Neo4j/MORK published on the host (attach case) on Linux.
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   neo4j:
-    # Optional: docker/up.sh enables this profile only when no Neo4j already exists
-    # on the target endpoint. Same pattern as mork below.
+    # up.sh enables this profile only when no Neo4j already exists on the target endpoint.
     profiles: ["neo4j"]
     image: ${NEO4J_IMAGE:-neo4j:5.21}
     ports:
@@ -69,15 +41,13 @@ services:
       - "${NEO4J_BOLT_PORT:-7687}:7687"
     environment:
       NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
-      # APOC — the loader uses apoc.periodic.iterate / apoc.map.removeKeys. The file
-      # export/import toggles are the proven-working defaults (overridable via env).
+      # APOC — the loader uses apoc.periodic.iterate / apoc.map.removeKeys.
       NEO4JLABS_PLUGINS: '["apoc"]'
       NEO4J_apoc_export_file_enabled: "${NEO4J_APOC_EXPORT_FILE:-true}"
       NEO4J_apoc_import_file_enabled: "${NEO4J_APOC_IMPORT_FILE:-true}"
       NEO4J_apoc_import_file_use__neo4j__config: "${NEO4J_APOC_IMPORT_USE_CONFIG:-false}"
       NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
-      # Import from ANY directory: absolute file:/// URLs resolve against "/", and
-      # DATA_ROOT is mounted same-path (below), so the loader's --import-dir works.
+      # Import from any dir: file:/// URLs resolve against "/" so the loader's --import-dir works.
       NEO4J_dbms_security_allow__csv__import__from__file__urls: "true"
       NEO4J_server_directories_import: "/"
       NEO4J_server_memory_pagecache_size: "${NEO4J_PAGECACHE:-1G}"
@@ -92,8 +62,7 @@ services:
     build:
       context: ../biocypher-mork
       args:
-        # Pinned nightly toolchain (see biocypher-mork/Dockerfile). Override to bisect
-        # a broken nightly: set RUST_NIGHTLY=YYYY-MM-DD in docker/console.env.
+        # Pinned nightly; override RUST_NIGHTLY to bisect a broken one.
         RUST_NIGHTLY: "${RUST_NIGHTLY:-2026-07-01}"
     ports:
       - "${MORK_HOST_PORT:-8432}:8027"
@@ -103,9 +72,7 @@ services:
       - SNAPSHOT_INTERVAL_SECONDS=${SNAPSHOT_INTERVAL_SECONDS:-300}
     volumes:
       - "${DATA_ROOT}:${DATA_ROOT}:ro"   # read the Console's .metta output (same path)
-      # Docker-managed volumes for MORK's writable dirs. A host bind mount fails with
-      # "Permission denied" because the host dir isn't owned by the container's mork
-      # user (UID 1000); named volumes are created with the right ownership.
+      # Named volumes, not host binds: they come up mork-owned (UID 1000), host binds don't.
       - mork_persist:/app/persist
       - mork_reports:/app/reports
       - ../biocypher-mork/entrypoint.sh:/app/entrypoint.sh:ro

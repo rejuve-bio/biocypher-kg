@@ -1,5 +1,4 @@
-/* Brand palette — Emerald #10B981 (primary), Deep Teal #0F766E (secondary),
-   Cyan #06B6D4 (accent), White / #0F172A backgrounds. */
+/* Brand palette */
 :root,
 :root[data-theme="dark"] {
   --bg: #0f172a;
@@ -357,7 +356,7 @@ input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
 .muted { color: var(--muted); }
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
 
-/* ── Load pills (where a build has been loaded) ──────────── */
+/* ── Load pills ──────────────────────────────────────────── */
 .loadpill {
   display: inline-flex;
   align-items: center;

@@ -1,8 +1,4 @@
-"""Console configuration introspection endpoints (read-only).
-
-Everything here parses committed YAML config; it never runs a build and never
-touches Neo4j, so it works even when no graph is loaded.
-"""
+"""Console configuration introspection endpoints (read-only)."""
 from fastapi import APIRouter, HTTPException
 
 from backend.core.console import config_introspect as ci

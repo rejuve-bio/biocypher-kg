@@ -46,9 +46,7 @@ export default function BuildDetail() {
         if (!alive) return;
         setJob(j);
         setLines(l.lines);
-        // Refresh the produced-file list every poll so downloads appear
-        // incrementally as each adapter finishes (checkpoint advances → more
-        // output on disk), not only when the whole build completes.
+        // Refresh file list every poll so downloads appear incrementally.
         const [out, gi] = await Promise.all([
           api.listOutput(id).catch(() => null),
           api.getGraphInfo(id).catch(() => null),

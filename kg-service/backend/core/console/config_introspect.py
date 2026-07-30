@@ -1,12 +1,4 @@
-"""Read-only introspection of the pipeline's YAML configuration.
-
-Everything here is cheap and pure: it parses committed config files and returns
-plain dicts. It never instantiates BioCypher or a writer, and never runs a build.
-
-Paths are always resolved against ``settings.repo_root_path`` and opened by
-absolute path so the ``!include`` directive (resolved relative to the including
-file's own directory) keeps working.
-"""
+"""Read-only introspection of the pipeline's YAML configuration."""
 from __future__ import annotations
 
 import functools
@@ -19,13 +11,7 @@ from backend.core.config import settings
 
 @functools.lru_cache(maxsize=1)
 def _load_yaml_with_includes():
-    """Import the repo-root ``config.yaml_loader.load_yaml_with_includes``.
-
-    The build CLI lives at the repo root, not under ``kg-service``, so we put the
-    repo root on ``sys.path`` to reuse its pure YAML loader (which understands the
-    custom ``!include`` directive). Safe because this app only ever imports config
-    via the fully-qualified ``backend.core.config`` — never bare ``import config``.
-    """
+    """Import repo-root ``config.yaml_loader.load_yaml_with_includes`` (needs repo root on sys.path)."""
     repo_root = str(settings.repo_root_path)
     if repo_root not in sys.path:
         sys.path.insert(0, repo_root)
@@ -34,12 +20,10 @@ def _load_yaml_with_includes():
     return load_yaml_with_includes
 
 
-# Writer types accepted by the CLI. Mirror of create_knowledge_graph.py::get_writer
-# (keep in sync if a writer is added/removed there).
+# Mirror of create_knowledge_graph.py::get_writer (keep in sync).
 WRITER_TYPES = ["metta", "prolog", "neo4j", "parquet", "networkx", "kgx"]
 
-# Toggleable build flags surfaced to the UI. `default` matches the CLI defaults in
-# create_knowledge_graph.py::main.
+# Toggleable build flags for the UI; defaults match create_knowledge_graph.py::main.
 BUILD_FLAGS = [
     {"name": "write_properties", "default": True,
      "help": "Write properties onto nodes and edges."},
@@ -67,11 +51,7 @@ def _resolve(path_str: str) -> Path:
 
 
 def _is_path_like(value: str) -> bool:
-    """Path-arg heuristic, mirrors create_knowledge_graph.py::_check_adapter_file_paths.
-
-    A string arg is treated as a filesystem path only when it is explicitly
-    rooted ("/", "./", "../"); bare names (labels, types) are ignored.
-    """
+    """True only for explicitly-rooted strings ("/", "./", "../"); mirrors the CLI's path check."""
     return value.startswith(("/", "./", "../"))
 
 
@@ -160,10 +140,7 @@ def resolve_schema_config_path(species: str, dataset: str) -> Path:
 
 
 def load_adapters_dict(species: str, dataset: str) -> tuple[dict, Optional[str]]:
-    """Return (adapters_dict, input_dir) with ``input_dir`` popped out.
-
-    Mirrors create_knowledge_graph.py::_load_adapters_config's ``pop('input_dir')``.
-    """
+    """Return (adapters_dict, input_dir) with ``input_dir`` popped out (mirrors the CLI)."""
     load = _load_yaml_with_includes()
     path = resolve_adapters_config_path(species, dataset)
     adapters = load(str(path)) or {}
@@ -203,15 +180,7 @@ def list_adapters(species: str, dataset: str) -> dict:
 
 
 def list_schema(species: str, dataset: str) -> dict:
-    """Shallow view of the BioCypher schema: node/edge type names + per-source schemas.
-
-    A full parse would require instantiating BioCypher (heavy, side effects), so we
-    only read the top-level type keys and split them by ``represented_as``.
-
-    A real build merges ``primer_schema_config.yaml`` with the species schema
-    (create_knowledge_graph.py::merge_schemas), so we do the same here — otherwise
-    species whose file is mostly empty (cel, mmu) would report zero types.
-    """
+    """Shallow view of the BioCypher schema: node/edge type names + per-source schemas."""
     load = _load_yaml_with_includes()
     path = resolve_schema_config_path(species, dataset)
     species_raw = load(str(path)) or {}
@@ -233,7 +202,6 @@ def list_schema(species: str, dataset: str) -> dict:
         else:
             node_types.append(key)
 
-    # Per-source auto-generated schemas (informational, read-only).
     ds_schema_dir = settings.repo_root_path / "data_source_schemas" / species
     data_source_schemas = (
         sorted(p.name for p in ds_schema_dir.glob("*.yaml"))
