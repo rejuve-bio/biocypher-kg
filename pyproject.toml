@@ -61,7 +61,7 @@ dependencies = [
     "platformdirs==4.5.0",
     "pluggy==1.6.0",
     "pooch==1.8.2",
-    "prompt-toolkit==3.0.52",
+    "prompt-toolkit==3.0.53",
     "proto-plus==1.27.1",
     "protobuf==6.33.5",
     "psycopg2==2.9.11",

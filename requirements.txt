@@ -204,7 +204,7 @@ pooch==1.8.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
-prompt-toolkit==3.0.52
+prompt-toolkit==3.0.53
     # via
     #   biocypher-metta (pyproject.toml)
     #   ipython
