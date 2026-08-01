@@ -46,7 +46,7 @@ coloredlogs==15.0.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
-colorlog==6.10.1
+colorlog==6.12.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   neo4j-utils
