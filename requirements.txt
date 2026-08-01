@@ -256,7 +256,7 @@ pysam==0.23.3
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
-pytest==8.4.2
+pytest==9.1.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   pytest-cov
