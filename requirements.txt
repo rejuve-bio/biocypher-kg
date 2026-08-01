@@ -26,7 +26,7 @@ bioutils==0.6.1
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
     #   hgvs
-cachetools==6.2.1
+cachetools==7.1.6
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-auth
