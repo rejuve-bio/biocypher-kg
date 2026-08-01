@@ -4,7 +4,7 @@ appdirs==1.4.4
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
-asttokens==3.0.0
+asttokens==3.0.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   stack-data
