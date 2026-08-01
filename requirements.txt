@@ -161,7 +161,7 @@ networkx==3.4.2
     #   biocypher-metta (pyproject.toml)
     #   biocypher
     #   obonet
-numpy==1.26.4
+numpy==2.2.6
     # via
     #   biocypher-metta (pyproject.toml)
     #   biopython

@@ -50,7 +50,7 @@ dependencies = [
     "neo4j==4.4.13",
     "neo4j-utils==0.0.7",
     "networkx==3.4.2",
-    "numpy==1.26.4",
+    "numpy==2.2.6",
     "obonet==1.0.0",
     "owlready2==0.44",
     "packaging==25.0",
