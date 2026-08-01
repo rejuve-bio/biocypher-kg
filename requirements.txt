@@ -54,7 +54,7 @@ configparser==7.2.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   hgvs
-coverage==7.11.0
+coverage==7.15.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   pytest-cov
