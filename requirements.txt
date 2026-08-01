@@ -30,7 +30,7 @@ cachetools==6.2.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-auth
-certifi==2025.10.5
+certifi==2026.7.22
     # via
     #   biocypher-metta (pyproject.toml)
     #   requests
