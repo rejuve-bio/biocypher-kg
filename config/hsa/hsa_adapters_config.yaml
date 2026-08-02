@@ -1812,7 +1812,7 @@ encode_re2g:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
-      filepath: regulation/Homo_sapiens.GRCh38.regulatory_features.v116.gff3.gz
+      filepath: /Homo_sapiens.GRCh38.regulatory_features.v116.gff3.gz
       taxon_id: 9606
   outdir: encode_re2g
   nodes: True
@@ -1823,9 +1823,9 @@ encode_re2g_edges:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
-      filepath: regulation/Homo_sapiens.GRCh38.regulatory_features.v116.gff3.gz
+      filepath: /Homo_sapiens.GRCh38.regulatory_features.v116.gff3.gz
       taxon_id: 9606
-      gencode_filepath: gencode/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz
+      gencode_filepath: ./samples/hsa/gencode_sample.gtf.gz
   outdir: encode_re2g
   nodes: False
   edges: True

@@ -35,10 +35,6 @@ from biocypher_metta.adapters.helpers import (
 # gene_id attribute in col 8, e.g.:
 #   1  HAVANA  gene  11869  14409  .  +  .  gene_id "ENSG00000290825.2"; …
 #
-# Edge creation logic:
-#   • gene_id present in enhancer attributes  → enhancer_gene edge(s)
-#   • gene_id absent                          → enhancer_overlaps_gene edge(s)
-#     (position-based overlap against the gene index built from gencode_filepath)
 
 class ENCODERe2GAdapter(Adapter):
 
