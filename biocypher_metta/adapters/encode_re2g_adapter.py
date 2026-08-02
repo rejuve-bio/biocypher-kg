@@ -29,25 +29,18 @@ from biocypher_metta.adapters.helpers import (
 #   col 8: attributes – semicolon-separated key=value pairs
 #                       e.g. ID=ENSR…;gene_id=ENSG…;color=#faca00
 #
-# gencode_filepath must be a GENCODE/Ensembl GTF file (.gtf or .gtf.gz).
-# It is used to build a gene-interval index for position-based overlap edges.
-# The GTF must contain rows where feature (col 2) == "gene", with a
-# gene_id attribute in col 8, e.g.:
-#   1  HAVANA  gene  11869  14409  .  +  .  gene_id "ENSG00000290825.2"; …
-#
 
 class ENCODERe2GAdapter(Adapter):
 
     ENHANCER_FEATURE = 'enhancer'
 
     def __init__(self, filepath, taxon_id, write_properties, add_provenance,
-                 label=None, chr=None, start=None, end=None,
+                 chr=None, start=None, end=None,
                  gencode_filepath=None, **kwargs):
         self.filepath = filepath
         self.chr = chr
         self.start = start
         self.end = end
-        self.label = label
         self.taxon_id = str(taxon_id) if taxon_id is not None else None
         self._taxon_id_int = int(taxon_id) if taxon_id is not None else 9606
         self.gencode_filepath = gencode_filepath
@@ -171,7 +164,7 @@ class ENCODERe2GAdapter(Adapter):
                 )
 
                 props = self._build_props({'chr': chrom, 'start': start, 'end': end})
-                yield region_id, self.label or 'enhancer', props
+                yield region_id, 'enhancer', props
 
     def get_edges(self):
 
@@ -208,10 +201,10 @@ class ENCODERe2GAdapter(Adapter):
                         if not raw_gid:
                             continue
                         gene_id = f'{curie}:{self._strip_version(raw_gid)}'
-                        yield region_id, gene_id, self.label or 'enhancer_gene', props
+                        yield region_id, gene_id, 'enhancer_gene', props
                 else:
                     if not self.gencode_filepath:
                         continue
-                    edge_label = self.label or 'enhancer_overlaps_gene'
+                    edge_label = 'enhancer_overlaps_gene'
                     for gene_id in self._find_overlapping_genes(chrom, start, end):
                         yield region_id, gene_id, edge_label, props
