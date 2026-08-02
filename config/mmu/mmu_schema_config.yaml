@@ -17,3 +17,47 @@ mmusdv subclass of:
     object_category: "biolink:LifeStage"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+
+##################             NODES   SECTION             ####################
+
+enhancer:
+  represented_as: node
+  input_label: enhancer
+  is_a: non coding element
+  mixins: [biolink:RegulatoryRegion]
+  biolink_category: "biolink:RegulatoryRegion"
+  inherit_properties: true
+  kgx_properties:
+    category: "biolink:RegulatoryRegion"
+  properties:
+    taxon_id:
+      type: str
+      description: Taxon ID for the organism (e.g., 10090 for mouse)
+
+#################             EDGES   SECTION             ####################
+
+enhancer overlaps gene:
+  description: >-
+    An association where an enhancer's genomic coordinates overlap with a gene's coordinates
+  is_a: regulatory association
+  mixins: [biolink:association]
+  biolink_predicate: "biolink:overlaps"
+  inherit_properties: true
+  represented_as: edge
+  input_label: enhancer_overlaps_gene
+  output_label: overlaps
+  source: enhancer
+  target: gene
+  kgx_properties:
+    subject_category: "biolink:RegulatoryRegion"
+    object_category: "biolink:Gene"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    taxon_id:
+      type: str
+      description: Taxon ID for the organism (e.g., 10090 for mouse)
+
+
+
+

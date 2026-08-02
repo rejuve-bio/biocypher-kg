@@ -1807,31 +1807,29 @@ catlas_abc_promoter_to_gene:
   nodes: False
   edges: True
 
-#######################   there is no such filepath   #######################################
-# encode_re2g:
-#   adapter:
-#     module: biocypher_metta.adapters.encode_re2g_adapter
-#     cls: ENCODERe2GAdapter
-#     args:
-#       filepath: encode_re2g/ENCODE_rE2G_K562.bed.gz
-#       label: enhancer
-#       taxon_id: 9606
-#   outdir: encode_re2g
-#   nodes: True
-#   edges: False
+encode_re2g:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: regulation/Homo_sapiens.GRCh38.regulatory_features.v116.gff3.gz
+      taxon_id: 9606
+  outdir: encode_re2g
+  nodes: True
+  edges: False
 
-# encode_re2g_enhancer_to_gene:
-#   adapter:
-#     module: biocypher_metta.adapters.encode_re2g_adapter
-#     cls: ENCODERe2GAdapter
-#     args:
-#       filepath: encode_re2g/ENCODE_rE2G_K562.bed.gz
-#       label: enhancer_activity_by_contact
-#       taxon_id: 9606
-#       cell_ontology_id: "CLO:0007059"  # K562
-#   outdir: encode_re2g
-#   nodes: False
-#   edges: True
+encode_re2g_edges:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: regulation/Homo_sapiens.GRCh38.regulatory_features.v116.gff3.gz
+      taxon_id: 9606
+      gencode_filepath: gencode/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz
+  outdir: encode_re2g
+  nodes: False
+  edges: True
+
 
 uniprot_dbxref_bgee_gene:
   adapter:

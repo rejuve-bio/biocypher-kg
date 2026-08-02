@@ -1932,16 +1932,16 @@ cellular component rna:
 # ---
 # regulatory association
 
-enhancer to gene association:
+enhancer overlaps gene:
   description: >-
-    An association between an enhancer and a gene
+    An association where an enhancer's genomic coordinates overlap with a gene's coordinates
   is_a: regulatory association
   mixins: [biolink:association]
-  biolink_predicate: "biolink:associated_with"
+  biolink_predicate: "biolink:overlaps"
   inherit_properties: true
   represented_as: edge
-  input_label: enhancer_gene
-  output_label: associated_with
+  input_label: enhancer_overlaps_gene
+  output_label: overlaps
   source: enhancer
   target: gene
   kgx_properties:
@@ -1950,12 +1950,9 @@ enhancer to gene association:
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
   properties:
-    score: 
-      type: float
-      biolink: has_quantitative_value
-    biological_context: 
+    taxon_id:
       type: str
-      biolink: has_biological_sequence
+      description: Taxon ID for the organism (e.g., 9606 for human)
 
 promoter to gene association:
   description: >-
