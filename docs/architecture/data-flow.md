@@ -251,9 +251,9 @@ classDiagram
     BaseMappingProcessor <|-- GOSubontologyProcessor
     BaseMappingProcessor <|-- HGNCProcessor
 
-    Adapter --> BaseMappingProcessor: uses (constructor arg)
-    GencodeGeneAdapter --> "config/species_config.yaml": reads
+    Adapter --> BaseMappingProcessor: uses
     StringPPIAdapter --> EnsemblUniProtProcessor: uses
+    note for GencodeGeneAdapter "reads config/species_config.yaml"
 ```
 
 ---
