@@ -3,21 +3,25 @@
 This catalogue lists every data source integrated into the BioCypher-KG pipeline. Use it to check coverage before adding a new source and to understand what biological domains are represented.
 
 **Source files:**
-- [`config/hsa/hsa_data_source_config.yaml`](../../config/hsa/hsa_data_source_config.yaml) — Human source URLs, version strategies, licenses
-- [`config/dmel/dmel_data_source_config.yaml`](../../config/dmel/dmel_data_source_config.yaml) — Drosophila source URLs
-- [`biocypher_metta/adapters/`](../../biocypher_metta/adapters/) — Adapter implementations
+- [`config/hsa/hsa_data_source_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/hsa/hsa_data_source_config.yaml) — Human source URLs, version strategies, licenses
+- [`config/dmel/dmel_data_source_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/dmel/dmel_data_source_config.yaml) — Drosophila source URLs
+- [`biocypher_metta/adapters/`](https://github.com/rejuve-bio/biocypher-kg/tree/main/biocypher_metta/adapters/) — Adapter implementations
 
 ---
 
 ## How to add a new data source
 
-See [CONTRIBUTING.md](../../CONTRIBUTING.md) for the full adapter development guide. In brief:
+See [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md) for the full adapter development guide. In brief:
 
 1. Create a new adapter class in `biocypher_metta/adapters/` (or `hsa/`/`dmel/` for species-specific sources)
 2. Implement `get_nodes()` and/or `get_edges()` following the `Adapter` ABC contract
 3. Add an entry to the appropriate `*_adapters_config.yaml`
 4. Add a URL + version strategy entry to `*_data_source_config.yaml`
 5. Run `make run-sample` to validate against sample data
+
+---
+
+> **Species scope note:** Adapters living directly in `biocypher_metta/adapters/` (not in an `hsa/` or `dmel/` subdirectory) are **multi-species** — they are configured per species via the `*_adapters_config.yaml` files and work for any species that includes them. Adapters in `hsa/` or `dmel/` are species-specific implementations. The sections below reflect which species each source is currently configured for, not which species the adapter code supports.
 
 ---
 
@@ -149,6 +153,8 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for the full adapter development gu
 | **RNA Central** | `rna_central_adapter.RNACentralAdapter` | `non_coding_rna` | — | [rnacentral.org](https://rnacentral.org/) |
 
 ### FlyBase (comprehensive Drosophila database)
+
+All FlyBase adapters source data from [flybase.org](https://flybase.org/).
 
 | FlyBase data | Adapter | Nodes | Edges |
 |---|---|---|---|
