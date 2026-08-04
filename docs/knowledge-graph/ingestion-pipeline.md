@@ -157,18 +157,37 @@ See the checkpoint state machine in [data-flow.md](../architecture/data-flow.md#
 
 ## Running a subset of adapters
 
-```bash
-# Run only specific adapters
-make run-direct \
-    ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-    SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
-    OUTPUT_DIR=./output \
-    INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot string_ppi"
+`--include-adapters` accepts both exact adapter keys and prefix wildcards (append `*` to match all keys starting with that prefix):
 
-# CLI equivalent
+```bash
+# Exact adapter keys
 uv run python create_knowledge_graph.py \
     --adapters-config config/hsa/hsa_adapters_config.yaml \
     --schema-config config/hsa/hsa_schema_config.yaml \
     --output-dir ./output \
     --include-adapters gencode_gene uniprotkb_sprot string_ppi
+
+# Prefix wildcard — runs all adapters whose key starts with "uniprotkb"
+uv run python create_knowledge_graph.py \
+    --adapters-config config/hsa/hsa_adapters_config.yaml \
+    --schema-config config/hsa/hsa_schema_config.yaml \
+    --output-dir ./output \
+    --include-adapters uniprotkb*
+
+# Mix of exact keys and prefixes
+uv run python create_knowledge_graph.py \
+    --adapters-config config/hsa/hsa_adapters_config.yaml \
+    --schema-config config/hsa/hsa_schema_config.yaml \
+    --output-dir ./output \
+    --include-adapters gencode_gene reactome*
+```
+
+The `make run-direct` equivalent uses the `INCLUDE_ADAPTERS` variable:
+
+```bash
+make run-direct \
+    ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
+    SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
+    OUTPUT_DIR=./output \
+    INCLUDE_ADAPTERS="uniprotkb*"
 ```
