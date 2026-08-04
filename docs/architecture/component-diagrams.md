@@ -173,25 +173,25 @@ classDiagram
 ```mermaid
 graph TD
     subgraph FastAPI["kg-service FastAPI (port 8000)"]
-        MAIN[main.py\nCORS + scheduler\n72h refresh]
-        SR[/api/summary]
-        UR[/api/updates]
-        GIR[/api/graph-info\n/api/graph-info/status]
-        VR[/api/databases/*\n/api/versions/*]
-        DR[/api/databases\n/api/databases/{db_type}/status]
-        ROOT["GET /\nGET /health"]
+        MAIN["main.py — CORS + scheduler — 72h refresh"]
+        SR["/api/summary"]
+        UR["/api/updates"]
+        GIR["/api/graph-info and /api/graph-info/status"]
+        VR["/api/databases/* and /api/versions/*"]
+        DR["/api/databases and /api/databases/{db_type}/status"]
+        ROOT["GET / and GET /health"]
     end
 
     subgraph Core["core/"]
-        CFG[config.py\nSettings Pydantic model]
-        NC[neo4j_client.py\nNeo4j driver wrapper]
-        GIC[graph_info_cache.py\n72h cached reader]
+        CFG["config.py — Settings Pydantic model"]
+        NC["neo4j_client.py — Neo4j driver wrapper"]
+        GIC["graph_info_cache.py — 72h cached reader"]
     end
 
     subgraph DB["External services"]
-        NEO4J[Neo4j\nbolt://localhost:7887]
-        MORK_SVC[MORK\nhttp://localhost:8027]
-        FS[Local filesystem\nARCHIVE_BASE + graph_info.json]
+        NEO4J["Neo4j — bolt://localhost:7887"]
+        MORK_SVC["MORK — http://localhost:8027"]
+        FS["Local filesystem — ARCHIVE_BASE + graph_info.json"]
     end
 
     MAIN --> SR
@@ -223,18 +223,18 @@ graph TD
 
 ```mermaid
 graph TD
-    BIOLINK[config/biolink-model.owl.ttl\nBiolink ontology] --> BC
-    BC[config/biocypher_config.yaml\nframework settings] --> WRITER[Writers]
+    BIOLINK["config/biolink-model.owl.ttl — Biolink ontology"] --> BC
+    BC["config/biocypher_config.yaml — framework settings"] --> WRITER[Writers]
     BC --> BIOCYPHER_CLS[BioCypher class]
 
-    PRIMER[config/primer_schema_config.yaml\n36 nodes · 108 edges] --> MERGE
-    HSA_SCHEMA[config/hsa/hsa_schema_config.yaml\nhuman extensions] --> MERGE
-    DMEL_SCHEMA[config/dmel/dmel_schema_config.yaml\nDrosophila extensions] --> MERGE
+    PRIMER["config/primer_schema_config.yaml — 36 nodes, 108 edges"] --> MERGE
+    HSA_SCHEMA["config/hsa/hsa_schema_config.yaml — human extensions"] --> MERGE
+    DMEL_SCHEMA["config/dmel/dmel_schema_config.yaml — Drosophila extensions"] --> MERGE
 
-    MERGE[merge_schemas()\nin create_knowledge_graph.py] --> WRITER
+    MERGE["merge_schemas() in create_knowledge_graph.py"] --> WRITER
     MERGE --> BIOCYPHER_CLS
 
-    SC[config/species_config.yaml] --> MAIN[create_knowledge_graph.py main()]
+    SC[config/species_config.yaml] --> MAIN["create_knowledge_graph.py main()"]
     HSA_AC[config/hsa/hsa_adapters_config.yaml] --> MAIN
     DMEL_AC[config/dmel/dmel_adapters_config.yaml] --> MAIN
-    ENV[.env file\nBIOPORTAL_API_KEY] --> MAIN
+    ENV[".env file — BIOPORTAL_API_KEY"] --> MAIN
