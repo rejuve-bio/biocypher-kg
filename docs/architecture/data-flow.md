@@ -94,29 +94,21 @@ sequenceDiagram
 
 ## Checkpoint state machine
 
-The `CheckpointManager` class in [`checkpoint_manager.py`](../../checkpoint_manager.py) persists state to `<output_dir>/kg_checkpoint.json` after each adapter completes. This enables interrupted runs to resume from the last successfully completed adapter.
+The `CheckpointManager` class in [`checkpoint_manager.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/checkpoint_manager.py) persists state to `<output_dir>/kg_checkpoint.json` after each adapter completes. This enables interrupted runs to resume from the last successfully completed adapter.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Fresh: No checkpoint file exists\n(or first run)
-    
-    Fresh --> Running: Pipeline starts\n(no checkpoint.json yet)
-    
-    Running --> Checkpointed: CheckpointManager.save()\ncalled after each adapter
-    
-    Checkpointed --> Running: Next adapter starts\n(still same run)
-    
-    Checkpointed --> Interrupted: Process killed / crash
-    
-    Interrupted --> Resuming: User runs pipeline again,\ncheckpoint.json detected,\n--resume flag or Y at prompt
-    
-    Interrupted --> Fresh: User chooses --restart\nor N at prompt\n→ checkpoint.json deleted
-    
-    Resuming --> Running: completed_adapters restored,\ncounts restored,\nelapsed_seconds restored
-    
-    Running --> Complete: All adapters finish,\nwriter.finalize() succeeds
-    
-    Complete --> [*]: CheckpointManager.delete()\nremoves checkpoint.json
+    [*] --> Fresh : No checkpoint file (first run)
+
+    Fresh --> Running : Pipeline starts
+    Running --> Checkpointed : CheckpointManager.save() after each adapter
+    Checkpointed --> Running : Next adapter starts (same run)
+    Checkpointed --> Interrupted : Process killed or crashed
+    Interrupted --> Resuming : checkpoint.json detected — resume chosen
+    Interrupted --> Fresh : --restart chosen — checkpoint deleted
+    Resuming --> Running : completed_adapters and counts restored
+    Running --> Complete : All adapters done — writer.finalize() succeeds
+    Complete --> [*] : CheckpointManager.delete() removes checkpoint.json
 ```
 
 ### Checkpoint file schema
@@ -178,7 +170,7 @@ For the full versioning specification, see [dataset-versioning.md](../knowledge-
 
 ## Neo4j loading sequence
 
-The `Neo4jLoader` in [`kg-service/neo4j_loader.py`](../../kg-service/neo4j_loader.py) supports incremental updates via surgical deletion of changed datasets.
+The `Neo4jLoader` in [`kg-service/neo4j_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/neo4j_loader.py) supports incremental updates via surgical deletion of changed datasets.
 
 ```mermaid
 sequenceDiagram
@@ -200,7 +192,7 @@ sequenceDiagram
     VM-->>Loader: source name detected from CSV header
 
     alt Hash changed since last load
-        Loader->>Neo4j: DELETE nodes/edges for changed source\n(surgical — only changed datasets)
+        Loader->>Neo4j: DELETE nodes/edges for changed source (surgical)
         Neo4j-->>Loader: deleted
         Loader->>Neo4j: LOAD CSV / neo4j-admin import for changed source
         Neo4j-->>Loader: loaded
@@ -242,7 +234,8 @@ classDiagram
     Adapter <|-- StringPPIAdapter
     Adapter <|-- ReactomeAdapter
     Adapter <|-- GeneOntologyAdapter
-    Adapter <|-- "... 75 more adapters"
+    Adapter <|-- MoreAdapters
+    note for MoreAdapters "75+ more adapter classes in biocypher_metta/adapters/"
 
     BaseWriter <|-- Neo4jCSVWriter
     BaseWriter <|-- MeTTaWriter
@@ -272,16 +265,16 @@ Before any adapter runs, `_check_adapter_file_paths()` validates all declared fi
 ```mermaid
 flowchart TD
     A[Load adapters_dict] --> B[For each adapter entry]
-    B --> C{arg key is a path key?\nfilepath, dirpath, _file, _path...}
+    B --> C{Is arg a path key?}
     C -- No --> B
     C -- Yes --> D{Path.exists?}
     D -- Yes --> B
     D -- No --> E[Add to missing dict]
     E --> B
-    B --> F{All adapters checked}
+    B --> F{All adapters checked?}
     F --> G{missing is empty?}
-    G -- Yes --> H[Pre-flight passed → continue]
-    G -- No --> I[Print grouped error report\nERROR: N adapter(s) have missing file paths]
+    G -- Yes --> H[Pre-flight passed — continue]
+    G -- No --> I[Print error report — missing file paths]
     I --> J[Exit 1]
 ```
 
