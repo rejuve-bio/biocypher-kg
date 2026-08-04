@@ -155,8 +155,7 @@ class PhysicalInteractionAdapter(Adapter):
     def pre_process(self, fb_psimi_table: FlybasePrecomputedTable) -> FlybasePrecomputedTable:
         df = fb_psimi_table.to_pandas_dataframe()        
         # replace cells equal to "-" by ""
-        #df = df.map(lambda x: '' if str(x) == '-' else x)
-        df = df.applymap(lambda x: '' if str(x) == '-' else x)
+        df = df.map(lambda x: '' if str(x) == '-' else x)
 
         df["ID(s) Interactor A"] = df["ID(s) Interactor A"].apply(lambda x: self._remove_flybase_str(x) if x else x)
         df["ID(s) Interactor B"] = df["ID(s) Interactor B"].apply(lambda x: self._remove_flybase_str(x) if x else x)

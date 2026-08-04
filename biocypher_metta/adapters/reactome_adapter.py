@@ -38,43 +38,26 @@ class ReactomeAdapter(Adapter):
     
     def get_nodes(self):
         if self.label == 'pathway':
+            from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
+            organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
             with open(self.filepath) as input:
                 for line in input:
-                    id, name, species = line.strip().split('\t')                
-                    pathway_id = f"{id}"
-                    # if self.taxon_id == None:           # this could be used to load pathway for all available species
-                    if self.taxon_id == 9606:
-                        if species == 'Homo sapiens':
-                            props = {}
-                            if self.write_properties:
-                                props['pathway_name'] = name
-                                props['pathway_url'] = f"https://reactome.org/content/detail/{id}"
-                                pubmed_id = self.pubmed_map.get(id, None)
-                                if pubmed_id is not None:
-                                    pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
-                                    props['evidence'] = pubmed_url
-
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
-                                    props['taxon_id'] = f'{self.taxon_id}'
-                            yield pathway_id, self.label, props
-                    elif self.taxon_id == 7227:
-                        if species == 'Drosophila melanogaster':
-                            props = {}
-                            if self.write_properties:
-                                props['pathway_name'] = name
-                                props['pathway_url'] = f"https://reactome.org/content/detail/{id}"
-                                pubmed_id = self.pubmed_map.get(id, None)
-                                if pubmed_id is not None:
-                                    pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
-                                    props['evidence'] = pubmed_url
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
-                                    props['taxon_id'] = f'{self.taxon_id}'
-
-                            yield pathway_id, self.label, props
+                    id, name, _ = line.strip().split('\t')
+                    organism_prefix = id[:5]  # e.g. 'R-HSA', 'R-DME'
+                    if organism_taxon_map.get(organism_prefix) != self.taxon_id:
+                        continue
+                    props = {}
+                    if self.write_properties:
+                        props['pathway_name'] = name
+                        props['pathway_url'] = f"https://reactome.org/content/detail/{id}"
+                        pubmed_id = self.pubmed_map.get(id, None)
+                        if pubmed_id is not None:
+                            props['evidence'] = f"https://pubmed.ncbi.nlm.nih.gov/{pubmed_id}"
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                            props['taxon_id'] = f'{self.taxon_id}'
+                    yield id, self.label, props
         elif self.label == 'reaction':
             from biocypher_metta.adapters.reactome_constants import REACTOME_ORGANISM_TAXON_MAP
             organism_taxon_map = {k: int(v) for k, v in REACTOME_ORGANISM_TAXON_MAP.items()}
@@ -116,12 +99,14 @@ class ReactomeAdapter(Adapter):
                     props['pubmed_url'] = pubmed_url
                 yield reaction_id, self.label, props
         elif organism_pathway_prefix == 'R-NUL':
-            # Drosophila only
+            # R-NUL reactions carry no organism-specific prefix; fall back to matching
+            # the species name column against the current taxon's full name.
             props = base_props.copy()
             props['evidence'] = data[4]
             props['reaction_url'] = data[2].replace("PathwayBrowser/#", "content/detail")
             props['taxon_id'] = f'{self.taxon_id}'
-            if self.taxon_id == 7227 and data[5] == 'Drosophila melanogaster' and data[0].startswith('FB'):
+            species_full_name = Adapter.SPECIES_INFO.get(self.taxon_id, {}).get('full_name')
+            if species_full_name and data[5] == species_full_name:
                 yield reaction_id, self.label, props
 
 

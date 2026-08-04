@@ -193,6 +193,7 @@ class PromotercCREAdapter(Adapter):
                     'start': promoter_data['start'],
                     'end': promoter_data['end'],
                     'accession': accession,
+                    'taxon_id': self.taxon_id,
                 })
 
                 if self.add_provenance:
@@ -215,6 +216,7 @@ class PromotercCREAdapter(Adapter):
                 
                 props = {
                     'distance': promoter_data['distance'],
+                    'taxon_id': self.taxon_id,
                 }
                 
                 if self.add_provenance:
@@ -242,7 +244,8 @@ class PromotercCREAdapter(Adapter):
                     ontology_id = self._get_ontology_id(tissue)
                     
                     props = {
-                        'biological_context': ontology_id
+                        'biological_context': ontology_id,
+                        'taxon_id': self.taxon_id,
                     }
                     
                     if self.add_provenance:

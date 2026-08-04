@@ -273,45 +273,6 @@ exon:
     exon_number:
       type: int
 
-# ---
-# genomic variants
-snp:
-  represented_as: node
-  input_label: snp
-  is_a: genomic variant
-  mixins: [biolink:Snv]
-  biolink_category: "biolink:Snv"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:Snv"
-  properties:
-    ref: 
-      type: str
-    alt: 
-      type: str
-    caf_ref: 
-      type: str
-    caf_alt:
-      type: str
-    polyphen2_humdiv_score:
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humdiv_prediction:
-      type: str
-    polyphen2_humvar_score:
-      type: float
-      biolink: has_quantitative_value
-    polyphen2_humvar_prediction:
-      type: str
-    raw_cadd_score:
-      type: float
-      biolink: has_quantitative_value
-    phred_score:
-      type: float
-      biolink: has_quantitative_value
-  description: >-
-    A single nucleotide polymorphism (SNP) is a variation in a single nucleotide that occurs at a specific position in the genome
-
 structural variant:
   represented_as: node
   input_label: structural_variant
@@ -477,41 +438,6 @@ pathway:
       range: biolink:OrganismTaxon
   kgx_properties:
     category: "biolink:Pathway"
-
-reaction:
-  is_a: molecular function
-  narrow_mappings:
-    - GO:0003674
-  represented_as: node
-  input_label: reaction
-  mixins: [biolink:MolecularActivity]
-  biolink_category: "biolink:MolecularActivity"
-  properties:
-    reaction_name:
-      type: str
-      biolink: name
-    reaction_url:        # Reactome provides this datum in the relation datafile. @todo: move this to pathway schema/node
-      type: str
-      biolink: source_record_urls
-    evidence:
-      type: str
-      biolink: has_evidence
-    pubmed_url:        
-      type: str
-      biolink: source_record_urls      
-    source:
-      type: str
-      biolink: knowledge_source
-    source_url:
-      type: str
-      biolink: source_web_page
-    taxon_id:
-      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
-      type: str
-      biolink: taxon
-      range: biolink:OrganismTaxon
-  kgx_properties:
-    category: "biolink:MolecularActivity"
   
 regulatory region:
   represented_as: node
@@ -1730,18 +1656,18 @@ pathway_to_biological_process:
       knowledge_level: "knowledge_assertion"
       agent_type: "manual_agent"
 
-pathway_to_molecular_function:
+reaction_to_molecular_function:
     is_a: association
-    source: pathway
+    source: reaction
     target: molecular function
     biolink_predicate: "biolink:related_to"
     represented_as: edge
-    input_label: pathway_to_molecular_function
+    input_label: reaction_to_molecular_function
     description: >-
-      An association between a pathway and a molecular function, indicating that the pathway is involved in the function.
+      An association between a reaction and a molecular function, indicating that the reaction is involved in the function.
     properties: {}
     kgx_properties:
-      subject_category: "biolink:Pathway"
+      subject_category: "biolink:MolecularActivity"
       object_category: "biolink:MolecularActivity"
       knowledge_level: "knowledge_assertion"
       agent_type: "manual_agent"
@@ -2294,27 +2220,7 @@ downstream gene to variant association:
       type: float
       biolink: has_quantitative_value
 
-in gene to variant association:
-  is_a: closest gene to variant association
-  mixins: [biolink:VariantToGeneAssociation]
-  biolink_predicate: "biolink:located_in"
-  inherit_properties: true
-  description: >-
-    holds between a sequence variant and a gene that is within the gene body
-  represented_as: edge
-  input_label: snp_in_gene
-  output_label: located_in
-  source: snp
-  target: gene
-  kgx_properties:
-    subject_category: "biolink:Snv"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-  properties:
-    p_value: 
-      type: float
-      biolink: has_quantitative_value
+
 
 topld in linkage disequilibrium with:
   is_a: association

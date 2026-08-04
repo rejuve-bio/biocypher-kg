@@ -50,49 +50,44 @@ dmel:
   sample:
     adapters_config: config/dmel/dmel_adapters_config_sample.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_cache_root: ""       # dmel doesn't use dbSNP
+    dbsnp_cache_root: ""
     dbsnp_variant: ""
   full:
     adapters_config: config/dmel/dmel_adapters_config.yaml
     schema_config: config/dmel/dmel_schema_config.yaml
-    dbsnp_cache_root: ""       # dmel doesn't use dbSNP
+    dbsnp_cache_root: ""
     dbsnp_variant: ""
 
 cel:
-  sample:
-    adapters_config: config/cel/cel_adapters_config_sample.yaml
-    schema_config: config/cel/cel_schema_config.yaml
-    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
-    # Example: dbsnp_variant: common
-    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
-    dbsnp_variant: ""
+  # sample:
+  #   adapters_config: config/cel/cel_adapters_config_sample.yaml
+  #   schema_config: config/cel/cel_schema_config.yaml
+  #   # Cel does not use dbSNP data.
+  #   dbsnp_cache_root: ""
+  #   dbsnp_variant: ""
+
   full:
     adapters_config: config/cel/cel_adapters_config.yaml
     schema_config: config/cel/cel_schema_config.yaml
-    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
-    # Example: dbsnp_variant: common
-    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
+    # Cel does not use dbSNP data.
+    dbsnp_cache_root: ""
     dbsnp_variant: ""
 
 mmu:
-  sample:
-    adapters_config: config/mmu/mmu_adapters_config_sample.yaml
-    schema_config: config/mmu/mmu_schema_config.yaml
-    dbsnp_cache_root: ""
-    dbsnp_variant: ""
+  # sample:
+  #   adapters_config: config/mmu/mmu_adapters_config_sample.yaml
+  #   schema_config: config/mmu/mmu_schema_config.yaml
+  #   dbsnp_cache_root: ""
+  #   dbsnp_variant: ""
   full:
     adapters_config: config/mmu/mmu_adapters_config.yaml
     schema_config: config/mmu/mmu_schema_config.yaml
-    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
-    # Example: dbsnp_variant: common
-    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
+    dbsnp_cache_root: ""
     dbsnp_variant: ""
 
 rno:
   full:
     adapters_config: config/rno/rno_adapters_config.yaml
     schema_config: config/rno/rno_schema_config.yaml
-    # Example: dbsnp_cache_root: /mnt/hdd_2/kedist/dbsnp_updater_updated/data/dbsnp
-    # Example: dbsnp_variant: common
-    dbsnp_cache_root: ""       # REQUIRED for full dataset runs that touch dbSNP
+    dbsnp_cache_root: ""
     dbsnp_variant: ""

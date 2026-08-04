@@ -13,3 +13,5 @@ relationships:
       taxon_id: int
       detection_method: str
       evidence_type: str
+      database: str
+    output_label: regulates

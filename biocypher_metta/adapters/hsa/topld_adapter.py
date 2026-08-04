@@ -19,8 +19,9 @@ class TopLDAdapter(Adapter):
     INDEX = {'SNP1': 0, 'SNP2': 1, 'R2': 4, 'Dprime': 5, '+/-corr': 6}
     def __init__(self, filepath, dbsnp_pos_map, chr,
                  ancestry, label, write_properties, add_provenance,
-                 start=None, end=None, cutoff=0.5):
+                 start=None, end=None, cutoff=0.5, taxon_id=9606):
         self.file_path = filepath
+        self.taxon_id = taxon_id
         self.dbsnp_pos_map = dbsnp_pos_map
         self.chr = chr
         self.ancestry = ancestry
@@ -57,7 +58,8 @@ class TopLDAdapter(Adapter):
                         props = {
                             'r2': to_float(r2_score),
                             'd_prime': to_float(row[TopLDAdapter.INDEX['Dprime']]),
-                            'ancestry': self.ancestry
+                            'ancestry': self.ancestry,
+                            'taxon_id': self.taxon_id
                         }
                         if self.add_provenance:
                             props['source'] = self.source

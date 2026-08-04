@@ -43,7 +43,7 @@ from typing import Dict, List
 
 class GeneGroupAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, label,  dmel_filepath=None, dmel_groups_hgnc_filepath=None):
+    def __init__(self, write_properties, add_provenance, label,  dmel_filepath=None, dmel_groups_hgnc_filepath=None, taxon_id=7227):
 
         self.dmel_filepath = dmel_filepath
         self.dmel_groups_hgnc_filepath = dmel_groups_hgnc_filepath
@@ -51,6 +51,7 @@ class GeneGroupAdapter(Adapter):
         self.type = 'GeneGroup'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(GeneGroupAdapter, self).__init__(write_properties, add_provenance)
 
@@ -88,7 +89,7 @@ class GeneGroupAdapter(Adapter):
                     hgnc_id= None
                 if hgnc_id != None:
                     props['HGNC_family_ID'] = hgnc_id
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -105,7 +106,7 @@ class GeneGroupAdapter(Adapter):
         rows = fb_gg_table.get_rows()
         for i in range(0, len(rows)):
             props = {}
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
             if self.add_provenance:
                 props['source'] = self.source
                 props['source_url'] = self.source_url            

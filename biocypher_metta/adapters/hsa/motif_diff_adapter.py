@@ -6,8 +6,9 @@ from biocypher_metta.processors import HGNCProcessor
 
 class MotifDiffAdapter(Adapter):
     def __init__(self, filepath, hgnc_to_ensembl=None, label=None, write_properties=None,
-                 add_provenance=None, threshold=1e-3, hgnc_processor=None):
+                 add_provenance=None, threshold=1e-3, hgnc_processor=None, taxon_id=9606):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.label = label
         self.threshold = threshold
 
@@ -80,7 +81,8 @@ class MotifDiffAdapter(Adapter):
                     if self.write_properties:
                         props['effect'] = effect
                         props['score'] = to_float(score)
-                        props['motif_id'] = tf_id 
+                        props['motif_id'] = tf_id
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url

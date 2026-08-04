@@ -3,6 +3,10 @@ import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.processors import HGNCProcessor
+from biocypher_metta.processors.gene_symbol_ensembl_processor import (
+    GeneSymbolEnsemblProcessor,
+    GENE_SYMBOL_CONFIGS,
+)
 from biocypher._logger import logger
 
 # Human data:
@@ -15,70 +19,123 @@ from biocypher._logger import logger
 # chr1 966432 966492 PLEKHN1_1 900 + 966481 966492
 # chr1 976670 976730 PERM1_1 900 - 976670 976681
 
+# Fly data:   https://epd.expasy.org/ftp/epdnew/D_melanogaster/
+# CEL data:   https://epd.expasy.org/ftp/epdnew/C_elegans/current/
+# Mouse data: https://epd.expasy.org/ftp/epdnew/M_musculus/
+# Rat data:   https://epd.expasy.org/ftp/epdnew/R_norvegicus/
 
-# Fly data:
-# https://epd.expasy.org/ftp/epdnew/D_melanogaster/
-
-# chr2L 7456 7516 CG11023_1 900 + 7505 7516
-# chr2L 18617 18677 l(2)gl_1 900 - 18617 18628
-# chr2L 25167 25227 Ir21a_1 900 - 25167 25178
-# chr2L 59231 59291 Cda5_1 900 - 59231 59242
-
-# CEL data:
-# https://epd.expasy.org/ftp/epdnew/C_elegans/current/
-
-# Mouse data:
-# https://epd.expasy.org/ftp/epdnew/M_musculus/ 
-
-
-# Rat data:
-# https://epd.expasy.org/ftp/epdnew/R_norvegicus/
-
+_SOURCE_URLS = {
+    9606:  'https://epd.expasy.org/ftp/epdnew/H_sapiens/',
+    7227:  'https://epd.expasy.org/ftp/epdnew/D_melanogaster/',
+    6239:  'https://epd.expasy.org/ftp/epdnew/C_elegans/',
+    10090: 'https://epd.expasy.org/ftp/epdnew/M_musculus/',
+    10116: 'https://epd.expasy.org/ftp/epdnew/R_norvegicus/',
+}
 
 class EPDAdapter(Adapter):
-    INDEX = {'chr' : 0, 'coord_start' : 1, 'coord_end' : 2, 'gene_id' : 3}
+    INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'gene_id': 3}
 
-    CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL'
-    }
-
-    def __init__(self, filepath, label, hgnc_to_ensembl_map=None, write_properties=None, add_provenance=None, taxon_id=9606,
-                 type='promoter', delimiter=' ', chr=None, start=None, end=None,
-                 hgnc_processor=None):
+    def __init__(
+        self,
+        filepath,
+        label,
+        hgnc_to_ensembl_map=None,
+        write_properties=None,
+        add_provenance=None,
+        taxon_id=9606,
+        type='promoter',
+        delimiter=' ',
+        chr=None,
+        start=None,
+        end=None,
+        hgnc_processor=None,
+        gene_symbol_processor=None,
+        gene_symbol_cache_base_dir='aux_files',
+    ):
+        """
+        :param hgnc_to_ensembl_map:          DEPRECATED — legacy pickle path for non-human
+                                              species (still supported for dmel).
+        :param gene_symbol_processor:         Pre-built GeneSymbolEnsemblProcessor instance.
+                                              If None, one is created automatically from
+                                              GENE_SYMBOL_CONFIGS for supported species.
+        :param gene_symbol_cache_base_dir:    Base dir for auto-created processor caches
+                                              (e.g. 'aux_files' → 'aux_files/mmu/gene_symbol_ensembl').
+        """
         self.filepath = filepath
-
-        # Use provided processor or create new one for human; fallback to pickle for other species
-        if hgnc_processor is not None:
-            self.hgnc_processor = hgnc_processor
-            self.hgnc_to_ensembl_map = None
-        elif hgnc_to_ensembl_map is not None and taxon_id != 9606:
-            self.hgnc_to_ensembl_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
-            self.hgnc_processor = None
-        else:
-            self.hgnc_processor = HGNCProcessor()
-            self.hgnc_processor.load_or_update()
-            self.hgnc_to_ensembl_map = None
+        self.taxon_id = taxon_id
         self.type = type
         self.label = label
         self.delimiter = delimiter
         self.chr = chr
         self.start = start
         self.end = end
-        self.taxon_id = taxon_id
         self.source = 'EPD'
         self.version = '006'
-        if self.taxon_id == 7227:
-            self.source_url = 'https://epd.expasy.org/ftp/epdnew/D_melanogaster/'
+        self.source_url = _SOURCE_URLS.get(taxon_id, 'https://epd.expasy.org/')
+
+        # --- ID resolver setup ---
+        if taxon_id == 9606:
+            # Human: always use HGNCProcessor
+            if hgnc_processor is not None:
+                self.hgnc_processor = hgnc_processor
+            else:
+                self.hgnc_processor = HGNCProcessor()
+                self.hgnc_processor.load_or_update()
+            self._symbol_map = None
+            self._gene_symbol_processor = None
+
+        elif gene_symbol_processor is not None:
+            # Caller provided a ready-made processor
+            self.hgnc_processor = None
+            self._gene_symbol_processor = gene_symbol_processor
+            self._gene_symbol_processor.load_or_update()
+            self._symbol_map = None
+
+        elif hgnc_to_ensembl_map is not None:
+            # Legacy pickle (used by existing dmel config)
+            self.hgnc_processor = None
+            self._gene_symbol_processor = None
+            self._symbol_map = pickle.load(open(hgnc_to_ensembl_map, 'rb'))
+
+        elif taxon_id in GENE_SYMBOL_CONFIGS:
+            # Auto-create processor from registry
+            self.hgnc_processor = None
+            self._gene_symbol_processor = GeneSymbolEnsemblProcessor.for_taxon(
+                taxon_id, cache_base_dir=gene_symbol_cache_base_dir
+            )
+            self._gene_symbol_processor.load_or_update()
+            self._symbol_map = None
+
         else:
-            self.source_url = 'https://epd.expasy.org/ftp/epdnew/H_sapiens/'
+            logger.warning(
+                f"EPDAdapter: no symbol resolver configured for taxon_id={taxon_id}. "
+                f"All edges will be skipped."
+            )
+            self.hgnc_processor = None
+            self._gene_symbol_processor = None
+            self._symbol_map = None
 
         super(EPDAdapter, self).__init__(write_properties, add_provenance)
 
+    def _resolve_symbol(self, gene_symbol: str):
+        """Return (ensembl_gene_id, prefix) or (None, None) if not found."""
+        prefix = Adapter.CURIE_PREFIX.get(self.taxon_id, 'ENSEMBL')
+
+        if self.hgnc_processor is not None:
+            ensembl_id = self.hgnc_processor.get_ensembl_id(gene_symbol)
+            return ensembl_id, prefix
+
+        if self._gene_symbol_processor is not None:
+            ensembl_id = self._gene_symbol_processor.get_ensembl_gene(gene_symbol)
+            return ensembl_id, prefix
+
+        if self._symbol_map is not None:
+            ensembl_id = self._symbol_map.get(gene_symbol)
+            return ensembl_id, prefix
+
+        return None, None
+
     def get_nodes(self):
-        """
-        Build a node for each promoter in the EPD BED file
-        """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
         opener = gzip.open if self.filepath.endswith('.gz') else open
@@ -86,7 +143,7 @@ class EPDAdapter(Adapter):
             reader = csv.reader(f, delimiter=self.delimiter)
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
-                coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
+                coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
                 promoter_id = f"EPD:{build_regulatory_region_id(chr, coord_start, coord_end)}"
 
@@ -97,7 +154,6 @@ class EPDAdapter(Adapter):
                         props['start'] = coord_start
                         props['end'] = coord_end
                         props['taxon_id'] = f'{self.taxon_id}'
-
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url
@@ -105,45 +161,28 @@ class EPDAdapter(Adapter):
                     yield promoter_id, self.label, props
 
     def get_edges(self):
-        """
-        Build an edge for each promoter-gene interaction in the EPD BED file.
-        """
         from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
 
         opener = gzip.open if self.filepath.endswith('.gz') else open
         with opener(self.filepath, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
-            not_found_symbols = 0
             for line in reader:
                 chr = line[EPDAdapter.INDEX['chr']]
-                coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0 indexed coordinate
+                coord_start = int(line[EPDAdapter.INDEX['coord_start']]) + 1
                 coord_end = int(line[EPDAdapter.INDEX['coord_end']])
-                gene_id = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
-                if self.hgnc_processor is not None:
-                    ensembl_id = self.hgnc_processor.get_ensembl_id(gene_id)
-                    if ensembl_id is None:
-                        continue
-                    ensembl_gene_id = f"ENSEMBL:{ensembl_id}"
-                elif self.taxon_id == 7227:
-                    fbgn = self.hgnc_to_ensembl_map.get(gene_id, None)
-                    ensembl_gene_id = f"FlyBase:{fbgn}" if fbgn else None
-                else:
-                    mapped_id = self.hgnc_to_ensembl_map.get(gene_id, None)
-                    ensembl_gene_id = f"ENSEMBL:{mapped_id}" if mapped_id else None
-                if ensembl_gene_id is None:
+                gene_symbol = line[EPDAdapter.INDEX['gene_id']].split('_')[0]
+
+                ensembl_id, prefix = self._resolve_symbol(gene_symbol)
+                if ensembl_id is None:
                     continue
-                
-                # if ensembl_gene_id is None:
-                #     not_found_symbols += 1
-                    # print(f"gene_id: {gene_id}  // {ensembl_gene_id}   --->  {self.taxon_id}")                       
-                ensembl_gene_id = f"{ensembl_gene_id}"
+
+                ensembl_gene_id = f"{prefix}:{ensembl_id}"
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, coord_start, coord_end):
                     promoter_id = f"EPD:{build_regulatory_region_id(chr, coord_start, coord_end)}"
                     props = {}
-                    if self.write_properties:
-                        if self.add_provenance:
-                            props['source'] = self.source
-                            props['source_url'] = self.source_url
+                    if self.write_properties and self.add_provenance:
+                        props['source'] = self.source
+                        props['source_url'] = self.source_url
 
                     yield promoter_id, ensembl_gene_id, self.label, props

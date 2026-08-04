@@ -51,13 +51,44 @@ class GenotypePhenotypeAdapter(Adapter):
         'so': 'sequence_type',
     }
 
-    def __init__(self, write_properties, add_provenance, label, dmel_filepath, dmel_fbrf_filepath):
+    def __init__(self, write_properties, add_provenance, label, dmel_filepath, dmel_fbrf_filepath, taxon_id=7227):
         self.dmel_filepath = dmel_filepath
         self.fbrf_to_pmid_pmcid_doi_dict = self.__build_fbrf_to_pmid_pmcid_doi_dict(dmel_fbrf_filepath)
-        self.label = label  
+        self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
         super(GenotypePhenotypeAdapter, self).__init__(write_properties, add_provenance)
+
+        self.snp_fbal_cache = set()
+        if self.label == 'involved_in':
+            self.snp_fbal_cache = self._load_snp_fbal_cache()
+
+    def _load_snp_fbal_cache(self):
+        try:
+            import psycopg2
+            conn = psycopg2.connect(
+                host='chado.flybase.org', database='flybase',
+                user='flybase', password='flybase', connect_timeout=10
+            )
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT f_allele.uniquename
+                    FROM feature f_snp
+                    JOIN feature_relationship fr ON fr.subject_id = f_snp.feature_id
+                    JOIN feature f_allele ON f_allele.feature_id = fr.object_id
+                    WHERE f_snp.type_id=733
+                      AND f_snp.is_obsolete=FALSE
+                      AND f_snp.is_analysis=FALSE
+                      AND f_snp.organism_id=1
+                """)
+                return {row[0] for row in cursor.fetchall()}
+        except Exception as e:
+            print(f"Warning: Could not connect to FlyBase for SNPs: {e}")
+            return set()
+        finally:
+            if conn is not None:
+                conn.close()
 
 
     def get_nodes(self):
@@ -75,7 +106,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 props['genotype_ids'] = row[1].replace(' ', '_').upper()
                 props['genotype_symbols'] = row[0].replace(' ', '_')                    
                 props['reference'] = f'http://flybase.org/reports/{row[6]}.htm'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -87,7 +118,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 props = {}
                 props['phenotype_ontology_id'] = row[3].replace(':', '_').upper()   # onto: fbbt or fbcv  
                 props['reference'] = f'http://flybase.org/reports/{row[6]}.htm'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -116,13 +147,18 @@ class GenotypePhenotypeAdapter(Adapter):
                 else:
                     props['fb_ref'] = row[6]                     # FBrf# only
                 # props['genotype_phenotype_id'] = f'genotype_phenotype_{id}'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
                 alleles = self.get_alleles(row[1])          # gets a list of allele ids from  genotype's  genotype_ids
                 for allele in alleles:
-                    yield f'FlyBase:{allele.upper()}', f'RejuveBio:phenotype_set{id}', self.label, props    
+                    source_id = f'FlyBase:{allele}'
+                    target_id = f'RejuveBio:phenotype_set{id}'
+                    if allele in self.snp_fbal_cache:
+                        yield source_id, target_id, 'snp_involved_in', props
+                    else:
+                        yield source_id, target_id, self.label, props
 
         elif self.label == 'genetically_informed_by':                     # phenotype to genotype schema
             id = -1
@@ -139,7 +175,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 else:
                     props['fb_ref'] = row[6]                     # FBrf# only
                 # props['genotype_phenotype_id'] = f'genotype_phenotype_{id}'
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -159,7 +195,7 @@ class GenotypePhenotypeAdapter(Adapter):
                     props['doi'] = ref['doi']
                 else:
                     props['fb_ref'] = row[6]  
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url
@@ -217,7 +253,7 @@ class GenotypePhenotypeAdapter(Adapter):
                         props['doi'] = ref['doi']
                     else:
                         props['fb_ref'] = row[6]  
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url                

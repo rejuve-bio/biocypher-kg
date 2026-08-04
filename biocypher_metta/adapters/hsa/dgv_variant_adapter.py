@@ -15,8 +15,9 @@ class DGVVariantAdapter(Adapter):
 
     def __init__(self, filepath, write_properties, add_provenance,
                  label, delimiter='\t',
-                 chr=None, start=None, end=None, feature_files=None):
+                 chr=None, start=None, end=None, feature_files=None, taxon_id=9606):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.delimiter = delimiter
         self.chr = chr
         self.start = start
@@ -48,6 +49,7 @@ class DGVVariantAdapter(Adapter):
                 props = {}
 
                 if self.write_properties:
+                    props['taxon_id'] = self.taxon_id
                     props['variant_accession'] = variant_accession
                     props['chr'] = chr
                     props['start'] = start
@@ -159,7 +161,8 @@ class DGVVariantAdapter(Adapter):
                 if self.write_properties:
                     props = {
                         'overlap_start': max(feats['starts'][fi], sv_starts[si]),
-                        'overlap_end':   min(feats['ends'][fi],   sv_ends[si])
+                        'overlap_end':   min(feats['ends'][fi],   sv_ends[si]),
+                        'taxon_id': self.taxon_id
                     }
                     if self.add_provenance:
                         props['source'] = 'Overlap calculation'
