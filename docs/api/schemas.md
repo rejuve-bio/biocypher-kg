@@ -3,10 +3,10 @@
 This document describes the data models and response shapes used by the kg-service API.
 
 **Source files:**
-- [`kg-service/backend/core/config.py`](../../kg-service/backend/core/config.py) — `Settings` Pydantic model
-- [`kg-service/backend/core/graph_info_cache.py`](../../kg-service/backend/core/graph_info_cache.py) — cache reader
-- [`kg-service/backend/api/routes/`](../../kg-service/backend/api/routes/) — route handlers
-- [`biocypher_dataset_downloader/versioning/base.py`](../../biocypher_dataset_downloader/versioning/base.py) — `VersionInfo` dataclass
+- [`kg-service/backend/core/config.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/core/config.py) — `Settings` Pydantic model
+- [`kg-service/backend/core/graph_info_cache.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/core/graph_info_cache.py) — cache reader
+- [`kg-service/backend/api/routes/`](https://github.com/rejuve-bio/biocypher-kg/tree/main/kg-service/backend/api/routes/) — route handlers
+- [`biocypher_dataset_downloader/versioning/base.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_dataset_downloader/versioning/base.py) — `VersionInfo` dataclass
 
 ---
 

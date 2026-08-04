@@ -267,7 +267,7 @@ same inputs), then rebuild with `--manifest`. Matching checksums guarantee ident
 
 ## See also
 
-- [biocypher_dataset_downloader/versioning/README.md](../../biocypher_dataset_downloader/versioning/README.md) —
+- [biocypher_dataset_downloader/versioning/README.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_dataset_downloader/versioning/README.md) —
   the resolver framework and how to add a new strategy.
 - [ingestion-pipeline.md](ingestion-pipeline.md) — the full download → adapt → write flow.
 - [configuration.md](../operations/configuration.md) — version strategy fields in `*_data_source_config.yaml`.

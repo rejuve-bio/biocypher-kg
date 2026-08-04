@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This document covers common failure modes and their resolution. For processor-specific errors, see [`biocypher_metta/processors/README.md`](../../biocypher_metta/processors/README.md).
+This document covers common failure modes and their resolution. For processor-specific errors, see [`biocypher_metta/processors/README.md`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/processors/README.md).
 
 ---
 

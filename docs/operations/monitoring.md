@@ -141,4 +141,4 @@ tail -f ./output/kg_pipeline.log
 
 ---
 
-> **Note:** The following details are not yet documented: SonarQube dashboard URL and access, alerting configuration for background scheduler failures, metrics export setup (Prometheus or equivalent), and production hardware requirements. Contributions welcome — see [CONTRIBUTING.md](../../CONTRIBUTING.md).
+> **Note:** The following details are not yet documented: SonarQube dashboard URL and access, alerting configuration for background scheduler failures, metrics export setup (Prometheus or equivalent), and production hardware requirements. Contributions welcome — see [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md).

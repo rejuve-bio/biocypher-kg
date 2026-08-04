@@ -3,9 +3,9 @@
 This document is the human-readable reference for all node types and edge types defined in the BioCypher-KG schema. The schema is defined in YAML files and processed by the BioCypher framework against the Biolink semantic model.
 
 **Source files (ground truth):**
-- [`config/primer_schema_config.yaml`](../../config/primer_schema_config.yaml) — shared base schema (all species)
-- [`config/hsa/hsa_schema_config.yaml`](../../config/hsa/hsa_schema_config.yaml) — human-specific overrides/additions
-- [`config/dmel/dmel_schema_config.yaml`](../../config/dmel/dmel_schema_config.yaml) — Drosophila-specific additions
+- [`config/primer_schema_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/primer_schema_config.yaml) — shared base schema (all species)
+- [`config/hsa/hsa_schema_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/hsa/hsa_schema_config.yaml) — human-specific overrides/additions
+- [`config/dmel/dmel_schema_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/dmel/dmel_schema_config.yaml) — Drosophila-specific additions
 
 <!-- SCHEMA-COUNT: nodes=36 primer + additional hsa/dmel | edges=108+ primer -->
 <!-- Run: grep -c "represented_as: node" config/primer_schema_config.yaml to verify -->
@@ -103,7 +103,7 @@ All nodes inherit from one of three archetypal base types:
 
 The human schema inherits all primer node types and may add taxon-specific constraints (`taxon_id: 9606`) or additional node types.
 
-> **Note:** Human-specific node type additions are defined in [`config/hsa/hsa_schema_config.yaml`](../../config/hsa/hsa_schema_config.yaml). This section is incomplete. Contributions welcome — see [CONTRIBUTING.md](../../CONTRIBUTING.md).
+> **Note:** Human-specific node type additions are defined in [`config/hsa/hsa_schema_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/hsa/hsa_schema_config.yaml). This section is incomplete. Contributions welcome — see [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md).
 
 ### Drosophila (`dmel_schema_config.yaml`)
 
@@ -371,4 +371,4 @@ MATCH (g:gene)-[:associated_with]->(d:disease)
 RETURN g.gene_name, d.term_name LIMIT 20
 ```
 
-> **Note:** These queries use label names as defined by `output_label` values in the schema; they may differ between writer formats (Neo4j CSV vs. direct writer) and schema versions. Contributions welcome — see [CONTRIBUTING.md](../../CONTRIBUTING.md).
+> **Note:** These queries use label names as defined by `output_label` values in the schema; they may differ between writer formats (Neo4j CSV vs. direct writer) and schema versions. Contributions welcome — see [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md).

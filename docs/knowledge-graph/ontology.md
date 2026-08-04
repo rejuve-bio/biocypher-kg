@@ -91,4 +91,4 @@ MATCH (d:disease {id: "DOID:9351"})-[:is_a*1..3]->(parent:disease)
 RETURN parent.term_name
 ```
 
-> **Note:** These queries use label and relationship names as defined by `output_label` values in the schema; they may vary between writer formats (Neo4j CSV vs. direct writer) and schema versions. Contributions welcome — see [CONTRIBUTING.md](../../CONTRIBUTING.md).
+> **Note:** These queries use label and relationship names as defined by `output_label` values in the schema; they may vary between writer formats (Neo4j CSV vs. direct writer) and schema versions. Contributions welcome — see [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md).

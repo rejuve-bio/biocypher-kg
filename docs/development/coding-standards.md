@@ -1,6 +1,6 @@
 # Coding Standards
 
-This document describes patterns and conventions for contributing to BioCypher-KG. It extends [CONTRIBUTING.md](../../CONTRIBUTING.md) — read that first for the PR workflow and schema update procedures.
+This document describes patterns and conventions for contributing to BioCypher-KG. It extends [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md) — read that first for the PR workflow and schema update procedures.
 
 ---
 

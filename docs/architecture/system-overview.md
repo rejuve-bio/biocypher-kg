@@ -27,7 +27,7 @@ The result is a consistent, schema-validated knowledge graph that can be loaded 
 | *Caenorhabditis elegans* | `cel` | In development — ontology adapters only |
 | *Rattus norvegicus* (rat) | `rno` | In development — config declared, adapters missing |
 
-Source: [`config/species_config.yaml`](../../config/species_config.yaml). Species `mmu` and `cel` have adapter and schema configs with ontology-only adapters. Species `rno` is declared but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing — attempting to run `rno` raises `FileNotFoundError`.
+Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu` and `cel` have adapter and schema configs with ontology-only adapters. Species `rno` is declared but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing — attempting to run `rno` raises `FileNotFoundError`.
 
 ---
 
@@ -43,7 +43,7 @@ Source: [`config/species_config.yaml`](../../config/species_config.yaml). Specie
 | KGX JSON | `KGXWriter` | Knowledge Graph Exchange standard |
 | NetworkX | `NetworkXWriter` | In-memory graph analysis with Python |
 
-Writer classes are in [`biocypher_metta/`](../../biocypher_metta/) — see [writers.md](../knowledge-graph/writers.md) for details.
+Writer classes are in [`biocypher_metta/`](https://github.com/rejuve-bio/biocypher-kg/tree/main/biocypher_metta/) — see [writers.md](../knowledge-graph/writers.md) for details.
 
 ---
 
@@ -170,15 +170,15 @@ The `Makefile` wraps both modes with interactive prompts — `make run` is the r
 
 | File | Purpose |
 |---|---|
-| [`create_knowledge_graph.py`](../../create_knowledge_graph.py) | Pipeline orchestrator — CLI, config loading, adapter loop, writing, finalisation |
-| [`checkpoint_manager.py`](../../checkpoint_manager.py) | `CheckpointManager` — persists state to `<output_dir>/kg_checkpoint.json` for crash recovery |
-| [`biocypher_metta/adapters/__init__.py`](../../biocypher_metta/adapters/__init__.py) | `Adapter` ABC — all adapters implement `get_nodes()` and `get_edges()` |
-| [`biocypher_metta/__init__.py`](../../biocypher_metta/__init__.py) | `BaseWriter` ABC — all writers implement `write_nodes()`, `write_edges()`, `finalize()` |
-| [`biocypher_metta/processors/base_mapping_processor.py`](../../biocypher_metta/processors/base_mapping_processor.py) | `BaseMappingProcessor` ABC — ID mapping with cached pickle files |
-| [`config/species_config.yaml`](../../config/species_config.yaml) | Species registry — maps species code + dataset type to adapter/schema config paths |
-| [`config/primer_schema_config.yaml`](../../config/primer_schema_config.yaml) | Shared base schema — 36 node types and 108 edge types, Biolink-compatible |
-| [`biocypher_dataset_downloader/download_manager.py`](../../biocypher_dataset_downloader/download_manager.py) | `DownloadManager` — dataset acquisition, version resolution, manifest generation |
-| [`kg-service/backend/api/main.py`](../../kg-service/backend/api/main.py) | FastAPI service exposing graph metadata |
+| [`create_knowledge_graph.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/create_knowledge_graph.py) | Pipeline orchestrator — CLI, config loading, adapter loop, writing, finalisation |
+| [`checkpoint_manager.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/checkpoint_manager.py) | `CheckpointManager` — persists state to `<output_dir>/kg_checkpoint.json` for crash recovery |
+| [`biocypher_metta/adapters/__init__.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/adapters/__init__.py) | `Adapter` ABC — all adapters implement `get_nodes()` and `get_edges()` |
+| [`biocypher_metta/__init__.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/__init__.py) | `BaseWriter` ABC — all writers implement `write_nodes()`, `write_edges()`, `finalize()` |
+| [`biocypher_metta/processors/base_mapping_processor.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/processors/base_mapping_processor.py) | `BaseMappingProcessor` ABC — ID mapping with cached pickle files |
+| [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml) | Species registry — maps species code + dataset type to adapter/schema config paths |
+| [`config/primer_schema_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/primer_schema_config.yaml) | Shared base schema — 36 node types and 108 edge types, Biolink-compatible |
+| [`biocypher_dataset_downloader/download_manager.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_dataset_downloader/download_manager.py) | `DownloadManager` — dataset acquisition, version resolution, manifest generation |
+| [`kg-service/backend/api/main.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py) | FastAPI service exposing graph metadata |
 | [`Makefile`](../../Makefile) | Primary user interface — wraps CLI with interactive prompts |
 
 ---
@@ -187,19 +187,19 @@ The `Makefile` wraps both modes with interactive prompts — `make run` is the r
 
 ### Neo4j
 
-Production graph database. Deployed via Docker Compose at [`docker/docker-compose.neo4j.yml`](../../docker/docker-compose.neo4j.yml). Configured via [`docker/neo4j.env.example`](../../docker/neo4j.env.example) (copy to `docker/neo4j.env`). Default ports: HTTP `7674`, Bolt `7887`.
+Production graph database. Deployed via Docker Compose at [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml). Configured via [`docker/neo4j.env.example`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/neo4j.env.example) (copy to `docker/neo4j.env`). Default ports: HTTP `7674`, Bolt `7887`.
 
-Loading is handled by [`kg-service/neo4j_loader.py`](../../kg-service/neo4j_loader.py) (`Neo4jLoader` class), which supports incremental updates with surgical deletion of changed datasets.
+Loading is handled by [`kg-service/neo4j_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/neo4j_loader.py) (`Neo4jLoader` class), which supports incremental updates with surgical deletion of changed datasets.
 
 ### MORK server
 
-Rust-based OpenCog Hyperon MeTTa query engine. Deployed via [`biocypher-mork/docker-compose.yml`](../../biocypher-mork/docker-compose.yml). Exposes port **8027** by default.
+Rust-based OpenCog Hyperon MeTTa query engine. Deployed via [`biocypher-mork/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher-mork/docker-compose.yml). Exposes port **8027** by default.
 
-> **Note:** The kg-service `Settings` model in [`kg-service/backend/core/config.py`](../../kg-service/backend/core/config.py) defaults `MORK_URL` to `http://localhost:8432`, which does not match the MORK container's port 8027. You must explicitly set `MORK_URL=http://localhost:8027` when running both services together. See [deployment.md](../operations/deployment.md).
+> **Note:** The kg-service `Settings` model in [`kg-service/backend/core/config.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/core/config.py) defaults `MORK_URL` to `http://localhost:8432`, which does not match the MORK container's port 8027. You must explicitly set `MORK_URL=http://localhost:8027` when running both services together. See [deployment.md](../operations/deployment.md).
 
 ### kg-service
 
-FastAPI application ([`kg-service/backend/api/main.py`](../../kg-service/backend/api/main.py)) exposing REST endpoints for graph metadata, version history, and summary statistics. A background scheduler refreshes `graph_info.json` every 72 hours. See [endpoints.md](../api/endpoints.md).
+FastAPI application ([`kg-service/backend/api/main.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py)) exposing REST endpoints for graph metadata, version history, and summary statistics. A background scheduler refreshes `graph_info.json` every 72 hours. See [endpoints.md](../api/endpoints.md).
 
 ---
 

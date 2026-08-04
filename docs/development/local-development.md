@@ -2,7 +2,7 @@
 
 This document covers getting the project running locally for development. For operator deployment, see [deployment.md](../operations/deployment.md).
 
-> This document wraps and extends the quickstart in the top-level [README.md](../../README.md) — check there for the authoritative make command reference.
+> This document wraps and extends the quickstart in the top-level [README.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/README.md) — check there for the authoritative make command reference.
 
 ---
 

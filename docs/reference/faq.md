@@ -132,7 +132,7 @@ Check the port: `MORK_URL` in `kg-service/.env` defaults to `8432` but the MORK 
 
 **Where do I find the adapter development guide?**
 
-[CONTRIBUTING.md](../../CONTRIBUTING.md) covers the full workflow. [coding-standards.md](../development/coding-standards.md) covers the adapter contract and style conventions.
+[CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTRIBUTING.md) covers the full workflow. [coding-standards.md](../development/coding-standards.md) covers the adapter contract and style conventions.
 
 **How do I run CI locally?**
 

@@ -2,7 +2,7 @@
 
 The `kg-service` FastAPI application exposes REST endpoints for querying knowledge graph metadata, version history, and summary statistics.
 
-**Source:** [`kg-service/backend/api/main.py`](../../kg-service/backend/api/main.py)  
+**Source:** [`kg-service/backend/api/main.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py)  
 **Default port:** `8000` (configured via `API_PORT` in `kg-service/.env`)  
 **OpenAPI docs:** `http://localhost:8000/docs` (Swagger UI, available when running)
 
@@ -54,7 +54,7 @@ Neo4j connectivity check.
 
 ## Summary router (`/api`)
 
-**Source:** [`kg-service/backend/api/routes/summary.py`](../../kg-service/backend/api/routes/summary.py)
+**Source:** [`kg-service/backend/api/routes/summary.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/summary.py)
 
 ### `GET /api/summary`
 
@@ -82,7 +82,7 @@ Returns a live summary of the Neo4j knowledge graph — node counts, edge counts
 
 ## Updates router (`/api`)
 
-**Source:** [`kg-service/backend/api/routes/updates.py`](../../kg-service/backend/api/routes/updates.py)
+**Source:** [`kg-service/backend/api/routes/updates.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/updates.py)
 
 ### `GET /api/updates`
 
@@ -103,7 +103,7 @@ If neither `since` nor `hours` is provided, defaults to the last 24 hours.
 
 ## Graph-info router (`/api`)
 
-**Source:** [`kg-service/backend/api/routes/graph_info.py`](../../kg-service/backend/api/routes/graph_info.py)
+**Source:** [`kg-service/backend/api/routes/graph_info.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/graph_info.py)
 
 The graph-info endpoints serve a cached version of `graph_info.json` produced by the pipeline. The cache is refreshed every **72 hours** by a background scheduler (`APScheduler`) registered in `main.py`. On startup, if no cache file exists, an initial generation is triggered 5 seconds later (non-blocking).
 
@@ -143,7 +143,7 @@ Returns metadata about the cache file itself.
 
 ## Versions and databases router (`/api`)
 
-**Source:** [`kg-service/backend/api/routes/versions.py`](../../kg-service/backend/api/routes/versions.py)
+**Source:** [`kg-service/backend/api/routes/versions.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/versions.py)
 
 This is the most complex router. It manages version history for both Neo4j and MORK databases and reads archive directories from `ARCHIVE_BASE` (configured in `settings`).
 
@@ -237,7 +237,7 @@ Get MORK statistics (calls `settings.MORK_SUMMARY_SCRIPT`).
 
 ## Databases router (`/api`)
 
-**Source:** [`kg-service/backend/api/routes/databases.py`](../../kg-service/backend/api/routes/databases.py)
+**Source:** [`kg-service/backend/api/routes/databases.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/databases.py)
 
 Note: `databases.py` imports `from backend.core.mork_client import MORKClient`. The module exists at `kg-service/backend/core/mork_client.py`, but the `GET /api/databases/mork/status` endpoint may still fail at runtime if MORK is unreachable due to the port mismatch (see [troubleshooting.md](../operations/troubleshooting.md)).
 

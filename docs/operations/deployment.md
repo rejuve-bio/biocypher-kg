@@ -20,7 +20,7 @@ This guide covers deploying the full BioCypher-KG system: the pipeline itself, N
 
 ## Option 1: Full pipeline via Docker Compose
 
-The root [`docker-compose.yml`](../../docker-compose.yml) defines 4 services that run sequentially:
+The root [`docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker-compose.yml) defines 4 services that run sequentially:
 
 | Service | Image | Purpose |
 |---|---|---|
@@ -58,7 +58,7 @@ ports:
 
 ## Option 2: Production Neo4j via Makefile
 
-The recommended path for production deployments uses the parameterised Neo4j compose file at [`docker/docker-compose.neo4j.yml`](../../docker/docker-compose.neo4j.yml) with settings in `docker/neo4j.env`.
+The recommended path for production deployments uses the parameterised Neo4j compose file at [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml) with settings in `docker/neo4j.env`.
 
 ```bash
 # 1. Copy and fill in the env file
@@ -107,7 +107,7 @@ For full human KG (62k genes, 750k variants, 45M edges): increase to at least `8
 
 ## Option 3: MORK standalone deployment
 
-Run the MORK server independently from [`biocypher-mork/docker-compose.yml`](../../biocypher-mork/docker-compose.yml):
+Run the MORK server independently from [`biocypher-mork/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher-mork/docker-compose.yml):
 
 ```bash
 cd biocypher-mork
@@ -194,7 +194,7 @@ make download                  # interactive download UI
 make run WRITER_TYPE=neo4j     # interactive run UI
 ```
 
-See the top-level [README.md](../../README.md) for the complete quickstart.
+See the top-level [README.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/README.md) for the complete quickstart.
 
 ---
 

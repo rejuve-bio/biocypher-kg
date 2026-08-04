@@ -17,7 +17,7 @@ Configuration is spread across four layers, evaluated in this order (later layer
 
 ## `config/biocypher_config.yaml`
 
-**Source:** [`config/biocypher_config.yaml`](../../config/biocypher_config.yaml)  
+**Source:** [`config/biocypher_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/biocypher_config.yaml)  
 Used by `BioCypher()` and all writer constructors (passed as `biocypher_config="config/biocypher_config.yaml"`).
 
 | Field | Type | Default | Description |
@@ -32,13 +32,13 @@ Used by `BioCypher()` and all writer constructors (passed as `biocypher_config="
 | `neo4j.skip_duplicate_nodes` | bool | `true` | Silently skip duplicate node IDs during writing |
 | `neo4j.skip_bad_relationships` | bool | `true` | Silently skip edges with missing source/target nodes |
 
-A Docker-specific variant exists at [`config/biocypher_docker_config.yaml`](../../config/biocypher_docker_config.yaml) with identical structure.
+A Docker-specific variant exists at [`config/biocypher_docker_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/biocypher_docker_config.yaml) with identical structure.
 
 ---
 
 ## `config/species_config.yaml`
 
-**Source:** [`config/species_config.yaml`](../../config/species_config.yaml)  
+**Source:** [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml)  
 Loaded by `load_species_config()` in `create_knowledge_graph.py`. Maps each species code and dataset type to its config paths.
 
 ### Structure
@@ -81,7 +81,7 @@ Loaded by `load_species_config()` in `create_knowledge_graph.py`. Maps each spec
 
 ## Adapter config YAML structure
 
-**Example:** [`config/hsa/hsa_adapters_config_sample.yaml`](../../config/hsa/hsa_adapters_config_sample.yaml)
+**Example:** [`config/hsa/hsa_adapters_config_sample.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/hsa/hsa_adapters_config_sample.yaml)
 
 Each entry declares one adapter invocation:
 
@@ -141,7 +141,7 @@ gencode_gene:
 
 Loading: `python-dotenv` reads `.env` (if present) at startup. If `python-dotenv` is not installed, set variables manually in the shell. The `.env` file is gitignored.
 
-**`.env.example`** ([`../../.env.example`](../../.env.example)):
+**`.env.example`** ([`.env.example`](https://github.com/rejuve-bio/biocypher-kg/blob/main/.env.example)):
 ```env
 BIOPORTAL_API_KEY=your_bioportal_api_key_here
 ```
@@ -159,7 +159,7 @@ Loaded via `pydantic_settings.BaseSettings` from a `.env` file in the `kg-servic
 | `ARCHIVE_BASE` | `/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/` | **⚠️ Hardcoded to the Bizon server path.** Must be overridden for any other deployment. Base directory for KG version archives used by `Neo4jLoader`. |
 | `VERSION_DIFF_SCRIPT` | `/home/abdum/services/biocypher-kg/version_diff.py` | **⚠️ Absolute path to Bizon server.** Path to `version_diff.py` — must be overridden. |
 | `MORK_SUMMARY_SCRIPT` | `/home/abdum/services/biocypher-kg/get_mork_summary.py` | **⚠️ Absolute path to Bizon server.** Must be overridden. |
-| `MORK_URL` | `http://localhost:8432` | **⚠️ Port conflict.** MORK container exposes port `8027` (see [`biocypher-mork/docker-compose.yml`](../../biocypher-mork/docker-compose.yml)). Set this to `http://localhost:8027` when running the MORK container with defaults. |
+| `MORK_URL` | `http://localhost:8432` | **⚠️ Port conflict.** MORK container exposes port `8027` (see [`biocypher-mork/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher-mork/docker-compose.yml)). Set this to `http://localhost:8027` when running the MORK container with defaults. |
 | `MORK_LIVE_STATS_ENABLED` | `false` | Enable live MORK statistics in API responses |
 | `CACHE_TTL` | `300` | Cache TTL in seconds for API responses |
 | `API_HOST` | `0.0.0.0` | FastAPI bind host |
@@ -174,7 +174,7 @@ Loaded via `pydantic_settings.BaseSettings` from a `.env` file in the `kg-servic
 
 ## Neo4j deployment environment (`docker/neo4j.env.example`)
 
-**Source:** [`docker/neo4j.env.example`](../../docker/neo4j.env.example)  
+**Source:** [`docker/neo4j.env.example`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/neo4j.env.example)  
 Copy to `docker/neo4j.env` (gitignored) and fill in values.
 
 | Variable | Default | Description |
@@ -212,7 +212,7 @@ Copy to `docker/neo4j.env` (gitignored) and fill in values.
 
 ## `config/yaml_loader.py` — YAML includes
 
-**Source:** [`config/yaml_loader.py`](../../config/yaml_loader.py)
+**Source:** [`config/yaml_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/yaml_loader.py)
 
 The `load_yaml_with_includes()` function extends standard YAML with a `!include <path>` directive that allows splitting large configs into separate files. Used by `load_species_config()` in `create_knowledge_graph.py`.
 
