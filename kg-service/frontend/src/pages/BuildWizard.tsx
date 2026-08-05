@@ -23,15 +23,15 @@ export default function BuildWizard() {
   const [adaptersError, setAdaptersError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [writerType, setWriterType] = useState<string>("metta");
-  const [outputDir, setOutputDir] = useState<string>("");
   const [adapterFilter, setAdapterFilter] = useState<string>("");
+  const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
+  const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
   const [flagValues, setFlagValues] = useState<Record<string, boolean>>({});
 
   const [validating, setValidating] = useState(false);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Initial load: species, writers, flags.
   useEffect(() => {
     Promise.all([api.listSpecies(), api.listWriters(), api.listFlags()])
       .then(([sp, w, fl]) => {
@@ -44,10 +44,26 @@ export default function BuildWizard() {
       .catch((e) => setLoadError(String(e)));
   }, []);
 
-  const datasets = useMemo(
-    () => species.find((s) => s.species === selSpecies)?.datasets ?? [],
-    [species, selSpecies],
-  );
+  const isAll = selSpecies === "all";
+
+  const datasets = useMemo(() => {
+    if (isAll) {
+      // All-species: union of dataset names; each species uses its own config.
+      const names = Array.from(
+        new Set(species.flatMap((s) => s.datasets.map((d) => d.name))),
+      );
+      return names.map((name) => ({
+        name,
+        adapters_config: "",
+        schema_config: "",
+        dbsnp_cache_root: "",
+        dbsnp_variant: "",
+        adapters_config_exists: true,
+        schema_config_exists: true,
+      }));
+    }
+    return species.find((s) => s.species === selSpecies)?.datasets ?? [];
+  }, [species, selSpecies, isAll]);
 
   // Pick a default dataset (prefer 'sample', prefer ones whose config exists).
   useEffect(() => {
@@ -56,17 +72,23 @@ export default function BuildWizard() {
       return;
     }
     const usable = datasets.filter((d) => d.adapters_config_exists);
-    // Only auto-select a dataset whose config actually exists. If none do, leave
-    // it unset so the adapters section shows a friendly notice instead of erroring.
+    // Leave unset when no config exists so the UI shows a notice instead of erroring.
     const preferred = usable.find((d) => d.name === "sample") ?? usable[0];
     setSelDataset(preferred ? preferred.name : "");
   }, [datasets]);
 
-  // Load adapters when species/dataset change.
+  // Prefill dbSNP fields from the selected dataset's species_config defaults.
+  useEffect(() => {
+    const d = datasets.find((x) => x.name === selDataset);
+    setDbsnpCacheRoot(d?.dbsnp_cache_root ?? "");
+    setDbsnpVariant(d?.dbsnp_variant || "common");
+  }, [selDataset, datasets]);
+
   useEffect(() => {
     setValidation(null);
     setAdaptersError(null);
-    if (!selSpecies || !selDataset) {
+    // "all" has no single config to introspect — every adapter of each species runs.
+    if (isAll || !selSpecies || !selDataset) {
       setAdapters([]);
       setSelected(new Set());
       return;
@@ -111,11 +133,15 @@ export default function BuildWizard() {
     return {
       species: selSpecies,
       dataset: selDataset,
-      // omit include_adapters when everything is selected (means "all")
-      include_adapters: allSelected ? null : Array.from(selected),
+      // null = all adapters (always for all-species runs).
+      include_adapters: isAll || allSelected ? null : Array.from(selected),
       writer_type: writerType,
-      // empty => let the server assign a default per-build output folder
-      output_dir: outputDir.trim() || null,
+      // Server decides where output goes: DATA_ROOT/<dated> if set, else repo default.
+      output_dir: null,
+      // dbSNP only applies to non-sample runs; sample uses the bundled cache.
+      dbsnp_cache_root:
+        selDataset !== "sample" ? dbsnpCacheRoot.trim() || null : null,
+      dbsnp_variant: selDataset !== "sample" ? dbsnpVariant || null : null,
       write_properties: flagValues.write_properties ?? true,
       add_provenance: flagValues.add_provenance ?? true,
       include_taxon_id: flagValues.include_taxon_id ?? true,
@@ -211,7 +237,7 @@ export default function BuildWizard() {
   return (
     <>
       <div className="card">
-        <h2>1 · Species &amp; Dataset</h2>
+        <h2><span className="step">1</span> Species &amp; Dataset</h2>
         <div className="row">
           <label className="field">
             Species
@@ -224,6 +250,7 @@ export default function BuildWizard() {
                   {s.species}
                 </option>
               ))}
+              <option value="all">all species (sequential)</option>
             </select>
           </label>
           <label className="field">
@@ -245,12 +272,46 @@ export default function BuildWizard() {
             </select>
           </label>
         </div>
+
+        {selDataset && selDataset !== "sample" && (
+          <div className="row" style={{ marginTop: 14, alignItems: "flex-start" }}>
+            <label className="field">
+              dbSNP variant
+              <select
+                value={dbsnpVariant}
+                onChange={(e) => setDbsnpVariant(e.target.value)}
+              >
+                <option value="common">common</option>
+                <option value="full">full</option>
+              </select>
+            </label>
+            <label className="field" style={{ flex: 1, minWidth: 300 }}>
+              dbSNP cache path (required)
+              <input
+                type="text"
+                value={dbsnpCacheRoot}
+                onChange={(e) => setDbsnpCacheRoot(e.target.value)}
+                placeholder="/path/to/dbsnp  (root containing common/ and/or full/)"
+                style={{ width: "100%" }}
+              />
+              <span className="field-hint">
+                Required for non-sample runs — the dbSNP mapping cache built by
+                scripts/update_dbsnp.py. The chosen variant subfolder must exist under it.
+              </span>
+            </label>
+          </div>
+        )}
       </div>
 
       <div className="card">
-        <h2>
-          2 · Adapters ({nSelected}/{adapters.length})
-        </h2>
+        <h2><span className="step">2</span> Adapters {isAll ? "" : `(${nSelected}/${adapters.length})`}</h2>
+        {isAll ? (
+          <div className="alert warn">
+            All-species run: every adapter in each species is included automatically —
+            per-adapter selection isn’t available for “all”.
+          </div>
+        ) : (
+        <>
         <div className="row" style={{ marginBottom: 10 }}>
           <input
             type="text"
@@ -282,11 +343,13 @@ export default function BuildWizard() {
         {!adapters.length && selDataset && !adaptersError && (
           <span className="muted">No adapters loaded.</span>
         )}
+        </>
+        )}
       </div>
 
       <div className="card">
-        <h2>3 · Output format &amp; options</h2>
-        <div className="row" style={{ marginBottom: 12, alignItems: "flex-start" }}>
+        <h2><span className="step">3</span> Output format &amp; options</h2>
+        <div className="row" style={{ marginBottom: 12 }}>
           <label className="field">
             Writer
             <select
@@ -300,19 +363,12 @@ export default function BuildWizard() {
               ))}
             </select>
           </label>
-          <label className="field" style={{ flex: 1, minWidth: 280 }}>
-            Output directory (optional)
-            <input
-              type="text"
-              value={outputDir}
-              onChange={(e) => setOutputDir(e.target.value)}
-              placeholder="Leave empty for a default per-build folder"
-              style={{ width: "100%" }}
-            />
-            <span className="field-hint">
-              Absolute path, or relative to the repo root.
-            </span>
-          </label>
+        </div>
+        <div className="field-hint" style={{ marginBottom: 12 }}>
+          📁 Output location is automatic: a dated folder
+          <span className="mono"> species-dataset-YYYYMMDD-HHMMSS </span>
+          under <span className="mono">DATA_ROOT</span> if configured, otherwise the
+          default build folder in the repo. The exact path is shown on the build page.
         </div>
         <div className="chips">
           {flags.map((f) => (
@@ -343,7 +399,7 @@ export default function BuildWizard() {
           <button
             className="primary"
             onClick={onBuild}
-            disabled={submitting || !nSelected}
+            disabled={submitting || (!isAll && !nSelected)}
           >
             {submitting ? "Launching…" : "Launch build"}
           </button>

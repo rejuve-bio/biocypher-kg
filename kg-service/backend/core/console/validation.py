@@ -1,11 +1,4 @@
-"""Validate a proposed build before it runs.
-
-Two layers:
-  1. static  — in-process, fast: mode/writer/config-existence/adapter-name checks.
-  2. authoritative — shells out to `create_knowledge_graph.py --check-only`
-     (runs no adapters) to verify every declared input path exists, exactly as a
-     real build would. This is the source of truth for ``missing_paths``.
-"""
+"""Validate a proposed build before it runs (static checks + `--check-only` path check)."""
 from __future__ import annotations
 
 import logging
@@ -74,7 +67,16 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
     adapters_dict: Optional[dict] = None
     num_adapters: Optional[int] = None
 
-    if req.species:
+    if req.species and req.species.lower() == "all":
+        # All-species run has no single adapters config; the CLI validates per species.
+        if req.dataset not in ("sample", "full"):
+            static_errors.append("dataset must be 'sample' or 'full' for an all-species run.")
+        static_warnings.append(
+            "All-species run: adapters and input-path validation are skipped here; "
+            "each species runs sequentially with its own config, and species without "
+            f"the '{req.dataset}' dataset are skipped."
+        )
+    elif req.species:
         try:
             adapters_config_abs = str(ci.resolve_adapters_config_path(req.species, req.dataset))
             schema_config_abs = str(ci.resolve_schema_config_path(req.species, req.dataset))
@@ -120,12 +122,28 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
                      {a.lower() for a in req.include_adapters}]
                 )
 
-    # --- dbSNP soft warning ---
-    if req.dataset != "sample" and not req.dbsnp_cache_root:
-        static_warnings.append(
-            "Non-sample dataset with no dbsnp_cache_root: builds that touch dbSNP "
-            "adapters will fail unless the cache root is set here or in species_config.yaml."
-        )
+    # --- dbSNP requirement for non-sample species-mode runs ---
+    # The pipeline hard-exits on a non-sample run without both cache root and variant.
+    if req.species and req.dataset != "sample":
+        try:
+            entry = ci._dataset_entry(req.species, req.dataset)
+        except ci.ConfigError:
+            entry = {}
+        eff_root = (req.dbsnp_cache_root or entry.get("dbsnp_cache_root") or "").strip()
+        eff_variant = (req.dbsnp_variant or entry.get("dbsnp_variant") or "").strip()
+        if not eff_root:
+            static_errors.append(
+                "dbSNP cache root is required for non-sample runs — provide the dbSNP "
+                "cache path (or set dbsnp_cache_root in species_config.yaml)."
+            )
+        if not eff_variant:
+            static_errors.append(
+                "dbSNP variant is required for non-sample runs — choose 'common' or 'full'."
+            )
+        elif eff_variant not in ("common", "full"):
+            static_errors.append(
+                f"dbSNP variant must be 'common' or 'full' (got '{eff_variant}')."
+            )
 
     # --- authoritative path check via --check-only ---
     ran_check_only = False

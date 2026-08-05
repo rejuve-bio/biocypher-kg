@@ -9,7 +9,8 @@ from pathlib import Path
 from datetime import datetime
 import argparse
 
-sys.path.insert(0, str(Path(__file__).parent / "biocypher-mork"))
+# Vendored MORK client is at the repo root, not kg-service/ (hence parents[1]).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "biocypher-mork"))
 from client import MORK
 
 
@@ -22,7 +23,6 @@ class MORKVersionManager:
         self.archive_dir = Path(archive_dir) / "mork"
         self.archive_dir.mkdir(parents=True, exist_ok=True)
         
-        # Metadata file location
         self.metadata_file = self.archive_dir / "version_metadata.json"
     
     def hash_all_datasets(self):
@@ -172,7 +172,6 @@ class MORKVersionManager:
         
         print(f"  ✅ Stored metadata to: {self.metadata_file}")
         
-        # add metadata atoms to MORK annotation namespace
         self._add_metadata_to_mork(version_info, build_id)
     
     def _add_metadata_to_mork(self, version_info, build_id):
@@ -250,11 +249,12 @@ def load_metta_files(server, data_dir):
     successful_files = 0
     failed_files = 0
     
+    data_dir_abs = Path(data_dir).resolve()
     with server.work_at("annotation") as scope:
         for file_path in files:
-            relative_path = file_path.relative_to(data_dir)
-            container_file_path = Path("/app/data") / relative_path
-            file_uri = f"file://{container_file_path}"
+            # Absolute host path — bind-mounted at the same location in the MORK container.
+            file_uri = f"file://{file_path.resolve()}"
+            relative_path = file_path.relative_to(data_dir_abs)
             
             folder_path = file_path.parent.name
             print(f"  ...Importing {folder_path}/{file_path.name}")
@@ -275,6 +275,14 @@ def load_metta_files(server, data_dir):
     print("="*50)
     
     return successful_files, failed_files
+
+
+def count_loaded_atoms(server, cap=100000):
+    with server.work_at("annotation") as scope:
+        data = scope.download_(max_results=cap)
+        data.block()
+        text = data.data or ""
+    return sum(1 for line in text.split("\n") if line.strip())
 
 
 def show_summary(server):
@@ -330,41 +338,51 @@ def main():
     print("MORK LOADER - BioCypher Knowledge Graph")
     print("="*60)
     
-    # Step 1: Connect to MORK
     server = connect_to_mork(args.host, args.port)
     
-    # Step 2: Initialize version manager
     version_manager = MORKVersionManager(server, args.data_dir, args.archive_dir)
     
-    # Step 3: Check versions (compares hashes)
     version_info = version_manager.check_and_version()
-    
+
     if version_info is None:
-        # no changes, skip loading
         print("\n✅ Load complete (no changes)\n")
         return
     
-    # Step 4: Archive ONLY changed datasets
     print(f"\n📦 Archiving changed datasets...")
     for dataset in version_info['changed_datasets']:
         version = version_info['dataset_versions'][dataset]
         print(f"  Archiving [{dataset}] to {version}...")
         version_manager.archive_dataset(dataset, version)
     
-    # Step 5: Full reload (clear everything)
     clear_annotation_namespace(server)
-    
-    # Step 6: Load ALL data
+
     successful, failed = load_metta_files(server, args.data_dir)
-    
-    # Step 7: Store version metadata (JSON file + MORK atoms)
+
+    # Verify by atom count (source of truth), not the import call; before metadata write so the marker atom isn't counted.
+    print(f"\n🔎 Verifying ingestion (querying annotation namespace)...")
+    try:
+        loaded_atoms = count_loaded_atoms(server)
+    except Exception as e:
+        loaded_atoms = 0
+        print(f"  ⚠️  Could not verify ingestion: {e}")
+    sampled = " (sampled)" if loaded_atoms >= 100000 else ""
+    print(f"  → {loaded_atoms} atom(s) in MORK{sampled}")
+
+    # Failed load: don't store metadata — next run would see "unchanged" and skip the retry.
+    if loaded_atoms == 0 or failed > 0:
+        print("\n" + "="*60)
+        print(f"❌ MORK LOAD FAILED")
+        print(f"   Files loaded: {successful} / {successful + failed}   (failed: {failed})")
+        print(f"   Atoms in MORK: {loaded_atoms}")
+        print(f"   Version metadata NOT updated — fix the cause above and retry.")
+        print("="*60 + "\n")
+        sys.exit(1)
+
     version_manager.store_metadata(version_info, args.build_id)
-    
-    # Step 8: Verify (optional)
+
     if args.verify:
         show_summary(server)
-    
-    # Final summary
+
     print("\n" + "="*60)
     print(f"✅ MORK LOAD COMPLETE")
     print(f"   Version: {version_info['atomspace_version']}")
@@ -372,8 +390,7 @@ def main():
     print(f"   Changed datasets: {len(version_info['changed_datasets'])}")
     print(f"   Unchanged datasets: {len(version_info['unchanged_datasets'])}")
     print(f"   Files loaded: {successful}")
-    if failed > 0:
-        print(f"   ⚠️  Failed files: {failed}")
+    print(f"   Atoms in MORK: {loaded_atoms}{sampled}")
     print(f"\n   Metadata: {version_manager.metadata_file}")
     print("="*60 + "\n")
 

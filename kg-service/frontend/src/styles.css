@@ -1,42 +1,43 @@
+/* Brand palette */
 :root,
 :root[data-theme="dark"] {
-  --bg: #0b0f1a;
-  --bg-accent-1: rgba(79, 140, 255, 0.14);
-  --bg-accent-2: rgba(155, 108, 255, 0.12);
-  --panel: #151d2e;
-  --panel-2: #1e293f;
-  --border: #2a3650;
+  --bg: #0f172a;
+  --bg-accent-1: rgba(16, 185, 129, 0.16);
+  --bg-accent-2: rgba(6, 182, 212, 0.13);
+  --panel: #1e293b;
+  --panel-2: #273449;
+  --border: #334155;
   --text: #e8eef8;
-  --muted: #93a1b8;
-  --accent: #5b91ff;
-  --accent-2: #a26bff;
+  --muted: #94a3b8;
+  --accent: #10b981;
+  --accent-2: #06b6d4;
   --teal: #2dd4bf;
   --ok: #34d399;
-  --warn: #f0b13d;
-  --err: #f26d6d;
-  --grad: linear-gradient(135deg, #5b91ff 0%, #a26bff 100%);
+  --warn: #fbbf24;
+  --err: #f87171;
+  --grad: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
   --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
   --shadow-sm: 0 4px 14px -8px rgba(0, 0, 0, 0.5);
 }
 
 :root[data-theme="light"] {
-  --bg: #edf1f9;
-  --bg-accent-1: rgba(79, 140, 255, 0.16);
-  --bg-accent-2: rgba(155, 108, 255, 0.13);
+  --bg: #ffffff;
+  --bg-accent-1: rgba(16, 185, 129, 0.10);
+  --bg-accent-2: rgba(6, 182, 212, 0.09);
   --panel: #ffffff;
-  --panel-2: #f1f4fb;
-  --border: #dbe2ee;
-  --text: #16203a;
-  --muted: #5f6b80;
-  --accent: #3f6fe6;
-  --accent-2: #8a4ff0;
-  --teal: #0f9e8e;
-  --ok: #16a463;
-  --warn: #b47512;
-  --err: #d23f3f;
-  --grad: linear-gradient(135deg, #3f6fe6 0%, #8a4ff0 100%);
-  --shadow: 0 12px 32px -16px rgba(40, 60, 120, 0.35);
-  --shadow-sm: 0 4px 14px -10px rgba(40, 60, 120, 0.3);
+  --panel-2: #f1f6f4;
+  --border: #dde7e3;
+  --text: #0f172a;
+  --muted: #5b6b76;
+  --accent: #059669;
+  --accent-2: #0891b2;
+  --teal: #0f766e;
+  --ok: #16a34a;
+  --warn: #b45309;
+  --err: #dc2626;
+  --grad: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  --shadow: 0 12px 32px -16px rgba(15, 118, 110, 0.18);
+  --shadow-sm: 0 4px 14px -10px rgba(15, 118, 110, 0.16);
 }
 
 * { box-sizing: border-box; }
@@ -69,7 +70,7 @@ body {
   z-index: 10;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -0.01em; }
-.brand-mark { font-size: 22px; filter: drop-shadow(0 2px 6px rgba(91, 145, 255, 0.5)); }
+.brand-mark { font-size: 22px; filter: drop-shadow(0 2px 6px rgba(16, 185, 129, 0.5)); }
 .brand-text {
   background: var(--grad);
   -webkit-background-clip: text;
@@ -124,6 +125,22 @@ body {
   border-radius: 4px;
   background: var(--grad);
 }
+/* Numbered steps get a gradient badge instead of the little bar. */
+.card h2:has(.step)::before { display: none; }
+.card h2 .step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 9px;
+  background: var(--grad);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  flex: none;
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--accent) 85%, transparent);
+}
 
 .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
 label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
@@ -138,6 +155,8 @@ select, input[type="text"] {
   padding: 10px 12px;
   font-size: 14px;
   font-family: inherit;
+  /* Faint inset so fields read as inputs even on a near-white panel in light mode. */
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--text) 7%, transparent);
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 select {
@@ -164,14 +183,16 @@ button {
   font-family: inherit;
   font-size: 14px;
   color: var(--text);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--text) 8%, var(--panel-2)), var(--panel-2));
+  background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 9px 16px;
   transition: transform 0.12s, background 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
 button:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent) 9%, var(--panel-2));
+  color: color-mix(in srgb, var(--accent) 40%, var(--text));
   box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
@@ -222,7 +243,48 @@ button.btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 8px; }
   background: color-mix(in srgb, var(--accent) 14%, transparent);
   color: var(--text);
 }
-.chip input, .adapter-item input { accent-color: var(--accent); }
+/* ── Checkboxes (custom, brand-styled) ───────────────────── */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 2px solid color-mix(in srgb, var(--muted) 55%, transparent);
+  border-radius: 6px;
+  background: var(--panel-2);
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+/* The tick: a white square clipped into a checkmark, scaled in on :checked. */
+input[type="checkbox"]::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  transform: scale(0);
+  transform-origin: center;
+  transition: transform 0.14s cubic-bezier(0.2, 0.9, 0.3, 1.35);
+  box-shadow: inset 1em 1em #fff;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0, 43% 62%);
+}
+input[type="checkbox"]:hover:not(:checked):not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel-2));
+}
+input[type="checkbox"]:checked {
+  background: var(--grad);
+  border-color: transparent;
+  box-shadow: 0 2px 9px -2px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+input[type="checkbox"]:checked::before { transform: scale(1); }
+input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 32%, transparent);
+}
+input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ── Adapter groups ──────────────────────────────────────── */
 .adapter-group { margin-top: 14px; }
@@ -233,9 +295,34 @@ button.btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 8px; }
 .group-dot.edge { background: var(--accent-2); box-shadow: 0 0 8px var(--accent-2); }
 .group-title { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; }
 .group-count { font-size: 12px; color: var(--muted); }
-.group-actions { margin-left: auto; display: flex; gap: 4px; }
-.linkbtn { background: transparent; border: none; color: var(--accent); font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 7px; }
-.linkbtn:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 14%, transparent); transform: none; box-shadow: none; border: none; }
+.group-actions {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: color-mix(in srgb, var(--panel-2) 70%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.linkbtn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 11px;
+  border-radius: 7px;
+  transition: background 0.12s, color 0.12s;
+}
+.linkbtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+  border: none;
+}
 
 /* ── Adapter grid ────────────────────────────────────────── */
 .adapter-grid {
@@ -268,6 +355,25 @@ button.btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 8px; }
 
 .muted { color: var(--muted); }
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+/* ── Load pills ──────────────────────────────────────────── */
+.loadpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.12s, background 0.12s;
+}
+.loadpill.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 15%, transparent); }
+.loadpill.run { color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.loadpill.err { color: var(--err); background: color-mix(in srgb, var(--err) 15%, transparent); }
+.loadpill:hover { border-color: currentColor; }
 
 /* ── Status badges ───────────────────────────────────────── */
 .badge { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; border-radius: 24px; font-size: 12px; font-weight: 700; text-transform: capitalize; }
