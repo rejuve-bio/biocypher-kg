@@ -34,13 +34,54 @@ def _job_or_404(job_id: str) -> BuildJob:
 def _enrich(job: BuildJob) -> dict:
     """Job dict + checkpoint summary + resumable flag (shared by list & detail)."""
     data = job.to_dict()
-    checkpoint = job_runner.read_checkpoint(job.output_dir)
+    checkpoint = job_runner.read_checkpoint(job.output_dir) if job.kind == "build" else None
     data["checkpoint"] = checkpoint
     data["resumable"] = checkpoint is not None and job.status in {
         JobStatus.FAILED,
         JobStatus.CANCELLED,
     }
+    data["retryable"] = (job.kind or "").startswith("load-") and job.status in {
+        JobStatus.FAILED,
+        JobStatus.CANCELLED,
+    }
+    if (job.kind or "build") == "build":
+        data["loads"] = job_runner.loads_for(job.id)
     return data
+
+
+@router.post("/builds/{job_id}/retry", status_code=201)
+def retry_load(job_id: str):
+    """Re-run a failed/cancelled load job (same target + output dir) as a new job."""
+    job = _job_or_404(job_id)
+    if not (job.kind or "").startswith("load-"):
+        raise HTTPException(status_code=400, detail="Retry is only for load jobs.")
+    new_job = job_runner.retry_load(job_id)
+    if new_job is None:
+        raise HTTPException(status_code=400, detail="Could not retry this load.")
+    return {"id": new_job.id, "status": new_job.status.value,
+            "kind": new_job.kind, "retry_of": job_id, "job": new_job.to_dict()}
+
+
+@router.post("/builds/{job_id}/load/{target}", status_code=201)
+def load_build(job_id: str, target: str):
+    """Load a succeeded build's output into Neo4j or MORK (surgical/versioned)."""
+    job = _job_or_404(job_id)
+    if target not in ("neo4j", "mork"):
+        raise HTTPException(status_code=400, detail="target must be 'neo4j' or 'mork'.")
+    if job.status != JobStatus.SUCCEEDED:
+        raise HTTPException(status_code=400, detail="Only a succeeded build can be loaded.")
+    writer = (job.params or {}).get("writer_type")
+    if target == "neo4j" and writer != "neo4j":
+        raise HTTPException(status_code=400,
+                            detail="Neo4j load needs a build made with writer_type 'neo4j'.")
+    if target == "mork" and writer != "metta":
+        raise HTTPException(status_code=400,
+                            detail="MORK load needs a build made with writer_type 'metta'.")
+    load_job = job_runner.launch_load(job_id, target)
+    if load_job is None:
+        raise HTTPException(status_code=404, detail="Source build not found.")
+    return {"id": load_job.id, "status": load_job.status.value,
+            "kind": load_job.kind, "job": load_job.to_dict()}
 
 
 @router.post("/builds/validate")
@@ -67,8 +108,9 @@ def create_build(req: BuildRequest):
 
 @router.get("/builds")
 def list_builds(status: Optional[str] = Query(default=None)):
-    """List build jobs, newest first. Optional ?status= filter."""
-    return {"builds": [_enrich(j) for j in registry.list(status=status)]}
+    """List BUILD jobs, newest first (optional ?status= filter); load jobs excluded."""
+    builds = [j for j in registry.list(status=status) if (j.kind or "build") == "build"]
+    return {"builds": [_enrich(j) for j in builds]}
 
 
 @router.get("/builds/{job_id}")
@@ -129,7 +171,7 @@ async def stream_logs(job_id: str):
             job = registry.get(job_id)
             if job is None or job.status in {JobStatus.SUCCEEDED, JobStatus.FAILED,
                                              JobStatus.CANCELLED}:
-                # one last flush of anything written after the final read
+                # final flush of anything written after the last read
                 if log_path.exists():
                     with open(log_path, "r", errors="replace") as fh:
                         fh.seek(pos)

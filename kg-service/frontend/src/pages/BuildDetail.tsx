@@ -46,17 +46,16 @@ export default function BuildDetail() {
         if (!alive) return;
         setJob(j);
         setLines(l.lines);
+        // Refresh file list every poll so downloads appear incrementally.
+        const [out, gi] = await Promise.all([
+          api.listOutput(id).catch(() => null),
+          api.getGraphInfo(id).catch(() => null),
+        ]);
+        if (!alive) return;
+        if (out?.exists) setFiles(out.files);
+        if (gi?.present) setGraphInfo(gi.summary ?? null);
         if (!TERMINAL.has(j.status)) {
           timer = setTimeout(tick, 2000);
-        } else {
-          // Build finished — load its produced files + graph summary (once).
-          const [out, gi] = await Promise.all([
-            api.listOutput(id).catch(() => null),
-            api.getGraphInfo(id).catch(() => null),
-          ]);
-          if (!alive) return;
-          if (out?.exists) setFiles(out.files);
-          if (gi?.present) setGraphInfo(gi.summary ?? null);
         }
       } catch (e) {
         if (alive) setError(String(e));
@@ -92,10 +91,32 @@ export default function BuildDetail() {
     }
   }
 
+  async function onLoad(target: "neo4j" | "mork") {
+    try {
+      const res = await api.loadBuild(id, target);
+      navigate(`/builds/${res.id}`);
+    } catch (e) {
+      setError(String(e));
+    }
+  }
+
+  async function onRetry() {
+    try {
+      const res = await api.retryLoad(id);
+      navigate(`/builds/${res.id}`);
+    } catch (e) {
+      setError(String(e));
+    }
+  }
+
   if (error) return <div className="alert err">{error}</div>;
   if (!job) return <div className="muted">Loading…</div>;
 
   const active = !TERMINAL.has(job.status);
+  const isBuild = (job.kind ?? "build") === "build";
+  const writer = (job.params as { writer_type?: string })?.writer_type;
+  const canLoadNeo4j = isBuild && job.status === "succeeded" && writer === "neo4j";
+  const canLoadMork = isBuild && job.status === "succeeded" && writer === "metta";
 
   return (
     <>
@@ -103,6 +124,9 @@ export default function BuildDetail() {
         <div className="row" style={{ justifyContent: "space-between" }}>
           <div className="row">
             <JobStatusBadge status={job.status} />
+            {!isBuild && (
+              <span className="tag edge">{(job.kind ?? "").replace("load-", "load→")}</span>
+            )}
             <span className="mono muted">{job.id}</span>
           </div>
           <div className="row">
@@ -119,6 +143,21 @@ export default function BuildDetail() {
                 ⟲ Resume
               </button>
             )}
+            {job.retryable && (
+              <button className="secondary" onClick={onRetry}>
+                ⟲ Retry load
+              </button>
+            )}
+            {canLoadNeo4j && (
+              <button className="secondary" onClick={() => onLoad("neo4j")}>
+                ⇪ Load to Neo4j
+              </button>
+            )}
+            {canLoadMork && (
+              <button className="secondary" onClick={() => onLoad("mork")}>
+                ⇪ Load to MORK
+              </button>
+            )}
           </div>
         </div>
         <div className="row" style={{ marginTop: 12, gap: 24 }}>
@@ -127,6 +166,21 @@ export default function BuildDetail() {
           <Meta label="Finished" value={fmt(job.finished_at)} />
           <Meta label="PID" value={job.pid ?? "—"} />
         </div>
+        {isBuild && job.loads && Object.keys(job.loads).length > 0 && (
+          <div className="row" style={{ marginTop: 14, gap: 8, alignItems: "center" }}>
+            <span className="muted" style={{ fontSize: 12 }}>Loaded into</span>
+            {Object.entries(job.loads).map(([target, l]) => (
+              <span
+                key={target}
+                className={loadPillClass(l.status)}
+                title={`${l.status} — view load log`}
+                onClick={() => navigate(`/builds/${l.job_id}`)}
+              >
+                {target === "neo4j" ? "Neo4j" : "MORK"} {loadIcon(l.status)}
+              </span>
+            ))}
+          </div>
+        )}
         {job.total_adapters != null &&
           (job.checkpoint || job.status === "running") && (
             <div style={{ marginTop: 12 }}>
@@ -184,7 +238,7 @@ export default function BuildDetail() {
 
       {(graphInfo || (files && files.length > 0)) && (
         <div className="card">
-          <h2>Results</h2>
+          <h2>Results {active ? "· updating live" : ""}</h2>
           <div className="alert ok" style={{ marginBottom: 14 }}>
             📁 Files were written to <span className="mono">{job.output_dir}</span>
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
@@ -275,6 +329,17 @@ function Meta({ label, value }: { label: string; value: unknown }) {
       <div className="mono">{String(value)}</div>
     </div>
   );
+}
+
+function loadPillClass(status: string): string {
+  if (status === "succeeded") return "loadpill ok";
+  if (status === "failed" || status === "cancelled") return "loadpill err";
+  return "loadpill run"; // queued / running
+}
+function loadIcon(status: string): string {
+  if (status === "succeeded") return "✓";
+  if (status === "failed" || status === "cancelled") return "⟲";
+  return "…";
 }
 
 function fmt(iso: string | null): string {

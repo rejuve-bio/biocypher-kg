@@ -1,0 +1,86 @@
+# BioCypher KG Console — the whole system in one compose file (driven by docker/up.sh).
+# Own project name so this stack never collides with the standalone Makefile Neo4j in this dir.
+name: biocypher-console
+
+services:
+  console:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: biocypher-kg-console
+    ports:
+      - "${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
+    environment:
+      PORT: "${CONSOLE_PORT:-9000}"
+      REPO_ROOT: /app
+      BUILDS_DIR: /app/kg-service/.builds
+      DATA_ROOT: "${DATA_ROOT:?set DATA_ROOT in docker/console.env}"
+      MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-1}"
+      # Set by docker/up.sh; defaults keep a manual `--profile neo4j --profile mork up` working.
+      NEO4J_URI: "${NEO4J_URI:-bolt://neo4j:7687}"
+      NEO4J_USER: "${NEO4J_USER:-neo4j}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
+      NEO4J_DATABASE: "${NEO4J_DATABASE:-neo4j}"
+      ARCHIVE_BASE: "${DATA_ROOT}/archives"
+      MORK_URL: "${MORK_URL:-http://mork:8027}"
+    volumes:
+      # Mounted at the same path so Neo4j/MORK read builds where the Console writes them.
+      - "${DATA_ROOT}:${DATA_ROOT}"
+      # Named volume so build history survives image rebuilds.
+      - console_builds:/app/kg-service/.builds
+    # Lets the Console reach a Neo4j/MORK published on the host (attach case) on Linux.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  neo4j:
+    # up.sh enables this profile only when no Neo4j already exists on the target endpoint.
+    profiles: ["neo4j"]
+    image: ${NEO4J_IMAGE:-neo4j:5.21}
+    ports:
+      - "${NEO4J_HTTP_PORT:-7474}:7474"
+      - "${NEO4J_BOLT_PORT:-7687}:7687"
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
+      # APOC — the loader uses apoc.periodic.iterate / apoc.map.removeKeys.
+      NEO4JLABS_PLUGINS: '["apoc"]'
+      NEO4J_apoc_export_file_enabled: "${NEO4J_APOC_EXPORT_FILE:-true}"
+      NEO4J_apoc_import_file_enabled: "${NEO4J_APOC_IMPORT_FILE:-true}"
+      NEO4J_apoc_import_file_use__neo4j__config: "${NEO4J_APOC_IMPORT_USE_CONFIG:-false}"
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      # Import from any dir: file:/// URLs resolve against "/" so the loader's --import-dir works.
+      NEO4J_dbms_security_allow__csv__import__from__file__urls: "true"
+      NEO4J_server_directories_import: "/"
+      NEO4J_server_memory_pagecache_size: "${NEO4J_PAGECACHE:-1G}"
+      NEO4J_server_memory_heap_max__size: "${NEO4J_HEAP_MAX:-1G}"
+    volumes:
+      - "${DATA_ROOT}:${DATA_ROOT}:ro"   # read the Console's build output (same path)
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+
+  mork:
+    profiles: ["mork"]
+    build:
+      context: ../biocypher-mork
+      args:
+        # Pinned nightly; override RUST_NIGHTLY to bisect a broken one.
+        RUST_NIGHTLY: "${RUST_NIGHTLY:-2026-07-01}"
+    ports:
+      - "${MORK_HOST_PORT:-8432}:8027"
+    environment:
+      - RUST_LOG=info
+      - SNAPSHOT_DIR=/app/persist
+      - SNAPSHOT_INTERVAL_SECONDS=${SNAPSHOT_INTERVAL_SECONDS:-300}
+    volumes:
+      - "${DATA_ROOT}:${DATA_ROOT}:ro"   # read the Console's .metta output (same path)
+      # Named volumes, not host binds: they come up mork-owned (UID 1000), host binds don't.
+      - mork_persist:/app/persist
+      - mork_reports:/app/reports
+      - ../biocypher-mork/entrypoint.sh:/app/entrypoint.sh:ro
+    restart: unless-stopped
+
+volumes:
+  console_builds:
+  neo4j_data:
+  neo4j_logs:
+  mork_persist:
+  mork_reports:

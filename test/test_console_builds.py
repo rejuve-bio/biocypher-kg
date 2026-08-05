@@ -66,6 +66,114 @@ def test_registry_persists_across_reload(tmp_path):
     assert got.status == JobStatus.SUCCEEDED
 
 
+def test_resolve_output_dir_dated_when_blank(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console.job_runner import resolve_output_dir
+    import re
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    req = BuildRequest(species="hsa", dataset="sample")  # no output_dir; writer_type defaults
+    out = resolve_output_dir(req, tmp_path / "job")
+    assert out.startswith(str(tmp_path))
+    # Grouped by writer type: <DATA_ROOT>/<writer>/<species>-<dataset>-<timestamp>
+    assert re.search(rf"/{req.writer_type}/hsa-sample-\d{{8}}-\d{{6}}$", out), out
+
+
+def test_resolve_output_dir_explicit_wins(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console.job_runner import resolve_output_dir
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    req = BuildRequest(species="hsa", dataset="sample", output_dir="/custom/out")
+    assert resolve_output_dir(req, tmp_path / "job") == "/custom/out"
+
+
+def test_build_load_argv_targets():
+    from backend.core.console.job_runner import build_load_argv
+    from backend.core.config import settings
+    n = build_load_argv("neo4j", "/out")
+    assert "kg-service/neo4j_loader.py" in n
+    assert "--output-dir" in n and "/out" in n and "--uri" in n
+    # ARCHIVE_BASE is passed verbatim; the loader appends the target subdir itself
+    # (…/neo4j, …/mork) — matching what versions.py reads. Do NOT pre-append target.
+    assert n[n.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
+    m = build_load_argv("mork", "/out")
+    assert "kg-service/mork_loader.py" in m
+    assert "--data-dir" in m and "/out" in m
+    assert m[m.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
+
+
+def test_launch_load_creates_tracked_load_job(monkeypatch):
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "print('loaded')"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+
+    load = job_runner.launch_load(src.id, "neo4j")
+    assert load is not None and load.kind == "load-neo4j"
+    assert load.output_dir == src.output_dir       # loads the build's output
+    final = _wait_for(load.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    assert final.status == JobStatus.SUCCEEDED
+    assert "loaded" in open(final.log_path).read()
+
+
+def test_retry_load_reruns_same_target_and_dir(monkeypatch):
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "import sys; sys.exit(1)"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+
+    load = job_runner.launch_load(src.id, "mork")
+    failed = _wait_for(load.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    assert failed.status == JobStatus.FAILED  # loader exited non-zero
+
+    # Retry a passing loader this time.
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "print('retried')"])
+    retry = job_runner.retry_load(load.id)
+    assert retry is not None
+    assert retry.id != load.id
+    assert retry.kind == "load-mork"
+    assert retry.output_dir == load.output_dir
+    assert (retry.params or {}).get("retry_of") == load.id
+    final = _wait_for(retry.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    assert final.status == JobStatus.SUCCEEDED
+    assert "retried" in open(final.log_path).read()
+
+
+def test_retry_load_rejects_build_jobs(monkeypatch):
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    # A build job isn't a load job → not retryable.
+    assert job_runner.retry_load(src.id) is None
+    # Unknown id → None.
+    assert job_runner.retry_load("does-not-exist") is None
+
+
+def test_load_summarized_on_build_not_a_separate_build(monkeypatch):
+    """A load is an action on a build: it's a load-kind job (the /builds list filters
+    those out), and the build reports it via loads_for()."""
+    monkeypatch.setattr(job_runner, "build_argv",
+                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+    monkeypatch.setattr(job_runner, "build_load_argv",
+                        lambda target, out: [sys.executable, "-c", "print('loaded')"])
+    src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
+    _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+    load = job_runner.launch_load(src.id, "neo4j")
+    _wait_for(load.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
+
+    # The load is a load-kind job → excluded from the build list by the route.
+    assert (load.kind or "").startswith("load-")
+    # The build reports where it was loaded.
+    summary = job_runner.loads_for(src.id)
+    assert summary["neo4j"]["job_id"] == load.id
+    assert summary["neo4j"]["status"] == "succeeded"
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

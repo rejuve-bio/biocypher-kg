@@ -29,8 +29,17 @@ services:
       NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
       NEO4J_dbms_security_procedures_allowlist: "apoc.*"
 
-      # Map /import as the LOAD CSV root
-      NEO4J_dbms_directories_import: "/import"
+      # Allow LOAD CSV from absolute file:/// URLs anywhere the server can read,
+      # so builds can be loaded from ANY directory under the mounted import root.
+      # NOTE: dbms.directories.import is intentionally NOT set — when it is set,
+      # Neo4j forces every file:// URL to be RELATIVE to it (absolute paths get
+      # prefixed and fail). Leaving it unset + allow_csv..._from_file_urls=true lets
+      # the loader use absolute file:///<build dir>/... via --import-dir.
+      NEO4J_dbms_security_allow__csv__import__from__file__urls: "true"
+      # Set the import root to "/" so absolute file:///<abs> URLs resolve to the real
+      # absolute path (Neo4j resolves file:// relative to this root). Combined with the
+      # same-path bind mount below, this lets the loader import from ANY directory.
+      NEO4J_server_directories_import: "/"
 
       # Memory tuning
       NEO4J_dbms_memory_pagecache_size: "${NEO4J_PAGECACHE:-4G}"
@@ -40,6 +49,11 @@ services:
     volumes:
       # Neo4j output dir is mounted read-only as the LOAD CSV import root
       - ${NEO4J_OUTPUT_DIR}:/import:ro
+      # Broad host root mounted at the SAME path (read-only) so the loader can pass
+      # --import-dir <any build dir under here> and LOAD CSV file:///<abs> resolves.
+      # Set NEO4J_IMPORT_ROOT to the parent that contains your build outputs (e.g.
+      # DATA_ROOT); defaults to the output dir so the mount is always valid.
+      - ${NEO4J_IMPORT_ROOT:-${NEO4J_OUTPUT_DIR}}:${NEO4J_IMPORT_ROOT:-${NEO4J_OUTPUT_DIR}}:ro
       # Persistent storage
       - neo4j_data:/data
       - neo4j_logs:/logs

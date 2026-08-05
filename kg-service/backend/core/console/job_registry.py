@@ -1,9 +1,4 @@
-"""JSON-persisted registry of build jobs, safe for concurrent access.
-
-The registry file (``<BUILDS_DIR>/registry.json``) is the source of truth so jobs
-survive an API restart. On startup, ``reconcile()`` repairs the status of jobs that
-were RUNNING when the process died.
-"""
+"""JSON-persisted registry of build jobs, safe for concurrent access."""
 from __future__ import annotations
 
 import json
@@ -107,17 +102,13 @@ class JobRegistry:
             if job_id in self._jobs:
                 del self._jobs[job_id]
                 self._save_locked()
-                # Drop the job's artifacts dir (logs + default output). A custom
-                # output_dir lives outside .builds and is intentionally left alone.
+                # A custom output_dir lives outside .builds and is left alone.
                 shutil.rmtree(self.job_dir(job_id), ignore_errors=True)
                 return True
             return False
 
     def prune(self, keep: Optional[int] = None) -> int:
-        """Retain only the newest ``keep`` terminal jobs; delete older ones.
-
-        Never touches QUEUED/RUNNING jobs. Returns how many were removed.
-        """
+        """Retain the newest ``keep`` terminal jobs; delete older ones (never QUEUED/RUNNING)."""
         keep = keep if keep is not None else settings.MAX_BUILD_HISTORY
         with self._lock:
             terminal = [j for j in self._jobs.values() if j.status in TERMINAL_STATUSES]
@@ -132,12 +123,7 @@ class JobRegistry:
 
     # ---- restart repair ----
     def reconcile(self) -> None:
-        """Repair jobs left RUNNING by a previous process instance.
-
-        Returns nothing; logs what it changed. Jobs whose PID is gone are marked
-        FAILED (orphaned). Live PIDs are left RUNNING (a fresh monitor is attached
-        by the caller if desired).
-        """
+        """Mark jobs left RUNNING/QUEUED by a dead process FAILED if their PID is gone."""
         with self._lock:
             changed = False
             for job in self._jobs.values():
@@ -152,5 +138,4 @@ class JobRegistry:
                 self._save_locked()
 
 
-# Module-level singleton used by the runner and routes.
 registry = JobRegistry()

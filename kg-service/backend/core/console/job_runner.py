@@ -1,12 +1,4 @@
-"""Launch and track knowledge-graph builds as subprocesses.
-
-Builds always shell out to ``create_knowledge_graph.py`` with ``cwd = REPO_ROOT``
-(the CLI hardcodes repo-root-relative paths). We never import the CLI here.
-
-Concurrency is bounded by a semaphore of size ``MAX_CONCURRENT_BUILDS``. A job that
-cannot get a slot stays QUEUED until one frees — this queue + semaphore is the seam
-that Phase 3 parallelization will widen.
-"""
+"""Launch and track knowledge-graph builds as subprocesses."""
 from __future__ import annotations
 
 import json
@@ -53,15 +45,7 @@ def _subprocess_env() -> dict:
 
 
 def build_argv(req: BuildRequest, output_dir: str, resume: bool = False) -> list[str]:
-    """Construct the exact argv to launch a build. Single source of truth.
-
-    Flag names mirror create_knowledge_graph.py::main exactly.
-
-    Always passes an explicit ``--resume``/``--restart`` so the CLI never falls
-    back to its interactive checkpoint prompt (we run with stdin=DEVNULL, so a
-    prompt would EOF and crash the build). ``resume=True`` continues from an
-    existing checkpoint in ``output_dir``; the default starts fresh.
-    """
+    """Construct the exact argv to launch a build. Single source of truth."""
     argv = [settings.UV_BIN, "run", "python", "create_knowledge_graph.py"]
     if req.species:
         argv += ["--species", req.species, "--dataset", req.dataset]
@@ -79,7 +63,7 @@ def build_argv(req: BuildRequest, output_dir: str, resume: bool = False) -> list
         argv += ["--dbsnp-cache-root", req.dbsnp_cache_root]
     if req.dbsnp_variant:
         argv += ["--dbsnp-variant", req.dbsnp_variant]
-    # Negatable booleans (only emit when they differ from the CLI default).
+    # Negatable booleans: only emit when they differ from the CLI default.
     if not req.write_properties:
         argv.append("--no-write-properties")
     if not req.add_provenance:
@@ -112,9 +96,13 @@ def check_only_argv(adapters_config_abs: str,
 
 
 def resolve_output_dir(req: BuildRequest, job_dir: Path) -> str:
-    """Where the build writes. Explicit output_dir wins; else <job_dir>/output."""
+    """Where the build writes: explicit output_dir -> dated DATA_ROOT dir -> <job_dir>/output."""
     if req.output_dir:
         return _abs(req.output_dir)
+    if settings.DATA_ROOT:
+        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+        name = f"{req.species}-{req.dataset}-{ts}" if req.species else f"build-{ts}"
+        return _abs(str(Path(settings.DATA_ROOT) / req.writer_type / name))
     return str(job_dir / "output")
 
 
@@ -137,11 +125,8 @@ def read_checkpoint(output_dir: str) -> Optional[dict]:
 
 
 def _reap_orphan_temp_schemas() -> None:
-    """Delete stray config/tmp*.yaml left by builds killed before their own cleanup.
-
-    Only runs when no build is currently RUNNING — the temp files aren't mapped to
-    a specific job, so we must not delete one an active build is still using.
-    """
+    """Delete stray config/tmp*.yaml left by builds killed before their own cleanup."""
+    # Skip while a build is RUNNING: temp files aren't mapped to a job and may be in use.
     if any(j.status == JobStatus.RUNNING for j in registry.list()):
         return
     for f in (settings.repo_root_path / "config").glob("tmp*.yaml"):
@@ -169,10 +154,7 @@ def _count_adapters(req: BuildRequest) -> Optional[int]:
 
 
 def launch(req: BuildRequest, resume: bool = False) -> BuildJob:
-    """Create a job, persist it QUEUED, and start a worker thread that runs the build.
-
-    ``resume=True`` continues from an existing checkpoint in ``req.output_dir``.
-    """
+    """Create a job, persist it QUEUED, and start a worker thread that runs the build."""
     job_id = uuid.uuid4().hex
     job_dir = registry.job_dir(job_id)
     job_dir.mkdir(parents=True, exist_ok=True)
@@ -195,7 +177,7 @@ def launch(req: BuildRequest, resume: bool = False) -> BuildJob:
         created_at=_now_iso(),
     )
     registry.add(job)
-    registry.prune()  # enforce MAX_BUILD_HISTORY retention
+    registry.prune()
 
     worker = threading.Thread(target=_run_job, args=(job_id, argv, log_path), daemon=True)
     worker.start()
@@ -249,13 +231,111 @@ def _run_job(job_id: str, argv: list[str], log_path: str) -> None:
         _reap_orphan_temp_schemas()
 
 
-def resume(job_id: str) -> Optional[BuildJob]:
-    """Launch a new job that continues a prior failed/cancelled build's checkpoint.
+def _mork_host_port() -> tuple[str, str]:
+    from urllib.parse import urlparse
+    u = urlparse(settings.MORK_URL)
+    return (u.hostname or "localhost", str(u.port or 8432))
 
-    Reuses the prior job's output_dir (where kg_checkpoint.json lives) and its
-    original parameters, launched with --resume. Returns None if there's no
-    checkpoint to resume from.
-    """
+
+def build_load_argv(target: str, output_dir: str) -> list[str]:
+    """argv to load a build's output into Neo4j or MORK via the existing loaders."""
+    # ARCHIVE_BASE passed verbatim: the loaders append the target subdir (neo4j/mork).
+    archive_dir = settings.ARCHIVE_BASE
+    if target == "neo4j":
+        return [settings.UV_BIN, "run", "python", "kg-service/neo4j_loader.py",
+                "--output-dir", output_dir,
+                # --import-dir makes LOAD CSV use absolute file:/// URLs, so any dir works.
+                "--import-dir", output_dir,
+                "--archive-dir", archive_dir,
+                "--uri", settings.NEO4J_URI,
+                "--username", settings.NEO4J_USER,
+                "--password", settings.NEO4J_PASSWORD]
+    if target == "mork":
+        host, port = _mork_host_port()
+        return [settings.UV_BIN, "run", "python", "kg-service/mork_loader.py",
+                "--data-dir", output_dir,
+                "--archive-dir", archive_dir,
+                "--host", host, "--port", port]
+    raise ValueError(f"unknown load target: {target!r}")
+
+
+def _start_load(target: str, output_dir: str, params: dict) -> BuildJob:
+    """Create + start a tracked load job for the given target + output dir."""
+    job_id = uuid.uuid4().hex
+    job_dir = registry.job_dir(job_id)
+    job_dir.mkdir(parents=True, exist_ok=True)
+    log_path = str(job_dir / "load.log")
+    argv = build_load_argv(target, output_dir)
+    job = BuildJob(
+        id=job_id,
+        status=JobStatus.QUEUED,
+        kind=f"load-{target}",
+        params={"target": target, "output_dir": output_dir, **params},
+        cmd=argv,
+        cwd=str(settings.repo_root_path),
+        output_dir=output_dir,
+        log_path=log_path,
+        created_at=_now_iso(),
+    )
+    registry.add(job)
+    registry.prune()
+    worker = threading.Thread(target=_run_job, args=(job_id, argv, log_path), daemon=True)
+    worker.start()
+    return job
+
+
+def launch_load(build_job_id: str, target: str) -> Optional[BuildJob]:
+    """Launch a load job that pushes a build's output into Neo4j/MORK."""
+    src = registry.get(build_job_id)
+    if src is None:
+        return None
+    return _start_load(target, src.output_dir, {
+        "source_build": build_job_id,
+        "species": (src.params or {}).get("species"),
+        "dataset": (src.params or {}).get("dataset"),
+    })
+
+
+def retry_load(job_id: str) -> Optional[BuildJob]:
+    """Re-run a failed/cancelled load job with the same target + output dir."""
+    prior = registry.get(job_id)
+    if prior is None or not (prior.kind or "").startswith("load-"):
+        return None
+    p = prior.params or {}
+    target = p.get("target") or (prior.kind or "").removeprefix("load-")
+    output_dir = p.get("output_dir") or prior.output_dir
+    if target not in ("neo4j", "mork") or not output_dir:
+        return None
+    return _start_load(target, output_dir, {
+        "source_build": p.get("source_build"),
+        "species": p.get("species"),
+        "dataset": p.get("dataset"),
+        "retry_of": job_id,
+    })
+
+
+def loads_for(build_id: str) -> dict:
+    """Latest load job per target (neo4j/mork) that loaded this build's output."""
+    out: dict = {}
+    for j in registry.list():
+        if not (j.kind or "").startswith("load-"):
+            continue
+        p = j.params or {}
+        if p.get("source_build") != build_id:
+            continue
+        target = p.get("target") or (j.kind or "").removeprefix("load-")
+        cur = out.get(target)
+        if cur is None or (j.created_at or "") > (cur["created_at"] or ""):
+            out[target] = {
+                "job_id": j.id,
+                "status": j.status.value,
+                "created_at": j.created_at,
+            }
+    return out
+
+
+def resume(job_id: str) -> Optional[BuildJob]:
+    """Launch a new job that continues a prior failed/cancelled build's checkpoint."""
     prior = registry.get(job_id)
     if prior is None or read_checkpoint(prior.output_dir) is None:
         return None
@@ -287,7 +367,7 @@ def cancel(job_id: str, grace_seconds: float = 5.0) -> bool:
         except subprocess.TimeoutExpired:
             os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
     except ProcessLookupError:
-        pass  # already gone
+        pass
 
     registry.update(job_id, status=JobStatus.CANCELLED, finished_at=_now_iso(),
                     error="Cancelled by user.")

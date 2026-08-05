@@ -1,0 +1,24 @@
+# Keep the build context lean. NOTE: samples/, config/, aux_files/ ARE needed
+# (sample builds read them), so they are intentionally not ignored.
+.git
+.venv
+**/__pycache__/
+**/*.py[cod]
+
+# Frontend build inputs/outputs (frontend is built in its own stage)
+kg-service/frontend/node_modules
+kg-service/frontend/dist
+kg-service/frontend/*.tsbuildinfo
+kg-service/frontend/vite.config.js
+kg-service/frontend/vite.config.d.ts
+
+# Runtime artifacts
+kg-service/.builds
+biocypher-log
+*.log
+output/
+output_*/
+
+# Docs/dev cruft
+.docx_render
+notebooks
