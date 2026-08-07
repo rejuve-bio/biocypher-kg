@@ -898,7 +898,7 @@ def delete_temp_schema(temp_path):
 def main(
     species: Optional[str] = typer.Option(
         None,
-        help="Species to generate KG for: hsa, dmel, cel, mmo, rno, or 'all'",
+        help="Species to generate KG for: hsa, dmel, cel, mmu, rno, or 'all'",
     ),
     dataset: str = typer.Option(
         "full",
@@ -1314,7 +1314,7 @@ def main(
             if schema_is_primer:
                 potential_species = None
                 for part in Path(adapters_config).parts:
-                    if part in ["hsa", "dmel", "cel", "mmo", "rno"]:
+                    if part in ["hsa", "dmel", "cel", "mmu", "rno"]:
                         potential_species = part
                         break
 

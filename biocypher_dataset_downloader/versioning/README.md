@@ -5,7 +5,7 @@ place (the data-source config) instead of being hardcoded across adapters. It po
 provenance manifest and the `check-versions` staleness checker.
 
 For the end-to-end picture (manifest, build wiring, Neo4j lineage, CI), see
-[doc/dataset-versioning.md](../../doc/dataset-versioning.md). This README is the framework reference.
+[docs/knowledge-graph/dataset-versioning.md](../../docs/knowledge-graph/dataset-versioning.md). This README is the framework reference.
 
 ## Overview
 
@@ -50,7 +50,7 @@ gencode:
 to pin which URL when several are declared). `StaticGetter` takes `value:`. `HttpHeadGetter` needs
 nothing — it's the fallback for `current/`-style URLs with no parseable version.
 
-See [doc/dataset-versioning.md](../../doc/dataset-versioning.md#declaring-a-source-version) for the
+See [dataset-versioning.md](../../docs/knowledge-graph/dataset-versioning.md#declaring-a-source-version) for the
 full schema (including the `source_url` / `citation` / `license` / `checksum` provenance fields).
 
 ## Using it from Python
