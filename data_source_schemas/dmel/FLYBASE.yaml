@@ -68,6 +68,8 @@ nodes:
     properties:
       allele_symbol: str
       taxon_id: int
+      end: int
+      start: int
   rnaseq library:
     url: https://flybase.org/
     input_label: rnaseq_library
@@ -79,6 +81,26 @@ nodes:
       taxon_id: int
       tissue_info: str[]
       cell_type_id: str
+  anatomy:
+    url: https://flybase.org/
+    input_label: anatomy
+  developmental stage:
+    url: https://flybase.org/
+    input_label: developmental_stage
+  phenotype:
+    url: https://flybase.org/
+    input_label: phenotype
+  sequence type:
+    url: https://flybase.org/
+    input_label: sequence_type
+  snp:
+    url: https://flybase.org/
+    input_label: snp
+    description: 'A single nucleotide polymorphism (SNP): a single-nucleotide variation
+      at a specific genomic position, for any species. Subtype of allele.'
+    properties:
+      end: int
+      start: int
 relationships:
   gene to group association:
     url: https://flybase.org/
@@ -209,6 +231,9 @@ relationships:
       DIOPT_score: int
       source_organism: str
       hsa_omim_id: str
+      target_organism_taxon_id: int
+      taxon_id: int
+    output_label: ortholog_of
   paralogy association:
     url: https://flybase.org/
     input_label: paralogs_genes
@@ -271,3 +296,203 @@ relationships:
     target: sequence type
     properties:
       taxon_id: str
+    output_label: classified_as
+  phenotype_set to anatomy:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: anatomy
+    properties:
+      taxon_id: int
+  phenotype_set to phenotype:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: phenotype
+    properties:
+      taxon_id: int
+  phenotype_set to biological process:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: biological process
+    properties:
+      taxon_id: int
+  phenotype_set to molecular function:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: molecular function
+    properties:
+      taxon_id: int
+  phenotype_set to developmental stage:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: developmental stage
+    properties:
+      taxon_id: int
+  phenotype_set to sequence type:
+    url: https://flybase.org/
+    input_label: characterized_by
+    source: phenotype_set
+    target: sequence type
+    properties:
+      taxon_id: int
+  protein to protein physical interaction:
+    url: https://flybase.org/
+    input_label: ptp_physically_interacts_with
+    source: protein
+    target: protein
+    properties:
+      detection_method: str
+      interaction_comments: str
+      interaction_type: molecular_interaction
+      pubmed_ids: str[]
+      source_comments: str
+      source_gene: str
+      source_taxon_id: int
+      target_comments: str
+      target_gene: str
+      target_taxon_id: int
+  transcript to protein physical interaction:
+    url: https://flybase.org/
+    input_label: ptp_physically_interacts_with
+    source: transcript
+    target: protein
+    properties:
+      detection_method: str
+      interaction_comments: str
+      interaction_type: molecular_interaction
+      pubmed_ids: str[]
+      source_comments: str
+      source_gene: str
+      source_taxon_id: int
+      target_comments: str
+      target_gene: str
+      target_taxon_id: int
+  protein to transcript physical interaction:
+    url: https://flybase.org/
+    input_label: ptt_physically_interacts_with
+    source: protein
+    target: transcript
+    properties:
+      detection_method: str
+      interaction_comments: str
+      interaction_type: str
+      pubmed_ids: str[]
+      source_comments: str
+      source_gene: str
+      source_taxon_id: int
+      target_comments: str
+      target_gene: str
+      target_taxon_id: int
+  transcript to transcript physical interaction:
+    url: https://flybase.org/
+    input_label: ptt_physically_interacts_with
+    source: transcript
+    target: transcript
+    properties:
+      detection_method: str
+      interaction_comments: str
+      interaction_type: str
+      pubmed_ids: str[]
+      source_comments: str
+      source_gene: str
+      source_taxon_id: int
+      target_comments: str
+      target_gene: str
+      target_taxon_id: int
+  gene expressed in anatomy:
+    url: https://flybase.org/
+    input_label: gene_expressed_in_anatomy
+    output_label: expressed_in
+    description: holds between a gene and an anatomical entity in which it is expressed
+    source: gene
+    target: anatomy
+  gene expressed in biological process:
+    url: https://flybase.org/
+    input_label: gene_expressed_in_biological_process
+    output_label: expressed_in
+    source: gene
+    target: biological process
+    properties:
+      taxon_id: int
+  gene expressed in cellular component:
+    url: https://flybase.org/
+    input_label: gene_expressed_in_cellular_component
+    output_label: expressed_in
+    source: gene
+    target: cellular component
+    properties:
+      taxon_id: int
+  gene expressed in developmental stage:
+    url: https://flybase.org/
+    input_label: gene_expressed_in_developmental_stage
+    output_label: expressed_in
+    description: holds between a gene and a developmental stage in which it is expressed
+    source: gene
+    target: developmental stage
+  gene expressed in molecular function:
+    url: https://flybase.org/
+    input_label: gene_expressed_in_molecular_function
+    output_label: expressed_in
+    source: gene
+    target: molecular function
+    properties:
+      taxon_id: int
+  gene expressed in phenotype:
+    url: https://flybase.org/
+    input_label: gene_expressed_in_phenotype
+    output_label: expressed_in
+    source: gene
+    target: phenotype
+    properties:
+      taxon_id: int
+  gene expression value:
+    url: https://flybase.org/
+    input_label: expression_value
+    description: A set of values for numeric estimation of gene expression.
+    source: gene
+    target: rnaseq library
+    properties:
+      taxon_id: int
+      value_and_description: list[tuple]
+  transcript expression value:
+    url: https://flybase.org/
+    input_label: expression_value
+    description: A set of values for numeric estimation of transcript expression.
+    source: transcript
+    target: rnaseq library
+    properties:
+      taxon_id: int
+      value_and_description: list[tuple]
+  protein expression value:
+    url: https://flybase.org/
+    input_label: expression_value
+    description: A set of values for numeric estimation of protein expression.
+    source: protein
+    target: rnaseq library
+    properties:
+      taxon_id: int
+      value_and_description: list[tuple]
+  snp to phenotype_set:
+    url: https://flybase.org/
+    input_label: snp_involved_in
+    output_label: involved_in
+    source: snp
+    target: phenotype_set
+  snp to gene association:
+    url: https://flybase.org/
+    input_label: snp_variant_of
+    output_label: variant_of
+    source: snp
+    target: gene
+  in gene to variant association:
+    url: https://flybase.org/
+    input_label: snp_in_gene
+    output_label: located_in
+    description: holds between a sequence variant and a gene that is within the gene
+      body
+    source: snp
+    target: gene

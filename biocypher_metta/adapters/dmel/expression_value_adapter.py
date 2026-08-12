@@ -95,7 +95,7 @@ class ExpressionValueAdapter(Adapter):
                 for row in rows:
                     props = {}
                     #source_ids = row[1].split('|')
-                    _source = ('gene', f'FlyBase{row[11].upper()}')    # gene FBgn#
+                    _source = ('gene', f'FlyBase:{row[11].upper()}')    # gene FBgn#
                     _target = row[7].upper()     # library FBlc = Cluster ID#
 
                     props['value_and_description'] = [

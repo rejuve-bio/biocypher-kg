@@ -8,6 +8,7 @@ nodes:
       taxon_id: str
       evidence: str
       pathway_name: str
+      pathway_url: str
   reaction:
     url: https://reactome.org
     input_label: reaction
@@ -15,6 +16,8 @@ nodes:
       taxon_id: str
       evidence: str
       reaction_url: str
+      pubmed_url: str
+      reaction_name: str
 relationships:
   gene to pathway association:
     url: https://reactome.org
@@ -25,6 +28,7 @@ relationships:
     target: pathway
     properties:
       taxon_id: int
+    output_label: participates_in
   gene to reaction association:
     url: https://reactome.org
     input_label: gene_or_gene_product_reaction
@@ -34,6 +38,7 @@ relationships:
     target: reaction
     properties:
       taxon_id: int
+    output_label: involved_in
   parent pathway of:
     url: https://reactome.org
     input_label: parent_pathway_of
@@ -52,3 +57,149 @@ relationships:
     target: pathway
     properties:
       taxon_id: int
+  protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_pathways
+    output_label: participates_in
+    description: An interaction between a protein and a biological process or pathway.
+    source: protein
+    target: pathway
+  transcript to pathway association:
+    url: https://reactome.org
+    input_label: transcript_pathways
+    output_label: participates_in
+    description: An interaction between a transcript and a biological process or pathway.
+    source: transcript
+    target: pathway
+  protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_reaction
+    output_label: involved_in
+    description: An interaction between a protein and a reaction (Reactome).
+    source: protein
+    target: reaction
+  transcript to reaction association:
+    url: https://reactome.org
+    input_label: transcript_reaction
+    output_label: involved_in
+    description: An interaction between a transcript and a reaction (Reactome).
+    source: transcript
+    target: reaction
+  small molecule to pathway association:
+    url: https://reactome.org
+    input_label: small_molecule_to_pathway
+    output_label: participates_in
+    description: An interaction between a small molecule (ChEBI) and a pathway (Reactome).
+    source: small molecule
+    target: pathway
+  small molecule to reaction association:
+    url: https://reactome.org
+    input_label: small_molecule_to_reaction
+    output_label: participates_in
+    description: An interaction between a small molecule (ChEBI) and a reaction (Reactome).
+    source: small molecule
+    target: reaction
+  post translational interaction:
+    url: https://reactome.org/
+    input_label: interacts_with
+    source: protein
+    target: protein
+    properties:
+      interaction_type: str
+  reaction to pathway association:
+    url: https://reactome.org
+    input_label: reaction_to_pathway
+    output_label: part_of
+    description: holds between a reaction that is a part of a pathway
+    source: reaction
+    target: pathway
+  input role protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_enables_pathway
+    output_label: enables
+    description: holds between a protein playing an input role in a pathway
+    source: protein
+    target: pathway
+    properties:
+      relation_ontology_term: str
+  input role protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_enables_reaction
+    output_label: enables
+    description: holds between a protein playing an input role in a reaction
+    source: protein
+    target: reaction
+    properties:
+      relation_ontology_term: str
+  output role protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_produced_by_pathway
+    output_label: produced_by
+    description: holds between a protein produced by a pathway
+    source: protein
+    target: pathway
+    properties:
+      relation_ontology_term: str
+  output role protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_produced_by_reaction
+    output_label: produced_by
+    description: holds between a protein produced by a reaction
+    source: protein
+    target: reaction
+    properties:
+      relation_ontology_term: str
+  catalyst protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_regulates_pathway
+    output_label: regulates
+    description: holds between a protein playing a catalyst role in a pathway
+    source: protein
+    target: pathway
+    properties:
+      relation_ontology_term: str
+  catalyst protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_regulates_reaction
+    output_label: regulates
+    description: holds between a protein playing a catalyst role in a reaction
+    source: protein
+    target: reaction
+    properties:
+      relation_ontology_term: str
+  negative role protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_negatively_regulates_pathway
+    output_label: negatively_regulates
+    description: holds between a protein negatively regulating a pathway
+    source: protein
+    target: pathway
+    properties:
+      relation_ontology_term: str
+  negative role protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_negatively_regulates_reaction
+    output_label: negatively_regulates
+    description: holds between a protein negatively regulating a reaction
+    source: protein
+    target: reaction
+    properties:
+      relation_ontology_term: str
+  positive role protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_positively_regulates_pathway
+    output_label: positively_regulates
+    description: holds between a protein positively regulating a pathway
+    source: protein
+    target: pathway
+    properties:
+      relation_ontology_term: str
+  positive role protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_positively_regulates_reaction
+    output_label: positively_regulates
+    description: holds between a protein positively regulating a reaction
+    source: protein
+    target: reaction
+    properties:
+      relation_ontology_term: str

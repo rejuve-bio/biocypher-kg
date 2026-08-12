@@ -1,0 +1,34 @@
+# Anchor genes for connected sample KG generation (connected_full_sample_data branch).
+#
+# Same housekeeping gene curation used in config/dmel/dmel_anchor_genes.yaml
+# and config/hsa/hsa_anchor_genes.yaml, here with the orthologous WBGene
+# (WormBase gene ID) for each gene, already used natively as gene_id in the
+# real GTF (Caenorhabditis_elegans.WBcel235.63.gtf.gz) — no conversion needed.
+#
+# See docs/knowledge-graph/sample-generation.md for the full methodology and the
+# cross-species table.
+
+anchor_genes:
+  - {symbol: act-2, wbgene: WBGene00000064, category: cytoskeleton}
+  - {symbol: mec-12, wbgene: WBGene00003175, category: cytoskeleton}
+  - {symbol: gpd-1, wbgene: WBGene00001683, category: glycolysis}
+  - {symbol: enol-1, wbgene: WBGene00011884, category: glycolysis}
+  - {symbol: eef-1A.2, wbgene: WBGene00001169, category: translation}
+  - {symbol: eef-2, wbgene: WBGene00001167, category: translation}
+  - {symbol: rpl-7, wbgene: WBGene00004418, category: ribosome_large}
+  - {symbol: rpl-32, wbgene: WBGene00004446, category: ribosome_large}
+  - {symbol: rps-6, wbgene: WBGene00004475, category: ribosome_small}
+  - {symbol: rps-2, wbgene: WBGene00004471, category: ribosome_small}
+  - {symbol: pas-6, wbgene: WBGene00003927, category: proteasome_alpha}
+  - {symbol: pbs-5, wbgene: WBGene00003951, category: proteasome_beta}
+  - {symbol: rpt-2, wbgene: WBGene00004502, category: proteasome_atpase}
+  - {symbol: ubq-2, wbgene: WBGene00006728, category: ubiquitin}
+  - {symbol: F52C6.3, wbgene: WBGene00018660, category: ubiquitin}
+  - {symbol: hsp-1, wbgene: WBGene00002005, category: chaperone}
+  - {symbol: cct-2, wbgene: WBGene00000378, category: chaperone}
+  - {symbol: his-34, wbgene: WBGene00001908, category: histone}
+  - {symbol: pcn-1, wbgene: WBGene00003955, category: dna_replication}
+  - {symbol: mcm-2, wbgene: WBGene00003154, category: dna_replication}
+  - {symbol: ama-1, wbgene: WBGene00000123, category: transcription}
+  - {symbol: sftb-1, wbgene: WBGene00011605, category: splicing}
+  - {symbol: sod-1, wbgene: WBGene00004930, category: antioxidant}

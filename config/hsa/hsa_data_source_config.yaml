@@ -274,6 +274,10 @@ reactome:
     - https://reactome.org/download/current/Pathways2GoTerms_human.txt
     - https://reactome.org/download/current/Reactions2GoTerms_human.txt
     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+    # Adapter config expects this saved as reactome_reaction_exporter_All_species.txt
+    # (its historical name from a one-off Reactome export) — the real download
+    # URL/filename is just reactome_reaction_exporter.txt.
+    - https://reactome.org/download/current/reactome_reaction_exporter.txt
 
 refseq:
   name: RefSeq Closest Gene

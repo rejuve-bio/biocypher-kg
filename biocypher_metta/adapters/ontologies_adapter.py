@@ -35,6 +35,13 @@ class OntologyAdapter(Adapter):
     PREDICATES = [SUBCLASS, DB_XREF]
     RESTRICTION_PREDICATES = [HAS_PART, PART_OF]
 
+    # Shared across every OntologyAdapter instance in this process. Several
+    # adapter blocks in a single sample/full config often load the *same*
+    # ontology file (e.g. go: node + 3 subclass_of edge blocks) -- each one
+    # is a separate instance that would otherwise redownload/reparse the
+    # identical file from scratch. Keyed by (ontology name, cache_dir).
+    _ONTOLOGY_LOAD_CACHE = {}
+
     def __init__(self, write_properties, add_provenance, ontology, type, label, dry_run=False, add_description=False, cache_dir=None, cache_expiration_days=30):
         self.cache_dir = cache_dir
         self.cache_expiration_days = cache_expiration_days
@@ -96,6 +103,18 @@ class OntologyAdapter(Adapter):
                 self.should_include_node(to_node))
     
     def update_graph(self):
+        cache_key = (self.ontology, self.cache_dir)
+        cached = OntologyAdapter._ONTOLOGY_LOAD_CACHE.get(cache_key)
+        if cached is not None:
+            self.world, self.graph, self.version = cached
+            print(f"Reusing already-loaded ontology graph for '{self.ontology}' "
+                  f"({len(self.graph)} triples) -- skipping redundant download/parse.")
+            return
+
+        self._update_graph_impl()
+        OntologyAdapter._ONTOLOGY_LOAD_CACHE[cache_key] = (self.world, self.graph, self.version)
+
+    def _update_graph_impl(self):
         if self.ontology not in self.ONTOLOGIES:
             raise ValueError(f"Ontology '{self.ontology}' is not defined in this adapter.")
 
@@ -339,7 +358,16 @@ class OntologyAdapter(Adapter):
         # __init__ raised before self.world was set by super().__init__).
         world = getattr(self, 'world', None)
         if world is not None:
-            world.close()
+            # Don't close a world that's shared via _ONTOLOGY_LOAD_CACHE --
+            # another adapter instance (already alive or loaded later from
+            # the cache) may still need it. It closes naturally on process
+            # exit instead.
+            is_shared = any(
+                world is cached_world
+                for cached_world, _, _ in OntologyAdapter._ONTOLOGY_LOAD_CACHE.values()
+            )
+            if not is_shared:
+                world.close()
             self.world = None
 
     def _calculate_file_hash(self, file_path):

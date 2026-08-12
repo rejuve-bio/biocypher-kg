@@ -1971,6 +1971,24 @@ non_coding_rna overlaps structural_variant:
   source: non_coding_rna
   target: structural variant
 
+non_coding_rna overlaps gene:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: ncrna_overlaps_gene
+  output_label: overlaps
+  source: non_coding_rna
+  target: gene
+
+gene overlaps non_coding_rna:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: gene_overlaps_ncrna
+  output_label: overlaps
+  source: gene
+  target: non_coding_rna
+
 orthology association:
   description: Non-directional association between two genes indicating that there is an orthology relation among them. It  is a historical homology that involves genes that diverged after a speciation event (purl.obolibrary.org/obo/RO_HOM0000017)
   is_a: related to at instance level

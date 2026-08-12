@@ -97,6 +97,6 @@ class ExpressedInAdapter(Adapter):
             edge_label = ExpressedInAdapter.TARGET_TYPE_TO_LABEL.get(target_type)
             if edge_label is None:
                 continue
-            yield source, f'FlyBase:{target}', edge_label, props
+            yield source, target, edge_label, props
 
 

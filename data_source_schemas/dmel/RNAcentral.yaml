@@ -18,6 +18,7 @@ relationships:
     target: biological process
     properties:
       taxon_id: int
+    output_label: participates_in
   molecular function rna:
     url: https://rnacentral.org/downloads
     input_label: molecular_function_rna
@@ -25,6 +26,7 @@ relationships:
     target: molecular function
     properties:
       taxon_id: int
+    output_label: enables
   cellular component rna:
     url: https://rnacentral.org/downloads
     input_label: cellular_component_rna
@@ -32,3 +34,16 @@ relationships:
     target: cellular component
     properties:
       taxon_id: int
+    output_label: located_in
+  non_coding_rna overlaps gene:
+    url: https://rnacentral.org/
+    input_label: ncrna_overlaps_gene
+    output_label: overlaps
+    source: non_coding_rna
+    target: gene
+  gene overlaps non_coding_rna:
+    url: https://rnacentral.org/
+    input_label: gene_overlaps_ncrna
+    output_label: overlaps
+    source: gene
+    target: non_coding_rna

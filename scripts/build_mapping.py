@@ -5,7 +5,7 @@
 # containing the mapping dictionary used by EPDAdapter for fly.
 
 # Usage:
-#     python build_flybase_synonym_mapping.py /path/to/fb_synonym_fb_2026_01.tsv.gz /path/to/output.pkl
+#     python build_flybase_synonym_mapping.py /path/to/fb_synonym_fb_2026_02.tsv.gz /path/to/output.pkl
 # """
 
 import pickle

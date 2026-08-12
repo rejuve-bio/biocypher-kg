@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-07-31T10:35:29.061515",
+  "processor": "entrez_ensembl",
+  "entries": 80819,
+  "remote_metadata": {
+    "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Mus_musculus.gene_info.gz": {
+      "url": "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Mus_musculus.gene_info.gz",
+      "last_modified": "Fri, 31 Jul 2026 11:44:28 GMT",
+      "etag": null,
+      "content_length": "3916906",
+      "checked_at": "2026-07-31T10:35:30.661229"
+    },
+    "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M38/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz": {
+      "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M38/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz",
+      "last_modified": "Tue, 02 Sep 2025 16:49:30 GMT",
+      "etag": "\"23e4b11-63dd445991163\"",
+      "content_length": "37636881",
+      "checked_at": "2026-07-31T10:35:31.787679"
+    }
+  }
+}

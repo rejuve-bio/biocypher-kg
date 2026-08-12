@@ -1,0 +1,239 @@
+{
+  "species": "hsa",
+  "input_dir": "/mnt/hdd_1/biocypher-kg/input/hsa",
+  "anchor_genes": [
+    "ENSG00000073111",
+    "ENSG00000074800",
+    "ENSG00000075624",
+    "ENSG00000100764",
+    "ENSG00000100804",
+    "ENSG00000109971",
+    "ENSG00000111640",
+    "ENSG00000115524",
+    "ENSG00000123416",
+    "ENSG00000129084",
+    "ENSG00000132646",
+    "ENSG00000137154",
+    "ENSG00000140988",
+    "ENSG00000142168",
+    "ENSG00000144713",
+    "ENSG00000146047",
+    "ENSG00000147604",
+    "ENSG00000156508",
+    "ENSG00000166226",
+    "ENSG00000167658",
+    "ENSG00000170315",
+    "ENSG00000181222",
+    "ENSG00000221983"
+  ],
+  "expanded_gene_count": 180,
+  "size_budget": 180,
+  "sources": {
+    "gencode_gtf": {
+      "real_rows": 101669,
+      "synthetic": false
+    },
+    "uniprot_sprot": {
+      "real_rows": 179,
+      "synthetic": false
+    },
+    "gaf": {
+      "real_rows": 18427,
+      "synthetic": false
+    },
+    "string_ppi": {
+      "real_rows": 12726,
+      "synthetic": false
+    },
+    "string_coexpression": {
+      "real_rows": 12726,
+      "synthetic": false
+    },
+    "coxpresdb": {
+      "real_rows": 31152,
+      "synthetic": false
+    },
+    "tflink": {
+      "real_rows": 7863,
+      "synthetic": false
+    },
+    "bgee": {
+      "real_rows": 289987,
+      "synthetic": false
+    },
+    "alliance_disease": {
+      "real_rows": 789,
+      "synthetic": false
+    },
+    "alliance_orthology": {
+      "real_rows": 1731,
+      "synthetic": false
+    },
+    "epd": {
+      "real_rows": 311,
+      "synthetic": false
+    },
+    "reactome_all_levels": {
+      "real_rows": 42416,
+      "synthetic": false
+    },
+    "reactome_reactions": {
+      "real_rows": 45280,
+      "synthetic": false
+    },
+    "reactome_pathways_relation": {
+      "real_rows": 1859,
+      "synthetic": false
+    },
+    "reactome_pathways": {
+      "real_rows": 1856,
+      "synthetic": false
+    },
+    "reactome_reaction_pmids": {
+      "real_rows": 7874,
+      "synthetic": false
+    },
+    "reactome_chebi_pathways": {
+      "real_rows": 32056,
+      "synthetic": false
+    },
+    "reactome_chebi_reactions": {
+      "real_rows": 4720,
+      "synthetic": false
+    },
+    "uniprot_chebi_part_of_chebi": {
+      "real_rows": 0,
+      "synthetic": true,
+      "synthetic_rows": 1,
+      "synthetic_file": "samples/hsa/uniprot/chebi_part_of_synthetic.dat.gz"
+    },
+    "reactome_ppi": {
+      "real_rows": 5976,
+      "synthetic": false
+    },
+    "reactome_reaction_exporter": {
+      "real_rows": 58508,
+      "synthetic": false
+    },
+    "rna_central_bed": {
+      "real_rows": 3101,
+      "synthetic": false
+    },
+    "rna_central_rfam": {
+      "real_rows": 255,
+      "synthetic": false
+    },
+    "gwas": {
+      "real_rows": 4561,
+      "synthetic": false
+    },
+    "hpo_gene_phenotype": {
+      "real_rows": 7171,
+      "synthetic": false
+    },
+    "hpo_gene_disease": {
+      "real_rows": 234,
+      "synthetic": false
+    },
+    "tadmap": {
+      "real_rows": 158,
+      "synthetic": false
+    },
+    "tfbs": {
+      "real_rows": 1138901,
+      "synthetic": false
+    },
+    "abc": {
+      "real_rows": 658052,
+      "synthetic": false
+    },
+    "cadd": {
+      "real_rows": 3472602,
+      "synthetic": false
+    },
+    "refseq_closest_gene": {
+      "real_rows": 180386,
+      "synthetic": false
+    },
+    "topld_afr": {
+      "real_rows": 1296231,
+      "synthetic": false
+    },
+    "topld_eas": {
+      "real_rows": 745805,
+      "synthetic": false
+    },
+    "topld_eur": {
+      "real_rows": 1616903,
+      "synthetic": false
+    },
+    "topld_sas": {
+      "real_rows": 709480,
+      "synthetic": false
+    },
+    "gtex_forgedb": {
+      "real_rows": 239577,
+      "synthetic": false
+    },
+    "hocomoco_annotation": {
+      "real_rows": 401,
+      "synthetic": false
+    },
+    "dbsuper": {
+      "real_rows": 1380,
+      "synthetic": false
+    },
+    "peregrine_gene_link": {
+      "real_rows": 207970,
+      "synthetic": false
+    },
+    "dbsnp_common_vcf": {
+      "real_rows": 967234,
+      "synthetic": false
+    },
+    "enhancer_atlas_bed": {
+      "real_rows": 5331,
+      "synthetic": false
+    },
+    "ccre_closest_genes_all": {
+      "real_rows": 7655,
+      "synthetic": false
+    },
+    "ccre_closest_genes_pc": {
+      "real_rows": 21551,
+      "synthetic": false
+    },
+    "ccre_eqtl_gene_links": {
+      "real_rows": 71046,
+      "synthetic": false
+    },
+    "catlas_abc_scores": {
+      "real_rows": 821993,
+      "synthetic": false
+    },
+    "motif_diff": {
+      "real_rows": 2000,
+      "synthetic": false
+    },
+    "roadmap_chromatin_state": {
+      "real_rows": 5377053,
+      "synthetic": false
+    },
+    "roadmap_h3_mark": {
+      "real_rows": 1699183,
+      "synthetic": false
+    },
+    "roadmap_dhs": {
+      "real_rows": 40715,
+      "synthetic": false
+    },
+    "reactome_pathways_go_bp": {
+      "real_rows": 710,
+      "synthetic": false
+    },
+    "reactome_reactions_go_mf": {
+      "real_rows": 1015,
+      "synthetic": false
+    }
+  }
+}

@@ -62,7 +62,7 @@ class EnhancerAtlasAdapter(Adapter):
         return chr, start, end, gene
     
     def get_nodes(self):
-        with open(self.enhancer_filepath, 'r') as f:
+        with gzip.open(self.enhancer_filepath, 'rt') as f:
             for line in f:
                 info = line.strip().split('\t')
                 chr = info[EnhancerAtlasAdapter.INDEX['chr']]

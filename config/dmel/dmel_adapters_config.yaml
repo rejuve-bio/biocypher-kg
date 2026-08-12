@@ -76,8 +76,8 @@ dmel_gene_group:
     cls: GeneGroupAdapter
     args:
       label: gene_group
-      dmel_filepath: flybase/gene_group_data_fb_2026_01.tsv.gz
-      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/gene_group_data_fb_2026_02.tsv.gz
+      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/gene_groups
   nodes: True
@@ -89,8 +89,8 @@ dmel_gene_to_gene_group:
     cls: GeneGroupAdapter
     args:
       label: grouped_into
-      dmel_filepath: flybase/gene_group_data_fb_2026_01.tsv.gz
-      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/gene_group_data_fb_2026_02.tsv.gz
+      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/gene_groups
   nodes: False
@@ -102,8 +102,8 @@ dmel_signaling_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: signaling_pathway_gene_group
-      dmel_filepath: flybase/signaling_pathway_group_data_fb_2026_01.tsv.gz
-      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/signaling_pathway_group_data_fb_2026_02.tsv.gz
+      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: True
@@ -115,8 +115,8 @@ dmel_gene_to_signaling_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: signaling_pathway_grouped_into
-      dmel_filepath: flybase/signaling_pathway_group_data_fb_2026_01.tsv.gz
-      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/signaling_pathway_group_data_fb_2026_02.tsv.gz
+      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: False
@@ -128,8 +128,8 @@ dmel_metabolic_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: metabolic_pathway_gene_group
-      dmel_filepath: flybase/metabolic_pathway_group_data_fb_2026_01.tsv.gz
-      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/metabolic_pathway_group_data_fb_2026_02.tsv.gz
+      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: True
@@ -141,8 +141,8 @@ dmel_gene_to_metabolic_pathway_gene_group:
     cls: GeneGroupAdapter
     args:
       label: metabolic_pathway_grouped_into
-      dmel_filepath: flybase/metabolic_pathway_group_data_fb_2026_01.tsv.gz
-      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/metabolic_pathway_group_data_fb_2026_02.tsv.gz
+      dmel_groups_hgnc_filepath: flybase/gene_groups_HGNC_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/pathway_gene_groups
   nodes: False
@@ -154,7 +154,7 @@ dmel_disease_model:
     cls: DiseaseModelAdapter
     args:
       label: dmel_disease_model
-      dmel_filepath: flybase/disease_model_annotations_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/disease_model_annotations_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/disease_model
   nodes: True
@@ -167,7 +167,7 @@ dmel_gene_to_disease_model:
     cls: DiseaseModelAdapter
     args:
        label: modelled_to_human_disease
-       dmel_filepath: flybase/disease_model_annotations_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/disease_model_annotations_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/disease_model
   nodes: False
@@ -179,7 +179,7 @@ dmel_gene_to_do_term:
     cls: DiseaseModelAdapter
     args:
        label: modelled_to_do_term
-       dmel_filepath: flybase/disease_model_annotations_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/disease_model_annotations_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/disease_model
   nodes: False
@@ -191,8 +191,8 @@ dmel_genotype:
     cls: GenotypePhenotypeAdapter
     args:
        label: genotype
-       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
-       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_02.tsv.gz
+       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: True
@@ -204,8 +204,8 @@ dmel_phenotype_set:
     cls: GenotypePhenotypeAdapter
     args:
       label: phenotype_set
-      dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
-      dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+      dmel_filepath: flybase/genotype_phenotype_data_fb_2026_02.tsv.gz
+      dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: True
@@ -217,8 +217,8 @@ dmel_allele_to_phenotype_set:
     cls: GenotypePhenotypeAdapter
     args:
        label: involved_in
-       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
-       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_02.tsv.gz
+       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
@@ -230,8 +230,8 @@ dmel_phenotype_set_to_genotype:
     cls: GenotypePhenotypeAdapter
     args:
        label: genetically_informed_by
-       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
-       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_02.tsv.gz
+       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
@@ -243,8 +243,8 @@ dmel_phenotype_set_to_ontology:
     cls: GenotypePhenotypeAdapter
     args:
        label: characterized_by
-       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
-       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_02.tsv.gz
+       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
@@ -256,8 +256,8 @@ dmel_phenotype_set_to_cellular_component:
     cls: GenotypePhenotypeAdapter
     args:
        label: inheres_in
-       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_01.tsv.gz
-       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/genotype_phenotype_data_fb_2026_02.tsv.gz
+       dmel_fbrf_filepath: flybase/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: flybase/genotype_phenotype_set
   nodes: False
@@ -270,9 +270,9 @@ dmel_ptp_physical_interaction:
     cls: PhysicalInteractionAdapter
     args:
        filepaths: [
-          flybase/physical_interactions_mitab_fb_2026_01.tsv.gz,
-          flybase/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
-          flybase/fbgn_uniprot_fb_2026_01.tsv.gz
+          flybase/physical_interactions_mitab_fb_2026_02.tsv.gz,
+          flybase/fbgn_fbtr_fbpp_expanded_fb_2026_02.tsv.gz,
+          flybase/fbgn_uniprot_fb_2026_02.tsv.gz
        ]
        label: ptp_physically_interacts_with
   outdir: flybase/mi_interactions
@@ -286,9 +286,9 @@ dmel_ptt_physical_interaction:
     cls: PhysicalInteractionAdapter
     args:
        filepaths: [
-          flybase/physical_interactions_mitab_fb_2026_01.tsv.gz,
-          flybase/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
-          flybase/fbgn_uniprot_fb_2026_01.tsv.gz
+          flybase/physical_interactions_mitab_fb_2026_02.tsv.gz,
+          flybase/fbgn_fbtr_fbpp_expanded_fb_2026_02.tsv.gz,
+          flybase/fbgn_uniprot_fb_2026_02.tsv.gz
        ]
        label: ptt_physically_interacts_with  
   outdir: flybase/mi_interactions
@@ -300,7 +300,7 @@ dmel_orthology_association:
         module: biocypher_metta.adapters.dmel.orthology_adapter
         cls: OrthologyAssociationAdapter
         args:
-          dmel_data_filepath: flybase/dmel_human_orthologs_disease_fb_2026_01.tsv.gz
+          dmel_data_filepath: flybase/dmel_human_orthologs_disease_fb_2026_02.tsv.gz
           taxon_id: 7227
           target_organism_taxon_id: 9606
     outdir: orthologs
@@ -312,7 +312,7 @@ dmel_paralogy_association:
         module: biocypher_metta.adapters.dmel.paralogy_adapter
         cls: ParalogyAssociationAdapter
         args:
-          dmel_data_filepath: flybase/dmel_paralogs_fb_2026_01.tsv.gz
+          dmel_data_filepath: flybase/dmel_paralogs_fb_2026_02.tsv.gz
           taxon_id: 7227
     outdir: paralogs
     nodes: False
@@ -323,7 +323,7 @@ dmel_allele:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
-       dmel_filepath: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/fbal_to_fbgn_fb_2026_02.tsv.gz
        label: allele
        taxon_id: 7227
   outdir: allele
@@ -335,7 +335,7 @@ dmel_allele_to_gene:
     module: biocypher_metta.adapters.dmel.allele_adapter
     cls: AlleleAdapter
     args:
-       dmel_filepath: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+       dmel_filepath: flybase/fbal_to_fbgn_fb_2026_02.tsv.gz
        label: variant_of
        taxon_id: 7227
   outdir: allele
@@ -358,7 +358,7 @@ dmel_gene_genetic_adapter:
         module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter
         cls: GeneGeneticAssociationAdapter
         args:
-          dmel_data_filepath: flybase/gene_genetic_interactions_fb_2026_01.tsv.gz
+          dmel_data_filepath: flybase/gene_genetic_interactions_fb_2026_02.tsv.gz
           taxon_id: 7227
     outdir: flybase/gene_genetic
     nodes: False
@@ -370,8 +370,8 @@ dmel_allele_to_allele_genetic_interaction_adapter:
         cls: AlleleGeneticInteractionAdapter
         args:
           label: allele_to_allele_genetic_interaction
-          dmel_data_filepath: flybase/allele_genetic_interactions_fb_2026_01.tsv.gz
-          dmel_fbal_to_fbgn_file: flybase/fbal_to_fbgn_fb_2026_01.tsv.gz
+          dmel_data_filepath: flybase/allele_genetic_interactions_fb_2026_02.tsv.gz
+          dmel_fbal_to_fbgn_file: flybase/fbal_to_fbgn_fb_2026_02.tsv.gz
           taxon_id: 7227
     outdir: flybase/allele_genetic
     nodes: False
@@ -382,7 +382,7 @@ dmel_expressed_in:
     module: biocypher_metta.adapters.dmel.expressed_in_adapter
     cls: ExpressedInAdapter
     args:
-      filepath: flybase/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz
+      filepath: flybase/scRNA-Seq_gene_expression_fb_2026_02.tsv.gz
       taxon_id: 7227
   outdir: expressed_in
   nodes: False
@@ -393,7 +393,7 @@ dmel_gene_to_sequence_ontology:
     module: biocypher_metta.adapters.dmel.gene_so_adapter
     cls: GeneToSequenceOntologyAdapter
     args:
-       filepath: flybase/dmel_gene_sequence_ontology_annotations_fb_2026_01.tsv.gz
+       filepath: flybase/dmel_gene_sequence_ontology_annotations_fb_2026_02.tsv.gz
        taxon_id: 7227
   outdir: so_classified_as
   nodes: False
@@ -405,9 +405,9 @@ dmel_rnaseq_library:
     cls: RnaseqLibraryAdapter
     args:
       filepaths: [
-                             flybase/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz,
-                             flybase/high-throughput_gene_expression_fb_2026_01.tsv.gz,
-                             flybase/gene_rpkm_report_fb_2026_01.tsv.gz,
+                             flybase/scRNA-Seq_gene_expression_fb_2026_02.tsv.gz,
+                             flybase/high-throughput_gene_expression_fb_2026_02.tsv.gz,
+                             flybase/gene_rpkm_report_fb_2026_02.tsv.gz,
                              fca2/fca2_fbgn_gene_output.tsv.gz,
                              fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
                              fca2/fca2_fbgn_mir_gene_output.tsv.gz,
@@ -426,9 +426,9 @@ dmel_expression_value:
     cls: ExpressionValueAdapter
     args:
       data_filepaths: [
-                             flybase/scRNA-Seq_gene_expression_fb_2026_01.tsv.gz,
-                             flybase/high-throughput_gene_expression_fb_2026_01.tsv.gz,
-                             flybase/gene_rpkm_report_fb_2026_01.tsv.gz,
+                             flybase/scRNA-Seq_gene_expression_fb_2026_02.tsv.gz,
+                             flybase/high-throughput_gene_expression_fb_2026_02.tsv.gz,
+                             flybase/gene_rpkm_report_fb_2026_02.tsv.gz,
                              fca2/fca2_fbgn_gene_output.tsv.gz,
                              fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
                              fca2/fca2_fbgn_mir_gene_output.tsv.gz,
@@ -436,7 +436,7 @@ dmel_expression_value:
                              afca/afca_afca_annotation_group_by_mean.tsv.gz,
       ]      
       aux_filepaths: [
-                        flybase/fbgn_fbtr_fbpp_expanded_fb_2026_01.tsv.gz,
+                        flybase/fbgn_fbtr_fbpp_expanded_fb_2026_02.tsv.gz,
       ]      
       taxon_id: 7227
   outdir: rnaseq
@@ -657,17 +657,17 @@ gaf_cellular_component_gene_product_located_in:
   nodes: False
   edges: True
 
-# coexpression:
-#   adapter:
-#     module: biocypher_metta.adapters.coxpresdb_adapter
-#     cls: CoxpresdbAdapter
-#     args:
-#       filepath: coxpressdb/
-#       label: coexpressed_with
-#       taxon_id: 7227
-#   outdir: coxpressdb
-#   nodes: False
-#   edges: True
+coexpression:
+  adapter:
+    module: biocypher_metta.adapters.coxpresdb_adapter
+    cls: CoxpresdbAdapter
+    args:
+      filepath: coxpressdb/
+      label: coexpressed_with
+      taxon_id: 7227
+  outdir: coxpressdb
+  nodes: False
+  edges: True
 
 reactome_pathway:
   adapter:

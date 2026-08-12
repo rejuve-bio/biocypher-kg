@@ -11,6 +11,7 @@ nodes:
       is_canonical: bool
       is_isoform: bool
       isoform_name: str
+      taxon_id: int
 relationships:
   translates to:
     url: https://www.uniprot.org/

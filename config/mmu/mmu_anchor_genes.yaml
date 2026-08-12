@@ -1,0 +1,35 @@
+# Anchor genes for connected sample KG generation (connected_full_sample_data branch).
+#
+# Same housekeeping gene curation used in config/dmel/dmel_anchor_genes.yaml
+# and config/hsa/hsa_anchor_genes.yaml, here with the orthologous ENSMUSG
+# (Ensembl mouse gene ID) for each gene, resolved via symbol->Ensembl dbXrefs
+# in Mus_musculus.gene_info.gz and confirmed present in the real GTF
+# (gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz).
+#
+# See docs/knowledge-graph/sample-generation.md for the full methodology and the
+# cross-species table.
+
+anchor_genes:
+  - {symbol: Actb, ensmusg: ENSMUSG00000029580, category: cytoskeleton}
+  - {symbol: Tuba1b, ensmusg: ENSMUSG00000023004, category: cytoskeleton}
+  - {symbol: Gapdh, ensmusg: ENSMUSG00000057666, category: glycolysis}
+  - {symbol: Eno1, ensmusg: ENSMUSG00000063524, category: glycolysis}
+  - {symbol: Eef1a1, ensmusg: ENSMUSG00000037742, category: translation}
+  - {symbol: Eef2, ensmusg: ENSMUSG00000034994, category: translation}
+  - {symbol: Rpl7, ensmusg: ENSMUSG00000043716, category: ribosome_large}
+  - {symbol: Rpl32, ensmusg: ENSMUSG00000057841, category: ribosome_large}
+  - {symbol: Rps6, ensmusg: ENSMUSG00000028495, category: ribosome_small}
+  - {symbol: Rps2, ensmusg: ENSMUSG00000044533, category: ribosome_small}
+  - {symbol: Psma1, ensmusg: ENSMUSG00000030751, category: proteasome_alpha}
+  - {symbol: Psmb5, ensmusg: ENSMUSG00000022193, category: proteasome_beta}
+  - {symbol: Psmc1, ensmusg: ENSMUSG00000021178, category: proteasome_atpase}
+  - {symbol: Ubb, ensmusg: ENSMUSG00000019505, category: ubiquitin}
+  - {symbol: Uba52, ensmusg: ENSMUSG00000090137, category: ubiquitin}
+  - {symbol: Hspa8, ensmusg: ENSMUSG00000015656, category: chaperone}
+  - {symbol: Cct2, ensmusg: ENSMUSG00000034024, category: chaperone}
+  - {symbol: H2bc1, ensmusg: ENSMUSG00000050799, category: histone}
+  - {symbol: Pcna, ensmusg: ENSMUSG00000027342, category: dna_replication}
+  - {symbol: Mcm2, ensmusg: ENSMUSG00000002870, category: dna_replication}
+  - {symbol: Polr2a, ensmusg: ENSMUSG00000005198, category: transcription}
+  - {symbol: Sf3b1, ensmusg: ENSMUSG00000025982, category: splicing}
+  - {symbol: Sod1, ensmusg: ENSMUSG00000022982, category: antioxidant}

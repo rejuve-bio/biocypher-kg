@@ -27,7 +27,7 @@ config/<species>/<species>_data_source_config.yaml   (you declare how to find th
 ```
 
 The design is declarative and lightweight: because our source URLs usually already embed the
-version (`gencode.v49`, `protein.links.v12.0`, `..._fb_2026_01.tsv`), a small regex over the URL
+version (`gencode.v49`, `protein.links.v12.0`, `..._fb_2026_02.tsv`), a small regex over the URL
 captures it — no per-source scraper code is needed.
 
 ## Declaring a source version

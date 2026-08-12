@@ -4,12 +4,27 @@ nodes:
   developmental stage:
     url: http://www.obofoundry.org/
     input_label: developmental_stage
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
   anatomy:
     url: http://www.obofoundry.org/
     input_label: anatomy
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
   phenotype:
     url: http://www.obofoundry.org/
     input_label: phenotype
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
   biological process:
     url: http://www.obofoundry.org/
     input_label: biological_process
@@ -64,22 +79,27 @@ nodes:
     properties:
       term_name: str
       description: str
+      alternative_ids: str[]
+      synonym: str[]
 relationships:
   FBdv subclass of:
     url: http://www.obofoundry.org/
     input_label: FBdv_subclass_of
     source: developmental stage
     target: developmental stage
+    output_label: is_a
   FBbt subclass of:
     url: http://www.obofoundry.org/
     input_label: FBbt_subclass_of
     source: anatomy
     target: anatomy
+    output_label: is_a
   FBcv subclass of:
     url: http://www.obofoundry.org/
     input_label: FBcv_subclass_of
     source: phenotype
     target: phenotype
+    output_label: is_a
   biological process subclass:
     url: http://www.obofoundry.org/
     input_label: biological_process_subclass_of
@@ -135,3 +155,4 @@ relationships:
     target: small molecule
     properties:
       rel_type: str
+    output_label: is_a
