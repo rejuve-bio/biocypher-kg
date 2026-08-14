@@ -174,6 +174,40 @@ def test_load_summarized_on_build_not_a_separate_build(monkeypatch):
     assert summary["neo4j"]["status"] == "succeeded"
 
 
+def test_prune_output_dirs_keeps_newest_per_writer_and_species(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    monkeypatch.setattr(settings, "MAX_OUTPUT_BUILDS", 5)
+
+    def make(rel: str):
+        d = tmp_path / rel
+        d.mkdir(parents=True)
+        (d / "graph_info.json").write_text("{}")
+
+    for i in range(7):   # metta/hsa: 7 → keep 5
+        make(f"metta/hsa-sample-202607{i:02d}-000000")
+    for i in range(3):   # metta/mmu: 3 → keep all 3
+        make(f"metta/mmu-sample-202607{i:02d}-000000")
+    for i in range(6):   # neo4j/hsa: 6 → keep 5
+        make(f"neo4j/hsa-sample-202607{i:02d}-000000")
+    # archives must never be touched
+    (tmp_path / "archives" / "mork").mkdir(parents=True)
+    (tmp_path / "archives" / "mork" / "version_metadata.json").write_text("{}")
+
+    removed = job_runner.prune_output_dirs()
+    assert removed == 3  # 2 from metta/hsa + 1 from neo4j/hsa
+
+    def kept(writer, species):
+        return sorted(p.name for p in (tmp_path / writer).iterdir()
+                      if p.name.startswith(species + "-"))
+
+    assert len(kept("metta", "hsa")) == 5
+    assert kept("metta", "hsa")[0] == "hsa-sample-20260702-000000"  # oldest two removed
+    assert len(kept("metta", "mmu")) == 3          # under the cap, all kept
+    assert len(kept("neo4j", "hsa")) == 5          # neo4j/hsa capped independently
+    assert (tmp_path / "archives" / "mork" / "version_metadata.json").exists()
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

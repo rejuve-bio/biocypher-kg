@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
+import shutil
 import signal
 import subprocess
 import threading
@@ -226,9 +228,60 @@ def _run_job(job_id: str, argv: list[str], log_path: str) -> None:
         registry.update(job_id, status=status, return_code=rc, finished_at=_now_iso(),
                         error=None if rc == 0 else f"Build exited with code {rc}.")
         logger.info("Build %s finished: %s (rc=%s)", job_id, status.value, rc)
+        if status == JobStatus.SUCCEEDED and (job.kind or "build") == "build":
+            try:
+                n = prune_output_dirs()
+                if n:
+                    logger.info("Pruned %d old build output dir(s)", n)
+            except OSError as exc:
+                logger.warning("Output prune skipped: %s", exc)
     finally:
         _semaphore.release()
         _reap_orphan_temp_schemas()
+
+
+# Matches the ...-YYYYMMDD-HHMMSS suffix of an auto-named build dir.
+_BUILD_TS_SUFFIX = re.compile(r"-\d{8}-\d{6}$")
+
+
+def prune_output_dirs(keep: Optional[int] = None) -> int:
+    """Keep only the newest ``keep`` build output folders per (writer folder, species)
+    under DATA_ROOT, deleting older ones. Leaves ``archives/`` and ``configs/`` alone,
+    and never removes a folder a queued/running build is writing to."""
+    keep = keep if keep is not None else settings.MAX_OUTPUT_BUILDS
+    root = Path(settings.DATA_ROOT) if settings.DATA_ROOT else None
+    if root is None or keep <= 0 or not root.is_dir():
+        return 0
+
+    active = {
+        str(Path(j.output_dir).resolve())
+        for j in registry.list()
+        if j.output_dir and j.status in {JobStatus.QUEUED, JobStatus.RUNNING}
+    }
+
+    # Scan DATA_ROOT itself (legacy flat builds) plus each writer subdir (metta/, neo4j/…).
+    skip = {"archives", "configs"}
+    parents = [root] + [
+        c for c in root.iterdir()
+        if c.is_dir() and c.name not in skip and not _BUILD_TS_SUFFIX.search(c.name)
+    ]
+
+    groups: dict[tuple, list[Path]] = {}
+    for parent in parents:
+        for d in parent.iterdir():
+            if d.is_dir() and _BUILD_TS_SUFFIX.search(d.name):
+                species = d.name.split("-", 1)[0]
+                groups.setdefault((str(parent), species), []).append(d)
+
+    removed = 0
+    for dirs in groups.values():
+        dirs.sort(key=lambda p: p.name, reverse=True)  # newest first (name ends in timestamp)
+        for d in dirs[keep:]:
+            if str(d.resolve()) in active:
+                continue
+            shutil.rmtree(d, ignore_errors=True)
+            removed += 1
+    return removed
 
 
 def _mork_host_port() -> tuple[str, str]:
