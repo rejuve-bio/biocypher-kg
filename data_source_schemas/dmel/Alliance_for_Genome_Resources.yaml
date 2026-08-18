@@ -1,6 +1,19 @@
 name: Alliance for Genome Resources
 website: https://www.alliancegenome.org
 relationships:
+  orthology association:
+    url: https://www.alliancegenome.org/
+    input_label: orthologs_genes
+    output_label: ortholog_of
+    description: Non-directional association between two genes indicating that there
+      is an orthology relation among them. It  is a historical homology that involves
+      genes that diverged after a speciation event (purl.obolibrary.org/obo/RO_HOM0000017)
+    source: gene
+    target: gene
+    properties:
+      source_organism: str
+      target_organism_taxon_id: int
+      taxon_id: int
   gene biomarker via orthology disease:
     url: https://www.alliancegenome.org/
     input_label: biomarker_via_orthology
@@ -83,16 +96,3 @@ relationships:
       reference: str
       taxon_id: int
       with_ortholog: str
-  orthology association:
-    url: https://www.alliancegenome.org/
-    input_label: orthologs_genes
-    output_label: ortholog_of
-    description: Non-directional association between two genes indicating that there
-      is an orthology relation among them. It  is a historical homology that involves
-      genes that diverged after a speciation event (purl.obolibrary.org/obo/RO_HOM0000017)
-    source: gene
-    target: gene
-    properties:
-      source_organism: str
-      target_organism_taxon_id: int
-      taxon_id: int

@@ -5,45 +5,27 @@ nodes:
     url: https://rnacentral.org/downloads
     input_label: non_coding_rna
     properties:
-      end: int
       chr: str
+      end: int
+      rna_type: str
       start: int
       taxon_id: int
-      rna_type: str
 relationships:
   biological process rna:
     url: https://rnacentral.org/downloads
     input_label: biological_process_rna
+    output_label: participates_in
     source: non coding rna
     target: biological process
-    properties:
-      taxon_id: int
-    output_label: participates_in
   molecular function rna:
     url: https://rnacentral.org/downloads
     input_label: molecular_function_rna
+    output_label: enables
     source: non coding rna
     target: molecular function
-    properties:
-      taxon_id: int
-    output_label: enables
   cellular component rna:
     url: https://rnacentral.org/downloads
     input_label: cellular_component_rna
+    output_label: located_in
     source: non coding rna
     target: cellular component
-    properties:
-      taxon_id: int
-    output_label: located_in
-  non_coding_rna overlaps gene:
-    url: https://rnacentral.org/
-    input_label: ncrna_overlaps_gene
-    output_label: overlaps
-    source: non_coding_rna
-    target: gene
-  gene overlaps non_coding_rna:
-    url: https://rnacentral.org/
-    input_label: gene_overlaps_ncrna
-    output_label: overlaps
-    source: gene
-    target: non_coding_rna

@@ -851,15 +851,13 @@ phenotype_set to sequence type:
 #   target: molecular_interaction
 
 # ptp stands for "protein or transcript to protein"
-ptp physically interacts with:
+protein to protein physical interaction:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: ptp_physically_interacts_with
+  input_label: ptp_physically_interacts_with_protein
   biolink_predicate: biolink:physically_interacts_with
-  source:
-  - protein
-  - transcript
+  source: protein
   target: protein
   properties:
     source_gene:
@@ -895,21 +893,66 @@ ptp physically interacts with:
       type: str
       biolink: comment
   kgx_properties:
-    subject_category: biolink:GeneProductMixin
+    subject_category: biolink:Protein
+    object_category: biolink:Protein
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+transcript to protein physical interaction:
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: ptp_physically_interacts_with_transcript
+  biolink_predicate: biolink:physically_interacts_with
+  source: transcript
+  target: protein
+  properties:
+    source_gene:
+      type: str
+      biolink: has_gene_or_gene_product
+    target_gene:
+      type: str
+      biolink: has_gene_or_gene_product
+    detection_method:
+      type: molecular_interaction
+      biolink: has_metric
+    pubmed_ids:
+      type: str[]
+      biolink: publication
+    source_taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+    target_taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+    interaction_type:
+      type: molecular_interaction
+      biolink: has_attribute
+    interaction_comments:
+      type: str
+      biolink: comment
+    source_comments:
+      type: str
+      biolink: comment
+    target_comments:
+      type: str
+      biolink: comment
+  kgx_properties:
+    subject_category: biolink:Transcript
     object_category: biolink:Protein
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
 # ptt stands for "protein or transcript to transcript"
-ptt physically interacts with:
+protein to transcript physical interaction:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: ptt_physically_interacts_with
+  input_label: ptt_physically_interacts_with_protein
   biolink_predicate: biolink:physically_interacts_with
-  source:
-  - protein
-  - transcript
+  source: protein
   target: transcript
   properties:
     source_gene:
@@ -945,7 +988,54 @@ ptt physically interacts with:
       type: str
       biolink: comment
   kgx_properties:
-    subject_category: biolink:GeneProductMixin
+    subject_category: biolink:Protein
+    object_category: biolink:Transcript
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+transcript to transcript physical interaction:
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: ptt_physically_interacts_with_transcript
+  biolink_predicate: biolink:physically_interacts_with
+  source: transcript
+  target: transcript
+  properties:
+    source_gene:
+      type: str
+      biolink: has_gene_or_gene_product
+    target_gene:
+      type: str
+      biolink: has_gene_or_gene_product
+    detection_method:
+      type: molecular_interaction
+      biolink: has_metric
+    pubmed_ids:
+      type: str[]
+      biolink: publication
+    source_taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+    target_taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+    interaction_type:
+      type: molecular_interaction
+      biolink: has_attribute
+    interaction_comments:
+      type: str
+      biolink: comment
+    source_comments:
+      type: str
+      biolink: comment
+    target_comments:
+      type: str
+      biolink: comment
+  kgx_properties:
+    subject_category: biolink:Transcript
     object_category: biolink:Transcript
     knowledge_level: knowledge_assertion
     agent_type: manual_agent

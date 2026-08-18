@@ -7,7 +7,6 @@ relationships:
     source: protein
     target: protein
     properties:
-      taxon_id: int
       score: float
   protein to protein coexpression association:
     url: https://string-db.org/

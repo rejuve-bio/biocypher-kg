@@ -427,12 +427,17 @@ class SchemaGenerator:
     SOURCE_NAME_ALIASES = {
         'Reactome': 'REACTOME',
     }
+    # Top-level keys in an adapters_config YAML that are metadata, not adapter entries.
+    ADAPTER_CONFIG_METADATA_KEYS = {'input_dir'}
 
     @staticmethod
     def load_schema_config(schema_config_path: str, include_primer: bool = False) -> Dict:
         schema_config = {}
         if include_primer:
-            primer_path = Path('config/primer_schema_config.yaml')
+            # config/<species>/<species>_schema_config.yaml -> config/primer_schema_config.yaml,
+            # resolved relative to schema_config_path (not the process cwd), so this works
+            # regardless of which repo checkout or working directory the caller runs from.
+            primer_path = Path(schema_config_path).resolve().parent.parent / 'primer_schema_config.yaml'
             with open(primer_path) as f:
                 primer_config = load_yaml_with_includes(f) or {}
             schema_config.update(primer_config)
@@ -602,21 +607,50 @@ class SchemaGenerator:
                 continue
 
             type_info = self.get_schema_type_info(candidate)
-            if not type_info:
+            if type_info:
+                represented_as = type_info['config'].get('represented_as')
+                if writes_nodes and represented_as == 'node':
+                    labels.append(candidate)
+                    seen_labels.add(candidate)
+                elif writes_edges and represented_as == 'edge':
+                    labels.append(candidate)
+                    seen_labels.add(candidate)
                 continue
 
-            represented_as = type_info['config'].get('represented_as')
-            if writes_nodes and represented_as == 'node':
-                labels.append(candidate)
-                seen_labels.add(candidate)
-            elif writes_edges and represented_as == 'edge':
-                labels.append(candidate)
-                seen_labels.add(candidate)
+            # The adapter may compute its actual per-row label as f'{candidate}_<category>'
+            # (e.g. one adapter emitting 'chromatin_state_anatomy', 'chromatin_state_tissue', ...
+            # depending on data determined at runtime). Match those against the configured
+            # base label by prefix, since a static analyzer can't resolve the runtime suffix.
+            for represented_as, enabled in (('node', writes_nodes), ('edge', writes_edges)):
+                if not enabled:
+                    continue
+                for label in self.get_schema_labels_with_prefix(candidate, represented_as):
+                    if label not in seen_labels:
+                        labels.append(label)
+                        seen_labels.add(label)
 
         if not labels:
             labels.extend(self.infer_labels_from_adapter_properties(adapter_cfg, analyzer))
 
         return labels or [adapter_name]
+
+    def get_schema_labels_with_prefix(self, prefix: str, represented_as: str) -> List[str]:
+        """Find literal input_labels of the form '{prefix}_<suffix>' for a given represented_as kind."""
+        marker = f'{prefix}_'
+        matches = []
+        seen = set()
+        for type_name, type_config in self.schema_config.items():
+            if not isinstance(type_config, dict):
+                continue
+            if type_config.get('represented_as') != represented_as:
+                continue
+            labels = type_config.get('input_label')
+            label_values = labels if isinstance(labels, list) else [labels] if labels else []
+            for label in label_values:
+                if isinstance(label, str) and label.startswith(marker) and label not in seen:
+                    seen.add(label)
+                    matches.append(label)
+        return matches
 
     def infer_labels_from_adapter_properties(self, adapter_cfg: Dict, analyzer: AdapterAnalyzer) -> List[str]:
         """Infer schema labels when config labels are absent/stale but properties are distinctive."""
@@ -624,6 +658,8 @@ class SchemaGenerator:
         modes = []
         if adapter_cfg.get('nodes', False):
             modes.append(('node', analyzer.get_node_properties()))
+        if adapter_cfg.get('edges', False):
+            modes.append(('edge', analyzer.get_edge_properties()))
 
         for represented_as, adapter_props in modes:
             if not adapter_props:
@@ -819,6 +855,11 @@ class SchemaGenerator:
         species: str,
         existing_adapter_config: Dict,
     ) -> Dict:
+        for name, config in existing_adapter_config.items():
+            if name in self.ADAPTER_CONFIG_METADATA_KEYS:
+                continue
+            if not isinstance(config, dict):
+                print(f"Warning: skipping non-dict adapter config entry '{name}' ({type(config).__name__})")
         existing_modules = {
             (config.get('adapter') or {}).get('module')
             for config in existing_adapter_config.values()
@@ -880,6 +921,12 @@ class SchemaGenerator:
         by_source = defaultdict(list)
 
         for adapter_name, config in self.adapter_config.items():
+            if adapter_name in self.ADAPTER_CONFIG_METADATA_KEYS:
+                continue
+            if not isinstance(config, dict):
+                print(f"Warning: skipping non-dict adapter config entry '{adapter_name}' ({type(config).__name__})")
+                continue
+
             # Filter by adapter name if specified
             if filter_adapters and adapter_name not in filter_adapters:
                 continue
@@ -1002,27 +1049,21 @@ class SchemaGenerator:
 
                         # Add or update node
                         if type_name not in nodes:
-                            nodes[type_name] = {
-                                'url': adapter_source_url,
-                                'input_label': label,
-                            }
-                            if output_label:
-                                nodes[type_name]['output_label'] = output_label
-                            if description:
-                                nodes[type_name]['description'] = description.strip()
-                            if valid_props:
-                                nodes[type_name]['properties'] = valid_props
+                            nodes[type_name] = {}
+                        nodes[type_name]['url'] = adapter_source_url
+                        nodes[type_name]['input_label'] = label
+                        if output_label:
+                            nodes[type_name]['output_label'] = output_label
                         else:
-                            if output_label:
-                                nodes[type_name]['output_label'] = output_label
-                            else:
-                                nodes[type_name].pop('output_label', None)
-                            # Merge properties if node already exists
-                            if valid_props:
-                                if 'properties' not in nodes[type_name]:
-                                    nodes[type_name]['properties'] = {}
-                                for prop, prop_type in valid_props.items():
-                                    nodes[type_name]['properties'].setdefault(prop, prop_type)
+                            nodes[type_name].pop('output_label', None)
+                        if description:
+                            nodes[type_name]['description'] = description.strip()
+                        # Merge properties: refresh types redetected this run, keep others
+                        # learned from earlier (e.g. filtered) runs.
+                        if valid_props:
+                            if 'properties' not in nodes[type_name]:
+                                nodes[type_name]['properties'] = {}
+                            nodes[type_name]['properties'].update(valid_props)
 
                     # Process edges
                     elif writes_edges and is_edge:
@@ -1042,31 +1083,25 @@ class SchemaGenerator:
 
                         # Add or update relationship
                         if type_name not in relationships:
-                            relationships[type_name] = {
-                                'url': adapter_source_url,
-                                'input_label': label,
-                            }
-                            if output_label:
-                                relationships[type_name]['output_label'] = output_label
-                            if description:
-                                relationships[type_name]['description'] = description.strip()
-                            if source:
-                                relationships[type_name]['source'] = source
-                            if target:
-                                relationships[type_name]['target'] = target
-                            if valid_props:
-                                relationships[type_name]['properties'] = valid_props
+                            relationships[type_name] = {}
+                        relationships[type_name]['url'] = adapter_source_url
+                        relationships[type_name]['input_label'] = label
+                        if output_label:
+                            relationships[type_name]['output_label'] = output_label
                         else:
-                            if output_label:
-                                relationships[type_name]['output_label'] = output_label
-                            else:
-                                relationships[type_name].pop('output_label', None)
-                            # Merge properties if relationship already exists
-                            if valid_props:
-                                if 'properties' not in relationships[type_name]:
-                                    relationships[type_name]['properties'] = {}
-                                for prop, prop_type in valid_props.items():
-                                    relationships[type_name]['properties'].setdefault(prop, prop_type)
+                            relationships[type_name].pop('output_label', None)
+                        if description:
+                            relationships[type_name]['description'] = description.strip()
+                        if source:
+                            relationships[type_name]['source'] = source
+                        if target:
+                            relationships[type_name]['target'] = target
+                        # Merge properties: refresh types redetected this run, keep others
+                        # learned from earlier (e.g. filtered) runs.
+                        if valid_props:
+                            if 'properties' not in relationships[type_name]:
+                                relationships[type_name]['properties'] = {}
+                            relationships[type_name]['properties'].update(valid_props)
 
         if nodes:
             schema['nodes'] = nodes

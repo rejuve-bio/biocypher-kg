@@ -5,107 +5,20 @@ nodes:
     url: https://reactome.org
     input_label: pathway
     properties:
-      taxon_id: str
       evidence: str
       pathway_name: str
       pathway_url: str
+      taxon_id: str
   reaction:
     url: https://reactome.org
     input_label: reaction
     properties:
-      taxon_id: str
       evidence: str
-      reaction_url: str
       pubmed_url: str
       reaction_name: str
+      reaction_url: str
+      taxon_id: str
 relationships:
-  gene to pathway association:
-    url: https://reactome.org
-    input_label: genes_pathways
-    description: An interaction between a gene or gene product (gogp) and a biological
-      process or pathway.
-    source: biolink:GeneOrGeneProduct
-    target: pathway
-    properties:
-      taxon_id: int
-    output_label: participates_in
-  gene to reaction association:
-    url: https://reactome.org
-    input_label: gene_or_gene_product_reaction
-    description: An interaction between a gene or a gene product (gogp) and a molecular
-      activity.
-    source: biolink:GeneOrGeneProduct
-    target: reaction
-    properties:
-      taxon_id: int
-    output_label: involved_in
-  parent pathway of:
-    url: https://reactome.org
-    input_label: parent_pathway_of
-    description: holds between two pathways where the domain class is a parent pathway
-      of the range class
-    source: pathway
-    target: pathway
-    properties:
-      taxon_id: int
-  child pathway of:
-    url: https://reactome.org
-    input_label: child_pathway_of
-    description: holds between two pathways where the domain class is a child pathway
-      of the range class
-    source: pathway
-    target: pathway
-    properties:
-      taxon_id: int
-  protein to pathway association:
-    url: https://reactome.org
-    input_label: protein_pathways
-    output_label: participates_in
-    description: An interaction between a protein and a biological process or pathway.
-    source: protein
-    target: pathway
-  transcript to pathway association:
-    url: https://reactome.org
-    input_label: transcript_pathways
-    output_label: participates_in
-    description: An interaction between a transcript and a biological process or pathway.
-    source: transcript
-    target: pathway
-  protein to reaction association:
-    url: https://reactome.org
-    input_label: protein_reaction
-    output_label: involved_in
-    description: An interaction between a protein and a reaction (Reactome).
-    source: protein
-    target: reaction
-  transcript to reaction association:
-    url: https://reactome.org
-    input_label: transcript_reaction
-    output_label: involved_in
-    description: An interaction between a transcript and a reaction (Reactome).
-    source: transcript
-    target: reaction
-  small molecule to pathway association:
-    url: https://reactome.org
-    input_label: small_molecule_to_pathway
-    output_label: participates_in
-    description: An interaction between a small molecule (ChEBI) and a pathway (Reactome).
-    source: small molecule
-    target: pathway
-  small molecule to reaction association:
-    url: https://reactome.org
-    input_label: small_molecule_to_reaction
-    output_label: participates_in
-    description: An interaction between a small molecule (ChEBI) and a reaction (Reactome).
-    source: small molecule
-    target: reaction
-  post translational interaction:
-    url: https://reactome.org/
-    input_label: interacts_with
-    source: protein
-    target: protein
-    properties:
-      interaction_type: str
   reaction to pathway association:
     url: https://reactome.org
     input_label: reaction_to_pathway
@@ -203,3 +116,81 @@ relationships:
     target: reaction
     properties:
       relation_ontology_term: str
+  gene to pathway association:
+    url: https://reactome.org
+    input_label: genes_pathways
+    output_label: participates_in
+    description: An interaction between a gene or gene product and a biological process
+      or pathway.
+    source: [gene, transcript, protein]
+    target: pathway
+  post translational interaction:
+    url: https://reactome.org/
+    input_label: interacts_with
+    source: protein
+    target: protein
+    properties:
+      interaction_type: str
+  protein to pathway association:
+    url: https://reactome.org
+    input_label: protein_pathways
+    output_label: participates_in
+    description: An interaction between a protein and a biological process or pathway.
+    source: protein
+    target: pathway
+  transcript to pathway association:
+    url: https://reactome.org
+    input_label: transcript_pathways
+    output_label: participates_in
+    description: An interaction between a transcript and a biological process or pathway.
+    source: transcript
+    target: pathway
+  gene to reaction association:
+    url: https://reactome.org
+    input_label: gene_or_gene_product_reaction
+    output_label: involved_in
+    description: An interaction between a gene and a reaction (Reactome).
+    source: gene
+    target: reaction
+  protein to reaction association:
+    url: https://reactome.org
+    input_label: protein_reaction
+    output_label: involved_in
+    description: An interaction between a protein and a reaction (Reactome).
+    source: protein
+    target: reaction
+  transcript to reaction association:
+    url: https://reactome.org
+    input_label: transcript_reaction
+    output_label: involved_in
+    description: An interaction between a transcript and a reaction (Reactome).
+    source: transcript
+    target: reaction
+  small molecule to pathway association:
+    url: https://reactome.org
+    input_label: small_molecule_to_pathway
+    output_label: participates_in
+    description: An interaction between a small molecule (ChEBI) and a pathway (Reactome).
+    source: small molecule
+    target: pathway
+  small molecule to reaction association:
+    url: https://reactome.org
+    input_label: small_molecule_to_reaction
+    output_label: participates_in
+    description: An interaction between a small molecule (ChEBI) and a reaction (Reactome).
+    source: small molecule
+    target: reaction
+  parent pathway of:
+    url: https://reactome.org
+    input_label: parent_pathway_of
+    description: holds between two pathways where the domain class is a parent pathway
+      of the range class
+    source: pathway
+    target: pathway
+  child pathway of:
+    url: https://reactome.org
+    input_label: child_pathway_of
+    description: holds between two pathways where the domain class is a child pathway
+      of the range class
+    source: pathway
+    target: pathway
