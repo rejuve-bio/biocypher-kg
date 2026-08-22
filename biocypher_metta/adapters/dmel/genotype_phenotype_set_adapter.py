@@ -215,7 +215,7 @@ class GenotypePhenotypeAdapter(Adapter):
                 if ontology_type is None:
                     ontology_type = self.ontologies_id_mapping[phenotype_ontology_id.split(':')[0].lower()]
                 
-                yield f'RejuveBio:phenotype_set{id}', (ontology_type, phenotype_ontology_id.replace(':', '_').upper()), self.label, props    
+                yield f'RejuveBio:phenotype_set{id}', (ontology_type, phenotype_ontology_id.replace(':', '_').upper()), f'{self.label}_{ontology_type}', props
                 
                 if row[5] != '':                         # more ontology terms          
                     terms_ids = [ t_id for t_id in row[5].split('|') ]      #multiple ontology ids
@@ -231,7 +231,7 @@ class GenotypePhenotypeAdapter(Adapter):
 
                         if ontology_type is None:
                             ontology_type = self.ontologies_id_mapping[term_id.split(':')[0].lower()]
-                        yield f'RejuveBio:phenotype_set{id}', (ontology_type, term_id.replace(':', '_').upper()), self.label, props    
+                        yield f'RejuveBio:phenotype_set{id}', (ontology_type, term_id.replace(':', '_').upper()), f'{self.label}_{ontology_type}', props
         elif self.label == 'inheres_in':
             id = -1
             for row in rows:
@@ -270,10 +270,10 @@ class GenotypePhenotypeAdapter(Adapter):
                                 if sub_onto_go == 'cellular_component':
                                     yield f'RejuveBio:phenotype_set{id}', (sub_onto_go, term_id.replace(':', '_').upper()), self.label, props    
                                 else:        # this is not the best solution because it will create a different type of edge but it works for now :/
-                                    yield f'RejuveBio:phenotype_set{id}', (sub_onto_go, term_id.replace(':', '_').upper()), 'characterized_by', props    
+                                    yield f'RejuveBio:phenotype_set{id}', (sub_onto_go, term_id.replace(':', '_').upper()), f'characterized_by_{sub_onto_go}', props
                             else:
                                 ontology_type = self.ontologies_id_mapping[term_id.split(':')[0].lower()]
-                                yield f'RejuveBio:phenotype_set{id}', (ontology_type, term_id.replace(':', '_').upper()), 'characterized_by', props    
+                                yield f'RejuveBio:phenotype_set{id}', (ontology_type, term_id.replace(':', '_').upper()), f'characterized_by_{ontology_type}', props
 
 
     def get_alleles(self, geno_ids: str) -> list[str]:

@@ -11,8 +11,8 @@ nodes:
       chr: str
       end: int
       start: int
-      variant_type: str
       taxon_id: int
+      variant_type: str
 relationships:
   gene overlaps structural_variant:
     url: https://www.ncbi.nlm.nih.gov/dbvar/content/ftp_manifest/

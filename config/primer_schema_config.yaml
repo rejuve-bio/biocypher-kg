@@ -1246,6 +1246,10 @@ gene expressed in anatomy:
     p_value:
       type: float
       biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
 
 gene expressed in developmental stage:
   description: holds between a gene and a developmental stage in which it is expressed
@@ -1271,6 +1275,10 @@ gene expressed in developmental stage:
     p_value:
       type: float
       biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
 
 expression:
   is_a: association
@@ -1588,7 +1596,7 @@ protein to protein coexpression association:
       biolink: has_quantitative_value
 
 gene to pathway association:
-  description: An interaction between a gene or gene product and a biological process
+  description: An interaction between a gene and a biological process
     or pathway.
   is_a: annotation
   mixins:
@@ -1598,13 +1606,10 @@ gene to pathway association:
   represented_as: edge
   input_label: genes_pathways
   output_label: participates_in
-  source:
-  - gene
-  - transcript
-  - protein
+  source: gene
   target: pathway
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Gene
     object_category: biolink:Pathway
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -1652,37 +1657,6 @@ gene to reaction association:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-protein to reaction association:
-  description: An interaction between a protein and a reaction (Reactome).
-  is_a: annotation
-  biolink_predicate: biolink:participates_in
-  inherit_properties: true
-  represented_as: edge
-  input_label: gene_or_gene_product_reaction
-  output_label: involved_in
-  source: protein
-  target: reaction
-  kgx_properties:
-    subject_category: biolink:Protein
-    object_category: biolink:MolecularActivity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-transcript to reaction association:
-  description: An interaction between a transcript and a reaction (Reactome).
-  is_a: annotation
-  biolink_predicate: biolink:participates_in
-  inherit_properties: true
-  represented_as: edge
-  input_label: gene_or_gene_product_reaction
-  output_label: involved_in
-  source: transcript
-  target: reaction
-  kgx_properties:
-    subject_category: biolink:Transcript
-    object_category: biolink:MolecularActivity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
 
 gene to transcription binding site association:
   represented_as: edge
@@ -2350,7 +2324,7 @@ protein has_xref molecular_function:
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_molecular_function
-  output_label: has_molecular_function
+  output_label: has_xref
   source: protein
   target: molecular function
   kgx_properties:
@@ -2749,14 +2723,22 @@ allele:
   mixins:
     - biolink:SequenceVariant
   biolink_category: biolink:Allele
-  inherit_properties: true      # inherits chr/start/end/taxon_id (position entity) + source/source_url (genomic variant)
+  # Not inheriting genomic variant/position entity's chr/start/end/source/source_url:
+  # allele adapters (e.g. FlyBase-derived alleles) don't carry genomic coordinates,
+  # only the more specific 'snp' subtype does. See 'snp' below, which re-adds the
+  # genomic variant parent directly so it still gets those properties.
+  inherit_properties: false
   properties:
     allele_symbol:
       type: str
       biolink: symbol
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
   description: >-
     Different versions of the same variant at a specific locus are called alleles.
-    The species is given by the inherited taxon_id (9606 hsa, 7227 dmel, 6239 cel,
+    The species is given by taxon_id (9606 hsa, 7227 dmel, 6239 cel,
     10090 mmu, 10116 rno, ...) and is mandatory, so this definition serves any species.
   kgx_properties:
     category: biolink:Allele
@@ -2764,7 +2746,7 @@ allele:
 snp:
   represented_as: node
   input_label: snp
-  is_a: allele
+  is_a: [allele, genomic variant]
   mixins:
     - biolink:Snv
   biolink_category: biolink:Snv

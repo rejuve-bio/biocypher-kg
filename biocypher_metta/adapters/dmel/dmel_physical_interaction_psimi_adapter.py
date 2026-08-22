@@ -114,7 +114,7 @@ class PhysicalInteractionAdapter(Adapter):
             # Flybase doesn't informs which transcript or protein is interacting. So, use all...
             for source in source_ids:
                 for target in target_ids:                                        
-                    yield (sources[0], f'FlyBase:{source}'), (targets[0], f'FlyBase:{target}'), self.label, props                   
+                    yield (sources[0], f'FlyBase:{source}'), (targets[0], f'FlyBase:{target}'), f'{self.label}_{sources[0]}', props
                         
 
     def get_FB_ids(self, source_fbgn, target_fbgn, data_row):

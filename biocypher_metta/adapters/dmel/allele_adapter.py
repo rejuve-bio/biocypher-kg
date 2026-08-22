@@ -80,7 +80,7 @@ class AlleleAdapter(Adapter):
                 fmin = self.snp_cache[allele_symbol]
                 if fmin is not None:
                     snp_props['start'] = fmin
-                    snp_props['end'] = fmin
+                    snp_props['end'] = fmin + 1
                 yield allele_id, 'snp', snp_props
             else:
                 yield allele_id, self.label, props      # here label is 'allele'

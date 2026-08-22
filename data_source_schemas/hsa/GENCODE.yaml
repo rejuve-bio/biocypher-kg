@@ -17,10 +17,10 @@ nodes:
     input_label: transcript
     description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
     properties:
+      taxon_id: int
       transcript_id: str
       transcript_name: str
       transcript_type: str
-      taxon_id: int
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon

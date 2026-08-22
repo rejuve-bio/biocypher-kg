@@ -12,9 +12,9 @@ nodes:
       end: int
       evidence: str
       start: int
+      taxon_id: int
       variant_accession: str
       variant_type: str
-      taxon_id: int
 relationships:
   gene overlaps structural_variant:
     url: http://dgv.tcag.ca/dgv/app/downloads
