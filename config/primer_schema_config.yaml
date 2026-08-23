@@ -2022,6 +2022,7 @@ paralogy association:
   is_a: related to at instance level
   represented_as: edge
   input_label: paralogs_genes
+  output_label: paralog_of
   biolink_predicate: biolink:paralog_of
   source: gene
   target: gene

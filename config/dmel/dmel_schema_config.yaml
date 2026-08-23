@@ -325,6 +325,7 @@ gene expressed in cellular component:
 allele to allele genetic interaction:
   represented_as: edge
   input_label: allele_to_allele_genetic_interaction
+  output_label: has_phenotypic_effect
   is_a: annotation
   biolink_predicate: biolink:interacts_with
   source: allele

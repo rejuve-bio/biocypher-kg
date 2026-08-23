@@ -308,6 +308,7 @@ relationships:
   paralogy association:
     url: https://flybase.org/
     input_label: paralogs_genes
+    output_label: paralog_of
     description: Non-directional association between two genes indicating that there
       is an paralogy relation among them. It is a historical homology that involves
       genes that diverged after a duplication event (purl.obolibrary.org/obo/RO_HOM0000011)
@@ -354,6 +355,7 @@ relationships:
   allele to allele genetic interaction:
     url: https://flybase.org/
     input_label: allele_to_allele_genetic_interaction
+    output_label: has_phenotypic_effect
     source: allele
     target: allele
     properties:
