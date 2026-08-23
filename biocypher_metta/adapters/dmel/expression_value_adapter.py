@@ -111,7 +111,7 @@ class ExpressionValueAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-                    yield _source, f'FlyBase:{_target}', self.label, props
+                    yield _source, f'FlyBase:{_target}', f'{self.label}_{_source[0]}', props
                 
                 del rows
 
@@ -137,7 +137,7 @@ class ExpressionValueAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-                    yield _source, f'FlyBase:{_target}', self.label, props
+                    yield _source, f'FlyBase:{_target}', f'{self.label}_{_source[0]}', props
 
             elif "gene_rpkm_report_fb" in dmel_data_filepath:
                 self.source = 'FLYBASE'
@@ -172,7 +172,7 @@ class ExpressionValueAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
-                    yield _source, f'FlyBase:{_target}', self.label, props
+                    yield _source, f'FlyBase:{_target}', f'{self.label}_{_source[0]}', props
 
             # FCA2 gene expression:
             # The fca2 file contents were generated in the "scripts/get_flyatlas2_gene_data.py" script by method
@@ -222,7 +222,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield _source, f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', f'{self.label}_{_source[0]}', props
 
                 # fca2_fbgn_Mir_gene header:
                 # FBgene ID	      Tissue stage and sex	    Tissue	    TPM 	SD	Enrichment                
@@ -259,7 +259,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield _source, f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', f'{self.label}_{_source[0]}', props
 
                 # fca2_fbgn_transcriptGene header:
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    FPKM	SD
@@ -292,7 +292,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield _source, f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', f'{self.label}_{_source[0]}', props
 
                 # fca2_fbgn_Mir_transcript header:
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    TPM 	SD              
@@ -325,7 +325,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield _source, f'FlyBase:{library_id}', self.label, props
+                        yield _source, f'FlyBase:{library_id}', f'{self.label}_{_source[0]}', props
 
             #afca_afca_annotation_group_by_mean header FORMAT:
             #FB gene symbol	cell_type1_5	cell_type1_30	cell_type1_50	cell_type1_70	cell_type2_5	cell_type2_30...
@@ -355,7 +355,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield _source, f'AFCA:{library_id}', self.label, props
+                        yield _source, f'AFCA:{library_id}', f'{self.label}_{_source[0]}', props
                         
 
 
