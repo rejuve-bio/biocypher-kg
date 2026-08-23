@@ -191,66 +191,6 @@ reaction_to_molecular_function:
       knowledge_level: "knowledge_assertion"
       agent_type: "manual_agent"
 
-biological process gene product:
-  is_a: go gene product
-  biolink_predicate: "biolink:involved_in"
-  inherit_properties: true
-  represented_as: edge
-  input_label: biological_process_gene_product
-  output_label: involved_in
-  source: protein
-  target: biological process
-  kgx_properties:
-    subject_category: "biolink:Protein"
-    object_category: "biolink:BiologicalProcess"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
-molecular function gene product:
-  is_a: go gene product
-  biolink_predicate: "biolink:enables"
-  inherit_properties: true
-  represented_as: edge
-  input_label: molecular_function_gene_product
-  output_label: enables
-  source: protein
-  target: molecular function
-  kgx_properties:
-    subject_category: "biolink:Protein"
-    object_category: "biolink:MolecularActivity"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
-cellular component gene product part of:
-  is_a: cellular component gene product
-  biolink_predicate: "biolink:part_of"
-  inherit_properties: true
-  represented_as: edge
-  input_label: cellular_component_gene_product_part_of
-  output_label: part_of
-  source: protein
-  target: cellular component
-  kgx_properties:
-    subject_category: "biolink:Protein"
-    object_category: "biolink:CellularComponent"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
-cellular component gene product located in:
-  is_a: cellular component gene product
-  biolink_predicate: "biolink:located_in"
-  inherit_properties: true
-  represented_as: edge
-  input_label: cellular_component_gene_product_located_in
-  output_label: located_in
-  source: protein
-  target: cellular component
-  kgx_properties:
-    subject_category: "biolink:Protein"
-    object_category: "biolink:CellularComponent"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-
 enhancer accessible in cell type:
   description: >-
     An enhancer shows open chromatin in a cell type (CL term) as profiled by

@@ -371,7 +371,7 @@ relationships:
   gene expressed in biological process:
     url: https://flybase.org/
     input_label: gene_expressed_in_biological_process
-    output_label: expressed_in
+    output_label: involved_in
     source: gene
     target: biological process
     properties:
@@ -396,7 +396,7 @@ relationships:
   gene expressed in molecular function:
     url: https://flybase.org/
     input_label: gene_expressed_in_molecular_function
-    output_label: expressed_in
+    output_label: involved_in
     source: gene
     target: molecular function
     properties:
@@ -404,7 +404,7 @@ relationships:
   gene expressed in phenotype:
     url: https://flybase.org/
     input_label: gene_expressed_in_phenotype
-    output_label: expressed_in
+    output_label: involved_in
     source: gene
     target: phenotype
     properties:
