@@ -159,11 +159,13 @@ jobs:
     needs: [determine_changes, prepare_config]
     if: needs.determine_changes.outputs.changes_detected == 'true'
     runs-on: ubuntu-latest
-    # Run adapters in parallel to speed up the KG build. ubuntu-latest has 2 vCPUs,
-    # so most of the win comes from overlapping I/O-bound (ontology-download) adapters;
-    # bump this if the job moves to a larger runner.
+    # Adapter parallelism is memory-bound here, NOT CPU-bound: some adapters load
+    # multi-GB ontologies (e.g. ChEBI ~9.5M triples ≈ 4 GB of RDF), so N workers can
+    # hold N copies at once. ubuntu-latest (~7 GB RAM) OOM/swap-thrashes and hangs at
+    # 4-8 workers, while the sequential job finishes in ~26 min. Keep this at 1 on the
+    # default runner; only raise it on a high-memory runner (budget ~4 GB per worker).
     env:
-      KG_MAX_WORKERS: 8
+      KG_MAX_WORKERS: 1
     strategy:
       matrix:
         writer-type: ${{ fromJson(needs.determine_changes.outputs.test_writers) }}
