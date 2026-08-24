@@ -12,10 +12,16 @@ import os
 import json
 import requests
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 from biocypher._logger import logger
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - non-POSIX platforms
+    fcntl = None
 
 
 class BaseMappingProcessor(ABC):
@@ -175,39 +181,72 @@ class BaseMappingProcessor(ABC):
         self.last_check_result = False
         return False
 
+    @contextmanager
+    def _cache_lock(self):
+        """Cross-process exclusive lock guarding this cache's fetch+save.
+
+        Serializes concurrent updates so parallel adapters sharing the same cache
+        don't race into lost writes, a corrupt pickle, or duplicate downloads.
+        Degrades to a no-op on platforms without ``fcntl``.
+        """
+        if fcntl is None:
+            yield
+            return
+        # Runtime-only mutex file (gitignored via *_mapping.lock); never committed.
+        lock_path = self.cache_dir / f"{self.name}_mapping.lock"
+        with open(lock_path, "w") as lock_f:
+            fcntl.flock(lock_f, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock_f, fcntl.LOCK_UN)
+
     def update_mapping(self, force: bool = False) -> bool:
+        # Fast path: a fresh cache loads read-only, no lock needed.
         if not force and not self.check_update_needed():
             if self.mapping_file.exists():
                 logger.info(f"{self.name}: Using existing mapping.")
                 self.load_mapping()
                 return True
 
-        logger.info(f"{self.name}: Updating mapping...")
-
-        try:
-            raw_data = self.fetch_data()
-            self.mapping = self.process_data(raw_data)
-
-            self.save_mapping()
-            self.save_version_info()
-
-            if self.mapping and all(isinstance(v, dict) for v in self.mapping.values()):
-                total = sum(len(v) for v in self.mapping.values())
-                logger.info(f"{self.name}: Successfully updated mapping with {total} entries across {len(self.mapping)} sub-mappings.")
-            else:
-                logger.info(f"{self.name}: Successfully updated mapping with {len(self.mapping)} entries.")
-            return True
-
-        except Exception as e:
-            logger.error(f"{self.name}: Error during update: {e}")
-
-            if self.mapping_file.exists():
-                logger.warning(f"{self.name}: Falling back to cached mapping.")
+        # An update looks necessary — serialize the whole fetch→save→save_version_info
+        # sequence across processes. The lock must wrap the entire method (not just
+        # save_mapping) because subclasses such as GOSubontologyProcessor override
+        # save_version_info() with their own read-modify-write of the version file.
+        with self._cache_lock():
+            # Double-check under the lock: another worker may have refreshed the
+            # cache while we waited.
+            if not force and not self.check_update_needed() and self.mapping_file.exists():
+                logger.info(f"{self.name}: Using existing mapping (refreshed by another worker).")
                 self.load_mapping()
                 return True
-            else:
-                logger.error(f"{self.name}: No cached mapping available. Cannot proceed.")
-                return False
+
+            logger.info(f"{self.name}: Updating mapping...")
+
+            try:
+                raw_data = self.fetch_data()
+                self.mapping = self.process_data(raw_data)
+
+                self.save_mapping()
+                self.save_version_info()
+
+                if self.mapping and all(isinstance(v, dict) for v in self.mapping.values()):
+                    total = sum(len(v) for v in self.mapping.values())
+                    logger.info(f"{self.name}: Successfully updated mapping with {total} entries across {len(self.mapping)} sub-mappings.")
+                else:
+                    logger.info(f"{self.name}: Successfully updated mapping with {len(self.mapping)} entries.")
+                return True
+
+            except Exception as e:
+                logger.error(f"{self.name}: Error during update: {e}")
+
+                if self.mapping_file.exists():
+                    logger.warning(f"{self.name}: Falling back to cached mapping.")
+                    self.load_mapping()
+                    return True
+                else:
+                    logger.error(f"{self.name}: No cached mapping available. Cannot proceed.")
+                    return False
 
     def save_mapping(self):
         import gzip
