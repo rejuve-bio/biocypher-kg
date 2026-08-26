@@ -17,3 +17,4 @@ mmusdv subclass of:
     object_category: "biolink:LifeStage"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
+

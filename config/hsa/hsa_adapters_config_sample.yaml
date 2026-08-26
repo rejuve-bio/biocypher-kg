@@ -1749,25 +1749,24 @@ encode_re2g:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
-      filepath: ./samples/hsa/ENCODE_rE2G_K562.bed.gz
-      label: enhancer
+      filepath: ./samples/hsa/Homo_sapiens.GRCh38.regulatory_features.sample.gff3.gz
       taxon_id: 9606
   outdir: encode_re2g
   nodes: True
   edges: False
 
-encode_re2g_enhancer_to_gene:
+encode_re2g_edges:
   adapter:
     module: biocypher_metta.adapters.encode_re2g_adapter
     cls: ENCODERe2GAdapter
     args:
-      filepath: ./samples/hsa/ENCODE_rE2G_K562.bed.gz
-      label: enhancer_activity_by_contact
+      filepath: ./samples/hsa/Homo_sapiens.GRCh38.regulatory_features.sample.gff3.gz
       taxon_id: 9606
-      cell_ontology_id: "CLO:0007059"  # K562 chronic myelogenous leukemia cell line
+      gencode_filepath: ./samples/hsa/gencode_sample.gtf.gz
   outdir: encode_re2g
   nodes: False
   edges: True
+
 
 uniprot_dbxref_bgee_gene:
   adapter:

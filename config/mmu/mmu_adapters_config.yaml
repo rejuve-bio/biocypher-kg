@@ -168,6 +168,31 @@ alliance_gene_disease_is_marker_for:
   nodes: False
   edges: True
 
+encode_re2g:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: /Mus_musculus.GRCm39.regulatory_features.v116.gff3.gz
+      taxon_id: 10090
+  outdir: encode_re2g
+  nodes: True
+  edges: False
+
+encode_re2g_edges:
+  adapter:
+    module: biocypher_metta.adapters.encode_re2g_adapter
+    cls: ENCODERe2GAdapter
+    args:
+      filepath: /Mus_musculus.GRCm39.regulatory_features.v116.gff3.gz
+      taxon_id: 10090
+      gencode_filepath: gencode/gencode.vM38.chr_patch_hapl_scaff.annotation.gtf.gz
+  outdir: encode_re2g
+  nodes: False
+  edges: True
+
+
+
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter

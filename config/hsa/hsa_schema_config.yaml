@@ -318,33 +318,6 @@ sequence variant:
     phred_score: 
       type: float
 
-# ---
-# non-coding elements
-enhancer:
-  represented_as: node
-  input_label: enhancer
-  is_a: non coding element
-  mixins: [biolink:RegulatoryRegion]
-  biolink_category: "biolink:RegulatoryRegion"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:RegulatoryRegion"
-  properties:
-    data_source: 
-      type: str
-      biolink: source_web_page
-    enhancer_id: 
-      type: str
-      biolink: id
-    development_stage:
-      type: str[]
-      biolink: in_taxon
-    ccre_module:
-      type: int
-      biolink: has_quantitative_value
-    taxon_id:
-      type: str
-      description: Taxon ID for the organism (e.g., 9606 for human)
 
 promoter:
   represented_as: node
@@ -1928,34 +1901,6 @@ cellular component rna:
     object_category: "biolink:CellularComponent"
     knowledge_level: "knowledge_assertion"
     agent_type: "manual_agent"
-
-# ---
-# regulatory association
-
-enhancer to gene association:
-  description: >-
-    An association between an enhancer and a gene
-  is_a: regulatory association
-  mixins: [biolink:association]
-  biolink_predicate: "biolink:associated_with"
-  inherit_properties: true
-  represented_as: edge
-  input_label: enhancer_gene
-  output_label: associated_with
-  source: enhancer
-  target: gene
-  kgx_properties:
-    subject_category: "biolink:RegulatoryRegion"
-    object_category: "biolink:Gene"
-    knowledge_level: "knowledge_assertion"
-    agent_type: "manual_agent"
-  properties:
-    score: 
-      type: float
-      biolink: has_quantitative_value
-    biological_context: 
-      type: str
-      biolink: has_biological_sequence
 
 promoter to gene association:
   description: >-

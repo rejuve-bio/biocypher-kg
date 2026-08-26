@@ -3,7 +3,12 @@ import hashlib
 from math import log10, floor, isinf
 from liftover import get_lifter
 
-ALLOWED_ASSEMBLIES = ['GRCh38']
+ALLOWED_ASSEMBLIES = ['GRCh38', 'GRCm39']
+
+_TAXON_ASSEMBLY = {
+    9606:  'GRCh38',  
+    10090: 'GRCm39',
+}
 _lifters = {}
 
 
@@ -176,3 +181,9 @@ def convert_genome_reference(chr, pos, from_build='hg19', to_build='hg38'):
         return int(converted)
     except:
         return None
+
+
+def assembly_for_taxon(taxon_id: int) -> str:
+    """Return the reference genome assembly name for a given NCBI taxon ID.
+    """
+    return _TAXON_ASSEMBLY.get(int(taxon_id), 'GRCh38')
