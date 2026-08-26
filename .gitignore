@@ -185,4 +185,8 @@ output_human/
 aux_files/hsa/catlas/*.pkl
 samples/hsa/catlasv1/cCRE_hg38.tsv.gz
 samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt
+
+# Reactome full reaction exporter (72 MB+ — generate via `export-reactome` CLI command)
+
+data/reactome_reaction_exporter_All_species.txt
 doc/plans
