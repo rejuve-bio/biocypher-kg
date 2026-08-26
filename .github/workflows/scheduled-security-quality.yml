@@ -1,0 +1,296 @@
+name: Scheduled Security & Quality Scan
+
+# Runs automatically every Monday at 07:00 UTC (after the dataset-version check
+# at 06:00) and can be triggered manually at any time.
+#
+# Jobs
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. pip-audit       – Python dependency CVE scan via OSV/PyPI advisory DB
+# 2. bandit          – Python SAST (static application security testing)
+# 3. trivy           – Filesystem CVE scan (broader ecosystem coverage)
+# 4. sonarqube-scan  – Scheduled SonarQube code-quality + security analysis
+# 5. report          – Summarise findings and open / update a GitHub issue
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"   # Mondays 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      fail_on_findings:
+        description: "Fail the workflow if any vulnerabilities are found"
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  security-events: write   # needed for SARIF uploads
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # 1. pip-audit — Python dependency vulnerability scan
+  # ─────────────────────────────────────────────────────────────────────────
+  pip-audit:
+    name: pip-audit (dependency CVEs)
+    runs-on: ubuntu-latest
+    outputs:
+      findings: ${{ steps.audit.outputs.findings }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.10
+
+      - name: Install pip-audit
+        run: uv tool install pip-audit
+
+      - name: Run pip-audit
+        id: audit
+        run: |
+          set +e
+          uv tool run pip-audit \
+            --requirement requirements.txt \
+            --format json \
+            --output pip-audit-report.json
+          EXIT=$?
+          set -e
+
+          if [ $EXIT -eq 0 ]; then
+            echo "findings=none" >> "$GITHUB_OUTPUT"
+          else
+            echo "findings=found" >> "$GITHUB_OUTPUT"
+          fi
+
+          cat pip-audit-report.json || true
+          exit 0   # never block; the report job decides whether to fail
+
+      - name: Upload pip-audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-audit-report
+          path: pip-audit-report.json
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 2. bandit — Python SAST
+  # ─────────────────────────────────────────────────────────────────────────
+  bandit:
+    name: bandit (Python SAST)
+    runs-on: ubuntu-latest
+    outputs:
+      findings: ${{ steps.bandit.outputs.findings }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.10
+
+      - name: Install bandit
+        run: uv tool install "bandit[toml]"
+
+      - name: Run bandit
+        id: bandit
+        run: |
+          set +e
+          uv tool run bandit \
+            --recursive \
+            --format json \
+            --output bandit-report.json \
+            --severity-level medium \
+            --confidence-level medium \
+            --exclude ".git,venv,.venv,node_modules,test" \
+            .
+          EXIT=$?
+          set -e
+
+          if [ $EXIT -eq 0 ]; then
+            echo "findings=none" >> "$GITHUB_OUTPUT"
+          else
+            echo "findings=found" >> "$GITHUB_OUTPUT"
+          fi
+
+          cat bandit-report.json || true
+          exit 0   # never block; the report job decides whether to fail
+
+      - name: Upload bandit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.json
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 3. trivy — filesystem CVE scan
+  # ─────────────────────────────────────────────────────────────────────────
+  trivy:
+    name: trivy (filesystem CVE scan)
+    runs-on: ubuntu-latest
+    outputs:
+      findings: ${{ steps.check-trivy.outputs.findings }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        id: trivy
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-report.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 0   # never block; report job handles failure logic
+
+      - name: Check for Trivy findings
+        id: check-trivy
+        run: |
+          # SARIF "results" array is empty when there are no findings
+          COUNT=$(python3 -c "
+          import json, sys
+          try:
+              data = json.load(open('trivy-report.sarif'))
+              total = sum(len(r.get('results', [])) for r in data.get('runs', []))
+              print(total)
+          except Exception:
+              print(0)
+          ")
+          if [ "$COUNT" -gt 0 ]; then
+            echo "findings=found" >> "$GITHUB_OUTPUT"
+          else
+            echo "findings=none" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload Trivy SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-report.sarif
+          category: trivy
+
+      - name: Upload Trivy report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.sarif
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 4. sonarqube-scan — scheduled quality + security analysis
+  # ─────────────────────────────────────────────────────────────────────────
+  sonarqube-scan:
+    name: SonarQube (scheduled)
+    runs-on: ubuntu-latest
+    continue-on-error: true   # gracefully skip when secrets are not configured
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v5.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=Biocypher_KG
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/__pycache__/**,**/build/**,**/dist/**,**/target/**,**/.git/**,**/coverage/**,**/*.test.js,**/*.test.py,**/*.spec.js
+            -Dsonar.sourceEncoding=UTF-8
+
+      - name: SonarQube Quality Gate Check
+        uses: sonarsource/sonarqube-quality-gate-action@v1.2.0
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        continue-on-error: true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 5. report — aggregate results and open a GitHub issue if needed
+  # ─────────────────────────────────────────────────────────────────────────
+  report:
+    name: Report findings
+    runs-on: ubuntu-latest
+    needs: [pip-audit, bandit, trivy]
+    if: always()
+
+    steps:
+      - name: Evaluate findings
+        id: eval
+        run: |
+          PIP="${{ needs.pip-audit.outputs.findings }}"
+          BAN="${{ needs.bandit.outputs.findings }}"
+          TRI="${{ needs.trivy.outputs.findings }}"
+
+          echo "pip_audit=$PIP"   >> "$GITHUB_OUTPUT"
+          echo "bandit=$BAN"      >> "$GITHUB_OUTPUT"
+          echo "trivy=$TRI"       >> "$GITHUB_OUTPUT"
+
+          if [ "$PIP" = "found" ] || [ "$BAN" = "found" ] || [ "$TRI" = "found" ]; then
+            echo "any_findings=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "any_findings=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open GitHub issue on findings
+        if: steps.eval.outputs.any_findings == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PIP_FINDINGS: ${{ steps.eval.outputs.pip_audit }}
+          BAN_FINDINGS: ${{ steps.eval.outputs.bandit }}
+          TRI_FINDINGS: ${{ steps.eval.outputs.trivy }}
+          DATE: ${{ github.run_started_at }}
+        run: |
+          RUN_DATE="${DATE%%T*}"   # extract YYYY-MM-DD from ISO timestamp
+
+          BODY=$(cat <<EOF
+          The scheduled security & quality scan on **${RUN_DATE}** found one or more issues that require attention.
+
+          | Tool | Status |
+          |------|--------|
+          | pip-audit (dependency CVEs) | ${PIP_FINDINGS:-unknown} |
+          | bandit (Python SAST)        | ${BAN_FINDINGS:-unknown} |
+          | trivy (filesystem CVEs)     | ${TRI_FINDINGS:-unknown} |
+
+          **Workflow run with full details and downloadable reports:** $RUN_URL
+
+          High and critical Trivy findings are also visible in the [Security tab](${{ github.server_url }}/${{ github.repository }}/security/code-scanning).
+
+          Please triage the attached artifacts, patch or pin vulnerable dependencies, and close this issue once resolved.
+          EOF
+          )
+
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "Security/quality findings detected (${RUN_DATE})" \
+            --body "$BODY" \
+            --label "security" \
+          || echo "Could not create issue (label missing or insufficient permissions) — see workflow run for details."
+
+      - name: Fail workflow if findings present and fail_on_findings=true
+        if: |
+          steps.eval.outputs.any_findings == 'true' &&
+          github.event.inputs.fail_on_findings == 'true'
+        run: |
+          echo "Vulnerabilities or security issues were detected. Failing as requested."
+          exit 1
