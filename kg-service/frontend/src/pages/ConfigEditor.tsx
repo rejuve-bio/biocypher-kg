@@ -3,6 +3,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { yaml } from "@codemirror/lang-yaml";
 import { api } from "../api/client";
 import type { SpeciesEntry } from "../types";
+import ConfirmDialog, { type Confirmable } from "../components/ConfirmDialog";
 
 type Kind = "adapters" | "schema";
 
@@ -19,6 +20,7 @@ export default function ConfigEditor() {
   const [cmTheme, setCmTheme] = useState<"light" | "dark">(
     () => (document.documentElement.dataset.theme === "light" ? "light" : "dark"),
   );
+  const [pending, setPending] = useState<Confirmable | null>(null);
 
   // Keep the editor theme in sync with the app's light/dark toggle.
   useEffect(() => {
@@ -144,11 +146,23 @@ export default function ConfigEditor() {
       )}
 
       <div className="row" style={{ marginTop: 12 }}>
-        <button className="primary" onClick={save} disabled={!dirty || loading || !content}>
+        <button
+          className="primary"
+          disabled={!dirty || loading || !content}
+          onClick={() =>
+            setPending({
+              title: "Save config changes?",
+              message: `Overwrites ${path}. Builds for ${sel}/${dataset} will use the updated config. (Validated on save; reverting is git's job.)`,
+              confirmLabel: "Save",
+              run: save,
+            })
+          }
+        >
           💾 Save
         </button>
         <span className="field-hint">Validated on save; invalid YAML is rejected and nothing is overwritten.</span>
       </div>
+      <ConfirmDialog pending={pending} onClose={() => setPending(null)} />
     </div>
   );
 }

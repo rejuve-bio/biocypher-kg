@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { api, type GraphInfoSummary, type ConfigManifest } from "../api/client";
 import type { BuildJob } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
+import ConfirmDialog, { type Confirmable } from "../components/ConfirmDialog";
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled"]);
 
@@ -33,6 +34,7 @@ export default function BuildDetail() {
   const [files, setFiles] = useState<OutputFile[] | null>(null);
   const [graphInfo, setGraphInfo] = useState<GraphInfoSummary | null>(null);
   const [snapshot, setSnapshot] = useState<ConfigManifest | null>(null);
+  const [pending, setPending] = useState<Confirmable | null>(null);
   const [fileFilter, setFileFilter] = useState("");
   const logRef = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
@@ -124,7 +126,16 @@ export default function BuildDetail() {
     return (
       <button
         className="secondary"
-        onClick={() => onLoad(target)}
+        onClick={() =>
+          setPending({
+            title: loaded ? `Reload ${T}?` : `Load into ${T}?`,
+            message: loaded
+              ? `Re-runs a surgical load into your live ${T} database. It's already loaded — reload re-syncs and is skipped if nothing changed.`
+              : `Runs a surgical load into your live ${T} database.`,
+            confirmLabel: loaded ? `Reload ${T}` : `Load ${T}`,
+            run: () => onLoad(target),
+          })
+        }
         disabled={inProgress}
         title={
           loaded
@@ -164,7 +175,19 @@ export default function BuildDetail() {
               ← All builds
             </Link>
             {active && (
-              <button className="danger" onClick={onCancel}>
+              <button
+                className="danger"
+                onClick={() =>
+                  setPending({
+                    title: "Cancel this build?",
+                    message:
+                      "The running build will be stopped. Progress is saved as a checkpoint, so you can resume it later.",
+                    confirmLabel: "Cancel build",
+                    tone: "danger",
+                    run: onCancel,
+                  })
+                }
+              >
                 Cancel
               </button>
             )}
@@ -174,7 +197,17 @@ export default function BuildDetail() {
               </button>
             )}
             {job.retryable && (
-              <button className="secondary" onClick={onRetry}>
+              <button
+                className="secondary"
+                onClick={() =>
+                  setPending({
+                    title: "Retry this load?",
+                    message: "Re-runs the failed load into its target database.",
+                    confirmLabel: "Retry load",
+                    run: onRetry,
+                  })
+                }
+              >
                 ⟲ Retry load
               </button>
             )}
@@ -352,6 +385,7 @@ export default function BuildDetail() {
           })()}
         </div>
       )}
+      <ConfirmDialog pending={pending} onClose={() => setPending(null)} />
     </>
   );
 }
