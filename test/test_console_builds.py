@@ -208,6 +208,32 @@ def test_prune_output_dirs_keeps_newest_per_writer_and_species(monkeypatch, tmp_
     assert (tmp_path / "archives" / "mork" / "version_metadata.json").exists()
 
 
+def test_snapshot_build_config_records_resolved_config_and_hash(tmp_path):
+    job = BuildJob(
+        id="snap1", status=JobStatus.SUCCEEDED, kind="build",
+        params={"species": "hsa", "dataset": "sample", "writer_type": "metta"},
+        cmd=["x"], cwd=".", output_dir=str(tmp_path),
+        log_path=str(tmp_path / "l.log"), created_at="2026-01-01T00:00:00Z",
+    )
+    manifest = job_runner.snapshot_build_config(job)
+    assert manifest is not None
+    assert manifest["species"] == "hsa"
+    assert len(manifest["config_hash"]) == 64  # sha256 hex
+    snap = tmp_path / "build_config"
+    assert (snap / "adapters_config.yaml").read_text().strip()
+    assert (snap / "schema_config.yaml").read_text().strip()
+    assert (snap / "manifest.json").exists()
+
+
+def test_snapshot_build_config_none_without_species(tmp_path):
+    job = BuildJob(
+        id="snap2", status=JobStatus.SUCCEEDED, kind="build", params={},
+        cmd=["x"], cwd=".", output_dir=str(tmp_path),
+        log_path=str(tmp_path / "l.log"), created_at="2026-01-01T00:00:00Z",
+    )
+    assert job_runner.snapshot_build_config(job) is None
+
+
 def test_build_argv_resume_flag():
     from backend.core.console.job_runner import build_argv
     req = BuildRequest(species="hsa", dataset="sample")

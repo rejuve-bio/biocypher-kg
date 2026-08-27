@@ -218,6 +218,19 @@ def build_graph_info(job_id: str):
     return {"present": True, "summary": {k: data.get(k) for k in _GRAPH_INFO_KEYS}}
 
 
+@router.get("/builds/{job_id}/config-snapshot")
+def build_config_snapshot(job_id: str):
+    """Return the recorded config manifest (hashes + source paths) for a build."""
+    job = _job_or_404(job_id)
+    p = Path(job.output_dir) / "build_config" / "manifest.json"
+    if not p.exists():
+        return {"present": False}
+    try:
+        return {"present": True, "manifest": json.loads(p.read_text())}
+    except (json.JSONDecodeError, OSError):
+        return {"present": False}
+
+
 @router.get("/builds/{job_id}/output/download")
 def download_output(job_id: str, path: str = Query(...)):
     """Download a single output file. Confined to the build's output dir."""

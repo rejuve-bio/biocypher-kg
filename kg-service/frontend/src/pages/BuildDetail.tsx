@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { api, type GraphInfoSummary } from "../api/client";
+import { api, type GraphInfoSummary, type ConfigManifest } from "../api/client";
 import type { BuildJob } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
 
@@ -32,6 +32,7 @@ export default function BuildDetail() {
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<OutputFile[] | null>(null);
   const [graphInfo, setGraphInfo] = useState<GraphInfoSummary | null>(null);
+  const [snapshot, setSnapshot] = useState<ConfigManifest | null>(null);
   const [fileFilter, setFileFilter] = useState("");
   const logRef = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
@@ -73,6 +74,12 @@ export default function BuildDetail() {
     const el = logRef.current;
     if (el && stick.current) el.scrollTop = el.scrollHeight;
   }, [lines]);
+
+  // Fetch the recorded config snapshot once a build has succeeded.
+  useEffect(() => {
+    if (!job || (job.kind ?? "build") !== "build" || job.status !== "succeeded") return;
+    api.getConfigSnapshot(id).then((r) => setSnapshot(r.manifest ?? null)).catch(() => {});
+  }, [id, job?.status, job?.kind]);
 
   async function onCancel() {
     try {
@@ -179,6 +186,20 @@ export default function BuildDetail() {
                 {target === "neo4j" ? "Neo4j" : "MORK"} {loadIcon(l.status)}
               </span>
             ))}
+          </div>
+        )}
+        {isBuild && snapshot && (
+          <div className="row" style={{ marginTop: 12, gap: 8, alignItems: "center" }}>
+            <span className="muted" style={{ fontSize: 12 }}>Config</span>
+            <span
+              className="mono"
+              title={`adapters: ${snapshot.source.adapters_config}\nschema:   ${snapshot.source.schema_config}`}
+            >
+              {snapshot.config_hash.slice(0, 12)}
+            </span>
+            <a className="link" href={api.outputDownloadUrl(id, "build_config/manifest.json")}>
+              snapshot
+            </a>
           </div>
         )}
         {job.total_adapters != null &&

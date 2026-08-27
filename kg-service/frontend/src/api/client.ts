@@ -127,6 +127,11 @@ export const api = {
       fetch(`${BASE}/builds/${id}/graph-info`),
     ),
 
+  getConfigSnapshot: (id: string) =>
+    json<{ present: boolean; manifest?: ConfigManifest }>(
+      fetch(`${BASE}/builds/${id}/config-snapshot`),
+    ),
+
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
@@ -137,6 +142,16 @@ export interface ConfigFile {
   kind: string;
   path: string;
   content: string;
+}
+
+export interface ConfigManifest {
+  species: string;
+  dataset: string;
+  writer_type: string | null;
+  source: { adapters_config: string; schema_config: string };
+  sha256: { adapters_config: string; schema_config: string };
+  config_hash: string;
+  recorded_at: string;
 }
 
 export interface GraphInfoSummary {

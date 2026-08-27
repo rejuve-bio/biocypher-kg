@@ -1,6 +1,7 @@
 """Launch and track knowledge-graph builds as subprocesses."""
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -10,6 +11,8 @@ import signal
 import subprocess
 import threading
 import uuid
+
+import yaml
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -230,6 +233,10 @@ def _run_job(job_id: str, argv: list[str], log_path: str) -> None:
         logger.info("Build %s finished: %s (rc=%s)", job_id, status.value, rc)
         if status == JobStatus.SUCCEEDED and (job.kind or "build") == "build":
             try:
+                snapshot_build_config(job)
+            except Exception as exc:  # noqa: BLE001 - provenance is best-effort
+                logger.warning("Config snapshot skipped: %s", exc)
+            try:
                 n = prune_output_dirs()
                 if n:
                     logger.info("Pruned %d old build output dir(s)", n)
@@ -238,6 +245,57 @@ def _run_job(job_id: str, argv: list[str], log_path: str) -> None:
     finally:
         _semaphore.release()
         _reap_orphan_temp_schemas()
+
+
+def snapshot_build_config(job: BuildJob) -> Optional[dict]:
+    """Record the exact resolved config that produced a build, into <output>/build_config/.
+
+    Writes the include-merged adapters + schema YAML (self-contained) plus a manifest
+    with per-file and combined sha256 hashes, so a KG's output carries which config
+    version made it. Best-effort: returns None if it can't be produced.
+    """
+    from backend.core.console import config_introspect as ci
+
+    p = job.params or {}
+    species, dataset = p.get("species"), p.get("dataset")
+    out = Path(job.output_dir)
+    if not species or not dataset or not out.is_dir():
+        return None
+
+    load = ci._load_yaml_with_includes()
+    try:
+        adapters_path = ci.resolve_adapters_config_path(species, dataset)
+        schema_path = ci.resolve_schema_config_path(species, dataset)
+    except ci.ConfigError:
+        return None
+    adapters = load(str(adapters_path)) or {}
+    # Effective schema = primer overlaid by the species schema (mirrors the build merge).
+    primer_path = settings.repo_root_path / "config" / "primer_schema_config.yaml"
+    primer = (load(str(primer_path)) or {}) if primer_path.exists() else {}
+    schema = {**primer, **(load(str(schema_path)) or {})}
+
+    adapters_yaml = yaml.safe_dump(adapters, sort_keys=False)
+    schema_yaml = yaml.safe_dump(schema, sort_keys=False)
+
+    dest = out / "build_config"
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "adapters_config.yaml").write_text(adapters_yaml)
+    (dest / "schema_config.yaml").write_text(schema_yaml)
+
+    def _sha(text: str) -> str:
+        return hashlib.sha256(text.encode()).hexdigest()
+
+    manifest = {
+        "species": species,
+        "dataset": dataset,
+        "writer_type": p.get("writer_type"),
+        "source": {"adapters_config": str(adapters_path), "schema_config": str(schema_path)},
+        "sha256": {"adapters_config": _sha(adapters_yaml), "schema_config": _sha(schema_yaml)},
+        "config_hash": _sha(adapters_yaml + schema_yaml),
+        "recorded_at": _now_iso(),
+    }
+    (dest / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    return manifest
 
 
 # Matches the ...-YYYYMMDD-HHMMSS suffix of an auto-named build dir.
