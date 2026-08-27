@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { yaml } from "@codemirror/lang-yaml";
 import { api } from "../api/client";
 import type { SpeciesEntry } from "../types";
 
@@ -14,6 +16,19 @@ export default function ConfigEditor() {
   const [dirty, setDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [cmTheme, setCmTheme] = useState<"light" | "dark">(
+    () => (document.documentElement.dataset.theme === "light" ? "light" : "dark"),
+  );
+
+  // Keep the editor theme in sync with the app's light/dark toggle.
+  useEffect(() => {
+    const root = document.documentElement;
+    const obs = new MutationObserver(() =>
+      setCmTheme(root.dataset.theme === "light" ? "light" : "dark"),
+    );
+    obs.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     api
@@ -106,17 +121,21 @@ export default function ConfigEditor() {
         </div>
       )}
 
-      <textarea
-        className="code-editor"
-        value={content}
-        spellCheck={false}
-        onChange={(e) => {
-          setContent(e.target.value);
-          setDirty(true);
-        }}
-        placeholder={loading ? "Loading…" : "Select a config to edit…"}
-        style={{ marginTop: 10 }}
-      />
+      <div className="cm-wrap" style={{ marginTop: 10 }}>
+        <CodeMirror
+          value={content}
+          height="480px"
+          theme={cmTheme}
+          extensions={[yaml()]}
+          editable={!loading}
+          onChange={(v) => {
+            setContent(v);
+            setDirty(true);
+          }}
+          basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
+          placeholder={loading ? "Loading…" : "Select a config to edit…"}
+        />
+      </div>
 
       {msg && (
         <div className={`alert ${msg.kind}`} style={{ marginTop: 10, whiteSpace: "pre-wrap" }}>
