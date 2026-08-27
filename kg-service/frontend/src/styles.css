@@ -15,6 +15,7 @@
   --ok: #34d399;
   --warn: #fbbf24;
   --err: #f87171;
+  --blue: #3b82f6;
   --grad: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
   --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
   --shadow-sm: 0 4px 14px -8px rgba(0, 0, 0, 0.5);
@@ -35,6 +36,7 @@
   --ok: #16a34a;
   --warn: #b45309;
   --err: #dc2626;
+  --blue: #2563eb;
   --grad: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
   --shadow: 0 12px 32px -16px rgba(15, 118, 110, 0.18);
   --shadow-sm: 0 4px 14px -10px rgba(15, 118, 110, 0.16);
@@ -207,6 +209,16 @@ button.primary {
   box-shadow: 0 10px 24px -10px var(--accent);
 }
 button.primary:hover:not(:disabled) { box-shadow: 0 16px 34px -8px var(--accent-2); transform: translateY(-1px); }
+
+/* Blue "suggested / proceed" confirm button (pairs with the red danger button). */
+button.suggested {
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  padding: 10px 22px;
+  box-shadow: 0 10px 24px -10px var(--blue);
+}
+button.suggested:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
 
 button.secondary {
   color: var(--accent);

@@ -4,7 +4,9 @@ export type Confirmable = {
   title: string;
   message: string;
   confirmLabel: string;
-  tone?: "danger" | "primary";
+  cancelLabel?: string;
+  // "danger" is a red confirm (destructive); "suggested" is a blue confirm (proceed).
+  tone?: "danger" | "suggested";
   run: () => void;
 };
 
@@ -36,10 +38,10 @@ export default function ConfirmDialog({ pending, onClose }: Props) {
         <p className="modal-msg">{pending.message}</p>
         <div className="row" style={{ justifyContent: "flex-end", marginTop: 18 }}>
           <button className="secondary" onClick={onClose}>
-            Cancel
+            {pending.cancelLabel ?? "Cancel"}
           </button>
           <button
-            className={pending.tone === "danger" ? "danger" : "primary"}
+            className={pending.tone === "danger" ? "danger" : "suggested"}
             onClick={() => {
               pending.run();
               onClose();

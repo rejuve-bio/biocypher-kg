@@ -152,7 +152,7 @@ export default function ConfigEditor() {
           onClick={() =>
             setPending({
               title: "Save config changes?",
-              message: `Overwrites ${path}. Builds for ${sel}/${dataset} will use the updated config. (Validated on save; reverting is git's job.)`,
+              message: `This overwrites ${path}. New builds of ${sel}/${dataset} will use the updated config. The file is validated on save, and you can revert it with git if needed.`,
               confirmLabel: "Save",
               run: save,
             })

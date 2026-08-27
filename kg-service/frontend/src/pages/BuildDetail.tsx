@@ -130,8 +130,8 @@ export default function BuildDetail() {
           setPending({
             title: loaded ? `Reload ${T}?` : `Load into ${T}?`,
             message: loaded
-              ? `Re-runs a surgical load into your live ${T} database. It's already loaded — reload re-syncs and is skipped if nothing changed.`
-              : `Runs a surgical load into your live ${T} database.`,
+              ? `${T} already holds this build. Reloading re-runs the surgical update on your live ${T} database, and it is skipped automatically if nothing has changed.`
+              : `This writes to your live ${T} database. Only datasets that changed are updated (a surgical load); everything else is left in place.`,
             confirmLabel: loaded ? `Reload ${T}` : `Load ${T}`,
             run: () => onLoad(target),
           })
@@ -179,10 +179,11 @@ export default function BuildDetail() {
                 className="danger"
                 onClick={() =>
                   setPending({
-                    title: "Cancel this build?",
+                    title: "Stop this running build?",
                     message:
-                      "The running build will be stopped. Progress is saved as a checkpoint, so you can resume it later.",
-                    confirmLabel: "Cancel build",
+                      "The build in progress will be stopped now. Adapters that already finished are kept as a checkpoint, so you can resume later instead of starting from scratch.",
+                    confirmLabel: "Stop build",
+                    cancelLabel: "Keep building",
                     tone: "danger",
                     run: onCancel,
                   })
@@ -202,7 +203,9 @@ export default function BuildDetail() {
                 onClick={() =>
                   setPending({
                     title: "Retry this load?",
-                    message: "Re-runs the failed load into its target database.",
+                    message: `This re-runs the failed load into your live ${
+                      (job.kind ?? "").includes("mork") ? "MORK" : "Neo4j"
+                    } database. Only changed datasets are applied (a surgical update).`,
                     confirmLabel: "Retry load",
                     run: onRetry,
                   })
