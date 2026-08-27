@@ -116,6 +116,29 @@ export default function BuildDetail() {
     }
   }
 
+  function renderLoadBtn(target: "neo4j" | "mork") {
+    const T = target === "neo4j" ? "Neo4j" : "MORK";
+    const st = job?.loads?.[target]?.status;
+    const inProgress = st === "running" || st === "queued";
+    const loaded = st === "succeeded";
+    return (
+      <button
+        className="secondary"
+        onClick={() => onLoad(target)}
+        disabled={inProgress}
+        title={
+          loaded
+            ? `Already loaded to ${T}. Reload re-syncs (surgical: skipped if unchanged) — useful if ${T} was reset.`
+            : inProgress
+              ? `Loading into ${T}…`
+              : undefined
+        }
+      >
+        {inProgress ? `⇪ Loading ${T}…` : loaded ? `⟲ Reload ${T}` : `⇪ Load to ${T}`}
+      </button>
+    );
+  }
+
   if (error) return <div className="alert err">{error}</div>;
   if (!job) return <div className="muted">Loading…</div>;
 
@@ -155,16 +178,8 @@ export default function BuildDetail() {
                 ⟲ Retry load
               </button>
             )}
-            {canLoadNeo4j && (
-              <button className="secondary" onClick={() => onLoad("neo4j")}>
-                ⇪ Load to Neo4j
-              </button>
-            )}
-            {canLoadMork && (
-              <button className="secondary" onClick={() => onLoad("mork")}>
-                ⇪ Load to MORK
-              </button>
-            )}
+            {canLoadNeo4j && renderLoadBtn("neo4j")}
+            {canLoadMork && renderLoadBtn("mork")}
           </div>
         </div>
         <div className="row" style={{ marginTop: 12, gap: 24 }}>
