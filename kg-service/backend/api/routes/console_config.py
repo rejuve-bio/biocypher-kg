@@ -49,7 +49,7 @@ def get_config(species: str, dataset: str, kind: str):
 
 @router.put("/species/{species}/datasets/{dataset}/config/{kind}")
 def put_config(species: str, dataset: str, kind: str, body: ConfigWrite):
-    """Validate and save an edited config file (backs up the previous version)."""
+    """Validate and atomically save an edited config file (history is git's job)."""
     try:
         return ci.save_config_text(species, dataset, kind, body.content)
     except ci.ConfigError as exc:

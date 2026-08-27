@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 import functools
-import shutil
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -234,21 +232,12 @@ def read_config_text(species: str, dataset: str, kind: str) -> dict:
             "path": str(path), "content": path.read_text()}
 
 
-def _backup_config(path: Path) -> None:
-    if not path.exists():
-        return
-    base = (Path(settings.DATA_ROOT) / "config-backups" if settings.DATA_ROOT
-            else settings.repo_root_path / ".config-backups")
-    base.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    shutil.copy2(path, base / f"{path.name}.{ts}.bak")
-
-
 def save_config_text(species: str, dataset: str, kind: str, content: str) -> dict:
     """Validate (via the project YAML loader) and atomically write a config file.
 
     Validation happens on a temp file in the same directory so relative ``!include``s
-    resolve; the previous version is backed up before the atomic replace.
+    resolve. History/revert is git's job (config/ is tracked); per-build config is
+    captured in each build's build_config/ snapshot.
     """
     load = _load_yaml_with_includes()
     path = _config_path(species, dataset, kind)
@@ -262,7 +251,6 @@ def save_config_text(species: str, dataset: str, kind: str, content: str) -> dic
     if not isinstance(parsed, dict):
         tmp.unlink(missing_ok=True)
         raise ConfigError("Top-level config must be a YAML mapping.")
-    _backup_config(path)
     tmp.replace(path)
     return {"species": species, "dataset": dataset, "kind": kind,
             "path": str(path), "content": content}

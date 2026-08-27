@@ -64,13 +64,12 @@ def test_unknown_species_raises():
 
 
 def test_read_and_save_config_roundtrip(tmp_path, monkeypatch):
-    """read_config_text returns raw text; save validates via the YAML loader, backs up,
-    and writes atomically. Uses a temp config file so the repo's configs are untouched."""
+    """read_config_text returns raw text; save validates via the YAML loader and writes
+    atomically. Uses a temp config file so the repo's configs are untouched."""
     cfg = tmp_path / "hsa" / "adapters.yaml"
     cfg.parent.mkdir(parents=True)
     cfg.write_text("gencode_gene:\n  nodes: true\n")
     monkeypatch.setattr(ci, "_config_path", lambda s, d, k: cfg)
-    monkeypatch.setattr(ci.settings, "DATA_ROOT", str(tmp_path))
 
     assert "gencode_gene" in ci.read_config_text("hsa", "sample", "adapters")["content"]
 
@@ -79,7 +78,6 @@ def test_read_and_save_config_roundtrip(tmp_path, monkeypatch):
         ci.save_config_text("hsa", "sample", "adapters", "key: [unbalanced")
     assert cfg.read_text() == "gencode_gene:\n  nodes: true\n"
 
-    # Valid save writes the new content and leaves a backup.
+    # Valid save writes the new content atomically.
     ci.save_config_text("hsa", "sample", "adapters", "gencode_gene:\n  nodes: false\n")
     assert "nodes: false" in cfg.read_text()
-    assert list((tmp_path / "config-backups").glob("*.bak"))
