@@ -3,6 +3,7 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import BuildWizard from "./pages/BuildWizard";
 import BuildHistory from "./pages/BuildHistory";
 import BuildDetail from "./pages/BuildDetail";
+import ConfigEditor from "./pages/ConfigEditor";
 
 type Theme = "dark" | "light";
 
@@ -28,6 +29,7 @@ export default function App() {
             New Build
           </NavLink>
           <NavLink to="/history">History</NavLink>
+          <NavLink to="/config">Config</NavLink>
           <button
             className="theme-toggle"
             title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
@@ -41,6 +43,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<BuildWizard />} />
           <Route path="/history" element={<BuildHistory />} />
+          <Route path="/config" element={<ConfigEditor />} />
           <Route path="/builds/:id" element={<BuildDetail />} />
         </Routes>
       </main>

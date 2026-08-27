@@ -29,6 +29,8 @@ services:
       - "${DATA_ROOT}:${DATA_ROOT}"
       # Named volume so build history survives image rebuilds.
       - console_builds:/app/kg-service/.builds
+      # Repo config/ bind-mounted so Console config edits persist and builds use them.
+      - ../config:/app/config
     # Lets the Console reach a Neo4j/MORK published on the host (attach case) on Linux.
     extra_hosts:
       - "host.docker.internal:host-gateway"

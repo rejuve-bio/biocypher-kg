@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import functools
+import shutil
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -215,6 +217,55 @@ def list_schema(species: str, dataset: str) -> dict:
         "edge_types": sorted(edge_types),
         "data_source_schemas": data_source_schemas,
     }
+
+
+def _config_path(species: str, dataset: str, kind: str) -> Path:
+    if kind == "adapters":
+        return resolve_adapters_config_path(species, dataset)
+    if kind == "schema":
+        return resolve_schema_config_path(species, dataset)
+    raise ConfigError(f"Unknown config kind '{kind}'. Use 'adapters' or 'schema'.")
+
+
+def read_config_text(species: str, dataset: str, kind: str) -> dict:
+    """Return the raw text of a species/dataset config file for editing."""
+    path = _config_path(species, dataset, kind)
+    return {"species": species, "dataset": dataset, "kind": kind,
+            "path": str(path), "content": path.read_text()}
+
+
+def _backup_config(path: Path) -> None:
+    if not path.exists():
+        return
+    base = (Path(settings.DATA_ROOT) / "config-backups" if settings.DATA_ROOT
+            else settings.repo_root_path / ".config-backups")
+    base.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    shutil.copy2(path, base / f"{path.name}.{ts}.bak")
+
+
+def save_config_text(species: str, dataset: str, kind: str, content: str) -> dict:
+    """Validate (via the project YAML loader) and atomically write a config file.
+
+    Validation happens on a temp file in the same directory so relative ``!include``s
+    resolve; the previous version is backed up before the atomic replace.
+    """
+    load = _load_yaml_with_includes()
+    path = _config_path(species, dataset, kind)
+    tmp = path.with_name(path.name + ".console-tmp")
+    tmp.write_text(content)
+    try:
+        parsed = load(str(tmp))
+    except Exception as exc:  # noqa: BLE001 - surface any loader error as a 400
+        tmp.unlink(missing_ok=True)
+        raise ConfigError(f"Config does not parse: {exc}")
+    if not isinstance(parsed, dict):
+        tmp.unlink(missing_ok=True)
+        raise ConfigError("Top-level config must be a YAML mapping.")
+    _backup_config(path)
+    tmp.replace(path)
+    return {"species": species, "dataset": dataset, "kind": kind,
+            "path": str(path), "content": content}
 
 
 def list_writers() -> list[str]:

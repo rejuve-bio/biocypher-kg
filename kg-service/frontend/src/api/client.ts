@@ -94,6 +94,25 @@ export const api = {
       fetch(`${BASE}/builds/${id}/retry`, { method: "POST" }),
     ),
 
+  getConfig: (species: string, dataset: string, kind: "adapters" | "schema") =>
+    json<ConfigFile>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}`),
+    ),
+
+  saveConfig: (
+    species: string,
+    dataset: string,
+    kind: "adapters" | "schema",
+    content: string,
+  ) =>
+    json<ConfigFile>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      }),
+    ),
+
   listOutput: (id: string) =>
     json<{
       output_dir: string;
@@ -111,6 +130,14 @@ export const api = {
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
+
+export interface ConfigFile {
+  species: string;
+  dataset: string;
+  kind: string;
+  path: string;
+  content: string;
+}
 
 export interface GraphInfoSummary {
   node_count: number | null;

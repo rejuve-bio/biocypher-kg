@@ -1,9 +1,14 @@
-"""Console configuration introspection endpoints (read-only)."""
+"""Console configuration introspection + editing endpoints."""
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from backend.core.console import config_introspect as ci
 
 router = APIRouter(prefix="/api/console", tags=["Console"])
+
+
+class ConfigWrite(BaseModel):
+    content: str
 
 
 @router.get("/species")
@@ -31,6 +36,24 @@ def get_schema(species: str, dataset: str):
         return ci.list_schema(species, dataset)
     except ci.ConfigError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.get("/species/{species}/datasets/{dataset}/config/{kind}")
+def get_config(species: str, dataset: str, kind: str):
+    """Raw text of the adapters or schema config for editing (kind: adapters|schema)."""
+    try:
+        return ci.read_config_text(species, dataset, kind)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.put("/species/{species}/datasets/{dataset}/config/{kind}")
+def put_config(species: str, dataset: str, kind: str, body: ConfigWrite):
+    """Validate and save an edited config file (backs up the previous version)."""
+    try:
+        return ci.save_config_text(species, dataset, kind, body.content)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @router.get("/writers")
