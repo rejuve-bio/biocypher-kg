@@ -3,6 +3,7 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import BuildWizard from "./pages/BuildWizard";
 import BuildHistory from "./pages/BuildHistory";
 import BuildDetail from "./pages/BuildDetail";
+import ExploreGraph from "./pages/ExploreGraph";
 
 // Lazy so CodeMirror ships in its own chunk, loaded only on the Config page.
 const ConfigEditor = lazy(() => import("./pages/ConfigEditor"));
@@ -31,6 +32,7 @@ export default function App() {
             New Build
           </NavLink>
           <NavLink to="/history">History</NavLink>
+          <NavLink to="/explore">Explore</NavLink>
           <NavLink to="/config">Config</NavLink>
           <button
             className="theme-toggle"
@@ -45,6 +47,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<BuildWizard />} />
           <Route path="/history" element={<BuildHistory />} />
+          <Route path="/explore" element={<ExploreGraph />} />
           <Route
             path="/config"
             element={

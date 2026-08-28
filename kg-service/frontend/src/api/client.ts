@@ -144,6 +144,35 @@ export interface ConfigFile {
   content: string;
 }
 
+// Observatory endpoints query the live Neo4j graph (mounted at /api, not /api/console).
+const OBS = "/api";
+
+export const obs = {
+  summary: () => json<GraphSummary>(fetch(`${OBS}/summary`)),
+  entities: (label: string, limit: number, offset: number) =>
+    json<EntitiesPage>(
+      fetch(`${OBS}/entities/${encodeURIComponent(label)}?limit=${limit}&offset=${offset}`),
+    ),
+};
+
+export interface GraphSummary {
+  node_count: number;
+  edge_count: number;
+  last_updated_at: string | null;
+  dataset_count: number;
+  top_entities: { name: string; count: number }[];
+  top_connections: { name: string; count: number }[];
+  schema?: { node_types: string[]; relationship_types: string[] };
+}
+
+export interface EntitiesPage {
+  label: string;
+  total: number;
+  limit: number;
+  offset: number;
+  entities: Record<string, unknown>[];
+}
+
 export interface ConfigManifest {
   species: string;
   dataset: string;

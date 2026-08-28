@@ -244,6 +244,31 @@ button.btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 8px; }
 
 /* ── Chips / flags ───────────────────────────────────────── */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Pills (type + count chips; also used as clickable filters) */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  font-size: 12px;
+  color: var(--text);
+}
+.pill strong { color: var(--accent); font-weight: 700; }
+button.pill { cursor: pointer; font-family: inherit; transition: border-color 0.12s, background 0.12s; }
+button.pill:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel-2));
+  transform: none;
+  box-shadow: none;
+}
+.pill.pill-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
 .chip {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 12px; border-radius: 24px; border: 1px solid var(--border);
