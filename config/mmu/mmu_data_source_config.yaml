@@ -84,3 +84,6 @@ uniprot:
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_rodents.dat.gz
   
 
+eva:
+  name: European Variation Archive (EVA) Release 9
+  url: https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9/by_species/mus_musculus/GRCm39/10090_GCA_000001635.9_current_ids.vcf.gz

@@ -1,4 +1,5 @@
-Title: BioCypher graph schema configuration file
-# ---
-# "Named Things"
-# ---
+Title: BioCypher graph schema configuration file (Biolink-adapted for rno)
+
+
+##################             NODES   SECTION             ####################
+

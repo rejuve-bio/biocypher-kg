@@ -2741,6 +2741,45 @@ anatomy subclass of:
     agent_type: manual_agent
 
 
+in gene to variant association:
+  is_a: association
+  mixins: [biolink:VariantToGeneAssociation]
+  biolink_predicate: "biolink:located_in"
+  inherit_properties: false
+  description: >-
+    holds between a sequence variant and a gene that is within the gene body
+  represented_as: edge
+  input_label: snp_in_gene
+  output_label: located_in
+  source: snp
+  target: gene
+  kgx_properties:
+    subject_category: "biolink:Snv"
+    object_category: "biolink:Gene"
+    knowledge_level: "knowledge_assertion"
+    agent_type: "manual_agent"
+  properties:
+    p_value:
+      type: float
+      biolink: has_quantitative_value
+    taxon_id:
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
+    source: 
+      type: str
+      biolink: provided_by
+    source_url: 
+      type: str
+      biolink: source_web_page
+    chr: 
+      type: str
+    pos: 
+      type: int
+      biolink: start_interbase_coordinate
+
+
 # genomic variants — species-agnostic (hsa, dmel, cel, mmu, rno, ...)
 allele:
   represented_as: node
@@ -2764,16 +2803,21 @@ allele:
 snp:
   represented_as: node
   input_label: snp
-  is_a: allele
-  mixins:
-    - biolink:Snv
-  biolink_category: biolink:Snv
+  is_a: genomic variant
+  mixins: [biolink:Snv]
+  biolink_category: "biolink:Snv"
   inherit_properties: true
+  kgx_properties:
+    category: "biolink:Snv"
   properties:
     ref:
       type: str
     alt:
       type: str
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
     caf_ref:
       type: str
     caf_alt:
@@ -2796,7 +2840,5 @@ snp:
       type: float
       biolink: has_quantitative_value
   description: >-
-    A single nucleotide polymorphism (SNP): a single-nucleotide variation at a
-    specific genomic position, for any species. Subtype of allele.
-  kgx_properties:
-    category: biolink:Snv
+    A single nucleotide polymorphism (SNP) is a variation in a single nucleotide
+    that occurs at a specific position in the genome

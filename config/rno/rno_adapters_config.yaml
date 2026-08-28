@@ -1,5 +1,30 @@
 input_dir: /mnt/hdd_1/biocypher-kg/input/rno
 
+eva_snp:
+  adapter:
+    module: biocypher_metta.adapters.eva_adapter
+    cls: EVAAdapter
+    args:
+      filepath: eva/10116_GCA_036323735.1_current_ids.vcf.gz
+      taxon_id: 10116
+      label: snp
+  outdir: rno/eva
+  nodes: True
+  edges: False
+
+eva_snp_in_gene:
+  adapter:
+    module: biocypher_metta.adapters.eva_adapter
+    cls: EVAAdapter
+    args:
+      filepath: eva/10116_GCA_036323735.1_current_ids.vcf.gz
+      gene_filepath: ensembl/Rattus_norvegicus.GRCr8.115.gtf.gz
+      taxon_id: 10116
+      label: snp_in_gene
+  outdir: rno/eva
+  nodes: False
+  edges: True
+
 bgee_gene_expressed_in_anatomical_entity:
   adapter:
     module: biocypher_metta.adapters.bgee_adapter
@@ -935,5 +960,33 @@ chebi_chebi_subclass_of:
       dry_run: False
       cache_dir: ./ontology_dataset_cache
   outdir: small_molecule
+  nodes: False
+  edges: True
+
+eco_evidence_ontology:
+  adapter:
+    module: biocypher_metta.adapters.eco_ontology_adapter
+    cls: EvidenceOntologyAdapter
+    args:
+      ontology: 'eco'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: evidence
+  nodes: True
+  edges: False
+
+eco_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.eco_ontology_adapter
+    cls: EvidenceOntologyAdapter
+    args:
+      ontology: 'eco'
+      label: eco_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: evidence
   nodes: False
   edges: True

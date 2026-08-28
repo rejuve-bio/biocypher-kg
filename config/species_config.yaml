@@ -86,6 +86,11 @@ mmu:
     dbsnp_variant: ""
 
 rno:
+  sample:
+    adapters_config: config/rno/rno_adapters_config_sample.yaml
+    schema_config: config/rno/rno_schema_config.yaml
+    dbsnp_cache_root: ""       
+    dbsnp_variant: ""
   full:
     adapters_config: config/rno/rno_adapters_config.yaml
     schema_config: config/rno/rno_schema_config.yaml

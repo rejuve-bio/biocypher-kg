@@ -1431,3 +1431,28 @@ alliance_gene_disease_is_marker_for:
   outdir: disease
   nodes: False
   edges: True
+
+eva_snp:
+  adapter:
+    module: biocypher_metta.adapters.eva_adapter
+    cls: EVAAdapter
+    args:
+      filepath: eva/7227_GCA_000001215.4_current_ids.vcf.gz
+      taxon_id: 7227
+      label: snp
+  outdir: dmel/eva
+  nodes: True
+  edges: False
+
+eva_snp_in_gene:
+  adapter:
+    module: biocypher_metta.adapters.eva_adapter
+    cls: EVAAdapter
+    args:
+      filepath: eva/7227_GCA_000001215.4_current_ids.vcf.gz
+      gene_filepath: gencode_Drosophila_melanogaster.BDGP6.46.60.chr.gtf.gz
+      taxon_id: 7227
+      label: snp_in_gene
+  outdir: dmel/eva
+  nodes: False
+  edges: True

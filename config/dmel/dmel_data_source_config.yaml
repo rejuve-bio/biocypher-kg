@@ -105,3 +105,7 @@ uniprot:
   name: UniProtKB/Swiss-Prot
   extract: false
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
+
+eva:
+  name: European Variation Archive (EVA) Release 9
+  url: https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9/by_species/drosophila_melanogaster/Release_6_plus_ISO1_MT/7227_GCA_000001215.4_current_ids.vcf.gz
