@@ -13,6 +13,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 _GRAPH_INFO_KEYS = [
     "node_count", "edge_count", "dataset_count", "last_updated_at",
     "kg_format", "data_size", "top_entities", "top_connections",
+    "datasets",  # per-adapter node/edge type composition
 ]
 
 from backend.core.console import job_runner

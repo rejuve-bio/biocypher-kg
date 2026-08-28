@@ -163,4 +163,13 @@ export interface GraphInfoSummary {
   data_size: string | null;
   top_entities: { name: string; count: number }[] | null;
   top_connections: { name: string; count: number }[] | null;
+  datasets?: DatasetComposition[] | null;
+}
+
+export interface DatasetComposition {
+  name: string;
+  version?: string | null;
+  url?: string | null;
+  nodes: string[];
+  edges: string[];
 }

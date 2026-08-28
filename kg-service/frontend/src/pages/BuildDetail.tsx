@@ -341,6 +341,68 @@ export default function BuildDetail() {
               </div>
             </div>
           )}
+          {graphInfo?.top_connections && graphInfo.top_connections.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+                Top edge types
+              </div>
+              <div className="chips">
+                {graphInfo.top_connections.slice(0, 12).map((e) => (
+                  <span className="pill" key={e.name}>
+                    {e.name} <strong>{e.count.toLocaleString()}</strong>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {graphInfo?.datasets && graphInfo.datasets.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+                Composition by adapter
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Adapter</th>
+                    <th>Node types</th>
+                    <th>Edge types</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {graphInfo.datasets.map((d) => (
+                    <tr key={d.name}>
+                      <td className="mono" style={{ whiteSpace: "nowrap", verticalAlign: "top" }}>
+                        {d.name}
+                        {d.version ? <span className="muted"> {d.version}</span> : null}
+                      </td>
+                      <td style={{ verticalAlign: "top" }}>
+                        {d.nodes?.length ? (
+                          <span className="chips">
+                            {d.nodes.map((n) => (
+                              <span className="tag node" key={n}>{n}</span>
+                            ))}
+                          </span>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                      </td>
+                      <td style={{ verticalAlign: "top" }}>
+                        {d.edges?.length ? (
+                          <span className="chips">
+                            {d.edges.map((e) => (
+                              <span className="tag edge" key={e}>{e}</span>
+                            ))}
+                          </span>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           {files && files.length > 0 && (() => {
             const fq = fileFilter.trim().toLowerCase();
             const shown = fq
