@@ -149,11 +149,17 @@ const OBS = "/api";
 
 export const obs = {
   summary: () => json<GraphSummary>(fetch(`${OBS}/summary`)),
+  schema: () => json<DetailedSchema>(fetch(`${OBS}/schema`)),
   entities: (label: string, limit: number, offset: number) =>
     json<EntitiesPage>(
       fetch(`${OBS}/entities/${encodeURIComponent(label)}?limit=${limit}&offset=${offset}`),
     ),
 };
+
+export interface DetailedSchema {
+  nodes: { data: { id: string; properties: string[] } }[];
+  edges: { data: { source: string; target: string; possible_connections: string[] } }[];
+}
 
 export interface GraphSummary {
   node_count: number;

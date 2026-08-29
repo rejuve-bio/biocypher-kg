@@ -269,6 +269,29 @@ button.pill:hover:not(:disabled) {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
+
+/* Explore graph */
+.explore-grid { display: grid; grid-template-columns: 1fr 320px; gap: 14px; margin-top: 12px; }
+@media (max-width: 860px) { .explore-grid { grid-template-columns: 1fr; } }
+.cy-canvas {
+  height: 560px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background:
+    radial-gradient(620px 420px at 28% 18%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+    var(--panel-2);
+}
+.cy-panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--panel-2) 50%, transparent);
+  overflow: auto;
+  min-height: 200px;
+}
+.dot-node, .dot-edge { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+.dot-node { background: var(--accent); }
+.dot-edge { background: var(--accent-2); }
 .chip {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 12px; border-radius: 24px; border: 1px solid var(--border);

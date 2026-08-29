@@ -3,10 +3,10 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import BuildWizard from "./pages/BuildWizard";
 import BuildHistory from "./pages/BuildHistory";
 import BuildDetail from "./pages/BuildDetail";
-import ExploreGraph from "./pages/ExploreGraph";
 
-// Lazy so CodeMirror ships in its own chunk, loaded only on the Config page.
+// Lazy so their heavy libraries (CodeMirror, Cytoscape) ship in their own chunks.
 const ConfigEditor = lazy(() => import("./pages/ConfigEditor"));
+const ExploreGraph = lazy(() => import("./pages/ExploreGraph"));
 
 type Theme = "dark" | "light";
 
@@ -47,7 +47,14 @@ export default function App() {
         <Routes>
           <Route path="/" element={<BuildWizard />} />
           <Route path="/history" element={<BuildHistory />} />
-          <Route path="/explore" element={<ExploreGraph />} />
+          <Route
+            path="/explore"
+            element={
+              <Suspense fallback={<div className="muted">Loading explorer…</div>}>
+                <ExploreGraph />
+              </Suspense>
+            }
+          />
           <Route
             path="/config"
             element={
