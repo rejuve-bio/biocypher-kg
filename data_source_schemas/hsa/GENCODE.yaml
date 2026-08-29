@@ -21,6 +21,7 @@ nodes:
       transcript_id: str
       transcript_name: str
       transcript_type: str
+      gene_name: str
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon

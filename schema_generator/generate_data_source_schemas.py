@@ -240,6 +240,14 @@ class AdapterAnalyzer:
                                                         dict_value = self.class_attributes[dict_name]
                                                         if isinstance(dict_value, dict) and dict_value:
                                                             metadata[target.attr] = next(iter(dict_value.values()))
+                                            elif isinstance(stmt.value, ast.Call):
+                                                # e.g. self.source_url = _PER_SPECIES_URLS.get(taxon_id, 'https://example.org/')
+                                                # -- use the literal fallback as the representative value.
+                                                func = stmt.value.func
+                                                if (isinstance(func, ast.Attribute) and func.attr == 'get'
+                                                        and len(stmt.value.args) >= 2
+                                                        and isinstance(stmt.value.args[1], ast.Constant)):
+                                                    metadata[target.attr] = stmt.value.args[1].value
         return metadata
 
     def extract_properties_from_dict(self, dict_node: ast.Dict) -> Set[str]:
@@ -992,7 +1000,10 @@ class SchemaGenerator:
             relationships = existing_schema.get('relationships', {})
             schema = {
                 'name': existing_schema.get('name', source_name),
-                'website': existing_schema.get('website', website)
+                # Prefer the freshly computed value; only fall back to what's already on
+                # disk when this run couldn't resolve a URL from any adapter (e.g. a
+                # filtered run that didn't touch the adapter carrying it).
+                'website': website if website else existing_schema.get('website', '')
             }
         else:
             schema = {

@@ -208,3 +208,6 @@ relationships:
     target: protein
     properties:
       interaction_type: str
+      interaction_context: str
+      pubmed_references: str[]
+      taxon_id: str

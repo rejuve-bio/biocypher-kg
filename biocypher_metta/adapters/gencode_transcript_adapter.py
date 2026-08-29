@@ -172,6 +172,7 @@ class GencodeTranscriptAdapter(Adapter):
                                     'transcript_id': info['transcript_id'].upper(),
                                     'transcript_name': info.get('transcript_name', 'not assigned_by_authority'),
                                     'transcript_type': transcript_type_val if transcript_type_val is not None else info['transcript_biotype'],
+                                    'gene_name': info.get('gene_name'),
                                     'taxon_id': self.taxon_id,
                                 }
 

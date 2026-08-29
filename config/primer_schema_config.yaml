@@ -630,6 +630,8 @@ transcript:
       biolink: id
     transcript_type:
       type: str
+    gene_name:
+      type: str
   description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
   exact_mappings:
   - SO:0000673
@@ -1310,9 +1312,9 @@ feature overlaps structural_variant:
 gene biomarker via orthology disease:
   description: A gene is a biomarker for a disease via orthology relationship. From
     Alliance for Genome Resources.
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:biomarker_for
   inherit_properties: true
   represented_as: edge
@@ -1347,9 +1349,9 @@ gene biomarker via orthology disease:
 gene implicated via orthology disease:
   description: A gene is implicated in a disease via orthology relationship. From
     Alliance for Genome Resources.
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:implicated_in
   inherit_properties: true
   represented_as: edge
@@ -1403,9 +1405,9 @@ gene in tad region:
 
 gene is implicated in disease:
   description: A gene is implicated in a disease. From Alliance for Genome Resources.
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:implicated_in
   inherit_properties: true
   represented_as: edge
@@ -1474,9 +1476,9 @@ gene to disease association:
 
 gene to disease marker association:
   description: Gene is a marker for a disease
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:model_of
   inherit_properties: true
   represented_as: edge
@@ -1510,9 +1512,9 @@ gene to disease marker association:
 
 gene to disease model association:
   description: Gene is a model for disease
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:model_of
   inherit_properties: true
   represented_as: edge
@@ -2186,7 +2188,11 @@ post translational interaction:
       biolink: has_quantitative_value
     interaction_type:
       type: str
-    reactome_pathway:
+    interaction_context:
+      type: str
+    pubmed_references:
+      type: str[]
+    taxon_id:
       type: str
 
 promoter overlaps structural_variant:

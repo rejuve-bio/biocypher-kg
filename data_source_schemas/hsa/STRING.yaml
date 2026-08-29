@@ -8,6 +8,7 @@ relationships:
     target: protein
     properties:
       score: float
+      taxon_id: str
   protein to protein coexpression association:
     url: https://string-db.org/
     input_label: protein_coexpressed_with
