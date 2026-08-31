@@ -289,6 +289,23 @@ button.pill:hover:not(:disabled) {
   overflow: auto;
   min-height: 200px;
 }
+/* Full-width graph with the details panel floating over it (Bloom-style). */
+.cy-stage { position: relative; }
+.cy-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 300px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 16px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+@media (max-width: 640px) { .cy-overlay { width: calc(100% - 24px); } }
 .dot-node, .dot-edge { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
 .dot-node { background: var(--accent); }
 .dot-edge { background: var(--accent-2); }

@@ -16,6 +16,19 @@ type Selected =
   | { kind: "edge"; rel: string; source: string; target: string; count: number; color: string }
   | null;
 
+// A spread-out force layout so a dense schema (many node types) stays legible.
+const LAYOUT = {
+  name: "cose",
+  animate: true,
+  animationDuration: 600,
+  padding: 40,
+  nodeDimensionsIncludeLabels: true,
+  idealEdgeLength: 140,
+  nodeRepulsion: 14000,
+  gravity: 0.25,
+  numIter: 1500,
+} as cytoscape.LayoutOptions;
+
 // Comma-separated hsl() is required — Cytoscape rejects the space-separated form.
 function goldenColor(i: number, light: number): string {
   const hue = ((i * 137.508) % 360).toFixed(0);
@@ -27,7 +40,7 @@ function cssVar(name: string, fallback: string): string {
   return v || fallback;
 }
 
-export default function SchemaGraph({ schema, topEntities, topConnections, height = 520 }: Props) {
+export default function SchemaGraph({ schema, topEntities, topConnections, height = 660 }: Props) {
   const [selected, setSelected] = useState<Selected>(null);
   const [theme, setTheme] = useState(() =>
     document.documentElement.dataset.theme === "light" ? "light" : "dark",
@@ -152,13 +165,7 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
     });
     cyRef.current = cy;
 
-    const layout = cy.layout({
-      name: "cose",
-      animate: true,
-      animationDuration: 600,
-      padding: 40,
-      nodeDimensionsIncludeLabels: true,
-    } as cytoscape.LayoutOptions);
+    const layout = cy.layout(LAYOUT);
     layout.one("layoutstop", () => cy.fit(undefined, 40));
     layout.run();
 
@@ -182,62 +189,59 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
 
   return (
     <div>
-      <div className="row" style={{ justifyContent: "flex-end", marginBottom: 8 }}>
-        <button className="secondary btn-sm" onClick={() => cyRef.current?.fit(undefined, 40)}>Fit</button>
-        <button
-          className="secondary btn-sm"
-          onClick={() => {
-            const cy = cyRef.current;
-            if (!cy) return;
-            const l = cy.layout({ name: "cose", animate: true } as cytoscape.LayoutOptions);
-            l.one("layoutstop", () => cy.fit(undefined, 40));
-            l.run();
-          }}
-        >
-          Re-layout
-        </button>
-      </div>
-      <div className="explore-grid">
-        <div ref={cyEl} className="cy-canvas" style={{ height }} />
-        <div className="cy-panel">
-          {selected?.kind === "node" && (
-            <>
-              <div className="row" style={{ gap: 8, alignItems: "center" }}>
-                <span className="type-dot" style={{ background: selected.color }} />
-                <span className="mono" style={{ fontSize: 15, fontWeight: 700 }}>{selected.id}</span>
-              </div>
-              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{selected.count.toLocaleString()} nodes</div>
-              <div className="muted" style={{ fontSize: 12, margin: "12px 0 6px" }}>Properties ({selected.props.length})</div>
-              <div className="chips">
-                {selected.props.length ? selected.props.map((p) => <span className="pill" key={p}>{p}</span>) : <span className="muted">none</span>}
-              </div>
-            </>
-          )}
-          {selected?.kind === "edge" && (
-            <>
-              <div className="row" style={{ gap: 8, alignItems: "center" }}>
-                <span className="type-dot" style={{ background: selected.color }} />
-                <span className="mono" style={{ fontSize: 15, fontWeight: 700 }}>{selected.rel}</span>
-              </div>
-              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{selected.count.toLocaleString()} relationships</div>
-              <div style={{ marginTop: 14, fontSize: 13 }}>
-                <span className="mono">{selected.source}</span>
-                <span className="muted"> → </span>
-                <span className="mono">{selected.target}</span>
-              </div>
-            </>
-          )}
-          {!selected && (
-            <>
-              <div style={{ fontWeight: 700, marginBottom: 8 }}>Schema</div>
-              <p className="muted" style={{ fontSize: 13, lineHeight: 1.55, margin: 0 }}>
-                Each circle is a node type, each arrow a relationship type and its direction.
-                Colors distinguish types. Click a node or arrow to inspect it, drag to
-                rearrange, scroll to zoom.
-              </p>
-            </>
-          )}
+      <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
+        <span className="muted" style={{ fontSize: 12 }}>
+          Click a node or arrow to inspect it. Drag to rearrange, scroll to zoom.
+        </span>
+        <div className="row">
+          <button className="secondary btn-sm" onClick={() => cyRef.current?.fit(undefined, 40)}>Fit</button>
+          <button
+            className="secondary btn-sm"
+            onClick={() => {
+              const cy = cyRef.current;
+              if (!cy) return;
+              const l = cy.layout(LAYOUT);
+              l.one("layoutstop", () => cy.fit(undefined, 40));
+              l.run();
+            }}
+          >
+            Re-layout
+          </button>
         </div>
+      </div>
+
+      <div className="cy-stage">
+        <div ref={cyEl} className="cy-canvas" style={{ height, width: "100%" }} />
+        {selected && (
+          <div className="cy-overlay">
+            {selected.kind === "node" ? (
+              <>
+                <div className="row" style={{ gap: 8, alignItems: "center" }}>
+                  <span className="type-dot" style={{ background: selected.color }} />
+                  <span className="mono" style={{ fontSize: 15, fontWeight: 700 }}>{selected.id}</span>
+                </div>
+                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{selected.count.toLocaleString()} nodes</div>
+                <div className="muted" style={{ fontSize: 12, margin: "12px 0 6px" }}>Properties ({selected.props.length})</div>
+                <div className="chips">
+                  {selected.props.length ? selected.props.map((p) => <span className="pill" key={p}>{p}</span>) : <span className="muted">none</span>}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="row" style={{ gap: 8, alignItems: "center" }}>
+                  <span className="type-dot" style={{ background: selected.color }} />
+                  <span className="mono" style={{ fontSize: 15, fontWeight: 700 }}>{selected.rel}</span>
+                </div>
+                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{selected.count.toLocaleString()} relationships</div>
+                <div style={{ marginTop: 14, fontSize: 13 }}>
+                  <span className="mono">{selected.source}</span>
+                  <span className="muted"> → </span>
+                  <span className="mono">{selected.target}</span>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
