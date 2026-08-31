@@ -292,6 +292,7 @@ button.pill:hover:not(:disabled) {
 .dot-node, .dot-edge { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
 .dot-node { background: var(--accent); }
 .dot-edge { background: var(--accent-2); }
+.type-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; flex: none; }
 .chip {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 12px; border-radius: 24px; border: 1px solid var(--border);

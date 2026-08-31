@@ -199,6 +199,7 @@ export interface GraphInfoSummary {
   top_entities: { name: string; count: number }[] | null;
   top_connections: { name: string; count: number }[] | null;
   datasets?: DatasetComposition[] | null;
+  schema?: DetailedSchema | null;
 }
 
 export interface DatasetComposition {
