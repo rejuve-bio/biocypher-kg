@@ -16,16 +16,16 @@ type Selected =
   | { kind: "edge"; rel: string; source: string; target: string; count: number; color: string }
   | null;
 
-// A spread-out force layout so a dense schema (many node types) stays legible.
+// Spread force layout so a dense schema (many node types) stays legible.
 const LAYOUT = {
   name: "cose",
   animate: true,
   animationDuration: 600,
   padding: 40,
   nodeDimensionsIncludeLabels: true,
-  idealEdgeLength: 140,
-  nodeRepulsion: 14000,
-  gravity: 0.25,
+  idealEdgeLength: 150,
+  nodeRepulsion: 16000,
+  gravity: 0.2,
   numIter: 1500,
 } as cytoscape.LayoutOptions;
 
@@ -42,6 +42,7 @@ function cssVar(name: string, fallback: string): string {
 
 export default function SchemaGraph({ schema, topEntities, topConnections, height = 660 }: Props) {
   const [selected, setSelected] = useState<Selected>(null);
+  const [legend, setLegend] = useState<{ label: string; color: string }[]>([]);
   const [theme, setTheme] = useState(() =>
     document.documentElement.dataset.theme === "light" ? "light" : "dark",
   );
@@ -64,6 +65,7 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
     const nodeTypes = schema.nodes.map((n) => n.data.id);
     const nodeColor: Record<string, string> = {};
     nodeTypes.forEach((t, i) => (nodeColor[t] = goldenColor(i, 55)));
+    setLegend(nodeTypes.map((t) => ({ label: t, color: nodeColor[t] })));
 
     const relSet = new Set<string>();
     for (const e of schema.edges) for (const r of e.data.possible_connections) relSet.add(r);
@@ -107,7 +109,6 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
     }
 
     const textc = cssVar("--text", "#e8eef8");
-    const mutedc = cssVar("--muted", "#94a3b8");
     const panel2 = cssVar("--panel-2", "#273449");
     const accent2 = cssVar("--accent-2", "#06b6d4");
 
@@ -145,22 +146,30 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
           style: {
             width: 3,
             "line-color": "data(color)",
-            "line-opacity": 0.8,
+            "line-opacity": 0.5,
             "target-arrow-color": "data(color)",
             "target-arrow-shape": "triangle",
             "arrow-scale": 1.2,
             "curve-style": "bezier",
+            // Labels hidden by default (the main source of clutter); shown on focus.
             label: "data(label)",
+            "text-opacity": 0,
             "font-size": 9,
-            color: mutedc,
+            color: textc,
             "text-rotation": "autorotate",
             "text-background-color": panel2,
-            "text-background-opacity": 0.85,
+            "text-background-opacity": 0.9,
             "text-background-padding": 2,
             "overlay-opacity": 0,
           },
         },
-        { selector: "edge:selected", style: { width: 5, "line-opacity": 1, color: textc } },
+        { selector: "node.faded", style: { opacity: 0.14 } },
+        { selector: "edge.faded", style: { opacity: 0.06 } },
+        { selector: "node.hl", style: {} },
+        {
+          selector: "edge.hl",
+          style: { "line-opacity": 1, width: 4, "text-opacity": 1 },
+        },
       ] as cytoscape.StylesheetStyle[],
     });
     cyRef.current = cy;
@@ -169,16 +178,31 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
     layout.one("layoutstop", () => cy.fit(undefined, 40));
     layout.run();
 
+    const focus = (hood: cytoscape.CollectionReturnValue) => {
+      cy.batch(() => {
+        cy.elements().removeClass("hl").addClass("faded");
+        hood.removeClass("faded").addClass("hl");
+      });
+    };
+    const clear = () => cy.batch(() => cy.elements().removeClass("hl faded"));
+
     cy.on("tap", "node", (evt) => {
-      const d = evt.target.data();
+      const n = evt.target;
+      focus(n.closedNeighborhood());
+      const d = n.data();
       setSelected({ kind: "node", id: d.id, count: d.count, props: d.props || [], color: d.color });
     });
     cy.on("tap", "edge", (evt) => {
-      const d = evt.target.data();
+      const e = evt.target;
+      focus(e.connectedNodes().union(e));
+      const d = e.data();
       setSelected({ kind: "edge", rel: d.rel, source: d.source, target: d.target, count: d.count, color: d.color });
     });
     cy.on("tap", (evt) => {
-      if (evt.target === cy) setSelected(null);
+      if (evt.target === cy) {
+        clear();
+        setSelected(null);
+      }
     });
 
     return () => {
@@ -191,7 +215,8 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
     <div>
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
         <span className="muted" style={{ fontSize: 12 }}>
-          Click a node or arrow to inspect it. Drag to rearrange, scroll to zoom.
+          Click a node or arrow to focus it and its neighbors. Click empty space to reset.
+          Drag to rearrange, scroll to zoom.
         </span>
         <div className="row">
           <button className="secondary btn-sm" onClick={() => cyRef.current?.fit(undefined, 40)}>Fit</button>
@@ -212,6 +237,21 @@ export default function SchemaGraph({ schema, topEntities, topConnections, heigh
 
       <div className="cy-stage">
         <div ref={cyEl} className="cy-canvas" style={{ height, width: "100%" }} />
+
+        {legend.length > 0 && (
+          <div className="cy-legend">
+            <div className="muted" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 6 }}>
+              NODE TYPES
+            </div>
+            {legend.map((t) => (
+              <div className="legend-row" key={t.label}>
+                <span className="type-dot" style={{ width: 10, height: 10, background: t.color }} />
+                <span style={{ fontSize: 12 }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {selected && (
           <div className="cy-overlay">
             {selected.kind === "node" ? (

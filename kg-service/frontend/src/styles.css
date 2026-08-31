@@ -306,6 +306,21 @@ button.pill:hover:not(:disabled) {
   backdrop-filter: blur(6px);
 }
 @media (max-width: 640px) { .cy-overlay { width: calc(100% - 24px); } }
+.cy-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  max-width: 190px;
+  max-height: 46%;
+  overflow: auto;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(6px);
+}
+.legend-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
 .dot-node, .dot-edge { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
 .dot-node { background: var(--accent); }
 .dot-edge { background: var(--accent-2); }
