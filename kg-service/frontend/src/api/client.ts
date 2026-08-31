@@ -132,6 +132,8 @@ export const api = {
       fetch(`${BASE}/builds/${id}/config-snapshot`),
     ),
 
+  morkSummary: () => json<MorkSummary>(fetch(`${BASE}/mork/summary`)),
+
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
@@ -159,6 +161,15 @@ export const obs = {
 export interface DetailedSchema {
   nodes: { data: { id: string; properties: string[] } }[];
   edges: { data: { source: string; target: string; possible_connections: string[] } }[];
+}
+
+export interface MorkSummary {
+  reachable: boolean;
+  error?: string;
+  atom_count?: number | null;
+  dataset_count?: number | null;
+  latest_version?: string | null;
+  versions?: unknown[];
 }
 
 export interface GraphSummary {

@@ -384,6 +384,10 @@ input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
   box-shadow: none;
   border: none;
 }
+.linkbtn.seg-on {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+}
 
 /* ── Adapter grid ────────────────────────────────────────── */
 .adapter-grid {

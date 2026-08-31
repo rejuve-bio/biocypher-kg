@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { api, type GraphInfoSummary, type ConfigManifest } from "../api/client";
 import type { BuildJob } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
 import ConfirmDialog, { type Confirmable } from "../components/ConfirmDialog";
+
+// Lazy so Cytoscape ships in its own chunk, only on build pages that show a schema.
+const SchemaGraph = lazy(() => import("../components/SchemaGraph"));
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled"]);
 
@@ -353,6 +356,20 @@ export default function BuildDetail() {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+          {graphInfo?.schema && graphInfo.schema.nodes.length > 0 && (
+            <div style={{ margin: "6px 0 18px" }}>
+              <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+                Schema (interactive)
+              </div>
+              <Suspense fallback={<div className="muted">Loading schema…</div>}>
+                <SchemaGraph
+                  schema={graphInfo.schema}
+                  topEntities={graphInfo.top_entities}
+                  topConnections={graphInfo.top_connections}
+                />
+              </Suspense>
             </div>
           )}
           {graphInfo?.datasets && graphInfo.datasets.length > 0 && (

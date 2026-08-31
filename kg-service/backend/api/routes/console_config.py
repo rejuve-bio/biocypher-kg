@@ -64,3 +64,28 @@ def get_writers():
 @router.get("/flags")
 def get_flags():
     return {"flags": ci.list_flags()}
+
+
+@router.get("/mork/summary")
+def mork_summary():
+    """Live MORK stats (atomspace, so counts/versions rather than a node/edge schema)."""
+    from backend.core.mork_client import MORKClient
+
+    def _safe(fn):
+        try:
+            return fn()
+        except Exception:  # noqa: BLE001
+            return None
+
+    try:
+        client = MORKClient()
+        atom_count = client.get_atom_count()
+    except Exception as exc:  # noqa: BLE001 - MORK unreachable
+        return {"reachable": False, "error": str(exc)}
+    return {
+        "reachable": True,
+        "atom_count": atom_count,
+        "dataset_count": _safe(client.get_dataset_count),
+        "latest_version": _safe(client.get_latest_version),
+        "versions": _safe(client.get_all_versions) or [],
+    }
