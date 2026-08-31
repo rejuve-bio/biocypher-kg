@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# docker/up.sh — bring up the Console, attaching to existing Neo4j/MORK or creating bundled ones.
+# docker/up.sh — bring up the Console. If NEO4J_URI/MORK_URL are set in console.env
+# (an external instance), they are used verbatim; otherwise attach to one already
+# running on the port, or create a bundled one.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -14,6 +16,11 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 
 set -a; . "$ENV_FILE"; set +a
+
+# An explicit URL in the env (an external instance) wins over everything: used as-is,
+# no probing, no bundled service.
+ENV_NEO4J_URI="${NEO4J_URI:-}"
+ENV_MORK_URL="${MORK_URL:-}"
 
 NEO4J_HOST="${NEO4J_HOST:-}"
 NEO4J_BOLT_PORT="${NEO4J_BOLT_PORT:-7687}"
@@ -43,7 +50,10 @@ service_running() {
 PROFILES=()
 
 # ── Neo4j ────────────────────────────────────────────────────────────────────
-if service_running neo4j; then
+if [ -n "$ENV_NEO4J_URI" ]; then
+  echo "→ Neo4j: using NEO4J_URI from ${ENV_FILE} (${ENV_NEO4J_URI})"
+  export NEO4J_URI="$ENV_NEO4J_URI"
+elif service_running neo4j; then
   echo "✔ Neo4j: reusing the bundled service already running"
   PROFILES+=(--profile neo4j)
   export NEO4J_URI="bolt://neo4j:7687"
@@ -63,7 +73,10 @@ else
 fi
 
 # ── MORK ─────────────────────────────────────────────────────────────────────
-if service_running mork; then
+if [ -n "$ENV_MORK_URL" ]; then
+  echo "→ MORK: using MORK_URL from ${ENV_FILE} (${ENV_MORK_URL})"
+  export MORK_URL="$ENV_MORK_URL"
+elif service_running mork; then
   echo "✔ MORK: reusing the bundled service already running"
   PROFILES+=(--profile mork)
   export MORK_URL="http://mork:8027"
