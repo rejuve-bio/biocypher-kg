@@ -69,6 +69,7 @@ def get_flags():
 @router.get("/mork/summary")
 def mork_summary():
     """Live MORK stats (atomspace, so counts/versions rather than a node/edge schema)."""
+    from backend.core.config import settings
     from backend.core.mork_client import MORKClient
 
     def _safe(fn):
@@ -80,8 +81,10 @@ def mork_summary():
     try:
         client = MORKClient()
         atom_count = client.get_atom_count()
-    except Exception as exc:  # noqa: BLE001 - MORK unreachable
+    except ImportError as exc:  # MORK client library missing (a deploy problem)
         return {"reachable": False, "error": str(exc)}
+    except Exception:  # noqa: BLE001 - server down or unreachable at MORK_URL
+        return {"reachable": False, "error": f"Could not connect to MORK at {settings.MORK_URL}."}
     return {
         "reachable": True,
         "atom_count": atom_count,

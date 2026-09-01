@@ -5,26 +5,49 @@ Wraps MORK operations for API endpoints
 
 import json
 import importlib
+import importlib.util
 from pathlib import Path
 from backend.core.config import settings
 
 
+def _load_mork_class():
+    """Load the MORK client class.
+
+    The client is vendored at <repo_root>/biocypher-mork/client.py (the same
+    module every loader imports via ``from client import MORK``). We load it
+    directly by path under a unique module name to avoid depending on sys.path
+    order or colliding with the generic ``client`` module name. As a fallback
+    we accept an installed ``mork`` package that exposes ``MORK``.
+    """
+    # kg-service/backend/core/mork_client.py -> parents[3] is the repo root
+    # (locally) and /app (in the Docker image, where `COPY . .` lands).
+    repo_root = Path(__file__).resolve().parents[3]
+    client_py = repo_root / "biocypher-mork" / "client.py"
+    if client_py.is_file():
+        spec = importlib.util.spec_from_file_location("biocypher_mork_client", client_py)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.MORK
+    try:
+        mork_module = importlib.import_module("mork")
+        return getattr(mork_module, "MORK")
+    except Exception as exc:
+        raise ImportError(
+            f"Could not import the MORK client. Looked for the vendored client at "
+            f"{client_py} and for an installed 'mork' package, but neither is available."
+        ) from exc
+
+
 class MORKClient:
     """Client for MORK database operations"""
-    
+
     def __init__(self, mork_url: str = None, archive_base: str = None):
         if mork_url is None:
             mork_url = settings.MORK_URL
         if archive_base is None:
             archive_base = settings.ARCHIVE_BASE
 
-        try:
-            mork_module = importlib.import_module("mork")
-            mork_cls = getattr(mork_module, "MORK")
-        except Exception as exc:
-            raise ImportError(
-                "MORK package is not installed or does not expose MORK."
-            ) from exc
+        mork_cls = _load_mork_class()
 
         self.mork_url = mork_url
         self.server = mork_cls(mork_url)
@@ -73,17 +96,20 @@ class MORKClient:
         return 0
     
     def get_atom_count(self):
-        """Get approximate atom count from MORK"""
-        try:
-            with self.server.work_at("annotation") as scope:
-                data = scope.download_(max_results=1000)
-                data.block()
-                if data.data:
-                    lines = [l for l in data.data.split('\n') if l.strip() and not l.strip().startswith(';')]
-                    return len(lines)
-            return 0
-        except:
-            return 0
+        """Approximate atom count from the live MORK server.
+
+        This actually talks to the server, so it doubles as the reachability
+        probe. A connection error propagates to the caller (reported as
+        offline/unreachable) rather than being swallowed into a misleading 0.
+        An empty-but-reachable atomspace legitimately returns 0.
+        """
+        with self.server.work_at("annotation") as scope:
+            data = scope.download_(max_results=1000)
+            data.block()
+            if data.data:
+                lines = [l for l in data.data.split('\n') if l.strip() and not l.strip().startswith(';')]
+                return len(lines)
+        return 0
     
     def compare_versions(self, version1: str, version2: str, dataset: str = None):
         """Compare two versions"""
