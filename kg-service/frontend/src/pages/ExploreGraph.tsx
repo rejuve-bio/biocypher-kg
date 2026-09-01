@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SchemaGraph from "../components/SchemaGraph";
-import { api, obs, type GraphSummary, type DetailedSchema, type MorkSummary } from "../api/client";
+import { api, obs, type GraphSummary, type DetailedSchema, type MorkSummary, type MorkSchema } from "../api/client";
 
 type Target = "neo4j" | "mork";
 
@@ -16,6 +16,7 @@ export default function ExploreGraph() {
   const [neoErr, setNeoErr] = useState<string | null>(null);
 
   const [mork, setMork] = useState<MorkSummary | null>(null);
+  const [morkSchema, setMorkSchema] = useState<MorkSchema | null>(null);
   const [morkErr, setMorkErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,7 +35,9 @@ export default function ExploreGraph() {
     if (target !== "mork") return;
     setMorkErr(null);
     setMork(null);
+    setMorkSchema(null);
     api.morkSummary().then(setMork).catch((e) => setMorkErr(msgOf(e)));
+    api.morkSchema().then(setMorkSchema).catch(() => setMorkSchema(null));
   }, [target]);
 
   return (
@@ -101,16 +104,34 @@ export default function ExploreGraph() {
           {mork && mork.reachable && (
             <>
               <div className="row" style={{ gap: 24, margin: "12px 0 2px" }}>
+                <Meta
+                  label="Node types"
+                  value={morkSchema?.node_type_count ?? (morkSchema?.schema?.nodes.length ?? "—")}
+                />
+                <Meta label="Edge types" value={morkSchema?.edge_type_count ?? "—"} />
                 <Meta label="Atoms" value={mork.atom_count != null ? mork.atom_count.toLocaleString() : "—"} />
                 <Meta label="Datasets" value={mork.dataset_count ?? "—"} />
-                <Meta label="Version" value={mork.latest_version ?? "—"} />
+                <Meta label="Version" value={mork.latest_version?.version ?? "—"} />
               </div>
-              <p className="muted" style={{ fontSize: 13, lineHeight: 1.55, marginTop: 12 }}>
-                MORK is an atomspace of MeTTa atoms, not a labeled property graph, so it is shown
-                as counts and versions rather than a node and edge schema.
-              </p>
+
+              {morkSchema?.schema && morkSchema.schema.nodes.length > 0 ? (
+                <>
+                  {morkSchema.sampled && (
+                    <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
+                      Schema derived from a live sample of the atomspace; very rare types may be missing.
+                    </div>
+                  )}
+                  <SchemaGraph schema={morkSchema.schema} showCounts={false} />
+                </>
+              ) : (
+                <p className="muted" style={{ fontSize: 13, lineHeight: 1.55, marginTop: 12 }}>
+                  MORK is an atomspace of MeTTa atoms. The node and edge schema below is derived from
+                  the atom structure. This space has no recognizable node/edge atoms yet.
+                </p>
+              )}
+
               {mork.versions && mork.versions.length > 0 && (
-                <div style={{ marginTop: 12 }}>
+                <div style={{ marginTop: 14 }}>
                   <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Versions</div>
                   <div className="chips">
                     {mork.versions.slice(0, 24).map((v, i) => (

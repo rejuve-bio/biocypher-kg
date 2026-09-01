@@ -134,6 +134,8 @@ export const api = {
 
   morkSummary: () => json<MorkSummary>(fetch(`${BASE}/mork/summary`)),
 
+  morkSchema: () => json<MorkSchema>(fetch(`${BASE}/mork/schema`)),
+
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
@@ -168,8 +170,17 @@ export interface MorkSummary {
   error?: string;
   atom_count?: number | null;
   dataset_count?: number | null;
-  latest_version?: string | null;
+  latest_version?: { version?: string | null; build_id?: string | null; timestamp?: string | null } | null;
   versions?: unknown[];
+}
+
+export interface MorkSchema {
+  reachable: boolean;
+  error?: string;
+  schema?: DetailedSchema;
+  node_type_count?: number;
+  edge_type_count?: number;
+  sampled?: boolean;
 }
 
 export interface GraphSummary {

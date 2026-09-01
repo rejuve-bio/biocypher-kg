@@ -111,6 +111,99 @@ class MORKClient:
                 return len(lines)
         return 0
     
+    def _download_projected(self, pattern, template, max_results):
+        """Read-only pattern projection against the live atomspace.
+
+        Returns the matched lines (with duplicates). The projected templates only
+        ever emit clean type/label/property symbols, so callers dedupe locally.
+        """
+        with self.server.work_at("annotation") as scope:
+            cmd = scope.download(pattern, template, max_results=max_results)
+            cmd.block()
+            return [l.strip() for l in (cmd.data or "").split("\n") if l.strip()]
+
+    @staticmethod
+    def _tokens(line):
+        """Split a projected atom line into its symbols.
+
+        Projected outputs are either a bare symbol (`exon`) or a flat paren list
+        of clean symbols (`(part_of exon transcript)`), so whitespace splitting
+        after stripping the outer parens is sufficient. We never project ids or
+        values (which could contain spaces), only schema-level symbols.
+        """
+        line = line.strip()
+        if line.startswith("(") and line.endswith(")"):
+            line = line[1:-1]
+        return line.split()
+
+    def get_schema(self, max_results: int = 20000):
+        """Derive a node/edge schema from the live MORK atomspace.
+
+        MORK is an atomspace of MeTTa atoms, not a labeled property graph, so it
+        has no native schema. But the KG atoms are regular:
+
+            node        (<type> <id>)
+            node prop   (<prop> (<type> <id>) <value>)
+            edge        (<label> (<srcType> <srcId>) (<tgtType> <tgtId>))
+
+        so node types, edge types + their connections, and per-type properties
+        are all recoverable by projecting each shape and deduping. Returns the
+        same ``{"nodes": [...], "edges": [...]}`` shape the Neo4j schema uses,
+        plus a ``sampled`` flag when any projection hit ``max_results`` (rare
+        types may then be missing from a very large space).
+        """
+        from collections import defaultdict
+
+        edge_lines = self._download_projected("($rel ($st $sx) ($tt $tx))", "($rel $st $tt)", max_results)
+        node_lines = self._download_projected("($t $id)", "$t", max_results)
+        prop_lines = self._download_projected("($prop ($t $id) $val)", "($t $prop)", max_results)
+
+        sampled = any(len(lines) >= max_results for lines in (edge_lines, node_lines, prop_lines))
+
+        # Edges: distinct (label, srcType, tgtType).
+        edge_triples = set()
+        for line in edge_lines:
+            parts = self._tokens(line)
+            if len(parts) == 3:
+                edge_triples.add(tuple(parts))
+        edge_labels = {rel for rel, _, _ in edge_triples}
+
+        # Node types: declarations, plus any type that only appears as an endpoint.
+        node_types = {t for t in node_lines if t}
+        for _, st, tt in edge_triples:
+            node_types.add(st)
+            node_types.add(tt)
+
+        # Properties per type. The (prop (type id) value) shape also matches edges
+        # (label (src) (tgt)), so drop any "property" whose name is an edge label.
+        props_by_type = defaultdict(set)
+        for line in prop_lines:
+            parts = self._tokens(line)
+            if len(parts) == 2:
+                t, prop = parts
+                if prop not in edge_labels:
+                    props_by_type[t].add(prop)
+
+        nodes = [
+            {"data": {"id": t, "properties": sorted(props_by_type.get(t, []))}}
+            for t in sorted(node_types)
+        ]
+
+        connections = defaultdict(set)
+        for rel, st, tt in edge_triples:
+            connections[(st, tt)].add(rel)
+        edges = [
+            {"data": {"source": s, "target": t, "possible_connections": sorted(rels)}}
+            for (s, t), rels in sorted(connections.items())
+        ]
+
+        return {
+            "schema": {"nodes": nodes, "edges": edges},
+            "node_type_count": len(node_types),
+            "edge_type_count": len(edge_labels),
+            "sampled": sampled,
+        }
+
     def compare_versions(self, version1: str, version2: str, dataset: str = None):
         """Compare two versions"""
         # This will use the version_diff.py logic

@@ -92,3 +92,23 @@ def mork_summary():
         "latest_version": _safe(client.get_latest_version),
         "versions": _safe(client.get_all_versions) or [],
     }
+
+
+@router.get("/mork/schema")
+def mork_schema():
+    """Live MORK node/edge schema, derived from the atomspace structure.
+
+    MORK has no native schema, so this projects the KG atom shapes (read-only)
+    and returns the same node/edge schema the Neo4j Explore graph uses.
+    """
+    from backend.core.config import settings
+    from backend.core.mork_client import MORKClient
+
+    try:
+        client = MORKClient()
+        result = client.get_schema()
+    except ImportError as exc:  # MORK client library missing (a deploy problem)
+        return {"reachable": False, "error": str(exc)}
+    except Exception:  # noqa: BLE001 - server down or unreachable at MORK_URL
+        return {"reachable": False, "error": f"Could not connect to MORK at {settings.MORK_URL}."}
+    return {"reachable": True, **result}
