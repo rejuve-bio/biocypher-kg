@@ -136,6 +136,25 @@ export const api = {
 
   morkSchema: () => json<MorkSchema>(fetch(`${BASE}/mork/schema`)),
 
+  morkInstances: (type: string, limit = 50) =>
+    json<MorkInstances>(fetch(`${BASE}/mork/instances/${encodeURIComponent(type)}?limit=${limit}`)),
+
+  morkNeighbors: (type: string, id: string, limit = 50) =>
+    json<Neighborhood>(
+      fetch(`${BASE}/mork/neighbors/${encodeURIComponent(type)}/${encodeURIComponent(id)}?limit=${limit}`),
+    ),
+
+  morkQuery: (pattern: string, template: string | null, limit = 200) =>
+    json<PatternResult>(
+      fetch(`${BASE}/mork/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pattern, template, limit }),
+      }),
+    ),
+
+  morkAtoms: (limit = 200) => json<RawAtoms>(fetch(`${BASE}/mork/atoms?limit=${limit}`)),
+
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
@@ -158,7 +177,48 @@ export const obs = {
     json<EntitiesPage>(
       fetch(`${OBS}/entities/${encodeURIComponent(label)}?limit=${limit}&offset=${offset}`),
     ),
+  neighbors: (label: string, id: string, limit = 50) =>
+    json<Neighborhood>(
+      fetch(`${OBS}/entities/${encodeURIComponent(label)}/${encodeURIComponent(id)}/neighbors?limit=${limit}`),
+    ),
 };
+
+// ===== Shared instance-exploration shapes (Neo4j and MORK return the same) =====
+
+export interface Neighborhood {
+  type: string;
+  id: string;
+  properties: Record<string, unknown>;
+  outgoing: { rel: string; target_type: string; target_id: string }[];
+  incoming: { rel: string; source_type: string; source_id: string }[];
+  out_truncated?: boolean;
+  in_truncated?: boolean;
+}
+
+export interface MorkInstances {
+  reachable: boolean;
+  error?: string;
+  type?: string;
+  instances?: { id: string; properties: Record<string, string> }[];
+  returned?: number;
+  has_more?: boolean;
+}
+
+export interface PatternResult {
+  reachable: boolean;
+  error?: string;
+  rows?: string[];
+  parsed?: string[][];
+  count?: number;
+  truncated?: boolean;
+}
+
+export interface RawAtoms {
+  reachable: boolean;
+  error?: string;
+  atoms?: string[];
+  truncated?: boolean;
+}
 
 export interface DetailedSchema {
   nodes: { data: { id: string; properties: string[] } }[];
