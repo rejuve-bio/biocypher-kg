@@ -11,6 +11,7 @@ export default function PatternPanel() {
   const [pattern, setPattern] = useState(EXAMPLES[0].pattern);
   const [template, setTemplate] = useState(EXAMPLES[0].template);
   const [limit, setLimit] = useState(200);
+  const [distinct, setDistinct] = useState(true);
   const [result, setResult] = useState<PatternResult | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +19,7 @@ export default function PatternPanel() {
     setLoading(true);
     setResult(null);
     api
-      .morkQuery(pattern, template.trim() || null, limit)
+      .morkQuery(pattern, template.trim() || null, limit, distinct)
       .then(setResult)
       .catch((e) => setResult({ reachable: false, error: e instanceof Error ? e.message : String(e) }))
       .finally(() => setLoading(false));
@@ -67,6 +68,14 @@ export default function PatternPanel() {
           onChange={(e) => setLimit(Math.max(1, Math.min(2000, Number(e.target.value) || 1)))}
           style={{ width: 90 }}
         />
+        <label className="chip" style={{ padding: "6px 10px" }}>
+          <input type="checkbox" checked={distinct} onChange={(e) => setDistinct(e.target.checked)} />
+          Distinct rows
+        </label>
+      </div>
+      <div className="muted" style={{ fontSize: 11, marginTop: 6 }}>
+        The atomspace streams one row per matching atom. Distinct dedupes them, so a schema-shaped
+        projection (like all edges) returns the real handful of rows instead of one per instance.
       </div>
 
       {result && (
@@ -76,7 +85,11 @@ export default function PatternPanel() {
           ) : (
             <>
               <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-                {result.count ?? 0} rows{result.truncated ? " (capped at limit)" : ""}
+                {result.distinct
+                  ? `${result.count ?? 0} distinct row${(result.count ?? 0) === 1 ? "" : "s"}` +
+                    (result.matched ? ` (from ${result.matched.toLocaleString()} matches scanned)` : "") +
+                    (result.truncated ? " · more may exist" : "")
+                  : `${result.count ?? 0} rows` + (result.truncated ? " (capped at limit)" : "")}
               </div>
               <div className="query-results">
                 {columns ? (

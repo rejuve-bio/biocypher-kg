@@ -144,12 +144,12 @@ export const api = {
       fetch(`${BASE}/mork/neighbors/${encodeURIComponent(type)}/${encodeURIComponent(id)}?limit=${limit}`),
     ),
 
-  morkQuery: (pattern: string, template: string | null, limit = 200) =>
+  morkQuery: (pattern: string, template: string | null, limit = 200, distinct = true) =>
     json<PatternResult>(
       fetch(`${BASE}/mork/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pattern, template, limit }),
+        body: JSON.stringify({ pattern, template, limit, distinct }),
       }),
     ),
 
@@ -210,6 +210,8 @@ export interface PatternResult {
   rows?: string[];
   parsed?: string[][];
   count?: number;
+  matched?: number;
+  distinct?: boolean;
   truncated?: boolean;
 }
 

@@ -324,19 +324,46 @@ class MORKClient:
             "in_truncated": len(in_lines) > limit,
         }
 
-    def run_pattern(self, pattern: str, template: str = None, limit: int = 200):
+    def run_pattern(self, pattern: str, template: str = None, limit: int = 200, distinct: bool = True):
         """Run a read-only pattern download against the live atomspace.
 
         ``download`` never mutates the space (unlike ``transform``/``query``),
-        and the pattern is scoped to the ``annotation`` namespace. Returns the
-        raw result rows plus a parsed token view when each row is a flat list.
+        and the pattern is scoped to the ``annotation`` namespace. It streams one
+        row per matching atom with no dedup, so a template coarser than the
+        pattern (e.g. projecting every edge to its type triple) yields the same
+        row many times. With ``distinct`` (the default) we scan a wider window
+        and dedupe, so schema-shaped queries return the handful of real rows;
+        the raw match count is reported separately.
         """
         template = template or pattern
-        rows = self._download_projected(pattern, template, limit + 1)
-        truncated = len(rows) > limit
-        rows = rows[:limit]
+        scan = max(limit, 5000) if distinct else limit
+        raw = self._download_projected(pattern, template, scan + 1)
+        capped = len(raw) > scan
+        raw = raw[:scan]
+        matched = len(raw)
+
+        if distinct:
+            seen = set()
+            rows = []
+            for r in raw:
+                if r not in seen:
+                    seen.add(r)
+                    rows.append(r)
+            truncated = capped or len(rows) > limit
+            rows = rows[:limit]
+        else:
+            rows = raw[:limit]
+            truncated = capped or matched > limit
+
         parsed = [self._tokens(r) for r in rows]
-        return {"rows": rows, "parsed": parsed, "count": len(rows), "truncated": truncated}
+        return {
+            "rows": rows,
+            "parsed": parsed,
+            "count": len(rows),
+            "matched": matched,
+            "distinct": distinct,
+            "truncated": truncated,
+        }
 
     def get_raw_atoms(self, limit: int = 200):
         """A sample of raw atoms for the S-expression tree view."""

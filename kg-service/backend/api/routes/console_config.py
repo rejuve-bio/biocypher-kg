@@ -131,6 +131,7 @@ class PatternQuery(BaseModel):
     pattern: str
     template: str | None = None
     limit: int = 200
+    distinct: bool = True
 
 
 @router.post("/mork/query")
@@ -152,7 +153,7 @@ def mork_query(body: PatternQuery):
     except Exception:  # noqa: BLE001
         return {"reachable": False, "error": f"Could not connect to MORK at {settings.MORK_URL}."}
     try:
-        result = client.run_pattern(body.pattern, body.template, limit=limit)
+        result = client.run_pattern(body.pattern, body.template, limit=limit, distinct=body.distinct)
     except Exception as exc:  # noqa: BLE001 - malformed pattern / server-side query error
         return {"reachable": True, "error": f"Query failed: {exc}"}
     return {"reachable": True, **result}
