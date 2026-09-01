@@ -50,6 +50,7 @@ Usage:
 
 import argparse
 import csv
+import functools
 import gzip
 import json
 import logging
@@ -80,7 +81,6 @@ SPECIES = {
         "is_flybase": True,
         "anchor_genes_file": "config/dmel/dmel_anchor_genes.yaml",
         "anchor_id_key": "fbgn",
-        "default_input_dir": "/mnt/hdd_1/biocypher-kg/input/dmel",
         "default_output_dir": "samples/dmel",
         "gene_info_file": "aux_files/dmel/Drosophila_melanogaster.gene_info.gz",
         "string_taxon_prefix": "7227.",
@@ -91,7 +91,6 @@ SPECIES = {
         "is_flybase": False,
         "anchor_genes_file": "config/hsa/hsa_anchor_genes.yaml",
         "anchor_id_key": "ensg",
-        "default_input_dir": "/mnt/hdd_1/biocypher-kg/input/hsa",
         "default_output_dir": "samples/hsa",
         "string_taxon_prefix": "9606.",
         "gaf_id_space": "uniprot",
@@ -103,7 +102,6 @@ SPECIES = {
         "is_flybase": False,
         "anchor_genes_file": "config/mmu/mmu_anchor_genes.yaml",
         "anchor_id_key": "ensmusg",
-        "default_input_dir": "/mnt/hdd_1/biocypher-kg/input/mmu",
         "default_output_dir": "samples/mmu",
         "string_taxon_prefix": "10090.",
         "gaf_id_space": "mgi",
@@ -115,7 +113,6 @@ SPECIES = {
         "is_flybase": False,
         "anchor_genes_file": "config/rno/rno_anchor_genes.yaml",
         "anchor_id_key": "ensrnog",
-        "default_input_dir": "/mnt/hdd_1/biocypher-kg/input/rno",
         "default_output_dir": "samples/rno",
         "string_taxon_prefix": "10116.",
         "gaf_id_space": "rgd",
@@ -127,7 +124,6 @@ SPECIES = {
         "is_flybase": False,
         "anchor_genes_file": "config/cel/cel_anchor_genes.yaml",
         "anchor_id_key": "wbgene",
-        "default_input_dir": "/mnt/hdd_1/biocypher-kg/input/cel",
         "default_output_dir": "samples/cel",
         "string_taxon_prefix": "6239.",
         "gaf_id_space": "gene",
@@ -155,207 +151,49 @@ FBAL_RE = re.compile(r"FBal\d+")
 GTF_GENE_ID_RE = re.compile(r'gene_id "([^"]+)"')
 GTF_TRANSCRIPT_ID_RE = re.compile(r'transcript_id "([^"]+)"')
 
-# species -> logical_name -> (glob pattern relative to input_dir, stable output
-# relative path, or None if the source is backbone-only and never copied to
-# samples/). Patterns absorb release-version differences (fb_2026_02 vs
-# fb_2026_07, GENCODE/Ensembl release bumps, STRING/TFLink point releases,
-# ...) so this script keeps working whether --input-dir is a long-lived local
-# mirror or a fresh download_data.py output.
-SOURCE_FILES = {
-    "dmel": {
-        "gtf": ("ensembl/Drosophila_melanogaster.BDGP6.*.gtf.gz", "ensembl/Drosophila_melanogaster.gtf.gz"),
-        "uniprot_dat": ("uniprot/uniprot_sprot_invertebrates.dat.gz", "uniprot/uniprot_sprot_invertebrates.dat.gz"),
-        "gaf": ("flybase/gene_association.fb.gz", "flybase/gene_association.fb.gz"),
-        "string_ppi": ("string/7227.protein.links.v*.txt.gz", "string/7227.protein.links.txt.gz"),
-        "string_coexpression": ("string/7227.protein.links.detailed.v*.txt.gz", "string/7227.protein.links.detailed.txt.gz"),
-        "tflink": (
-            "tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v*.tsv.gz",
-            "tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat.tsv.gz",
-        ),
-        "fbgn_fbtr_fbpp_expanded": ("flybase/fbgn_fbtr_fbpp_expanded_fb_*.tsv.gz", "flybase/fbgn_fbtr_fbpp_expanded.tsv.gz"),
-        "fbgn_uniprot": ("flybase/fbgn_uniprot_fb_*.tsv.gz", "flybase/fbgn_uniprot.tsv.gz"),
-        "fbal_to_fbgn": ("flybase/fbal_to_fbgn_fb_*.tsv.gz", "flybase/fbal_to_fbgn.tsv.gz"),
-        "fca2_fbgn_gene": ("fca2/fca2_fbgn_gene_output.tsv.gz", "fca2/fca2_fbgn_gene_output.tsv.gz"),
-        "fca2_fbgn_transcript_gene": ("fca2/fca2_fbgn_transcriptGene_output.tsv.gz", "fca2/fca2_fbgn_transcriptGene_output.tsv.gz"),
-        "fca2_fbgn_mir_gene": ("fca2/fca2_fbgn_mir_gene_output.tsv.gz", "fca2/fca2_fbgn_mir_gene_output.tsv.gz"),
-        "fca2_fbgn_mir_transcript": ("fca2/fca2_fbgn_mir_transcript_output.tsv.gz", "fca2/fca2_fbgn_mir_transcript_output.tsv.gz"),
-        "afca_annotation": ("afca/afca_afca_annotation_group_by_mean.tsv.gz", "afca/afca_afca_annotation_group_by_mean.tsv.gz"),
-        "physical_interactions_mitab": ("flybase/physical_interactions_mitab_fb_*.tsv.gz", "flybase/physical_interactions_mitab.tsv.gz"),
-        "dmel_human_orthologs_disease": ("flybase/dmel_human_orthologs_disease_fb_*.tsv.gz", "flybase/dmel_human_orthologs_disease.tsv.gz"),
-        "dmel_paralogs": ("flybase/dmel_paralogs_fb_*.tsv.gz", "flybase/dmel_paralogs.tsv.gz"),
-        "gene_genetic_interactions": ("flybase/gene_genetic_interactions_fb_*.tsv.gz", "flybase/gene_genetic_interactions.tsv.gz"),
-        "allele_genetic_interactions": ("flybase/allele_genetic_interactions_fb_*.tsv.gz", "flybase/allele_genetic_interactions.tsv.gz"),
-        "gene_group_data": ("flybase/gene_group_data_fb_*.tsv.gz", "flybase/gene_group_data.tsv.gz"),
-        "signaling_pathway_group_data": ("flybase/signaling_pathway_group_data_fb_*.tsv.gz", "flybase/signaling_pathway_group_data.tsv.gz"),
-        "metabolic_pathway_group_data": ("flybase/metabolic_pathway_group_data_fb_*.tsv.gz", "flybase/metabolic_pathway_group_data.tsv.gz"),
-        "gene_groups_hgnc": ("flybase/gene_groups_HGNC_fb_*.tsv.gz", "flybase/gene_groups_HGNC.tsv.gz"),
-        "gene_sequence_ontology": (
-            "flybase/dmel_gene_sequence_ontology_annotations_fb_*.tsv.gz",
-            "flybase/dmel_gene_sequence_ontology_annotations.tsv.gz",
-        ),
-        "disease_model_annotations": ("flybase/disease_model_annotations_fb_*.tsv.gz", "flybase/disease_model_annotations.tsv.gz"),
-        "genotype_phenotype_data": ("flybase/genotype_phenotype_data_fb_*.tsv.gz", "flybase/genotype_phenotype_data.tsv.gz"),
-        "fbrf_pmid_pmcid_doi": ("flybase/fbrf_pmid_pmcid_doi_fb_*.tsv.gz", "flybase/fbrf_pmid_pmcid_doi.tsv.gz"),
-        # NOTE: RNASeq_library_adapter/expression_value_adapter dispatch by filename
-        # substring (e.g. "scRNA-Seq_gene_expression_fb" in filepath) to tell these
-        # three apart — the "_fb" marker must survive in the stable output name below,
-        # even though the release date after it is dropped.
-        "scrna_seq_gene_expression": ("flybase/scRNA-Seq_gene_expression_fb_*.tsv.gz", "flybase/scRNA-Seq_gene_expression_fb.tsv.gz"),
-        "high_throughput_gene_expression": (
-            "flybase/high-throughput_gene_expression_fb_*.tsv.gz",
-            "flybase/high-throughput_gene_expression_fb.tsv.gz",
-        ),
-        "gene_rpkm_report": ("flybase/gene_rpkm_report_fb_*.tsv.gz", "flybase/gene_rpkm_report_fb.tsv.gz"),
-        "bgee": ("bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz", "bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz"),
-        "epd": ("epd/Dm_EPDnew.bed.gz", "epd/Dm_EPDnew.bed.gz"),
-        "alliance_disease": ("alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"),
-        "alliance_orthology": ("alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"),
-        "reactome_pathways": ("reactome/ReactomePathways.txt", "reactome/ReactomePathways.txt"),
-        "reactome_pathways_relation": ("reactome/ReactomePathwaysRelation.txt", "reactome/ReactomePathwaysRelation.txt"),
-        "reactome_all_levels": ("reactome/Ensembl2Reactome_All_Levels.txt", "reactome/Ensembl2Reactome_All_Levels.txt"),
-        "reactome_reactions": ("reactome/Ensembl2ReactomeReactions.txt", "reactome/Ensembl2ReactomeReactions.txt"),
-        "reactome_reaction_pmids": ("reactome/ReactionPMIDS.txt", "reactome/ReactionPMIDS.txt"),
-        "reactome_reaction_exporter": ("reactome/reactome_reaction_exporter_All_species.txt", "reactome/reactome_reaction_exporter_All_species.txt"),
-        "reactome_chebi_pathways": ("reactome/ChEBI2Reactome_All_Levels.txt", "reactome/ChEBI2Reactome_All_Levels.txt"),
-        "reactome_chebi_reactions": ("reactome/ChEBI2ReactomeReactions.txt", "reactome/ChEBI2ReactomeReactions.txt"),
-        "reactome_ppi": ("reactome/reactome.all_species.interactions.tab-delimited.txt", "reactome/reactome.all_species.interactions.tab-delimited.txt"),
-        "rna_central_bed": ("rna_central/drosophila_melanogaster.BDGP6.46.bed.gz", "rna_central/drosophila_melanogaster.BDGP6.46.bed.gz"),
-        "rna_central_rfam": ("rna_central/rnacentral_rfam_annotations.tsv.gz", "rna_central/rnacentral_rfam_annotations.tsv.gz"),
-    },
-    "hsa": {
-        "gtf": ("gencode/gencode.v*.chr_patch_hapl_scaff.annotation.gtf.gz", "ensembl/gencode.gtf.gz"),
-        "uniprot_dat": ("uniprot/uniprot_sprot_human.dat.gz", "uniprot/uniprot_sprot_human.dat.gz"),
-        "gaf": ("gaf/goa_human.gaf.gz", "gaf/goa_human.gaf.gz"),
-        "string_ppi": ("string/9606.protein.links.v*.txt.gz", "string/9606.protein.links.txt.gz"),
-        "string_coexpression": ("string/9606.protein.links.detailed.v*.txt.gz", "string/9606.protein.links.detailed.txt.gz"),
-        "tflink": (
-            "tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat_v*.tsv.gz",
-            "tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat.tsv.gz",
-        ),
-        "bgee": ("bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz", "bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz"),
-        "epd": ("epd/Hs_EPDnew.bed.gz", "epd/Hs_EPDnew.bed.gz"),
-        "alliance_disease": ("alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"),
-        "alliance_orthology": ("alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"),
-        "reactome_pathways": ("reactome/ReactomePathways.txt", "reactome/ReactomePathways.txt"),
-        "reactome_pathways_relation": ("reactome/ReactomePathwaysRelation.txt", "reactome/ReactomePathwaysRelation.txt"),
-        "reactome_all_levels": ("reactome/Ensembl2Reactome_All_Levels.txt", "reactome/Ensembl2Reactome_All_Levels.txt"),
-        "reactome_reactions": ("reactome/Ensembl2ReactomeReactions.txt", "reactome/Ensembl2ReactomeReactions.txt"),
-        "reactome_reaction_pmids": ("reactome/ReactionPMIDS.txt", "reactome/ReactionPMIDS.txt"),
-        "reactome_reaction_exporter": ("reactome/reactome_reaction_exporter_All_species.txt", "reactome/reactome_reaction_exporter_All_species.txt"),
-        "reactome_pathways_go_bp": ("reactome/Pathways2GoTerms_human.txt", "reactome/Pathways2GoTerms_human.txt"),
-        "reactome_reactions_go_mf": ("reactome/Reactions2GoTerms_human.txt", "reactome/Reactions2GoTerms_human.txt"),
-        "reactome_chebi_pathways": ("reactome/ChEBI2Reactome_All_Levels.txt", "reactome/ChEBI2Reactome_All_Levels.txt"),
-        "reactome_chebi_reactions": ("reactome/ChEBI2ReactomeReactions.txt", "reactome/ChEBI2ReactomeReactions.txt"),
-        "reactome_ppi": ("reactome/reactome.all_species.interactions.tab-delimited.txt", "reactome/reactome.all_species.interactions.tab-delimited.txt"),
-        "rna_central_bed": ("rna_central/homo_sapiens.GRCh38.bed.gz", "rna_central/homo_sapiens.GRCh38.bed.gz"),
-        "rna_central_rfam": ("rna_central/rnacentral_rfam_annotations.tsv.gz", "rna_central/rnacentral_rfam_annotations.tsv.gz"),
-        "gwas": ("gwas/gwas-catalog-download-associations-v1.0-full.tsv", "gwas/gwas-catalog-download-associations-v1.0-full.tsv"),
-        "hpo_gene_phenotype": ("hpo/genes_to_phenotype.txt", "hpo/genes_to_phenotype.txt"),
-        "hpo_gene_disease": ("hpo/genes_to_disease.txt", "hpo/genes_to_disease.txt"),
-        "tadmap": ("tadmap/TADMap_geneset_hs.csv", "tadmap/TADMap_geneset_hs.csv"),
-        "tfbs": ("tfbs/encRegTfbsClustered.txt.gz", "tfbs/encRegTfbsClustered.txt.gz"),
-        "abc": ("abc/abc.forgedb.csv.gz", "abc/abc.forgedb.csv.gz"),
-        "cadd": ("cadd/cadd.forgedb.csv.gz", "cadd/cadd.forgedb.csv.gz"),
-        "refseq_closest_gene": ("refseq/closest_gene.forgedb.csv.gz", "refseq/closest_gene.forgedb.csv.gz"),
-        "topld_afr": ("topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz", "topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz"),
-        "topld_eas": ("topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz", "topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz"),
-        "topld_eur": ("topld/EUR/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz", "topld/EUR/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz"),
-        "topld_sas": ("topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz", "topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz"),
-        "gtex_forgedb": ("gtex/eqtl/gtex.forgedb.csv.gz", "gtex/eqtl/gtex.forgedb.csv.gz"),
-        "hocomoco_annotation": ("hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv", "hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv"),
-        "dbsuper": ("dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz", "dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz"),
-        "peregrine_enhancers": ("peregrine/PEREGRINEenhancershg38.gz", "peregrine/PEREGRINEenhancershg38.gz"),
-        "peregrine_sources": ("peregrine/PEREGRINEenhancersources.gz", "peregrine/PEREGRINEenhancersources.gz"),
-        "peregrine_gene_link": ("peregrine/enhancer_gene_link_18.tsv.gz", "peregrine/enhancer_gene_link_18.tsv.gz"),
-        "dbsnp_common_vcf": ("dbsnp/00-common_all.vcf.gz", "dbsnp/00-common_all.vcf.gz"),
-        "enhancer_atlas_bed": ("enhancer_atlas/hs.bed.gz", "enhancer_atlas/hs.bed.gz"),
-        "ccre_closest_genes_all": ("cCRE/GRCh38-Closest-Genes-All.tsv.gz", "cCRE/GRCh38-Closest-Genes-All.tsv.gz"),
-        "ccre_closest_genes_pc": ("cCRE/GRCh38-Closest-Genes-PC.tsv.gz", "cCRE/GRCh38-Closest-Genes-PC.tsv.gz"),
-        "ccre_eqtl_gene_links": ("cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz", "cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz"),
-        "motif_diff": ("motif_diff/_mono_probNorm_average.diff", "motif_diff/_mono_probNorm_average.diff"),
-        "roadmap_dhs": ("forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz", "forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz"),
-    },
-    "mmu": {
-        "gtf": ("gencode/gencode.vM*.chr_patch_hapl_scaff.annotation.gtf.gz", "ensembl/gencode.gtf.gz"),
-        "uniprot_dat": ("uniprot/uniprot_sprot_rodents.dat.gz", "uniprot/uniprot_sprot_rodents.dat.gz"),
-        "gaf": ("gaf/mgi.gaf.gz", "gaf/mgi.gaf.gz"),
-        "string_ppi": ("string/10090.protein.links.v*.txt.gz", "string/10090.protein.links.txt.gz"),
-        "string_coexpression": ("string/10090.protein.links.detailed.v*.txt.gz", "string/10090.protein.links.detailed.txt.gz"),
-        "tflink": (
-            "tflink/TFLink_Mus_musculus_interactions_All_simpleFormat_v*.tsv.gz",
-            "tflink/TFLink_Mus_musculus_interactions_All_simpleFormat.tsv.gz",
-        ),
-        "gene_info": ("ensembl/Mus_musculus.gene_info.gz", None),
-        "bgee": ("bgee/Mus_musculus_expr_simple_all_conditions.tsv.gz", "bgee/Mus_musculus_expr_simple_all_conditions.tsv.gz"),
-        "epd": ("epd/Mm_EPDnew.bed.gz", "epd/Mm_EPDnew.bed.gz"),
-        "alliance_disease": ("alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"),
-        "alliance_orthology": ("alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"),
-        "reactome_pathways": ("reactome/ReactomePathways.txt", "reactome/ReactomePathways.txt"),
-        "reactome_pathways_relation": ("reactome/ReactomePathwaysRelation.txt", "reactome/ReactomePathwaysRelation.txt"),
-        "reactome_all_levels": ("reactome/Ensembl2Reactome_All_Levels.txt", "reactome/Ensembl2Reactome_All_Levels.txt"),
-        "reactome_reactions": ("reactome/Ensembl2ReactomeReactions.txt", "reactome/Ensembl2ReactomeReactions.txt"),
-        "reactome_reaction_pmids": ("reactome/ReactionPMIDS.txt", "reactome/ReactionPMIDS.txt"),
-        "reactome_reaction_exporter": ("reactome/reactome_reaction_exporter_All_species.txt", "reactome/reactome_reaction_exporter_All_species.txt"),
-        "reactome_chebi_pathways": ("reactome/ChEBI2Reactome_All_Levels.txt", "reactome/ChEBI2Reactome_All_Levels.txt"),
-        "reactome_chebi_reactions": ("reactome/ChEBI2ReactomeReactions.txt", "reactome/ChEBI2ReactomeReactions.txt"),
-        "reactome_ppi": ("reactome/reactome.all_species.interactions.tab-delimited.txt", "reactome/reactome.all_species.interactions.tab-delimited.txt"),
-        "rna_central_bed": ("rna_central/mus_musculus.GRCm39.bed.gz", "rna_central/mus_musculus.GRCm39.bed.gz"),
-        "rna_central_rfam": ("rna_central/rnacentral_rfam_annotations.tsv.gz", "rna_central/rnacentral_rfam_annotations.tsv.gz"),
-    },
-    "rno": {
-        "gtf": ("ensembl/Rattus_norvegicus.GRCr8.*.gtf.gz", "ensembl/Rattus_norvegicus.gtf.gz"),
-        "uniprot_dat": ("uniprot/uniprot_sprot_rodents.dat.gz", "uniprot/uniprot_sprot_rodents.dat.gz"),
-        "gaf": ("gaf/rgd.gaf.gz", "gaf/rgd.gaf.gz"),
-        "string_ppi": ("string/10116.protein.links.v*.txt.gz", "string/10116.protein.links.txt.gz"),
-        "string_coexpression": ("string/10116.protein.links.detailed.v*.txt.gz", "string/10116.protein.links.detailed.txt.gz"),
-        "tflink": (
-            "tflink/TFLink_Rattus_norvegicus_interactions_All_simpleFormat_v*.tsv.gz",
-            "tflink/TFLink_Rattus_norvegicus_interactions_All_simpleFormat.tsv.gz",
-        ),
-        "gene_info": ("ensembl/Rattus_norvegicus.gene_info.gz", None),
-        "bgee": ("bgee/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz", "bgee/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz"),
-        "epd": ("epd/Rn_EPDnew.bed.gz", "epd/Rn_EPDnew.bed.gz"),
-        "alliance_disease": ("alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"),
-        "alliance_orthology": ("alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"),
-        "reactome_pathways": ("reactome/ReactomePathways.txt", "reactome/ReactomePathways.txt"),
-        "reactome_pathways_relation": ("reactome/ReactomePathwaysRelation.txt", "reactome/ReactomePathwaysRelation.txt"),
-        "reactome_all_levels": ("reactome/Ensembl2Reactome_All_Levels.txt", "reactome/Ensembl2Reactome_All_Levels.txt"),
-        "reactome_reactions": ("reactome/Ensembl2ReactomeReactions.txt", "reactome/Ensembl2ReactomeReactions.txt"),
-        "reactome_reaction_pmids": ("reactome/ReactionPMIDS.txt", "reactome/ReactionPMIDS.txt"),
-        "reactome_reaction_exporter": ("reactome/reactome_reaction_exporter_All_species.txt", "reactome/reactome_reaction_exporter_All_species.txt"),
-        "reactome_chebi_pathways": ("reactome/ChEBI2Reactome_All_Levels.txt", "reactome/ChEBI2Reactome_All_Levels.txt"),
-        "reactome_chebi_reactions": ("reactome/ChEBI2ReactomeReactions.txt", "reactome/ChEBI2ReactomeReactions.txt"),
-        "reactome_ppi": ("reactome/reactome.all_species.interactions.tab-delimited.txt", "reactome/reactome.all_species.interactions.tab-delimited.txt"),
-        "rna_central_bed": ("rna_central/rattus_norvegicus.mRatBN7.2.bed.gz", "rna_central/rattus_norvegicus.mRatBN7.2.bed.gz"),
-        "rna_central_rfam": ("rna_central/rnacentral_rfam_annotations.tsv.gz", "rna_central/rnacentral_rfam_annotations.tsv.gz"),
-    },
-    "cel": {
-        "gtf": ("ensembl/Caenorhabditis_elegans.WBcel235.*.gtf.gz", "ensembl/Caenorhabditis_elegans.gtf.gz"),
-        "uniprot_dat": ("uniprot/uniprot_sprot_invertebrates.dat.gz", "uniprot/uniprot_sprot_invertebrates.dat.gz"),
-        "gaf": ("gaf/wb.gaf.gz", "gaf/wb.gaf.gz"),
-        "string_ppi": ("string/6239.protein.links.v*.txt.gz", "string/6239.protein.links.txt.gz"),
-        "string_coexpression": ("string/6239.protein.links.detailed.v*.txt.gz", "string/6239.protein.links.detailed.txt.gz"),
-        "tflink": (
-            "tflink/TFLink_Caenorhabditis_elegans_interactions_All_simpleFormat_v*.tsv.gz",
-            "tflink/TFLink_Caenorhabditis_elegans_interactions_All_simpleFormat.tsv.gz",
-        ),
-        "bgee": ("bgee/Caenorhabditis_elegans_expr_simple_all_conditions.tsv.gz", "bgee/Caenorhabditis_elegans_expr_simple_all_conditions.tsv.gz"),
-        "epd": ("epd/Ce_EPDnew.bed.gz", "epd/Ce_EPDnew.bed.gz"),
-        "alliance_disease": ("alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"),
-        "alliance_orthology": ("alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"),
-        "reactome_pathways": ("reactome/ReactomePathways.txt", "reactome/ReactomePathways.txt"),
-        "reactome_pathways_relation": ("reactome/ReactomePathwaysRelation.txt", "reactome/ReactomePathwaysRelation.txt"),
-        "reactome_all_levels": ("reactome/Ensembl2Reactome_All_Levels.txt", "reactome/Ensembl2Reactome_All_Levels.txt"),
-        "reactome_reactions": ("reactome/Ensembl2ReactomeReactions.txt", "reactome/Ensembl2ReactomeReactions.txt"),
-        "reactome_reaction_pmids": ("reactome/ReactionPMIDS.txt", "reactome/ReactionPMIDS.txt"),
-        "reactome_reaction_exporter": ("reactome/reactome_reaction_exporter_All_species.txt", "reactome/reactome_reaction_exporter_All_species.txt"),
-        "reactome_chebi_pathways": ("reactome/ChEBI2Reactome_All_Levels.txt", "reactome/ChEBI2Reactome_All_Levels.txt"),
-        "reactome_chebi_reactions": ("reactome/ChEBI2ReactomeReactions.txt", "reactome/ChEBI2ReactomeReactions.txt"),
-        "reactome_ppi": ("reactome/reactome.all_species.interactions.tab-delimited.txt", "reactome/reactome.all_species.interactions.tab-delimited.txt"),
-        "rna_central_bed": ("rna_central/caenorhabditis_elegans.WBcel235.bed.gz", "rna_central/caenorhabditis_elegans.WBcel235.bed.gz"),
-        "rna_central_rfam": ("rna_central/rnacentral_rfam_annotations.tsv.gz", "rna_central/rnacentral_rfam_annotations.tsv.gz"),
-    },
-}
+
+def data_source_config_path(species):
+    return f"config/{species}/{species}_data_source_config.yaml"
+
+
+@functools.lru_cache(maxsize=None)
+def load_data_source_config(species):
+    with open(data_source_config_path(species)) as f:
+        return yaml.safe_load(f)
+
+
+def species_input_dir(species):
+    """The real, full-size source data dir this species' sample generation reads
+    from by default — the `input_dir:` top-level key in that species'
+    data_source_config.yaml (also where biocypher_dataset_downloader/download_data.py
+    downloads to), overridable per call via --input-dir.
+    """
+    return load_data_source_config(species)["input_dir"]
+
+
+@functools.lru_cache(maxsize=None)
+def local_files_index(species):
+    """Flatten every source_id's `local_files:` sub-dict in this species'
+    data_source_config.yaml into name -> (pattern, stable_name, source_id).
+    `pattern` is a glob relative to input_dir (absorbs release-version
+    differences: fb_2026_02 vs fb_2026_07, GENCODE/Ensembl release bumps,
+    STRING/TFLink point releases, ...). `stable_name` is the version-free
+    relative path used when writing the filtered sample output (None if this
+    source is backbone-only and never copied to samples/). `source_id` is the
+    top-level data_source_config.yaml key that owns this file — used to
+    auto-download it if missing (see ensure_required_files) — with no url:
+    for local_files that aren't download-managed at all (e.g. dmel's
+    fca2/afca atlases, hsa's PEREGRINE/motif_diff/roadmap forgedb files).
+    """
+    cfg = load_data_source_config(species)
+    index = {}
+    for source_id, source_config in cfg.items():
+        if source_id in ("name", "input_dir") or not isinstance(source_config, dict):
+            continue
+        for name, spec in (source_config.get("local_files") or {}).items():
+            index[name] = (spec["pattern"], spec.get("stable_name"), source_id)
+    return index
+
 
 # (species, name) -> fallback directory to search when the primary glob comes up
 # empty under input_dir. "INPUT_ROOT" means "input_dir itself, no subfolder"
@@ -380,15 +218,16 @@ def open_maybe_gzip(path, mode="rt", **kwargs):
 
 
 def resolve_source_file(input_dir, species, name):
-    """Glob-resolve a real input file by logical name (see SOURCE_FILES), so
-    release-versioned filenames (fb_2026_02, BDGP6.54.62, gencode.v49, v12.0,
-    ...) don't need to be hardcoded. Excludes GTF's '.chr.-only-annotation'
-    false positives are not an issue here since chr_patch_hapl_scaff is the
-    wanted file; dmel's '.chr.' exclusion stays dmel-specific via the pattern
-    itself. Picks the lexicographically last match when several releases
-    coexist (version strings sort chronologically).
+    """Glob-resolve a real input file by logical name (see local_files: in
+    config/<species>/<species>_data_source_config.yaml), so release-versioned
+    filenames (fb_2026_02, BDGP6.54.62, gencode.v49, v12.0, ...) don't need to
+    be hardcoded. Excludes GTF's '.chr.-only-annotation' false positives are
+    not an issue here since chr_patch_hapl_scaff is the wanted file; dmel's
+    '.chr.' exclusion stays dmel-specific via the pattern itself. Picks the
+    lexicographically last match when several releases coexist (version
+    strings sort chronologically).
     """
-    pattern, _ = SOURCE_FILES[species][name]
+    pattern, _, _ = local_files_index(species)[name]
     exclude = (lambda p: ".chr." not in p.name) if species == "dmel" and name == "gtf" else (lambda p: True)
     matches = sorted(p for p in input_dir.glob(pattern) if exclude(p))
     search_root = input_dir
@@ -414,10 +253,111 @@ def resolve_source_file(input_dir, species, name):
 
 
 def output_path_for(output_dir, species, name):
-    _, stable_name = SOURCE_FILES[species][name]
+    _, stable_name, _ = local_files_index(species)[name]
     if stable_name is None:
         raise ValueError(f"Source '{name}' for species '{species}' is backbone-only, has no output path")
     return output_dir / stable_name
+
+
+def _file_present(input_dir, species, name):
+    try:
+        resolve_source_file(input_dir, species, name)
+        return True
+    except FileNotFoundError:
+        return False
+
+
+_DOWNLOAD_KEYS = ("url", "directories", "zip_extract", "bucket", "bed_url", "ep_base_url")
+
+
+def _is_download_managed(species, source_id):
+    """Whether this source_id's data_source_config.yaml entry actually has a
+    download recipe (any of DownloadManager.process_download's recognised
+    keys), as opposed to being a local_files:-only placeholder for a file
+    that isn't download-managed at all (dmel's fca2/afca atlases, hsa's
+    PEREGRINE/motif_diff/roadmap forgedb files — real, pre-existing gaps).
+    """
+    source_config = load_data_source_config(species).get(source_id, {})
+    return any(k in source_config for k in _DOWNLOAD_KEYS)
+
+
+def ensure_required_files(species, input_dir, interactive=True):
+    """Check, up front, that every real source file this species' sample
+    generation will read is present under input_dir. If any are missing, list
+    them (flagging which ones can be fetched automatically via
+    biocypher_dataset_downloader vs. which need to be obtained manually) and
+    ask the user whether to download the missing ones now. Returns False if
+    the user declines, so the caller can abort before doing any processing.
+
+    interactive=False (used by download_data.py's post-download bridge, which
+    always runs right after its own download_all() already ran) skips the
+    prompt entirely: known-missing files that aren't download-managed at all
+    (dmel's fca2/afca, hsa's PEREGRINE/motif_diff/roadmap forgedb files, ...)
+    would otherwise block that automated call on stdin every single run.
+    """
+    data_source_config_path_ = data_source_config_path(species)
+
+    logger.info("Checking required source files for '%s' under %s...", species, input_dir)
+    missing = []
+    for name, (pattern, _, source_id) in local_files_index(species).items():
+        if not _file_present(input_dir, species, name):
+            missing.append((name, pattern, source_id if _is_download_managed(species, source_id) else None))
+
+    if not missing:
+        logger.info("All required source files are present.")
+        return True
+
+    if not interactive:
+        logger.warning(
+            "Missing (non-interactive call, continuing): %s",
+            ", ".join(sorted(name for name, _, _ in missing)),
+        )
+        return True
+
+    print(f"\n{len(missing)} required source file(s) missing under {input_dir}:")
+    downloadable_ids = set()
+    for name, pattern, source_id in sorted(missing):
+        if source_id:
+            print(f"  - [{name}] {pattern}  (downloadable: source '{source_id}')")
+            downloadable_ids.add(source_id)
+        else:
+            print(f"  - [{name}] {pattern}  (no known download source — obtain manually)")
+
+    if downloadable_ids:
+        prompt = (
+            f"\n{len(downloadable_ids)} download source(s) ({', '.join(sorted(downloadable_ids))}) "
+            f"can be fetched via {data_source_config_path_} to cover {sum(1 for *_, s in missing if s)} "
+            f"of the {len(missing)} missing file(s). Download them now and continue? [y/N]: "
+        )
+    else:
+        prompt = "\nNone of the missing files can be downloaded automatically. Continue anyway? [y/N]: "
+
+    reply = input(prompt).strip().lower()
+    if reply not in ("y", "yes"):
+        print("Aborting: required source files are missing.")
+        return False
+
+    failed_ids = []
+    if downloadable_ids:
+        from biocypher_dataset_downloader.download_manager import DownloadManager
+        manager = DownloadManager(data_source_config_path_, input_dir)
+        for source_id in sorted(downloadable_ids):
+            logger.info("Downloading missing source '%s' -> %s/%s ...", source_id, input_dir, source_id)
+            try:
+                manager.download_source(source_id)
+            except Exception as e:
+                logger.error("Download of source '%s' failed (%s: %s) — skipping it, continuing with the rest.", source_id, type(e).__name__, e)
+                failed_ids.append(source_id)
+
+    still_missing = [name for name in local_files_index(species) if not _file_present(input_dir, species, name)]
+    if still_missing:
+        logger.warning(
+            "Still missing after download: %s. Continuing anyway — the run will fail if any of these are actually needed.",
+            ", ".join(sorted(still_missing)),
+        )
+    if failed_ids:
+        logger.warning("Source(s) that failed to download: %s", ", ".join(failed_ids))
+    return True
 
 
 def copy_header_comments_and_filter(input_path, output_path, keep_fn, min_cols=1):
@@ -2721,10 +2661,13 @@ def _generate_hsa_phase2_extension(species, input_dir, output_dir, id_sets, reco
     record("reactome_reactions_go_mf", n, empty_ok_reason="no GO molecular_function terms for referenced reactions")
 
 
-def generate_sample(species, input_dir, output_dir, size_budget, anchor_genes_file):
+def generate_sample(species, input_dir, output_dir, size_budget, anchor_genes_file, interactive=True):
     cfg = SPECIES[species]
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
+
+    if not ensure_required_files(species, input_dir, interactive=interactive):
+        return None
 
     logger.info("Loading anchor genes from %s", anchor_genes_file)
     anchor_gene_ids = load_anchor_genes(anchor_genes_file, cfg["anchor_id_key"])
@@ -2781,17 +2724,42 @@ def generate_sample(species, input_dir, output_dir, size_budget, anchor_genes_fi
     return manifest
 
 
+def _configured_species_names():
+    species_config_path = Path(__file__).resolve().parent.parent / "config" / "species_config.yaml"
+    with open(species_config_path) as f:
+        return sorted(yaml.safe_load(f).keys())
+
+
 def main():
+    species_names = _configured_species_names()
+
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--species", choices=sorted(SPECIES.keys()), default="dmel")
-    parser.add_argument("--input-dir", default=None, help="Real, full-size source data dir (long-lived mirror, or a download_data.py output dir)")
-    parser.add_argument("--output-dir", default=None, help="Where to write the filtered sample")
+    parser.add_argument("--species", choices=species_names + ["all"], default=None)
+    parser.add_argument("--input-dir", default=None, help="Real, full-size source data dir (long-lived mirror, or a download_data.py output dir). Ignored with --species all.")
+    parser.add_argument("--output-dir", default=None, help="Where to write the filtered sample. Ignored with --species all.")
     parser.add_argument("--size-budget", type=int, default=180)
-    parser.add_argument("--anchor-genes-file", default=None)
+    parser.add_argument("--anchor-genes-file", default=None, help="Ignored with --species all.")
     args = parser.parse_args()
 
+    if args.species is None:
+        print("Usage: generate_connected_sample.py --species {" + ",".join(species_names + ["all"]) + "} [options]")
+        print()
+        print("Available species (from config/species_config.yaml):")
+        for name in species_names:
+            print(f"  {name}")
+        print("  all  (generate every species above, one after another)")
+        return
+
+    if args.species == "all":
+        if args.input_dir or args.output_dir or args.anchor_genes_file:
+            parser.error("--input-dir/--output-dir/--anchor-genes-file are per-species and can't be combined with --species all")
+        for name in species_names:
+            cfg = SPECIES[name]
+            generate_sample(name, species_input_dir(name), cfg["default_output_dir"], args.size_budget, cfg["anchor_genes_file"])
+        return
+
     cfg = SPECIES[args.species]
-    input_dir = args.input_dir or cfg["default_input_dir"]
+    input_dir = args.input_dir or species_input_dir(args.species)
     output_dir = args.output_dir or cfg["default_output_dir"]
     anchor_genes_file = args.anchor_genes_file or cfg["anchor_genes_file"]
 

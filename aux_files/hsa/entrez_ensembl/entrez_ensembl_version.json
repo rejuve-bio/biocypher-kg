@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-08-12T13:42:03.836913",
+  "timestamp": "2026-08-23T14:39:37.597376",
   "processor": "entrez_ensembl",
-  "entries": 124499,
+  "entries": 124505,
   "remote_metadata": {
     "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz": {
       "url": "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
-      "last_modified": "Wed, 12 Aug 2026 07:40:52 GMT",
+      "last_modified": "Wed, 19 Aug 2026 11:22:24 GMT",
       "etag": null,
-      "content_length": "5175546",
-      "checked_at": "2026-08-12T13:42:08.823980"
+      "content_length": "5179376",
+      "checked_at": "2026-08-23T14:39:40.587661"
     },
     "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz": {
       "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz",
       "last_modified": "Tue, 02 Sep 2025 16:44:35 GMT",
       "etag": "\"5d0cd1c-63dd43400f360\"",
       "content_length": "97570076",
-      "checked_at": "2026-08-12T13:42:09.951011"
+      "checked_at": "2026-08-23T14:39:41.373634"
     }
   }
 }

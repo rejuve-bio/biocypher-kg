@@ -552,24 +552,7 @@ on it catching everything preemptively; check the node/edge pairing logic
 yourself when wiring a new derived-ID source.
 
 **Step 4 — if real data comes back empty, verify before assuming it's a
-genuine gap.** Two real false-positives from this branch's history: case
-sensitivity (`grep "DR   BGEE"` found zero rows; the real line prefix is
-`DR   Bgee`, mixed case — the adapter's own `get_dbxrefs()` already
-uppercases before comparing, the bug was in the check, not the data);
-checking only the filtered subset, not the raw source (always grep/check
-the **unfiltered** real input file too before concluding "no data exists" —
-and check it precisely: an earlier pass here mistakenly checked a stale,
-5MB, half-downloaded `uniprot_sprot_human.dat` sitting next to the real
-119MB `.dat.gz`, and reported zero. The real file has 378 BINDING-feature
-`ligand_part_id` qualifiers across 177 distinct accessions — but **none**
-of those 177 accessions are among hsa's own 202-accession closure. So the
-end result (0 real rows in hsa's sample) is still correct, but the reason
-is a **scoping gap** — hsa's curated 180-gene closure (housekeeping genes)
-just doesn't happen to include any of the specific enzymes this rare
-annotation concentrates on — not a **data-availability gap** in UniProt
-itself. Get the "why" right, not just the row count: it changes whether
-the fix, if ever needed, is "expand the closure" vs. "there's nothing to
-fix.").
+genuine gap.
 
 Only after confirming genuine absence: leave it empty with
 `record(..., empty_ok_reason="...")`, or — if the edge type is

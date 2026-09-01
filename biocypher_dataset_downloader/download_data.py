@@ -37,6 +37,7 @@ def _generate_connected_sample(config_file: str, output_dir: Path, size_budget: 
         output_dir=str(sample_output_dir),
         size_budget=size_budget,
         anchor_genes_file=anchor_genes_file,
+        interactive=False,
     )
     logging.info("Connected sample generation complete.")
 

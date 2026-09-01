@@ -1,4 +1,6 @@
 # ---
+input_dir: /mnt/hdd_1/biocypher-kg/input/dmel
+
 alliance:    # agr: alliance of genome resource
   name: Alliance Genome Resource
   version: {strategy: url_regex, pattern: 'alliancegenome\.org/(\d+\.\d+\.\d+)/', vtype: semver}
@@ -10,11 +12,16 @@ alliance:    # agr: alliance of genome resource
     - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
     - https://download.alliancegenome.org/8.3.0/VCF/R6/VCF_R6_7.vcf.gz
     - https://download.alliancegenome.org/8.3.0/VARIANT-ALLELE/NCBITaxon7227/VARIANT-ALLELE_NCBITaxon7227_8.tsv.gz
+  local_files:
+    alliance_disease: {pattern: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"}
+    alliance_orthology: {pattern: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"}
 
 bgee:
   name: Bgee Expression Data
   extract: false
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz
+  local_files:
+    bgee: {pattern: "bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz", stable_name: "bgee/Drosophila_melanogaster_expr_simple_all_conditions.tsv.gz"}
 
 coxpressdb:
   name: Coxpress DB
@@ -27,11 +34,15 @@ ensembl:
   extract: false
   url: 
     - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.63.gtf.gz
+  local_files:
+    gtf: {pattern: "ensembl/Drosophila_melanogaster.BDGP6.*.gtf.gz", stable_name: "ensembl/Drosophila_melanogaster.gtf.gz"}
 
 epd:
   name: Eukaryotic Promoter Database
   compress: gzip
   url: https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/Dm_EPDnew.bed
+  local_files:
+    epd: {pattern: "epd/Dm_EPDnew.bed.gz", stable_name: "epd/Dm_EPDnew.bed.gz"}
 
 flybase:
   name: Flybase 2026_01
@@ -68,6 +79,27 @@ flybase:
   move_to:
     - fb_synonym_fb_2026_02.tsv.gz: ./aux_files/dmel/
     - fbal_to_fbgn_fb_2026_02.tsv.gz: ./aux_files/dmel/
+  local_files:
+    allele_genetic_interactions: {pattern: "flybase/allele_genetic_interactions_fb_*.tsv.gz", stable_name: "flybase/allele_genetic_interactions.tsv.gz"}
+    disease_model_annotations: {pattern: "flybase/disease_model_annotations_fb_*.tsv.gz", stable_name: "flybase/disease_model_annotations.tsv.gz"}
+    dmel_human_orthologs_disease: {pattern: "flybase/dmel_human_orthologs_disease_fb_*.tsv.gz", stable_name: "flybase/dmel_human_orthologs_disease.tsv.gz"}
+    dmel_paralogs: {pattern: "flybase/dmel_paralogs_fb_*.tsv.gz", stable_name: "flybase/dmel_paralogs.tsv.gz"}
+    fbal_to_fbgn: {pattern: "flybase/fbal_to_fbgn_fb_*.tsv.gz", stable_name: "flybase/fbal_to_fbgn.tsv.gz"}
+    fbgn_fbtr_fbpp_expanded: {pattern: "flybase/fbgn_fbtr_fbpp_expanded_fb_*.tsv.gz", stable_name: "flybase/fbgn_fbtr_fbpp_expanded.tsv.gz"}
+    fbgn_uniprot: {pattern: "flybase/fbgn_uniprot_fb_*.tsv.gz", stable_name: "flybase/fbgn_uniprot.tsv.gz"}
+    fbrf_pmid_pmcid_doi: {pattern: "flybase/fbrf_pmid_pmcid_doi_fb_*.tsv.gz", stable_name: "flybase/fbrf_pmid_pmcid_doi.tsv.gz"}
+    gaf: {pattern: "flybase/gene_association.fb.gz", stable_name: "flybase/gene_association.fb.gz"}
+    gene_genetic_interactions: {pattern: "flybase/gene_genetic_interactions_fb_*.tsv.gz", stable_name: "flybase/gene_genetic_interactions.tsv.gz"}
+    gene_group_data: {pattern: "flybase/gene_group_data_fb_*.tsv.gz", stable_name: "flybase/gene_group_data.tsv.gz"}
+    gene_groups_hgnc: {pattern: "flybase/gene_groups_HGNC_fb_*.tsv.gz", stable_name: "flybase/gene_groups_HGNC.tsv.gz"}
+    gene_rpkm_report: {pattern: "flybase/gene_rpkm_report_fb_*.tsv.gz", stable_name: "flybase/gene_rpkm_report_fb.tsv.gz"}
+    gene_sequence_ontology: {pattern: "flybase/dmel_gene_sequence_ontology_annotations_fb_*.tsv.gz", stable_name: "flybase/dmel_gene_sequence_ontology_annotations.tsv.gz"}
+    genotype_phenotype_data: {pattern: "flybase/genotype_phenotype_data_fb_*.tsv.gz", stable_name: "flybase/genotype_phenotype_data.tsv.gz"}
+    high_throughput_gene_expression: {pattern: "flybase/high-throughput_gene_expression_fb_*.tsv.gz", stable_name: "flybase/high-throughput_gene_expression_fb.tsv.gz"}
+    metabolic_pathway_group_data: {pattern: "flybase/metabolic_pathway_group_data_fb_*.tsv.gz", stable_name: "flybase/metabolic_pathway_group_data.tsv.gz"}
+    physical_interactions_mitab: {pattern: "flybase/physical_interactions_mitab_fb_*.tsv.gz", stable_name: "flybase/physical_interactions_mitab.tsv.gz"}
+    scrna_seq_gene_expression: {pattern: "flybase/scRNA-Seq_gene_expression_fb_*.tsv.gz", stable_name: "flybase/scRNA-Seq_gene_expression_fb.tsv.gz"}
+    signaling_pathway_group_data: {pattern: "flybase/signaling_pathway_group_data_fb_*.tsv.gz", stable_name: "flybase/signaling_pathway_group_data.tsv.gz"}
 
 reactome:
   name: Reactome
@@ -80,6 +112,16 @@ reactome:
     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
     - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
     - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
+  local_files:
+    reactome_all_levels: {pattern: "reactome/Ensembl2Reactome_All_Levels.txt", stable_name: "reactome/Ensembl2Reactome_All_Levels.txt"}
+    reactome_chebi_pathways: {pattern: "reactome/ChEBI2Reactome_All_Levels.txt", stable_name: "reactome/ChEBI2Reactome_All_Levels.txt"}
+    reactome_chebi_reactions: {pattern: "reactome/ChEBI2ReactomeReactions.txt", stable_name: "reactome/ChEBI2ReactomeReactions.txt"}
+    reactome_pathways: {pattern: "reactome/ReactomePathways.txt", stable_name: "reactome/ReactomePathways.txt"}
+    reactome_pathways_relation: {pattern: "reactome/ReactomePathwaysRelation.txt", stable_name: "reactome/ReactomePathwaysRelation.txt"}
+    reactome_ppi: {pattern: "reactome/reactome.all_species.interactions.tab-delimited.txt", stable_name: "reactome/reactome.all_species.interactions.tab-delimited.txt"}
+    reactome_reaction_exporter: {pattern: "reactome/reactome_reaction_exporter_All_species.txt", stable_name: "reactome/reactome_reaction_exporter_All_species.txt"}
+    reactome_reaction_pmids: {pattern: "reactome/ReactionPMIDS.txt", stable_name: "reactome/ReactionPMIDS.txt"}
+    reactome_reactions: {pattern: "reactome/Ensembl2ReactomeReactions.txt", stable_name: "reactome/Ensembl2ReactomeReactions.txt"}
 
 rna_central:
   name: RNA Central
@@ -87,6 +129,9 @@ rna_central:
   url:
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+  local_files:
+    rna_central_bed: {pattern: "rna_central/drosophila_melanogaster.BDGP6.46.bed.gz", stable_name: "rna_central/drosophila_melanogaster.BDGP6.46.bed.gz"}
+    rna_central_rfam: {pattern: "rna_central/rnacentral_rfam_annotations.tsv.gz", stable_name: "rna_central/rnacentral_rfam_annotations.tsv.gz"}
 
 string:
   name: STRING PPI
@@ -95,14 +140,34 @@ string:
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
     - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/7227.protein.links.detailed.v12.0.txt.gz
+  local_files:
+    string_coexpression: {pattern: "string/7227.protein.links.detailed.v*.txt.gz", stable_name: "string/7227.protein.links.detailed.txt.gz"}
+    string_ppi: {pattern: "string/7227.protein.links.v*.txt.gz", stable_name: "string/7227.protein.links.txt.gz"}
 
 tflink:
   name: TFLink
   version: {strategy: url_regex, pattern: '_(v[\d.]+)\.tsv', vtype: semver}
   compress: gzip
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv
+  local_files:
+    tflink: {pattern: "tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v*.tsv.gz", stable_name: "tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat.tsv.gz"}
 
 uniprot:
   name: UniProtKB/Swiss-Prot
   extract: false
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_invertebrates.dat.gz
+  local_files:
+    uniprot_dat: {pattern: "uniprot/uniprot_sprot_invertebrates.dat.gz", stable_name: "uniprot/uniprot_sprot_invertebrates.dat.gz"}
+
+afca:  # AgingFlyCellAtlas -- not download-managed (static snapshot, see review_2026_09.txt)
+  name: afca
+  local_files:
+    afca_annotation: {pattern: "afca/afca_afca_annotation_group_by_mean.tsv.gz", stable_name: "afca/afca_afca_annotation_group_by_mean.tsv.gz"}
+
+fca2:  # FlyCellAtlas2 -- not download-managed (static snapshot, see review_2026_09.txt)
+  name: fca2
+  local_files:
+    fca2_fbgn_gene: {pattern: "fca2/fca2_fbgn_gene_output.tsv.gz", stable_name: "fca2/fca2_fbgn_gene_output.tsv.gz"}
+    fca2_fbgn_mir_gene: {pattern: "fca2/fca2_fbgn_mir_gene_output.tsv.gz", stable_name: "fca2/fca2_fbgn_mir_gene_output.tsv.gz"}
+    fca2_fbgn_mir_transcript: {pattern: "fca2/fca2_fbgn_mir_transcript_output.tsv.gz", stable_name: "fca2/fca2_fbgn_mir_transcript_output.tsv.gz"}
+    fca2_fbgn_transcript_gene: {pattern: "fca2/fca2_fbgn_transcriptGene_output.tsv.gz", stable_name: "fca2/fca2_fbgn_transcriptGene_output.tsv.gz"}

@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-07-31T11:06:02.804222",
+  "timestamp": "2026-08-23T14:50:18.237249",
   "processor": "entrez_ensembl",
-  "entries": 51069,
+  "entries": 51065,
   "remote_metadata": {
     "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz": {
       "url": "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz",
-      "last_modified": "Fri, 31 Jul 2026 11:44:29 GMT",
+      "last_modified": "Wed, 19 Aug 2026 11:22:25 GMT",
       "etag": null,
-      "content_length": "2283239",
-      "checked_at": "2026-07-31T11:06:05.420120"
+      "content_length": "2286117",
+      "checked_at": "2026-08-23T14:50:18.872454"
     },
     "https://ftp.ensembl.org/pub/release-116/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz": {
       "url": "https://ftp.ensembl.org/pub/release-116/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz",
       "last_modified": "Thu, 26 Mar 2026 13:20:55 GMT",
       "etag": "\"161b75a-64ded4121ace4\"",
       "content_length": "23181146",
-      "checked_at": "2026-07-31T11:06:06.144835"
+      "checked_at": "2026-08-23T14:50:20.360753"
     }
   }
 }
