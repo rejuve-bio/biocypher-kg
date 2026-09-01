@@ -31,17 +31,3 @@ export const PALETTE = [
 export function paletteColor(i: number): string {
   return PALETTE[((i % PALETTE.length) + PALETTE.length) % PALETTE.length];
 }
-
-// A color assigner that hands out palette colors in first-seen order and keeps
-// each type's color stable for the life of the map.
-export function makeColorMap() {
-  const map = new Map<string, string>();
-  return (type: string): string => {
-    let c = map.get(type);
-    if (!c) {
-      c = paletteColor(map.size);
-      map.set(type, c);
-    }
-    return c;
-  };
-}

@@ -160,54 +160,6 @@ class Neo4jClient:
             """, label=label).single()
             return result["count"]
 
-    def get_node_neighbors(self, label: str, entity_id: str, limit: int = 50) -> Optional[Dict]:
-        """Immediate neighborhood of one node: its properties plus incoming and
-        outgoing edges (relationship type + neighbor label/id), capped at ``limit``
-        per direction. Metadata nodes are excluded. Label match is case-insensitive
-        so lowercased schema ids work. Returns None if the node is not found."""
-        _META = "NOT m:DatasetHash AND NOT m:DatasetVersion AND NOT m:KGVersion AND NOT m:DatasetMapping"
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
-            node = session.run("""
-                MATCH (n)
-                WHERE any(l IN labels(n) WHERE toLower(l) = toLower($label)) AND n.id = $id
-                RETURN properties(n) AS props, labels(n)[0] AS lbl
-                LIMIT 1
-            """, label=label, id=entity_id).single()
-            if node is None:
-                return None
-
-            out = session.run(f"""
-                MATCH (n)-[r]->(m)
-                WHERE any(l IN labels(n) WHERE toLower(l) = toLower($label)) AND n.id = $id AND {_META}
-                RETURN type(r) AS rel, labels(m)[0] AS ntype, m.id AS nid
-                LIMIT $limit
-            """, label=label, id=entity_id, limit=limit)
-            outgoing = [
-                {"rel": r["rel"], "target_type": (r["ntype"] or "").lower(), "target_id": r["nid"]}
-                for r in out if r["nid"] is not None
-            ]
-
-            inc = session.run(f"""
-                MATCH (n)<-[r]-(m)
-                WHERE any(l IN labels(n) WHERE toLower(l) = toLower($label)) AND n.id = $id AND {_META}
-                RETURN type(r) AS rel, labels(m)[0] AS ntype, m.id AS nid
-                LIMIT $limit
-            """, label=label, id=entity_id, limit=limit)
-            incoming = [
-                {"rel": r["rel"], "source_type": (r["ntype"] or "").lower(), "source_id": r["nid"]}
-                for r in inc if r["nid"] is not None
-            ]
-
-            return {
-                "type": (node["lbl"] or label).lower(),
-                "id": entity_id,
-                "properties": dict(node["props"]),
-                "outgoing": outgoing,
-                "incoming": incoming,
-                "out_truncated": len(outgoing) >= limit,
-                "in_truncated": len(incoming) >= limit,
-            }
-
     # ===== UPDATES =====
 
     def get_updates_since(self, since_timestamp: str) -> Dict:

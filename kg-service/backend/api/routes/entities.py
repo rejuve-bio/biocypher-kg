@@ -29,21 +29,6 @@ def get_entity_count(label: str):
     """Get the total number of entities with the given label."""
     return {"label": label, "count": neo4j_client.get_entity_count(label)}
 
-@router.get("/entities/{label}/{entity_id}/neighbors")
-def get_entity_neighbors(
-    label: str,
-    entity_id: str,
-    limit: int = Query(default=50, ge=1, le=500, description="Max neighbors per direction"),
-):
-    """Immediate neighborhood (in/out edges + properties) of one node."""
-    neighbors = neo4j_client.get_node_neighbors(label, entity_id, limit=limit)
-    if neighbors is None:
-        raise HTTPException(
-            status_code=404,
-            detail=f"No {label} entity found with id '{entity_id}'",
-        )
-    return neighbors
-
 @router.get("/entities/{label}/{entity_id}")
 def get_entity_by_id(label: str, entity_id: str):
     """Get a single entity by its id for the given label."""

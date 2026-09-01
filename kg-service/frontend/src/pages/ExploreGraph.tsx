@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 import SchemaGraph from "../components/SchemaGraph";
-import InstanceExplorer from "../components/InstanceExplorer";
-import PatternPanel from "../components/PatternPanel";
-import AtomTree from "../components/AtomTree";
 import { api, obs, type GraphSummary, type DetailedSchema, type MorkSummary, type MorkSchema } from "../api/client";
 
 type Target = "neo4j" | "mork";
@@ -21,16 +18,6 @@ export default function ExploreGraph() {
   const [mork, setMork] = useState<MorkSummary | null>(null);
   const [morkSchema, setMorkSchema] = useState<MorkSchema | null>(null);
   const [morkErr, setMorkErr] = useState<string | null>(null);
-
-  // Instance exploration: which node type is being browsed (null = schema map only).
-  const [browseType, setBrowseType] = useState<string | null>(null);
-  const [morkTool, setMorkTool] = useState<"none" | "query" | "atoms">("none");
-
-  // A type from one database may not exist in the other, so reset on switch.
-  useEffect(() => {
-    setBrowseType(null);
-    setMorkTool("none");
-  }, [target]);
 
   useEffect(() => {
     if (target !== "neo4j") return;
@@ -71,14 +58,14 @@ export default function ExploreGraph() {
             MORK
           </button>
         </span>
-        <span className="muted" style={{ fontSize: 12 }}>live database</span>
+        <span className="muted" style={{ fontSize: 12 }}>live schema</span>
       </div>
 
       {target === "neo4j" && (
         <>
           {neoErr && (
             <div className="alert err" style={{ marginTop: 12 }}>
-              Could not reach Neo4j: {neoErr}. Exploration reads the live Neo4j graph.
+              Could not reach Neo4j: {neoErr}. The schema reads the live Neo4j graph.
             </div>
           )}
           {summary && schema && (
@@ -90,17 +77,11 @@ export default function ExploreGraph() {
                 <Meta label="Edges" value={(summary.edge_count ?? 0).toLocaleString()} />
               </div>
               {schema.nodes.length ? (
-                <>
-                  <SchemaGraph
-                    schema={schema}
-                    topEntities={summary.top_entities}
-                    topConnections={summary.top_connections}
-                    onBrowseType={setBrowseType}
-                  />
-                  {browseType && (
-                    <InstanceExplorer db="neo4j" type={browseType} onClose={() => setBrowseType(null)} />
-                  )}
-                </>
+                <SchemaGraph
+                  schema={schema}
+                  topEntities={summary.top_entities}
+                  topConnections={summary.top_connections}
+                />
               ) : (
                 <div className="muted" style={{ marginTop: 12 }}>The Neo4j graph is empty.</div>
               )}
@@ -140,44 +121,13 @@ export default function ExploreGraph() {
                       Schema derived from a live sample of the atomspace; very rare types may be missing.
                     </div>
                   )}
-                  <SchemaGraph schema={morkSchema.schema} showCounts={false} onBrowseType={setBrowseType} />
-                  {browseType && (
-                    <InstanceExplorer db="mork" type={browseType} onClose={() => setBrowseType(null)} />
-                  )}
+                  <SchemaGraph schema={morkSchema.schema} showCounts={false} />
                 </>
               ) : (
                 <p className="muted" style={{ fontSize: 13, lineHeight: 1.55, marginTop: 12 }}>
                   MORK is an atomspace of MeTTa atoms. The node and edge schema is derived from the atom
                   structure. This space has no recognizable node/edge atoms yet.
                 </p>
-              )}
-
-              <div className="row" style={{ gap: 8, marginTop: 16, alignItems: "center" }}>
-                <span className="muted" style={{ fontSize: 12 }}>Power tools:</span>
-                <button
-                  className={`linkbtn ${morkTool === "query" ? "seg-on" : ""}`}
-                  onClick={() => setMorkTool((t) => (t === "query" ? "none" : "query"))}
-                >
-                  Pattern query
-                </button>
-                <button
-                  className={`linkbtn ${morkTool === "atoms" ? "seg-on" : ""}`}
-                  onClick={() => setMorkTool((t) => (t === "atoms" ? "none" : "atoms"))}
-                >
-                  Raw atoms
-                </button>
-              </div>
-              {morkTool === "query" && (
-                <div className="card" style={{ marginTop: 12 }}>
-                  <h3 style={{ marginTop: 0 }}>Pattern query</h3>
-                  <PatternPanel />
-                </div>
-              )}
-              {morkTool === "atoms" && (
-                <div className="card" style={{ marginTop: 12 }}>
-                  <h3 style={{ marginTop: 0 }}>Raw atoms</h3>
-                  <AtomTree />
-                </div>
               )}
 
               {mork.versions && mork.versions.length > 0 && (
