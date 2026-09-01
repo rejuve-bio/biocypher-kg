@@ -94,7 +94,7 @@ dependencies = [
     "toml==0.10.2",
     "tomli==2.3.0",
     "tqdm==4.67.3",
-    "traitlets==5.14.3",
+    "traitlets==5.16.1",
     "treelib==1.6.4",
     "typer==0.20.0",
     "typing-extensions==4.15.0",
