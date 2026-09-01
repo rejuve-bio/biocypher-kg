@@ -38,7 +38,7 @@ This will guide you through all parameters step by step with sensible defaults.
 
 #### Option 2: Quick Sample Run
 ```bash
-make run-sample WRITER_TYPE=<metta,neo4j,prolog> [INCLUDE_TAXON_ID=no]
+make run-sample WRITER_TYPE=<metta,neo4j,prolog> [INCLUDE_TAXON_ID=no] [MAX_WORKERS=N]
 ```
 
 #### Option 3: Direct Run with Parameters
@@ -49,7 +49,8 @@ make run-direct OUTPUT_DIR=./output \
                WRITER_TYPE=metta \
                WRITE_PROPERTIES=no \
                ADD_PROVENANCE=no \
-               INCLUDE_TAXON_ID=no
+               INCLUDE_TAXON_ID=no \
+               MAX_WORKERS=8
 
 # Override the base input directory (e.g. on a different machine):
 make run-direct OUTPUT_DIR=./output \
@@ -85,6 +86,7 @@ When you run `make run`, you'll see:
 🔗 Add provenance? (yes/no) [no]: 
 🧬 Include taxon_id in output? (yes/no) [yes]: 
 🚦 Skip pre-flight path validation? (yes/no) [no]: 
+🧵 Enter max parallel workers (1 = sequential) [auto]: 
 ```
 
 ### Available Make Commands
@@ -102,6 +104,24 @@ make test            # Run tests
 make clean           # Clean temporary files
 make distclean       # Full clean
 ```
+
+### Parallel Adapter Execution
+
+Within a species run, adapters run concurrently across a pool of worker processes. Control the pool size with `--max-workers` (or `MAX_WORKERS=` via `make`):
+
+- **Default:** `min(8, CPU count)`.
+- **`--max-workers 1`:** run adapters sequentially (the previous behavior).
+- The **networkx** writer always runs sequentially — it builds a single in-memory graph that can't be split across processes.
+
+```bash
+uv run python create_knowledge_graph.py \
+    --output-dir ./output \
+    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
+    --schema-config ./config/hsa/hsa_schema_config.yaml \
+    --max-workers 8
+```
+
+Each worker builds its own writer and writes to per-adapter output directories, so their outputs never collide. Adapters that would write the same output file (same output directory and label) are automatically run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works the same as in sequential mode.
 
 ### Pre-flight File Path Validation
 

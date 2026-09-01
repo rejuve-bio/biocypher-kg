@@ -22,3 +22,4 @@ relationships:
     target: anatomy
     properties:
       p_value: float
+      taxon_id: int

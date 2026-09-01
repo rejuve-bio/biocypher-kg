@@ -120,9 +120,8 @@ relationships:
     url: https://reactome.org
     input_label: genes_pathways
     output_label: participates_in
-    description: An interaction between a gene or gene product and a biological process
-      or pathway.
-    source: [gene, transcript, protein]
+    description: An interaction between a gene and a biological process or pathway.
+    source: gene
     target: pathway
   post translational interaction:
     url: https://reactome.org/
@@ -131,6 +130,9 @@ relationships:
     target: protein
     properties:
       interaction_type: str
+      interaction_context: str
+      pubmed_references: str[]
+      taxon_id: str
   protein to pathway association:
     url: https://reactome.org
     input_label: protein_pathways
