@@ -9,7 +9,7 @@ nodes:
       chr: str
       end: int
       start: int
-      taxon_id: str
+      taxon_id: int
 relationships:
   enhancer activity by contact:
     url: https://www.encodeproject.org/

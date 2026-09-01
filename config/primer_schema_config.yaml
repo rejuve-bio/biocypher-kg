@@ -630,6 +630,8 @@ transcript:
       biolink: id
     transcript_type:
       type: str
+    gene_name:
+      type: str
   description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
   exact_mappings:
   - SO:0000673
@@ -743,12 +745,10 @@ biological process gene product:
   represented_as: edge
   input_label: biological_process_gene_product
   output_label: involved_in
-  source:
-  - protein
-  - gene
+  source: protein
   target: biological process
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Protein
     object_category: biolink:BiologicalProcess
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -936,12 +936,10 @@ cellular component gene product located in:
   represented_as: edge
   input_label: cellular_component_gene_product_located_in
   output_label: located_in
-  source:
-  - protein
-  - gene
+  source: protein
   target: cellular component
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Protein
     object_category: biolink:CellularComponent
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -953,12 +951,10 @@ cellular component gene product part of:
   represented_as: edge
   input_label: cellular_component_gene_product_part_of
   output_label: part_of
-  source:
-  - protein
-  - gene
+  source: protein
   target: cellular component
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Protein
     object_category: biolink:CellularComponent
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -1246,6 +1242,10 @@ gene expressed in anatomy:
     p_value:
       type: float
       biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
 
 gene expressed in developmental stage:
   description: holds between a gene and a developmental stage in which it is expressed
@@ -1271,6 +1271,10 @@ gene expressed in developmental stage:
     p_value:
       type: float
       biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
 
 expression:
   is_a: association
@@ -1308,9 +1312,9 @@ feature overlaps structural_variant:
 gene biomarker via orthology disease:
   description: A gene is a biomarker for a disease via orthology relationship. From
     Alliance for Genome Resources.
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:biomarker_for
   inherit_properties: true
   represented_as: edge
@@ -1345,9 +1349,9 @@ gene biomarker via orthology disease:
 gene implicated via orthology disease:
   description: A gene is implicated in a disease via orthology relationship. From
     Alliance for Genome Resources.
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:implicated_in
   inherit_properties: true
   represented_as: edge
@@ -1401,9 +1405,9 @@ gene in tad region:
 
 gene is implicated in disease:
   description: A gene is implicated in a disease. From Alliance for Genome Resources.
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:implicated_in
   inherit_properties: true
   represented_as: edge
@@ -1472,9 +1476,9 @@ gene to disease association:
 
 gene to disease marker association:
   description: Gene is a marker for a disease
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:model_of
   inherit_properties: true
   represented_as: edge
@@ -1508,9 +1512,9 @@ gene to disease marker association:
 
 gene to disease model association:
   description: Gene is a model for disease
-  is_a: association
+  is_a: gene to disease association
   mixins:
-  - biolink:Association
+  - biolink:GeneToDiseaseAssociation
   biolink_predicate: biolink:model_of
   inherit_properties: true
   represented_as: edge
@@ -1588,7 +1592,7 @@ protein to protein coexpression association:
       biolink: has_quantitative_value
 
 gene to pathway association:
-  description: An interaction between a gene or gene product and a biological process
+  description: An interaction between a gene and a biological process
     or pathway.
   is_a: annotation
   mixins:
@@ -1598,13 +1602,10 @@ gene to pathway association:
   represented_as: edge
   input_label: genes_pathways
   output_label: participates_in
-  source:
-  - gene
-  - transcript
-  - protein
+  source: gene
   target: pathway
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Gene
     object_category: biolink:Pathway
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -1652,37 +1653,6 @@ gene to reaction association:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-protein to reaction association:
-  description: An interaction between a protein and a reaction (Reactome).
-  is_a: annotation
-  biolink_predicate: biolink:participates_in
-  inherit_properties: true
-  represented_as: edge
-  input_label: gene_or_gene_product_reaction
-  output_label: involved_in
-  source: protein
-  target: reaction
-  kgx_properties:
-    subject_category: biolink:Protein
-    object_category: biolink:MolecularActivity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
-
-transcript to reaction association:
-  description: An interaction between a transcript and a reaction (Reactome).
-  is_a: annotation
-  biolink_predicate: biolink:participates_in
-  inherit_properties: true
-  represented_as: edge
-  input_label: gene_or_gene_product_reaction
-  output_label: involved_in
-  source: transcript
-  target: reaction
-  kgx_properties:
-    subject_category: biolink:Transcript
-    object_category: biolink:MolecularActivity
-    knowledge_level: knowledge_assertion
-    agent_type: manual_agent
 
 gene to transcription binding site association:
   represented_as: edge
@@ -1882,12 +1852,10 @@ molecular function gene product:
   represented_as: edge
   input_label: molecular_function_gene_product
   output_label: enables
-  source:
-  - protein
-  - gene
+  source: protein
   target: molecular function
   kgx_properties:
-    subject_category: biolink:GeneOrGeneProduct
+    subject_category: biolink:Protein
     object_category: biolink:MolecularActivity
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
@@ -2056,6 +2024,7 @@ paralogy association:
   is_a: related to at instance level
   represented_as: edge
   input_label: paralogs_genes
+  output_label: paralog_of
   biolink_predicate: biolink:paralog_of
   source: gene
   target: gene
@@ -2219,7 +2188,11 @@ post translational interaction:
       biolink: has_quantitative_value
     interaction_type:
       type: str
-    reactome_pathway:
+    interaction_context:
+      type: str
+    pubmed_references:
+      type: str[]
+    taxon_id:
       type: str
 
 promoter overlaps structural_variant:
@@ -2350,7 +2323,7 @@ protein has_xref molecular_function:
   inherit_properties: true
   represented_as: edge
   input_label: protein_has_xref_molecular_function
-  output_label: has_molecular_function
+  output_label: has_xref
   source: protein
   target: molecular function
   kgx_properties:
@@ -2749,14 +2722,22 @@ allele:
   mixins:
     - biolink:SequenceVariant
   biolink_category: biolink:Allele
-  inherit_properties: true      # inherits chr/start/end/taxon_id (position entity) + source/source_url (genomic variant)
+  # Not inheriting genomic variant/position entity's chr/start/end/source/source_url:
+  # allele adapters (e.g. FlyBase-derived alleles) don't carry genomic coordinates,
+  # only the more specific 'snp' subtype does. See 'snp' below, which re-adds the
+  # genomic variant parent directly so it still gets those properties.
+  inherit_properties: false
   properties:
     allele_symbol:
       type: str
       biolink: symbol
+    taxon_id:
+      type: int
+      biolink: taxon
+      range: biolink:OrganismTaxon
   description: >-
     Different versions of the same variant at a specific locus are called alleles.
-    The species is given by the inherited taxon_id (9606 hsa, 7227 dmel, 6239 cel,
+    The species is given by taxon_id (9606 hsa, 7227 dmel, 6239 cel,
     10090 mmu, 10116 rno, ...) and is mandatory, so this definition serves any species.
   kgx_properties:
     category: biolink:Allele
@@ -2764,7 +2745,7 @@ allele:
 snp:
   represented_as: node
   input_label: snp
-  is_a: allele
+  is_a: [allele, genomic variant]
   mixins:
     - biolink:Snv
   biolink_category: biolink:Snv

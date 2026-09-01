@@ -5,50 +5,55 @@ nodes:
     url: https://www.gencodegenes.org/
     input_label: gene
     properties:
-      end: int
       chr: str
-      start: int
-      gene_type: str
+      end: int
       gene_name: str
+      gene_type: str
+      start: int
+      synonym: str[]
+      taxon_id: int
   transcript:
     url: https://www.gencodegenes.org/
     input_label: transcript
     description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
     properties:
-      transcript_type: str
-      transcript_name: str
-      gene_name: str
+      taxon_id: int
       transcript_id: str
+      transcript_name: str
+      transcript_type: str
+      gene_name: str
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon
     properties:
-      end: int
-      gene_id: str
-      exon_id: str
       chr: str
+      end: int
       exon_number: int
       start: int
-      transcript_id: str
+      taxon_id: int
 relationships:
   transcribes to:
     url: https://www.gencodegenes.org/
     input_label: transcribes_to
-    description: x transcribes to y if and only if y is synthesized from template
-      x
+    description: inverse of transcribed from
     source: gene
     target: transcript
   exon part_of transcript:
     url: https://www.gencodegenes.org/
     input_label: part_of_transcript
-    description: holds between parts and wholes (material entities or processes) For
-      example, a particular exon is part of a particular transcript or gene
+    output_label: part_of
+    description: An association between an exon and its gene
     source: exon
     target: transcript
+    properties:
+      taxon_id: int
   exon part_of gene:
     url: https://www.gencodegenes.org/
     input_label: part_of_gene
-    description: holds between parts and wholes (material entities or processes) For
-      example, a particular exon is part of a particular transcript or gene
+    output_label: part_of
+    description: 'Description: For example, a particular exon is part of a particular
+      transcript or gene'
     source: exon
     target: gene
+    properties:
+      taxon_id: int

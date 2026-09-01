@@ -18,6 +18,7 @@ nodes:
       chr: str
       end: int
       start: int
+      taxon_id: int
   promoter:
     url: https://screen.wenglab.org/downloads
     input_label: promoter
@@ -26,6 +27,7 @@ nodes:
       chr: str
       end: int
       start: int
+      taxon_id: int
 relationships:
   gene to transcription binding site association:
     url: https://genome.ucsc.edu/cgi-bin/hgTables

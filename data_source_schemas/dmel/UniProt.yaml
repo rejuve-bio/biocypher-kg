@@ -6,11 +6,12 @@ nodes:
     input_label: protein
     properties:
       accessions: str[]
-      protein_name: str
       canonical_accession: str
       is_canonical: bool
       is_isoform: bool
       isoform_name: str
+      protein_name: str
+      taxon_id: int
 relationships:
   translates to:
     url: https://www.uniprot.org/
@@ -21,54 +22,52 @@ relationships:
       acid chain/polypeptide)
     source: transcript
     target: protein
-    properties:
-      taxon_id: int
   protein has_xref gene:
     url: https://www.uniprot.org/
     input_label: protein_has_xref_gene
+    output_label: has_xref
     source: protein
     target: gene
-    output_label: has_xref
     properties:
       evidence: str[]
   protein has_xref transcript:
     url: https://www.uniprot.org/
     input_label: protein_has_xref_transcript
+    output_label: has_xref
     source: protein
     target: transcript
-    output_label: has_xref
     properties:
       evidence: str[]
   protein has_xref protein:
     url: https://www.uniprot.org/
     input_label: protein_has_xref_protein
+    output_label: has_xref
     source: protein
     target: protein
-    output_label: has_xref
     properties:
       evidence: str[]
   protein has_xref biological_process:
     url: https://www.uniprot.org/
     input_label: protein_has_xref_biological_process
+    output_label: has_xref
     source: protein
     target: biological process
-    output_label: has_xref
     properties:
       evidence: str[]
   protein has_xref cellular_component:
     url: https://www.uniprot.org/
     input_label: protein_has_xref_cellular_component
+    output_label: has_xref
     source: protein
     target: cellular component
-    output_label: has_xref
     properties:
       evidence: str[]
   protein has_xref molecular_function:
     url: https://www.uniprot.org/
     input_label: protein_has_xref_molecular_function
+    output_label: has_xref
     source: protein
     target: molecular function
-    output_label: has_molecular_function
     properties:
       evidence: str[]
   protein has_xref catalytic_activity:

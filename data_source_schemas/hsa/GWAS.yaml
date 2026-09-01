@@ -32,5 +32,4 @@ relationships:
     source: snp
     target: gene
     properties:
-      distance: int
       p_value: float

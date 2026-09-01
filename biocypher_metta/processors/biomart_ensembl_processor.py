@@ -6,7 +6,8 @@ peptides) by querying Ensembl BioMart. Works for any species available in
 BioMart; the caller supplies the three species-specific parameters.
 
 Data source:
-- Ensembl BioMart: https://www.ensembl.org/biomart/martservice
+- Ensembl BioMart (currently served from the jun2026.archive.ensembl.org
+  mirror — see BIOMART_URL below)
 
 Update strategy: Time-based (every 7 days by default).
 
@@ -33,7 +34,12 @@ from biocypher._logger import logger
 from .base_mapping_processor import BaseMappingProcessor
 
 
-BIOMART_URL = "https://www.ensembl.org/biomart/martservice"
+# Ensembl retired the live BioMart endpoint (www.ensembl.org/biomart/martservice
+# now 404s, redirecting through an "Ensembl URL Resolver" page) as part of their
+# summer-2026 platform migration to beta.ensembl.org. Until BioMart is available
+# there, the pre-migration site is kept up at this dated archive mirror.
+# TODO: point back to www.ensembl.org once BioMart lands on the new platform.
+BIOMART_URL = "https://jun2026.archive.ensembl.org/biomart/martservice"
 
 _QUERY_XML_TEMPLATE = """\
 <?xml version="1.0" encoding="UTF-8"?>

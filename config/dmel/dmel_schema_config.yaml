@@ -249,9 +249,9 @@ snp to phenotype_set:
 gene expressed in phenotype:
   represented_as: edge
   input_label: gene_expressed_in_phenotype
-  output_label: expressed_in
+  output_label: involved_in
   is_a: annotation
-  biolink_predicate: biolink:expressed_in
+  biolink_predicate: biolink:involved_in
   source: gene
   target: phenotype
   properties:
@@ -268,9 +268,9 @@ gene expressed in phenotype:
 gene expressed in biological process:
   represented_as: edge
   input_label: gene_expressed_in_biological_process
-  output_label: expressed_in
+  output_label: involved_in
   is_a: annotation
-  biolink_predicate: biolink:expressed_in
+  biolink_predicate: biolink:involved_in
   source: gene
   target: biological process
   properties:
@@ -287,9 +287,9 @@ gene expressed in biological process:
 gene expressed in molecular function:
   represented_as: edge
   input_label: gene_expressed_in_molecular_function
-  output_label: expressed_in
+  output_label: involved_in
   is_a: annotation
-  biolink_predicate: biolink:expressed_in
+  biolink_predicate: biolink:involved_in
   source: gene
   target: molecular function
   properties:
@@ -325,6 +325,7 @@ gene expressed in cellular component:
 allele to allele genetic interaction:
   represented_as: edge
   input_label: allele_to_allele_genetic_interaction
+  output_label: has_phenotypic_effect
   is_a: annotation
   biolink_predicate: biolink:interacts_with
   source: allele
@@ -402,7 +403,7 @@ gene expression value:
   biolink_predicate: biolink:has_quantified_expression_level
   represented_as: edge
   inherit_properties: false
-  input_label: expression_value
+  input_label: expression_value_gene
   source: gene
   target: rnaseq library
   description: A set of values for numeric estimation of gene expression.
@@ -433,7 +434,7 @@ transcript expression value:
   biolink_predicate: biolink:has_quantified_expression_level
   represented_as: edge
   inherit_properties: false
-  input_label: expression_value
+  input_label: expression_value_transcript
   source: transcript
   target: rnaseq library
   description: A set of values for numeric estimation of transcript expression.
@@ -464,7 +465,7 @@ protein expression value:
   biolink_predicate: biolink:has_quantified_expression_level
   represented_as: edge
   inherit_properties: false
-  input_label: expression_value
+  input_label: expression_value_protein
   source: protein
   target: rnaseq library
   description: A set of values for numeric estimation of protein expression.
@@ -736,7 +737,7 @@ phenotype_set to genotype:
 
 phenotype_set to anatomy:
   represented_as: edge
-  input_label: characterized_by
+  input_label: characterized_by_anatomy
   is_a: annotation
   biolink_predicate: biolink:characterized_by
   source: phenotype_set
@@ -754,7 +755,7 @@ phenotype_set to anatomy:
 
 phenotype_set to phenotype:
   represented_as: edge
-  input_label: characterized_by
+  input_label: characterized_by_phenotype
   is_a: annotation
   biolink_predicate: biolink:characterized_by
   source: phenotype_set
@@ -772,7 +773,7 @@ phenotype_set to phenotype:
 
 phenotype_set to biological process:
   represented_as: edge
-  input_label: characterized_by
+  input_label: characterized_by_biological_process
   is_a: annotation
   biolink_predicate: biolink:characterized_by
   source: phenotype_set
@@ -790,7 +791,7 @@ phenotype_set to biological process:
 
 phenotype_set to molecular function:
   represented_as: edge
-  input_label: characterized_by
+  input_label: characterized_by_molecular_function
   is_a: annotation
   biolink_predicate: biolink:characterized_by
   source: phenotype_set
@@ -808,7 +809,7 @@ phenotype_set to molecular function:
 
 phenotype_set to developmental stage:
   represented_as: edge
-  input_label: characterized_by
+  input_label: characterized_by_developmental_stage
   is_a: annotation
   biolink_predicate: biolink:characterized_by
   source: phenotype_set
@@ -826,7 +827,7 @@ phenotype_set to developmental stage:
 
 phenotype_set to sequence type:
   represented_as: edge
-  input_label: characterized_by
+  input_label: characterized_by_sequence_type
   is_a: annotation
   biolink_predicate: biolink:characterized_by
   source: phenotype_set
@@ -842,18 +843,19 @@ phenotype_set to sequence type:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-ptp physical interaction type:
-  is_a: expression
-  represented_as: edge
-  input_label: ptp_physical_interaction_type
-  source: ptp physically interacts with
-  target: molecular_interaction
+# only testing edge to edge
+# ptp physical interaction type:
+#   is_a: expression
+#   represented_as: edge
+#   input_label: ptp_physical_interaction_type
+#   source: ptp physically interacts with
+#   target: molecular_interaction
 
 protein to protein physical interaction:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: ptp_physically_interacts_with
+  input_label: ptp_physically_interacts_with_protein
   biolink_predicate: biolink:physically_interacts_with
   source: protein
   target: protein
@@ -900,7 +902,7 @@ transcript to protein physical interaction:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: ptp_physically_interacts_with
+  input_label: ptp_physically_interacts_with_transcript
   biolink_predicate: biolink:physically_interacts_with
   source: transcript
   target: protein
@@ -947,7 +949,7 @@ protein to transcript physical interaction:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: ptt_physically_interacts_with
+  input_label: ptt_physically_interacts_with_protein
   biolink_predicate: biolink:physically_interacts_with
   source: protein
   target: transcript
@@ -994,7 +996,7 @@ transcript to transcript physical interaction:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: ptt_physically_interacts_with
+  input_label: ptt_physically_interacts_with_transcript
   biolink_predicate: biolink:physically_interacts_with
   source: transcript
   target: transcript

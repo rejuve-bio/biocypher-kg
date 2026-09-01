@@ -97,8 +97,8 @@ class RoadMapDHSAdapter(Adapter):
                         _props['source'] = self.source
                         _props['source_url'] = self.source_url
 
-                    yield _source, _target, self.label, _props
-                    yield _source, tissue_target, self.label, _props
+                    yield _source, _target, f'{self.label}_{_target[0]}', _props
+                    yield _source, tissue_target, f'{self.label}_{tissue_target[0]}', _props
                 except Exception as e:
                     print(f"error while parsing row: {row}, error: {e.args} skipping...")
                     continue
