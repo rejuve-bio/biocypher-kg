@@ -1299,6 +1299,34 @@ do_disease_do_subclass_of:
   nodes: False
   edges: True
 
+eco_evidence_ontology:
+  adapter:
+    module: biocypher_metta.adapters.eco_ontology_adapter
+    cls: EvidenceOntologyAdapter
+    args:
+      ontology: 'eco'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: evidence
+  nodes: True
+  edges: False
+
+eco_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.eco_ontology_adapter
+    cls: EvidenceOntologyAdapter
+    args:
+      ontology: 'eco'
+      label: eco_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: evidence
+  nodes: False
+  edges: True
+
 chebi_ontology:
   adapter:
     module: biocypher_metta.adapters.chebi_ontology_adapter

@@ -26,3 +26,32 @@ wbbt_subclass_of:
   outdir: wbbt
   nodes: False
   edges: True
+
+
+eco_evidence_ontology:
+  adapter:
+    module: biocypher_metta.adapters.eco_ontology_adapter
+    cls: EvidenceOntologyAdapter
+    args:
+      ontology: 'eco'
+      type: node
+      dry_run: True
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: evidence
+  nodes: True
+  edges: False
+
+eco_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.eco_ontology_adapter
+    cls: EvidenceOntologyAdapter
+    args:
+      ontology: 'eco'
+      label: eco_subclass_of
+      type: edge
+      dry_run: True
+      cache_dir: ./ontology_dataset_cache
+  outdir: evidence
+  nodes: False
+  edges: True
