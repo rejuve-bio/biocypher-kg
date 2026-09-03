@@ -20,11 +20,18 @@ ARG RUST_NIGHTLY=2026-07-01
 RUN rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal && \
     rustup default "nightly-${RUST_NIGHTLY}"
 
-RUN git clone --depth=1 https://github.com/Adam-Vandervorst/PathMap.git /app/PathMap && \
-    cd /app/PathMap && \
-    cargo build --release
-
+# MORK pulls its core dependency PathMap from git `master` (unpinned) in its
+# workspace Cargo.toml and ships no Cargo.lock, so every rebuild fetches PathMap
+# HEAD. A PathMap API change then silently breaks the MORK kernel build with
+# mismatched-type errors in kernel/src/space.rs. Pin PathMap to the commit that
+# was master HEAD when MORK's `server` branch last changed (2026-03-09), for a
+# reproducible build. Bump this only when intentionally moving MORK forward.
+# (The standalone PathMap clone was dropped: MORK's Cargo.toml uses the git
+# dependency, not a local path, so a separate clone was never actually used.)
+ARG PATHMAP_REV=23f91cdbb7c4462d0f015767d9a4b3b33e2e7655
 RUN git clone --depth=1 -b server https://github.com/Abdu1964/MORK.git /app/MORK_SERVER && \
+    sed -i "s|^branch = \"master\"|rev = \"${PATHMAP_REV}\"|" /app/MORK_SERVER/Cargo.toml && \
+    grep -q "rev = \"${PATHMAP_REV}\"" /app/MORK_SERVER/Cargo.toml && \
     cd /app/MORK_SERVER/server && cargo build --release
 
 # RUN git clone https://github.com/trueagi-io/MORK.git /app/MORK && \  
