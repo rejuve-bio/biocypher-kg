@@ -1616,7 +1616,7 @@ def build_dbsnp_cache(triples, dbsnp_cache_dir):
         _json.dump({
             "sample_from_common": True,
             "filter": "scoped to connected-sample gene/region closure (built from abc/cadd/refseq rows directly, no VCF processed)",
-            "rsid_count": len(rows_to_insert),
+            "entries": len(rows_to_insert),
         }, f, indent=2)
 
     return len(rows_to_insert)

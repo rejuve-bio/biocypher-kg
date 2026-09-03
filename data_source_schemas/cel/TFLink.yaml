@@ -5,7 +5,7 @@ relationships:
     url: tflink.net
     input_label: tf_gene
     output_label: regulates
-    description: An regulatory association between a transcription factor and its
+    description: A regulatory association between a transcription factor and its
       target gene
     source: gene
     target: gene
