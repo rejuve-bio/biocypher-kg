@@ -134,6 +134,11 @@ if [ -n "$SPECIES_INSTANCES" ]; then
   echo "  default NEO4J_URI = ${NEO4J_URI}"
   echo "─────────────────────────────────────────────"
   echo
+  # A previous single-instance run leaves bundled neo4j/mork containers holding
+  # the base ports (7687/8432) that the first species' instance now needs. They
+  # are profiled services (still defined), so --remove-orphans won't drop them;
+  # remove them explicitly first.
+  "${COMPOSE[@]}" --profile neo4j --profile mork rm -sf neo4j mork >/dev/null 2>&1 || true
   exec "${COMPOSE[@]}" -f "$SPECIES_OVERRIDE" up -d --build --remove-orphans "$@"
 fi
 
