@@ -32,19 +32,32 @@ def _env(name: str):
     return v or None
 
 
+def species_specific(species: str) -> bool:
+    """True if this species has at least one endpoint set explicitly."""
+    return bool(_env(f"NEO4J_URI_{species.upper()}") or _env(f"MORK_URL_{species.upper()}"))
+
+
+def _any_explicit() -> bool:
+    """True if any species has its own instance (per-species mode)."""
+    return any(species_specific(sp) for sp in species_list())
+
+
 def neo4j_uri_for(species: str):
-    """Per-species Neo4j URI, or the global default when unset."""
-    return _env(f"NEO4J_URI_{species.upper()}") or (settings.NEO4J_URI or None)
+    """Per-species Neo4j URI. Never falls back to another species' instance: in
+    per-species mode an unconfigured species returns None (not configured); the
+    global default is used only in single-instance mode (nothing per-species set)."""
+    v = _env(f"NEO4J_URI_{species.upper()}")
+    if v:
+        return v
+    return None if _any_explicit() else (settings.NEO4J_URI or None)
 
 
 def mork_url_for(species: str):
-    """Per-species MORK URL, or the global default when unset."""
-    return _env(f"MORK_URL_{species.upper()}") or (settings.MORK_URL or None)
-
-
-def species_specific(species: str) -> bool:
-    """True if this species has at least one endpoint set explicitly (not the fallback)."""
-    return bool(_env(f"NEO4J_URI_{species.upper()}") or _env(f"MORK_URL_{species.upper()}"))
+    """Per-species MORK URL, with the same no-cross-species-fallback rule."""
+    v = _env(f"MORK_URL_{species.upper()}")
+    if v:
+        return v
+    return None if _any_explicit() else (settings.MORK_URL or None)
 
 
 def list_targets() -> list[dict]:

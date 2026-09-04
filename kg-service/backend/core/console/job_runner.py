@@ -342,28 +342,25 @@ def prune_output_dirs(keep: Optional[int] = None) -> int:
     return removed
 
 
-def _mork_host_port(species: str = None) -> tuple[str, str]:
-    """Host/port of the MORK instance for this species (its own instance when
-    configured, else the global default)."""
-    from urllib.parse import urlparse
-    from backend.core.console import explore_targets as et
-    url = (et.mork_url_for(species) if species else None) or settings.MORK_URL
-    u = urlparse(url)
-    return (u.hostname or "localhost", str(u.port or 8432))
-
-
 def build_load_argv(target: str, output_dir: str, species: str = None) -> list[str]:
     """argv to load a build's output into Neo4j or MORK via the existing loaders.
 
     Routes to the species' own instance (NEO4J_URI_<SP> / MORK_URL_<SP>) so a
-    build for a species loads into the database attached to that species; falls
-    back to the global endpoint when the species has no dedicated instance.
+    build for a species loads into the database attached to that species. In
+    per-species mode a species with no instance raises rather than loading into
+    another species' database; in single-instance mode the global endpoint is used.
     """
+    from urllib.parse import urlparse
     from backend.core.console import explore_targets as et
     # ARCHIVE_BASE passed verbatim: the loaders append the target subdir (neo4j/mork).
     archive_dir = settings.ARCHIVE_BASE
     if target == "neo4j":
-        uri = (et.neo4j_uri_for(species) if species else None) or settings.NEO4J_URI
+        uri = et.neo4j_uri_for(species) if species else settings.NEO4J_URI
+        if not uri:
+            raise ValueError(
+                f"No Neo4j instance is configured for species '{species}'. "
+                f"Add it to SPECIES_INSTANCES (or set NEO4J_URI_{(species or '').upper()})."
+            )
         return [settings.UV_BIN, "run", "python", "kg-service/neo4j_loader.py",
                 "--output-dir", output_dir,
                 # --import-dir makes LOAD CSV use absolute file:/// URLs, so any dir works.
@@ -373,7 +370,14 @@ def build_load_argv(target: str, output_dir: str, species: str = None) -> list[s
                 "--username", settings.NEO4J_USER,
                 "--password", settings.NEO4J_PASSWORD]
     if target == "mork":
-        host, port = _mork_host_port(species)
+        url = et.mork_url_for(species) if species else settings.MORK_URL
+        if not url:
+            raise ValueError(
+                f"No MORK instance is configured for species '{species}'. "
+                f"Add it to SPECIES_INSTANCES (or set MORK_URL_{(species or '').upper()})."
+            )
+        u = urlparse(url)
+        host, port = (u.hostname or "localhost", str(u.port or 8432))
         return [settings.UV_BIN, "run", "python", "kg-service/mork_loader.py",
                 "--data-dir", output_dir,
                 "--archive-dir", archive_dir,
