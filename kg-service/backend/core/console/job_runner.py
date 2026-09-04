@@ -342,27 +342,38 @@ def prune_output_dirs(keep: Optional[int] = None) -> int:
     return removed
 
 
-def _mork_host_port() -> tuple[str, str]:
+def _mork_host_port(species: str = None) -> tuple[str, str]:
+    """Host/port of the MORK instance for this species (its own instance when
+    configured, else the global default)."""
     from urllib.parse import urlparse
-    u = urlparse(settings.MORK_URL)
+    from backend.core.console import explore_targets as et
+    url = (et.mork_url_for(species) if species else None) or settings.MORK_URL
+    u = urlparse(url)
     return (u.hostname or "localhost", str(u.port or 8432))
 
 
-def build_load_argv(target: str, output_dir: str) -> list[str]:
-    """argv to load a build's output into Neo4j or MORK via the existing loaders."""
+def build_load_argv(target: str, output_dir: str, species: str = None) -> list[str]:
+    """argv to load a build's output into Neo4j or MORK via the existing loaders.
+
+    Routes to the species' own instance (NEO4J_URI_<SP> / MORK_URL_<SP>) so a
+    build for a species loads into the database attached to that species; falls
+    back to the global endpoint when the species has no dedicated instance.
+    """
+    from backend.core.console import explore_targets as et
     # ARCHIVE_BASE passed verbatim: the loaders append the target subdir (neo4j/mork).
     archive_dir = settings.ARCHIVE_BASE
     if target == "neo4j":
+        uri = (et.neo4j_uri_for(species) if species else None) or settings.NEO4J_URI
         return [settings.UV_BIN, "run", "python", "kg-service/neo4j_loader.py",
                 "--output-dir", output_dir,
                 # --import-dir makes LOAD CSV use absolute file:/// URLs, so any dir works.
                 "--import-dir", output_dir,
                 "--archive-dir", archive_dir,
-                "--uri", settings.NEO4J_URI,
+                "--uri", uri,
                 "--username", settings.NEO4J_USER,
                 "--password", settings.NEO4J_PASSWORD]
     if target == "mork":
-        host, port = _mork_host_port()
+        host, port = _mork_host_port(species)
         return [settings.UV_BIN, "run", "python", "kg-service/mork_loader.py",
                 "--data-dir", output_dir,
                 "--archive-dir", archive_dir,
@@ -376,7 +387,7 @@ def _start_load(target: str, output_dir: str, params: dict) -> BuildJob:
     job_dir = registry.job_dir(job_id)
     job_dir.mkdir(parents=True, exist_ok=True)
     log_path = str(job_dir / "load.log")
-    argv = build_load_argv(target, output_dir)
+    argv = build_load_argv(target, output_dir, params.get("species"))
     job = BuildJob(
         id=job_id,
         status=JobStatus.QUEUED,
