@@ -136,6 +136,14 @@ export const api = {
 
   morkSchema: () => json<MorkSchema>(fetch(`${BASE}/mork/schema`)),
 
+  exploreTargets: () =>
+    json<{ targets: ExploreTarget[] }>(fetch(`${BASE}/explore/targets`)).then((d) => d.targets),
+
+  exploreSchema: (species: string, db: "neo4j" | "mork") =>
+    json<ExploreSchema>(
+      fetch(`${BASE}/explore/schema?species=${encodeURIComponent(species)}&db=${db}`),
+    ),
+
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
@@ -181,6 +189,30 @@ export interface MorkSchema {
   node_type_count?: number;
   edge_type_count?: number;
   sampled?: boolean;
+}
+
+export interface ExploreTarget {
+  species: string;
+  explicit: boolean;
+  neo4j_uri: string | null;
+  mork_url: string | null;
+}
+
+export interface ExploreSchema {
+  species: string;
+  db: "neo4j" | "mork";
+  reachable: boolean;
+  error?: string;
+  schema?: DetailedSchema;
+  node_types?: number;
+  edge_types?: number;
+  node_count?: number;
+  edge_count?: number;
+  atom_count?: number;
+  version?: string | null;
+  sampled?: boolean;
+  top_entities?: { name: string; count: number }[];
+  top_connections?: { name: string; count: number }[];
 }
 
 export interface GraphSummary {

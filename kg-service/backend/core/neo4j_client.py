@@ -6,12 +6,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Neo4jClient:
-    def __init__(self):
+    def __init__(self, uri: str = None, user: str = None, password: str = None):
+        # Per-species instances share creds and the `neo4j` database name (methods
+        # use settings.NEO4J_DATABASE); only the URI differs, so that is all we
+        # override here. Defaults keep the single-instance/default client working.
+        self.uri = uri or settings.NEO4J_URI
         self.driver = GraphDatabase.driver(
-            settings.NEO4J_URI,
-            auth=(settings.NEO4J_USER, settings.NEO4J_PASSWORD)
+            self.uri,
+            auth=(user or settings.NEO4J_USER, password or settings.NEO4J_PASSWORD)
         )
-        logger.info(f"Connected to Neo4j at {settings.NEO4J_URI}")
+        logger.info(f"Connected to Neo4j at {self.uri}")
 
     def close(self):
         self.driver.close()

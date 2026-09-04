@@ -1,154 +1,11 @@
 import { useEffect, useState } from "react";
 import SchemaGraph from "../components/SchemaGraph";
-import { api, obs, type GraphSummary, type DetailedSchema, type MorkSummary, type MorkSchema } from "../api/client";
+import { api, type ExploreTarget, type ExploreSchema } from "../api/client";
 
-type Target = "neo4j" | "mork";
+type Db = "neo4j" | "mork";
 
 function msgOf(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
-}
-
-export default function ExploreGraph() {
-  const [target, setTarget] = useState<Target>("neo4j");
-
-  const [summary, setSummary] = useState<GraphSummary | null>(null);
-  const [schema, setSchema] = useState<DetailedSchema | null>(null);
-  const [neoErr, setNeoErr] = useState<string | null>(null);
-
-  const [mork, setMork] = useState<MorkSummary | null>(null);
-  const [morkSchema, setMorkSchema] = useState<MorkSchema | null>(null);
-  const [morkErr, setMorkErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (target !== "neo4j") return;
-    setNeoErr(null);
-    setSummary(null);
-    Promise.all([obs.summary(), obs.schema()])
-      .then(([s, sc]) => {
-        setSummary(s);
-        setSchema(sc);
-      })
-      .catch((e) => setNeoErr(msgOf(e)));
-  }, [target]);
-
-  useEffect(() => {
-    if (target !== "mork") return;
-    setMorkErr(null);
-    setMork(null);
-    setMorkSchema(null);
-    api.morkSummary().then(setMork).catch((e) => setMorkErr(msgOf(e)));
-    api.morkSchema().then(setMorkSchema).catch(() => setMorkSchema(null));
-  }, [target]);
-
-  return (
-    <div className="card">
-      <div className="row" style={{ gap: 12 }}>
-        <h2 style={{ margin: 0 }}>Explore</h2>
-        <span className="group-actions">
-          <button
-            className={`linkbtn ${target === "neo4j" ? "seg-on" : ""}`}
-            onClick={() => setTarget("neo4j")}
-          >
-            Neo4j
-          </button>
-          <button
-            className={`linkbtn ${target === "mork" ? "seg-on" : ""}`}
-            onClick={() => setTarget("mork")}
-          >
-            MORK
-          </button>
-        </span>
-        <span className="muted" style={{ fontSize: 12 }}>live schema</span>
-      </div>
-
-      {target === "neo4j" && (
-        <>
-          {neoErr && (
-            <div className="alert err" style={{ marginTop: 12 }}>
-              Could not reach Neo4j: {neoErr}. The schema reads the live Neo4j graph.
-            </div>
-          )}
-          {summary && schema && (
-            <>
-              <div className="row" style={{ gap: 24, margin: "12px 0 2px" }}>
-                <Meta label="Node types" value={schema.nodes.length} />
-                <Meta label="Edge types" value={summary.top_connections?.length ?? 0} />
-                <Meta label="Nodes" value={(summary.node_count ?? 0).toLocaleString()} />
-                <Meta label="Edges" value={(summary.edge_count ?? 0).toLocaleString()} />
-              </div>
-              {schema.nodes.length ? (
-                <SchemaGraph
-                  schema={schema}
-                  topEntities={summary.top_entities}
-                  topConnections={summary.top_connections}
-                />
-              ) : (
-                <div className="muted" style={{ marginTop: 12 }}>The Neo4j graph is empty.</div>
-              )}
-            </>
-          )}
-          {!summary && !neoErr && <div className="muted" style={{ marginTop: 12 }}>Loading…</div>}
-        </>
-      )}
-
-      {target === "mork" && (
-        <>
-          {morkErr && (
-            <div className="alert err" style={{ marginTop: 12 }}>Could not reach MORK: {morkErr}</div>
-          )}
-          {mork && !mork.reachable && (
-            <div className="alert warn" style={{ marginTop: 12 }}>
-              MORK is not reachable{mork.error ? `: ${mork.error}` : ""}.
-            </div>
-          )}
-          {mork && mork.reachable && (
-            <>
-              <div className="row" style={{ gap: 24, margin: "12px 0 2px" }}>
-                <Meta
-                  label="Node types"
-                  value={morkSchema?.node_type_count ?? (morkSchema?.schema?.nodes.length ?? "—")}
-                />
-                <Meta label="Edge types" value={morkSchema?.edge_type_count ?? "—"} />
-                <Meta label="Atoms" value={mork.atom_count != null ? mork.atom_count.toLocaleString() : "—"} />
-                <Meta label="Datasets" value={mork.dataset_count ?? "—"} />
-                <Meta label="Version" value={mork.latest_version?.version ?? "—"} />
-              </div>
-
-              {morkSchema?.schema && morkSchema.schema.nodes.length > 0 ? (
-                <>
-                  {morkSchema.sampled && (
-                    <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
-                      Schema derived from a live sample of the atomspace; very rare types may be missing.
-                    </div>
-                  )}
-                  <SchemaGraph schema={morkSchema.schema} showCounts={false} />
-                </>
-              ) : (
-                <p className="muted" style={{ fontSize: 13, lineHeight: 1.55, marginTop: 12 }}>
-                  MORK is an atomspace of MeTTa atoms. The node and edge schema is derived from the atom
-                  structure. This space has no recognizable node/edge atoms yet.
-                </p>
-              )}
-
-              {mork.versions && mork.versions.length > 0 && (
-                <div style={{ marginTop: 14 }}>
-                  <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Versions</div>
-                  <div className="chips">
-                    {mork.versions.slice(0, 24).map((v, i) => (
-                      <span className="pill" key={i}>
-                        {typeof v === "object" ? JSON.stringify(v) : String(v)}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-          {!mork && !morkErr && <div className="muted" style={{ marginTop: 12 }}>Loading…</div>}
-        </>
-      )}
-    </div>
-  );
 }
 
 function Meta({ label, value }: { label: string; value: unknown }) {
@@ -156,6 +13,146 @@ function Meta({ label, value }: { label: string; value: unknown }) {
     <div>
       <div className="muted" style={{ fontSize: 12 }}>{label}</div>
       <div className="mono">{String(value)}</div>
+    </div>
+  );
+}
+
+// One species' live schema for the selected database.
+function SpeciesSchema({ species, db, compact }: { species: string; db: Db; compact?: boolean }) {
+  const [data, setData] = useState<ExploreSchema | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setData(null);
+    api
+      .exploreSchema(species, db)
+      .then((d) => alive && setData(d))
+      .catch((e) => alive && setData({ species, db, reachable: false, error: msgOf(e) }))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, [species, db]);
+
+  if (loading) return <div className="muted" style={{ padding: 12 }}>Loading {species}…</div>;
+  if (!data) return null;
+  if (!data.reachable) {
+    return (
+      <div className="alert warn" style={{ marginTop: 8 }}>
+        {species}: {data.error || "unreachable"}
+      </div>
+    );
+  }
+
+  const stats: [string, unknown][] =
+    db === "neo4j"
+      ? [
+          ["Node types", data.node_types ?? "—"],
+          ["Edge types", data.edge_types ?? "—"],
+          ["Nodes", data.node_count != null ? data.node_count.toLocaleString() : "—"],
+          ["Edges", data.edge_count != null ? data.edge_count.toLocaleString() : "—"],
+        ]
+      : [
+          ["Node types", data.node_types ?? "—"],
+          ["Edge types", data.edge_types ?? "—"],
+          ["Atoms", data.atom_count != null ? data.atom_count.toLocaleString() : "—"],
+          ["Version", data.version ?? "—"],
+        ];
+
+  return (
+    <div>
+      <div className="row" style={{ gap: compact ? 16 : 24, margin: "8px 0 2px" }}>
+        {stats.map(([l, v]) => (
+          <Meta key={l} label={l} value={v} />
+        ))}
+      </div>
+      {data.schema && data.schema.nodes.length ? (
+        <>
+          {db === "mork" && data.sampled && (
+            <div className="muted" style={{ fontSize: 12, margin: "6px 0" }}>
+              Schema sampled from the live atomspace; very rare types may be missing.
+            </div>
+          )}
+          <SchemaGraph
+            schema={data.schema}
+            topEntities={data.top_entities}
+            topConnections={data.top_connections}
+            showCounts={db === "neo4j"}
+            height={compact ? 380 : 640}
+          />
+        </>
+      ) : (
+        <div className="muted" style={{ marginTop: 8 }}>No schema for {species} in {db}.</div>
+      )}
+    </div>
+  );
+}
+
+export default function ExploreGraph() {
+  const [db, setDb] = useState<Db>("neo4j");
+  const [species, setSpecies] = useState<string>("all");
+  const [targets, setTargets] = useState<ExploreTarget[] | null>(null);
+  const [targetsErr, setTargetsErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.exploreTargets().then(setTargets).catch((e) => setTargetsErr(msgOf(e)));
+  }, []);
+
+  const speciesList = targets?.map((t) => t.species) ?? [];
+
+  return (
+    <div className="card">
+      <div className="row" style={{ gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+        <h2 style={{ margin: 0 }}>Explore</h2>
+        <span className="group-actions">
+          <button className={`linkbtn ${db === "neo4j" ? "seg-on" : ""}`} onClick={() => setDb("neo4j")}>
+            Neo4j
+          </button>
+          <button className={`linkbtn ${db === "mork" ? "seg-on" : ""}`} onClick={() => setDb("mork")}>
+            MORK
+          </button>
+        </span>
+        <span className="muted" style={{ fontSize: 12 }}>live schema</span>
+        <span style={{ flex: 1 }} />
+        <span className="muted" style={{ fontSize: 12 }}>Species</span>
+        <select value={species} onChange={(e) => setSpecies(e.target.value)}>
+          <option value="all">All species</option>
+          {speciesList.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+
+      {targetsErr && (
+        <div className="alert err" style={{ marginTop: 12 }}>Could not load species: {targetsErr}</div>
+      )}
+      {!targets && !targetsErr && <div className="muted" style={{ marginTop: 12 }}>Loading…</div>}
+
+      {targets && speciesList.length === 0 && (
+        <div className="muted" style={{ marginTop: 12 }}>No species configured.</div>
+      )}
+
+      {targets && species !== "all" && (
+        <div style={{ marginTop: 8 }}>
+          <SpeciesSchema species={species} db={db} />
+        </div>
+      )}
+
+      {targets && species === "all" && speciesList.length > 0 && (
+        <div className="species-grid">
+          {speciesList.map((s) => (
+            <div className="species-card" key={s}>
+              <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+                <h3 style={{ margin: 0, textTransform: "uppercase", letterSpacing: "0.03em" }}>{s}</h3>
+                <button className="linkbtn" onClick={() => setSpecies(s)}>focus →</button>
+              </div>
+              <SpeciesSchema species={s} db={db} compact />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

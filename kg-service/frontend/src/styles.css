@@ -552,3 +552,19 @@ a.link { color: var(--accent); text-decoration: none; font-weight: 600; }
 a.link:hover { text-decoration: underline; }
 
 details summary { cursor: pointer; }
+
+/* ===== Per-species Explore (side-by-side schemas) ===== */
+.species-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+@media (max-width: 1100px) { .species-grid { grid-template-columns: 1fr; } }
+.species-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--panel-2) 40%, transparent);
+  min-width: 0;
+}

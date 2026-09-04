@@ -94,6 +94,82 @@ def mork_summary():
     }
 
 
+@router.get("/explore/targets")
+def explore_targets():
+    """Species and the Neo4j/MORK endpoints they resolve to (for the Explore selector)."""
+    from backend.core.console import explore_targets as et
+    return {"targets": et.list_targets()}
+
+
+@router.get("/explore/schema")
+def explore_schema(species: str, db: str = "neo4j"):
+    """Live schema (+ stats) for one species' database instance.
+
+    db=neo4j reads that species' Neo4j; db=mork reads that species' MORK. Both
+    return the same {schema:{nodes,edges}} shape the SchemaGraph renders, plus
+    db-specific stats. Unreachable/misconfigured instances report it rather than
+    failing the whole request.
+    """
+    from backend.core.console import explore_targets as et
+
+    if db == "neo4j":
+        client = et.get_neo4j_client(species)
+        if client is None:
+            return {"species": species, "db": db, "reachable": False, "error": "No Neo4j endpoint configured for this species."}
+        try:
+            schema = client.get_detailed_schema()
+            counts = client.get_total_counts()
+            top_entities = client.get_node_type_distribution()
+            top_connections = client.get_edge_type_distribution()
+        except Exception:  # noqa: BLE001 - instance down/unreachable
+            return {"species": species, "db": db, "reachable": False,
+                    "error": f"Could not reach Neo4j at {et.neo4j_uri_for(species)}."}
+        return {
+            "species": species, "db": db, "reachable": True,
+            "schema": schema,
+            "node_types": len(schema.get("nodes", [])),
+            "edge_types": len(top_connections or []),
+            "node_count": counts.get("node_count"),
+            "edge_count": counts.get("edge_count"),
+            "top_entities": top_entities,
+            "top_connections": top_connections,
+        }
+
+    if db == "mork":
+        try:
+            client = et.get_mork_client(species)
+        except ImportError as exc:
+            return {"species": species, "db": db, "reachable": False, "error": str(exc)}
+        except Exception:  # noqa: BLE001 - instance down/unreachable
+            return {"species": species, "db": db, "reachable": False,
+                    "error": f"Could not reach MORK at {et.mork_url_for(species)}."}
+        if client is None:
+            return {"species": species, "db": db, "reachable": False, "error": "No MORK endpoint configured for this species."}
+        try:
+            result = client.get_schema()
+            atom_count = client.get_atom_count()
+        except Exception:  # noqa: BLE001
+            return {"species": species, "db": db, "reachable": False,
+                    "error": f"Could not reach MORK at {et.mork_url_for(species)}."}
+        latest = None
+        try:
+            lv = client.get_latest_version()
+            latest = lv.get("version") if lv else None
+        except Exception:  # noqa: BLE001
+            latest = None
+        return {
+            "species": species, "db": db, "reachable": True,
+            "schema": result.get("schema"),
+            "node_types": result.get("node_type_count"),
+            "edge_types": result.get("edge_type_count"),
+            "sampled": result.get("sampled"),
+            "atom_count": atom_count,
+            "version": latest,
+        }
+
+    raise HTTPException(status_code=400, detail=f"Unknown db '{db}' (expected neo4j or mork)")
+
+
 @router.get("/mork/schema")
 def mork_schema():
     """Live MORK node/edge schema, derived from the atomspace structure.
