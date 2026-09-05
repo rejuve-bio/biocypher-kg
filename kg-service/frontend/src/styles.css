@@ -643,11 +643,49 @@ details summary { cursor: pointer; }
   background: color-mix(in srgb, var(--panel-2) 70%, transparent);
 }
 .gc-nav-head .muted { margin-left: auto; font-weight: 600; }
-.gc-nav-body { max-height: 560px; overflow: auto; padding: 6px; }
-.gc-tree-row { display: flex; align-items: center; gap: 2px; border-radius: 7px; white-space: nowrap; }
-.gc-tree-row:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
-.gc-tree-row.active { background: color-mix(in srgb, var(--accent-2) 16%, transparent); }
-.gc-caret { background: none; border: none; color: var(--muted); cursor: pointer; width: 16px; padding: 0; font-size: 10px; flex: none; }
-.gc-caret-spacer { width: 16px; flex: none; display: inline-block; }
-.gc-tree-name { background: none; border: none; color: var(--text); cursor: pointer; padding: 5px 4px; font-size: 12px; text-align: left; flex: 1; min-width: 0; }
-.gc-tree-count { font-size: 10px; padding: 0 8px 0 4px; flex: none; }
+.gc-nav-body { max-height: 600px; overflow: auto; padding: 8px 8px 8px 4px; }
+
+/* Nested guide lines: each level's children hang off a vertical rule. */
+.gc-tree-children {
+  margin-left: 16px;
+  padding-left: 2px;
+  border-left: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+}
+.gc-tree-row {
+  display: flex; align-items: center; gap: 3px; border-radius: 8px;
+  padding: 1px 4px 1px 2px; white-space: nowrap; position: relative;
+  transition: background 0.1s;
+}
+.gc-tree-row:hover { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.gc-tree-row.active { background: color-mix(in srgb, var(--accent-2) 18%, transparent); box-shadow: inset 2px 0 0 var(--accent-2); }
+
+.gc-caret {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  width: 16px; height: 22px; padding: 0; font-size: 9px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform 0.14s ease, color 0.1s;
+}
+.gc-caret:hover { color: var(--accent); }
+.gc-caret.open { transform: rotate(90deg); }
+
+/* Leaf marker */
+.gc-dot { width: 16px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
+.gc-dot::before {
+  content: ""; width: 4px; height: 4px; border-radius: 50%;
+  background: color-mix(in srgb, var(--muted) 65%, transparent);
+}
+
+.gc-tree-name {
+  background: none; border: none; color: var(--text); cursor: pointer;
+  padding: 4px 4px; font-size: 12.5px; text-align: left; flex: 1; min-width: 0;
+  letter-spacing: 0.01em;
+}
+.gc-tree-name:hover { color: var(--accent); }
+.gc-tree-row.is-parent > .gc-tree-name { font-weight: 700; }
+.gc-tree-count {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  background: color-mix(in srgb, var(--panel-2) 85%, transparent);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 1px 7px; min-width: 16px; text-align: center; flex: none; margin-left: 4px;
+}
+.gc-tree-row.active .gc-tree-count { color: var(--accent-2); border-color: color-mix(in srgb, var(--accent-2) 45%, var(--border)); }

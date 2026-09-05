@@ -94,21 +94,25 @@ function buildTree(items: EntrySummary[]): TNode[] {
   return roots.map(build).map(sortRec).sort(byName);
 }
 
-function TreeItem({ node, depth, selected, onOpen }: { node: TNode; depth: number; selected: string | null; onOpen: (n: string) => void }) {
+function TreeItem({ node, selected, onOpen }: { node: TNode; selected: string | null; onOpen: (n: string) => void }) {
   const [open, setOpen] = useState(true);
   const has = node.children.length > 0;
   return (
-    <div>
-      <div className={`gc-tree-row ${selected === node.e.name ? "active" : ""}`} style={{ paddingLeft: 6 + depth * 14 }}>
+    <div className="gc-tnode">
+      <div className={`gc-tree-row ${selected === node.e.name ? "active" : ""} ${has ? "is-parent" : ""}`}>
         {has ? (
-          <button className="gc-caret" onClick={() => setOpen((o) => !o)}>{open ? "▾" : "▸"}</button>
+          <button className={`gc-caret ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-label="toggle">▸</button>
         ) : (
-          <span className="gc-caret-spacer" />
+          <span className="gc-dot" />
         )}
-        <button className="gc-tree-name mono" onClick={() => onOpen(node.e.name)} title={node.e.name}>{node.e.name}</button>
-        {has && <span className="gc-tree-count muted">{node.children.length}</span>}
+        <button className="gc-tree-name" onClick={() => onOpen(node.e.name)} title={node.e.name}>{node.e.name}</button>
+        {has && <span className="gc-tree-count">{node.children.length}</span>}
       </div>
-      {open && node.children.map((c) => <TreeItem key={c.e.name} node={c} depth={depth + 1} selected={selected} onOpen={onOpen} />)}
+      {open && has && (
+        <div className="gc-tree-children">
+          {node.children.map((c) => <TreeItem key={c.e.name} node={c} selected={selected} onOpen={onOpen} />)}
+        </div>
+      )}
     </div>
   );
 }
@@ -117,14 +121,14 @@ function NavContent({ items, kind, filtering, selected, onOpen }: { items: Entry
   if (items.length === 0) return <div className="muted" style={{ padding: 8, fontSize: 12 }}>none</div>;
   // Hierarchy tree for schema (when not searching); flat list for adapters / search.
   if (kind === "schema" && !filtering) {
-    return <>{buildTree(items).map((n) => <TreeItem key={n.e.name} node={n} depth={0} selected={selected} onOpen={onOpen} />)}</>;
+    return <>{buildTree(items).map((n) => <TreeItem key={n.e.name} node={n} selected={selected} onOpen={onOpen} />)}</>;
   }
   return (
     <>
       {items.map((e) => (
-        <div key={e.name} className={`gc-tree-row ${selected === e.name ? "active" : ""}`} style={{ paddingLeft: 6 }}>
-          <span className="gc-caret-spacer" />
-          <button className="gc-tree-name mono" onClick={() => onOpen(e.name)} title={e.name}>{e.name}</button>
+        <div key={e.name} className={`gc-tree-row ${selected === e.name ? "active" : ""}`}>
+          <span className="gc-dot" />
+          <button className="gc-tree-name" onClick={() => onOpen(e.name)} title={e.name}>{e.name}</button>
         </div>
       ))}
     </>
