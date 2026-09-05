@@ -202,6 +202,7 @@ export interface EntrySummary {
   represented_as?: string;
   input_label?: string | null;
   biolink_category?: string | null;
+  is_a?: string | string[] | null;
 }
 
 export interface ConfigEntries {

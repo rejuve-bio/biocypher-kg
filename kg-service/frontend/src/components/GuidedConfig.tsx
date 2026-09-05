@@ -67,17 +67,67 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function EntrySection({ title, items, selected, onOpen }: { title: string; items: EntrySummary[]; selected: string | null; onOpen: (name: string) => void }) {
-  if (items.length === 0) return null;
+// ── is_a hierarchy tree (schema) ──────────────────────────────────────────────
+type TNode = { e: EntrySummary; children: TNode[] };
+
+function firstParent(e: EntrySummary, names: Set<string>): string | null {
+  const p = e.is_a;
+  const v = Array.isArray(p) ? p[0] : p; // multiple inheritance -> primary parent
+  return typeof v === "string" && v !== e.name && names.has(v) ? v : null;
+}
+
+function buildTree(items: EntrySummary[]): TNode[] {
+  const names = new Set(items.map((i) => i.name));
+  const childrenOf = new Map<string, EntrySummary[]>();
+  const roots: EntrySummary[] = [];
+  for (const e of items) {
+    const p = firstParent(e, names);
+    if (p) {
+      const arr = childrenOf.get(p) ?? [];
+      arr.push(e);
+      childrenOf.set(p, arr);
+    } else roots.push(e);
+  }
+  const build = (e: EntrySummary): TNode => ({ e, children: (childrenOf.get(e.name) ?? []).map(build) });
+  const byName = (a: TNode, b: TNode) => a.e.name.localeCompare(b.e.name);
+  const sortRec = (n: TNode): TNode => ({ ...n, children: n.children.map(sortRec).sort(byName) });
+  return roots.map(build).map(sortRec).sort(byName);
+}
+
+function TreeItem({ node, depth, selected, onOpen }: { node: TNode; depth: number; selected: string | null; onOpen: (n: string) => void }) {
+  const [open, setOpen] = useState(true);
+  const has = node.children.length > 0;
   return (
-    <div className="gc-section">
-      <div className="gc-section-title muted">{title} ({items.length})</div>
-      {items.map((e) => (
-        <button key={e.name} className={`gc-entry ${selected === e.name ? "active" : ""}`} onClick={() => onOpen(e.name)}>
-          <span className="mono" style={{ fontSize: 12 }}>{e.name}</span>
-        </button>
-      ))}
+    <div>
+      <div className={`gc-tree-row ${selected === node.e.name ? "active" : ""}`} style={{ paddingLeft: 6 + depth * 14 }}>
+        {has ? (
+          <button className="gc-caret" onClick={() => setOpen((o) => !o)}>{open ? "▾" : "▸"}</button>
+        ) : (
+          <span className="gc-caret-spacer" />
+        )}
+        <button className="gc-tree-name mono" onClick={() => onOpen(node.e.name)} title={node.e.name}>{node.e.name}</button>
+        {has && <span className="gc-tree-count muted">{node.children.length}</span>}
+      </div>
+      {open && node.children.map((c) => <TreeItem key={c.e.name} node={c} depth={depth + 1} selected={selected} onOpen={onOpen} />)}
     </div>
+  );
+}
+
+function NavContent({ items, kind, filtering, selected, onOpen }: { items: EntrySummary[]; kind: Kind; filtering: boolean; selected: string | null; onOpen: (n: string) => void }) {
+  if (items.length === 0) return <div className="muted" style={{ padding: 8, fontSize: 12 }}>none</div>;
+  // Hierarchy tree for schema (when not searching); flat list for adapters / search.
+  if (kind === "schema" && !filtering) {
+    return <>{buildTree(items).map((n) => <TreeItem key={n.e.name} node={n} depth={0} selected={selected} onOpen={onOpen} />)}</>;
+  }
+  return (
+    <>
+      {items.map((e) => (
+        <div key={e.name} className={`gc-tree-row ${selected === e.name ? "active" : ""}`} style={{ paddingLeft: 6 }}>
+          <span className="gc-caret-spacer" />
+          <button className="gc-tree-name mono" onClick={() => onOpen(e.name)} title={e.name}>{e.name}</button>
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -179,26 +229,39 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
   const nodeGroup = shown.filter((e) => !isEdgeEntry(e));
   const edgeGroup = shown.filter((e) => isEdgeEntry(e));
 
+  const filtering = filter.trim().length > 0;
+
   return (
-    <div className="gc-grid">
-      <div className="gc-list">
-        <input className="input" placeholder="Search entries…" value={filter} onChange={(e) => setFilter(e.target.value)} style={{ marginBottom: 8 }} />
-        <button className="secondary btn-sm" style={{ marginBottom: 8, width: "100%" }} onClick={addEntry}>+ Add {kind === "adapters" ? "adapter" : "type"}</button>
-        <div className="gc-entries">
-          {entries === null ? (
-            <div className="muted" style={{ padding: 10 }}>Loading…</div>
-          ) : shown.length === 0 ? (
-            <div className="muted" style={{ padding: 10 }}>No matches.</div>
-          ) : (
-            <>
-              <EntrySection title={kind === "adapters" ? "Node adapters" : "Node types"} items={nodeGroup} selected={selected} onOpen={openEntry} />
-              <EntrySection title={kind === "adapters" ? "Edge adapters" : "Edge types"} items={edgeGroup} selected={selected} onOpen={openEntry} />
-            </>
-          )}
-        </div>
+    <div className="gc-guided">
+      <div className="gc-toolbar">
+        <input className="input" placeholder="Search entries…" value={filter} onChange={(e) => setFilter(e.target.value)} />
+        <button className="secondary btn-sm" onClick={addEntry}>+ Add {kind === "adapters" ? "adapter" : "type"}</button>
       </div>
 
-      <div className="gc-form">
+      <div className="gc-cols">
+        <div className="gc-nav-col">
+          <div className="gc-nav-head">
+            <span className="type-dot dot-node" /> {kind === "adapters" ? "Node adapters" : "Node types"}
+            <span className="muted">{nodeGroup.length}</span>
+          </div>
+          <div className="gc-nav-body">
+            {entries === null ? <div className="muted" style={{ padding: 8 }}>Loading…</div>
+              : <NavContent items={nodeGroup} kind={kind} filtering={filtering} selected={selected} onOpen={openEntry} />}
+          </div>
+        </div>
+
+        <div className="gc-nav-col">
+          <div className="gc-nav-head">
+            <span className="type-dot dot-edge" /> {kind === "adapters" ? "Edge adapters" : "Edge types"}
+            <span className="muted">{edgeGroup.length}</span>
+          </div>
+          <div className="gc-nav-body">
+            {entries === null ? <div className="muted" style={{ padding: 8 }}>Loading…</div>
+              : <NavContent items={edgeGroup} kind={kind} filtering={filtering} selected={selected} onOpen={openEntry} />}
+          </div>
+        </div>
+
+        <div className="gc-form">
         {!selected ? (
           <div className="muted" style={{ padding: 20 }}>Select an entry to edit, or add a new one.</div>
         ) : loading || !data ? (
@@ -223,6 +286,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
         )}
 
         {msg && <div className={`alert ${msg.kind}`} style={{ marginTop: 12 }}>{msg.text}</div>}
+        </div>
       </div>
     </div>
   );

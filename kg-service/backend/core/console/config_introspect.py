@@ -302,6 +302,7 @@ def _entry_summary(kind: str, name: str, val: dict) -> dict:
         "represented_as": str(val.get("represented_as", "node")),
         "input_label": val.get("input_label"),
         "biolink_category": val.get("biolink_category"),
+        "is_a": val.get("is_a"),  # str or list; drives the hierarchy tree
     }
 
 

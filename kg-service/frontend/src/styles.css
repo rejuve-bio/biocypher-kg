@@ -620,3 +620,34 @@ details summary { cursor: pointer; }
   padding: 6px 8px 3px; position: sticky; top: 0; z-index: 1;
   background: color-mix(in srgb, var(--panel) 94%, transparent);
 }
+
+/* Guided config: two-column navigator + is_a tree */
+.gc-guided { margin-top: 12px; }
+.gc-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+.gc-toolbar .input { flex: 1; }
+.gc-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(320px, 1.7fr);
+  gap: 12px; align-items: start;
+}
+@media (max-width: 1000px) { .gc-cols { grid-template-columns: 1fr; } }
+.gc-nav-col {
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  background: color-mix(in srgb, var(--panel-2) 40%, transparent);
+  display: flex; flex-direction: column;
+}
+.gc-nav-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 12px; font-size: 12px; font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel-2) 70%, transparent);
+}
+.gc-nav-head .muted { margin-left: auto; font-weight: 600; }
+.gc-nav-body { max-height: 560px; overflow: auto; padding: 6px; }
+.gc-tree-row { display: flex; align-items: center; gap: 2px; border-radius: 7px; white-space: nowrap; }
+.gc-tree-row:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.gc-tree-row.active { background: color-mix(in srgb, var(--accent-2) 16%, transparent); }
+.gc-caret { background: none; border: none; color: var(--muted); cursor: pointer; width: 16px; padding: 0; font-size: 10px; flex: none; }
+.gc-caret-spacer { width: 16px; flex: none; display: inline-block; }
+.gc-tree-name { background: none; border: none; color: var(--text); cursor: pointer; padding: 5px 4px; font-size: 12px; text-align: left; flex: 1; min-width: 0; }
+.gc-tree-count { font-size: 10px; padding: 0 8px 0 4px; flex: none; }
