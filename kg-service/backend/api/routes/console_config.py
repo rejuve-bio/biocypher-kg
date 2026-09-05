@@ -56,6 +56,54 @@ def put_config(species: str, dataset: str, kind: str, body: ConfigWrite):
         raise HTTPException(status_code=400, detail=str(exc))
 
 
+# ── Guided (structured) config editing ───────────────────────────────────────
+
+class EntryWrite(BaseModel):
+    data: dict
+
+
+@router.get("/species/{species}/datasets/{dataset}/config/{kind}/entries")
+def get_config_entries(species: str, dataset: str, kind: str):
+    """Ordered list of the config's named entries with a light summary of each."""
+    try:
+        return ci.list_config_entries(species, dataset, kind)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.get("/species/{species}/datasets/{dataset}/config/{kind}/entries/{name}")
+def get_config_entry(species: str, dataset: str, kind: str, name: str):
+    """Full structured data for a single entry."""
+    try:
+        return ci.get_config_entry(species, dataset, kind, name)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.put("/species/{species}/datasets/{dataset}/config/{kind}/entries/{name}")
+def put_config_entry(species: str, dataset: str, kind: str, name: str, body: EntryWrite):
+    """Add or replace one entry (splices only its block; validated on save)."""
+    try:
+        return ci.save_config_entry(species, dataset, kind, name, body.data)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.delete("/species/{species}/datasets/{dataset}/config/{kind}/entries/{name}")
+def delete_config_entry(species: str, dataset: str, kind: str, name: str):
+    """Remove one entry from the config."""
+    try:
+        return ci.delete_config_entry(species, dataset, kind, name)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.get("/biolink/categories")
+def biolink_categories():
+    """Distinct biolink categories used across the schema configs (for pickers)."""
+    return {"categories": ci.list_biolink_categories()}
+
+
 @router.get("/writers")
 def get_writers():
     return {"writers": ci.list_writers()}

@@ -113,6 +113,41 @@ export const api = {
       }),
     ),
 
+  getConfigEntries: (species: string, dataset: string, kind: "adapters" | "schema") =>
+    json<ConfigEntries>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}/entries`),
+    ),
+
+  getConfigEntry: (species: string, dataset: string, kind: "adapters" | "schema", name: string) =>
+    json<{ name: string; data: Record<string, unknown> }>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}/entries/${encodeURIComponent(name)}`),
+    ),
+
+  saveConfigEntry: (
+    species: string,
+    dataset: string,
+    kind: "adapters" | "schema",
+    name: string,
+    data: Record<string, unknown>,
+  ) =>
+    json<{ name: string; data: Record<string, unknown> }>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}/entries/${encodeURIComponent(name)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data }),
+      }),
+    ),
+
+  deleteConfigEntry: (species: string, dataset: string, kind: "adapters" | "schema", name: string) =>
+    json<{ deleted: string }>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}/entries/${encodeURIComponent(name)}`, {
+        method: "DELETE",
+      }),
+    ),
+
+  biolinkCategories: () =>
+    json<{ categories: string[] }>(fetch(`${BASE}/biolink/categories`)).then((d) => d.categories),
+
   listOutput: (id: string) =>
     json<{
       output_dir: string;
@@ -154,6 +189,28 @@ export interface ConfigFile {
   kind: string;
   path: string;
   content: string;
+}
+
+export interface EntrySummary {
+  name: string;
+  // adapters
+  nodes?: boolean;
+  edges?: boolean;
+  module?: string | null;
+  cls?: string | null;
+  // schema
+  represented_as?: string;
+  input_label?: string | null;
+  biolink_category?: string | null;
+}
+
+export interface ConfigEntries {
+  species: string;
+  dataset: string;
+  kind: "adapters" | "schema";
+  path: string;
+  count: number;
+  entries: EntrySummary[];
 }
 
 // Observatory endpoints query the live Neo4j graph (mounted at /api, not /api/console).

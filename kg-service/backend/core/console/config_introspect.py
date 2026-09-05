@@ -256,6 +256,176 @@ def save_config_text(species: str, dataset: str, kind: str, content: str) -> dic
             "path": str(path), "content": content}
 
 
+# ===== Guided (structured) config editing =====
+# A config is a mapping of named entries. The guided editor reads/writes one entry
+# at a time. Saves splice only the edited entry's text block back into the raw
+# file, so untouched entries stay byte-for-byte identical (see save_config_entry).
+
+def _load_config_dict(path: Path) -> dict:
+    """Load a config to a plain dict via the project loader (handles !include and,
+    like the build loader, keeps the last of any duplicate keys)."""
+    load = _load_yaml_with_includes()
+    return load(str(path)) or {}
+
+
+def _to_plain(obj):
+    """Deep-convert to plain JSON-serializable Python (defensive; the loader
+    already returns plain types)."""
+    if isinstance(obj, dict):
+        return {str(k): _to_plain(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_to_plain(v) for v in obj]
+    if isinstance(obj, bool):
+        return bool(obj)
+    if isinstance(obj, int):
+        return int(obj)
+    if isinstance(obj, float):
+        return float(obj)
+    if obj is None:
+        return None
+    return str(obj)
+
+
+def _entry_summary(kind: str, name: str, val: dict) -> dict:
+    if kind == "adapters":
+        adapter = val.get("adapter") or {}
+        return {
+            "name": name,
+            "nodes": bool(val.get("nodes", False)),
+            "edges": bool(val.get("edges", False)),
+            "module": adapter.get("module"),
+            "cls": adapter.get("cls"),
+        }
+    # schema
+    return {
+        "name": name,
+        "represented_as": str(val.get("represented_as", "node")),
+        "input_label": val.get("input_label"),
+        "biolink_category": val.get("biolink_category"),
+    }
+
+
+def list_config_entries(species: str, dataset: str, kind: str) -> dict:
+    """Ordered list of the config's named entries + a light summary of each."""
+    path = _config_path(species, dataset, kind)
+    doc = _load_config_dict(path)
+    entries = [
+        _entry_summary(kind, str(name), val)
+        for name, val in doc.items()
+        if isinstance(val, dict)  # skip scalar keys like Title / input_dir
+    ]
+    return {"species": species, "dataset": dataset, "kind": kind,
+            "path": str(path), "count": len(entries), "entries": entries}
+
+
+def get_config_entry(species: str, dataset: str, kind: str, name: str) -> dict:
+    """Full structured data for a single entry."""
+    path = _config_path(species, dataset, kind)
+    doc = _load_config_dict(path)
+    if name not in doc:
+        raise ConfigError(f"No entry '{name}' in the {kind} config.")
+    return {"name": name, "data": _to_plain(doc[name])}
+
+
+def _top_level_key(line: str):
+    """The mapping key on a column-0 line, else None (skips indented lines,
+    blanks, comments, and list items)."""
+    if not line or line[0].isspace():
+        return None
+    s = line.lstrip()
+    if s.startswith("#") or s.startswith("-") or ":" not in line:
+        return None
+    key = line.split(":", 1)[0].strip()
+    if len(key) >= 2 and key[0] in "\"'" and key[-1] == key[0]:
+        key = key[1:-1]
+    return key or None
+
+
+def _entry_span(lines: list[str], name: str):
+    """[start, end) line indices of the top-level entry ``name`` (the last
+    occurrence, matching the build loader's last-wins), or None."""
+    keys = [(i, k) for i, ln in enumerate(lines) if (k := _top_level_key(ln)) is not None]
+    match = None
+    for pos, (_i, k) in enumerate(keys):
+        if k == name:
+            match = pos
+    if match is None:
+        return None
+    start = keys[match][0]
+    end = keys[match + 1][0] if match + 1 < len(keys) else len(lines)
+    return start, end
+
+
+def _dump_entry(name: str, data: dict) -> str:
+    import yaml
+    return yaml.safe_dump(
+        {name: data},
+        default_flow_style=False,
+        sort_keys=False,  # preserve the field order the form sent
+        allow_unicode=True,
+        width=4096,  # don't wrap long scalars (e.g. urls)
+        indent=2,
+    )
+
+
+def save_config_entry(species: str, dataset: str, kind: str, name: str, data: dict) -> dict:
+    """Add or replace one entry by splicing just its block into the raw file, so
+    every other entry stays byte-for-byte identical, then validate + atomic write."""
+    if not isinstance(data, dict):
+        raise ConfigError("Entry data must be a mapping.")
+    path = _config_path(species, dataset, kind)
+    lines = path.read_text().splitlines(keepends=True)
+    new_lines = _dump_entry(name, data).splitlines(keepends=True)
+    span = _entry_span(lines, name)
+    if span is None:
+        # New entry: append, ensuring a separating newline.
+        sep = "" if (not lines or lines[-1].endswith("\n")) else "\n"
+        result = "".join(lines) + sep + "".join(new_lines)
+    else:
+        start, end = span
+        # Keep the blank lines that separated this entry from the next.
+        trailing, j = [], end - 1
+        while j >= start and lines[j].strip() == "":
+            trailing.insert(0, lines[j])
+            j -= 1
+        result = "".join(lines[:start] + new_lines + trailing + lines[end:])
+    save_config_text(species, dataset, kind, result)  # loader-validates + atomic write
+    return get_config_entry(species, dataset, kind, name)
+
+
+def delete_config_entry(species: str, dataset: str, kind: str, name: str) -> dict:
+    """Remove one entry's block from the raw file, then validate + atomic write."""
+    path = _config_path(species, dataset, kind)
+    lines = path.read_text().splitlines(keepends=True)
+    span = _entry_span(lines, name)
+    if span is None:
+        raise ConfigError(f"No entry '{name}' in the {kind} config.")
+    start, end = span
+    save_config_text(species, dataset, kind, "".join(lines[:start] + lines[end:]))
+    return {"deleted": name}
+
+
+def list_biolink_categories() -> list[str]:
+    """Distinct ``biolink:...`` identifiers used across the schema configs, for
+    the guided schema editor's type pickers (the project's own vocabulary)."""
+    import re
+    paths = [settings.repo_root_path / "config" / "primer_schema_config.yaml"]
+    for entry in list_species_and_datasets():
+        for ds in entry.get("datasets", []):
+            sc = ds.get("schema_config")
+            if sc:
+                p = _resolve(sc)
+                if p.exists():
+                    paths.append(p)
+    cats: set[str] = set()
+    for p in paths:
+        try:
+            cats.update(re.findall(r"biolink:[A-Za-z0-9_]+", p.read_text()))
+        except Exception:  # noqa: BLE001
+            continue
+    return sorted(cats)
+
+
 def list_writers() -> list[str]:
     return list(WRITER_TYPES)
 

@@ -4,14 +4,17 @@ import { yaml } from "@codemirror/lang-yaml";
 import { api } from "../api/client";
 import type { SpeciesEntry } from "../types";
 import ConfirmDialog, { type Confirmable } from "../components/ConfirmDialog";
+import GuidedConfig from "../components/GuidedConfig";
 
 type Kind = "adapters" | "schema";
+type Mode = "guided" | "yaml";
 
 export default function ConfigEditor() {
   const [species, setSpecies] = useState<SpeciesEntry[]>([]);
   const [sel, setSel] = useState("");
   const [dataset, setDataset] = useState("");
   const [kind, setKind] = useState<Kind>("adapters");
+  const [mode, setMode] = useState<Mode>("guided");
   const [content, setContent] = useState("");
   const [path, setPath] = useState("");
   const [dirty, setDirty] = useState(false);
@@ -50,6 +53,7 @@ export default function ConfigEditor() {
   }, [sel, species]);
 
   useEffect(() => {
+    if (mode !== "yaml") return;
     if (!sel || !dataset || !datasets.some((d) => d.name === dataset)) return;
     let alive = true;
     setLoading(true);
@@ -73,7 +77,7 @@ export default function ConfigEditor() {
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sel, dataset, kind]);
+  }, [sel, dataset, kind, mode]);
 
   async function save() {
     setMsg(null);
@@ -81,7 +85,7 @@ export default function ConfigEditor() {
       const r = await api.saveConfig(sel, dataset, kind, content);
       setContent(r.content);
       setDirty(false);
-      setMsg({ kind: "ok", text: "Saved — the previous version was backed up." });
+      setMsg({ kind: "ok", text: "Saved. Revert with git if needed." });
     } catch (e) {
       setMsg({ kind: "err", text: msgOf(e) });
     }
@@ -114,54 +118,68 @@ export default function ConfigEditor() {
             <option value="schema">schema config</option>
           </select>
         </label>
+        <span style={{ flex: 1 }} />
+        <span className="group-actions" style={{ alignSelf: "end" }}>
+          <button className={`linkbtn ${mode === "guided" ? "seg-on" : ""}`} onClick={() => setMode("guided")}>Guided</button>
+          <button className={`linkbtn ${mode === "yaml" ? "seg-on" : ""}`} onClick={() => setMode("yaml")}>YAML</button>
+        </span>
       </div>
 
-      {path && (
-        <div className="field-hint" style={{ marginTop: 10 }}>
-          <span className="mono">{path}</span>
-          {dirty ? " · unsaved changes" : ""}
-        </div>
+      {mode === "guided" && sel && dataset && (
+        <GuidedConfig species={sel} dataset={dataset} kind={kind} />
       )}
 
-      <div className="cm-wrap" style={{ marginTop: 10 }}>
-        <CodeMirror
-          value={content}
-          height="480px"
-          theme={cmTheme}
-          extensions={[yaml()]}
-          editable={!loading}
-          onChange={(v) => {
-            setContent(v);
-            setDirty(true);
-          }}
-          basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
-          placeholder={loading ? "Loading…" : "Select a config to edit…"}
-        />
-      </div>
+      {mode === "yaml" && (
+        <>
+          {path && (
+            <div className="field-hint" style={{ marginTop: 10 }}>
+              <span className="mono">{path}</span>
+              {dirty ? " · unsaved changes" : ""}
+            </div>
+          )}
 
-      {msg && (
-        <div className={`alert ${msg.kind}`} style={{ marginTop: 10, whiteSpace: "pre-wrap" }}>
-          {msg.text}
-        </div>
+          <div className="cm-wrap" style={{ marginTop: 10 }}>
+            <CodeMirror
+              value={content}
+              height="480px"
+              theme={cmTheme}
+              extensions={[yaml()]}
+              editable={!loading}
+              onChange={(v) => {
+                setContent(v);
+                setDirty(true);
+              }}
+              basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
+              placeholder={loading ? "Loading…" : "Select a config to edit…"}
+            />
+          </div>
+
+          {msg && (
+            <div className={`alert ${msg.kind}`} style={{ marginTop: 10, whiteSpace: "pre-wrap" }}>
+              {msg.text}
+            </div>
+          )}
+
+          <div className="row" style={{ marginTop: 12 }}>
+            <button
+              className="primary"
+              disabled={!dirty || loading || !content}
+              onClick={() =>
+                setPending({
+                  title: "Save config changes?",
+                  message: `This overwrites ${path}. New builds of ${sel}/${dataset} will use the updated config. The file is validated on save, and you can revert it with git if needed.`,
+                  confirmLabel: "Save",
+                  run: save,
+                })
+              }
+            >
+              💾 Save
+            </button>
+            <span className="field-hint">Validated on save; invalid YAML is rejected and nothing is overwritten.</span>
+          </div>
+        </>
       )}
 
-      <div className="row" style={{ marginTop: 12 }}>
-        <button
-          className="primary"
-          disabled={!dirty || loading || !content}
-          onClick={() =>
-            setPending({
-              title: "Save config changes?",
-              message: `This overwrites ${path}. New builds of ${sel}/${dataset} will use the updated config. The file is validated on save, and you can revert it with git if needed.`,
-              confirmLabel: "Save",
-              run: save,
-            })
-          }
-        >
-          💾 Save
-        </button>
-        <span className="field-hint">Validated on save; invalid YAML is rejected and nothing is overwritten.</span>
-      </div>
       <ConfirmDialog pending={pending} onClose={() => setPending(null)} />
     </div>
   );

@@ -568,3 +568,46 @@ details summary { cursor: pointer; }
   background: color-mix(in srgb, var(--panel-2) 40%, transparent);
   min-width: 0;
 }
+
+/* ===== Guided config editor ===== */
+.input {
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 13px; width: 100%;
+}
+.input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+
+.gc-grid { display: grid; grid-template-columns: 280px 1fr; gap: 16px; margin-top: 12px; }
+@media (max-width: 860px) { .gc-grid { grid-template-columns: 1fr; } }
+.gc-list { display: flex; flex-direction: column; }
+.gc-entries {
+  display: flex; flex-direction: column; gap: 2px;
+  max-height: 560px; overflow: auto;
+  border: 1px solid var(--border); border-radius: 12px; padding: 6px;
+  background: color-mix(in srgb, var(--panel-2) 45%, transparent);
+}
+.gc-entry {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left;
+  padding: 7px 10px; border: 1px solid transparent; border-radius: 8px;
+  background: transparent; color: var(--text); cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.gc-entry:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.gc-entry.active {
+  background: color-mix(in srgb, var(--accent-2) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent-2) 55%, var(--border));
+}
+.gc-form {
+  border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+  background: color-mix(in srgb, var(--panel-2) 30%, transparent); min-width: 0;
+}
+.gc-fields { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.gc-field { display: flex; flex-direction: column; gap: 4px; }
+.kv-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.kv-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 8px; }
+.prop-head, .prop-row { display: grid; grid-template-columns: 1fr 0.7fr 1.2fr auto; gap: 8px; }
+.prop-head { font-size: 11px; padding: 0 2px; }
+.gc-raw {
+  font-size: 11px; background: var(--panel-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px; overflow: auto; max-height: 260px; margin-top: 8px;
+}
