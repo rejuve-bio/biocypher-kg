@@ -630,8 +630,6 @@ transcript:
       biolink: id
     transcript_type:
       type: str
-    gene_name:
-      type: str
   description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
   exact_mappings:
   - SO:0000673
@@ -1653,7 +1651,6 @@ gene to reaction association:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-
 gene to transcription binding site association:
   represented_as: edge
   is_a: related at instance level
@@ -1939,6 +1936,24 @@ non_coding_rna overlaps structural_variant:
   source: non_coding_rna
   target: structural variant
 
+non_coding_rna overlaps gene:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: ncrna_overlaps_gene
+  output_label: overlaps
+  source: non_coding_rna
+  target: gene
+
+gene overlaps non_coding_rna:
+  is_a: association
+  biolink_predicate: biolink:overlaps
+  represented_as: edge
+  input_label: gene_overlaps_ncrna
+  output_label: overlaps
+  source: gene
+  target: non_coding_rna
+
 orthology association:
   description: Non-directional association between two genes indicating that there is an orthology relation among them. It  is a historical homology that involves genes that diverged after a speciation event (purl.obolibrary.org/obo/RO_HOM0000017)
   is_a: related to at instance level
@@ -2188,11 +2203,7 @@ post translational interaction:
       biolink: has_quantitative_value
     interaction_type:
       type: str
-    interaction_context:
-      type: str
-    pubmed_references:
-      type: str[]
-    taxon_id:
+    reactome_pathway:
       type: str
 
 promoter overlaps structural_variant:

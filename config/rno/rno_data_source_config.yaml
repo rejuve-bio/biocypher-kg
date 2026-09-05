@@ -1,4 +1,6 @@
 # ---
+input_dir: /mnt/hdd_1/biocypher-kg/input/rno
+
 alliance:
   name: Alliance of Genome Resources
   version: {strategy: url_regex, pattern: 'alliancegenome\.org/(\d+\.\d+\.\d+)/', vtype: semver}
@@ -10,11 +12,16 @@ alliance:
     - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
     - https://fms.alliancegenome.org/download/VCF_mRatBN7.2.vcf.gz    # look at EVA  VCF
     - https://fms.alliancegenome.org/download/VARIANT-ALLELE_NCBITaxon10116.tsv.gz  # variant/allel
+  local_files:
+    alliance_disease: {pattern: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"}
+    alliance_orthology: {pattern: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"}
 
 bgee:
   name: Bgee Expression Data
   extract: false
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz
+  local_files:
+    bgee: {pattern: "bgee/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz", stable_name: "bgee/Rattus_norvegicus_expr_simple_all_conditions.tsv.gz"}
 
 coxpressdb:
   name: Coxpress DB
@@ -29,8 +36,13 @@ coxpressdb:
 ensembl:
   name: Ensembl Assembly 8.v116
   extract: false
-  url: 
+  url:
     - https://ftp.ensembl.org/pub/current/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz
+    # NCBI gene_info, used to build the gene<->RGD id map for GAF matching
+    - https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz
+  local_files:
+    gene_info: {pattern: "ensembl/Rattus_norvegicus.gene_info.gz", stable_name: null}
+    gtf: {pattern: "ensembl/Rattus_norvegicus.GRCr8.*.gtf.gz", stable_name: "ensembl/Rattus_norvegicus.gtf.gz"}
 
 epd:
   name: Eukaryotic Promoter Database
@@ -39,10 +51,15 @@ epd:
     # - https://epd.epfl.ch/EPD/get_promoter_seq?db=hg38&format=bed&nb_seq=0  # this is not working
     # - https://epd.expasy.org/ftp/epdnew/D_melanogaster/current/ 
     - https://epd.expasy.org/ftp/epdnew/R_norvegicus/current/Rn_EPDnew.bed
+  local_files:
+    epd: {pattern: "epd/Rn_EPDnew.bed.gz", stable_name: "epd/Rn_EPDnew.bed.gz"}
+
 gaf:
   name: GO Annotation File (GAF) from GO (RGD)
   extract: false
   url: http://current.geneontology.org/annotations/rgd.gaf.gz
+  local_files:
+    gaf: {pattern: "gaf/rgd.gaf.gz", stable_name: "gaf/rgd.gaf.gz"}
 
 reactome:
   name: Reactome
@@ -56,6 +73,16 @@ reactome:
     - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
     # - local file needs to be created in the download manager: reactome_reaction_exporter_All_species.txt
+  local_files:
+    reactome_all_levels: {pattern: "reactome/Ensembl2Reactome_All_Levels.txt", stable_name: "reactome/Ensembl2Reactome_All_Levels.txt"}
+    reactome_chebi_pathways: {pattern: "reactome/ChEBI2Reactome_All_Levels.txt", stable_name: "reactome/ChEBI2Reactome_All_Levels.txt"}
+    reactome_chebi_reactions: {pattern: "reactome/ChEBI2ReactomeReactions.txt", stable_name: "reactome/ChEBI2ReactomeReactions.txt"}
+    reactome_pathways: {pattern: "reactome/ReactomePathways.txt", stable_name: "reactome/ReactomePathways.txt"}
+    reactome_pathways_relation: {pattern: "reactome/ReactomePathwaysRelation.txt", stable_name: "reactome/ReactomePathwaysRelation.txt"}
+    reactome_ppi: {pattern: "reactome/reactome.all_species.interactions.tab-delimited.txt", stable_name: "reactome/reactome.all_species.interactions.tab-delimited.txt"}
+    reactome_reaction_exporter: {pattern: "reactome/reactome_reaction_exporter_All_species.txt", stable_name: "reactome/reactome_reaction_exporter_All_species.txt"}
+    reactome_reaction_pmids: {pattern: "reactome/ReactionPMIDS.txt", stable_name: "reactome/ReactionPMIDS.txt"}
+    reactome_reactions: {pattern: "reactome/Ensembl2ReactomeReactions.txt", stable_name: "reactome/Ensembl2ReactomeReactions.txt"}
 
 rna_central:
   name: RNA Central
@@ -63,6 +90,9 @@ rna_central:
   url:
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/rattus_norvegicus.mRatBN7.2.bed.gz
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
+  local_files:
+    rna_central_bed: {pattern: "rna_central/rattus_norvegicus.mRatBN7.2.bed.gz", stable_name: "rna_central/rattus_norvegicus.mRatBN7.2.bed.gz"}
+    rna_central_rfam: {pattern: "rna_central/rnacentral_rfam_annotations.tsv.gz", stable_name: "rna_central/rnacentral_rfam_annotations.tsv.gz"}
 
 string:
   name: STRING PPI
@@ -71,15 +101,21 @@ string:
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/10116.protein.links.v12.0.txt.gz
     - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/10116.protein.links.detailed.v12.0.txt.gz
+  local_files:
+    string_coexpression: {pattern: "string/10116.protein.links.detailed.v*.txt.gz", stable_name: "string/10116.protein.links.detailed.txt.gz"}
+    string_ppi: {pattern: "string/10116.protein.links.v*.txt.gz", stable_name: "string/10116.protein.links.txt.gz"}
 
 tflink:
   name: TFLink
   version: {strategy: url_regex, pattern: '_(v[\d.]+)\.tsv', vtype: semver}
   compress: gzip
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Rattus_norvegicus_interactions_All_simpleFormat_v1.0.tsv
+  local_files:
+    tflink: {pattern: "tflink/TFLink_Rattus_norvegicus_interactions_All_simpleFormat_v*.tsv.gz", stable_name: "tflink/TFLink_Rattus_norvegicus_interactions_All_simpleFormat.tsv.gz"}
 
 uniprot:
   name: UniProtKB/Swiss-Prot
   extract: false
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_rodents.dat.gz
-  
+  local_files:
+    uniprot_dat: {pattern: "uniprot/uniprot_sprot_rodents.dat.gz", stable_name: "uniprot/uniprot_sprot_rodents.dat.gz"}

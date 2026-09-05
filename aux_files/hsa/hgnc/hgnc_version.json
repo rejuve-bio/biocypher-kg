@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-23T12:49:51.196789",
+  "timestamp": "2026-08-24T22:26:15.623401",
   "processor": "hgnc",
   "entries": 248641,
   "remote_metadata": {
@@ -8,7 +8,7 @@
       "last_modified": null,
       "etag": null,
       "content_length": null,
-      "checked_at": "2026-08-23T12:49:52.843205"
+      "checked_at": "2026-08-24T22:26:17.313103"
     }
   }
 }

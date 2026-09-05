@@ -944,7 +944,6 @@ transcript to protein physical interaction:
     object_category: biolink:Protein
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
-
 protein to transcript physical interaction:
   is_a: expression
   inherit_properties: true

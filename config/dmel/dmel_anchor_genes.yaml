@@ -1,0 +1,36 @@
+# Anchor genes for connected sample KG generation (connected_full_sample_data branch).
+#
+# Curation: housekeeping genes with reciprocal "best score" orthology confirmed
+# simultaneously in hsa/mmu/rno/dmel/cel via Alliance of Genome Resources
+# (ORTHOLOGY-ALLIANCE_COMBINED), covering distinct functional categories
+# (cytoskeleton, glycolysis, translation, ribosome, proteasome, ubiquitin,
+# chaperones, histone, DNA replication, transcription, splicing, antioxidant).
+# Validated against complete real data (STRING, TFLink, GAF: 100% covered;
+# coxpresdb: 22/23, only His2B has no file — histones tend to be left out of panels).
+#
+# See docs/knowledge-graph/sample-generation.md for the full methodology.
+
+anchor_genes:
+  - {symbol: Act5C, fbgn: FBgn0000042, category: cytoskeleton}
+  - {symbol: alphaTub85E, fbgn: FBgn0003886, category: cytoskeleton}
+  - {symbol: Gapdh1, fbgn: FBgn0001091, category: glycolysis}
+  - {symbol: Eno, fbgn: FBgn0000579, category: glycolysis}
+  - {symbol: eEF1alpha2, fbgn: FBgn0000557, category: translation}
+  - {symbol: eEF2, fbgn: FBgn0000559, category: translation}
+  - {symbol: RpL7, fbgn: FBgn0005593, category: ribosome_large}
+  - {symbol: RpL32, fbgn: FBgn0002626, category: ribosome_large}
+  - {symbol: RpS6, fbgn: FBgn0261592, category: ribosome_small}
+  - {symbol: RpS2, fbgn: FBgn0004867, category: ribosome_small}
+  - {symbol: Prosalpha6T, fbgn: FBgn0032492, category: proteasome_alpha}
+  - {symbol: Prosbeta5, fbgn: FBgn0029134, category: proteasome_beta}
+  - {symbol: Rpt2, fbgn: FBgn0015282, category: proteasome_atpase}
+  - {symbol: CG11700, fbgn: FBgn0029856, category: ubiquitin}
+  - {symbol: RpL40, fbgn: FBgn0003941, category: ubiquitin}
+  - {symbol: Hsc70-4, fbgn: FBgn0266599, category: chaperone}
+  - {symbol: CCT2, fbgn: FBgn0030086, category: chaperone}
+  - {symbol: His2B_CG33868, fbgn: FBgn0053868, category: histone}
+  - {symbol: PCNA, fbgn: FBgn0005655, category: dna_replication}
+  - {symbol: Mcm2, fbgn: FBgn0014861, category: dna_replication}
+  - {symbol: Polr2A, fbgn: FBgn0003277, category: transcription}
+  - {symbol: Sf3b1, fbgn: FBgn0031266, category: splicing}
+  - {symbol: Sod1, fbgn: FBgn0003462, category: antioxidant}
