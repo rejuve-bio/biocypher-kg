@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
+import yaml from "js-yaml";
 import { api, type EntrySummary } from "../api/client";
 
 type Kind = "adapters" | "schema";
 type Data = Record<string, unknown>;
+
+// Render one entry as the YAML that will be written to the file (name as the
+// top-level key), matching the on-disk block.
+function entryToYaml(name: string, data: Data): string {
+  try {
+    return yaml.dump({ [name]: data }, { indent: 2, lineWidth: -1, noRefs: true, sortKeys: false });
+  } catch {
+    return "# could not render YAML";
+  }
+}
 
 function msgOf(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
@@ -53,6 +64,20 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="muted" style={{ fontSize: 12 }}>{label}</span>
       {children}
     </label>
+  );
+}
+
+function EntrySection({ title, items, selected, onOpen }: { title: string; items: EntrySummary[]; selected: string | null; onOpen: (name: string) => void }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="gc-section">
+      <div className="gc-section-title muted">{title} ({items.length})</div>
+      {items.map((e) => (
+        <button key={e.name} className={`gc-entry ${selected === e.name ? "active" : ""}`} onClick={() => onOpen(e.name)}>
+          <span className="mono" style={{ fontSize: 12 }}>{e.name}</span>
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -149,6 +174,10 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     () => (entries ?? []).filter((e) => e.name.toLowerCase().includes(filter.toLowerCase())),
     [entries, filter],
   );
+  const isEdgeEntry = (e: EntrySummary) =>
+    kind === "adapters" ? !!e.edges && !e.nodes : e.represented_as === "edge";
+  const nodeGroup = shown.filter((e) => !isEdgeEntry(e));
+  const edgeGroup = shown.filter((e) => isEdgeEntry(e));
 
   return (
     <div className="gc-grid">
@@ -158,19 +187,14 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
         <div className="gc-entries">
           {entries === null ? (
             <div className="muted" style={{ padding: 10 }}>Loading…</div>
+          ) : shown.length === 0 ? (
+            <div className="muted" style={{ padding: 10 }}>No matches.</div>
           ) : (
-            shown.map((e) => (
-              <button key={e.name} className={`gc-entry ${selected === e.name ? "active" : ""}`} onClick={() => openEntry(e.name)}>
-                <span className="mono" style={{ fontSize: 12 }}>{e.name}</span>
-                <span className="muted" style={{ fontSize: 11 }}>
-                  {kind === "adapters"
-                    ? `${e.nodes ? "nodes" : ""}${e.nodes && e.edges ? " · " : ""}${e.edges ? "edges" : ""}`
-                    : e.represented_as}
-                </span>
-              </button>
-            ))
+            <>
+              <EntrySection title={kind === "adapters" ? "Node adapters" : "Node types"} items={nodeGroup} selected={selected} onOpen={openEntry} />
+              <EntrySection title={kind === "adapters" ? "Edge adapters" : "Edge types"} items={edgeGroup} selected={selected} onOpen={openEntry} />
+            </>
           )}
-          {entries !== null && shown.length === 0 && <div className="muted" style={{ padding: 10 }}>No matches.</div>}
         </div>
       </div>
 
@@ -192,8 +216,8 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
             {kind === "adapters" ? <AdapterForm data={data} patch={patch} /> : <SchemaForm data={data} patch={patch} biolink={biolink} />}
 
             <details style={{ marginTop: 14 }}>
-              <summary className="muted" style={{ fontSize: 12 }}>Raw entry (everything, including fields not shown above)</summary>
-              <pre className="gc-raw mono">{JSON.stringify(data, null, 2)}</pre>
+              <summary className="muted" style={{ fontSize: 12 }}>YAML (exactly as it will be written to the file)</summary>
+              <pre className="gc-raw mono">{entryToYaml(selected, data)}</pre>
             </details>
           </>
         )}
