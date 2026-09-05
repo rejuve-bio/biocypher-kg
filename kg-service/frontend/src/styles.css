@@ -97,7 +97,7 @@ body {
   box-shadow: 0 6px 18px -8px var(--accent);
 }
 
-.content { max-width: 1040px; margin: 0 auto; padding: 28px 24px 60px; }
+.content { max-width: min(1640px, calc(100vw - 48px)); margin: 0 auto; padding: 28px 24px 60px; }
 
 /* ── Cards ───────────────────────────────────────────────── */
 .card {
@@ -690,9 +690,3 @@ details summary { cursor: pointer; }
 }
 .gc-tree-row.active .gc-tree-count { color: var(--accent-2); border-color: color-mix(in srgb, var(--accent-2) 45%, var(--border)); }
 
-/* Break a page card out of the centered .content width to use more screen. */
-.page-wide {
-  width: min(1640px, calc(100vw - 48px));
-  margin-left: 50%;
-  transform: translateX(-50%);
-}
