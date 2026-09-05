@@ -1,5 +1,5 @@
 {
   "sample_from_common": true,
   "filter": "scoped to connected-sample gene/region closure (built from abc/cadd/refseq rows directly, no VCF processed)",
-  "rsid_count": 1421429
+  "entries": 1421429
 }
