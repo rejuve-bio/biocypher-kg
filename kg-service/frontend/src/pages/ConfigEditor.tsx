@@ -92,7 +92,7 @@ export default function ConfigEditor() {
   }
 
   return (
-    <div className="card">
+    <div className={`card ${mode === "guided" ? "page-wide" : ""}`}>
       <h2>Edit config</h2>
       <div className="row">
         <label className="field">

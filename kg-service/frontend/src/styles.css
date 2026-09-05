@@ -689,3 +689,10 @@ details summary { cursor: pointer; }
   padding: 1px 7px; min-width: 16px; text-align: center; flex: none; margin-left: 4px;
 }
 .gc-tree-row.active .gc-tree-count { color: var(--accent-2); border-color: color-mix(in srgb, var(--accent-2) 45%, var(--border)); }
+
+/* Break a page card out of the centered .content width to use more screen. */
+.page-wide {
+  width: min(1640px, calc(100vw - 48px));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
