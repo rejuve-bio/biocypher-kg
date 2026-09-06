@@ -342,6 +342,26 @@ def prune_output_dirs(keep: Optional[int] = None) -> int:
     return removed
 
 
+_SECRET_FLAGS = {"--password", "--pass", "--pwd", "--token", "--secret"}
+
+
+def _redact_argv(argv: list[str]) -> list[str]:
+    """Copy of argv with secret values masked, for storing/displaying the command
+    without leaking the Neo4j password to the registry JSON or the UI."""
+    out = list(argv)
+    i = 0
+    while i < len(out):
+        a = out[i]
+        if a in _SECRET_FLAGS and i + 1 < len(out):
+            out[i + 1] = "***"
+            i += 2
+            continue
+        if "=" in a and a.split("=", 1)[0] in _SECRET_FLAGS:
+            out[i] = a.split("=", 1)[0] + "=***"
+        i += 1
+    return out
+
+
 def build_load_argv(target: str, output_dir: str, species: str = None) -> list[str]:
     """argv to load a build's output into Neo4j or MORK via the existing loaders.
 
@@ -397,7 +417,9 @@ def _start_load(target: str, output_dir: str, params: dict) -> BuildJob:
         status=JobStatus.QUEUED,
         kind=f"load-{target}",
         params={"target": target, "output_dir": output_dir, **params},
-        cmd=argv,
+        # Store a redacted copy so the password never lands in the registry/UI;
+        # the real argv (below) is what actually runs.
+        cmd=_redact_argv(argv),
         cwd=str(settings.repo_root_path),
         output_dir=output_dir,
         log_path=log_path,

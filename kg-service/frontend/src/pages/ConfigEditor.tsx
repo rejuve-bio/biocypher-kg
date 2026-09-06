@@ -19,7 +19,7 @@ export default function ConfigEditor() {
   const [path, setPath] = useState("");
   const [dirty, setDirty] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [msg, setMsg] = useState<{ kind: "ok" | "err" | "warn"; text: string } | null>(null);
   const [cmTheme, setCmTheme] = useState<"light" | "dark">(
     () => (document.documentElement.dataset.theme === "light" ? "light" : "dark"),
   );
@@ -85,7 +85,12 @@ export default function ConfigEditor() {
       const r = await api.saveConfig(sel, dataset, kind, content);
       setContent(r.content);
       setDirty(false);
-      setMsg({ kind: "ok", text: "Saved. Revert with git if needed." });
+      const warns = r.warnings ?? [];
+      if (warns.length) {
+        setMsg({ kind: "warn", text: `Saved, but ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
+      } else {
+        setMsg({ kind: "ok", text: "Saved. Revert with git if needed." });
+      }
     } catch (e) {
       setMsg({ kind: "err", text: msgOf(e) });
     }

@@ -232,12 +232,76 @@ def read_config_text(species: str, dataset: str, kind: str) -> dict:
             "path": str(path), "content": path.read_text()}
 
 
+_BIOLINK_RE = None  # compiled lazily in _validate_schema_doc
+
+
+def _validate_schema_doc(parsed: dict) -> tuple[list[str], list[str]]:
+    """Fast, network-free schema/biolink checks. Returns (errors, warnings).
+
+    Errors block the save (clear mistakes); warnings are surfaced but allowed
+    (the authoritative biolink check still runs in BioCypher at build time).
+    """
+    import re
+    global _BIOLINK_RE
+    if _BIOLINK_RE is None:
+        # Classes are PascalCase, but slots/mixins/predicates are lowercase
+        # (e.g. biolink:association, biolink:related_to), so accept either case;
+        # only genuinely broken terms (spaces, bad chars) are malformed.
+        _BIOLINK_RE = re.compile(r"^biolink:[A-Za-z][A-Za-z0-9_]*$")
+
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    # is_a parents may live in this file or in the primer schema it's merged with.
+    known_types = {k for k, v in parsed.items() if isinstance(v, dict)}
+    primer = settings.repo_root_path / "config" / "primer_schema_config.yaml"
+    if primer.exists():
+        try:
+            pdoc = _load_yaml_with_includes()(str(primer)) or {}
+            known_types |= {k for k, v in pdoc.items() if isinstance(v, dict)}
+        except Exception:  # noqa: BLE001
+            pass
+    known_biolink = set(list_biolink_categories())
+
+    def check_term(name, field, v):
+        if isinstance(v, str) and v.startswith("biolink:"):
+            if not _BIOLINK_RE.match(v):
+                errors.append(f"{name}: malformed biolink term in {field}: '{v}'")
+            elif v not in known_biolink:
+                warnings.append(f"{name}: {field} '{v}' is not used elsewhere in this project — verify it is a valid biolink class")
+
+    for name, val in parsed.items():
+        if name == "Title" or not isinstance(val, dict):
+            continue
+        rep = val.get("represented_as")
+        if rep is not None and str(rep) not in ("node", "edge"):
+            errors.append(f"{name}: represented_as must be 'node' or 'edge' (got '{rep}')")
+        if not val.get("input_label"):
+            warnings.append(f"{name}: no input_label set")
+        check_term(name, "biolink_category", val.get("biolink_category"))
+        mixins = val.get("mixins")
+        if isinstance(mixins, list):
+            for m in mixins:
+                check_term(name, "mixins", m)
+        elif mixins is not None:
+            warnings.append(f"{name}: mixins should be a list")
+        parents = val.get("is_a")
+        plist = parents if isinstance(parents, list) else ([parents] if parents else [])
+        for p in plist:
+            if isinstance(p, str) and not p.startswith("biolink:") and p not in known_types:
+                warnings.append(f"{name}: parent '{p}' (is_a) not found among schema types")
+        props = val.get("properties")
+        if props is not None and not isinstance(props, dict):
+            errors.append(f"{name}: properties must be a mapping")
+    return errors, warnings
+
+
 def save_config_text(species: str, dataset: str, kind: str, content: str) -> dict:
-    """Validate (via the project YAML loader) and atomically write a config file.
+    """Validate (via the project YAML loader + schema checks) and atomically write.
 
     Validation happens on a temp file in the same directory so relative ``!include``s
-    resolve. History/revert is git's job (config/ is tracked); per-build config is
-    captured in each build's build_config/ snapshot.
+    resolve. Schema configs also get biolink/structure validation: errors block the
+    save, warnings are returned. History/revert is git's job (config/ is tracked).
     """
     load = _load_yaml_with_includes()
     path = _config_path(species, dataset, kind)
@@ -251,9 +315,17 @@ def save_config_text(species: str, dataset: str, kind: str, content: str) -> dic
     if not isinstance(parsed, dict):
         tmp.unlink(missing_ok=True)
         raise ConfigError("Top-level config must be a YAML mapping.")
+
+    warnings: list[str] = []
+    if kind == "schema":
+        errors, warnings = _validate_schema_doc(parsed)
+        if errors:
+            tmp.unlink(missing_ok=True)
+            raise ConfigError("Schema validation failed:\n- " + "\n- ".join(errors))
+
     tmp.replace(path)
     return {"species": species, "dataset": dataset, "kind": kind,
-            "path": str(path), "content": content}
+            "path": str(path), "content": content, "warnings": warnings}
 
 
 # ===== Guided (structured) config editing =====
@@ -390,8 +462,11 @@ def save_config_entry(species: str, dataset: str, kind: str, name: str, data: di
             trailing.insert(0, lines[j])
             j -= 1
         result = "".join(lines[:start] + new_lines + trailing + lines[end:])
-    save_config_text(species, dataset, kind, result)  # loader-validates + atomic write
-    return get_config_entry(species, dataset, kind, name)
+    saved = save_config_text(species, dataset, kind, result)  # validates + atomic write
+    out = get_config_entry(species, dataset, kind, name)
+    # Only surface warnings about the entry the user just edited.
+    out["warnings"] = [w for w in saved.get("warnings", []) if w.startswith(f"{name}:")]
+    return out
 
 
 def delete_config_entry(species: str, dataset: str, kind: str, name: str) -> dict:

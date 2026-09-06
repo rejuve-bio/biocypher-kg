@@ -143,7 +143,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
   const [dirty, setDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const [biolink, setBiolink] = useState<string[]>([]);
-  const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [msg, setMsg] = useState<{ kind: "ok" | "err" | "warn"; text: string } | null>(null);
 
   useEffect(() => {
     setSelected(null);
@@ -184,9 +184,14 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     if (!selected || !data) return;
     setMsg(null);
     try {
-      await api.saveConfigEntry(species, dataset, kind, selected, data);
+      const res = await api.saveConfigEntry(species, dataset, kind, selected, data);
       setDirty(false);
-      setMsg({ kind: "ok", text: `Saved ${selected}. Only that entry's lines changed.` });
+      const warns = res.warnings ?? [];
+      if (warns.length) {
+        setMsg({ kind: "warn", text: `Saved ${selected}, but ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
+      } else {
+        setMsg({ kind: "ok", text: `Saved ${selected}. Only that entry's lines changed.` });
+      }
       api.getConfigEntries(species, dataset, kind).then((r) => setEntries(r.entries)).catch(() => {});
     } catch (e) {
       setMsg({ kind: "err", text: msgOf(e) });
@@ -289,7 +294,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
           </>
         )}
 
-        {msg && <div className={`alert ${msg.kind}`} style={{ marginTop: 12 }}>{msg.text}</div>}
+        {msg && <div className={`alert ${msg.kind}`} style={{ marginTop: 12, whiteSpace: "pre-wrap" }}>{msg.text}</div>}
         </div>
       </div>
     </div>

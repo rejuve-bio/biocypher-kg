@@ -130,7 +130,7 @@ export const api = {
     name: string,
     data: Record<string, unknown>,
   ) =>
-    json<{ name: string; data: Record<string, unknown> }>(
+    json<{ name: string; data: Record<string, unknown>; warnings?: string[] }>(
       fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}/entries/${encodeURIComponent(name)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -189,6 +189,7 @@ export interface ConfigFile {
   kind: string;
   path: string;
   content: string;
+  warnings?: string[];
 }
 
 export interface EntrySummary {
