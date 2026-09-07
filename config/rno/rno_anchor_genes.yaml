@@ -1,0 +1,35 @@
+# Anchor genes for connected sample KG generation (connected_full_sample_data branch).
+#
+# Same housekeeping gene curation used in config/dmel/dmel_anchor_genes.yaml
+# and config/hsa/hsa_anchor_genes.yaml, here with the orthologous ENSRNOG
+# (Ensembl rat gene ID) for each gene, resolved via symbol->Ensembl dbXrefs
+# in Rattus_norvegicus.gene_info.gz and confirmed present in the real GTF
+# (Rattus_norvegicus.GRCr8.116.gtf.gz).
+#
+# See docs/knowledge-graph/sample-generation.md for the full methodology and the
+# cross-species table.
+
+anchor_genes:
+  - {symbol: Actb, ensrnog: ENSRNOG00000034254, category: cytoskeleton}
+  - {symbol: Tuba1b, ensrnog: ENSRNOG00000072536, category: cytoskeleton}
+  - {symbol: Gapdh, ensrnog: ENSRNOG00000018630, category: glycolysis}
+  - {symbol: Eno1, ensrnog: ENSRNOG00000017895, category: glycolysis}
+  - {symbol: Eef1a1, ensrnog: ENSRNOG00000009439, category: translation}
+  - {symbol: Eef2, ensrnog: ENSRNOG00000020266, category: translation}
+  - {symbol: Rpl7, ensrnog: ENSRNOG00000084049, category: ribosome_large}
+  - {symbol: Rpl32, ensrnog: ENSRNOG00000010746, category: ribosome_large}
+  - {symbol: Rps6, ensrnog: ENSRNOG00000049025, category: ribosome_small}
+  - {symbol: Rps2, ensrnog: ENSRNOG00000014179, category: ribosome_small}
+  - {symbol: Psma1, ensrnog: ENSRNOG00000011745, category: proteasome_alpha}
+  - {symbol: Psmb5, ensrnog: ENSRNOG00000013386, category: proteasome_beta}
+  - {symbol: Psmc1, ensrnog: ENSRNOG00000003951, category: proteasome_atpase}
+  - {symbol: Ubb, ensrnog: ENSRNOG00000066088, category: ubiquitin}
+  - {symbol: Uba52, ensrnog: ENSRNOG00000090524, category: ubiquitin}
+  - {symbol: Hspa8, ensrnog: ENSRNOG00000034066, category: chaperone}
+  - {symbol: Cct2, ensrnog: ENSRNOG00000021317, category: chaperone}
+  - {symbol: H2bc1, ensrnog: ENSRNOG00000084925, category: histone}
+  - {symbol: Pcna, ensrnog: ENSRNOG00000021264, category: dna_replication}
+  - {symbol: Mcm2, ensrnog: ENSRNOG00000016316, category: dna_replication}
+  - {symbol: Polr2a, ensrnog: ENSRNOG00000028834, category: transcription}
+  - {symbol: Sf3b1, ensrnog: ENSRNOG00000013516, category: splicing}
+  - {symbol: Sod1, ensrnog: ENSRNOG00000002115, category: antioxidant}

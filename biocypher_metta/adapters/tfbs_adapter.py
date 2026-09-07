@@ -51,12 +51,14 @@ class TfbsAdapter(Adapter):
         super(TfbsAdapter, self).__init__(write_properties, add_provenance)
     
     def _read_csv_gz(self):
+        # Real source file is tab-delimited with no header row (UCSC table
+        # export) — sourceIds/sourceScores columns contain embedded commas,
+        # so a comma-delimited reader shreds nearly every row.
         with gzip.open(self.filepath, 'rt') as f:
-            reader = csv.reader(f)
-            header = next(reader, None)
-            
+            reader = csv.reader(f, delimiter='\t')
+
             for row in reader:
-                if row: 
+                if row:
                     yield row
     
     def get_nodes(self):

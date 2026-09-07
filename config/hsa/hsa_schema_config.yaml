@@ -175,6 +175,7 @@ protein to protein coexpression association:
       type: float
       biolink: has_quantitative_value
 
+# There is no data for this.
 reaction_to_molecular_function:
     is_a: association
     source: reaction

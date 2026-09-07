@@ -60,6 +60,11 @@ class AdapterAnalyzer:
         self.tree = ast.parse(self.source_code)
         self.class_attributes = self._extract_class_attributes()
         self.label_attributes = self._extract_label_attributes()
+        # metadata attr -> (class dict attribute name, constructor arg name used
+        # as the subscript key), for self.attr = ClassName.DICT[ctor_arg] patterns
+        # that a specific adapter config block's args can resolve precisely
+        # (see get_metadata_from_init's Subscript case and its caller).
+        self.dict_lookups: Dict[str, tuple] = {}
 
     @staticmethod
     def _is_label_name(name: str) -> bool:
@@ -239,7 +244,15 @@ class AdapterAnalyzer:
                                                     if dict_name in self.class_attributes:
                                                         dict_value = self.class_attributes[dict_name]
                                                         if isinstance(dict_value, dict) and dict_value:
+                                                            # Naive fallback (first value) -- may not match this
+                                                            # specific adapter config block's actual constructor
+                                                            # arg. Record the (dict, index-var) pair too, so the
+                                                            # caller can re-resolve precisely once it knows this
+                                                            # block's real args (see self.dict_lookups above).
                                                             metadata[target.attr] = next(iter(dict_value.values()))
+                                                            index = stmt.value.slice
+                                                            if isinstance(index, ast.Name):
+                                                                self.dict_lookups[target.attr] = (dict_name, index.id)
                                             elif isinstance(stmt.value, ast.Call):
                                                 # e.g. self.source_url = _PER_SPECIES_URLS.get(taxon_id, 'https://example.org/')
                                                 # -- use the literal fallback as the representative value.
@@ -1031,6 +1044,17 @@ class SchemaGenerator:
                     pass
 
             adapter_source_url = adapter_data['source_url'] if adapter_data['source_url'] else ''
+            # Re-resolve self.attr = ClassName.DICT[ctor_arg]-style source_url precisely
+            # for this specific block, when its args give the ctor_arg a literal value
+            # the static analysis above couldn't see (it only had a naive first-value
+            # fallback -- see AdapterAnalyzer.dict_lookups).
+            lookup = analyzer.dict_lookups.get('source_url')
+            if lookup:
+                dict_name, arg_name = lookup
+                key = adapter_args.get(arg_name)
+                dict_value = analyzer.class_attributes.get(dict_name)
+                if key is not None and isinstance(dict_value, dict) and key in dict_value:
+                    adapter_source_url = dict_value[key]
 
             for label in self.get_labels_for_adapter_config(adapter_name, adapter_cfg, adapter_data):
                 type_infos = self.get_schema_type_infos(label)

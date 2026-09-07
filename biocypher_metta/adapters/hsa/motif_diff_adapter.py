@@ -38,7 +38,7 @@ class MotifDiffAdapter(Adapter):
                 if not row: 
                     continue
                 
-                variant_rsid = row[0]
+                variant_rsid = f"DBSNP:{row[0]}"
             
                 best_motifs = {}
             
