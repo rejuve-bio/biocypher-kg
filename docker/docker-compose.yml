@@ -9,7 +9,8 @@ services:
       dockerfile: Dockerfile
     image: biocypher-kg-console
     ports:
-      - "${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
+      # Bind to loopback only — reachable from the host, not the network.
+      - "127.0.0.1:${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
     environment:
       PORT: "${CONSOLE_PORT:-9000}"
       REPO_ROOT: /app
@@ -40,8 +41,9 @@ services:
     profiles: ["neo4j"]
     image: ${NEO4J_IMAGE:-neo4j:5.21}
     ports:
-      - "${NEO4J_HTTP_PORT:-7474}:7474"
-      - "${NEO4J_BOLT_PORT:-7687}:7687"
+      # Loopback-only; use an SSH tunnel or reverse proxy for remote access.
+      - "127.0.0.1:${NEO4J_HTTP_PORT:-7474}:7474"
+      - "127.0.0.1:${NEO4J_BOLT_PORT:-7687}:7687"
     environment:
       NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
       # APOC — the loader uses apoc.periodic.iterate / apoc.map.removeKeys.
@@ -68,7 +70,7 @@ services:
         # Pinned nightly; override RUST_NIGHTLY to bisect a broken one.
         RUST_NIGHTLY: "${RUST_NIGHTLY:-2026-07-01}"
     ports:
-      - "${MORK_HOST_PORT:-8432}:8027"
+      - "127.0.0.1:${MORK_HOST_PORT:-8432}:8027"
     environment:
       - RUST_LOG=info
       - SNAPSHOT_DIR=/app/persist

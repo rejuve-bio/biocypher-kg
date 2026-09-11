@@ -84,8 +84,8 @@ gen_species_override() {
   neo4j-${sp}:
     image: \${NEO4J_IMAGE:-neo4j:5.21}
     ports:
-      - "${bolt}:7687"
-      - "${http}:7474"
+      - "127.0.0.1:${bolt}:7687"
+      - "127.0.0.1:${http}:7474"
     environment:
       NEO4J_AUTH: "\${NEO4J_USER:-neo4j}/\${NEO4J_PASSWORD:?set NEO4J_PASSWORD in docker/console.env}"
       NEO4JLABS_PLUGINS: '["apoc"]'
@@ -105,7 +105,7 @@ gen_species_override() {
     build:
       context: ../biocypher-mork
     ports:
-      - "${morkp}:8027"
+      - "127.0.0.1:${morkp}:8027"
     volumes:
       - "\${DATA_ROOT}:\${DATA_ROOT}"
       - mork_persist_${sp}:/app/persist
