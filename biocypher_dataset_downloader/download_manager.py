@@ -718,18 +718,46 @@ class DownloadManager:
 
         return downloaded, skipped, failed_filenames
 
+    def _remote_fingerprint(self, url: str) -> dict:
+        """HEAD `url` and return a dict of cache-busting headers (content-length,
+        etag, last-modified). Empty dict if the HEAD request fails or the server
+        gives us nothing useful to compare against.
+        """
+        try:
+            response = self.session.head(url, timeout=10, allow_redirects=True)
+            fingerprint = {
+                k: v for k, v in {
+                    'content_length': response.headers.get('content-length'),
+                    'etag': response.headers.get('etag'),
+                    'last_modified': response.headers.get('last-modified'),
+                }.items() if v is not None
+            }
+            return fingerprint
+        except requests.RequestException:
+            return {}
+
     def _handle_enhancer_atlas(self, source_config: dict,
                                source_key: str) -> tuple[int, int, list[str], int]:
         """Handle EnhancerAtlas records with bed_url / ep_base_url / tissues.
 
         Disk layout (must match what EnhancerAtlasAdapter expects):
-            <output_dir>/<source_key>/<species>.bed.gz    — this species' BED file,
-                                                             extracted from the tarball and gzipped
-            <output_dir>/<source_key>/enhancer_gene/      — one <tissue>_EP.txt file per tissue
+            <output_dir>/<source_key>/<species>.bed.gz         — this species' BED file,
+                                                                  extracted from the tarball and gzipped
+            <output_dir>/<source_key>/<species>.bed.gz.meta.json — fingerprint (size/etag/
+                                                                  last-modified) of the tarball
+                                                                  it was extracted from
+            <output_dir>/<source_key>/enhancer_gene/           — one <tissue>_EP.txt file per tissue
 
         The species code is taken from the last path segment of ep_base_url
         (e.g. ".../AllEPs/hs" -> "hs"), which also names the member to pull out
         of the (multi-species) BED tarball.
+
+        The tarball itself can be hundreds of MB, so it isn't re-downloaded on
+        every run just to compare member sizes (as the original single-species
+        handler did) — instead a HEAD request's fingerprint (size/etag/
+        last-modified) is compared against the one recorded the last time the
+        BED file was extracted, so an updated archive upstream is still
+        detected without paying for a full re-download when nothing changed.
 
         Returns (downloaded, skipped, failed_filenames, samples_created).
         """
@@ -749,9 +777,26 @@ class DownloadManager:
         if bed_url and species_code:
             bed_member_name = f"{species_code}.bed"
             bed_gz_path = source_dir / f"{bed_member_name}.gz"
+            meta_path = source_dir / f"{bed_member_name}.gz.meta.json"
 
-            if bed_gz_path.exists() and bed_gz_path.stat().st_size > 0:
-                logger.info(f"Skipped {bed_gz_path.name} (already exists)")
+            remote_fingerprint = self._remote_fingerprint(bed_url)
+            stored_fingerprint = None
+            if meta_path.exists():
+                try:
+                    stored_fingerprint = json.loads(meta_path.read_text())
+                except (json.JSONDecodeError, OSError):
+                    stored_fingerprint = None
+
+            # Trust the local file only if it exists AND either the remote
+            # HEAD failed (nothing to compare against) or it matches what we
+            # recorded when the file was last extracted.
+            up_to_date = (
+                bed_gz_path.exists() and bed_gz_path.stat().st_size > 0
+                and (not remote_fingerprint or remote_fingerprint == stored_fingerprint)
+            )
+
+            if up_to_date:
+                logger.info(f"Skipped {bed_gz_path.name} (already exists, tarball unchanged)")
                 skipped += 1
             else:
                 tar_filename = Path(urlparse(bed_url).path).name
@@ -777,6 +822,10 @@ class DownloadManager:
                                 logger.info(f"Extracted and compressed {bed_gz_path.name}")
                                 downloaded += 1
                                 samples_created += self._create_sample(bed_gz_path)
+                                if remote_fingerprint:
+                                    meta_path.write_text(json.dumps(remote_fingerprint))
+                                else:
+                                    meta_path.unlink(missing_ok=True)
 
                     except tarfile.TarError as e:
                         logger.error(f"Failed to extract {tar_filename}: {e}")
