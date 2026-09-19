@@ -153,7 +153,7 @@ class EPDAdapter(Adapter):
                         props['chr'] = chr
                         props['start'] = coord_start
                         props['end'] = coord_end
-                        props['taxon_id'] = f'{self.taxon_id}'
+                        props['taxon_id'] = self.taxon_id
                         if self.add_provenance:
                             props['source'] = self.source
                             props['source_url'] = self.source_url

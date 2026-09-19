@@ -10,6 +10,7 @@ nodes:
       end: int
       se_id: str
       start: int
+      taxon_id: int
 relationships:
   super enhancer to gene association:
     url: https://asntech.org/dbsuper/download.php

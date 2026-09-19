@@ -2,6 +2,7 @@
 import pathlib
 import os
 import re
+import tempfile
 from biocypher._logger import logger
 import networkx as nx
 from collections import Counter, defaultdict
@@ -65,19 +66,29 @@ class MeTTaWriter(BaseWriter):
 
     def create_type_hierarchy(self):
         G = self.ontology._nx_graph
-        file_path = f"{self.output_path}/type_defs.metta"
-        with open(file_path, "w") as f:
-            for node in G.nodes:
-                if "mixin" in node: continue
-                ancestor = list(self.get_parent(G, node))[-1]
-                node = self.normalize_text(node)
-                ancestor = self.normalize_text(ancestor)
-                if ancestor == node:
-                    f.write(f"(: {node.upper()} Type)\n")
-                else:
-                    f.write(f"(<: {node.upper()} {ancestor.upper()})\n")
+        final_path = f"{self.output_path}/type_defs.metta"
+        # Write to a temp file then atomically rename, so concurrent workers each
+        # constructing their own writer don't interleave writes to the shared
+        # type_defs.metta. Content is schema-deterministic, so last-writer-wins is safe.
+        fd, tmp_path = tempfile.mkstemp(dir=self.output_path, suffix=".type_defs.metta.tmp")
+        try:
+            with os.fdopen(fd, "w") as f:
+                for node in G.nodes:
+                    if "mixin" in node: continue
+                    ancestor = list(self.get_parent(G, node))[-1]
+                    node = self.normalize_text(node)
+                    ancestor = self.normalize_text(ancestor)
+                    if ancestor == node:
+                        f.write(f"(: {node.upper()} Type)\n")
+                    else:
+                        f.write(f"(<: {node.upper()} {ancestor.upper()})\n")
 
-            self.create_data_constructors(f)
+                self.create_data_constructors(f)
+            os.replace(tmp_path, final_path)
+        except BaseException:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+            raise
         logger.info("Type hierarchy created successfully.")
 
 

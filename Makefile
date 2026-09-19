@@ -40,6 +40,7 @@ help:
 	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
 	@echo "  make run-sample     SKIP_PREFLIGHT=yes   - Same, for sample runs"
 	@echo "  make run-sample INCLUDE_TAXON_ID=no   - Run without taxon_id in output (single-species KG)"
+	@echo "  make run-sample MAX_WORKERS=4        - Run adapters on 4 parallel workers (1 = sequential)"
 	@echo "  make run-direct ... SKIP_PREFLIGHT=yes   - Skip pre-flight file path validation"
 	@echo "  make run-direct ... INPUT_DIR=/data/hsa - Override base input directory from the YAML config"
 	@echo "  make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"
@@ -172,6 +173,15 @@ run-interactive: check-uv
 		echo "Pre-flight validation enabled"; \
 	fi; \
 	echo ""; \
+	read -p "🧵 Enter max parallel workers (1 = sequential) [auto]: " MAX_WORKERS; \
+	if [ -n "$$MAX_WORKERS" ]; then \
+		MAX_WORKERS_FLAG="--max-workers $$MAX_WORKERS"; \
+		echo "Max parallel workers: $$MAX_WORKERS"; \
+	else \
+		MAX_WORKERS_FLAG=""; \
+		echo "Max parallel workers: auto (min(8, CPU count))"; \
+	fi; \
+	echo ""; \
 	echo "🎯 Starting knowledge graph creation..."; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
@@ -186,13 +196,14 @@ run-interactive: check-uv
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
 		$$SKIP_PREFLIGHT_FLAG \
+		$$MAX_WORKERS_FLAG \
 		$$INPUT_DIR_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
 	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(SCHEMA_CONFIG)" ]; then \
 		echo "❌ Error: Missing required parameters"; \
-		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...]"; \
+		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...] [MAX_WORKERS=N]"; \
 		echo ""; \
 		echo "Or use 'make run' for interactive mode"; \
 		exit 1; \
@@ -224,6 +235,7 @@ run-direct: check-uv
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
 		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
+		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),) \
 		$(if $(INPUT_DIR),--input-dir $(INPUT_DIR),)
 
 # Run with sample configuration and data (with optional writer type)
@@ -261,7 +273,8 @@ run-sample: check-uv
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
-		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
+		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),)
 	@echo "✅ Sample run completed! Check the ./output directory for results."
 # Validate file paths in an adapters config without running any adapters
 check-paths: check-uv

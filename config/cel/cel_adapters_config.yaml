@@ -245,53 +245,53 @@ gencode_exon_part_of_gene:
   nodes: False
   edges: True
 
-gaf_biological_process_gene_product:
+gaf_biological_process_gene:
   adapter:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
       filepath: gaf/wb.gaf.gz
       gaf_type: wormbase
-      label: biological_process_gene_product
+      label: biological_process_gene
       taxon_id: 6239
   outdir: gaf
   nodes: False
   edges: True
 
-gaf_molecular_function_gene_product:
+gaf_molecular_function_gene:
   adapter:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
       filepath: gaf/wb.gaf.gz
       gaf_type: wormbase
-      label: molecular_function_gene_product
+      label: molecular_function_gene
       taxon_id: 6239
   outdir: gaf
   nodes: False
   edges: True
 
-gaf_cellular_component_gene_product_part_of:
+gaf_cellular_component_gene_part_of:
   adapter:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
       filepath: gaf/wb.gaf.gz
       gaf_type: wormbase
-      label: cellular_component_gene_product_part_of
+      label: cellular_component_gene_part_of
       taxon_id: 6239
   outdir: gaf
   nodes: False
   edges: True
 
-gaf_cellular_component_gene_product_located_in:
+gaf_cellular_component_gene_located_in:
   adapter:
     module: biocypher_metta.adapters.gaf_adapter
     cls: GAFAdapter
     args:
       filepath: gaf/wb.gaf.gz
       gaf_type: wormbase
-      label: cellular_component_gene_product_located_in
+      label: cellular_component_gene_located_in
       taxon_id: 6239
   outdir: gaf
   nodes: False

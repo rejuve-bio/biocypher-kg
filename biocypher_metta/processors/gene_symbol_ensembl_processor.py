@@ -5,8 +5,12 @@ Maps current gene symbols *and their synonyms* to Ensembl gene IDs.
 Supports both the vertebrate Ensembl BioMart and the Metazoa BioMart.
 
 Data sources:
-- Vertebrate: https://www.ensembl.org/biomart/martservice
+- Vertebrate: https://jun2026.archive.ensembl.org/biomart/martservice
+  (www.ensembl.org/biomart/martservice was retired by Ensembl's summer-2026
+  platform migration; see biomart_ensembl_processor.py for details)
 - Metazoa:    https://metazoa.ensembl.org/biomart/martservice
+  (also broken by the same migration as of this writing; no working
+  replacement found yet — see METAZOA_BIOMART_URL below)
 
 Example usage:
     mmu = GeneSymbolEnsemblProcessor(
@@ -33,7 +37,11 @@ from biocypher._logger import logger
 from .base_mapping_processor import BaseMappingProcessor
 
 
-VERTEBRATE_BIOMART_URL = "https://www.ensembl.org/biomart/martservice"
+# See biomart_ensembl_processor.py's BIOMART_URL comment for why this points
+# at the dated archive mirror instead of the live www.ensembl.org host.
+VERTEBRATE_BIOMART_URL = "https://jun2026.archive.ensembl.org/biomart/martservice"
+# TODO: metazoa.ensembl.org is broken by the same migration (404 -> Ensembl
+# URL Resolver) and no working archive replacement has been found yet.
 METAZOA_BIOMART_URL    = "https://metazoa.ensembl.org/biomart/martservice"
 
 _QUERY_XML_TEMPLATE = """\

@@ -12,6 +12,7 @@ nodes:
       end: int
       evidence: str
       start: int
+      taxon_id: int
       variant_accession: str
       variant_type: str
 relationships:

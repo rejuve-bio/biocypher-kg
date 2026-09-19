@@ -6,7 +6,8 @@ peptides) by querying Ensembl BioMart. Works for any species available in
 BioMart; the caller supplies the three species-specific parameters.
 
 Data source:
-- Ensembl BioMart: https://www.ensembl.org/biomart/martservice
+- Ensembl BioMart (currently served from the jun2026.archive.ensembl.org
+  mirror — see BIOMART_URL below)
 
 Update strategy: Time-based (every 7 days by default).
 
@@ -27,14 +28,18 @@ Example — Mus musculus (MGI IDs):
 
 import requests
 import tempfile
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from biocypher._logger import logger
 from .base_mapping_processor import BaseMappingProcessor
 
 
-BIOMART_URL = "https://www.ensembl.org/biomart/martservice"
+# Ensembl retired the live BioMart endpoint (www.ensembl.org/biomart/martservice
+# now 404s, redirecting through an "Ensembl URL Resolver" page) as part of their
+# summer-2026 platform migration to beta.ensembl.org. Until BioMart is available
+# there, the pre-migration site is kept up at this dated archive mirror.
+# TODO: point back to www.ensembl.org once BioMart lands on the new platform.
+BIOMART_URL = "https://jun2026.archive.ensembl.org/biomart/martservice"
 
 _QUERY_XML_TEMPLATE = """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -87,7 +92,15 @@ class BioMartEnsemblProcessor(BaseMappingProcessor):
         return None
 
     def check_update_needed(self) -> bool:
-        """Honor the configured time window before doing any remote check."""
+        """Treat a valid pre-built cache as authoritative.
+
+        BioMart is committed as a pre-built artifact (the API is slow/unreliable and
+        exposes no version metadata, so a time-based refresh would re-query it at
+        runtime and stall builds). We therefore query BioMart ONLY when the cache is
+        missing, unreadable, or empty — never on a time-based expiry. To force a
+        refresh, delete the cache dir (e.g. aux_files/<species>/biomart_ensembl/) and
+        re-run while the API is reachable.
+        """
         if not self.mapping_file.exists() or not self.version_file.exists():
             logger.info(f"{self.name}: Cache not found. Update needed.")
             return True
@@ -97,23 +110,17 @@ class BioMartEnsemblProcessor(BaseMappingProcessor):
             logger.warning(f"{self.name}: Invalid version file. Update needed.")
             return True
 
-        if self.update_interval:
-            last_update = datetime.fromisoformat(version_info['timestamp'])
-            age = datetime.now() - last_update
-            if age <= self.update_interval:
-                if version_info.get('entries', -1) == 0:
-                    logger.warning(
-                        f"{self.name}: Cached mapping is empty (0 entries). Forcing re-download."
-                    )
-                    return True
-                logger.info(
-                    f"{self.name}: Using cached mapping "
-                    f"(age: {age.days}d {age.seconds // 3600}h; "
-                    f"refresh window: {self.update_interval.days}d)."
-                )
-                return False
+        if version_info.get('entries', -1) == 0:
+            logger.warning(
+                f"{self.name}: Cached mapping is empty (0 entries). Forcing re-download."
+            )
+            return True
 
-        return super().check_update_needed()
+        logger.info(
+            f"{self.name}: Using pre-built cache (authoritative; delete "
+            f"{self.cache_dir} to force a refresh)."
+        )
+        return False
 
     def fetch_data(self) -> str:
         logger.info(f"{self.name}: Querying Ensembl BioMart ({self.dataset})...")

@@ -105,10 +105,10 @@ class RoadMapChromatinStateAdapter(Adapter):
                         edge_key2 = (_source, tissue_target)
                         if edge_key not in seen_edges:
                             seen_edges.add(edge_key)
-                            yield _source, _target, self.label, _props
+                            yield _source, _target, f'{self.label}_{_target[0]}', _props
                         if edge_key2 not in seen_edges:
                             seen_edges.add(edge_key2)
-                            yield _source, tissue_target, self.label, _props
+                            yield _source, tissue_target, f'{self.label}_{tissue_target[0]}', _props
 
                     except Exception as e:
                         print(f"error while parsing row: {row}, error: {e.args}. Skipping...")

@@ -11,6 +11,7 @@ nodes:
       end: int
       enhancer_id: str
       start: int
+      taxon_id: int
 relationships:
   enhancer to gene association:
     url: https://www.peregrineproj.org/

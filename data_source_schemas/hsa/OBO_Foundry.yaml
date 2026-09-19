@@ -25,6 +25,22 @@ nodes:
       description: str
       synonym: str[]
       term_name: str
+  developmental stage:
+    url: http://www.obofoundry.org/
+    input_label: developmental_stage
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+  disease:
+    url: http://www.obofoundry.org/
+    input_label: disease
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
   anatomy:
     url: http://www.obofoundry.org/
     input_label: anatomy
@@ -81,14 +97,6 @@ nodes:
       description: str
       synonym: str[]
       term_name: str
-  disease:
-    url: http://www.obofoundry.org/
-    input_label: disease
-    properties:
-      alternative_ids: str[]
-      description: str
-      synonym: str[]
-      term_name: str
 relationships:
   biological process subclass:
     url: http://www.obofoundry.org/
@@ -96,6 +104,12 @@ relationships:
     output_label: is_a
     source: biological process
     target: biological process
+  go gene:
+    url: http://www.obofoundry.org/
+    input_label: go_gene
+  go gene product:
+    url: http://www.obofoundry.org/
+    input_label: go_gene_product
   cellular component subclass:
     url: http://www.obofoundry.org/
     input_label: cellular_component_subclass_of
@@ -108,7 +122,19 @@ relationships:
     output_label: is_a
     source: molecular function
     target: molecular function
-  uberon subclass of:
+  hsapdv subclass of:
+    url: http://www.obofoundry.org/
+    input_label: hsapdv_subclass_of
+    output_label: is_a
+    source: developmental stage
+    target: developmental stage
+  omim subclass of:
+    url: http://www.obofoundry.org/
+    input_label: omim_subclass_of
+    output_label: is_a
+    source: disease
+    target: disease
+  anatomy subclass of:
     url: http://www.obofoundry.org/
     input_label: anatomy_subclass_of
     output_label: is_a

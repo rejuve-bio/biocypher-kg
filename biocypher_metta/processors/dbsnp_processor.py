@@ -12,6 +12,7 @@ Reverse lookups (position → rsID) use the idx_pos index on the single
 rsid_to_pos table — no separate pos_to_rsid table needed.
 """
 
+import os
 import sqlite3
 import pickle
 import gzip
@@ -20,6 +21,34 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 from biocypher._logger import logger
+
+
+class _SQLiteConnCache:
+    """Per-process cache of read-only SQLite connections, keyed by DB path.
+
+    ``sqlite3.Connection`` objects are not fork/pickle-safe, so the dict wrappers
+    below hold only a DB *path* and (re)acquire their connection from here. This
+    keeps the wrappers trivially picklable — they can be sent to a
+    ``ProcessPoolExecutor`` worker and will lazily open their own connection in
+    that process on first use. The PID guard drops any connections inherited via
+    ``fork`` (they belong to the parent and are unsafe to reuse in the child).
+    """
+
+    _conns: Dict[str, sqlite3.Connection] = {}
+    _pid: Optional[int] = None
+
+    @classmethod
+    def get(cls, db_path: str) -> sqlite3.Connection:
+        pid = os.getpid()
+        if cls._pid != pid:
+            cls._conns = {}
+            cls._pid = pid
+        conn = cls._conns.get(db_path)
+        if conn is None:
+            conn = sqlite3.connect(f"file:{db_path}?immutable=1", uri=True)
+            conn.execute("PRAGMA query_only=ON")
+            cls._conns[db_path] = conn
+        return conn
 
 
 class DBSNPProcessor:
@@ -222,9 +251,12 @@ class DBSNPProcessor:
         self._ensure_loaded()
 
         if self._backend == 'sqlite':
+            # Pass the DB path (not the live connection) so the wrappers stay
+            # picklable and reopen their own read-only connection per process.
+            db_path = str(self.db_file)
             return (
-                _SQLiteRsidToPosWrapper(self._conn),
-                _SQLitePosToRsidWrapper(self._conn),
+                _SQLiteRsidToPosWrapper(db_path),
+                _SQLitePosToRsidWrapper(db_path),
             )
 
         # pickle fallback
@@ -259,10 +291,18 @@ class DBSNPProcessor:
 
 
 class _SQLiteRsidToPosWrapper:
-    """Dict-like wrapper: rsid → {'chr': ..., 'pos': ...}"""
+    """Dict-like wrapper: rsid → {'chr': ..., 'pos': ...}
 
-    def __init__(self, conn: sqlite3.Connection):
-        self._conn = conn
+    Holds only the DB path so it is picklable across processes; the read-only
+    connection is resolved per process via ``_SQLiteConnCache``.
+    """
+
+    def __init__(self, db_path: str):
+        self._db_path = db_path
+
+    @property
+    def _conn(self) -> sqlite3.Connection:
+        return _SQLiteConnCache.get(self._db_path)
 
     def get(self, rsid, default=None):
         row = self._conn.execute(
@@ -294,10 +334,18 @@ class _SQLiteRsidToPosWrapper:
 
 
 class _SQLitePosToRsidWrapper:
-    """Dict-like wrapper: (chr, pos) → rsid. Accepts 'chr_pos' or 'chr:pos' key formats."""
+    """Dict-like wrapper: (chr, pos) → rsid. Accepts 'chr_pos' or 'chr:pos' key formats.
 
-    def __init__(self, conn: sqlite3.Connection):
-        self._conn = conn
+    Holds only the DB path so it is picklable across processes; the read-only
+    connection is resolved per process via ``_SQLiteConnCache``.
+    """
+
+    def __init__(self, db_path: str):
+        self._db_path = db_path
+
+    @property
+    def _conn(self) -> sqlite3.Connection:
+        return _SQLiteConnCache.get(self._db_path)
 
     def _parse_key(self, key: str):
         """Parse 'chr_pos' or 'chr:pos' into (chr, pos)."""
