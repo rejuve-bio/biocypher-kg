@@ -331,7 +331,7 @@ toml==0.10.2
     #   biocypher-metta (pyproject.toml)
     #   biocypher
     #   neo4j-utils
-tomli==2.3.0
+tomli==2.4.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   coverage

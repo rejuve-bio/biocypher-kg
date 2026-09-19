@@ -92,7 +92,7 @@ dependencies = [
     "stringcase==1.2.0",
     "tabulate==0.10.0",
     "toml==0.10.2",
-    "tomli==2.3.0",
+    "tomli==2.4.1",
     "tqdm==4.67.3",
     "traitlets==5.14.3",
     "treelib==1.6.4",
