@@ -341,7 +341,7 @@ tqdm==4.67.3
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
     #   biocypher
-traitlets==5.14.3
+traitlets==5.16.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   ipython
