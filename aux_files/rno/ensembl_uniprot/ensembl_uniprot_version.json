@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-07-20T18:56:07.291516",
+  "processor": "ensembl_uniprot",
+  "entries": 175884,
+  "remote_metadata": {
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/RAT_10116_idmapping.dat.gz": {
+      "url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/RAT_10116_idmapping.dat.gz",
+      "last_modified": "Wed, 10 Jun 2026 20:00:00 GMT",
+      "etag": "\"8f8eaf-653ebb0451000\"",
+      "content_length": "9408175",
+      "checked_at": "2026-07-20T18:56:08.101623"
+    }
+  }
+}

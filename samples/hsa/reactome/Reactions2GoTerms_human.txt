@@ -1,0 +1,1016 @@
+Identifier	Name	GO_Term
+R-HSA-110144	ADP + ADP <=> AMP + ATP [AK2]	GO:0004017
+R-HSA-110145	AMP + ATP <=> ADP + ADP [AK2]	GO:0004017
+R-HSA-110308	REV1 inserts dCMP opposite to AP sites in DNA	GO:0017125
+R-HSA-110311	POLZ extends translesion synthesis	GO:0003887
+R-HSA-110317	Insertion of correct bases opposite the lesion by POLH	GO:0003887
+R-HSA-110319	Elongation by POLH	GO:0003887
+R-HSA-110363	FEN1 bound to PCNA and APEX1 cleaves flap ssDNA	GO:0017108
+R-HSA-110368	POLD,POLE-mediated DNA strand displacement synthesis	GO:0003887
+R-HSA-111264	Addition of nucleotides between position +11 and +30	GO:0003899
+R-HSA-111524	IMP + L-Aspartate + GTP => Adenylosuccinate + GDP + Pi [ADSS]	GO:0004019
+R-HSA-111742	RNR (M1M2) reduces nucleotide diphosphates to deoxynucleotide diphosphates (glutaredoxin)	GO:0036175
+R-HSA-111751	RNR (M1M2) reduces nucleotide diphosphates to deoxynucleotide diphosphates (thioredoxin)	GO:0004748
+R-HSA-111804	RNR (M1M2B) reduces nucleotide diphosphates to deoxynucleotide diphosphates (thioredoxin)	GO:0004748
+R-HSA-112381	Hyperphosphorylation (Ser2) of RNA Pol II CTD by P-TEFb complex	GO:0004674
+R-HSA-112383	Hypophosphorylation of RNA Pol II CTD by FCP1P protein	GO:0004721
+R-HSA-1168640	Ubiquitinated IkB is degraded	GO:0004175
+R-HSA-1169406	ISGylation of host proteins	GO:0061662
+R-HSA-1169421	Trans-autophosphorylation of activated ligand-responsive EGFR mutant dimers	GO:0004713
+R-HSA-1176059	Translocation of Influenza A virus nonstructural protein 1 (NS1A) into the nucleus	GO:0017056
+R-HSA-1214188	PRDM9 trimethylates histone H3	GO:0042800
+R-HSA-1225951	SOS-mediated nucleotide exchange of RAS (mediated by GRB2:SOS1 in complex with ligand-responsive p-6Y-EGFR mutants)	GO:0005085
+R-HSA-1225952	Phosphorylation of SHC1 by ligand-responsive p-6Y-EGFR mutants	GO:0004713
+R-HSA-1225956	Inefficient ubiquitination of ligand-responsive p-6Y-EGFR mutants by p-Y371-CBL	GO:0061630
+R-HSA-1225957	SOS-mediated nucleotide exchange of RAS (mediated by GRB2:SOS1 in complex with phosphorylated SHC1 and ligand-responsive p-6Y-EGFR mutants)	GO:0005085
+R-HSA-1225960	Phosphorylation of CBL by ligand-responsive p-6Y-EGFR mutants	GO:0004713
+R-HSA-1226014	Conversion of PIP2 to PIP3 by PI3K bound to ligand-responsive p-6Y-EGFR mutants	GO:0046934
+R-HSA-1234159	Proteasome proteolyzes ub-HIF-alpha	GO:0004175
+R-HSA-1234163	Cytosolic VBC complex ubiquitinylates hydroxyprolyl-HIF-alpha 	GO:0004842
+R-HSA-1234172	Nuclear VBC complex ubiquitinylates HIF-alpha	GO:0004842
+R-HSA-1236935	Proteasomal cleavage of substrate (26S proteasome catalyst)	GO:0004175
+R-HSA-1236970	Proteasomal clevage of exogenous antigen (26S proteasome catalyst)	GO:0004175
+R-HSA-1247844	Phosphorylation of PLCG1 by ligand-responsive p-6Y-EGFR mutants	GO:0004713
+R-HSA-1248655	Trans-autophosphorylation of EGFRvIII mutant dimers	GO:0004713
+R-HSA-1248694	Trans-autophosphorylation of ERBB2 homodimer	GO:0004713
+R-HSA-1253282	ERBB4 ubiquitination by WWP1/ITCH	GO:0004842
+R-HSA-1296127	Activation of voltage gated Potassium channels	GO:0005249
+R-HSA-1358789	Self-ubiquitination of RNF41	GO:0004842
+R-HSA-1358790	RNF41 ubiquitinates ERBB3	GO:0004842
+R-HSA-1358792	RNF41 ubiquitinates activated ERBB3	GO:0004842
+R-HSA-1358795	Deubiquitination of RNF41 by P-USP8	GO:0004843
+R-HSA-1363331	Ubiquitination of p130 (RBL2) by SCF (Skp2)	GO:0004842
+R-HSA-1497784	The cofactor BH4 is required for electron transfer in the eNOS catalytic cycle	GO:0034617
+R-HSA-1497796	BH2 binding can lead to eNOS uncoupling	GO:0034617
+R-HSA-1497810	Uncoupled eNOS favours the formation of superoxide	GO:0016175
+R-HSA-1504190	DVL is ubiquitinated by CUL3:KLHL12:RBX1	GO:0061630
+R-HSA-1504193	Ubiquitinated DVL is degraded by the proteasome	GO:0004175
+R-HSA-156832	INF-gamma induced phosphorylation of L13a	GO:0004672
+R-HSA-156909	eEF1A complexes with GTP	GO:0019001
+R-HSA-156912	Peptide transfer from P-site tRNA to the A-site tRNA	GO:0000048
+R-HSA-156913	Regeneration of eEF1A:GTP by eEF1B activity	GO:0005085
+R-HSA-156923	Hydrolysis of eEF1A:GTP	GO:0003924
+R-HSA-157629	NOTCH2-ligand complex is cleaved to produce NEXT2	GO:0008237
+R-HSA-157632	Complex of NOTCH1 with its ligand is cleaved to produce NEXT1	GO:0008237
+R-HSA-159101	NXF1:NXT1 (TAP:p15) binds capped mRNA:CBC:EJC:TREX (minus DDX39B)	GO:0016887
+R-HSA-1638803	Phosphorylation of cohesin by PLK1 at centromeres	GO:0004674
+R-HSA-1638821	PP2A-B56 dephosphorylates centromeric cohesin	GO:0004722
+R-HSA-1655851	S2P hydrolyzes SREBP1A,1C,2	GO:0004222
+R-HSA-165726	Phosphorylation of Ribosomal protein S6 by activated S6K1	GO:0004674
+R-HSA-167072	Hypophosphorylation of RNA Pol II CTD by FCP1P protein	GO:0004721
+R-HSA-167084	Hyperphosphorylation (Ser2) of RNA Pol II CTD by P-TEFb complex	GO:0004674
+R-HSA-167097	HIV Promoter Opening: First Transition	GO:0043138
+R-HSA-167098	Phosphorylation (Ser5) of RNA pol II CTD	GO:0004674
+R-HSA-167113	Addition of the fourth nucleotide on the nascent HIV-1 transcript: Second Transition	GO:0003899
+R-HSA-167115	Addition of nucleotides between position +11 and +30 on HIV-1 transcript	GO:0003899
+R-HSA-167117	Addition of nucleotides 10 and 11 on the growing HIV-1 transcript: Third Transition	GO:0003899
+R-HSA-167121	Addition of the third nucleotide on the nascent HIV-1 transcript	GO:0003899
+R-HSA-167136	Addition of nucleotides 5 through 9 on the growing HIV-1 transcript	GO:0003899
+R-HSA-167191	Hyperphosphorylation (Ser2) of RNA Pol II CTD by the P-TEFb(Cyclin T1:Cdk9) complex	GO:0008353
+R-HSA-1678841	Regulation of protein ISGylation by ISG15 deconjugating enzyme USP18	GO:0019785
+R-HSA-168184	Activated TAK1 mediates phosphorylation of the IKK Complex	GO:0004674
+R-HSA-168915	K63-linked ubiquitination of RIP1 bound to the activated TLR complex	GO:0004842
+R-HSA-169468	MCM2-7 mediated fork unwinding	GO:0004386
+R-HSA-170704	Phosphorylation of DSIF by the P-TEFb(Cyclin T1:Cdk9) complex	GO:0008353
+R-HSA-170706	Phosphorylation of  NEFL by the P-TEFb(Cyclin T1:Cdk9) complex	GO:0008353
+R-HSA-170796	NPC transports GCK1:GCKR from cytosol to nucleoplasm	GO:0017056
+R-HSA-173542	SMURF2 ubiquitinates SMAD2	GO:0004842
+R-HSA-174057	Multiubiquitination of APC/C-associated Cdh1	GO:0004842
+R-HSA-174058	Degradation of multiubiquitinated Cdh1	GO:0004175
+R-HSA-174079	Phosphorylation of Cdh1 by Cyclin A:Cdk2	GO:0004693
+R-HSA-174104	Ubiquitination of Cyclin A by APC/C:Cdc20 complex	GO:0004842
+R-HSA-174105	Degradation of multiubiquitinated cell cycle proteins	GO:0004175
+R-HSA-174110	Cdc25A mediated dephosphorylation of Cyclin A:phospho-Cdk2	GO:0004721
+R-HSA-174144	Ubiquitination of Securin by phospho-APC/C:Cdc20 complex	GO:0004842
+R-HSA-174159	Ubiquitination of Emi1 by SCF-beta-TrCP	GO:0004842
+R-HSA-174164	Phosphorylation of Cyclin A:Cdk2 at Tyr 15	GO:0004713
+R-HSA-174195	Ubiquitination of cell cycle proteins targeted by the APC/C:Cdh1complex	GO:0004842
+R-HSA-174202	Degradation of multiubiquitinated Securin	GO:0004175
+R-HSA-174203	SCF-mediated degradation of Emi1	GO:0004175
+R-HSA-174227	Ubiquitination of Cyclin B by phospho-APC/C:Cdc20 complex	GO:0004842
+R-HSA-174255	Degradation multiubiquitinated Cyclin A	GO:0004175
+R-HSA-174425	The primase component of DNA polymerase:primase synthesizes a 6-10 nucleotide RNA primer on the G strand of the telomere	GO:0003899
+R-HSA-174427	The polymerase component of DNA polymerase alpha:primase synthesizes a 20-nucleotide primer on the G strand of the telomere	GO:0003887
+R-HSA-174438	Formation of the Flap Intermediate on the C-strand	GO:0043138
+R-HSA-174439	Loading of PCNA - Sliding Clamp Formation on the C-strand of the telomere	GO:0003689
+R-HSA-174441	Removal of RNA primer and dissociation of RPA and Dna2 from the C-strand	GO:0017108
+R-HSA-174444	Formation of C-strand Okazaki fragments	GO:0003887
+R-HSA-174446	Removal of remaining Flap from the C-strand	GO:0017108
+R-HSA-174456	Joining of adjacent Okazaki fragments of the C-strand	GO:0003909
+R-HSA-176264	Recruitment of the Rad9-Hus1-Rad1 complex to DNA	GO:0003689
+R-HSA-176298	Activation of claspin	GO:0004674
+R-HSA-177692	Activation of recruited TAK1 within the activated TLR3 complex 	GO:0008349
+R-HSA-179417	Multiubiquitination of Nek2A	GO:0004842
+R-HSA-1799329	Signal peptidase hydrolyzes signal peptide from ribosome-associated nascent protein	GO:0004252
+R-HSA-180540	Multi-ubiquitination of APOBEC3G	GO:0004842
+R-HSA-180573	Degradation of ubiquitinated CD4	GO:0004175
+R-HSA-180597	Ubiquitination of CD4 by Vpu:CD4:beta-TrCP:SKP1 complex	GO:0004842
+R-HSA-180603	Proteosome-mediated degradation of APOBEC3G	GO:0004175
+R-HSA-182986	CBL-mediated ubiquitination of CIN85	GO:0004842
+R-HSA-182993	Ubiquitination of stimulated EGFR (CBL)	GO:0004842
+R-HSA-183036	Ubiquitination of stimulated EGFR (CBL:GRB2)	GO:0061630
+R-HSA-183051	CBL ubiquitinates Sprouty	GO:0004842
+R-HSA-183084	CBL escapes CDC42-mediated inhibition by down-regulating the adaptor molecule Beta-Pix	GO:0004842
+R-HSA-183089	CBL binds and ubiquitinates phosphorylated Sprouty	GO:0004842
+R-HSA-184269	Monoubiquitinated N-myristoyl GAG polyprotein is targeted to the late endosomal vesicle membrane by the ESCRT-I complex	GO:0008320
+R-HSA-1852623	Ubiquitination of NICD1 by FBWX7	GO:0004842
+R-HSA-1855161	I(1,3,4,5,6)P5 transports from the nucleus to the cytosol	GO:0022842
+R-HSA-1855168	I(1,3,4,5)P4 transports from the cytosol to the nucleus	GO:0022842
+R-HSA-1855173	5-PP-IP4 transports from the nucleus to the cytosol	GO:0022842
+R-HSA-1855188	IP6 transports from the cytosol to the nucleus	GO:0022842
+R-HSA-1855190	I(1,4,5)P3 transports from the cytosol to the nucleus	GO:0022842
+R-HSA-1855201	I(1,3,4,6)P4 transports from the cytosol to the nucleus	GO:0022842
+R-HSA-1855203	5-PP-IP5 transports from the nucleus to the cytosol	GO:0022842
+R-HSA-1855212	1/3-PP-IP5 transports from the cytosol to the nucleus	GO:0022842
+R-HSA-1855220	(PP)2-IP4 transports from the nucleus to the cytosol	GO:0022842
+R-HSA-1861595	Extension of pseudopodia by myosin-X in a PI3K dependent manner	GO:0003774
+R-HSA-187520	Cyclin E/A:Cdk2-mediated  phosphorylation of p27/p21	GO:0004693
+R-HSA-187574	Degradation of ubiquitinated p27/p21 by the 26S proteasome	GO:0004175
+R-HSA-187575	Ubiquitination of phospho-p27/p21	GO:0004842
+R-HSA-187916	Cyclin A:Cdk2 mediated phosphorylation of p27/p21	GO:0004693
+R-HSA-187934	Inactivation of Cyclin A:Cdk2 complexes by p27/p21	GO:0004861
+R-HSA-187948	Phosphorylation of proteins involved in the G1/S transition by Cyclin A:Cdk2	GO:0004693
+R-HSA-187949	CAK-mediated phosphorylation of Cyclin A:Cdk2	GO:0004674
+R-HSA-187959	Phosphorylation of E2F1/E2F3 by Cyclin A:phosph-Cdk2(Thr 160)	GO:0004693
+R-HSA-188191	APC/C:Cdh1-mediated degradation of Skp2	GO:0004175
+R-HSA-188350	CAK-mediated phosphorylation of Cyclin E:Cdk2	GO:0004674
+R-HSA-188390	Cyclin E:CDK2-mediated phosphorylation of RB1	GO:0004693
+R-HSA-1912357	ITCH ubiquitinates DTX	GO:0004842
+R-HSA-1912386	Ubiquitination of NOTCH1 by ITCH in the absence of ligand	GO:0004842
+R-HSA-1912391	NICD1 is phosphorylated by CDK8	GO:0004693
+R-HSA-1918092	CHIP (STUB1) mediates ubiquitination of ERBB2	GO:0004842
+R-HSA-1918095	CUL5 mediates ubiquitination of ERBB2	GO:0004842
+R-HSA-192627	Viral mRNA Export	GO:0017056
+R-HSA-192704	Synthesis of PB1-F2	GO:0003746
+R-HSA-192841	Viral Protein Synthesis	GO:0003746
+R-HSA-192925	Export of Spliced Viral mRNA	GO:0017056
+R-HSA-1963582	Trans-autophosphorylation of ERBB2 heterodimers	GO:0004713
+R-HSA-1964482	RNA polymerase III transcribes microbial dsDNA to dsRNA	GO:0003899
+R-HSA-1977296	NEDD4 ubiquitinates ERBB4jmAcyt1s80 dimer	GO:0004842
+R-HSA-1980074	Ubiquitination of DLL/JAG ligands upon binding to NOTCH1	GO:0004842
+R-HSA-1980118	ARRB mediates NOTCH1 ubiquitination	GO:0004842
+R-HSA-202111	AKT1 phosphorylates eNOS	GO:0004674
+R-HSA-202127	eNOS synthesizes NO	GO:0004517
+R-HSA-202129	HSP90 binds eNOS:Caveolin-1:CaM complex	GO:0030235
+R-HSA-202137	AKT1 binds eNOS complex via HSP90	GO:0140767
+R-HSA-202144	Caveolin-1 dissociates from eNOS:CaM:HSP90 complex	GO:0030235
+R-HSA-202453	Auto-ubiquitination of TRAF6	GO:0004842
+R-HSA-202534	Ubiquitination of NEMO by TRAF6	GO:0004842
+R-HSA-203901	Pol II mediated transcription of microRNA genes	GO:0003899
+R-HSA-205008	Polyubiquitinated NRIF binds to p62 (Sequestosome)	GO:0043130
+R-HSA-205118	TRAF6 polyubiquitinates NRIF	GO:0004842
+R-HSA-209061	Ubiquitinated and phosphorylated IKBA binds to and is degraded by the proteasome complex	GO:0004175
+R-HSA-209063	Beta-TrCP ubiquitinates NFKB p50:p65:phospho IKBA complex	GO:0004842
+R-HSA-211715	Proteasome mediated degradation of PAK-2p34	GO:0004175
+R-HSA-211734	Ubiquitination of PAK-2p34	GO:0004842
+R-HSA-212263	PRC2 trimethylates histone H3 at lysine-27	GO:0016279
+R-HSA-212269	DNMT1,3A,3B:PRC2 methylates cytosine and histone H3	GO:0008168
+R-HSA-2130282	Degradation of ubiquitinated beta catenin by the proteasome	GO:0004175
+R-HSA-2130336	Initial proteolyis of Ii by aspartic proteases to lip22	GO:0004197
+R-HSA-2130349	Generation of CLIP from lip10	GO:0004197
+R-HSA-2130504	Cleavage of lip22 to lip10	GO:0004197
+R-HSA-2130641	Translocation of TGN-lysosome vesicle to lysosome	GO:0003924
+R-HSA-2130725	Internalization of MHC II:Ii clathrin coated vesicle	GO:0003924
+R-HSA-2160892	HYAL2 hydrolyses HA into 20kDa fragments	GO:0004415
+R-HSA-2160915	Receptor-mediated uptake of HA	GO:0038024
+R-HSA-2169050	SMURFs/NEDD4L ubiquitinate phosphorylated TGFBR1 and SMAD7	GO:0004842
+R-HSA-2172172	Ubiquitination of DLL/JAG ligands upon binding to NOTCH2	GO:0004842
+R-HSA-2172678	PHF8 demethylates histone H4K20me1	GO:0035575
+R-HSA-2176475	Phosphorylation of SMAD2 and SMAD3 linker regions by CDK8 or CDK9	GO:0004674
+R-HSA-2179276	SMURF2 monoubiquitinates SMAD3	GO:0004842
+R-HSA-2179291	UCHL5, USP15 deubiquitinate TGFBR1	GO:0004843
+R-HSA-2186747	Ubiquitination of SKI/SKIL by RNF111/SMURF2	GO:0004842
+R-HSA-2186785	RNF111 ubiquitinates SMAD7	GO:0004842
+R-HSA-2187368	STUB1 (CHIP) ubiquitinates SMAD3	GO:0004842
+R-HSA-2213017	Auto-ubiquitination of TRAF3	GO:0004842
+R-HSA-2220944	ADAM10/17 cleaves ligand-bound NOTCH1 PEST domain mutants to produce NEXT1 PEST domain mutants	GO:0008237
+R-HSA-2220971	CDK8 phosphorylates NICD1 PEST domain mutants 	GO:0004693
+R-HSA-2220976	NOTCH1 HD+PEST domain mutants are cleaved by ADAM10/17 irrespective of ligand binding	GO:0008237
+R-HSA-2245218	CDK1 phosphorylates PHF8	GO:0004693
+R-HSA-2294580	PLK1 hyperphosphorylates Condensin II complex	GO:0004674
+R-HSA-2294600	CDK1 phosphorylates condensin II subunit NCAPD3	GO:0004693
+R-HSA-2301205	SETD8 monomethylates histone H4	GO:0042799
+R-HSA-2316352	SLC2A4 (GLUT4) vesicle translocates and docks at the plasma membrane	GO:0000146
+R-HSA-2408529	Sec-tRNA(Sec):EEFSEC:GTP binds to 80S Ribosome	GO:0035368
+R-HSA-2466068	Phosphorylation of cohesin by PLK1 at chromosomal arms	GO:0004674
+R-HSA-2467809	ESPL1 (Separase) cleaves centromeric cohesin	GO:0008234
+R-HSA-2468039	Acetylation of SMC3 subunit of chromosomal arm associated cohesin by ESCO1 or ESCO2	GO:0008080
+R-HSA-2468287	CDK1 phosphorylates CDCA5 (Sororin) at centromeres	GO:0004693
+R-HSA-2468293	CDK1 phosphorylates CDCA5 (Sororin) at chromosomal arms	GO:0004693
+R-HSA-2473152	Acetylation of SMC3 subunit of centromeric chromatin associated cohesin by ESCO1 or ESCO2	GO:0008080
+R-HSA-2514854	CDK1 phosphorylates condensin I	GO:0004693
+R-HSA-2529015	Dephosphorylation of CK2-modified condensin I	GO:0004721
+R-HSA-2529020	CK2 phosphorylates condensin I subunits	GO:0004674
+R-HSA-2545203	Deacetylation of cleaved cohesin	GO:0004407
+R-HSA-2545253	Deacetylation of cohesin	GO:0004407
+R-HSA-2574840	AJUBA facilitates AURKA autophosphorylation	GO:0004674
+R-HSA-264444	Autoubiquitination of phospho-COP1(Ser-387 )	GO:0004842
+R-HSA-264458	Proteasome mediated degradation of COP1	GO:0004175
+R-HSA-2682349	RAF1:SGK:TSC22D3:WPP ubiquitinates SCNN channels	GO:0004842
+R-HSA-2730752	NOTCH1 HD domain mutants are cleaved to produce NEXT1 irrespective of ligand binding	GO:0008237
+R-HSA-2730904	Auto-ubiquitination of TRAF6	GO:0004842
+R-HSA-2737728	Ubiquitination of DLL/JAG ligands upon binding to NOTCH1 HD domain mutants	GO:0004842
+R-HSA-2769007	Ubiquitination of DLL/JAG ligands upon binding to NOTCH1 PEST domain mutants	GO:0004842
+R-HSA-2900765	Ubiquitination of DLL/JAG ligands upon binding to NOTCH1 HD+PEST domain mutants	GO:0004842
+R-HSA-2990880	NEK6/NEK7 phosphorylates NUP98	GO:0004674
+R-HSA-2990882	CDK1 phosphorylates NUP98	GO:0004693
+R-HSA-2997616	PIAS1,4 SUMOylates BRCA1 with SUMO2,3	GO:0019789
+R-HSA-2997709	PIAS1,4 SUMOylates BRCA1 with SUMO1	GO:0019789
+R-HSA-3000310	AURKA phosphorylates PLK1	GO:0004674
+R-HSA-3000335	SCF-beta-TrCp1/2 ubiquitinates phosphorylated BORA	GO:0004842
+R-HSA-3000348	RANBP2 SUMOylates SP100 with SUMO2	GO:0019789
+R-HSA-3000399	RANBP2 SUMOylates SP100 with SUMO1	GO:0019789
+R-HSA-3000411	RANBP2 SUMOylates PML with SUMO2	GO:0019789
+R-HSA-3000434	PML, TRIM27, PIAS1,2-1 SUMOylate MDM2 with SUMO1	GO:0019789
+R-HSA-3108212	SMC5-SMC6 Complex SUMOylates Cohesin with SUMO1	GO:0019789
+R-HSA-3134804	STING ubiquitination by TRIM32 or TRIM56	GO:0004842
+R-HSA-3134946	DDX41 ubiquitination by TRIM21	GO:0004842
+R-HSA-3139027	Maturation of HIV Virion	GO:0008233
+R-HSA-3149434	Transport of GAG to the Plasma Membrane	GO:0008320
+R-HSA-3214912	KDM1A, KDM1B demethylate MeK5-histone H3	GO:0032452
+R-HSA-3215295	USP7 deubiquitinates MDM2	GO:0004843
+R-HSA-3215310	USP7 deubiquitinates TP53 and counteracts MDM2	GO:0004843
+R-HSA-3222593	KDM6B demethylates H3K27me3 on p16INK4A promoter	GO:0071558
+R-HSA-3229102	p-MAPKAPK3 phosphorylates BMI1	GO:0004674
+R-HSA-3240295	PRC2-EZH2 trimethylates nucleosomes associated with CDKN2A promoter	GO:0046976
+R-HSA-3247493	PIAS1 SUMOylates SP3 with SUMO1	GO:0019789
+R-HSA-3249386	DTX4 ubiquitinates p-S172-TBK1 within NLRP4:DTX4:dsDNA:ZBP1:TBK1	GO:0004842
+R-HSA-3299691	SOD1 catalyzes 2H+ + 2O2.- => O2 + H2O2 (cytosol)	GO:0004784
+R-HSA-3299753	CCS transfers Cu to SOD1 and oxidizes cysteine residues in SOD1	GO:0016532
+R-HSA-3301237	KAT2 complexes acetylate histone H3	GO:0004402
+R-HSA-3318415	ATF2 acetylates histone H2B, H4	GO:0004402
+R-HSA-3321805	NSL acetylates histone H4	GO:0004402
+R-HSA-3321975	NuA4 complex acetylates histone H2A, HIST1H4	GO:0004402
+R-HSA-3322429	XIAP monoubiquinates TLE	GO:0061630
+R-HSA-3341343	PRDX1,2,5 catalyze TXN reduced + H2O2 => TXN oxidized + 2H2O	GO:0008379
+R-HSA-3364026	MLL2 complex trimethylates H3K4 at the MYC gene	GO:0042800
+R-HSA-3371422	ATP hydrolysis by HSP70	GO:0016887
+R-HSA-3371467	SIRT1 deacetylates HSF1	GO:0034979
+R-HSA-3371554	HSF1 acetylation at Lys80	GO:0034212
+R-HSA-3451147	KAT5 HAT complex acetylates TCF4 gene at histone H4	GO:0004402
+R-HSA-3465545	PIAS1,3,4 SUMOylate MTA1 with SUMO2,3	GO:0019789
+R-HSA-353125	26S proteosome degrades ODC holoenzyme complex	GO:0004175
+R-HSA-3640861	RNF146 ubiquitinates ADP-ribosylated AXIN	GO:0061630
+R-HSA-3640872	USP34 deubiquitinates AXIN1,AXIN2	GO:0004843
+R-HSA-3640874	Ub-RibC-AXIN is degraded by the proteasome	GO:0004175
+R-HSA-3662335	EP300 acetylates histone H2A, H2B, H3, H4	GO:0004402
+R-HSA-3697008	CREBBP acetylates histone H2B, H3, H4	GO:0004402
+R-HSA-3769447	HDAC1:2-containing complex deacetylate histones	GO:0004407
+R-HSA-3777112	SOD1 catalyzes 2H+ + O2.- => O2 + H2O2 (mitochondrial intermembrane space)	GO:0004784
+R-HSA-3777129	HDAC3 containing complexes deacetylate histone	GO:0004407
+R-HSA-3780995	NHLRC1 mediated ubiquitination of EPM2A (laforin) and PPP1RC3 (PTG) associated with glycogen-GYG2	GO:0004842
+R-HSA-3781009	NHLRC1 mediated ubiquitination of EPM2A and PPP1RC3 associated with glycogen-GYG1	GO:0004842
+R-HSA-3782637	HDAC8 deacetylates histones	GO:0004407
+R-HSA-3782655	HDAC10 deacetylates histone	GO:0004407
+R-HSA-3788705	CDKN1A (p21) prevents phosphorylation of Cdh1 by Cyclin A:Cdk2	GO:0004693
+R-HSA-3788724	Cdh1:APC/C ubiquitinates EHMT1 and EHMT2	GO:0004842
+R-HSA-3788745	EHMT1:EHMT2 methylates IL8 promoter	GO:0140938
+R-HSA-3788748	EHMT1:EHMT2 methylates IL6 promoter	GO:0140938
+R-HSA-3797226	Defective NHLRC1 does not ubiquitinate EPM2A (laforin) and PPP1R3C (PTG) (type 2B disease)	GO:0004842
+R-HSA-380272	Plk1-mediated phosphorylation of Nlp	GO:0004674
+R-HSA-3900177	SUMOylation of DDX5 with SUMO1	GO:0019789
+R-HSA-3900194	PIAS1 SUMOylates DDX5 with SUMO2	GO:0019789
+R-HSA-3927959	SUMOylation of CREBBP with SUMO1	GO:0019789
+R-HSA-3928608	LIMK phosphorylates CFL1, inactivating it	GO:0004674
+R-HSA-3968414	UBE2I (UBC9), PIAS1 SUMOylate FOXL2 with SUMO1	GO:0019789
+R-HSA-399950	Phosphorylation of cofilin by LIMK-1	GO:0004674
+R-HSA-400143	Fatty acid ligands activate PPARA	GO:0004879
+R-HSA-400183	PPARA:RXRA binds Corepressors of PPARA	GO:0003714
+R-HSA-4085347	PIAS1 SUMOylates SAFB with SUMO1	GO:0019789
+R-HSA-4085372	PIAS1 SUMOylates SAFB with SUMO2,3	GO:0019789
+R-HSA-4086036	PIAS1,3 SUMOylate NRIP1 with SUMO1	GO:0019789
+R-HSA-4086059	SUMOylation of NPM1 with SUMO2,3	GO:0019789
+R-HSA-4086088	SUMOylation of NPM1 with SUMO1	GO:0019789
+R-HSA-4088024	CCNA:CDK1/2 complexes and CCNB1:CDK1 complexes phosphorylate FOXM1	GO:0004693
+R-HSA-4088134	PLK1 phosphorylates FOXM1	GO:0004674
+R-HSA-4088141	PP2A-PPP2R2A dephosphorylates FOXM1	GO:0004722
+R-HSA-4090281	PIAS1,2-1 SUMOylate HIC1 with SUMO1	GO:0019789
+R-HSA-4090288	PIAS1,3 SUMOylate MBD1 with SUMO1	GO:0019789
+R-HSA-4090390	PIAS1,2-1 SUMOylates AR with SUMO1	GO:0019789
+R-HSA-4090408	PIAS1,3 SUMOylate ESR1 with SUMO1	GO:0019789
+R-HSA-419644	Transphosphorylation of pLIMK1	GO:0004674
+R-HSA-420818	MBTPS2 (S2P) cleaves ATF6 (ATF6-alpha)	GO:0004222
+R-HSA-427336	TTF1:rRNA promoter:ERCC6:EHMT2 complex dimethylates histone H3 at lysine-9	GO:0046974
+R-HSA-427366	Transcription of intergenic spacer of the rRNA gene	GO:0003899
+R-HSA-427514	eNoSC deacetylates histone H3	GO:0004407
+R-HSA-427527	eNoSC dimethylates histone H3 at lysine-9	GO:0046974
+R-HSA-429955	CCR4-NOT complex deadenylates mRNA	GO:0004535
+R-HSA-429992	PARN deadenylates mRNA	GO:0004535
+R-HSA-430021	PAN2-PAN3 complex partially deadenylates mRNA	GO:0004535
+R-HSA-433672	NoRC:HDAC:DNMT deacetylates histone H4 and methylates histone H3	GO:0004407
+R-HSA-4341016	PIAS1 SUMOylates NR3C2 (Mineralcorticoid Receptor) with SUMO1	GO:0019789
+R-HSA-445089	Dephosphorylation of pL1 (Y1176)	GO:0004725
+R-HSA-446877	TRAF6 is K63 poly-ubiquitinated	GO:0004842
+R-HSA-450337	Activated TAK1 phosphorylates MKK4/MKK7	GO:0004674
+R-HSA-450346	activated human TAK1 phosphorylates MKK3/MKK6	GO:0004674
+R-HSA-450358	Activated TRAF6 synthesizes unanchored polyubiquitin chains upon TLR stimulation 	GO:0004842
+R-HSA-450466	AUF1:mRNA complex is degraded	GO:0004175
+R-HSA-451418	Pellino ubiquitinates IRAK1	GO:0004842
+R-HSA-4546385	PIAS1,3 SUMOylates NR5A1 with SUMO2	GO:0019789
+R-HSA-4546386	PIAS1,3 SUMOylates NR5A1 with SUMO1	GO:0019789
+R-HSA-4551649	RANBP2 SUMOylates RANBP2 with SUMO1	GO:0019789
+R-HSA-4551679	RANBP2 SUMOylates RANBP2 with SUMO2	GO:0019789
+R-HSA-4568848	PIAS1,2-1 SUMOylates XRCC4 with SUMO1	GO:0019789
+R-HSA-4570467	SUMOylation of NOP58 with SUMO1	GO:0019789
+R-HSA-4570489	SUMOylation of NOP58 with SUMO2	GO:0019789
+R-HSA-4570493	RANBP2 (NUP358) SUMOylates HNRNPC with SUMO1	GO:0019789
+R-HSA-4570499	CBX4 (Pc2) SUMOylates HNRNPK with SUMO2	GO:0019789
+R-HSA-4608852	SMURF1/2 ubiquitinates PRICKLE1	GO:0061630
+R-HSA-4608855	PRICKLE1 is degraded by the proteasome	GO:0004175
+R-HSA-4615839	PIAS1 SUMOylates SATB1 with SUMO2,3	GO:0019789
+R-HSA-4615872	RANBP2 SUMOylates HDAC4 with SUMO1	GO:0019789
+R-HSA-4615889	SUMOylation of HDAC1 with SUMO1	GO:0019789
+R-HSA-4615900	PIAS1 SUMOylates SATB2 with SUMO3	GO:0019789
+R-HSA-4615905	PIAS1 SUMOylates SATB1 with SUMO1	GO:0019789
+R-HSA-4615910	SUMOylation of PCNA with SUMO1	GO:0019789
+R-HSA-4615987	RANBP2 SUMOylates HDAC4 with SUMO2,3	GO:0019789
+R-HSA-4641129	AXIN is ubiquitinated by SMURF2	GO:0061630
+R-HSA-4641159	DVL1 is ubiquitinated by HECW1	GO:0061630
+R-HSA-4641236	USP8 deubiquitinates FZD to potentiate WNT signaling	GO:0004843
+R-HSA-4641246	ZNRF3 autoubiquitinates to promote its internalization	GO:0061630
+R-HSA-4641253	ZNRF3 ubiquitinates FZD to promote its downregulation	GO:0061630
+R-HSA-4641256	Ubiquitinated AXIN is degraded by the proteasome	GO:0004175
+R-HSA-4641260	Ubiquitinated DVL1 is degraded by the proteasome	GO:0004175
+R-HSA-4655355	RANBP2 SUMOylates CDCA8 (Borealin) and PIAS3 SUMOylates AURKB (Aurora-B)	GO:0019789
+R-HSA-4655355	RANBP2 SUMOylates CDCA8 (Borealin) and PIAS3 SUMOylates AURKB (Aurora-B)	GO:0019789
+R-HSA-4717461	PIAS1,2-2 SUMOylate PPARG with SUMO1	GO:0019789
+R-HSA-4717521	PIAS1 SUMOylates NR2C1 (TR2)	GO:0019789
+R-HSA-4719424	PIAS1 SUMOylates THRB with SUMO1	GO:0019789
+R-HSA-4719448	PIAS1 SUMOylates THRB with SUMO3	GO:0019789
+R-HSA-4724284	KDM3A, KDM3B, KDM7A, PHF2:ARID5B, PHF8 demethylate MeK10-histone H3	GO:0032452
+R-HSA-4754181	KDM5A-D demethylate Me2K5-histone H3	GO:0032452
+R-HSA-4754187	KDM6A, KDM6B, KDM7A demethylate Me2K28-histone H3	GO:0032452
+R-HSA-4755494	PIAS1,2-1 SUMOylate NR5A2 with SUMO1	GO:0019789
+R-HSA-5159245	SETD3, SETD7 (KMT7), WHSC1L1 (KMT3F), Core MLL complex methylate lysine-5 of histone H3 (H3K4)	GO:0140938
+R-HSA-5205799	CCND1:CDK4:PRMT5:pT5-WDR77 methylates arginine-9 of histone H3 (H3R8)	GO:0140938
+R-HSA-5205861	COPRS:CCND1:CDK4:PRMT5:pT5-WDR77 methylates arginine-4 of histone H4 (H4R3)	GO:0042054
+R-HSA-5211239	SIRT1 deacetylates TAF1B in SL1 complex	GO:0034979
+R-HSA-5218809	PTK2 and SRC-1 phosphorylate PXN on Y31 and Y118	GO:0004713
+R-HSA-5218826	Active ROCK1,ROCK2 phosphorylates p-5Y-PTK2 on S732	GO:0004674
+R-HSA-5218828	PTK2/SRC-1 phosphorylates BCAR1	GO:0004713
+R-HSA-5218839	DOCK180:ELMO exchanges GTP for GDP, activating RAC1	GO:0005085
+R-HSA-5218851	p-Y402-PTK2B phosphorylates p-5Y,S732-PTK2 on Y407	GO:0004713
+R-HSA-5218916	p-MAPK2/3 phosphorylates HSP27	GO:0004674
+R-HSA-5227490	NoRC:HDAC:DNMT methylates cytosine of the rRNA genes	GO:0009008
+R-HSA-5228508	RANBP2 SUMOylates PML with SUMO1	GO:0019789
+R-HSA-5228521	PIAS1,4 SUMOylate CASP8AP2 with SUMO1	GO:0019789
+R-HSA-5228523	RANBP2 SUMOylates MDM2 with SUMO1	GO:0019789
+R-HSA-5228525	RANBP2 SUMOylates TOP2A with SUMO1	GO:0019789
+R-HSA-5244692	Core MLL complex, SMYD3, PRDM9 methylate dimethyl-lysine-5 of histone H3 (H3K4)	GO:0140938
+R-HSA-5246693	APC is K63-polyubiquitinated	GO:0061630
+R-HSA-5250938	B-WICH:histone acetyltransferase acetylates histone H3 at lysine-9	GO:0004402
+R-HSA-5251955	HSP40s activate intrinsic ATPase activity of HSP70s in the nucleoplasm	GO:0001671
+R-HSA-5251959	HSP40s activate intrinsic ATPase activity of HSP70s in the cytosol	GO:0001671
+R-HSA-5252041	NPC transports Hikeshi:HSP70s:ATP from cytosol to nucleoplasm	GO:0017056
+R-HSA-5252079	HSP110s exchange ATP for ADP on HSP70s:ADP	GO:0000774
+R-HSA-5324632	Dissociation of cytosolic HSF1:HSP90:HDAC6:PTGES3 upon sensing protein aggregates	GO:0051787
+R-HSA-5333615	80S:Met-tRNAi:mRNA:SECISBP2:Sec-tRNA(Sec):EEFSEC:GTP is hydrolysed to 80S:Met-tRNAi:mRNA:SECISBP2:Sec and EEFSEC:GDP by EEFSEC	GO:0003924
+R-HSA-5334097	DNMT3B:DNMT3L methylates cytosine in DNA	GO:0051719
+R-HSA-5334151	DNMT1 methylates cytosine in hemimethylated DNA	GO:0051718
+R-HSA-5334152	DNMT3A:DNMT3L methylates cytosine in DNA	GO:0051719
+R-HSA-5336420	DT fragment B transports DT fragment A from target cell endosome membrane	GO:0008320
+R-HSA-5336421	DT fragment A ADP-ribosylates target cell EEF	GO:0047286
+R-HSA-5357757	BIRC(cIAP1/2) ubiquitinates RIPK1	GO:0004842
+R-HSA-5357845	K63polyUb-RIPK1 is deubiquitinated	GO:0061578
+R-HSA-5358475	DPH6 ligates ammonium to diphthine-EEF2	GO:0017178
+R-HSA-5358484	DPH5 transfers four methyl groups from AdoMet to aminocarboxypropyl EEF2	GO:0141133
+R-HSA-5358494	DPH2 transfers a 3-amino-3-carboxypropyl group from AdoMet to residue 715 of nascent EEF2	GO:0090560
+R-HSA-5358512	MLH1:PMS2 makes single strand incision near  insertion/deletion loop of 2 bases or more	GO:0004519
+R-HSA-5358518	MLH1:PMS2 makes single strand incision near 1-2 base mismatch	GO:0004519
+R-HSA-5358599	EXO1 interacting with MSH2:MSH6 excises single strand DNA containing a mismatch	GO:0008409
+R-HSA-5358619	EXO1 interacting with MSH2:MSH3 excises DNA strand containing an insertion/deletion loop (IDL)	GO:0008409
+R-HSA-5362412	SYVN1 ubiquitinates Hh C-terminal fragments	GO:0004842
+R-HSA-5362448	Hh C-terminal fragments are degraded by the proteasome	GO:0004175
+R-HSA-5367022	DPH7 hydrolyzes a methyl group on Me-diphthine EEF2	GO:0051723
+R-HSA-5387392	processing defective Hh variants are degraded by the proteasome	GO:0004175
+R-HSA-5389839	39S subunit binds 28S subunit:mRNA:fMet-tRNA	GO:0003924
+R-HSA-5389842	TUFM hydrolyzes GTP and TUFM:GDP dissociates from 55S ribosome	GO:0003924
+R-HSA-5419273	Hydrolysis of GTP and dissociation of 28S and 39S subunits	GO:0003924
+R-HSA-5419279	Translocation of peptidyl-tRNA from A-site to P-site (and translocation of 55S ribosome by 3 bases along mRNA)	GO:0003924
+R-HSA-5483238	Hh processing variants are ubiquitinated	GO:0004842
+R-HSA-5577237	KCNH2:KCNE transport K+ from cytosol to extracellular region	GO:0005251
+R-HSA-5601926	RNA polymerase II polymerizes primary piRNA transcript	GO:0003899
+R-HSA-5607724	26S proteasome processes K48PolyUb-K21,22-p-S32,36-IkBA:NF-kB complex to form NF-kB complex	GO:0004175
+R-HSA-5607725	SCF-beta-TRCP ubiquitinates p-7S-p100:RELB in active NIK:p-176,S180-IKKA dimer:p-7S-p100:SCF-beta-TRCP	GO:0004842
+R-HSA-5607728	beta-TRCP ubiquitinates IkB-alpha in p-S32,33-IkB-alpha:NF-kB complex	GO:0004842
+R-HSA-5607731	26S proteasome processes p-7S-p100:RELB to form p52:RELB	GO:0004175
+R-HSA-5607756	TRAF6 oligomer autoubiquitinates	GO:0004842
+R-HSA-5607757	K63polyUb-TRAF6 ubiquitinates TAK1	GO:0004842
+R-HSA-5610742	SCF(beta-TrCP) ubiquitinates p-GLI1	GO:0004842
+R-HSA-5610745	SCF(beta-TrCP) ubiquitinates p-GLI2	GO:0004842
+R-HSA-5610746	SCF(beta-TrCP) ubiquitinates p-GLI3	GO:0004842
+R-HSA-5610754	GLI3 is partially degraded by the proteasome to yield the GLI3 repressor	GO:0004175
+R-HSA-5610757	GLI2 is degraded by the proteasome	GO:0004175
+R-HSA-5610758	GLI1 is degraded by the proteasome after ubiquitination by beta-TrCP	GO:0004175
+R-HSA-5610760	GLI1 is degraded by the proteasome after ubiquitination by ITCH	GO:0004175
+R-HSA-5617431	Retinoic acid activates HOXA1 chromatin	GO:0071558
+R-HSA-5617816	RAB3IP stimulates nucleotide exchange on RAB8A 	GO:0005085
+R-HSA-5617887	HOXC4 chromatin is activated	GO:0071558
+R-HSA-5618093	ATP hydrolysis by HSP90	GO:0016887
+R-HSA-5618328	ATAT acetylates microtubules	GO:0004468
+R-HSA-5618331	HDAC6 deacetylates microtubules	GO:0042903
+R-HSA-5625784	PKN1 phosphorylates histone 3 of nucleosomes associate with KLK2 and KLK3 promoters	GO:0004674
+R-HSA-5625797	KDM4C demethylates Me3K-10-H3 associated with KLK2 and KLK3 promoters	GO:0032452
+R-HSA-5625848	KDM1A demethylates dimethylated H3K9 (Me2K-10-H3) at KLK2 and KLK3 promoters	GO:0032452
+R-HSA-5625870	KDM1A demethylates monomethylated H3K9 (MeK-10-H3) at KLK2 and KLK3 promoters	GO:0032452
+R-HSA-5631885	PRDX1 overoxidizes	GO:0004601
+R-HSA-5632648	SMURF1/2 ubiquitinates PTCH1	GO:0061630
+R-HSA-5635854	GLI2,3 are degraded by the proteasome	GO:0004175
+R-HSA-5635856	SPOP:CUL3:RBX1 ubiquitinates GLI2,3	GO:0061630
+R-HSA-5635864	NUMB:ITCH ubiquitinates GLI1	GO:0061630
+R-HSA-5635868	ub-GLI is degraded by the proteasome	GO:0004175
+R-HSA-5637686	WHSC1L1 (KMT3F), Core MLL complex, SMYD3 (KMT3E) methylate methyl-lysine-5 of histone H3 (H3K4)	GO:0140938
+R-HSA-5637795	Phosphorylation of PLC-gamma 1 by p-EGFRvIII mutant	GO:0004713
+R-HSA-5637796	Phosphorylation of SHC1 by p-5Y-EGFRvIII	GO:0004713
+R-HSA-5637801	Conversion of PIP2 to PIP3 by PI3K bound to phosphorylated EGFRvIII	GO:0046934
+R-HSA-5637806	SOS-mediated nucleotide exchange of RAS (mediated by GRB2:SOS1 in complex with p-EGFRvIII)	GO:0005085
+R-HSA-5637808	SOS-mediated nucleotide exchange of RAS (mediated by GRB2:SOS1 in complex with phosphorylated SHC1 and p-EGFRvIII)	GO:0005085
+R-HSA-5651805	LIG1 bound to APEX1 and PCNA ligates SSB	GO:0003909
+R-HSA-5652009	RAD18:UBE2B or RBX1:CUL4:DDB1:DTL monoubiquitinates PCNA	GO:0004842
+R-HSA-5653754	UBE2L6:TRIM25 ISGylates monoUb:K164-PCNA	GO:0042296
+R-HSA-5653770	USP10 deubiquitinates monoUb:K164,ISG:K164,ISG:K168-PCNA	GO:0004843
+R-HSA-5653786	USP43 deISGylates ISG:K164,ISG:K168-PCNA	GO:0019785
+R-HSA-5653840	POLD,POLE complete replication of damaged DNA after TLS	GO:0003887
+R-HSA-5654672	CBL ubiquitinates FRS2 and FGFR1	GO:0061630
+R-HSA-5654677	CBL ubiquitinates FRS2 and FGFR2	GO:0061630
+R-HSA-5654679	CBL ubiquitinates FRS2 and FGFR3	GO:0061630
+R-HSA-5654684	CBL ubiquitinates FRS2 and FGFR4	GO:0061630
+R-HSA-5654989	SPRTN:VCP-mediated release of POLH from monoUb:K164-PCNA	GO:0016887
+R-HSA-5655170	RCHY1 monoubiquitinates POLH	GO:0004842
+R-HSA-5655466	USP1:WDR48 deubiquitinates monoUb:K164-PCNA	GO:0004843
+R-HSA-5655892	POLK incorporates dNMP opposite to damaged DNA base	GO:0003887
+R-HSA-5655965	POLK and POLZ cooperate in elongation of mispaired primer termini	GO:0003887
+R-HSA-5656148	POLI incorporates dNMP opposite to damaged DNA base	GO:0003887
+R-HSA-5656158	POLZ elongates POLI-incorporated dNMP	GO:0003887
+R-HSA-5658424	KBTBD7:CUL3:RBX1 ubiquitinates NF1	GO:0061630
+R-HSA-5658430	NF1 is degraded by the proteasome	GO:0004175
+R-HSA-5660660	p300 acetylates RELA subunit	GO:0016407
+R-HSA-5660752	USP9X deubiquitinates Ub-SNCA	GO:0008234
+R-HSA-5660753	SIAH1:UBE2L6:Ubiquitin ubiquitinates SNCA	GO:0004842
+R-HSA-5661115	KDM3A, KDM3B, KDM7A, PHF2:ARID5B, PHF8 demethylate Me2K10-histone H3	GO:0032452
+R-HSA-5661116	KDM5A-D demethylate Me3K5-histone H3	GO:0032452
+R-HSA-5661121	KDM6A, KDM6B, KDM7A demethylate Me3K28-histone H3	GO:0032452
+R-HSA-5661123	KDM1A, KDM1B demethylate Me2K5-histone H3	GO:0032452
+R-HSA-5661474	Defective NPC does not transport GCK1:GKRP from cytosol to nucleoplasm	GO:0017056
+R-HSA-5665809	SRGAP2 stimulates RAC1 GTP-ase activity and ends FMNL1-mediated elongation of actin filaments	GO:0003924
+R-HSA-5666160	AURKB phosphorylates DIAPH2-2 at kinetochores	GO:0004674
+R-HSA-5667107	SIAH1, SIAH2 ubiquitinate SNCAIP	GO:0004842
+R-HSA-5667111	PARK2 K63-Ubiquitinates SNCAIP	GO:0004842
+R-HSA-5668414	TRAF2 ubiquitinates cIAP1,2 in cIAP1,2:TRAF1:TRAF2:TRAF3:NIK	GO:0016740
+R-HSA-5668454	K63polyUb-cIAP1,2 ubiquitinates TRAF3	GO:0004842
+R-HSA-5668481	Protesomal degradation of K48polyUb-TRAF3	GO:0004175
+R-HSA-5668520	26Sproteasome degrades K48polyUb-NIK	GO:0004175
+R-HSA-5668534	cIAP1,2 ubiquitinates NIK in cIAP1,2:TRAF2::TRAF3:NIK	GO:0004842
+R-HSA-5672973	MAP2Ks phosphorylate MAPKs	GO:0004674
+R-HSA-5672978	RAF phosphorylates MAP2K dimer	GO:0004674
+R-HSA-5674022	BRAP autoubiquitinates	GO:0061630
+R-HSA-5675470	BIRC2/3 (cIAP1/2) is autoubiquitinated	GO:0004842
+R-HSA-5682598	ATM phosphorylates HERC2	GO:0004674
+R-HSA-5682607	PIAS4 SUMOylates HERC2 with SUMO1 at DNA DSBs	GO:0019789
+R-HSA-5682858	RNF8 and RNF168 ubiquitinate H2AFX	GO:0061630
+R-HSA-5682965	WHSC1 dimethylates histone H4 on lysine K21 at DSBs	GO:0042799
+R-HSA-5682983	ATM phosphorylates WHSC1	GO:0004674
+R-HSA-5683077	RNF8 and RNF168 ubiquitinate KDM4A,B	GO:0036435
+R-HSA-5683405	PPP5C dephosphorylates TP53BP1	GO:0004722
+R-HSA-5683425	ATM phosphorylates TP53BP1 at DNA DSBs	GO:0004674
+R-HSA-5683801	CHEK2 phosphorylates BRCA1	GO:0004674
+R-HSA-5683930	WICH phosphorylates H2AFX on Y142	GO:0004713
+R-HSA-5683964	ATM phosphorylates EYA1-4	GO:0004674
+R-HSA-5683967	EYA1-4 dephosphorylates tyrosine Y142 of H2AFX	GO:0004725
+R-HSA-5684052	PIAS4 SUMOylates MDC1	GO:0019789
+R-HSA-5684071	RNF4 ubiquitinates MDC1	GO:0061630
+R-HSA-5684096	CDK2 phosphorylates RBBP8	GO:0004674
+R-HSA-5684250	SCF betaTrCP ubiquitinates NFKB p105 within p-S927, S932-NFkB p105:TPL2:ABIN2 	GO:0004842
+R-HSA-5684887	Activation of CHEK1 at resected DNA DSBs	GO:0004674
+R-HSA-5685156	ATR phosphorylates RPA2	GO:0004674
+R-HSA-5685230	CHEK1 phosphorylates RAD51	GO:0004674
+R-HSA-5685994	Long-range resection of DNA DSBs by EXO1 or DNA2	GO:0004536
+R-HSA-5686410	BLM mediates dissolution of double Holliday junction	GO:0004386
+R-HSA-5686440	MUS81:EME1,EME2 cleaves D-loop	GO:0004520
+R-HSA-5686642	RAD52 promotes single strand annealing at resected DNA DSBs	GO:0140666
+R-HSA-5686657	ERCC1:XPF cleaves flaps generated by SSA	GO:0004520
+R-HSA-5686663	Completion of SSA	GO:0003909
+R-HSA-5686704	Activated ATM phosphorylates DCLRE1C	GO:0004674
+R-HSA-5687081	MAPK6 is ubiquitinated at the N-terminal	GO:0061630
+R-HSA-5687112	MAPK6 is degraded by the 26S proteasome	GO:0004175
+R-HSA-5687640	POLQ extends annealed 3'-ssDNA overhangs in MMEJ	GO:0003887
+R-HSA-5687653	PARP1,PARP2 dimers bound to MMEJ sites autoPARylate	GO:0003950
+R-HSA-5688797	ATXN3 family cleave Ub chains	GO:0004843
+R-HSA-5688837	ATXN3 deubiquitinates polyUb-PARK2	GO:0004843
+R-HSA-5689111	PARK2 autoubiquitinates	GO:0061630
+R-HSA-5689950	USP7 deubiquitinates TP53,MDM2,MDM4,FOXO4, PTEN	GO:0004843
+R-HSA-5689972	USP2 deubiquitinates MDM2,MDM4	GO:0004843
+R-HSA-5689973	USP10,USP24,USP42 deubiquitinate TP53	GO:0004843
+R-HSA-5690080	USP3,SAGA deubiquitinate Histone H2A,H2B	GO:0004843
+R-HSA-5690152	USP5 cleaves polyubiquitin	GO:0004843
+R-HSA-5690157	USP16,USP21 deubiquitinate Histone H2A	GO:0004843
+R-HSA-5690159	USP21 deubiquitinates RIPK1,DDX58	GO:0004843
+R-HSA-5690196	USP8 deubiquitinates RNF128	GO:0004843
+R-HSA-5690319	UCHL1, UCHL3 cleave ubiquitin adducts	GO:0004843
+R-HSA-5690759	BAP1:Ub-HCFC1 deubiquitinates BAP1:Ub-HCFC1	GO:0004843
+R-HSA-5690790	Histone H2A is dubiquitinated by the PR-DUB complex	GO:0004843
+R-HSA-5690827	TNFAIP3 (A20) ubiquitinates RIPK1	GO:0061630
+R-HSA-5690856	TNFAIP3 (A20) deubiquitinates K63polyUb-RIPK1	GO:0061578
+R-HSA-5690870	OTUD7B,TNFAIP3 deubiquitinate TRAF6	GO:1990380
+R-HSA-5690988	3'-incision of DNA by ERCC5 (XPG) in GG-NER	GO:0004520
+R-HSA-5690996	ERCC2 and ERCC3 DNA helicases form an open bubble structure in damaged DNA	GO:0004386
+R-HSA-5690997	Ligation of newly synthesized repair patch to incised DNA in GG-NER	GO:0003909
+R-HSA-5691001	Repair DNA synthesis of ~27-30 bases long patch by POLD, POLE or POLK in GG-NER	GO:0003887
+R-HSA-5691108	SKP1:FBXL5:CUL1:NEDD8 ubiquitinylates IREB2	GO:0004842
+R-HSA-5691381	MYSM1 deubiquitinates Histone H2A	GO:0004843
+R-HSA-5691411	BRCA1-A complex deubiquitinates K63polyUb-histone H2A	GO:0061578
+R-HSA-5691431	PSMD14 cleaves K63-linked ubiquitin	GO:0061578
+R-HSA-5691439	BRISC complex deubiquitinates NLRP3	GO:0061578
+R-HSA-5693108	TNFAIP3 (A20) ubiquitinates RIPK1 with K48-linked Ub chains 	GO:0004842
+R-HSA-5693536	ATM phosphorylates MDC1	GO:0004674
+R-HSA-5693549	ATM phosphorylates histone H2AFX on S139 at DNA DSBs	GO:0004674
+R-HSA-5693551	Phosphorylation of BRCA1-A complex at multiple sites by ATM	GO:0004674
+R-HSA-5693584	Cleavage of Holliday junctions by GEN1 or SLX1A:SLX4:MUS81:EME1,(MUS81:EME2)	GO:0004520
+R-HSA-5693589	D-loop dissociation and strand annealing	GO:0003678
+R-HSA-5693593	D-loop extension by DNA polymerases	GO:0003887
+R-HSA-5693608	Initial resection of double-strand break ends	GO:0004520
+R-HSA-5696465	USP45 deubiquitinates ERCC1	GO:0004843
+R-HSA-5696534	USP18 deubiquitinates TAK1:TAB1	GO:0004843
+R-HSA-5696547	STAMBPL1 is a deubiquitinase	GO:0061578
+R-HSA-5696564	USP25 deubiquitinates DDX58	GO:0004843
+R-HSA-5696600	USP17 deubiquitinates RCE1, CDC25A, DDX58, IFIH1	GO:0004843
+R-HSA-5696605	USP12, USP26 deubiquitinate AR	GO:0004843
+R-HSA-5696627	CYLD deubiquitinates K63polyUb-TRAF2,K63polyUb-TRAF6,K63polyUb-RIPK1,K63polyUb-IKBKG	GO:0004843
+R-HSA-5696872	USP30 deubiquitinates Ub-MOM proteins	GO:0004843
+R-HSA-5696914	USP28 deubiquitinates CLSPN and MYC	GO:0004843
+R-HSA-5696945	USP33 deubiquitinates CCP110,ARRB	GO:0004843
+R-HSA-5696947	USP47 deubiquitinates POLB	GO:0004843
+R-HSA-5696958	USP44 deubiquitinates CDC20	GO:0004843
+R-HSA-5696960	USP49 deubiquitinates H2B	GO:0004843
+R-HSA-5696968	USP20, USP33 deubiquitinate ADRB2	GO:0004843
+R-HSA-5696997	USP24 deubiquitinates DDB2	GO:0004843
+R-HSA-5697009	USP37:RUVLB1:PSMC5 deubiquitinates CCNA1,CCNA2	GO:0004843
+R-HSA-6781764	USP15 deubiquitinates SMAD1,SMAD2,SMAD3, SMAD7:SMURF,KEAP1	GO:0004843
+R-HSA-6781779	USP13 deubiquitinates BECN1,USP10	GO:0004843
+R-HSA-6781814	USP19 deubiquitinates RNF123	GO:0004843
+R-HSA-6781824	Active RNA Pol II complex transcribes lesion-containing DNA template	GO:0003899
+R-HSA-6781867	ERCC8:DDB1:CUL4:RBX1 ubiquitinates ERCC6 and RNA Pol II	GO:0061630
+R-HSA-6781897	USP11 deubiquitinates NFKBIA	GO:0004843
+R-HSA-6782069	UVSSA:USP7 deubiquitinates ERCC6	GO:0004843
+R-HSA-6782106	USP10 deubiquitinates SNX3, CFTR	GO:0004843
+R-HSA-6782131	ERCC2-facilitated RNA Pol II backtracking in TC-NER	GO:0043139
+R-HSA-6782204	5' incision of damaged DNA strand by ERCC1:ERCC4 in TC-NER	GO:0004520
+R-HSA-6782208	Repair DNA synthesis of ~27-30 bases long patch by POLD, POLE or POLK in TC-NER	GO:0003887
+R-HSA-6782224	3' incision by ERCC5 (XPG) in TC-NER	GO:0004520
+R-HSA-6782227	Ligation of newly synthesized repair patch to incised DNA in TC-NER	GO:0003909
+R-HSA-6782286	METTL1:WDR4 methylates guanosine-46 of tRNA(Phe) yielding 7-methylguanosine-46	GO:0008176
+R-HSA-6782628	USP8 deubiquitinates STAM2:HGS	GO:0004843
+R-HSA-6782820	USP17 deubiquitinates SUDS3	GO:0004843
+R-HSA-6782943	UV-DDB ubiquitinates XPC	GO:0061630
+R-HSA-6783177	USP21 deubiquitinates GATA3,IL33	GO:0004843
+R-HSA-6783483	tRNA:XPOT:RAN:GTP translocates from the nucleus to the cytosol	GO:0017056
+R-HSA-6784620	MBTPS1,2 cleaves CREB3L3 to CREB3L3(1-?) and CREB3L3(?-461)	GO:0004222
+R-HSA-6785361	Monoubiquitination of FANCD2:FANCI	GO:0061630
+R-HSA-6785986	DNA nucleases unhook the interstrand crosslink (ICL)	GO:0004536
+R-HSA-6786166	Translesion synthesis across unhooked ICL by POLN	GO:0003887
+R-HSA-6786171	FANCD2 deubiquitination by USP1:WDR48	GO:0004843
+R-HSA-6790454	SUMOylation of XPC	GO:0019789
+R-HSA-6790487	RNF111 ubiquitinates SUMOylated XPC	GO:0061630
+R-HSA-6790906	EMG1 of the SSU processome methylates pseudouridine-1248 of 18S rRNA yielding N(1)-methylpseudouridine-1248	GO:0070037
+R-HSA-6790907	Box C/D snoRNP methylates ribonucleotides in pre-rRNA yielding 2'-O-methylribonucleotides	GO:0008171
+R-HSA-6791222	21S pre-rRNA is nucleolytically processed at site E (site2a) to yield 18SE pre-rRNA	GO:0000175
+R-HSA-6791223	18SE pre-rRNA in pre-40S particles is nucleolytically processed during translocation from the nucleus to the cytosol	GO:0004521
+R-HSA-6791227	47S pre-rRNA is nucleolytically processed at A' (01,A1), site A0, and site 02 (site 6)  to yield 45S pre-rRNA	GO:0004534
+R-HSA-6793661	(CDK1,CDK2):CCNA phosphorylates MDM2 at T218	GO:0004693
+R-HSA-6797606	CDK12 phosphorylates RNA Pol II CTD at DNA repair genes	GO:0004693
+R-HSA-6798373	MDM2 ubiquitinates DYRK2	GO:0061630
+R-HSA-6799332	ATR phosphorylates TP53	GO:0004674
+R-HSA-6801675	PLK2 phosphorylates NPM1	GO:0004674
+R-HSA-6802910	Activated MAP2Ks phosphorylate MAPKs downstream of high kinase activity BRAF mutants	GO:0004712
+R-HSA-6802911	High kinase activity BRAF complexes phosphorylate MAP2Ks	GO:0004674
+R-HSA-6802918	Activated MAP2Ks phosphorylate MAPKs downstream of inactive BRAF mutants	GO:0004712
+R-HSA-6802919	RAS:GTP:moderate kinase activity p-RAF complexes phosphorylate MAP2Ks	GO:0004674
+R-HSA-6802921	Activated MAP2Ks phosphorylate MAPKs downstream of moderate kinase activity BRAF mutants	GO:0004712
+R-HSA-6802922	Activated MAP2Ks phosphorylate MAPKs downstream of oncogenic RAS	GO:0004712
+R-HSA-6802926	Mutant RAS:p-RAF complexes phosphorylate MAP2Ks	GO:0004674
+R-HSA-6802927	BRAF and RAF fusion mutant dimers are phosphorylated	GO:0004712
+R-HSA-6802933	p-BRAF and RAF fusion dimers phosphorylate MAP2Ks	GO:0004674
+R-HSA-6802935	MAPKs are phosphorylated downstream of BRAF and RAF fusion dimers	GO:0004674
+R-HSA-6802943	RAS:GTP:inactive p-RAF complexes phosphorylate MAP2Ks	GO:0004674
+R-HSA-6804253	MDM2 ubiquitinates JMY	GO:0061630
+R-HSA-6804441	RNF34 or RFFL ubiquitinates phosphorylated TP53	GO:0061630
+R-HSA-6804468	PIAS1 SUMOylates SP3 with SUMO2	GO:0019789
+R-HSA-6804485	PIAS1 SUMOylates L3MBTL2 with SUMO2	GO:0019789
+R-HSA-6804724	MDM2 ubiquitinates phosphorylated MDM4	GO:0061630
+R-HSA-6804879	MDM2 ubiquitinates TP53	GO:0061630
+R-HSA-6804942	MDM2 homodimers auto-ubiquitinate	GO:0061630
+R-HSA-6805109	CDK2 phosphorylates TP53	GO:0004693
+R-HSA-6805399	TAF1 phosphorylates TP53	GO:0004674
+R-HSA-6805650	MTA2-NuRD complex deacetylates TP53	GO:0004407
+R-HSA-6805785	AKT phosphorylates PHF20	GO:0004674
+R-HSA-6807106	PTEN undergoes monoubiquitination	GO:0061630
+R-HSA-6807118	USP7 deubiquitinates monoubiquitinated PTEN	GO:0004843
+R-HSA-6807134	NEDD4, WWP2, CHIP and XIAP polyubiquitinate PTEN	GO:0061630
+R-HSA-6807206	USP13 and OTUD3 deubiquitinate PTEN	GO:0004843
+R-HSA-6810233	CDK7 phosphorylates serine-5 and serine-7 of heptad repeats in C-terminal domain of RNA polymerase II at snRNA promoter	GO:0004674
+R-HSA-6814549	Pre-snRNA transcript initiation, Integrator binding, LEC binding	GO:0003899
+R-HSA-6814555	Integrator complex processes the 3' end of snRNA	GO:0004521
+R-HSA-6814559	Pre-snRNA is elongated and capped with 7-methylguanosine	GO:0003899
+R-HSA-68712	The geminin component of geminin:Cdt1 complexes is ubiquitinated, releasing Cdt1	GO:0004842
+R-HSA-688136	TNFAIP3 (A20) deubiquitinates RIP2	GO:0061578
+R-HSA-688137	RIP2 is K63 polyubiquitinated	GO:0019787
+R-HSA-68825	Ubiquitinated geminin is degraded by the proteasome	GO:0004175
+R-HSA-68913	The primase component of DNA polymerase:primase synthesizes a 6-10 nucleotide RNA primer at the origin	GO:0003899
+R-HSA-68944	Orc1 is phosphorylated by cyclin A/CDK2	GO:0004693
+R-HSA-68946	Phosphorylated Orc1 is ubiquitinated while still associated with chromatin	GO:0061630
+R-HSA-68948	Ubiquitinated Orc1 is degraded by the proteasome	GO:0004175
+R-HSA-68950	The polymerase component of DNA polymerase alpha:primase synthesizes a 20-nucleotide primer at the origin	GO:0003887
+R-HSA-68954	Mcm2-7 is phosphorylated by DDK	GO:0004713
+R-HSA-69005	Cdc6 protein is phosphorylated by CDK	GO:0004693
+R-HSA-69015	Cytoplasmic phosphorylated Cdc6 is ubiquitinated by the anaphase-promoting complex	GO:0061630
+R-HSA-69016	Ubiquitinated Cdc6 is degraded by the proteasome	GO:0004175
+R-HSA-69116	Formation of Okazaki fragments	GO:0003887
+R-HSA-69152	Removal of remaining Flap	GO:0017108
+R-HSA-69195	Phosphorylation of Cyclin E:CDK2 complexes by WEE1	GO:0004713
+R-HSA-69199	Dephosphorylation of Cyclin E:Cdk2 complexes by Cdc25A	GO:0004721
+R-HSA-69562	Inactivation of Cyclin E:Cdk2 complexes by p27/p21	GO:0004861
+R-HSA-69598	Ubiquitination of phosphorylated CDC25A	GO:0004842
+R-HSA-69600	Proteolytic degradation of ubiquitinated-Cdc25A	GO:0004175
+R-HSA-69891	Phosphorylation and activation of CHEK2 by ATM	GO:0004674
+R-HSA-70449	GADPH tetramer dehydrogenates GA3P	GO:0004365
+R-HSA-70454	TPI1 dimer isomerizes DHAP to GA3P	GO:0004807
+R-HSA-70481	TPI1 dimer isomerizes GA3P to DHAP	GO:0004807
+R-HSA-70482	GAPDH tetramers reduce 1,3BPG to GA3P	GO:0004365
+R-HSA-70494	Enolase dimers (ENO1,2,3) convert PEP to 2PG	GO:0004634
+R-HSA-71660	Enolase dimers dehydrates 2PG	GO:0004634
+R-HSA-71670	Pyruvate kinase dephosphorylates PEP to PYR	GO:0004743
+R-HSA-72095	Internal Methylation of mRNA	GO:0001734
+R-HSA-72621	Ribosomal scanning 	GO:0003743
+R-HSA-72647	Cap-bound mRNA is activated by helicases 	GO:0003724
+R-HSA-72697	Start codon recognition	GO:0003743
+R-HSA-73736	Acetylation of SL1	GO:0016407
+R-HSA-73794	IMP + H2O + NAD+ => XMP + NADH + H+ [IMPDH1,2]	GO:0003938
+R-HSA-741386	RIP2 induces K63-linked ubiquitination of NEMO	GO:0004842
+R-HSA-741411	CYLD deubiquitinates NEMO	GO:0061578
+R-HSA-74986	Elongation of pre-rRNA transcript	GO:0003899
+R-HSA-75824	Ubiquitination of Cyclin D1	GO:0004842
+R-HSA-75825	Proteasome mediated degradation of Cyclin D1	GO:0004175
+R-HSA-75850	Addition of the third nucleotide on the nascent transcript	GO:0003899
+R-HSA-75869	Addition of the fourth nucleotide on the Nascent Transcript: Second Transition	GO:0003899
+R-HSA-75873	Addition of Nucleotides 5 through 9 on the growing Transcript	GO:0003899
+R-HSA-75949	RNA Polymerase II Promoter Opening: First Transition	GO:0043138
+R-HSA-76576	Addition of nucleotides 10 and 11 on the growing transcript: Third Transition	GO:0003899
+R-HSA-77071	Phosphorylation (Ser5) of RNA pol II CTD	GO:0004674
+R-HSA-77078	Hydrolysis of the 5'-end of the nascent transcript by the capping enzyme	GO:0004651
+R-HSA-77081	Formation of the CE:GMP intermediate complex	GO:0004484
+R-HSA-77083	Transfer of GMP from the capping enzyme GT site to 5'-end of mRNA	GO:0004484
+R-HSA-77090	Methylation of GMP-cap by RNA Methyltransferase	GO:0004482
+R-HSA-870437	USP9X (FAM) deubiquitinates SMAD4	GO:0004843
+R-HSA-870449	TRIM33 monoubiquitinates SMAD4	GO:0004842
+R-HSA-8848436	PTK6 phosphorylates CDKN1B	GO:0004713
+R-HSA-8848829	CBL autoubiquitinates	GO:0061630
+R-HSA-8850594	Deglycosylation complex hydrolyses N-glycans from unfolded glycoproteins	GO:0000224
+R-HSA-8850992	Proteasome degrades polyubiquitinated PTEN	GO:0004175
+R-HSA-8851011	TRIM27 polyubiquitinates PTEN	GO:0061630
+R-HSA-8852132	Ub-Cys632-UBA1 adenylates ubiquitin in the cytosol	GO:0004839
+R-HSA-8852133	UBA1 conjugates ubiquitin to UBA1 in the cytosol	GO:0004839
+R-HSA-8852134	UBA1 adenylates ubiquitin in the cytosol	GO:0004839
+R-HSA-8852306	Mitotic phosphorylation-induced dissociation of GTSE1 from microtubule plus ends	GO:0004674
+R-HSA-8852354	GTSE1 facilitates proteasome-mediated degradation of TP53	GO:0004175
+R-HSA-8853379	ENGASE hydrolyses unfolded protein:(GlcNAc)2 (Man(9-5)	GO:0033925
+R-HSA-8853419	TPX2 promotes AURKA autophosphorylation	GO:0004674
+R-HSA-8853514	UCHL3,USP7,USP9X cleaves UBA52 yielding ubiquitin	GO:0004843
+R-HSA-8853515	OTULIN,USP5 cleaves UBC yielding ubiquitin	GO:0004843
+R-HSA-8853529	OTULIN,USP5 cleaves UBB yielding ubiquitin	GO:0004843
+R-HSA-8854041	SCF-FBXL7 ubiquitinates AURKA	GO:0061630
+R-HSA-8854044	Proteasome degrades AURKA ubiquitinated by SCF-FBXL7	GO:0004175
+R-HSA-8854051	SCF-FBXL18 ubiquitinates FBXL7	GO:0061630
+R-HSA-8854071	Proteasome-mediated degradation of PolyUb-FBXL7	GO:0004175
+R-HSA-8854628	MYLIP dimer ubiquitinates VLDLR on Lys-839	GO:0061630
+R-HSA-8862184	USP48 cleaves polyubiquitin	GO:0004843
+R-HSA-8865050	Ub-Cys625-UBA6 adenylates ubiquitin in the cytosol	GO:0004839
+R-HSA-8865090	UBA6 adenylates ubiquitin in the cytosol	GO:0004839
+R-HSA-8865098	UBA6 conjugates ubiquitin to UBA6 in the cytosol	GO:0004839
+R-HSA-8865182	OTUD7A hydrolyses K11diUb	GO:0004843
+R-HSA-8865498	KMT2A trimethylates nucleosomes at the SPI1 gene locus producing H3K4Me3 mark	GO:0042800
+R-HSA-8865774	TTLLs polyglutamylate tubulin	GO:0070740
+R-HSA-8866105	CCPs deglutamylate tubulin	GO:0004181
+R-HSA-8866405	RNR (M1M2B) reduces nucleotide diphosphates to deoxynucleotide diphosphates (glutaredoxin)	GO:0036175
+R-HSA-8866546	RNF5 and RNF185 ubiquitinate misfolded CFTR	GO:0061630
+R-HSA-8866553	misfolded CFTR is degraded by the 26S proteasome	GO:0004175
+R-HSA-8866856	RNF5 and RNF185 ubiquitinate CFTR F508del	GO:0061630
+R-HSA-8866858	CFTR F508del is degraded by the 26S proteasome	GO:0004175
+R-HSA-8867288	OS9:SEL1:ERAD E3 ligase:DERL2 ubiquitinates unfolded protein:(GlcNAc)2 (Man)9-5	GO:0061630
+R-HSA-8867370	TTLL3, TTLL8, TTLL10 polyglycylate tubulin	GO:0070735
+R-HSA-8868072	Clathrin-associated PIK3C2A phosphorylates PI(4)P to PI(3,4)P2	GO:0035005
+R-HSA-8868567	CDK5:p25 phosphorylates PRDX1	GO:0004674
+R-HSA-8868648	SYNJ hydrolyze PI(4,5)P2 to PI(4)P	GO:0004439
+R-HSA-8868658	HSPA8-mediated ATP hydrolysis promotes vesicle uncoating	GO:0016887
+R-HSA-8868661	Dynamin-mediated GTP hydrolysis promotes vesicle scission	GO:0003924
+R-HSA-8869456	USP4 deubiquitinate TRAF2,TRAF6	GO:0004843
+R-HSA-8869506	TNFAIP3 in OTUD7B:TNFAIP3:ZRANB1 deubiquitinates K63polyUb-TRAF6	GO:0061578
+R-HSA-8874122	MBTPS2 (S2P) cleaves ATF6B (ATF6-beta)	GO:0004222
+R-HSA-8874187	MBTPS2 (S2P) cleaves CREB3L2	GO:0004222
+R-HSA-8874192	MBTPS2 (S2P) cleaves CREB3	GO:0004222
+R-HSA-8874194	MBTPS2 (S2P) cleaves CREB3L1	GO:0004222
+R-HSA-8874195	MBTPS2 (S2P) cleaves CREB3L4	GO:0004222
+R-HSA-8874201	MBTPS2 (S2P) cleaves CREB3L3	GO:0004222
+R-HSA-8875183	CBL monoubiquitinates activated MET	GO:0061630
+R-HSA-8875431	LRIG1 undergoes ubiquitination	GO:0061630
+R-HSA-8875443	USP8 deubiquitinates LRIG1	GO:0004843
+R-HSA-8876258	CBL monoubiquitinates InlB-bound MET	GO:0061630
+R-HSA-8877003	CBLL1 ubiqutinates the InlA-bound CDH1 complex	GO:0061630
+R-HSA-8879123	PRMT3 transfers 3xCH3 from 3xAdoMet to RPS2	GO:0016274
+R-HSA-888589	Release of GABA at the synapse	GO:0000149
+R-HSA-8931974	N6AMT2 transfers 3xCH3 from 3xAdoMet to EEF1A	GO:0016279
+R-HSA-8932221	METTL21A transfers 3xCH3 from 3xAdoMet to HSPA8	GO:0016279
+R-HSA-8932243	EEF2KMT transfers 3xCH3 from 3xAdoMet to EEF2	GO:0016279
+R-HSA-8932355	26S proteasome degrades Ub-NFE2L2	GO:0004175
+R-HSA-8932413	METTL10 transfers 3xCH3 from 3xAdoMet to EEF1A1	GO:0016279
+R-HSA-8936481	Core MLL complex methylates H3K4Me2-Nucleosome at the ITGA2B gene promoter	GO:0042800
+R-HSA-8936584	PRMT6 arginine methylates H3K4me2-Nucleosome at the ITGA2B gene promoter	GO:0140938
+R-HSA-8936608	PRMT6 arginine methylates H3K4me2-Nucleosome at the GP1BA gene promoter	GO:0140938
+R-HSA-8936621	Core MLL complex methylates H3K4Me2-Nucleosome at the GP1BA gene promoter	GO:0042800
+R-HSA-8936849	AHR:2xHSP90:AIP:PTGES3 binds TCDD	GO:0004879
+R-HSA-8937016	Core MLL complex methylates H3K4Me2-Nucleosome at the THBS1 gene promoter	GO:0042800
+R-HSA-8937022	PRMT6 arginine methylates H3K4me2-Nucleosome at the THBS1 gene promoter	GO:0140938
+R-HSA-8937050	Core MLL complex methylates H3K4Me2-Nucleosome at the MIR27A gene promoter	GO:0042800
+R-HSA-8937113	PRMT6 arginine methylates H3K4me2-Nucleosome at the MIR27A gene promoter	GO:0140938
+R-HSA-8937169	AHR:TCDD:2xHSP90AB1:AIP:PTGES3 translocates from cytosol to nucleoplasm	GO:0004879
+R-HSA-8937191	AHR:TCDD:2xHSP90AB1:AIP:PTGES3 dissociates	GO:0004879
+R-HSA-8937807	SRC phosphorylates RUNX3	GO:0004713
+R-HSA-8938773	RNF144A polyubiquitinates PRKDC	GO:0061630
+R-HSA-8938815	RNF152 polyubiquitinates RRAGA	GO:0061630
+R-HSA-8939203	HSP90-dependent ATP hydrolysis promotes release of ESR:ESTG from chaperone complex	GO:0016887
+R-HSA-8939335	RNF181 polyubiquinates BCL10	GO:0061630
+R-HSA-8939706	SCF(SKP2) polyubiquitinates RUNX2	GO:0061630
+R-HSA-8939801	26S proteasome degrades PolyUb-RUNX2	GO:0004175
+R-HSA-8941312	TUT4,TUT7 oligouridylate mRNA	GO:0050265
+R-HSA-8942101	RNF20:RNF40 monoubiquitinates Histone H2B	GO:0061630
+R-HSA-8943003	SHPRH polyubiquitinates monoubiquitinated PCNA	GO:0061630
+R-HSA-8943040	HLTF polyubiquitinates monoubiquitinated PCNA	GO:0061630
+R-HSA-8943080	TMEM129 polyubiquitinates HLA (MHC class I heavy chain) bound to cytomegalovirus US11	GO:0061630
+R-HSA-8948709	DTX4 ubiquitinates p-S172-TBK1 within NLRP4:DTX4:STING:TBK1:IRF3	GO:0004842
+R-HSA-8948775	MKRN1 polyubiquitinates PTEN	GO:0061630
+R-HSA-8948832	RNF146 polyubiquitinates PARylated PTEN	GO:0061630
+R-HSA-8951966	EP300 acetylates RUNX3	GO:0061733
+R-HSA-8952069	HDAC4 deacetylates RUNX3	GO:0033558
+R-HSA-8952382	MDM2 polyubiquitinates RUNX3	GO:0061630
+R-HSA-8952408	Polyubiquitinated RUNX3 is degraded by the proteasome	GO:0004175
+R-HSA-8952419	SMURFs ubiquitinate RUNX3	GO:0061630
+R-HSA-8952638	AcM-UBE2M transfers NEDD8 to CRL4 E3 ubiquitin ligase complex	GO:0019788
+R-HSA-8953946	PEX2:PEX10:PEX12 monoubiquitinates PEX5S,L at cysteine-11	GO:0061630
+R-HSA-8955706	TTL ligates L-Tyr to the carboxy terminus of detyr-alpha tubulin:beta tubulin	GO:0004835
+R-HSA-8955712	SVBP:VASH1,VASH2 hydrolyzes the terminal L-Tyr residue from alphaY-beta tubulin dimer	GO:0004181
+R-HSA-8955869	Polyglutamylase complex (TTLL1) polyglutamylates alpha subunits of tubulin	GO:0070740
+R-HSA-8956026	CUL9:RBX1 ubiquitinates BIRC5	GO:0061630
+R-HSA-8956045	COP9 signalosome deneddylates nuclear CRL4 E3 ubiquitin ligase complex	GO:0019784
+R-HSA-8956106	VHL:EloB,C:NEDD8-CUL2:RBX1 complex ubiquitinylates HIF-alpha	GO:0004842
+R-HSA-8956684	ITCH polyubiquitinates TP73	GO:0061630
+R-HSA-8957265	26S proteasome degrades TP73 polyubiquitinated by ITCH	GO:0004175
+R-HSA-8986083	USP33 deubiquitinates ROBO1	GO:0004843
+R-HSA-9008076	WWP1 polyubiquitinates RUNX2	GO:0061630
+R-HSA-9008110	Proteasome degrades polyubiquitinated RUNX2	GO:0004175
+R-HSA-9009308	STUB1 polyubiquitinates RUNX2	GO:0061630
+R-HSA-9009362	Proteasome degrades PolyUb-RUNX2	GO:0004175
+R-HSA-9009403	SMURF1 polyubiquitinates RUNX2	GO:0061630
+R-HSA-9011300	ZSWIM8 ubiquitinates ROBO3.1	GO:0061630
+R-HSA-9011313	Proteasome degrades ubiquitinated ROBO3.1	GO:0004175
+R-HSA-9011949	KDM4B demethylates H3K9me3 on estrogen-responsive target enhancers	GO:0032454
+R-HSA-9011985	KDM1A demethylates H3 on MYC and BCL genes in response to estrogen	GO:0032454
+R-HSA-9012319	p-TEFb phosphorylates serine 2 in RNA polymerase II CTD	GO:0004674
+R-HSA-9013069	Ubiquitination of DLL/JAG ligands upon binding to NOTCH3	GO:0004842
+R-HSA-9013974	Auto-ubiquitination of TRAF3 within activated TLR3 complex	GO:0004842
+R-HSA-9014342	K63-linked ubiquitination of RIP1 bound to the activated TLR complex	GO:0004842
+R-HSA-9017817	Gamma-secretase cleaves YBX1:NOTCH3	GO:0004190
+R-HSA-9018785	RHOBTB2 binds GTP	GO:0044183
+R-HSA-9021523	WWP2 ubiquitinates NOTCH3	GO:0061630
+R-HSA-9032751	Estrogen-independent phosphorylation of ESR1 S118 by MAPK1 and MAPK3	GO:0004674
+R-HSA-9033478	USP9X hydrolyzes Ub:PEX5S yielding PEX5S and Ubiquitin	GO:0004843
+R-HSA-9033485	PEX2:PEX10:PEX12 monoubiquitinates PEX5L at cysteine-11	GO:0061630
+R-HSA-9033491	USP9X hydrolyzes Ub:PEX5L yielding PEX5L and Ubiquitin	GO:0004843
+R-HSA-9033499	PEX1:PEX6:PEX26:ZFAND6 dissociates Ub:PEX5L and PEX7 from PEX14:PEX13:PEX2:PEX10:PEX12 and translocates PEX5L and PEX7 from the peroxisomal membrane to the cytosol	GO:0042626
+R-HSA-9033505	PEX1:PEX6:PEX26:ZFAND6:Ub:PEX5S,L:PEX14:PEX13:PEX2:PEX10:PEX12 dissociates yielding cytosolic Ub:PEX5S,L and membrane PEX14:PEX13:PEX2:PEX10:PEX12	GO:0042626
+R-HSA-9038161	Progesterone stimulation promotes PGR:P4 binding to ESR1:ESTG	GO:0016887
+R-HSA-912458	Formation of meiotic heteroduplex	GO:0000150
+R-HSA-912470	ATR phosphorylates Histone H2A.X at unsynapsed regions	GO:0004674
+R-HSA-917693	ESCRT Disassembly	GO:0016887
+R-HSA-917744	GABA loaded synaptic vesicle Docking and Priming	GO:0000149
+R-HSA-918224	DDX58 is K63 polyubiquitinated	GO:0004842
+R-HSA-927836	SMG6 hydrolyzes mRNA with premature termination codon	GO:0004521
+R-HSA-927889	SMG1 phosphorylates UPF1 (enhanced by Exon Junction Complex)	GO:0004674
+R-HSA-934604	Phosphorylated SPRY2 is ubiquitinated by CBL	GO:0061630
+R-HSA-936381	OTUD5 deubiquitinates TRAF3	GO:0061578
+R-HSA-936390	CYLD mediated deubiquitination of DDX58 (RIG-I)	GO:0061578
+R-HSA-936475	Negative regulation of DDX58/IFIH1 signaling by RNF216	GO:0061630
+R-HSA-936942	Auto ubiquitination of oligo-TRAF6 bound to p-IRAK2	GO:0004842
+R-HSA-936951	Activation of TAK1 complex bound to activated TLR4 complex	GO:0004674
+R-HSA-936986	Activated TRAF6 synthesizes unanchored polyubiquitin chains	GO:0004842
+R-HSA-936991	Auto phosphorylation of TAK1 bound to p-IRAK2:pUb oligo-TRAF6: free K63 pUb:TAB1:TAB2/TAB3 	GO:0008349
+R-HSA-937050	Pellino ubiquitinates hp-IRAK1	GO:0034450
+R-HSA-9604629	FBXW7 promotes ubiquitination of p-NICD4	GO:0061630
+R-HSA-9604642	Proteasome degrades ubiquitinated NICD4	GO:0004175
+R-HSA-9604829	SIRT6 deacetylates histones at NOTCH1 and NOTCH4 gene promoters	GO:0046969
+R-HSA-9610627	KIF17 transports GluN1:GluN2B (GRIN1:GRIN2B) NMDA receptors to the plasma membrane	GO:0003777
+R-HSA-9613490	Unwinding of DNA for the nascent HIV-1 transcript: Second Transition	GO:0043138
+R-HSA-9613494	Unwinding of DNA for the Nascent Transcript: Second Transition	GO:0043138
+R-HSA-9613497	Unwinding DNA for the nascent transcript	GO:0043138
+R-HSA-9613498	Unwinding of DNA for the nascent HIV-1 transcript	GO:0043138
+R-HSA-9613530	PRKAA2 phosphorylates PLINs	GO:0004674
+R-HSA-9614343	Viral UL47:UL48 Proteins Bind HCMV Tegumented Virion to Host Microtuble and Dynein complexs	GO:0008017
+R-HSA-9617758	EP300,CREBBP acetylate FOXO4	GO:0061733
+R-HSA-9626945	CREBBP acetylates FOXO1	GO:0061733
+R-HSA-9628444	Activated TRAF6 synthesizes unanchored polyubiquitin chains upon TLR3 stimulation 	GO:0004842
+R-HSA-9629216	NEIL3 cleaves 5-guanidinohydantoin (Gh) from damaged telomeric DNA	GO:0019104
+R-HSA-9629483	NEIL3 cleaves spiroiminodihydantoin from damaged telomeric DNA	GO:0019104
+R-HSA-9629497	NEIL3 cleaves thymine glycol from telomeric DNA	GO:0019104
+R-HSA-9629869	KDM8:Fe2+ hydroxylates an arginine residue of RPS6	GO:0106157
+R-HSA-9630022	JMJD6 dimer hydroxylates lysine residues of U2AF2	GO:0070815
+R-HSA-9633008	p-T899-EIF2AK4 (GCN2) phosphorylates EIF2AS1	GO:0004674
+R-HSA-9633742	EIF2AK4 (GCN2) dimer autophosphorylates	GO:0004674
+R-HSA-9636439	PtpA:Ub dephosphorylates p-Y133-VPS33B	GO:0004725
+R-HSA-9645394	Activated TRAF6 synthesizes unanchored polyubiquitin chains upon ALPK1:ADP-heptose stimulation 	GO:0004842
+R-HSA-9645414	Auto ubiquitination of TRAF6 bound to ALPK1:ADP-heptose:TIFA oligomer	GO:0004842
+R-HSA-9645442	Auto phosphorylation of TAK1 within the ALPK1:ADP-heptose:p-T9-TIFA:pUb-TRAF6: free K63 pUb:TAB1:TAB2/TAB3 :MAP3K7 complex	GO:0008349
+R-HSA-9653514	USP17L2 deubiquitinates RCE1	GO:0004843
+R-HSA-9656214	MAP2Ks phosphorylate MAPKs downstream of RAF1 mutants	GO:0004674
+R-HSA-9656215	RAF1 mutant complexes phosphorylate MAP2K dimer	GO:0004674
+R-HSA-9659380	Mechanoelectrical transduction (MET) channel transports cations from the extracellular region into the cytosol of stereocilia of inner hair cell	GO:0140135
+R-HSA-9663363	Mechanoelectrical transduction (MET) channel transports cations into the cytosol of stereocilia of cochlear outer hair cell	GO:0140135
+R-HSA-9664588	ERBB2 KD mutants trans-autophosphorylate	GO:0004713
+R-HSA-9665389	Heterodimers of ERBB2 ECD mutants and EGFR trans-autophosphorylate	GO:0004713
+R-HSA-9668419	SPAST (spastin) mediates the severing of microtubules at chromosome attachment sites	GO:0008568
+R-HSA-9670149	TERRA transcription	GO:0003899
+R-HSA-9674127	USP30 deubiquitinates ATM dimer:Ub-p-PEX5	GO:0101005
+R-HSA-9684118	ERCC3-facilitated RNA Pol II backtracking in TC-NER	GO:0043138
+R-HSA-9685195	SARS-CoV-1 9b recruits ITCH to MAVS 	GO:0061630
+R-HSA-9685219	SARS-CoV-1 nsp3 deubiquinates K63-linked pUb oligo-TRAF6 (TLR7/8 signaling)	GO:0061578
+R-HSA-9686521	CDK2:CCNA phosphorylates TERF2	GO:0004693
+R-HSA-9686920	PELI1 ubiquitinates RIPK3 at K363	GO:0061630
+R-HSA-9686969	APC/C:Cdh1 polyubiquitinates SKP2	GO:0061630
+R-HSA-9688831	STUB1 ubiquitinates RIPK3 at K55, K363	GO:0004842
+R-HSA-9700181	Autophosphorylation of ALK fusions	GO:0004713
+R-HSA-9700193	ALK mutants phosphorylate SHC1	GO:0004713
+R-HSA-9701000	BRCA1:BARD1 heterodimer autoubiquitinates	GO:0004842
+R-HSA-9701565	HDACs deacetylate p-STAT3 dimers	GO:0033558
+R-HSA-9705738	SOCS1,3 ubiquitinates CSF3R in SOCS1,3:p-4Y-CSF3R:CSF3 dimer:LYN:p-Y-JAK1:p-JAK2:p-SYK:p-HCK:p-TYK2:CUL5:ELOB:ELOC:RNF7	GO:0061630
+R-HSA-9706354	Ubiquitination of FLT3	GO:0061630
+R-HSA-9706356	CBL mutants don't ubiquitinate FLT3	GO:0061630
+R-HSA-9708517	FBXL17 ubiquitinates BACH1 (in BACH1:FBXL17:SCF (SKP2))	GO:0061630
+R-HSA-9710480	Decitabine triphosphate incorporates into DNA	GO:0003887
+R-HSA-9710490	The GSDME gene promoter is hypermethylated	GO:0008168
+R-HSA-9711016	SARS-CoV-1 nsp3 deubiquinates K63-linked pUb-STING	GO:0061578
+R-HSA-9711058	SARS-CoV-1 nsp3 deubiquinates K48-linked pUb IkBA	GO:1990380
+R-HSA-9712082	ALK fusions phosphorylate IRS1	GO:0004713
+R-HSA-9712084	PI3K synthesizes PIP3 downstream of ALK mutants	GO:0046934
+R-HSA-9712085	ALK mutants phosphorylate STAT3	GO:0004713
+R-HSA-9712086	ALK fusions phosphorylate PLCG1	GO:0004713
+R-HSA-9712087	ALK fusions phosphorylate FRS	GO:0004713
+R-HSA-9725030	MAPK1 phsophorylates ZC3HCF1 in a NPM-ALK-dependent manner	GO:0004674
+R-HSA-9733316	p-Y-CBL autoubiquitinates and multiubiquitinates p-Y561-CSF1R in CSF1 dimer:p-Y561-CSF1R dimer:p-Y-CBL	GO:0061630
+R-HSA-9734547	JAK2-activated MAPKs phosphorylate YBX1	GO:0004674
+R-HSA-9748945	IMPDH tetramers dehydrogenate 6TIMP to 6TXMP	GO:0003938
+R-HSA-9749350	ATP-dependent release of CDT1 from the OCCM complex	GO:0016887
+R-HSA-9750942	USP14 deubiquitinates NLRC5	GO:0061578
+R-HSA-9750946	TRAF2,6 ubiquitinates NLRC5	GO:0004842
+R-HSA-975118	TRAF6 ubiquitinqtes IRF7 within the activated TLR7/8 or 9 complex	GO:0004842
+R-HSA-975122	Pellino ubiquitinates hp-IRAK1 upon TLR7/8 or 9 activation<br>	GO:0034450
+R-HSA-975147	Auto ubiquitination of oligo-TRAF6 bound to p-IRAK2 at endosome membrane	GO:0004842
+R-HSA-9755303	26S proteasome degrades HIFalpha	GO:0004175
+R-HSA-9755304	MUL1 ubiquitinates UBXN7	GO:0061630
+R-HSA-9755306	ub UBXN7 is degraded by the 26S proteasome	GO:0004175
+R-HSA-9755505	KEAP1:NEDD8-CUL3:RBX1 complex ubiquitinates NFE2L2	GO:0061630
+R-HSA-9756494	CREBBP acetylates SARS-CoV-2 N at K375	GO:0061733
+R-HSA-9758604	Ubiquitination of IKBKG by TRAF6	GO:0004842
+R-HSA-9759154	TRIM21 ubiquitinates SQSTM1	GO:0061630
+R-HSA-9759172	KEAP1:CUL3:RBX1 ubiquitinates p-S349 SQSTM1 oligomer	GO:0061630
+R-HSA-9760081	CREBBP, EP300 acetylates NFE2L2	GO:0034212
+R-HSA-9760094	SRXN1 reduces hyperoxidized PRDX1 dimer	GO:0032542
+R-HSA-9762091	NFE2L2 is ubiquitinated by BTRC:SKP1:CUL1:RBX1	GO:0061630
+R-HSA-9762096	Ub,pS335,S338,T NFE2L2 is degraded	GO:0004175
+R-HSA-9764932	PRC2 (EZH2) core complex methylates nucleosomes at CDH1 gene promoter	GO:0046976
+R-HSA-9766223	Proteasome-dependent degradation of ubiquitinated CDH1	GO:0004175
+R-HSA-9766227	MDM2 mediates CDH1 ubiquitination	GO:0004842
+R-HSA-9766645	CUL3:RBX1 ubiquitinates KEAP1	GO:0061630
+R-HSA-9770129	Formation of the Spliceosomal A complex	GO:0003724
+R-HSA-9770131	Formation of the Spliceosomal B* complex	GO:0003724
+R-HSA-9770141	Formation of the Spliceosomal C* complex	GO:0003724
+R-HSA-9770142	Formation of the Spliceosomal B complex	GO:0003724
+R-HSA-9770145	Formation of the Spliceosomal Bact complex	GO:0003724
+R-HSA-9770236	Formation of the Spliceosomal P complex and exon ligation	GO:0000386
+R-HSA-9770847	Spliceosomal P complex dissociates yielding the intron-containing complex (ILS) and the spliced mRNP (new)	GO:0008186
+R-HSA-9772351	Disassembly of the Intron Lariat Spliceosome (new)	GO:0008186
+R-HSA-9793444	ITCH polyubiquitinates MLKL at K50	GO:0004842
+R-HSA-9793485	PRKN polyubiquitinates RIPK3	GO:0004842
+R-HSA-9793679	LUBAC ubiquitinates RIPK1 at K627	GO:0004842
+R-HSA-9794542	Formation of the Spliceosomal C complex containing intron lariat	GO:0000384
+R-HSA-9796346	MIB2 ubiquitinates RIPK1 at K377, K604, K634	GO:0004842
+R-HSA-9796387	STUB1 ubiquitinates RIPK1 at K571, K604, K627	GO:0004842
+R-HSA-9796626	MIB2 ubiquitinates CFLAR 	GO:0004842
+R-HSA-9815507	MIB2 ubiquitinates CYLD at K338, K530	GO:0004842
+R-HSA-9817362	SPATA2:CYLD-bound LUBAC ubiquitinates RIPK1 at K627 within the TNFR1 signaling complex	GO:0004842
+R-HSA-9817400	CYLD hydrolyses K63polyUb on RIPK1 within the TNFR1 complex	GO:0061578
+R-HSA-9817458	TET3 oxidizes 5-methylcytosine to 5-hydroxymethylcytosine in chromatin containing histone H3.3	GO:0070579
+R-HSA-9817512	UNG (UNG2) and base excision repair remove uridine and 5-methylcytidine from chromatin containing histone H3.3	GO:0004844
+R-HSA-9817513	AICDA deaminates cytidine in chromatin containing histone H3.3 and 5-methylcytidine	GO:0004126
+R-HSA-9818975	CYLD hydrolyses M1polyUb on RIPK1 within the TNFR1 complex	GO:0061815
+R-HSA-9822185	HIRA and NPM2 assemble H3.3-containing nucleosomes on paternal DNA	GO:0140713
+R-HSA-9822311	CCR4-NOT deadenylates mRNA in CCR4-NOT:BTG4:PABPN1L:mRNP	GO:0004535
+R-HSA-9822335	CCR4-NOT(CNOT6L) deadenylates mRNA in CCR4-NOT(CNOT6L):ZFP36L2:mRNA	GO:0004535
+R-HSA-9822437	DIS3L2 hydrolyzes uridylated mRNA	GO:0000175
+R-HSA-9822461	KDM5B demethylates histone H3 trimethyllysine-4 (H3K4me3)	GO:0032453
+R-HSA-9822467	KDM5A demethylates histone H3 trimethyllysine-4 (H3K4me3)	GO:0032453
+R-HSA-9822914	KDM6B (JMJD3) demethylates histone H3 trimethyllysine-27 (H3K27me3)	GO:0071558
+R-HSA-9822985	KDM6A (UTX) demethylates histone H3 trimethyllysine-27 (H3K27me3)	GO:0071558
+R-HSA-9825747	CREBBP acetylates HINT1 dimer	GO:0061733
+R-HSA-9828639	Transcription of respiratory syncytial virus subgenomic positive sense mRNAs	GO:0003968
+R-HSA-983140	Transfer of Ub from E2 to substrate and release of E2	GO:0004842
+R-HSA-983150	Proteasomal cleavage of substrate	GO:0004175
+R-HSA-983152	Transfer of ubiquitin from E1 to E2	GO:0043130
+R-HSA-983153	E1 mediated ubiquitin activation	GO:0004842
+R-HSA-983156	Polyubiquitination of substrate	GO:0004842
+R-HSA-9833155	Ubiquitination of STAT2	GO:0004842
+R-HSA-9833820	PKR dimer autophosphorylates	GO:0004672
+R-HSA-9833973	ISGylation of PKR	GO:0061662
+R-HSA-9834070	PRKN ubiquitinates MOM substrates	GO:0004842
+R-HSA-9834736	Synthesis of antigenomic RNA of human respiratory syncytial virus	GO:0003968
+R-HSA-9834809	SUMOylation of PKR	GO:0061665
+R-HSA-9835885	p-PKR dimer phosphorylates eIF2-alpha	GO:0004672
+R-HSA-9836159	p-PKR dimer phosphorylates DHX9	GO:0004672
+R-HSA-9836184	p-PKR dimer phosphorylates CDK1	GO:0004672
+R-HSA-9836322	p-PKR dimer phosphorylates MKK6	GO:0004672
+R-HSA-9836362	p-PKR dimer phosphorylates TP53 tetramer	GO:0004672
+R-HSA-9836383	p-PKR dimer phosphorylates ILF3:ILF2	GO:0004672
+R-HSA-9836404	p-PKR dimer phosphorylates MAPT	GO:0004672
+R-HSA-9836435	p-PKR dimer phosphorylates SNCA	GO:0004672
+R-HSA-9836449	p-PKR dimer phosphorylates HIV tat	GO:0004672
+R-HSA-9836515	p-PKR dimer phosphorylates PTPN2	GO:0004672
+R-HSA-9836617	p-PKR dimer phosphorylates SPHK1	GO:0004672
+R-HSA-9836664	p-PKR dimer phosphorylates PPP2R5A	GO:0004672
+R-HSA-9838081	LONP1 degrades mitochondrial matrix proteins	GO:0004176
+R-HSA-9842833	SETDB1 in ATF7IP:SETDB1:SUMO2-6K-TRIM28:KRAB-ZFP:retroelement trimethylates lysine-9 of histone H3 in nucleosomes	GO:0140938
+R-HSA-9842868	TRIM28 in TRIM28:KRAB-ZFP:retroelement chromatin autoSUMOylates with SUMO2	GO:0061665
+R-HSA-9843121	MLL4-ASCOM, (MLL3-ASCOM) complex monomethylates nucleosomes at PPARG:RXRA-bound enhancers	GO:0042800
+R-HSA-9844006	SETDB1 in me3-K16-ATF7IP:SETDB1:MORC2:HUSH complex:L1 RNA trimethylates lysine-9 of histone H3 (H3K9me3)	GO:0140938
+R-HSA-9844057	SETDB1 in me3-K16-ATF7IP:SETDB1:MORC2:HUSH complex:L1HS,L1PA2,3 heterochromatin trimethylates lysine-9 of histone H3 in adjacent nucleosome	GO:0140938
+R-HSA-9845308	DNMT3A:DNMT3L in nascent RNA transcript:MeR-PIWIL4:2'-O-methyl-piRNA:SPOCD1:DNMT3A:DNMT3L methylates cytosine in DNA	GO:0051719
+R-HSA-9855735	factor XII:polyanionic activator -> factor XIIa + polyanionic activator (autocatalysis)	GO:0004252
+R-HSA-9861563	CTLH E3 ligase ubiquitinates LDHA	GO:0004842
+R-HSA-9861640	CTLH E3 ligase ubiquitinates PKM-1	GO:0004842
+R-HSA-990526	Recruitment of ITCH and K48 ubiquitination of MAVS	GO:0061630
+R-HSA-9908101	Maturation of the canonical 20S core particle	GO:0004175
+R-HSA-9908105	Maturation of the 20S immunoproteasome core particle	GO:0004175
+R-HSA-9908108	Maturation of the 20S thymoproteasome core particle	GO:0004175
+R-HSA-9908780	Maturation of the preholospermatoproteasome	GO:0004175
+R-HSA-9909369	CSNK1E,CSNK1D phosphorylate CRY and PER proteins	GO:0004674
+R-HSA-9909628	Trimethylation of CD274 gene chromatin by MLL1/3 complex	GO:0042800
+R-HSA-9909631	Trimethylation of CD274 gene promoter by EZH2	GO:0046976
+R-HSA-9912636	Proteasomal cleavage of intracellular substrate (PA28-alpha-beta-20S proteasome catalyst)	GO:0004175
+R-HSA-9912655	Proteasomal cleavage of intracellular substrate (immunoproteasome catalyst)	GO:0004175
+R-HSA-9912747	Proteasomal clevage of exogenous antigen (immunoproteasome catalyst)	GO:0004175
+R-HSA-9912751	Proteasomal cleavage of partially digested antigen (immunoproteasome catalyst)	GO:0004175
+R-HSA-9919011	Pre-NS1 folds and is N-glycosylated	GO:0004579
+R-HSA-9920716	CLOCK acetylates BMAL1 on lysine-538	GO:0061733
+R-HSA-9922273	CSNK1D,E phosphorylates CLOCK in p-S-CRY:p-S-PER:CSNK1D,E:p-S90,Ac-538-BMAL:p-2T,3S-CLOCK:target gene	GO:0004674
+R-HSA-9926482	CREBBP, EP300 acetylate MITF-M	GO:0004402
+R-HSA-9929350	Ubiquitination of CD274 by BTRC-SCF E3-ligase complex	GO:0004842
+R-HSA-9929352	Ubiquitinated CD274 is degraded by the 26S proteasome	GO:0004175
+R-HSA-9929353	Deubiquitination of CD274	GO:0101005
+R-HSA-9929486	SPOP-mediated degradation of CD274 by 26S Proteosome	GO:0004175
+R-HSA-9929490	CD274 ubiquitination by SPOP:CUL3:RBX1 complex	GO:0061630
+R-HSA-9929884	CCNA:CDK1 phosphorylates HJURP	GO:0004693
+R-HSA-9931298	Ubiquitination of CD274 by ERAD complex	GO:0061630
+R-HSA-9931314	Proteasomal degradation of polyUb-p-S195-CD274	GO:0004175
+R-HSA-9931430	MIB2-mediated K63-ubiquitination of CD274	GO:0061630
+R-HSA-9932510	BTRC:CUL1:SKP1:RBX1 (SCF-beta-TrCP1) ubiquitinylates phosphorylated PER1,2,3	GO:0061630
+R-HSA-9932512	FBXL3:CUL1:SKP1:RBX1 ubiquitinylates phosphorylated CRY1,2	GO:0061630
+R-HSA-9934753	CBLL1 ubiquitinates CDH1	GO:0004842
+R-HSA-9934884	Proteolysis of K48polyUb,p-S-CRY1,2	GO:0004175
+R-HSA-9934887	Proteolysis of K48polyUb-K107,p-S-CRY1,K48polyUb-K126,p-S-CRY2	GO:0004175
+R-HSA-9934893	Proteolysis of K48polyUb-K,p-S-PER1,2,3	GO:0004175
+R-HSA-9937719	ICT1 hydrolyzes the peptidyl-tRNA bond of the nascent polypeptide	GO:0004045
+R-HSA-9940470	GATAD2A is SUMOylated	GO:0019789
+R-HSA-9941704	NuRD deacetylates telomeric nucleosomes	GO:0004407
+R-HSA-9943614	CHD2-dependent H3.3 deposition at MYOG gene	GO:0016887
+R-HSA-9944087	CHD6-9-dependent ATP hydrolysis	GO:0016887
+R-HSA-9944091	NuRD hydrolyzes ATP to affect nucleosome organization	GO:0016887
+R-HSA-9944092	NuRD deacetylates nucleosomes	GO:0004407
+R-HSA-9945766	NS3 is ubiquitinated	GO:0061630
+R-HSA-9946390	NS1 dimer is ubiquitinated	GO:0061630
+R-HSA-9948300	RQT complex:K63polyUb-80S ribosome dissociates yielding K63polyUb-40S subunit and 60S subunit:peptidyl-tRNA with nascent peptide	GO:0016887
+R-HSA-9948301	ZNF598 K63 polyubiquitinates RPS10 (eS10) and RPS20 (uS10) of the 40S ribosomal subunit	GO:0004842
+R-HSA-9948362	LTN1 K48 polyubiquitinates the nascent peptide in NEMF:60S ribosomal subunit:peptidyl-tRNA with nascent peptide	GO:0061630
+R-HSA-9948427	ANKZF1 cleaves the peptidyl-tRNA in VCP hexamer:LTN1:NEMF:60S ribosome subunit:peptidyl-tRNA with K48polyUb-nascent peptide	GO:0004521
+R-HSA-9949632	VCP hexamer extracts K48 polyubiquitinated alanine-tailed nascent peptide from VCP hexamer:UFD1:NPLOC4:LTN1:NEMF:TCF25:60S ribosome subunit:K48polyUb-nascent peptide	GO:0016887
+R-HSA-9949676	The proteasome degrades the alanine-tailed K48-polyUb nascent peptide bound to LTN1:NEMF:TCF25:VCP hexamer	GO:0004175
+R-HSA-9954721	NEDD8-K699-CUL2:ELOB:ELOC:RBX1:KLHDC10 K48 polyubiquitinates alanine-tailed nascent peptide	GO:0004842
+R-HSA-9954728	The proteasome degrades the K48-polyubiquitinated alanine-tailed nascent peptide	GO:0004175
+R-HSA-9954737	RCHY1 K48 polyubiquitinates alanine-tailed nascent peptide	GO:0061630
+R-HSA-9954919	ABCE1:ATP binds PELO:HBS1L-1:GTP:80S ribosome:non-stop mRNA:peptidyl-tRNA with nascent peptide and HBS1L-1:GDP is released	GO:0003924
+R-HSA-9955146	S.flexneri ipaH9.8 ubiquitinates GBPs	GO:0004842
+R-HSA-9955731	ABCE1:PELO:80S Ribosome:non-stop mRNA:peptidyl-tRNA with elongating peptide dissociates yielding ABCE1:40S ribosomal subunit, PELO, and 60S ribosomal subunit:peptidyl-tRNA with nascent peptide	GO:0016887
+R-HSA-9958873	Cell-to-cell contact through homophilic cadherin interactions inhibits RAC1/CDC42 ubiquitination	GO:0004842
+R-HSA-9958874	26S proteasome degrades ubiquitinated RAC1, CDC42	GO:0004175
+R-HSA-9970189	PABPN1-stimulated PAPOL synthesizes polyA tail at distal 3'UTR PAS	GO:1990817
+R-HSA-9970190	PP1 dephosphorylates RNA Pol II	GO:0004722
+R-HSA-9970191	RBBP6 activates CPSF complex	GO:0004842
+R-HSA-9970193	CPSF3 cleaves pre-mRNA at distal 3'UTR PAS	GO:0004519
+R-HSA-9970282	U1 snRNP suppresses CPSF3-mediated pre-mRNA cleavage at intronic PAS	GO:0004519
+R-HSA-9970294	CPSF3 cleaves pre-mRNA at proximal 3'UTR PAS	GO:0004519
+R-HSA-9970318	PABPN1-stimulated PAPOL synthesizes polyA tail at proximal 3'UTR PAS	GO:1990817
+R-HSA-9970320	PABPN1-stimulated PAPOL synthesizes polyA tail at intronic PAS	GO:1990817
