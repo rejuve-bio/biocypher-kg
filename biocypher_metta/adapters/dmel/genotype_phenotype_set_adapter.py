@@ -216,8 +216,8 @@ class GenotypePhenotypeAdapter(Adapter):
                     ontology_type = self.ontologies_id_mapping[phenotype_ontology_id.split(':')[0].lower()]
                 
                 yield f'RejuveBio:phenotype_set{id}', (ontology_type, phenotype_ontology_id.replace(':', '_').upper()), f'{self.label}_{ontology_type}', props
-                
-                if row[5] != '':                         # more ontology terms          
+
+                if row[5] != '':                         # more ontology terms
                     terms_ids = [ t_id for t_id in row[5].split('|') ]      #multiple ontology ids
                     for term_id in terms_ids:
                         # if go's subontology is 'cellular_component', 'characterized_by' edge label seems not to be the best name: use inheres_in (from PATO)

@@ -1,9 +1,13 @@
 ---
+input_dir: /mnt/hdd_1/biocypher-kg/input/hsa
+
 abc:
   name: Activity-By-Contact (ABC)
   version: {strategy: url_regex, pattern: '/abc/(v[\d.]+)/', vtype: semver}
   extract: false
   url: https://forgedb.cancer.gov/api/abc/v1.0/abc.forgedb.csv.gz
+  local_files:
+    abc: {pattern: "abc/abc.forgedb.csv.gz", stable_name: "abc/abc.forgedb.csv.gz"}
 
 alliance:
   name: agr - alliance of genome resource
@@ -14,18 +18,25 @@ alliance:
     - https://download.alliancegenome.org/8.3.0/EXPRESSION-ALLIANCE/COMBINED/EXPRESSION-ALLIANCE_COMBINED_6.tsv.gz  # gene to expression location (ontologies like GO, FBbt, etc) NO HUMAN DATA
     - https://download.alliancegenome.org/8.3.0/INTERACTION-MOL/COMBINED/INTERACTION-MOL_COMBINED_5.tsv.gz          # Format is like that processed by dmel.dmel_physical_interaction_psimi_adapter
     - https://download.alliancegenome.org/8.3.0/ORTHOLOGY-ALLIANCE/COMBINED/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz    
+  local_files:
+    alliance_disease: {pattern: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"}
+    alliance_orthology: {pattern: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"}
 
 bgee:
   name: Bgee Expression Data
   extract: false
   # url: https://bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_development.tsv.gz
   url: https://www.bgee.org/ftp/current/download/calls/expr_calls/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+  local_files:
+    bgee: {pattern: "bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz", stable_name: "bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz"}
 
 cadd:
   name: Combined Annotation Dependent Depletion (CADD)
   version: {strategy: url_regex, pattern: '/cadd/(v[\d.]+)/', vtype: semver}
   extract: false
   url: https://forgedb.cancer.gov/api/cadd/v1.0/cadd.forgedb.csv.gz
+  local_files:
+    cadd: {pattern: "cadd/cadd.forgedb.csv.gz", stable_name: "cadd/cadd.forgedb.csv.gz"}
 
 catlas:
   name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
@@ -47,6 +58,10 @@ cCRE:
     - url: https://downloads.wenglab.org/Human-Gene-Links.zip
       files:
         - V4-hg38.Gene-Links.eQTLs.txt
+  local_files:
+    ccre_closest_genes_all: {pattern: "cCRE/GRCh38-Closest-Genes-All.tsv.gz", stable_name: "cCRE/GRCh38-Closest-Genes-All.tsv.gz"}
+    ccre_closest_genes_pc: {pattern: "cCRE/GRCh38-Closest-Genes-PC.tsv.gz", stable_name: "cCRE/GRCh38-Closest-Genes-PC.tsv.gz"}
+    ccre_eqtl_gene_links: {pattern: "cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz", stable_name: "cCRE/V4-hg38.Gene-Links.eQTLs.txt.gz"}
 
 coxpressdb:
   name: Coxpress DB
@@ -62,12 +77,16 @@ dbsnp:
   url:
     - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz
     - https://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-common_all.vcf.gz
+  local_files:
+    dbsnp_common_vcf: {pattern: "dbsnp/00-common_all.vcf.gz", stable_name: "dbsnp/00-common_all.vcf.gz"}
 
 dbsuper:
   name: dbsuper
   compress: gzip
   # url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz       #  no  such file
   url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
+  local_files:
+    dbsuper: {pattern: "dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz", stable_name: "dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz"}
 
 dbvar:
   name: NCBI dbVar
@@ -209,23 +228,44 @@ enhancer_atlas:
 #   name: FAVOR
 #   url:
 #     chr16: https://dataverse.harvard.edu/api/access/datafile/6388551/   # file in the url: FAVOR.FullDB.Chr16.tar.gz
+  local_files:
+    enhancer_atlas_bed: {pattern: "enhancer_atlas/hs.bed.gz", stable_name: "enhancer_atlas/hs.bed.gz"}
 
 epd:
   name: Eukaryotic Promoter Database
   compress: gzip
   url: https://epd.expasy.org/ftp/epdnew/H_sapiens/current/Hs_EPDnew.bed        # adapters use gzipped version.
+  local_files:
+    epd: {pattern: "epd/Hs_EPDnew.bed.gz", stable_name: "epd/Hs_EPDnew.bed.gz"}
 
 gaf:
   name: GO Annotation File (GAF)
   extract: false
   url: http://geneontology.org/gene-associations/goa_human.gaf.gz
+  local_files:
+    gaf: {pattern: "gaf/goa_human.gaf.gz", stable_name: "gaf/goa_human.gaf.gz"}
 
-gencode:            # About the file to be downloaded:	"It contains the comprehensive gene annotation on the reference chromosomes only"
+gencode:
   name: GENCODE v49
   version: {strategy: url_regex, pattern: 'gencode\.(v\d+)\.', vtype: sequential}
   source_url: https://www.gencodegenes.org/
   extract: false
-  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v49.annotation.gtf.gz
+  url:
+    # Pinned to release_49/ (not latest_release/, which now serves v50+ and
+    # 404s on these v49-named files) -- the v49 pin matches gencode_gene_adapter.py's
+    # self.version and adapters/__init__.py's SPECIES_INFO features_data_url, both
+    # hardcoded to v49 too. Bumping the pin means updating all three together.
+    #
+    # Primary assembly, reference chromosomes only -- used by the real KG
+    # adapters (gencode_gene_adapter.py etc, see hsa_adapters_config.yaml).
+    - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.annotation.gtf.gz
+    # Comprehensive: reference chromosomes + scaffolds + assembly patches +
+    # alternate loci (haplotypes) -- used by scripts/generate_connected_sample.py's
+    # gene<->transcript backbone map (SOURCE_FILES["hsa"]["gtf"]), which wants the
+    # widest possible transcript coverage for genes on alternate loci.
+    - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz
+  local_files:
+    gtf: {pattern: "gencode/gencode.v*.chr_patch_hapl_scaff.annotation.gtf.gz", stable_name: "ensembl/gencode.gtf.gz"}
 
 gtex_eqtl:
   name: GTEx eQTL
@@ -233,12 +273,16 @@ gtex_eqtl:
   # bucket: adult-gtex
   # path: bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
   url: https://storage.googleapis.com/adult-gtex/bulk-qtl/v10/single-tissue-cis-qtl/GTEx_Analysis_v10_eQTL.tar
+  local_files:
+    gtex_forgedb: {pattern: "gtex/eqtl/gtex.forgedb.csv.gz", stable_name: "gtex/eqtl/gtex.forgedb.csv.gz"}
 
 gwas:
   name: GWAS Catalog
   url: 
     - https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-associations-full.zip
     # - https://ftp.ebi.ac.uk/pub/databases/gwas/releases/2025/09/30/gwas-catalog-associations_ontology-annotated.tsv
+  local_files:
+    gwas: {pattern: "gwas/gwas-catalog-download-associations-v1.0-full.tsv", stable_name: "gwas/gwas-catalog-download-associations-v1.0-full.tsv"}
 
 hocomoco:
   name: HOCOMOCOv11
@@ -247,6 +291,8 @@ hocomoco:
   url:
     annotation: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
     pwm: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
+  local_files:
+    hocomoco_annotation: {pattern: "hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv", stable_name: "hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv"}
 
 hpo:
   name: Human Phenotype Ontology Phenotype and disease associations
@@ -254,6 +300,9 @@ hpo:
   url:
   - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_disease.txt
   - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_phenotype.txt
+  local_files:
+    hpo_gene_disease: {pattern: "hpo/genes_to_disease.txt", stable_name: "hpo/genes_to_disease.txt"}
+    hpo_gene_phenotype: {pattern: "hpo/genes_to_phenotype.txt", stable_name: "hpo/genes_to_phenotype.txt"}
 
 polyphen2:
   name: PolyPhen-2
@@ -274,12 +323,30 @@ reactome:
     - https://reactome.org/download/current/Pathways2GoTerms_human.txt
     - https://reactome.org/download/current/Reactions2GoTerms_human.txt
     - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+    # Adapter config expects this saved as reactome_reaction_exporter_All_species.txt
+    # (its historical name from a one-off Reactome export) — the real download
+    # URL/filename is just reactome_reaction_exporter.txt.
+    - https://reactome.org/download/current/reactome_reaction_exporter.txt
+  local_files:
+    reactome_all_levels: {pattern: "reactome/Ensembl2Reactome_All_Levels.txt", stable_name: "reactome/Ensembl2Reactome_All_Levels.txt"}
+    reactome_chebi_pathways: {pattern: "reactome/ChEBI2Reactome_All_Levels.txt", stable_name: "reactome/ChEBI2Reactome_All_Levels.txt"}
+    reactome_chebi_reactions: {pattern: "reactome/ChEBI2ReactomeReactions.txt", stable_name: "reactome/ChEBI2ReactomeReactions.txt"}
+    reactome_pathways: {pattern: "reactome/ReactomePathways.txt", stable_name: "reactome/ReactomePathways.txt"}
+    reactome_pathways_go_bp: {pattern: "reactome/Pathways2GoTerms_human.txt", stable_name: "reactome/Pathways2GoTerms_human.txt"}
+    reactome_pathways_relation: {pattern: "reactome/ReactomePathwaysRelation.txt", stable_name: "reactome/ReactomePathwaysRelation.txt"}
+    reactome_ppi: {pattern: "reactome/reactome.all_species.interactions.tab-delimited.txt", stable_name: "reactome/reactome.all_species.interactions.tab-delimited.txt"}
+    reactome_reaction_exporter: {pattern: "reactome/reactome_reaction_exporter_All_species.txt", stable_name: "reactome/reactome_reaction_exporter_All_species.txt"}
+    reactome_reaction_pmids: {pattern: "reactome/ReactionPMIDS.txt", stable_name: "reactome/ReactionPMIDS.txt"}
+    reactome_reactions: {pattern: "reactome/Ensembl2ReactomeReactions.txt", stable_name: "reactome/Ensembl2ReactomeReactions.txt"}
+    reactome_reactions_go_mf: {pattern: "reactome/Reactions2GoTerms_human.txt", stable_name: "reactome/Reactions2GoTerms_human.txt"}
 
 refseq:
   name: RefSeq Closest Gene
   version: {strategy: url_regex, pattern: '/closest_gene/(v[\d.]+)/', vtype: semver}
   extract: false
   url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
+  local_files:
+    refseq_closest_gene: {pattern: "refseq/closest_gene.forgedb.csv.gz", stable_name: "refseq/closest_gene.forgedb.csv.gz"}
 
 rna_central:
   name: RNA Central
@@ -301,6 +368,9 @@ rna_central:
 # # roadmap_h3marks:
 # #   name: Roadmap Epigenomics H3 Marks
 # #   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS/marks  # there is no marks directory
+  local_files:
+    rna_central_bed: {pattern: "rna_central/homo_sapiens.GRCh38.bed.gz", stable_name: "rna_central/homo_sapiens.GRCh38.bed.gz"}
+    rna_central_rfam: {pattern: "rna_central/rnacentral_rfam_annotations.tsv.gz", stable_name: "rna_central/rnacentral_rfam_annotations.tsv.gz"}
 
 string:
   name: STRING PPI
@@ -309,20 +379,30 @@ string:
   url:
     - https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
     - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/9606.protein.links.detailed.v12.0.txt.gz
+  local_files:
+    string_coexpression: {pattern: "string/9606.protein.links.detailed.v*.txt.gz", stable_name: "string/9606.protein.links.detailed.txt.gz"}
+    string_ppi: {pattern: "string/9606.protein.links.v*.txt.gz", stable_name: "string/9606.protein.links.txt.gz"}
 
 tadmap:
   name: TADMap
   url: https://cb.csail.mit.edu/cb/tadmap/TADMap_geneset_hs.csv
+  local_files:
+    tadmap: {pattern: "tadmap/TADMap_geneset_hs.csv", stable_name: "tadmap/TADMap_geneset_hs.csv"}
 
 tfbs:
   name: UCSC TFBS Clusters
+  extract: false
   url: https://hgdownload.soe.ucsc.edu/goldenpath/hg38/database/encRegTfbsClustered.txt.gz
+  local_files:
+    tfbs: {pattern: "tfbs/encRegTfbsClustered.txt.gz", stable_name: "tfbs/encRegTfbsClustered.txt.gz"}
 
 tflink:
   name: TFLink
   version: {strategy: url_regex, pattern: '_(v[\d.]+)\.tsv', vtype: semver}
   extract: false
   url: https://cdn.netbiol.org/tflink/download_files/TFLink_Homo_sapiens_interactions_All_simpleFormat_v1.0.tsv.gz
+  local_files:
+    tflink: {pattern: "tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat_v*.tsv.gz", stable_name: "tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat.tsv.gz"}
 
 topld:
   name: TopLD
@@ -340,8 +420,32 @@ topld:
     SAS: 
       - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
       # - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+  local_files:
+    topld_afr: {pattern: "topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz", stable_name: "topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz"}
+    topld_eas: {pattern: "topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz", stable_name: "topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz"}
+    topld_eur: {pattern: "topld/EUR/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz", stable_name: "topld/EUR/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz"}
+    topld_sas: {pattern: "topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz", stable_name: "topld/SAS/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz"}
 
 uniprot:
   name: UniProtKB/Swiss-Prot
   extract: false
   url:  https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
+  local_files:
+    uniprot_dat: {pattern: "uniprot/uniprot_sprot_human.dat.gz", stable_name: "uniprot/uniprot_sprot_human.dat.gz"}
+
+motif_diff:  # HOCOMOCO motif-disruption scores -- not download-managed, obtain manually
+  name: motif_diff
+  local_files:
+    motif_diff: {pattern: "motif_diff/_mono_probNorm_average.diff", stable_name: "motif_diff/_mono_probNorm_average.diff"}
+
+peregrine:  # PEREGRINE enhancer predictions -- not download-managed, obtain manually
+  name: peregrine
+  local_files:
+    peregrine_enhancers: {pattern: "peregrine/PEREGRINEenhancershg38.gz", stable_name: "peregrine/PEREGRINEenhancershg38.gz"}
+    peregrine_gene_link: {pattern: "peregrine/enhancer_gene_link_18.tsv.gz", stable_name: "peregrine/enhancer_gene_link_18.tsv.gz"}
+    peregrine_sources: {pattern: "peregrine/PEREGRINEenhancersources.gz", stable_name: "peregrine/PEREGRINEenhancersources.gz"}
+
+roadmap_dhs:  # Roadmap DHS forgedb export -- not download-managed, obtain manually
+  name: roadmap_dhs
+  local_files:
+    roadmap_dhs: {pattern: "forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz", stable_name: "forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz"}
