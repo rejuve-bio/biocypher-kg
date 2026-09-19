@@ -266,7 +266,7 @@ python-dateutil==2.9.0.post0
     # via
     #   biocypher-metta (pyproject.toml)
     #   pandas
-pytz==2025.2
+pytz==2026.3.post1
     # via
     #   biocypher-metta (pyproject.toml)
     #   neo4j
