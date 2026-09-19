@@ -1,0 +1,19 @@
+name: EPD
+website: ''
+nodes:
+  promoter:
+    url: ''
+    input_label: promoter
+    properties:
+      chr: str
+      end: int
+      start: int
+      taxon_id: int
+relationships:
+  promoter to gene association:
+    url: ''
+    input_label: promoter_gene
+    output_label: associated_with
+    description: An association between a promoter and a gene
+    source: promoter
+    target: gene

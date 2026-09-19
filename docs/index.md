@@ -78,6 +78,7 @@ These files exist in the repository and should be linked to, not restated:
 | [README.md](../README.md) | Quickstart, make commands, Neo4j deployment |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Adapter development guide, PR workflow |
 | [docs/knowledge-graph/dataset-versioning.md](knowledge-graph/dataset-versioning.md) | Complete versioning specification (moved from doc/) |
+| [docs/knowledge-graph/sample-generation.md](knowledge-graph/sample-generation.md) | Ego-network closure sample generation algorithm and methodology, per species (moved from doc/) |
 | [biocypher_metta/processors/README.md](../biocypher_metta/processors/README.md) | Processor usage and cache files |
 | [schema_generator/README.md](../schema_generator/README.md) | Schema generation tool |
 | [biocypher_dataset_downloader/versioning/README.md](../biocypher_dataset_downloader/versioning/README.md) | VersionInfo/VersionGetter contract |

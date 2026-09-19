@@ -1,0 +1,225 @@
+{
+  "species": "dmel",
+  "input_dir": "/mnt/hdd_1/biocypher-kg/input/dmel",
+  "anchor_genes": [
+    "FBgn0000042",
+    "FBgn0000557",
+    "FBgn0000559",
+    "FBgn0000579",
+    "FBgn0001091",
+    "FBgn0002626",
+    "FBgn0003277",
+    "FBgn0003462",
+    "FBgn0003886",
+    "FBgn0003941",
+    "FBgn0004867",
+    "FBgn0005593",
+    "FBgn0005655",
+    "FBgn0014861",
+    "FBgn0015282",
+    "FBgn0029134",
+    "FBgn0029856",
+    "FBgn0030086",
+    "FBgn0031266",
+    "FBgn0032492",
+    "FBgn0053868",
+    "FBgn0261592",
+    "FBgn0266599"
+  ],
+  "expanded_gene_count": 180,
+  "size_budget": 180,
+  "sources": {
+    "gencode_gtf": {
+      "real_rows": 5811,
+      "synthetic": false
+    },
+    "uniprot_sprot": {
+      "real_rows": 144,
+      "synthetic": false
+    },
+    "gaf": {
+      "real_rows": 3330,
+      "synthetic": false
+    },
+    "string_ppi": {
+      "real_rows": 14008,
+      "synthetic": false
+    },
+    "string_coexpression": {
+      "real_rows": 14008,
+      "synthetic": false
+    },
+    "coxpresdb": {
+      "real_rows": 31862,
+      "synthetic": false
+    },
+    "tflink": {
+      "real_rows": 420,
+      "synthetic": false
+    },
+    "fbgn_fbtr_fbpp_expanded": {
+      "real_rows": 433,
+      "synthetic": false
+    },
+    "fbgn_uniprot": {
+      "real_rows": 344,
+      "synthetic": false
+    },
+    "fbal_to_fbgn": {
+      "real_rows": 4591,
+      "synthetic": false
+    },
+    "physical_interactions_mitab": {
+      "real_rows": 810,
+      "synthetic": false
+    },
+    "orthology_association": {
+      "real_rows": 615,
+      "synthetic": false
+    },
+    "paralogy_association": {
+      "real_rows": 130,
+      "synthetic": false
+    },
+    "gene_genetic_interactions": {
+      "real_rows": 38,
+      "synthetic": false
+    },
+    "allele_genetic_interactions": {
+      "real_rows": 7301,
+      "synthetic": false
+    },
+    "gene_group": {
+      "real_rows": 1904,
+      "synthetic": false
+    },
+    "signaling_pathway_group": {
+      "real_rows": 416,
+      "synthetic": false
+    },
+    "metabolic_pathway_group": {
+      "real_rows": 212,
+      "synthetic": false
+    },
+    "gene_groups_HGNC_aux_copy": {
+      "real_rows": 1999,
+      "synthetic": false
+    },
+    "gene_sequence_ontology": {
+      "real_rows": 374,
+      "synthetic": false
+    },
+    "disease_model": {
+      "real_rows": 615,
+      "synthetic": false
+    },
+    "genotype_phenotype": {
+      "real_rows": 9103,
+      "synthetic": false
+    },
+    "fbrf_aux_copy": {
+      "real_rows": 106340,
+      "synthetic": false
+    },
+    "scrna_seq_gene_expression": {
+      "real_rows": 513662,
+      "synthetic": false
+    },
+    "high_throughput_gene_expression": {
+      "real_rows": 33441,
+      "synthetic": false
+    },
+    "gene_rpkm_report": {
+      "real_rows": 22320,
+      "synthetic": false
+    },
+    "fca2_fbgn_gene": {
+      "real_rows": 7732,
+      "synthetic": false
+    },
+    "fca2_fbgn_transcript_gene": {
+      "real_rows": 18361,
+      "synthetic": false
+    },
+    "fca2_fbgn_mir_gene": {
+      "real_rows": 0,
+      "synthetic": false,
+      "reason": "no fca2 miRNA gene-level expression rows for genes in set"
+    },
+    "fca2_fbgn_mir_transcript": {
+      "real_rows": 0,
+      "synthetic": false,
+      "reason": "no fca2 miRNA transcript expression rows for genes in set"
+    },
+    "afca_annotation": {
+      "real_rows": 165,
+      "synthetic": false
+    },
+    "bgee": {
+      "real_rows": 151014,
+      "synthetic": false
+    },
+    "alliance_disease": {
+      "real_rows": 846,
+      "synthetic": false
+    },
+    "alliance_orthology": {
+      "real_rows": 1952,
+      "synthetic": false
+    },
+    "epd": {
+      "real_rows": 173,
+      "synthetic": false
+    },
+    "reactome_all_levels": {
+      "real_rows": 21144,
+      "synthetic": false
+    },
+    "reactome_reactions": {
+      "real_rows": 18005,
+      "synthetic": false
+    },
+    "reactome_pathways_relation": {
+      "real_rows": 1041,
+      "synthetic": false
+    },
+    "reactome_pathways": {
+      "real_rows": 1041,
+      "synthetic": false
+    },
+    "reactome_reaction_pmids": {
+      "real_rows": 117,
+      "synthetic": false
+    },
+    "reactome_chebi_pathways": {
+      "real_rows": 12582,
+      "synthetic": false
+    },
+    "reactome_chebi_reactions": {
+      "real_rows": 1544,
+      "synthetic": false
+    },
+    "uniprot_chebi_part_of_chebi": {
+      "real_rows": 0,
+      "synthetic": true,
+      "synthetic_rows": 1,
+      "synthetic_file": "samples/dmel/uniprot/chebi_part_of_synthetic.dat.gz"
+    },
+    "reactome_ppi": {
+      "real_rows": 2187,
+      "synthetic": false
+    },
+    "reactome_reaction_exporter": {
+      "real_rows": 17786,
+      "synthetic": false
+    },
+    "rna_central_bed": {
+      "real_rows": 112,
+      "synthetic": false
+    },
+    "rna_central_rfam": {
+      "real_rows": 66,
+      "synthetic": false
+    }
+  }
+}

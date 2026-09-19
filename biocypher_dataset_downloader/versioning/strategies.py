@@ -3,7 +3,7 @@
 - :class:`StaticGetter`   — a declared constant version (sources with no upstream versioning).
 - :class:`UrlRegexGetter` — capture the version from the configured URL/filename via regex.
                             Covers the common case where the version is embedded in the URL
-                            (``gencode.v49``, ``protein.links.v12.0``, ``..._fb_2026_01.tsv``).
+                            (``gencode.v49``, ``protein.links.v12.0``, ``..._fb_2026_02.tsv``).
 - :class:`HttpHeadGetter` — derive an opaque change signature from HTTP HEAD metadata
                             (ETag / Last-Modified / Content-Length). The safe default and the
                             only strategy that can detect a refresh of a ``current/`` symlink.
