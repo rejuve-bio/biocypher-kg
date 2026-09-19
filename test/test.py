@@ -1,5 +1,6 @@
 from biocypher import BioCypher
 from biocypher_metta.processors import DBSNPProcessor
+from create_knowledge_graph import _load_adapters_config
 import pytest
 import yaml
 import importlib
@@ -30,13 +31,23 @@ def convert_input_labels(label, replace_char="_"):
     return label.replace(" ", replace_char)
 
 def parse_schema(bcy):
+    """
+    BioCypher's own _extend_schema() auto-expands a class with a list-valued
+    'source' or 'target' into extra synthetic per-item sub-entries (e.g.
+    'protein.ptp physically interacts with', keyed with the SAME input_label
+    as the original class). Iterating schema.items() therefore visits
+    multiple entries per label; aggregate every (source, target) combo seen
+    for a label into a set instead of overwriting, or later entries silently
+    clobber earlier ones (this mirrors how the real pipeline's
+    BaseWriter._build_edge_type_combos in biocypher_metta/__init__.py already
+    aggregates, which is why that path isn't affected by this).
+    """
     schema = bcy._get_ontology_mapping()._extend_schema()
     edges_schema = {}
     node_labels = set()
 
     for k, v in schema.items():
         if v["represented_as"] == "edge":
-            edge_type = convert_input_labels(k)
             source_type = v.get("source", None)
             target_type = v.get("target", None)
             if source_type is not None and target_type is not None:
@@ -45,29 +56,22 @@ def parse_schema(bcy):
                     label = convert_input_labels(v["input_label"][0])
                 else:
                     label = convert_input_labels(v["input_label"])
+                label = label.lower()
 
-                # Process source_type
-                if isinstance(source_type, list):
-                    source_type = [convert_input_labels(st) for st in source_type]
-                    source_type_lower = [st.lower() for st in source_type]
-                else:
-                    source_type = convert_input_labels(source_type)
-                    source_type_lower = source_type.lower()
-
-                # Process target_type
-                if isinstance(target_type, list):
-                    target_type = [convert_input_labels(tt) for tt in target_type]
-                    target_type_lower = [tt.lower() for tt in target_type]
-                else:
-                    target_type = convert_input_labels(target_type)
-                    target_type_lower = target_type.lower()
+                src_list = source_type if isinstance(source_type, list) else [source_type]
+                tgt_list = target_type if isinstance(target_type, list) else [target_type]
+                src_list = [convert_input_labels(s).lower() for s in src_list]
+                tgt_list = [convert_input_labels(t).lower() for t in tgt_list]
 
                 output_label = v.get("output_label", None)
-                edges_schema[label.lower()] = {
-                    "source": source_type_lower,
-                    "target": target_type_lower,
-                    "output_label": output_label.lower() if output_label is not None else None
-                }
+                output_label = output_label.lower() if output_label is not None else None
+
+                entry = edges_schema.setdefault(label, {"combos": set(), "output_label": output_label})
+                for s in src_list:
+                    for t in tgt_list:
+                        entry["combos"].add((s, t))
+                if output_label is not None:
+                    entry["output_label"] = output_label
 
         elif v["represented_as"] == "node":
             label = v["input_label"]
@@ -164,12 +168,16 @@ def setup_class(request):
     adapters_config_path = request.config.getoption("--adapters-config")
 
     # Use DBSNPProcessor to load dbSNP mappings
-    dbsnp_processor = DBSNPProcessor(cache_dir="aux_files/hsa/sample_dbsnp")
+    dbsnp_processor = DBSNPProcessor(cache_dir=request.config.getoption("--dbsnp-cache-root"))
     dbsnp_processor.load_mapping()
     dbsnp_rsids_dict, dbsnp_pos_dict = dbsnp_processor.get_dict_wrappers()
 
-    with open(adapters_config_path, 'r') as f:
-        adapters_config = yaml.safe_load(f)
+    # Reuse the real pipeline's loader (not a bare yaml.safe_load) so an
+    # 'input_dir:' top-level key (used by every generate_connected_sample.py
+    # sample config) is popped out and every adapter's bare relative paths
+    # get resolved against it — matching exactly what create_knowledge_graph.py
+    # does at real build time.
+    adapters_config = _load_adapters_config(Path(adapters_config_path), context="test")
 
     test_options = {
         "mode": request.config.getoption("--adapter-test-mode"),
@@ -194,14 +202,14 @@ def validate_node_type(node_id, node_label, schema_node_labels):
 def validate_edge_type_compatibility(source_id, target_id, edge_label, edges_schema):
     """
     Validate if source and target types are compatible with edge schema.
-    Handles both single types and list types.
+    edges_schema[label]["combos"] is the set of every (source, target) type
+    pair seen across all schema entries (and BioCypher's own per-item
+    synthetic expansions) sharing that label.
     """
     if edge_label.lower() not in edges_schema:
         return False, f"Edge label '{edge_label}' not found in schema"
 
-    edge_def = edges_schema[edge_label.lower()]
-    valid_source_types = edge_def["source"]
-    valid_target_types = edge_def["target"]
+    combos = edges_schema[edge_label.lower()]["combos"]
 
     # Extract source type
     if isinstance(source_id, tuple):
@@ -215,21 +223,12 @@ def validate_edge_type_compatibility(source_id, target_id, edge_label, edges_sch
     else:
         return True, "Cannot validate target type for non-tuple ID"
 
-    # Validate source type
-    if isinstance(valid_source_types, list):
-        if source_type not in valid_source_types:
-            return False, f"Source type '{source_type}' not in valid types {valid_source_types}"
-    else:
-        if source_type != valid_source_types:
-            return False, f"Source type '{source_type}' does not match required '{valid_source_types}'"
-
-    # Validate target type
-    if isinstance(valid_target_types, list):
-        if target_type not in valid_target_types:
-            return False, f"Target type '{target_type}' not in valid types {valid_target_types}"
-    else:
-        if target_type != valid_target_types:
-            return False, f"Target type '{target_type}' does not match required '{valid_target_types}'"
+    if (source_type, target_type) not in combos:
+        valid_str = ", ".join(f"({s}, {t})" for s, t in sorted(combos))
+        return False, (
+            f"Types (source='{source_type}', target='{target_type}') are not a valid combo "
+            f"for edge '{edge_label}'. Valid combos: {valid_str}"
+        )
 
     return True, "Valid"
 
@@ -458,6 +457,24 @@ class TestBiocypherKG:
             sparse_adapters = ["overlap", "uniprot_has_xref", "uniprot_dbxref", "uniprot_chebi"]
             if not sample_edge and any(sparse in adapter_name for sparse in sparse_adapters):
                 logging.warning(f"No edges found for sparse adapter '{adapter_name}'. This is expected with the current sample data.")
+                continue
+
+            # (adapter_name, taxon_id) pairs confirmed to produce zero rows from the
+            # real, unfiltered source itself (not a sample-scoping gap). dmel's own
+            # production config comments that the Alliance disease file has no
+            # is_model_of entries for taxon 7227 (2026/04/25 version), unlike
+            # mmu/rno/cel which do have real is_model_of rows; is_marker_for isn't
+            # commented there but was verified the same way directly against the raw
+            # DISEASE-ALLIANCE_COMBINED.tsv.gz (distinct association_type values for
+            # taxon 7227: biomarker_via_orthology, implicated_via_orthology,
+            # is_implicated_in, is_not_implicated_in -- no is_model_of/is_marker_for).
+            known_empty_adapters = {
+                ("alliance_gene_disease_is_model_of", 7227),
+                ("alliance_gene_disease_is_marker_for", 7227),
+            }
+            taxon_id = config['adapter']['args'].get('taxon_id')
+            if not sample_edge and (adapter_name, taxon_id) in known_empty_adapters:
+                logging.warning(f"No edges found for '{adapter_name}' (taxon {taxon_id}). Documented as having no real data for this species.")
                 continue
 
             assert sample_edge, f"No edges found for adapter '{adapter_name}'"

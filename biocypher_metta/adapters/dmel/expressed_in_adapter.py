@@ -38,7 +38,7 @@ class ExpressedInAdapter(Adapter):
         'go': ['biological_process', 'molecular_function', 'cellular_component'],
     }
 
-    TARGET_TYPE_TO_LABEL = {
+    TARGET_TYPE_TO_LABEL = {  # input_label
         'anatomy': 'gene_expressed_in_anatomy',
         'developmental_stage': 'gene_expressed_in_developmental_stage',
         'phenotype': 'gene_expressed_in_phenotype',
@@ -97,6 +97,6 @@ class ExpressedInAdapter(Adapter):
             edge_label = ExpressedInAdapter.TARGET_TYPE_TO_LABEL.get(target_type)
             if edge_label is None:
                 continue
-            yield source, f'FlyBase:{target}', edge_label, props
+            yield source, target, edge_label, props
 
 
