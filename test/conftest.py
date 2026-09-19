@@ -34,6 +34,12 @@ def pytest_addoption(parser):
         help="Path to the species-specific schema config YAML file"
     )
     parser.addoption(
+        "--dbsnp-cache-root",
+        action="store",
+        default="aux_files/hsa/sample_dbsnp",
+        help="Path to the dbSNP cache root matching the adapters config under test."
+    )
+    parser.addoption(
         "--adapter-test-mode",
         action="store",
         choices=["smoke", "full"],

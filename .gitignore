@@ -162,6 +162,9 @@ cython_debug/
 #VSCode
 .vscode/
 
+# Claude Code local session/tool config (settings, scheduled-task locks)
+.claude/
+
 # Neo4j env (contains credentials and host-specific paths — use docker/neo4j.env.example as template)
 docker/neo4j.env
 
@@ -177,14 +180,15 @@ output/
 output_cli/
 output_fly/
 output_human/
+# Built KG output for the connected_full_sample_data branch (CSVs, never
+# committed — only the filtered sample *input* files under samples/<species>/
+# are tracked). Covers output_<species>_sample/ for all 5 species.
+output_*_sample/
+output_*_connected_sample/
 
 # Mapping-cache lock files (runtime mutex used for parallel adapter execution)
 *_mapping.lock
 
-# CATLAS generated/downloaded files (large, not committed)
-aux_files/hsa/catlas/*.pkl
-samples/hsa/catlasv1/cCRE_hg38.tsv.gz
-samples/reactome/interactors/reactome.all_species.interactions.tab-delimited.txt
 doc/plans
 
 # Claude Code local session/config data

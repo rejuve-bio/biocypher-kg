@@ -1176,7 +1176,7 @@ enhancer_atlas_enhancer:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: enhancer_atlas/hs.bed
+      enhancer_filepath: enhancer_atlas/hs.bed.gz
       enhancer_gene_filepath: enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       label: enhancer
@@ -1190,7 +1190,7 @@ enhancer_atlas_enhancer_regulates:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: enhancer_atlas/hs.bed
+      enhancer_filepath: enhancer_atlas/hs.bed.gz
       enhancer_gene_filepath: enhancer_atlas/enhancer_gene
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
       type: enhancer to gene association
@@ -1508,7 +1508,7 @@ tfbs_transcription_factor_binding_site:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: tfbs/EncRegTfbsClustered.csv.gz
+      filepath: tfbs/encRegTfbsClustered.txt.gz
       label: tfbs
       taxon_id: 9606        
   outdir: tfbs
@@ -1520,7 +1520,7 @@ tfbs_gene_association:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: tfbs/EncRegTfbsClustered.csv.gz
+      filepath: tfbs/encRegTfbsClustered.txt.gz
       label: gene_tfbs
       taxon_id: 9606        
   outdir: tfbs

@@ -1584,153 +1584,154 @@ def main(
                         "config/primer_schema_config.yaml",
                         Path(config["schema_config"]),
                     )
-                    sp_is_sample = dataset == "sample"
-                    sp_cache_root = dbsnp_cache_root or config.get("dbsnp_cache_root", "")
-                    if not sp_cache_root and sp_is_sample:
-                        sp_cache_root = "aux_files/hsa/sample_dbsnp"
-                    sp_variant = dbsnp_variant or config.get("dbsnp_variant") or None
+                    try:
+                        sp_is_sample = dataset == "sample"
+                        sp_cache_root = dbsnp_cache_root or config.get("dbsnp_cache_root", "")
+                        if not sp_cache_root and sp_is_sample:
+                            sp_cache_root = "aux_files/hsa/sample_dbsnp"
+                        sp_variant = dbsnp_variant or config.get("dbsnp_variant") or None
 
-                    ckpt = _setup_checkpoint(
-                        sp_output_dir,
-                        pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
-                        no_checkpoint=no_checkpoint,
-                        resume=resume,
-                    )
-
-                    # The main process only needs its own writer for the sequential
-                    # path or networkx (which can't be parallelized). In parallel mode
-                    # each worker builds its own, so skip this (ontology-parsing)
-                    # construction here to avoid a wasted parse per species.
-                    writer_needed_in_main = max_workers == 1 or writer_type == "networkx"
-                    bc = (
-                        get_writer(
-                            writer_type,
+                        ckpt = _setup_checkpoint(
                             sp_output_dir,
-                            sp_schema_config,
-                            include_curie=include_curie,
-                            import_root=output_dir,
+                            pipeline_id=f"{sp_output_dir}::{sp_adapters_config}",
+                            no_checkpoint=no_checkpoint,
+                            resume=resume,
                         )
-                        if writer_needed_in_main
-                        else None
-                    )
-                    logger.info(f"Using {writer_type} writer for {sp}")
 
-                    if bc is not None and writer_type == "parquet":
-                        bc.buffer_size = buffer_size
-                        bc.overwrite = overwrite
+                        # The main process only needs its own writer for the sequential
+                        # path or networkx (which can't be parallelized). In parallel mode
+                        # each worker builds its own, so skip this (ontology-parsing)
+                        # construction here to avoid a wasted parse per species.
+                        writer_needed_in_main = max_workers == 1 or writer_type == "networkx"
+                        bc = (
+                            get_writer(
+                                writer_type,
+                                sp_output_dir,
+                                sp_schema_config,
+                                include_curie=include_curie,
+                                import_root=output_dir,
+                            )
+                            if writer_needed_in_main
+                            else None
+                        )
+                        logger.info(f"Using {writer_type} writer for {sp}")
 
-                    sp_writer_kwargs = {
-                        "writer_type": writer_type,
-                        "output_dir": sp_output_dir,
-                        "schema_config_path": sp_schema_config,
-                        "include_curie": include_curie,
-                        "import_root": output_dir,
-                        "buffer_size": buffer_size,
-                        "overwrite": overwrite,
-                    }
+                        if bc is not None and writer_type == "parquet":
+                            bc.buffer_size = buffer_size
+                            bc.overwrite = overwrite
 
-                    schema_dict = preprocess_schema(sp_schema_config)
-                    sp_adapters_dict = _load_adapters_config(sp_adapters_config, sp, input_dir=input_dir)
-
-                    if include_adapters:
-                        original_count = len(sp_adapters_dict)
-                        include_lower = [adapter.lower() for adapter in include_adapters]
-                        sp_adapters_dict = {
-                            key: value
-                            for key, value in sp_adapters_dict.items()
-                            if _adapter_matches(key, include_lower)
+                        sp_writer_kwargs = {
+                            "writer_type": writer_type,
+                            "output_dir": sp_output_dir,
+                            "schema_config_path": sp_schema_config,
+                            "include_curie": include_curie,
+                            "import_root": output_dir,
+                            "buffer_size": buffer_size,
+                            "overwrite": overwrite,
                         }
-                        if not sp_adapters_dict:
-                            logger.error(f"No matching adapters found for {sp}.")
-                            continue
-                        logger.info(
-                            f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}"
-                        )
 
-                    if _adapters_need_dbsnp(sp_adapters_dict):
-                        sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
-                            sp_cache_root, sp_variant, is_sample=sp_is_sample
-                        )
-                    else:
-                        logger.info(f"No adapters for {sp} require dbSNP, skipping dbSNP load.")
-                        sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = {}, {}
+                        schema_dict = preprocess_schema(sp_schema_config)
+                        sp_adapters_dict = _load_adapters_config(sp_adapters_config, sp, input_dir=input_dir)
 
-                    nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
-                        sp_adapters_dict,
-                        sp_dbsnp_rsids_dict,
-                        sp_dbsnp_pos_dict,
-                        bc,
-                        write_properties,
-                        add_provenance,
-                        schema_dict,
-                        checkpoint_manager=ckpt,
-                        include_taxon_id=include_taxon_id,
-                        skip_preflight=skip_preflight,
-                        writer_kwargs=sp_writer_kwargs,
-                        max_workers=max_workers,
-                    )
+                        if include_adapters:
+                            original_count = len(sp_adapters_dict)
+                            include_lower = [adapter.lower() for adapter in include_adapters]
+                            sp_adapters_dict = {
+                                key: value
+                                for key, value in sp_adapters_dict.items()
+                                if _adapter_matches(key, include_lower)
+                            }
+                            if not sp_adapters_dict:
+                                logger.error(f"No matching adapters found for {sp}.")
+                                continue
+                            logger.info(
+                                f"Filtered to {len(sp_adapters_dict)}/{original_count} adapters for {sp}"
+                            )
 
-                    if writer_type == "networkx":
-                        bc.write_graph()
-                        logger.info(f"NetworkX graph saved for {sp}")
-
-                    if bc is not None and hasattr(bc, "finalize"):
-                        bc.finalize()
-
-                    _write_graph_info(
-                        nodes_count,
-                        nodes_props,
-                        edges_count,
-                        schema_dict,
-                        sp_output_dir,
-                        datasets_dict,
-                        kg_format=writer_type,
-                    )
-
-                    if generate_data_source_schemas:
-                        if data_source_schema_output_dir:
-                            schema_output_dir = data_source_schema_output_dir / sp
+                        if _adapters_need_dbsnp(sp_adapters_dict):
+                            sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = _load_dbsnp(
+                                sp_cache_root, sp_variant, is_sample=sp_is_sample
+                            )
                         else:
-                            schema_output_dir = _default_data_source_schema_output_dir(sp, sp_output_dir)
-                        _try_generate_data_source_schemas(
-                            sp_schema_config,
-                            sp_adapters_config,
+                            logger.info(f"No adapters for {sp} require dbSNP, skipping dbSNP load.")
+                            sp_dbsnp_rsids_dict, sp_dbsnp_pos_dict = {}, {}
+
+                        nodes_count, nodes_props, edges_count, datasets_dict, adapter_times, empty_output_adapters, total_start = process_adapters(
                             sp_adapters_dict,
-                            schema_output_dir,
+                            sp_dbsnp_rsids_dict,
+                            sp_dbsnp_pos_dict,
+                            bc,
+                            write_properties,
+                            add_provenance,
+                            schema_dict,
+                            checkpoint_manager=ckpt,
+                            include_taxon_id=include_taxon_id,
+                            skip_preflight=skip_preflight,
+                            writer_kwargs=sp_writer_kwargs,
+                            max_workers=max_workers,
                         )
 
-                    if ckpt is not None:
-                        ckpt.delete()
+                        if writer_type == "networkx":
+                            bc.write_graph()
+                            logger.info(f"NetworkX graph saved for {sp}")
 
-                    delete_temp_schema(sp_schema_config)
+                        if bc is not None and hasattr(bc, "finalize"):
+                            bc.finalize()
 
-                    sp_elapsed = time.time() - total_start
-                    species_summary.append({
-                        "species": sp,
-                        "elapsed": sp_elapsed,
-                        "nodes": sum(nodes_count.values()),
-                        "edges": sum(edges_count.values()),
-                    })
+                        _write_graph_info(
+                            nodes_count,
+                            nodes_props,
+                            edges_count,
+                            schema_dict,
+                            sp_output_dir,
+                            datasets_dict,
+                            kg_format=writer_type,
+                        )
 
-                    logger.info("")
-                    logger.info("#" * 60)
-                    logger.info(f"  PIPELINE COMPLETE [{sp}]")
-                    logger.info(f"  Total time  : {_fmt_elapsed(sp_elapsed)}")
-                    logger.info(f"  Total nodes : {sum(nodes_count.values()):,}")
-                    logger.info(f"  Total edges : {sum(edges_count.values()):,}")
-                    if adapter_times:
-                        top = sorted(adapter_times.items(), key=lambda x: x[1], reverse=True)[:5]
+                        if generate_data_source_schemas:
+                            if data_source_schema_output_dir:
+                                schema_output_dir = data_source_schema_output_dir / sp
+                            else:
+                                schema_output_dir = _default_data_source_schema_output_dir(sp, sp_output_dir)
+                            _try_generate_data_source_schemas(
+                                sp_schema_config,
+                                sp_adapters_config,
+                                sp_adapters_dict,
+                                schema_output_dir,
+                            )
+
+                        if ckpt is not None:
+                            ckpt.delete()
+
+                        sp_elapsed = time.time() - total_start
+                        species_summary.append({
+                            "species": sp,
+                            "elapsed": sp_elapsed,
+                            "nodes": sum(nodes_count.values()),
+                            "edges": sum(edges_count.values()),
+                        })
+
                         logger.info("")
-                        logger.info("  Top slowest adapters:")
-                        for rank, (name, secs) in enumerate(top, 1):
-                            logger.info(f"    {rank}. {name}: {_fmt_elapsed(secs)}")
-                    if empty_output_adapters:
+                        logger.info("#" * 60)
+                        logger.info(f"  PIPELINE COMPLETE [{sp}]")
+                        logger.info(f"  Total time  : {_fmt_elapsed(sp_elapsed)}")
+                        logger.info(f"  Total nodes : {sum(nodes_count.values()):,}")
+                        logger.info(f"  Total edges : {sum(edges_count.values()):,}")
+                        if adapter_times:
+                            top = sorted(adapter_times.items(), key=lambda x: x[1], reverse=True)[:5]
+                            logger.info("")
+                            logger.info("  Top slowest adapters:")
+                            for rank, (name, secs) in enumerate(top, 1):
+                                logger.info(f"    {rank}. {name}: {_fmt_elapsed(secs)}")
+                        if empty_output_adapters:
+                            logger.info("")
+                            logger.info(f"  Empty output ({len({n for n, _ in empty_output_adapters})} adapter(s)):")
+                            for name, output_type in empty_output_adapters:
+                                logger.info(f"    - {name} ({output_type}: 0)")
+                        logger.info("#" * 60)
                         logger.info("")
-                        logger.info(f"  Empty output ({len({n for n, _ in empty_output_adapters})} adapter(s)):")
-                        for name, output_type in empty_output_adapters:
-                            logger.info(f"    - {name} ({output_type}: 0)")
-                    logger.info("#" * 60)
-                    logger.info("")
+                    finally:
+                        delete_temp_schema(sp_schema_config)
 
                 all_species_elapsed = time.time() - all_species_start
                 logger.info("\n" + "=" * 60)

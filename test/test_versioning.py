@@ -33,7 +33,7 @@ def test_url_regex_extracts_gencode_version():
 def test_url_regex_extracts_flybase_release_from_filename():
     # Reproduces dmel's extract_date_string() behaviour declaratively.
     cfg = {
-        "url": ["https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/fbal_to_fbgn_fb_2026_01.tsv.gz"],
+        "url": ["https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/fbal_to_fbgn_fb_2026_02.tsv.gz"],
         "version": {"strategy": "url_regex", "pattern": r"fb_(\d{4}_\d{2})"},
     }
     vi = resolve_source("flybase", cfg)
