@@ -1,0 +1,36 @@
+# Anchor genes for connected sample KG generation (connected_full_sample_data branch).
+#
+# Same housekeeping gene curation used in config/dmel/dmel_anchor_genes.yaml
+# (reciprocal "best score" orthology via Alliance of Genome Resources), here
+# with the canonical ENSG (Ensembl gene ID) of each chosen human gene. IDs
+# were resolved via aux_files/hsa/hgnc/hgnc_mapping.pkl (HGNC -> symbol -> ENSG)
+# and confirmed present in the real GTF
+# (gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz).
+#
+# See docs/knowledge-graph/sample-generation.md for the full methodology and the
+# cross-species table.
+
+anchor_genes:
+  - {symbol: ACTB, ensg: ENSG00000075624, category: cytoskeleton}
+  - {symbol: TUBA1B, ensg: ENSG00000123416, category: cytoskeleton}
+  - {symbol: GAPDH, ensg: ENSG00000111640, category: glycolysis}
+  - {symbol: ENO1, ensg: ENSG00000074800, category: glycolysis}
+  - {symbol: EEF1A1, ensg: ENSG00000156508, category: translation}
+  - {symbol: EEF2, ensg: ENSG00000167658, category: translation}
+  - {symbol: RPL7, ensg: ENSG00000147604, category: ribosome_large}
+  - {symbol: RPL32, ensg: ENSG00000144713, category: ribosome_large}
+  - {symbol: RPS6, ensg: ENSG00000137154, category: ribosome_small}
+  - {symbol: RPS2, ensg: ENSG00000140988, category: ribosome_small}
+  - {symbol: PSMA1, ensg: ENSG00000129084, category: proteasome_alpha}
+  - {symbol: PSMB5, ensg: ENSG00000100804, category: proteasome_beta}
+  - {symbol: PSMC1, ensg: ENSG00000100764, category: proteasome_atpase}
+  - {symbol: UBB, ensg: ENSG00000170315, category: ubiquitin}
+  - {symbol: UBA52, ensg: ENSG00000221983, category: ubiquitin}
+  - {symbol: HSPA8, ensg: ENSG00000109971, category: chaperone}
+  - {symbol: CCT2, ensg: ENSG00000166226, category: chaperone}
+  - {symbol: H2BC1, ensg: ENSG00000146047, category: histone}
+  - {symbol: PCNA, ensg: ENSG00000132646, category: dna_replication}
+  - {symbol: MCM2, ensg: ENSG00000073111, category: dna_replication}
+  - {symbol: POLR2A, ensg: ENSG00000181222, category: transcription}
+  - {symbol: SF3B1, ensg: ENSG00000115524, category: splicing}
+  - {symbol: SOD1, ensg: ENSG00000142168, category: antioxidant}
