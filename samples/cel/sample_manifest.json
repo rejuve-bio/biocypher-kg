@@ -1,0 +1,128 @@
+{
+  "species": "cel",
+  "input_dir": "/mnt/hdd_1/biocypher-kg/input/cel",
+  "anchor_genes": [
+    "WBGene00000064",
+    "WBGene00000123",
+    "WBGene00000378",
+    "WBGene00001167",
+    "WBGene00001169",
+    "WBGene00001683",
+    "WBGene00001908",
+    "WBGene00002005",
+    "WBGene00003154",
+    "WBGene00003175",
+    "WBGene00003927",
+    "WBGene00003951",
+    "WBGene00003955",
+    "WBGene00004418",
+    "WBGene00004446",
+    "WBGene00004471",
+    "WBGene00004475",
+    "WBGene00004502",
+    "WBGene00004930",
+    "WBGene00006728",
+    "WBGene00011605",
+    "WBGene00011884",
+    "WBGene00018660"
+  ],
+  "expanded_gene_count": 180,
+  "size_budget": 180,
+  "sources": {
+    "gencode_gtf": {
+      "real_rows": 5137,
+      "synthetic": false
+    },
+    "uniprot_sprot": {
+      "real_rows": 167,
+      "synthetic": false
+    },
+    "gaf": {
+      "real_rows": 3189,
+      "synthetic": false
+    },
+    "string_ppi": {
+      "real_rows": 10236,
+      "synthetic": false
+    },
+    "string_coexpression": {
+      "real_rows": 10236,
+      "synthetic": false
+    },
+    "coxpresdb": {
+      "real_rows": 31862,
+      "synthetic": false
+    },
+    "tflink": {
+      "real_rows": 3017,
+      "synthetic": false
+    },
+    "bgee": {
+      "real_rows": 7845,
+      "synthetic": false
+    },
+    "alliance_disease": {
+      "real_rows": 914,
+      "synthetic": false
+    },
+    "alliance_orthology": {
+      "real_rows": 3052,
+      "synthetic": false
+    },
+    "epd": {
+      "real_rows": 141,
+      "synthetic": false
+    },
+    "reactome_all_levels": {
+      "real_rows": 7594,
+      "synthetic": false
+    },
+    "reactome_reactions": {
+      "real_rows": 6016,
+      "synthetic": false
+    },
+    "reactome_pathways_relation": {
+      "real_rows": 1004,
+      "synthetic": false
+    },
+    "reactome_pathways": {
+      "real_rows": 1008,
+      "synthetic": false
+    },
+    "reactome_reaction_pmids": {
+      "real_rows": 0,
+      "synthetic": false,
+      "reason": "no PubMed refs for referenced reactions"
+    },
+    "reactome_chebi_pathways": {
+      "real_rows": 13391,
+      "synthetic": false
+    },
+    "reactome_chebi_reactions": {
+      "real_rows": 1568,
+      "synthetic": false
+    },
+    "uniprot_chebi_part_of_chebi": {
+      "real_rows": 0,
+      "synthetic": true,
+      "synthetic_rows": 1,
+      "synthetic_file": "samples/cel/uniprot/chebi_part_of_synthetic.dat.gz"
+    },
+    "reactome_ppi": {
+      "real_rows": 1982,
+      "synthetic": false
+    },
+    "reactome_reaction_exporter": {
+      "real_rows": 15722,
+      "synthetic": false
+    },
+    "rna_central_bed": {
+      "real_rows": 107,
+      "synthetic": false
+    },
+    "rna_central_rfam": {
+      "real_rows": 30,
+      "synthetic": false
+    }
+  }
+}
