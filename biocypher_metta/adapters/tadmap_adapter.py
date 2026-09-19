@@ -92,7 +92,8 @@ class TADMapAdapter(Adapter):
                 for gene in genes_info:
                     try:
                         gene = gene.split('|')
-                        gene = f"{gene[1].split(':')[1].upper()}"  # Add prefix + uppercase
+                        ensembl_id = gene[1].split(':')[1].upper()
+                        gene = f"{Adapter.CURIE_PREFIX[self.taxon_id]}:{ensembl_id}"
                         genes.append(gene)
                     except IndexError:
                         continue

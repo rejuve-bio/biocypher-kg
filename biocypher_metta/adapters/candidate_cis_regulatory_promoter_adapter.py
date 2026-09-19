@@ -211,8 +211,9 @@ class PromotercCREAdapter(Adapter):
                 if not gene_id:
                     continue
                 
-                # Add  prefix to gene_id
-                gene_id = f"{gene_id}"
+                # Add CURIE prefix to gene_id (matches EnhancercCREAdapter and
+                # every other gene-referencing adapter's ENSEMBL: convention)
+                gene_id = f"ENSEMBL:{gene_id}"
                 
                 props = {
                     'distance': promoter_data['distance'],
@@ -237,8 +238,8 @@ class PromotercCREAdapter(Adapter):
                     
                     if not gene_id:
                         continue
-                    
-                    gene_id = f"{gene_id}"
+
+                    gene_id = f"ENSEMBL:{gene_id}"
                     
                     tissue = eqtl_data['tissue']
                     ontology_id = self._get_ontology_id(tissue)
