@@ -154,7 +154,7 @@ neo4j==4.4.13
     # via
     #   biocypher-metta (pyproject.toml)
     #   neo4j-utils
-neo4j-utils==0.0.7
+neo4j-utils==0.0.12
     # via biocypher-metta (pyproject.toml)
 networkx==3.4.2
     # via
