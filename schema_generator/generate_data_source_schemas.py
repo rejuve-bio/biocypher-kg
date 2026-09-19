@@ -530,8 +530,13 @@ class SchemaGenerator:
         if schema_config_data is not None:
             self.schema_config = schema_config_data
         else:
-            with open(self.schema_config_path) as f:
-                self.schema_config = load_yaml_with_includes(f)
+            # Always merge config/primer_schema_config.yaml, matching both --species
+            # mode below and the main KG build pipeline (create_knowledge_graph.py) --
+            # otherwise types defined only in the primer schema (e.g. enhancer,
+            # promoter) silently resolve to "no schema config found" here.
+            self.schema_config = self.load_schema_config(
+                str(self.schema_config_path), include_primer=True,
+            )
         if adapter_config_data is not None:
             self.adapter_config = adapter_config_data
         else:
