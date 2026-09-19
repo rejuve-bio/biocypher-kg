@@ -15,52 +15,7 @@ chromosome:
     chromosome_id: 
       type: str
 
-# coding elements
-enhancer:
-  represented_as: node
-  input_label: enhancer
-  is_a: non coding element
-  mixins: [biolink:RegulatoryRegion]
-  biolink_category: "biolink:RegulatoryRegion"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:RegulatoryRegion"
-  properties:
-    data_source: 
-      type: str
-      biolink: source_web_page
-    enhancer_id: 
-      type: str
-      biolink: id
-    development_stage:
-      type: str[]
-      biolink: in_taxon
-    ccre_module:
-      type: int
-      biolink: has_quantitative_value
-    taxon_id:
-      type: int
-      description: Taxon ID for the organism (e.g., 9606 for human)
-
-promoter:
-  represented_as: node
-  input_label: promoter
-  is_a: non coding element
-  mixins: [biolink:RegulatoryRegion]
-  biolink_category: "biolink:RegulatoryRegion"
-  inherit_properties: true
-  kgx_properties:
-    category: "biolink:RegulatoryRegion"
-  properties:
-    development_stage:
-      type: str[]
-      biolink: in_taxon
-    ccre_module:
-      type: int
-      biolink: has_quantitative_value
-    taxon_id:
-      type: int
-      description: Taxon ID for the organism (e.g., 9606 for human)
+# non coding elements
 
 super enhancer:
   represented_as: node
@@ -175,6 +130,7 @@ protein to protein coexpression association:
       type: float
       biolink: has_quantitative_value
 
+# There is no data for this.
 reaction_to_molecular_function:
     is_a: association
     source: reaction
