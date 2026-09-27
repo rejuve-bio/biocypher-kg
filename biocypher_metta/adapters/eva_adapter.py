@@ -347,7 +347,12 @@ class EVAAdapter(Adapter):
                             props["source_url"] = self.source_url
 
                     processed += 1
-                    yield snp_id, gene_id, self.label, props
+                    target_id = gene_id
+                    if ":" not in gene_id:
+                        curie_prefix = self.CURIE_PREFIX.get(self.taxon_id)
+                        if curie_prefix:
+                            target_id = f"{curie_prefix}:{gene_id}"
+                    yield snp_id, target_id, self.label, props
 
         logger.info(
             f"EVAAdapter.get_edges [{self.taxon_id}]: "
