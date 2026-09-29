@@ -55,7 +55,8 @@ services:
       # Map the fixed entrypoint script
       - ./biocypher-mork/entrypoint.sh:/app/entrypoint.sh:ro
     ports:
-      - "${MORK_HOST_PORT:-8027}:8027"
+      # Loopback-only; use an SSH tunnel or reverse proxy for remote access.
+      - "127.0.0.1:${MORK_HOST_PORT:-8027}:8027"
     environment:
       - RUST_LOG=info
       # Snapshot settings (can be overridden in .env or docker-variables.env)
