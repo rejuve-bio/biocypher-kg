@@ -242,5 +242,7 @@ echo "────────────────────────�
 echo
 
 # --remove-orphans is scoped to this project, so it never touches foreign stacks.
-"${COMPOSE[@]}" "${PROFILES[@]}" up -d --build --remove-orphans "$@"
+# ${PROFILES[@]+...} guard: an empty array under `set -u` is an "unbound variable" on
+# bash <= 4.3 (incl. macOS's 3.2). PROFILES is empty when both DBs come from env URLs.
+"${COMPOSE[@]}" ${PROFILES[@]+"${PROFILES[@]}"} up -d --build --remove-orphans "$@"
 connect_extra_networks
