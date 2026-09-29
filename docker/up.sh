@@ -47,6 +47,40 @@ service_running() {
     | grep -qx "$1"
 }
 
+# ── Reaching an externally-managed Neo4j/MORK ──────────────────────────────────
+# Host ports are loopback-only, so on Linux a container CANNOT reach a DB via
+# host.docker.internal (the container arrives on the bridge gateway, not 127.0.0.1).
+# The robust, OS-independent answer is to share a docker network with that DB and
+# address it by service name. Set CONSOLE_EXTRA_NETWORKS to the network(s) the
+# external DB is on; up.sh creates any that are missing and attaches the console
+# after bring-up. Then point NEO4J_URI / MORK_URL at the DB's service name, e.g.
+#   CONSOLE_EXTRA_NETWORKS="labdb"
+#   NEO4J_URI=bolt://my-neo4j:7687
+#   MORK_URL=http://my-mork:8027
+CONSOLE_EXTRA_NETWORKS="${CONSOLE_EXTRA_NETWORKS:-}"
+
+connect_extra_networks() {
+  [ -n "$CONSOLE_EXTRA_NETWORKS" ] || return 0
+  local cid net
+  # Find the console container by its compose labels (project name is fixed in the compose file).
+  cid=$(docker ps -q \
+    --filter "label=com.docker.compose.project=biocypher-console" \
+    --filter "label=com.docker.compose.service=console" | head -1)
+  if [ -z "$cid" ]; then
+    echo "⚠ CONSOLE_EXTRA_NETWORKS set but the console container isn't running; skipping network attach" >&2
+    return 0
+  fi
+  for net in $CONSOLE_EXTRA_NETWORKS; do
+    docker network create "$net" >/dev/null 2>&1 || true
+    if docker network connect "$net" "$cid" >/dev/null 2>&1; then
+      echo "🔗 console joined network '${net}' — reach its containers by service name"
+    else
+      echo "✔ console already on network '${net}'"
+    fi
+  done
+  return 0
+}
+
 # ── Per-species instances ────────────────────────────────────────────────────
 # When SPECIES_INSTANCES is set (e.g. "hsa dmel"), provision a Neo4j + MORK per
 # species — each on its own host ports and volumes — and tell the Console each
@@ -142,7 +176,9 @@ if [ -n "$SPECIES_INSTANCES" ]; then
   # are profiled services (still defined), so --remove-orphans won't drop them;
   # remove them explicitly first.
   "${COMPOSE[@]}" --profile neo4j --profile mork rm -sf neo4j mork >/dev/null 2>&1 || true
-  exec "${COMPOSE[@]}" -f "$SPECIES_OVERRIDE" up -d --build --remove-orphans "$@"
+  "${COMPOSE[@]}" -f "$SPECIES_OVERRIDE" up -d --build --remove-orphans "$@"
+  connect_extra_networks
+  exit 0
 fi
 
 PROFILES=()
@@ -163,6 +199,8 @@ elif ! is_local "$NEO4J_HOST"; then
 elif port_taken "$NEO4J_BOLT_PORT"; then
   owner=$(docker ps --filter "publish=$NEO4J_BOLT_PORT" --format '{{.Names}}' 2>/dev/null | head -1)
   echo "✔ Neo4j: attaching to existing instance on localhost:${NEO4J_BOLT_PORT}${owner:+ (container: $owner)}"
+  echo "  note: works on Docker Desktop; on Linux a loopback-bound host port is NOT reachable this way —"
+  echo "        put that Neo4j on a shared network and set CONSOLE_EXTRA_NETWORKS + NEO4J_URI=bolt://<svc>:7687"
   export NEO4J_URI="bolt://host.docker.internal:${NEO4J_BOLT_PORT}"
 else
   echo "＋ Neo4j: none found on :${NEO4J_BOLT_PORT} — creating the bundled service"
@@ -186,6 +224,8 @@ elif ! is_local "$MORK_HOST"; then
 elif port_taken "$MORK_HOST_PORT"; then
   owner=$(docker ps --filter "publish=$MORK_HOST_PORT" --format '{{.Names}}' 2>/dev/null | head -1)
   echo "✔ MORK: attaching to existing instance on localhost:${MORK_HOST_PORT}${owner:+ (container: $owner)}"
+  echo "  note: works on Docker Desktop; on Linux a loopback-bound host port is NOT reachable this way —"
+  echo "        put that MORK on a shared network and set CONSOLE_EXTRA_NETWORKS + MORK_URL=http://<svc>:8027"
   export MORK_URL="http://host.docker.internal:${MORK_HOST_PORT}"
 else
   echo "＋ MORK: none found on :${MORK_HOST_PORT} — creating the bundled service"
@@ -202,4 +242,5 @@ echo "────────────────────────�
 echo
 
 # --remove-orphans is scoped to this project, so it never touches foreign stacks.
-exec "${COMPOSE[@]}" "${PROFILES[@]}" up -d --build --remove-orphans "$@"
+"${COMPOSE[@]}" "${PROFILES[@]}" up -d --build --remove-orphans "$@"
+connect_extra_networks
