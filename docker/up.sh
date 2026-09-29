@@ -83,6 +83,7 @@ gen_species_override() {
       cat <<YAML
   neo4j-${sp}:
     image: \${NEO4J_IMAGE:-neo4j:5.21}
+    restart: unless-stopped
     ports:
       - "127.0.0.1:${bolt}:7687"
       - "127.0.0.1:${http}:7474"
@@ -104,6 +105,7 @@ gen_species_override() {
   mork-${sp}:
     build:
       context: ../biocypher-mork
+    restart: unless-stopped
     ports:
       - "127.0.0.1:${morkp}:8027"
     volumes:
