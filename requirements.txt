@@ -252,7 +252,7 @@ pyparsing==3.2.5
     # via
     #   biocypher-metta (pyproject.toml)
     #   rdflib
-pysam==0.23.3
+pysam==0.24.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
