@@ -224,6 +224,55 @@ signaling pathway gene group:
   kgx_properties:
     category: biolink:Pathway
 
+dmel enhancer:
+  is_a: enhancer
+  represented_as: node
+  input_label: enhancer
+  inherit_properties: true
+  description: >
+    A FlyBase regulatory_region entry whose Name contains 'enhancer' and
+    carries an associated_genes attribute.  ~121 entries in r6.69.
+  properties:
+    name:
+      type: str
+      biolink: name
+      description: FlyBase Name= attribute from the GFF3 record
+
+dmel regulatory region:
+  is_a: regulatory region
+  represented_as: node
+  input_label: regulatory_region
+  inherit_properties: true
+  description: >
+    A FlyBase regulatory feature (insulator, protein_binding_site,
+    regulatory_region, TSS) from the dmel whole-genome GFF3.
+  properties:
+    name:
+      type: str
+      biolink: name
+    library:
+      type: str
+      description: Library identifier from FlyBase library= attribute (text after ':')
+    feature_type:
+      type: str
+      description: GFF3 feature type (e.g. insulator, TSS, protein_binding_site, regulatory_region)
+    so_term:
+      type: str
+      description: Sequence Ontology term ID for this feature type
+
+dmel transcription binding site:
+  is_a: regulatory region
+  represented_as: node
+  input_label: tfbs
+  inherit_properties: true
+  description: >
+    A TF_binding_site from the FlyBase GFF3.  Uses location-based IDs
+    (chr_start_end_assembly) consistent with the existing tfbs_adapter.
+    Inherits from regulatory region per the Sequence Ontology hierarchy.
+  properties:
+    source_id:
+      type: str
+      description: Original FlyBase FBsf ID from the GFF3 ID= attribute
 
 
 ##################             EDGES   SECTION             ####################
@@ -1035,5 +1084,72 @@ transcript to transcript physical interaction:
   kgx_properties:
     subject_category: biolink:Transcript
     object_category: biolink:Transcript
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+# ---------- FlyBase regulatory annotation edges (Issue #360) ----------
+
+dmel enhancer to gene association:
+  is_a: enhancer to gene association
+  represented_as: edge
+  input_label: enhancer_gene
+  output_label: associated_with
+  source: enhancer
+  target: gene
+  inherit_properties: true
+  description: >
+    An association between a FlyBase enhancer and a gene it regulates,
+    derived from the associated_genes attribute in the dmel GFF3.
+  properties:
+    confirmed:
+      type: bool
+      description: >
+        Qualitative confirmation flag.  Always true for FlyBase GFF3 data
+        (no interaction score is available).
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:Gene
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+dmel gene to transcription binding site association:
+  is_a: gene to transcription binding site association
+  represented_as: edge
+  input_label: gene_tfbs
+  output_label: binds_to
+  source: gene
+  target: tfbs
+  inherit_properties: true
+  description: >
+    A gene binds_to TFBS edge derived from the bound_moiety attribute
+    of TF_binding_site records in the FlyBase GFF3.
+  properties:
+    source_id:
+      type: str
+      description: Original FlyBase FBsf ID for the TF_binding_site record
+  kgx_properties:
+    subject_category: biolink:Gene
+    object_category: biolink:RegulatoryRegion
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+dmel regulatory feature to sequence type:
+  is_a: related to at instance level
+  represented_as: edge
+  input_label: regulatory_feature_sequence_type
+  output_label: is_a
+  biolink_predicate: biolink:subclass_of
+  source: regulatory region
+  target: sequence type
+  description: >
+    Links a FlyBase regulatory feature to its corresponding Sequence
+    Ontology term (SO:0000235, SO:0000627, SO:0000410, SO:0005836, SO:0000315).
+  properties:
+    taxon_id:
+      type: int
+      biolink: taxon
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:OntologyClass
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
