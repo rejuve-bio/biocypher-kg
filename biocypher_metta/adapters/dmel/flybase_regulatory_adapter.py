@@ -377,4 +377,5 @@ class FlyBaseRegulatoryAdapter(Adapter):
                     props["source"] = self.source
                     props["source_url"] = self.source_url
 
-            yield node_id, so_node_id, "regulatory_feature_classified_as", props
+            edge_label = "tfbs_classified_as" if feat == "TF_binding_site" else "regulatory_feature_classified_as"
+            yield node_id, so_node_id, edge_label, props
