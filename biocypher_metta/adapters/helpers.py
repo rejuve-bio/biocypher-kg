@@ -3,7 +3,7 @@ import hashlib
 from math import log10, floor, isinf
 from liftover import get_lifter
 
-ALLOWED_ASSEMBLIES = ['GRCh38']
+ALLOWED_ASSEMBLIES = ['GRCh38', 'BDGP6']
 _lifters = {}
 
 

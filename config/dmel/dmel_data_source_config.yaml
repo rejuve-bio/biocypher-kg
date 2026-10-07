@@ -76,6 +76,7 @@ flybase:
     - https://s3ftp.flybase.org/releases/current/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
     - https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz  # GOA (GO annotation)
     - https://s3ftp.flybase.org/releases/current/precomputed_files/synonyms/fb_synonym_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/genomes/Drosophila_melanogaster/current/gff/dmel-all-r6.69.gff.gz
   move_to:
     - fb_synonym_fb_2026_02.tsv.gz: ./aux_files/dmel/
     - fbal_to_fbgn_fb_2026_02.tsv.gz: ./aux_files/dmel/
@@ -100,6 +101,7 @@ flybase:
     physical_interactions_mitab: {pattern: "flybase/physical_interactions_mitab_fb_*.tsv.gz", stable_name: "flybase/physical_interactions_mitab.tsv.gz"}
     scrna_seq_gene_expression: {pattern: "flybase/scRNA-Seq_gene_expression_fb_*.tsv.gz", stable_name: "flybase/scRNA-Seq_gene_expression_fb.tsv.gz"}
     signaling_pathway_group_data: {pattern: "flybase/signaling_pathway_group_data_fb_*.tsv.gz", stable_name: "flybase/signaling_pathway_group_data.tsv.gz"}
+    dmel_gff: {pattern: "flybase/dmel-all-r*.gff.gz", stable_name: "flybase/dmel-all-r6.69.gff.gz"}
 
 reactome:
   name: Reactome

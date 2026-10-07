@@ -1432,9 +1432,9 @@ alliance_gene_disease_is_marker_for:
   nodes: False
   edges: True
 
-# ---------- FlyBase regulatory annotation (Issue #360) ----------
+# ---------- FlyBase regulatory annotation ----------
 
-dmel_flybase_enhancer:
+dmel_flybase_enhancer_nodes:
   adapter:
     module: biocypher_metta.adapters.dmel.flybase_regulatory_adapter
     cls: FlyBaseRegulatoryAdapter
@@ -1444,9 +1444,21 @@ dmel_flybase_enhancer:
       taxon_id: 7227
   outdir: flybase_regulatory
   nodes: True
+  edges: False
+
+dmel_flybase_enhancer_gene_edges:
+  adapter:
+    module: biocypher_metta.adapters.dmel.flybase_regulatory_adapter
+    cls: FlyBaseRegulatoryAdapter
+    args:
+      filepath: flybase/dmel-all-r6.69.gff.gz
+      label: flybase_enhancer_gene
+      taxon_id: 7227
+  outdir: flybase_regulatory
+  nodes: False
   edges: True
 
-dmel_flybase_regulatory_region:
+dmel_flybase_regulatory_region_nodes:
   adapter:
     module: biocypher_metta.adapters.dmel.flybase_regulatory_adapter
     cls: FlyBaseRegulatoryAdapter
@@ -1456,9 +1468,21 @@ dmel_flybase_regulatory_region:
       taxon_id: 7227
   outdir: flybase_regulatory
   nodes: True
+  edges: False
+
+dmel_flybase_regulatory_region_so_edges:
+  adapter:
+    module: biocypher_metta.adapters.dmel.flybase_regulatory_adapter
+    cls: FlyBaseRegulatoryAdapter
+    args:
+      filepath: flybase/dmel-all-r6.69.gff.gz
+      label: flybase_regulatory_region_so
+      taxon_id: 7227
+  outdir: flybase_regulatory
+  nodes: False
   edges: True
 
-dmel_flybase_gene_tfbs:
+dmel_flybase_gene_tfbs_edges:
   adapter:
     module: biocypher_metta.adapters.dmel.flybase_regulatory_adapter
     cls: FlyBaseRegulatoryAdapter

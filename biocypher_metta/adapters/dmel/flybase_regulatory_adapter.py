@@ -2,23 +2,19 @@
 FlyBase regulatory-annotation adapter for *Drosophila melanogaster*.
 
 Parses the whole-genome GFF3 from FlyBase and produces:
-  1. **Enhancer nodes** — ``regulatory_region`` entries whose ``Name=`` contains
-     "enhancer" *and* that carry an ``associated_genes=`` attribute (Task 3).
-  2. **Enhancer → gene edges** — one edge per ``associated_genes`` entry,
-     using the ``enhancer to gene association`` schema (Task 3).
-  3. **Regulatory-region nodes** — all five SO feature types *except*
-     ``TF_binding_site`` (Task 4).
-  4. **Gene → TFBS binding edges** — from ``bound_moiety`` FBgn to a
-     location-based TFBS node ID, using the ``gene to transcription binding
-     site association`` schema (Task 5).
-  5. **Regulatory feature → sequence-type edges** — linking each regulatory
-     feature to its corresponding SO term (Task 6).
 
-Source
-------
-https://s3ftp.flybase.org/genomes/Drosophila_melanogaster/current/gff/dmel-all-r6.69.gff.gz
+  - **Enhancer nodes** from ``regulatory_region`` entries whose ``Name=``
+    contains "enhancer" and that carry an ``associated_genes=`` attribute.
+  - **Enhancer → gene edges** linking each enhancer to its target gene(s)
+    via the ``enhancer to gene association`` schema.
+  - **Regulatory-region nodes** for non-TFBS regulatory features (insulator,
+    protein_binding_site, regulatory_region, TSS).
+  - **Gene → TFBS binding edges** connecting ``bound_moiety`` genes to
+    location-based TF_binding_site nodes.
+  - **Regulatory feature → SO edges** typing each feature to its
+    Sequence Ontology term.
 
-Issue: https://github.com/rejuve-bio/biocypher-kg/issues/360
+Source: https://s3ftp.flybase.org/genomes/Drosophila_melanogaster/current/gff/
 """
 
 import gzip
@@ -97,14 +93,19 @@ class FlyBaseRegulatoryAdapter(Adapter):
 
     Depending on the ``label`` parameter it emits different node/edge types:
 
-    ============================================  ==============  =========
-    label                                         get_nodes()     get_edges()
-    ============================================  ==============  =========
-    ``flybase_enhancer``                          enhancer nodes  enhancer → gene edges
-    ``flybase_regulatory_region``                 reg-region nodes (no TFBS)  reg-feature → SO edges
-    ``flybase_gene_tfbs``                         (nothing)       gene → TFBS edges
-    ============================================  ==============  =========
+    =============================================  ===================  ==========================
+    label                                          get_nodes()          get_edges()
+    =============================================  ===================  ==========================
+    ``flybase_enhancer``                           enhancer nodes       —
+    ``flybase_enhancer_gene``                      —                    enhancer → gene edges
+    ``flybase_regulatory_region``                  reg-region nodes     —
+    ``flybase_regulatory_region_so``               —                    reg-feature → SO edges
+    ``flybase_gene_tfbs``                          —                    gene → TFBS edges
+    =============================================  ===================  ==========================
     """
+
+    # Drosophila melanogaster assembly identifier.
+    DMEL_ASSEMBLY = "BDGP6"
 
     def __init__(
         self,
@@ -124,9 +125,14 @@ class FlyBaseRegulatoryAdapter(Adapter):
         super().__init__(write_properties, add_provenance)
 
     # ------------------------------------------------------------------
-    #  Internal: iterate GFF3 lines, yielding parsed records for in-scope
-    #  feature types on main chromosome arms only.
+    #  Internal helpers
     # ------------------------------------------------------------------
+    @staticmethod
+    def _is_enhancer(attrs: Dict[str, str]) -> bool:
+        """Return True if this regulatory_region qualifies as an enhancer."""
+        name = attrs.get("Name", "")
+        return "enhancer" in name.lower() and attrs.get("associated_genes")
+
     def _iter_features(self):
         """Yield (chr, source, feature_type, start, end, attrs_dict) tuples."""
         with _open_gff3(self.filepath) as fh:
@@ -162,15 +168,15 @@ class FlyBaseRegulatoryAdapter(Adapter):
             yield from self._regulatory_region_nodes()
 
     def get_edges(self):
-        if self.label == "flybase_enhancer":
+        if self.label == "flybase_enhancer_gene":
             yield from self._enhancer_gene_edges()
         elif self.label == "flybase_gene_tfbs":
             yield from self._gene_tfbs_edges()
-        elif self.label == "flybase_regulatory_region":
+        elif self.label == "flybase_regulatory_region_so":
             yield from self._regulatory_feature_so_edges()
 
     # ------------------------------------------------------------------
-    #  Task 3: Enhancer nodes + enhancer → gene edges
+    #  Enhancer nodes + enhancer → gene edges
     # ------------------------------------------------------------------
     def _enhancer_nodes(self):
         """
@@ -181,11 +187,7 @@ class FlyBaseRegulatoryAdapter(Adapter):
         for chrom, _src, feat, start, end, attrs in self._iter_features():
             if feat != "regulatory_region":
                 continue
-            name = attrs.get("Name", "")
-            if "enhancer" not in name.lower():
-                continue
-            assoc = attrs.get("associated_genes")
-            if not assoc:
+            if not self._is_enhancer(attrs):
                 continue
 
             fb_id = attrs.get("ID", "")
@@ -199,7 +201,7 @@ class FlyBaseRegulatoryAdapter(Adapter):
                 props["chr"] = chrom
                 props["start"] = start
                 props["end"] = end
-                props["name"] = name
+                props["name"] = attrs.get("Name", "")
                 props["taxon_id"] = self.taxon_id
                 if self.add_provenance:
                     props["source"] = self.source
@@ -211,23 +213,19 @@ class FlyBaseRegulatoryAdapter(Adapter):
         """
         Yield enhancer → gene edges.  One edge per associated gene.
         ``associated_genes`` value format: ``gene_symbol:FBgnXXXXXXX``
-        (semicolon-separated when multiple).
+        (comma-separated when multiple).
         """
         for chrom, _src, feat, start, end, attrs in self._iter_features():
             if feat != "regulatory_region":
                 continue
-            name = attrs.get("Name", "")
-            if "enhancer" not in name.lower():
-                continue
-            assoc = attrs.get("associated_genes")
-            if not assoc:
+            if not self._is_enhancer(attrs):
                 continue
 
             fb_id = attrs.get("ID", "")
             enhancer_id = f"FlyBase:{fb_id}"
 
             # Parse associated_genes — comma-separated, each is symbol:FBgnXXX
-            for gene_entry in assoc.split(","):
+            for gene_entry in attrs["associated_genes"].split(","):
                 gene_entry = gene_entry.strip()
                 if ":" in gene_entry:
                     fbgn = gene_entry.split(":")[-1].strip()
@@ -249,18 +247,24 @@ class FlyBaseRegulatoryAdapter(Adapter):
                 yield enhancer_id, gene_id, "enhancer_gene", props
 
     # ------------------------------------------------------------------
-    #  Task 4: Regulatory region nodes (all five types EXCEPT TF_binding_site)
+    #  Regulatory region nodes (excludes TF_binding_site and enhancers)
     # ------------------------------------------------------------------
     def _regulatory_region_nodes(self):
         """
-        Yield regulatory_region nodes for all five SO feature types except
-        TF_binding_site (which uses the existing location-based TFBS ID from
-        the tfbs_adapter).
+        Yield regulatory_region nodes for non-TFBS and non-enhancer features.
+
+        TF_binding_site entries are excluded (TFBS nodes use location-based
+        IDs and a separate label).  Enhancer-qualifying regulatory_region
+        entries are also excluded — they are emitted by ``_enhancer_nodes()``
+        to avoid creating duplicate Neo4j nodes with the same FlyBase ID.
         """
         seen = set()
         for chrom, _src, feat, start, end, attrs in self._iter_features():
             if feat == "TF_binding_site":
-                continue  # TFBS nodes are handled by tfbs_adapter
+                continue
+            # Skip enhancer-qualifying entries (emitted by _enhancer_nodes).
+            if feat == "regulatory_region" and self._is_enhancer(attrs):
+                continue
 
             fb_id = attrs.get("ID", "")
             if fb_id in seen:
@@ -289,15 +293,15 @@ class FlyBaseRegulatoryAdapter(Adapter):
             yield node_id, "regulatory_region", props
 
     # ------------------------------------------------------------------
-    #  Task 5: Gene → TFBS binding edges
+    #  Gene → TFBS binding edges
     # ------------------------------------------------------------------
     def _gene_tfbs_edges(self):
         """
         For every TF_binding_site record, create a gene → TFBS edge from the
         ``bound_moiety`` gene (FBgn) to a location-based TFBS node ID.
 
-        TFBS nodes use location-based IDs (matching the existing tfbs_adapter
-        pattern): ``FLYBASE_TFBS:{chr}_{start}_{end}_{assembly}``.
+        TFBS nodes use location-based IDs:
+        ``FLYBASE_TFBS:{chr}_{start}_{end}_{BDGP6}``.
         """
         for chrom, _src, feat, start, end, attrs in self._iter_features():
             if feat != "TF_binding_site":
@@ -317,9 +321,7 @@ class FlyBaseRegulatoryAdapter(Adapter):
                 continue
 
             gene_id = f"FlyBase:{fbgn}"
-            # Location-based TFBS ID (consistent with tfbs_adapter pattern,
-            # but using FlyBase prefix for dmel data).
-            tfbs_id = f"FLYBASE_TFBS:{build_regulatory_region_id(chrom, start, end)}"
+            tfbs_id = f"FLYBASE_TFBS:{build_regulatory_region_id(chrom, start, end, self.DMEL_ASSEMBLY)}"
 
             source_fb_id = attrs.get("ID", "")
 
@@ -334,12 +336,19 @@ class FlyBaseRegulatoryAdapter(Adapter):
             yield gene_id, tfbs_id, "gene_tfbs", props
 
     # ------------------------------------------------------------------
-    #  Task 6: Regulatory feature → sequence type edges
+    #  Regulatory feature → sequence type edges
     # ------------------------------------------------------------------
     def _regulatory_feature_so_edges(self):
         """
         For each regulatory feature, link it to the corresponding SO term
-        node via a ``regulatory_feature_sequence_type`` edge.
+        node via a ``regulatory_feature_classified_as`` edge.
+
+        Enhancer-qualifying entries are included here (they still get an SO
+        typing edge even though their *node* is emitted as ``enhancer``).
+
+        TFBS entries use a typed tuple source ``('tfbs', id)`` so the Neo4j
+        loader can match nodes labelled ``tfbs`` rather than
+        ``regulatory_region``.
         """
         seen = set()
         for chrom, _src, feat, start, end, attrs in self._iter_features():
@@ -352,9 +361,10 @@ class FlyBaseRegulatoryAdapter(Adapter):
             if not so_id:
                 continue
 
-            # For TFBS, use location-based ID; for others, use FlyBase ID.
+            # For TFBS, use location-based ID and typed tuple; for others,
+            # use the FlyBase ID directly.
             if feat == "TF_binding_site":
-                node_id = f"FLYBASE_TFBS:{build_regulatory_region_id(chrom, start, end)}"
+                node_id = f"FLYBASE_TFBS:{build_regulatory_region_id(chrom, start, end, self.DMEL_ASSEMBLY)}"
             else:
                 node_id = f"FlyBase:{fb_id}"
 
@@ -367,4 +377,4 @@ class FlyBaseRegulatoryAdapter(Adapter):
                     props["source"] = self.source
                     props["source_url"] = self.source_url
 
-            yield node_id, so_node_id, "regulatory_feature_sequence_type", props
+            yield node_id, so_node_id, "regulatory_feature_classified_as", props
