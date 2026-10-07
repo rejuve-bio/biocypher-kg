@@ -1087,7 +1087,7 @@ transcript to transcript physical interaction:
     knowledge_level: knowledge_assertion
     agent_type: manual_agent
 
-# ---------- FlyBase regulatory annotation edges (Issue #360) ----------
+# ---------- FlyBase regulatory annotation edges ----------
 
 dmel enhancer to gene association:
   is_a: enhancer to gene association
@@ -1134,11 +1134,12 @@ dmel gene to transcription binding site association:
     agent_type: manual_agent
 
 dmel regulatory feature to sequence type:
-  is_a: related to at instance level
+  is_a: annotation
+  inherit_properties: true
   represented_as: edge
-  input_label: regulatory_feature_sequence_type
-  output_label: is_a
-  biolink_predicate: biolink:subclass_of
+  input_label: regulatory_feature_classified_as
+  output_label: classified_as
+  biolink_predicate: biolink:classified_as
   source: regulatory region
   target: sequence type
   description: >

@@ -1,12 +1,12 @@
 """
-Tests for the FlyBase regulatory-annotation adapter (Issue #360).
+Tests for the FlyBase regulatory-annotation adapter.
 
-Uses a small synthetic GFF3 snippet to verify all five output modes:
+Uses a small synthetic GFF3 snippet to verify all output modes:
   1. Enhancer nodes
   2. Enhancer → gene edges
-  3. Regulatory region nodes (non-TFBS)
-  4. Gene → TFBS edges
-  5. Regulatory feature → sequence type edges
+  3. Regulatory region nodes (non-TFBS, non-enhancer)
+  4. Gene → TFBS edges (with BDGP6 assembly)
+  5. Regulatory feature → sequence type edges (classified_as)
 """
 
 import gzip
@@ -46,7 +46,7 @@ def gff3_path(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-#  Tests
+#  Tests: Enhancer nodes
 # ---------------------------------------------------------------------------
 
 
@@ -94,13 +94,18 @@ class TestEnhancerNodes:
         assert "FlyBase:FBsf0000926668" not in ids
 
 
+# ---------------------------------------------------------------------------
+#  Tests: Enhancer → gene edges
+# ---------------------------------------------------------------------------
+
+
 class TestEnhancerGeneEdges:
     def test_enhancer_gene_edges(self, gff3_path):
         adapter = FlyBaseRegulatoryAdapter(
             write_properties=True,
             add_provenance=False,
             filepath=gff3_path,
-            label="flybase_enhancer",
+            label="flybase_enhancer_gene",
         )
         edges = list(adapter.get_edges())
         # FBsf0001111111 → 1 gene, FBsf0002222222 → 2 genes = 3 edges
@@ -111,7 +116,7 @@ class TestEnhancerGeneEdges:
             write_properties=True,
             add_provenance=False,
             filepath=gff3_path,
-            label="flybase_enhancer",
+            label="flybase_enhancer_gene",
         )
         edges = list(adapter.get_edges())
         targets = {e[1] for e in edges}
@@ -124,11 +129,16 @@ class TestEnhancerGeneEdges:
             write_properties=True,
             add_provenance=False,
             filepath=gff3_path,
-            label="flybase_enhancer",
+            label="flybase_enhancer_gene",
         )
         edges = list(adapter.get_edges())
         for edge in edges:
             assert edge[3]["confirmed"] is True
+
+
+# ---------------------------------------------------------------------------
+#  Tests: Regulatory region nodes (non-TFBS, non-enhancer)
+# ---------------------------------------------------------------------------
 
 
 class TestRegulatoryRegionNodes:
@@ -141,14 +151,17 @@ class TestRegulatoryRegionNodes:
         )
         nodes = list(adapter.get_nodes())
         ids = {n[0] for n in nodes}
-        # Should include: 3 regulatory_regions + 1 insulator + 1 TSS = 5
-        # Should NOT include: TF_binding_site, scaffold entry
-        assert len(nodes) == 5
-        assert "FlyBase:FBsf0000926668" in ids
-        assert "FlyBase:FBsf0003333333" in ids  # insulator
-        assert "FlyBase:FBsf0004444444" in ids  # TSS
+        # Should include: 1 plain regulatory_region + 1 insulator + 1 TSS = 3
+        # Should NOT include: TFBS, scaffold, or enhancer-qualifying entries
+        assert len(nodes) == 3
+        assert "FlyBase:FBsf0000926668" in ids   # plain regulatory_region
+        assert "FlyBase:FBsf0003333333" in ids    # insulator
+        assert "FlyBase:FBsf0004444444" in ids    # TSS
         # scaffold should be excluded
         assert "FlyBase:FBsf9999999999" not in ids
+        # enhancers should NOT appear here (emitted by _enhancer_nodes)
+        assert "FlyBase:FBsf0001111111" not in ids
+        assert "FlyBase:FBsf0002222222" not in ids
 
     def test_library_property(self, gff3_path):
         adapter = FlyBaseRegulatoryAdapter(
@@ -164,6 +177,11 @@ class TestRegulatoryRegionNodes:
         assert insulator[2]["so_term"] == "SO:0000627"
 
 
+# ---------------------------------------------------------------------------
+#  Tests: Gene → TFBS edges (with BDGP6 assembly)
+# ---------------------------------------------------------------------------
+
+
 class TestGeneTfbsEdges:
     def test_gene_tfbs_edges(self, gff3_path):
         adapter = FlyBaseRegulatoryAdapter(
@@ -176,9 +194,15 @@ class TestGeneTfbsEdges:
         assert len(edges) == 1
         edge = edges[0]
         assert edge[0] == "FlyBase:FBgn0002573"  # sens gene
-        assert edge[1].startswith("FLYBASE_TFBS:")
+        # TFBS ID should use BDGP6 assembly, not GRCh38
+        assert edge[1] == "FLYBASE_TFBS:3R_3272_3476_BDGP6"
         assert edge[2] == "gene_tfbs"
         assert edge[3]["source_id"] == "FBsf0000226205"
+
+
+# ---------------------------------------------------------------------------
+#  Tests: Regulatory feature → SO edges (classified_as)
+# ---------------------------------------------------------------------------
 
 
 class TestRegulatoryFeatureSOEdges:
@@ -187,16 +211,40 @@ class TestRegulatoryFeatureSOEdges:
             write_properties=True,
             add_provenance=False,
             filepath=gff3_path,
-            label="flybase_regulatory_region",
+            label="flybase_regulatory_region_so",
         )
         edges = list(adapter.get_edges())
-        # Should emit one edge per unique feature (3 reg_regions + 1 insulator + 1 TSS + 1 TFBS = 6)
+        # All unique features across ALL types:
+        # 3 regulatory_regions + 1 insulator + 1 TSS + 1 TFBS = 6
         assert len(edges) == 6
+        # Check the edge label is classified_as
+        for edge in edges:
+            assert edge[2] == "regulatory_feature_classified_as"
+        # Check SO term targets
         so_targets = {e[1][1] if isinstance(e[1], tuple) else e[1] for e in edges}
         assert "SO_0005836" in so_targets  # regulatory_region
         assert "SO_0000627" in so_targets  # insulator
         assert "SO_0000315" in so_targets  # TSS
         assert "SO_0000235" in so_targets  # TF_binding_site
+
+    def test_tfbs_so_edge_uses_bdgp6(self, gff3_path):
+        """TFBS→SO edges should use BDGP6 assembly in the TFBS ID."""
+        adapter = FlyBaseRegulatoryAdapter(
+            write_properties=True,
+            add_provenance=False,
+            filepath=gff3_path,
+            label="flybase_regulatory_region_so",
+        )
+        edges = list(adapter.get_edges())
+        tfbs_edges = [e for e in edges if e[1] == ("sequence_type", "SO_0000235")]
+        assert len(tfbs_edges) == 1
+        assert "BDGP6" in tfbs_edges[0][0]
+        assert "GRCh38" not in tfbs_edges[0][0]
+
+
+# ---------------------------------------------------------------------------
+#  Tests: Scaffold filtering
+# ---------------------------------------------------------------------------
 
 
 class TestScaffoldFiltering:
