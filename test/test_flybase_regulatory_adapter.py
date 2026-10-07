@@ -217,9 +217,9 @@ class TestRegulatoryFeatureSOEdges:
         # All unique features across ALL types:
         # 3 regulatory_regions + 1 insulator + 1 TSS + 1 TFBS = 6
         assert len(edges) == 6
-        # Check the edge label is classified_as
-        for edge in edges:
-            assert edge[2] == "regulatory_feature_classified_as"
+        # Check the edge labels
+        edge_labels = {e[2] for e in edges}
+        assert edge_labels == {"regulatory_feature_classified_as", "tfbs_classified_as"}
         # Check SO term targets
         so_targets = {e[1][1] if isinstance(e[1], tuple) else e[1] for e in edges}
         assert "SO_0005836" in so_targets  # regulatory_region
