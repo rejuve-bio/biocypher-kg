@@ -1144,7 +1144,29 @@ dmel regulatory feature to sequence type:
   target: sequence type
   description: >
     Links a FlyBase regulatory feature to its corresponding Sequence
-    Ontology term (SO:0000235, SO:0000627, SO:0000410, SO:0005836, SO:0000315).
+    Ontology term (SO:0000627, SO:0000410, SO:0005836, SO:0000315).
+  properties:
+    taxon_id:
+      type: int
+      biolink: taxon
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:OntologyClass
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+
+dmel tfbs to sequence type:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: tfbs_classified_as
+  output_label: classified_as
+  biolink_predicate: biolink:classified_as
+  source: transcription binding site
+  target: sequence type
+  description: >
+    Links a FlyBase TFBS to its corresponding Sequence
+    Ontology term (SO:0000235).
   properties:
     taxon_id:
       type: int
