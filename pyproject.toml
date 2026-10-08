@@ -6,7 +6,7 @@ authors = [
     "Abdulrahman S. Omar <xabush@singularitynet.io>",
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "appdirs==1.4.4",
     "asttokens==3.0.0",
@@ -81,7 +81,7 @@ dependencies = [
     "pyyaml==6.0.3",
     "questionary==2.1.1",
     "rdflib==6.3.2",
-    "requests==2.32.5",
+    "requests>=2.33.0,<3.0.0",
     "rich==14.2.0",
     "rsa==4.9.1",
     "setuptools==80.9.0",
