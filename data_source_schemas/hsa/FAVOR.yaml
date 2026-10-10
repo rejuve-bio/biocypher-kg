@@ -4,11 +4,12 @@ nodes:
   snp:
     url: http://favor.genohub.org/
     input_label: snp
-    description: A single nucleotide polymorphism (SNP) is a variation in a single
-      nucleotide that occurs at a specific position in the genome
+    description: 'A single nucleotide polymorphism (SNP): a single-nucleotide variation
+      at a specific genomic position, for any species. Subtype of allele.'
     properties:
       alt: str
       chr: str
       end: int
       ref: str
       start: int
+      taxon_id: int

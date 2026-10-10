@@ -193,6 +193,7 @@ class PromotercCREAdapter(Adapter):
                     'start': promoter_data['start'],
                     'end': promoter_data['end'],
                     'accession': accession,
+                    'taxon_id': self.taxon_id,
                 })
 
                 if self.add_provenance:
@@ -210,11 +211,13 @@ class PromotercCREAdapter(Adapter):
                 if not gene_id:
                     continue
                 
-                # Add  prefix to gene_id
-                gene_id = f"{gene_id}"
+                # Add CURIE prefix to gene_id (matches EnhancercCREAdapter and
+                # every other gene-referencing adapter's ENSEMBL: convention)
+                gene_id = f"ENSEMBL:{gene_id}"
                 
                 props = {
                     'distance': promoter_data['distance'],
+                    'taxon_id': self.taxon_id,
                 }
                 
                 if self.add_provenance:
@@ -235,14 +238,15 @@ class PromotercCREAdapter(Adapter):
                     
                     if not gene_id:
                         continue
-                    
-                    gene_id = f"{gene_id}"
+
+                    gene_id = f"ENSEMBL:{gene_id}"
                     
                     tissue = eqtl_data['tissue']
                     ontology_id = self._get_ontology_id(tissue)
                     
                     props = {
-                        'biological_context': ontology_id
+                        'biological_context': ontology_id,
+                        'taxon_id': self.taxon_id,
                     }
                     
                     if self.add_provenance:

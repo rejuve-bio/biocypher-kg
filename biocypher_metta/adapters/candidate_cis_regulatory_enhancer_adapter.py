@@ -67,6 +67,7 @@ class EnhancercCREAdapter(Adapter):
                         'start': start,
                         'end': end,
                         'accession': accession,
+                        'taxon_id': self.taxon_id,
                     })
 
                     if self.add_provenance:
@@ -137,6 +138,7 @@ class EnhancercCREAdapter(Adapter):
 
                 props = {
                     'distance': distance,
+                    'taxon_id': self.taxon_id,
                 }
 
                 if self.add_provenance:

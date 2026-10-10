@@ -10,7 +10,7 @@ nodes:
       development_stage: str[]
       end: int
       start: int
-      taxon_id: str
+      taxon_id: int
   enhancer:
     url: https://catlas.org/
     input_label: enhancer
@@ -20,7 +20,7 @@ nodes:
       development_stage: str[]
       end: int
       start: int
-      taxon_id: str
+      taxon_id: int
 relationships:
   enhancer accessible in cell type:
     url: https://catlas.org/

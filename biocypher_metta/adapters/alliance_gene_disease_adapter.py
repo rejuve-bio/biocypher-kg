@@ -9,8 +9,9 @@
 
 import gzip
 import csv
+from typing import Optional
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.processors import HGNCProcessor
+from biocypher_metta.processors import HGNCProcessor, BioMartEnsemblProcessor
 
 # Column indices for the TSV file
 COLUMNS = {
@@ -34,6 +35,18 @@ COLUMNS = {
     'source': 17,
 }
 
+# Species whose Alliance IDs only need the "DB:" prefix stripped.
+_STRIP_PREFIX = {
+    '7227': 'FB:',   # FB:FBgn... → FBgn...
+    '6239': 'WB:',   # WB:WBGene... → WBGene...
+}
+
+# BioMart-based species: taxon_id → (dataset, species_id_attr, species_code)
+_BIOMART_CONFIGS = {
+    '10116': ('rnorvegicus_gene_ensembl', 'rgd_id', 'rno'),
+    '10090': ('mmusculus_gene_ensembl',   'mgi_id', 'mmu'),
+}
+
 # Map association types to edge labels
 ASSOCIATION_TYPE_MAP = {
     'biomarker_via_orthology': 'biomarker_via_orthology',
@@ -45,31 +58,76 @@ ASSOCIATION_TYPE_MAP = {
 
 
 class AllianceGeneDiseaseAdapter(Adapter):
-    def __init__(self, filepath, label, taxon_id, write_properties=None, add_provenance=None):
+    def __init__(
+        self,
+        filepath,
+        label,
+        taxon_id,
+        hgnc_cache_dir: str = 'aux_files/hsa/hgnc',
+        biomart_cache_base_dir: str = 'aux_files',
+        write_properties=None,
+        add_provenance=None,
+    ):
         """
         Constructs Alliance gene-disease adapter.
-        
+
         :param filepath: Path to DISEASE-ALLIANCE_COMBINED.tsv.gz file
         :param label: One of the supported association types:
                       - biomarker_via_orthology
                       - implicated_via_orthology
                       - is_implicated_in
                       - is_model_of
+                      - is_marker_for
         :param taxon_id: NCBI taxon ID (e.g., '9606' for human).
+        :param hgnc_cache_dir: Cache directory for HGNCProcessor (hsa only).
+        :param biomart_cache_base_dir: Base directory for BioMart caches.
         :param write_properties: Whether to write edge properties
         :param add_provenance: Whether to add provenance information
         """
         self.filepath = filepath
         self.label = label
         self.taxon_id = str(taxon_id)
-        self.hgnc_processor = None
-        if self.taxon_id == "9606":
-            self.hgnc_processor = HGNCProcessor()
         self.source = "Alliance for Genome Resources"
         self.source_url = "https://www.alliancegenome.org/"
         self.version = "latest"
-        
+
+        self._hgnc_processor = HGNCProcessor(cache_dir=hgnc_cache_dir)
+
+        self._biomart_processors = {
+            taxon: BioMartEnsemblProcessor(
+                dataset=dataset,
+                species_id_attr=species_id_attr,
+                cache_dir=f"{biomart_cache_base_dir}/{sp_code}/biomart_ensembl",
+            )
+            for taxon, (dataset, species_id_attr, sp_code) in _BIOMART_CONFIGS.items()
+        }
+
         super(AllianceGeneDiseaseAdapter, self).__init__(write_properties, add_provenance)
+
+    def _resolve_gene_id(self, gene_id: str) -> Optional[str]:
+        """Convert an Alliance gene ID to the CURIE-prefixed gene ID used in the KG."""
+        resolved = self._resolve_bare_gene_id(gene_id)
+        if resolved is None:
+            return None
+        return f"{Adapter.CURIE_PREFIX[int(self.taxon_id)]}:{resolved}"
+
+    def _resolve_bare_gene_id(self, gene_id: str) -> Optional[str]:
+        """Convert an Alliance gene ID to the bare (unprefixed) Ensembl/FlyBase/WormBase ID."""
+        if self.taxon_id in _STRIP_PREFIX:
+            prefix = _STRIP_PREFIX[self.taxon_id]
+            return gene_id[len(prefix):] if gene_id.startswith(prefix) else gene_id
+
+        if self.taxon_id == '9606':
+            return self._hgnc_processor.get_ensembl_id(gene_id)
+
+        if self.taxon_id in self._biomart_processors:
+            proc = self._biomart_processors[self.taxon_id]
+            result = proc.get_ensembl_gene(gene_id)
+            if result is None and ':' in gene_id:
+                result = proc.get_ensembl_gene(gene_id.split(':', 1)[1])
+            return result
+
+        return gene_id
 
     def get_edges(self):
         """
@@ -120,11 +178,10 @@ class AllianceGeneDiseaseAdapter(Adapter):
                 inferred_from_symbol = row[COLUMNS['inferred_from_symbol']]
                 
                 # Create edge
-                if self.taxon_id == "9606":
-                    ensembl_id = self.hgnc_processor.get_ensembl_id(db_object_id)
-                    _source = ("gene", ensembl_id)
-                else:
-                    _source = ("gene", db_object_id)
+                resolved_id = self._resolve_gene_id(db_object_id)
+                if resolved_id is None:
+                    continue
+                _source = ("gene", resolved_id)
                 _target = ("disease", doid)
                 _label = self.label
                 _props = {}

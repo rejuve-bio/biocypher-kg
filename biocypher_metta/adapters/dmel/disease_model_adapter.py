@@ -37,11 +37,12 @@ import re
 class DiseaseModelAdapter(Adapter):
 #class DiseaseModelAdapter():
 
-    def __init__(self, write_properties, add_provenance, label='dmel_disease_model', dmel_filepath=None):
+    def __init__(self, write_properties, add_provenance, label='dmel_disease_model', dmel_filepath=None, taxon_id=7227):
         self.dmel_filepath = dmel_filepath
         self.label = label # node label is expected to be: 'dmel_disease_model'
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(DiseaseModelAdapter, self).__init__(write_properties, add_provenance)
 
@@ -88,7 +89,7 @@ class DiseaseModelAdapter(Adapter):
                 props['interacting_alleles'] =  [allele.upper() for allele in alleles]
             props['ev_code_interact_alleles'] = row[10]
             props['reference_id'] = row[11]
-            props['taxon_id'] = 7227
+            props['taxon_id'] = self.taxon_id
             yield f'RejuveBio:DMEL_DISEASE_MODEL_{id}', self.label, props
 
     def get_edges(self):      
@@ -103,8 +104,8 @@ class DiseaseModelAdapter(Adapter):
         id = -1
         for row in rows:
             id += 1
-            props = {}            
-            props['taxon_id'] = 7227
+            props = {}
+            props['taxon_id'] = self.taxon_id
             if self.label == 'modelled_to_human_disease':
                 source = row[0].upper()                        
                 yield f'FlyBase:{source}', f'RejuveBio:DMEL_DISEASE_MODEL_{id}', self.label, props

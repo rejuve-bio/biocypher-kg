@@ -1,0 +1,6 @@
+{
+  "timestamp": "2026-07-17T22:22:26.969918",
+  "processor": "entrez_ensembl",
+  "entries": 42507,
+  "source": "local files (s3ftp.flybase.org blocked by WAF bot-challenge, see docstring)"
+}

@@ -52,7 +52,14 @@ class TFLinkAdapter(Adapter):
             with open(entrez_to_ensemble_map, "rb") as f:
                 self.entrez2ensemble = pickle.load(f)
         else:
-            self.processor = EntrezEnsemblProcessor()
+            species_info = Adapter.SPECIES_INFO[taxon_id]
+            self.processor = EntrezEnsemblProcessor(
+                ncbi_gene_info_url=species_info['ncbi_gene_info_url'],
+                gencode_url=species_info['features_data_url'],
+                tax_id=str(taxon_id),
+                cache_dir=species_info['entrez_ensembl_cache_directory'],
+                update_interval_hours=species_info['update_interval_hours']
+            )
             self.processor.load_or_update()
 
         if hasattr(self, 'processor') and self.processor is not None:

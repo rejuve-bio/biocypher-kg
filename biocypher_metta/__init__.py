@@ -13,8 +13,9 @@ class BaseWriter(ABC):
         self.include_curie = include_curie
         self.bcy = BioCypher(schema_config_path=schema_config,
                              biocypher_config_path=biocypher_config)
-        if not os.path.exists(output_dir):
-            self.output_path.mkdir(parents=True)
+        # exist_ok=True so concurrent workers building their own writer against the
+        # same (not-yet-existing) output_dir don't race into FileExistsError.
+        self.output_path.mkdir(parents=True, exist_ok=True)
         self.ontology = self.bcy._get_ontology()
 
         self.node_freq = Counter()

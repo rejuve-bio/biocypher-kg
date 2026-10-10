@@ -29,3 +29,15 @@ relationships:
     output_label: located_in
     source: non coding rna
     target: cellular component
+  non_coding_rna overlaps gene:
+    url: https://rnacentral.org/
+    input_label: ncrna_overlaps_gene
+    output_label: overlaps
+    source: non_coding_rna
+    target: gene
+  gene overlaps non_coding_rna:
+    url: https://rnacentral.org/
+    input_label: gene_overlaps_ncrna
+    output_label: overlaps
+    source: gene
+    target: non_coding_rna

@@ -27,10 +27,6 @@ from collections import defaultdict
 
 class BgeeAdapter(Adapter):
     FIELD_INDEX = {'gene': 0, 'anatomical_entity': 2, 'developmental stage': 4, 'expression': 8, 'fdr': 10, 'expression_score': 11}
-    CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL',
-    }
 
     def __init__(self, filepath, write_properties, add_provenance, taxon_id, label,
                  anatomy_label=None, developmental_stage_label=None):

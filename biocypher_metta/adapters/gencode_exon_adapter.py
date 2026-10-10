@@ -35,11 +35,6 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 #FBgn_ID	Gene_Symbol	Summary_Source	Summary
 
 class GencodeExonAdapter(Adapter):
-    CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL'
-    }
-
     ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_biotype', 'transcript_name', 'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
@@ -103,12 +98,15 @@ class GencodeExonAdapter(Adapter):
 
     def get_nodes(self):
         with gzip.open(self.filepath, 'rt') as input:
+            not_processed = 0
+            total = 0
             for line in input:
                 if line.startswith('#'):
                     continue
-                    
+
                 split_line = line.strip().split()
                 if split_line[GencodeExonAdapter.INDEX['type']] == 'exon':
+                    total += 1
                     info = self.parse_info_metadata(
                         split_line[GencodeExonAdapter.INDEX['info']:])
                     
@@ -143,16 +141,19 @@ class GencodeExonAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'exon_number': int(info.get('exon_number', -1)),
+                                    'taxon_id': self.taxon_id,
                                 }
-                                
+
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url                                    
                             yield exon_id, self.label, props
 
                     except Exception as e:
-                        print(f'Failed to process for label to load: {self.label}, type to load: exon, data: {line}')
-                        print(f'Error: {str(e)}')
+                        # print(f'Failed to process for label to load: {self.label}, type to load: exon, data: {line}')
+                        # print(f'Error: {str(e)}')
+                        not_processed += 1
+            print(f"Not processed records: {not_processed} out of {total} exons.")
 
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as input:
@@ -179,9 +180,11 @@ class GencodeExonAdapter(Adapter):
                     exon_id = exon_id + '_PAR_Y'
 
                 _props = {}
-                if self.write_properties and self.add_provenance:
-                    _props['source'] = self.source
-                    _props['source_url'] = self.source_url
+                if self.write_properties:
+                    _props['taxon_id'] = self.taxon_id
+                    if self.add_provenance:
+                        _props['source'] = self.source
+                        _props['source_url'] = self.source_url
 
                 try:
                     _source = f"{GencodeExonAdapter.CURIE_PREFIX[self.taxon_id]}:{exon_id}"

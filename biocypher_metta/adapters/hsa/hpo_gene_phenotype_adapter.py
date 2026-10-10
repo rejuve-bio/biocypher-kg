@@ -47,8 +47,10 @@ class HPOAdapter(Adapter):
         entrez_to_ensembl_map: str = None,
         label: str = "gene_phenotype",
         entrez_ensembl_processor=None,
+        taxon_id=9606,
     ):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.label = label
         self.source = "Human Phenotype Ontology"
         self.source_url = "https://hpo.jax.org/"
@@ -129,6 +131,7 @@ class HPOAdapter(Adapter):
                     props["frequency"] = frequency
                 if disease_id and disease_id != "-":
                     props["disease_id"] = disease_id
+                props["taxon_id"] = self.taxon_id
 
             if self.add_provenance:
                 props["source"] = self.source

@@ -26,7 +26,7 @@ class RoadMapChromatinStateAdapter(Adapter):
 
     def __init__(self, filepath, cell_to_ontology_id_map,  tissue_to_ontology_id_map, label,
                  dbsnp_rsid_map, write_properties, add_provenance,
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None, taxon_id=9606):
         """
         :param filepath: path to the directory containing epigenomic data
         :param dbsnp_rsid_map: a dictionary mapping dbSNP rsid to genomic position
@@ -35,6 +35,7 @@ class RoadMapChromatinStateAdapter(Adapter):
         :param end: end position
         """
         self.filepath = filepath
+        self.taxon_id = taxon_id
         assert os.path.isdir(self.filepath), "The path to the directory containing epigenomic data is not directory"
         self.cell_to_ontology_id_map = pickle.load(open(cell_to_ontology_id_map, 'rb'))
         self.tissue_to_ontology_id_map = pickle.load(open(tissue_to_ontology_id_map, 'rb'))
@@ -95,6 +96,7 @@ class RoadMapChromatinStateAdapter(Adapter):
                         _props = {}
                         if self.write_properties:
                             _props["state"] = row[self.COL_DICT['datatype']]
+                            _props['taxon_id'] = self.taxon_id
                             if self.add_provenance:
                                 _props['source'] = self.source
                                 _props['source_url'] = self.source_url
@@ -103,10 +105,10 @@ class RoadMapChromatinStateAdapter(Adapter):
                         edge_key2 = (_source, tissue_target)
                         if edge_key not in seen_edges:
                             seen_edges.add(edge_key)
-                            yield _source, _target, self.label, _props
+                            yield _source, _target, f'{self.label}_{_target[0]}', _props
                         if edge_key2 not in seen_edges:
                             seen_edges.add(edge_key2)
-                            yield _source, tissue_target, self.label, _props
+                            yield _source, tissue_target, f'{self.label}_{tissue_target[0]}', _props
 
                     except Exception as e:
                         print(f"error while parsing row: {row}, error: {e.args}. Skipping...")

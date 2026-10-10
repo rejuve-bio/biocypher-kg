@@ -1,10 +1,11 @@
 .PHONY: help setup check-uv run run-interactive run-sample run-direct check-paths \
         download download-direct \
         test clean distclean \
-        neo4j-up neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
+        neo4j-up neo4j-reset neo4j-down neo4j-logs neo4j-status neo4j-load neo4j-load-direct
 
 # Path to the Neo4j env file; override with: make neo4j-up NEO4J_ENV_FILE=my.env
 NEO4J_ENV_FILE ?= docker/neo4j.env
+NEO4J_PROJECT_NAME ?= biocypher_neo4j
 
 # Base input directory for resolving adapter config paths; overrides the input_dir: field in the YAML
 INPUT_DIR ?=
@@ -24,7 +25,8 @@ help:
 	@echo "  make distclean      - Full clean including virtual environment"
 	@echo ""
 	@echo "Neo4j deployment (configure via $(NEO4J_ENV_FILE)):"
-	@echo "  make neo4j-up           - Start Neo4j Docker container"
+	@echo "  make neo4j-up           - Start Neo4j Docker container (idempotent, preserves data)"
+	@echo "  make neo4j-reset        - Wipe Neo4j volumes and start fresh from env"
 	@echo "  make neo4j-down         - Stop and remove Neo4j Docker container"
 	@echo "  make neo4j-logs         - Stream Neo4j container logs"
 	@echo "  make neo4j-status       - Show Neo4j container status"
@@ -38,6 +40,7 @@ help:
 	@echo "  make run-sample WRITER_TYPE=prolog - Run with sample data using prolog writer"
 	@echo "  make run-sample     SKIP_PREFLIGHT=yes   - Same, for sample runs"
 	@echo "  make run-sample INCLUDE_TAXON_ID=no   - Run without taxon_id in output (single-species KG)"
+	@echo "  make run-sample MAX_WORKERS=4        - Run adapters on 4 parallel workers (1 = sequential)"
 	@echo "  make run-direct ... SKIP_PREFLIGHT=yes   - Skip pre-flight file path validation"
 	@echo "  make run-direct ... INPUT_DIR=/data/hsa - Override base input directory from the YAML config"
 	@echo "  make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml"
@@ -170,6 +173,15 @@ run-interactive: check-uv
 		echo "Pre-flight validation enabled"; \
 	fi; \
 	echo ""; \
+	read -p "🧵 Enter max parallel workers (1 = sequential) [auto]: " MAX_WORKERS; \
+	if [ -n "$$MAX_WORKERS" ]; then \
+		MAX_WORKERS_FLAG="--max-workers $$MAX_WORKERS"; \
+		echo "Max parallel workers: $$MAX_WORKERS"; \
+	else \
+		MAX_WORKERS_FLAG=""; \
+		echo "Max parallel workers: auto (min(8, CPU count))"; \
+	fi; \
+	echo ""; \
 	echo "🎯 Starting knowledge graph creation..."; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python create_knowledge_graph.py \
@@ -184,13 +196,14 @@ run-interactive: check-uv
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
 		$$SKIP_PREFLIGHT_FLAG \
+		$$MAX_WORKERS_FLAG \
 		$$INPUT_DIR_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
 run-direct: check-uv
 	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(SCHEMA_CONFIG)" ]; then \
 		echo "❌ Error: Missing required parameters"; \
-		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...]"; \
+		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...] [MAX_WORKERS=N]"; \
 		echo ""; \
 		echo "Or use 'make run' for interactive mode"; \
 		exit 1; \
@@ -222,6 +235,7 @@ run-direct: check-uv
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
 		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
+		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),) \
 		$(if $(INPUT_DIR),--input-dir $(INPUT_DIR),)
 
 # Run with sample configuration and data (with optional writer type)
@@ -259,7 +273,8 @@ run-sample: check-uv
 		$$WRITE_PROPERTIES_FLAG \
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
-		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,)
+		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
+		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),)
 	@echo "✅ Sample run completed! Check the ./output directory for results."
 # Validate file paths in an adapters config without running any adapters
 check-paths: check-uv
@@ -284,19 +299,39 @@ check-paths: check-uv
 
 # ─── Neo4j deployment targets ────────────────────────────────────────────────
 
+# neo4j-up: ## Start Neo4j Docker container (reads docker/neo4j.env)
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
+# 	@echo "✅ Neo4j starting — check status with: make neo4j-status"
+
+# neo4j-down: ## Stop and remove Neo4j Docker container
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
+# 	@echo "✅ Neo4j stopped"
+
+# neo4j-logs: ## Stream Neo4j container logs
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
+
+# neo4j-status: ## Show Neo4j container status
+# 	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
+
 neo4j-up: ## Start Neo4j Docker container (reads docker/neo4j.env)
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d
 	@echo "✅ Neo4j starting — check status with: make neo4j-status"
 
+neo4j-reset: ## Wipe Neo4j volumes and start fresh from env (DESTROYS existing graph data)
+	@echo "♻️  Resetting Neo4j volumes so env settings are re-applied..."
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down --volumes
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml up -d --force-recreate neo4j
+	@echo "✅ Neo4j started with fresh state from $(NEO4J_ENV_FILE) — check status with: make neo4j-status"
+
 neo4j-down: ## Stop and remove Neo4j Docker container
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml down
 	@echo "✅ Neo4j stopped"
 
 neo4j-logs: ## Stream Neo4j container logs
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml logs -f neo4j
 
 neo4j-status: ## Show Neo4j container status
-	docker compose --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
+	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
 
 neo4j-load: check-uv ## Load data with version tracking (incremental — only reloads changed datasets)
 	@export PATH="$$HOME/.local/bin:$$PATH"; \

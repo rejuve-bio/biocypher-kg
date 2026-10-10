@@ -19,8 +19,9 @@ class RefSeqClosestGeneAdapter(Adapter):
     """
     def __init__(self, filepath, hgnc_to_ensembl_map=None, dbsnp_rsid_map=None, label='closest_gene',
                  write_properties=None, add_provenance=None,
-                 chr=None, start=None, end=None, hgnc_processor=None):
+                 chr=None, start=None, end=None, hgnc_processor=None, taxon_id=9606):
         self.file_path = filepath
+        self.taxon_id = taxon_id
         self.dbsnp_rsid_map = dbsnp_rsid_map
         self.chr = chr
         self.start = start
@@ -64,6 +65,7 @@ class RefSeqClosestGeneAdapter(Adapter):
                                 props['chr'] = chr
                                 props['pos'] = pos
                                 props['distance'] = int(distance)
+                                props['taxon_id'] = self.taxon_id
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url

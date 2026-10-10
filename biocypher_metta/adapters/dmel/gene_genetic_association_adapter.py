@@ -33,11 +33,12 @@ from biocypher._logger import logger
 
 class GeneGeneticAssociationAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'gene_genetic_association'):
+    def __init__(self, write_properties, add_provenance, dmel_data_filepath, label = 'gene_genetic_association', taxon_id=7227):
         self.dmel_data_filepath = dmel_data_filepath
         self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
+        self.taxon_id = taxon_id
 
         super(GeneGeneticAssociationAdapter, self).__init__(write_properties, add_provenance)
 
@@ -61,7 +62,7 @@ class GeneGeneticAssociationAdapter(Adapter):
                 target = target[0]
                 props['type'] = row[4]
                 props['reference'] = row[5]
-                props['taxon_id'] = 7227
+                props['taxon_id'] = self.taxon_id
                 yield f'FlyBase:{source}', f'FlyBase:{target}', self.label, props
             #
             elif len(source) > 1 and len(target) == 1:
@@ -69,7 +70,7 @@ class GeneGeneticAssociationAdapter(Adapter):
                 for source_id in source:
                     props['type'] = row[4]
                     props['reference'] = row[5]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     yield f'FlyBase:{source_id}', f'FlyBase:{target}', self.label, props
             #
             elif len(source) == 1 and len(target) > 1:
@@ -77,7 +78,7 @@ class GeneGeneticAssociationAdapter(Adapter):
                 for target_id in target:
                     props['type'] = row[4]
                     props['reference'] = row[5]
-                    props['taxon_id'] = 7227
+                    props['taxon_id'] = self.taxon_id
                     yield f'FlyBase:{source}', f'FlyBase:{target_id}', self.label, props
             #
             elif len(source) > 1 and len(target) > 1:
@@ -85,5 +86,5 @@ class GeneGeneticAssociationAdapter(Adapter):
                     for target_id in target:
                         props['type'] = row[4]
                         props['reference'] = row[5]
-                        props['taxon_id'] = 7227
+                        props['taxon_id'] = self.taxon_id
                         yield f'FlyBase:{source_id}', f'FlyBase:{target_id}', self.label, props

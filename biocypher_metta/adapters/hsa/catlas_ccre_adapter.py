@@ -47,7 +47,7 @@ class CAtlasCCREAdapter(Adapter):
     ):
         self.filepath = filepath
         self.label = label
-        self.taxon_id = str(taxon_id) if taxon_id is not None else None
+        self.taxon_id = taxon_id
         self.class_filter = class_filter.lower().strip() if isinstance(class_filter, str) else None
         self.input_coordinate_system = input_coordinate_system
         self.source = "CATLAS"

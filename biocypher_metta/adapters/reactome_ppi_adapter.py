@@ -36,8 +36,8 @@ class ReactomePPIAdapter(Adapter):
         prefix = context.replace('reactome:', '')[:5]
         taxon_id = REACTOME_ORGANISM_TAXON_MAP.get(prefix)
         
-        if not taxon_id and prefix != 'R-NUL':
-             print(f"ReactomePPIAdapter: Unknown species prefix '{prefix}' in context '{context}'")
+        # if not taxon_id and prefix != 'R-NUL':
+        #      print(f"ReactomePPIAdapter: Unknown species prefix '{prefix}' in context '{context}'")
              
         return taxon_id
 

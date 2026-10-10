@@ -23,7 +23,7 @@ relationships:
     url: https://reactome.org
     input_label: reaction_to_pathway
     output_label: part_of
-    description: holds between a reaction and a pathway
+    description: holds between a reaction that is a part of a pathway
     source: reaction
     target: pathway
   input role protein to pathway association:
@@ -194,6 +194,13 @@ relationships:
       that the pathway is involved in the process.
     source: pathway
     target: biological process
+  reaction_to_molecular_function:
+    url: https://reactome.org
+    input_label: reaction_to_molecular_function
+    description: An association between a reaction and a molecular function, indicating
+      that the reaction is involved in the function.
+    source: reaction
+    target: molecular function
   post translational interaction:
     url: https://reactome.org/
     input_label: interacts_with
@@ -201,17 +208,6 @@ relationships:
     target: protein
     properties:
       interaction_type: str
-  pathway_to_molecular_function:
-    url: https://reactome.org
-    input_label: pathway_to_molecular_function
-    description: An association between a pathway and a molecular function, indicating
-      that the pathway is involved in the function.
-    source: pathway
-    target: molecular function
-  pathway_to_cellular_component:
-    url: https://reactome.org
-    input_label: pathway_to_cellular_component
-    description: An association between a pathway and a cellular component, indicating
-      that the pathway is associated with the component.
-    source: pathway
-    target: cellular component
+      interaction_context: str
+      pubmed_references: str[]
+      taxon_id: str

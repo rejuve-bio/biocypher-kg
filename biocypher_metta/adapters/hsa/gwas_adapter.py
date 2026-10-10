@@ -38,8 +38,10 @@ class GWASAdapter(Adapter):
         chr=None,
         start=None,
         end=None,
+        taxon_id=9606,
     ):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.chr = chr
         self.start = start
         self.end = end
@@ -75,6 +77,7 @@ class GWASAdapter(Adapter):
                         if self.write_properties:
                             _props = {
                                 "p_value": to_float(row[self.index["p_value"]]),
+                                "taxon_id": self.taxon_id,
                             }
                             if self.label == "snp_upstream_gene":
                                 _props["distance"] = int(row[self.index["upstream_distance"]])

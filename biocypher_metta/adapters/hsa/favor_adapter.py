@@ -60,8 +60,9 @@ class FavorAdapter(Adapter):
     WRITE_THRESHOLD = 1000000
 
     def __init__(self, write_properties, add_provenance, label,
-                 filepath=None, chr=None, start=None, end=None):
+                 filepath=None, chr=None, start=None, end=None, taxon_id=9606):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.chr = chr
         self.start = start
         self.end = end
@@ -113,6 +114,7 @@ class FavorAdapter(Adapter):
                     if self.write_properties:
                         props = {
                             # '_key': id,
+                            'taxon_id': self.taxon_id,
                             'chr': chr,
                             'start': pos,
                             'end': pos,

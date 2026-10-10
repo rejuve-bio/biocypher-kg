@@ -1,0 +1,1856 @@
+R-HSA-5619084	ABC transporter disorders	Homo sapiens
+R-HSA-1369062	ABC transporters in lipid homeostasis	Homo sapiens
+R-HSA-382556	ABC-family protein mediated transport	Homo sapiens
+R-HSA-198323	AKT phosphorylates targets in the cytosol	Homo sapiens
+R-HSA-198693	AKT phosphorylates targets in the nucleus	Homo sapiens
+R-HSA-211163	AKT-mediated inactivation of FOXO1A	Homo sapiens
+R-HSA-9700645	ALK mutants bind TKIs	Homo sapiens
+R-HSA-9931269	AMPK-induced ERAD and lysosome mediated degradation of PD-L1(CD274)	Homo sapiens
+R-HSA-179409	APC-Cdc20 mediated degradation of Nek2A	Homo sapiens
+R-HSA-174143	APC/C-mediated degradation of cell cycle proteins	Homo sapiens
+R-HSA-174048	APC/C:Cdc20 mediated degradation of Cyclin B	Homo sapiens
+R-HSA-174154	APC/C:Cdc20 mediated degradation of Securin	Homo sapiens
+R-HSA-176409	APC/C:Cdc20 mediated degradation of mitotic proteins	Homo sapiens
+R-HSA-174178	APC/C:Cdh1 mediated degradation of Cdc20 and other APC/C:Cdh1 targeted proteins in late mitosis/early G1	Homo sapiens
+R-HSA-179419	APC:Cdc20 mediated degradation of cell cycle proteins prior to satisfation of the cell cycle checkpoint	Homo sapiens
+R-HSA-5649702	APEX1-Independent Resolution of AP Sites via the Single Nucleotide Replacement Pathway	Homo sapiens
+R-HSA-180689	APOBEC3G mediated resistance to HIV-1 infection	Homo sapiens
+R-HSA-5624958	ARL13B-mediated ciliary trafficking of INPP5E	Homo sapiens
+R-HSA-380994	ATF4 activates genes in response to endoplasmic reticulum  stress	Homo sapiens
+R-HSA-381183	ATF6 (ATF6-alpha) activates chaperone genes	Homo sapiens
+R-HSA-381033	ATF6 (ATF6-alpha) activates chaperones	Homo sapiens
+R-HSA-8874177	ATF6B (ATF6-beta) activates chaperones	Homo sapiens
+R-HSA-9932444	ATP-dependent chromatin remodelers	Homo sapiens
+R-HSA-450408	AUF1 (hnRNP D0) binds and destabilizes mRNA	Homo sapiens
+R-HSA-8854518	AURKA Activation by TPX2	Homo sapiens
+R-HSA-2161522	Abacavir ADME	Homo sapiens
+R-HSA-9659787	Aberrant regulation of mitotic G1/S transition in cancer due to RB1 defects	Homo sapiens
+R-HSA-9687139	Aberrant regulation of mitotic cell cycle due to RB1 defects	Homo sapiens
+R-HSA-9687136	Aberrant regulation of mitotic exit in cancer due to RB1 defects	Homo sapiens
+R-HSA-2978092	Abnormal conversion of 2-oxoglutarate to 2-hydroxyglutarate	Homo sapiens
+R-HSA-167242	Abortive elongation of HIV-1 transcript in the absence of Tat	Homo sapiens
+R-HSA-264642	Acetylcholine Neurotransmitter Release Cycle	Homo sapiens
+R-HSA-181431	Acetylcholine binding and downstream events	Homo sapiens
+R-HSA-9667769	Acetylcholine inhibits contraction of outer hair cells	Homo sapiens
+R-HSA-9638737	Action of antimicrobials and antimicrobial resistance	Homo sapiens
+R-HSA-2122948	Activated NOTCH1 Transmits Signal to the Nucleus	Homo sapiens
+R-HSA-5625886	Activated PKN1 stimulates transcription of AR (androgen receptor) regulated genes KLK2 and KLK3	Homo sapiens
+R-HSA-2033519	Activated point mutants of FGFR2	Homo sapiens
+R-HSA-9619483	Activation of AMPK downstream of NMDARs	Homo sapiens
+R-HSA-176814	Activation of APC/C and APC/C:Cdc20 mediated degradation of mitotic proteins	Homo sapiens
+R-HSA-176187	Activation of ATR in response to replication stress	Homo sapiens
+R-HSA-5619507	Activation of HOX genes during differentiation	Homo sapiens
+R-HSA-936964	Activation of IRF3, IRF7 mediated by TBK1, IKKε (IKBKE)	Homo sapiens
+R-HSA-1592389	Activation of Matrix Metalloproteinases	Homo sapiens
+R-HSA-1169091	Activation of NF-kappaB in B cells	Homo sapiens
+R-HSA-2980767	Activation of NIMA Kinases NEK9, NEK6, NEK7	Homo sapiens
+R-HSA-442755	Activation of NMDA receptors and postsynaptic events	Homo sapiens
+R-HSA-2151209	Activation of PPARGC1A (PGC-1alpha) by phosphorylation	Homo sapiens
+R-HSA-428540	Activation of RAC1	Homo sapiens
+R-HSA-9619229	Activation of RAC1 downstream of NMDARs	Homo sapiens
+R-HSA-1169092	Activation of RAS in B cells	Homo sapiens
+R-HSA-5635838	Activation of SMO	Homo sapiens
+R-HSA-9958825	Activation of STAT3 by cadherin engagement	Homo sapiens
+R-HSA-5617472	Activation of anterior HOX genes in hindbrain development during early embryogenesis	Homo sapiens
+R-HSA-2426168	Activation of gene expression by SREBF (SREBP)	Homo sapiens
+R-HSA-451326	Activation of kainate receptors upon glutamate binding	Homo sapiens
+R-HSA-8866907	Activation of the TFAP2 (AP-2) family of transcription factors	Homo sapiens
+R-HSA-72662	Activation of the mRNA upon binding of the cap-binding complex and eIFs, and subsequent binding to 43S	Homo sapiens
+R-HSA-68962	Activation of the pre-replicative complex	Homo sapiens
+R-HSA-1280218	Adaptive Immune System	Homo sapiens
+R-HSA-418990	Adherens junctions interactions	Homo sapiens
+R-HSA-9843745	Adipogenesis	Homo sapiens
+R-HSA-879415	Advanced glycosylation endproduct receptor signaling	Homo sapiens
+R-HSA-1428517	Aerobic respiration and respiratory electron transport	Homo sapiens
+R-HSA-9938027	Affinity selection of immunoglobulins	Homo sapiens
+R-HSA-5423646	Aflatoxin activation and detoxification	Homo sapiens
+R-HSA-9646399	Aggrephagy	Homo sapiens
+R-HSA-351143	Agmatine biosynthesis	Homo sapiens
+R-HSA-8964540	Alanine metabolism	Homo sapiens
+R-HSA-9730737	Alkylating DNA damage induced by chemotherapeutic drugs	Homo sapiens
+R-HSA-9645460	Alpha-protein kinase 1 signaling pathway	Homo sapiens
+R-HSA-140179	Amine Oxidase reactions	Homo sapiens
+R-HSA-9639288	Amino acids regulate mTORC1	Homo sapiens
+R-HSA-141444	Amplification  of signal from unattached  kinetochores via a MAD2  inhibitory signal	Homo sapiens
+R-HSA-141424	Amplification of signal from the kinetochores	Homo sapiens
+R-HSA-977225	Amyloid fiber formation	Homo sapiens
+R-HSA-5620912	Anchoring of the basal body to the plasma membrane	Homo sapiens
+R-HSA-983170	Antigen Presentation: Folding, assembly and peptide loading of class I MHC	Homo sapiens
+R-HSA-983695	Antigen activates B Cell Receptor (BCR) leading to generation of second messengers	Homo sapiens
+R-HSA-1236975	Antigen processing-Cross presentation	Homo sapiens
+R-HSA-9912633	Antigen processing: Ub, ATP-independent proteasomal degradation	Homo sapiens
+R-HSA-983168	Antigen processing: Ubiquitination & Proteasome degradation	Homo sapiens
+R-HSA-9639775	Antimicrobial action and antimicrobial resistance in Mtb	Homo sapiens
+R-HSA-1169410	Antimicrobial mechanism of IFN-stimulated genes	Homo sapiens
+R-HSA-6803157	Antimicrobial peptides	Homo sapiens
+R-HSA-109581	Apoptosis	Homo sapiens
+R-HSA-75153	Apoptotic execution phase	Homo sapiens
+R-HSA-445717	Aquaporin-mediated transport	Homo sapiens
+R-HSA-8937144	Aryl hydrocarbon receptor signalling	Homo sapiens
+R-HSA-446203	Asparagine N-linked glycosylation	Homo sapiens
+R-HSA-8963693	Aspartate and asparagine metabolism	Homo sapiens
+R-HSA-9749641	Aspirin ADME	Homo sapiens
+R-HSA-175474	Assembly Of The HIV Virion	Homo sapiens
+R-HSA-9918476	Assembly and Release of Dengue Virus Virions	Homo sapiens
+R-HSA-9609736	Assembly and cell surface presentation of NMDA receptors	Homo sapiens
+R-HSA-9820962	Assembly and release of respiratory syncytial virus (RSV) virions	Homo sapiens
+R-HSA-8963889	Assembly of active LPL and LIPC lipase complexes	Homo sapiens
+R-HSA-9975921	Assembly of the 9+0 primary cilium	Homo sapiens
+R-HSA-9975924	Assembly of the 9+2 motile cilia	Homo sapiens
+R-HSA-68616	Assembly of the ORC complex at the origin of replication	Homo sapiens
+R-HSA-68867	Assembly of the pre-replicative complex	Homo sapiens
+R-HSA-390471	Association of TriC/CCT with target proteins during biosynthesis	Homo sapiens
+R-HSA-4608870	Asymmetric localization of PCP proteins	Homo sapiens
+R-HSA-9754706	Atorvastatin ADME	Homo sapiens
+R-HSA-9678110	Attachment and Entry	Homo sapiens
+R-HSA-9694614	Attachment and Entry	Homo sapiens
+R-HSA-3371568	Attenuation phase	Homo sapiens
+R-HSA-174084	Autodegradation of Cdh1 by Cdh1:APC/C	Homo sapiens
+R-HSA-349425	Autodegradation of the E3 ubiquitin ligase COP1	Homo sapiens
+R-HSA-9612973	Autophagy	Homo sapiens
+R-HSA-422475	Axon guidance	Homo sapiens
+R-HSA-9748787	Azathioprine ADME	Homo sapiens
+R-HSA-5250924	B-WICH complex positively regulates rRNA expression	Homo sapiens
+R-HSA-5620922	BBSome-mediated cargo-targeting to cilium	Homo sapiens
+R-HSA-1368108	BMAL1:CLOCK,NPAS2 activates circadian expression	Homo sapiens
+R-HSA-9824439	Bacterial Infection Pathways	Homo sapiens
+R-HSA-73884	Base Excision Repair	Homo sapiens
+R-HSA-73929	Base-Excision Repair, AP Site Formation	Homo sapiens
+R-HSA-210991	Basigin interactions	Homo sapiens
+R-HSA-3858494	Beta-catenin independent WNT signaling	Homo sapiens
+R-HSA-196299	Beta-catenin phosphorylation cascade	Homo sapiens
+R-HSA-194068	Bile acid and bile salt metabolism	Homo sapiens
+R-HSA-2173782	Binding and Uptake of Ligands by Scavenger Receptors	Homo sapiens
+R-HSA-4411364	Binding of TCF/LEF:CTNNB1 to target gene promoters	Homo sapiens
+R-HSA-9931953	Biofilm formation	Homo sapiens
+R-HSA-211859	Biological oxidations	Homo sapiens
+R-HSA-9018678	Biosynthesis of specialized proresolving mediators (SPMs)	Homo sapiens
+R-HSA-446193	Biosynthesis of the N-glycan precursor (dolichol lipid-linked oligosaccharide, LLO) and transfer to a nascent protein	Homo sapiens
+R-HSA-9636467	Blockage of phagosome acidification	Homo sapiens
+R-HSA-9033658	Blood group systems biosynthesis	Homo sapiens
+R-HSA-70895	Branched-chain amino acid catabolism	Homo sapiens
+R-HSA-162588	Budding and maturation of HIV virion	Homo sapiens
+R-HSA-450385	Butyrate Response Factor 1 (BRF1) binds and destabilizes mRNA	Homo sapiens
+R-HSA-8851680	Butyrophilin (BTN) family interactions	Homo sapiens
+R-HSA-5621481	C-type lectin receptors (CLRs)	Homo sapiens
+R-HSA-5218900	CASP8 activity is inhibited	Homo sapiens
+R-HSA-5621575	CD209 (DC-SIGN) signaling	Homo sapiens
+R-HSA-5690714	CD22 mediated BCR regulation	Homo sapiens
+R-HSA-9013148	CDC42 GTPase cycle	Homo sapiens
+R-HSA-68689	CDC6 association with the ORC:origin complex	Homo sapiens
+R-HSA-69017	CDK-mediated phosphorylation and removal of Cdc6	Homo sapiens
+R-HSA-9937848	CHD chromatin remodelers	Homo sapiens
+R-HSA-9943411	CHD1 and CHD2 subfamily	Homo sapiens
+R-HSA-9943965	CHD3, CHD4, CHD5 subfamily	Homo sapiens
+R-HSA-9943962	CHD6, CHD7, CHD8, CHD9 subfamily	Homo sapiens
+R-HSA-447041	CHL1 interactions	Homo sapiens
+R-HSA-5607763	CLEC7A (Dectin-1) induces NFAT activation	Homo sapiens
+R-HSA-5607764	CLEC7A (Dectin-1) signaling	Homo sapiens
+R-HSA-5660668	CLEC7A/inflammasome pathway	Homo sapiens
+R-HSA-6811434	COPI-dependent Golgi-to-ER retrograde traffic	Homo sapiens
+R-HSA-6811436	COPI-independent Golgi-to-ER retrograde traffic	Homo sapiens
+R-HSA-6807878	COPI-mediated anterograde transport	Homo sapiens
+R-HSA-204005	COPII-mediated vesicle transport	Homo sapiens
+R-HSA-140180	COX reactions	Homo sapiens
+R-HSA-442742	CREB1 phosphorylation through NMDA receptor-mediated activation of RAS signaling	Homo sapiens
+R-HSA-442720	CREB1 phosphorylation through the activation of Adenylate Cyclase	Homo sapiens
+R-HSA-442729	CREB1 phosphorylation through the activation of CaMKII/CaMKK/CaMKIV cascasde	Homo sapiens
+R-HSA-8874211	CREB3 factors activate genes	Homo sapiens
+R-HSA-399956	CRMPs in Sema3A signaling	Homo sapiens
+R-HSA-1296052	Ca2+ activated K+ channels	Homo sapiens
+R-HSA-4086398	Ca2+ pathway	Homo sapiens
+R-HSA-2025928	Calcineurin activates NFAT	Homo sapiens
+R-HSA-901042	Calnexin/calreticulin cycle	Homo sapiens
+R-HSA-72737	Cap-dependent Translation Initiation	Homo sapiens
+R-HSA-8955332	Carboxyterminal post-translational modifications of tubulin	Homo sapiens
+R-HSA-5576891	Cardiac conduction	Homo sapiens
+R-HSA-9733709	Cardiogenesis	Homo sapiens
+R-HSA-5694530	Cargo concentration in the ER	Homo sapiens
+R-HSA-8856825	Cargo recognition for clathrin-mediated endocytosis	Homo sapiens
+R-HSA-5620920	Cargo trafficking to the periciliary membrane	Homo sapiens
+R-HSA-71262	Carnitine synthesis	Homo sapiens
+R-HSA-5357769	Caspase activation via extrinsic apoptotic signalling pathway	Homo sapiens
+R-HSA-174184	Cdc20:Phospho-APC/C mediated degradation of Cyclin A	Homo sapiens
+R-HSA-1640170	Cell Cycle	Homo sapiens
+R-HSA-69620	Cell Cycle Checkpoints	Homo sapiens
+R-HSA-69278	Cell Cycle, Mitotic	Homo sapiens
+R-HSA-204998	Cell death signalling via NRAGE, NRIF and NADE	Homo sapiens
+R-HSA-446728	Cell junction organization	Homo sapiens
+R-HSA-9664424	Cell recruitment (pro-inflammatory response)	Homo sapiens
+R-HSA-202733	Cell surface interactions at the vascular wall	Homo sapiens
+R-HSA-1500931	Cell-Cell communication	Homo sapiens
+R-HSA-421270	Cell-cell junction organization	Homo sapiens
+R-HSA-446353	Cell-extracellular matrix interactions	Homo sapiens
+R-HSA-2559583	Cellular Senescence	Homo sapiens
+R-HSA-9711123	Cellular response to chemical stress	Homo sapiens
+R-HSA-3371556	Cellular response to heat stress	Homo sapiens
+R-HSA-1234174	Cellular response to hypoxia	Homo sapiens
+R-HSA-9840373	Cellular response to mitochondrial stress	Homo sapiens
+R-HSA-9711097	Cellular response to starvation	Homo sapiens
+R-HSA-9855142	Cellular responses to mechanical stimuli	Homo sapiens
+R-HSA-8953897	Cellular responses to stimuli	Homo sapiens
+R-HSA-2262752	Cellular responses to stress	Homo sapiens
+R-HSA-380287	Centrosome maturation	Homo sapiens
+R-HSA-193681	Ceramide signalling	Homo sapiens
+R-HSA-9940465	ChAHP complex assembly	Homo sapiens
+R-HSA-9613829	Chaperone Mediated Autophagy	Homo sapiens
+R-HSA-390466	Chaperonin-mediated protein folding	Homo sapiens
+R-HSA-75035	Chk1/Chk2(Cds1) mediated inactivation of Cyclin B:Cdk1 complex	Homo sapiens
+R-HSA-191273	Cholesterol biosynthesis	Homo sapiens
+R-HSA-6798163	Choline catabolism	Homo sapiens
+R-HSA-1793185	Chondroitin sulfate/dermatan sulfate metabolism	Homo sapiens
+R-HSA-9821002	Chromatin modifications during the maternal to zygotic transition (MZT)	Homo sapiens
+R-HSA-3247509	Chromatin modifying enzymes	Homo sapiens
+R-HSA-4839726	Chromatin organization	Homo sapiens
+R-HSA-73886	Chromosome Maintenance	Homo sapiens
+R-HSA-8964026	Chylomicron clearance	Homo sapiens
+R-HSA-8963901	Chylomicron remodeling	Homo sapiens
+R-HSA-5617833	Cilium Assembly	Homo sapiens
+R-HSA-9793528	Ciprofloxacin ADME	Homo sapiens
+R-HSA-9909396	Circadian clock	Homo sapiens
+R-HSA-71403	Citric acid cycle (TCA cycle)	Homo sapiens
+R-HSA-983169	Class I MHC mediated antigen processing & presentation	Homo sapiens
+R-HSA-9603798	Class I peroxisomal membrane protein import	Homo sapiens
+R-HSA-8856828	Clathrin-mediated endocytosis	Homo sapiens
+R-HSA-110331	Cleavage of the damaged purine	Homo sapiens
+R-HSA-110329	Cleavage of the damaged pyrimidine 	Homo sapiens
+R-HSA-9927353	Co-inhibition by BTLA	Homo sapiens
+R-HSA-389513	Co-inhibition by CTLA4	Homo sapiens
+R-HSA-389948	Co-inhibition by PD-1	Homo sapiens
+R-HSA-389356	Co-stimulation by CD28	Homo sapiens
+R-HSA-9927354	Co-stimulation by ICOS	Homo sapiens
+R-HSA-9769740	Coagulation pathway	Homo sapiens
+R-HSA-2470946	Cohesin Loading onto Chromatin	Homo sapiens
+R-HSA-1442490	Collagen degradation	Homo sapiens
+R-HSA-1474290	Collagen formation	Homo sapiens
+R-HSA-166658	Complement cascade	Homo sapiens
+R-HSA-2514853	Condensation of Prometaphase Chromosomes	Homo sapiens
+R-HSA-2299718	Condensation of Prophase Chromosomes	Homo sapiens
+R-HSA-5637810	Constitutive Signaling by EGFRvIII	Homo sapiens
+R-HSA-1236382	Constitutive Signaling by Ligand-Responsive EGFR Cancer Variants	Homo sapiens
+R-HSA-2691232	Constitutive Signaling by NOTCH1 HD Domain Mutants	Homo sapiens
+R-HSA-2894862	Constitutive Signaling by NOTCH1 HD+PEST Domain Mutants	Homo sapiens
+R-HSA-2644606	Constitutive Signaling by NOTCH1 PEST Domain Mutants	Homo sapiens
+R-HSA-9634285	Constitutive Signaling by Overexpressed ERBB2	Homo sapiens
+R-HSA-176407	Conversion from APC/C:Cdc20 to APC/C:Cdh1 in late anaphase	Homo sapiens
+R-HSA-6814122	Cooperation of PDCL (PhLP1) and TRiC/CCT in G-protein beta folding	Homo sapiens
+R-HSA-389958	Cooperation of Prefoldin and TriC/CCT  in actin and tubulin folding	Homo sapiens
+R-HSA-71288	Creatine metabolism	Homo sapiens
+R-HSA-8949613	Cristae formation	Homo sapiens
+R-HSA-1236973	Cross-presentation of particulate exogenous antigens (phagosomes)	Homo sapiens
+R-HSA-1236978	Cross-presentation of soluble exogenous antigens (endosomes)	Homo sapiens
+R-HSA-69273	Cyclin A/B1/B2 associated events during G2/M transition	Homo sapiens
+R-HSA-69656	Cyclin A:Cdk2-associated events at S phase entry	Homo sapiens
+R-HSA-69231	Cyclin D associated events in G1	Homo sapiens
+R-HSA-69202	Cyclin E associated events during G1/S transition 	Homo sapiens
+R-HSA-211897	Cytochrome P450 - arranged by substrate type	Homo sapiens
+R-HSA-1280215	Cytokine Signaling in Immune system	Homo sapiens
+R-HSA-9707564	Cytoprotection by HMOX1	Homo sapiens
+R-HSA-2564830	Cytosolic iron-sulfur cluster assembly	Homo sapiens
+R-HSA-1834949	Cytosolic sensors of pathogen-associated DNA 	Homo sapiens
+R-HSA-1489509	DAG and IP3 signaling	Homo sapiens
+R-HSA-2172127	DAP12 interactions	Homo sapiens
+R-HSA-168928	DDX58/IFIH1-mediated induction of interferon-alpha/beta	Homo sapiens
+R-HSA-3134963	DEx/H-box helicases activate type I IFN and inflammatory cytokines production 	Homo sapiens
+R-HSA-73893	DNA Damage Bypass	Homo sapiens
+R-HSA-5696394	DNA Damage Recognition in GG-NER	Homo sapiens
+R-HSA-73942	DNA Damage Reversal	Homo sapiens
+R-HSA-2559586	DNA Damage/Telomere Stress Induced Senescence	Homo sapiens
+R-HSA-5693606	DNA Double Strand Break Response	Homo sapiens
+R-HSA-5693532	DNA Double-Strand Break Repair	Homo sapiens
+R-HSA-73894	DNA Repair	Homo sapiens
+R-HSA-69306	DNA Replication	Homo sapiens
+R-HSA-69002	DNA Replication Pre-Initiation	Homo sapiens
+R-HSA-5334118	DNA methylation	Homo sapiens
+R-HSA-68952	DNA replication initiation	Homo sapiens
+R-HSA-69190	DNA strand elongation	Homo sapiens
+R-HSA-3769402	Deactivation of the beta-catenin transactivating complex	Homo sapiens
+R-HSA-429947	Deadenylation of mRNA	Homo sapiens
+R-HSA-429914	Deadenylation-dependent mRNA decay	Homo sapiens
+R-HSA-73887	Death Receptor Signaling	Homo sapiens
+R-HSA-5607761	Dectin-1 mediated noncanonical NF-kB signaling	Homo sapiens
+R-HSA-5621480	Dectin-2 family	Homo sapiens
+R-HSA-5682113	Defective ABCA1 causes TGD	Homo sapiens
+R-HSA-5682294	Defective ABCA12 causes ARCI4B	Homo sapiens
+R-HSA-5683678	Defective ABCA3 causes SMDP3	Homo sapiens
+R-HSA-5678520	Defective ABCB11 causes PFIC2 and BRIC2	Homo sapiens
+R-HSA-5678771	Defective ABCB4 causes PFIC3, ICP3 and GBD1	Homo sapiens
+R-HSA-5683371	Defective ABCB6 causes MCOPCB7	Homo sapiens
+R-HSA-5679001	Defective ABCC2 causes DJS	Homo sapiens
+R-HSA-5690338	Defective ABCC6 causes PXE	Homo sapiens
+R-HSA-5683177	Defective ABCC8 can cause hypo- and hyper-glycemias	Homo sapiens
+R-HSA-5678420	Defective ABCC9 causes CMD10, ATFB12 and Cantu syndrome	Homo sapiens
+R-HSA-5684045	Defective ABCD1 causes ALD	Homo sapiens
+R-HSA-5683329	Defective ABCD4 causes MAHCJ	Homo sapiens
+R-HSA-5679096	Defective ABCG5 causes sitosterolemia	Homo sapiens
+R-HSA-5679090	Defective ABCG8 causes GBD4 and sitosterolemia	Homo sapiens
+R-HSA-5579031	Defective ACTH causes obesity and POMCD	Homo sapiens
+R-HSA-5619099	Defective AVP does not bind AVPR1A,B and causes neurohypophyseal diabetes insipidus (NDI)	Homo sapiens
+R-HSA-9036092	Defective AVP does not bind AVPR2 and causes neurohypophyseal diabetes insipidus (NDI)	Homo sapiens
+R-HSA-5678895	Defective CFTR causes cystic fibrosis	Homo sapiens
+R-HSA-5619060	Defective CP causes aceruloplasminemia (ACERULOP)	Homo sapiens
+R-HSA-9699150	Defective DNA double strand break response due to BARD1 loss of function	Homo sapiens
+R-HSA-9663199	Defective DNA double strand break response due to BRCA1 loss of function	Homo sapiens
+R-HSA-5619073	Defective GCK causes maturity-onset diabetes of the young 2 (MODY2)	Homo sapiens
+R-HSA-9704331	Defective HDR through Homologous Recombination Repair (HRR) due to PALB2 loss of BRCA1 binding function	Homo sapiens
+R-HSA-9704646	Defective HDR through Homologous Recombination Repair (HRR) due to PALB2 loss of BRCA2/RAD51/RAD51C binding function	Homo sapiens
+R-HSA-5619056	Defective HK1 causes hexokinase deficiency (HK deficiency)	Homo sapiens
+R-HSA-9734009	Defective Intrinsic Pathway for Apoptosis	Homo sapiens
+R-HSA-9645722	Defective Intrinsic Pathway for Apoptosis Due to p14ARF Loss of Function	Homo sapiens
+R-HSA-5619042	Defective RHAG causes regulator type Rh-null hemolytic anemia (RHN)	Homo sapiens
+R-HSA-9693928	Defective RIPK1-mediated regulated necrosis	Homo sapiens
+R-HSA-5619048	Defective SLC11A2 causes hypochromic microcytic anemia, with iron overload 1 (AHMIO1)	Homo sapiens
+R-HSA-5619104	Defective SLC12A1 causes Bartter syndrome 1 (BS1)	Homo sapiens
+R-HSA-5619087	Defective SLC12A3 causes Gitelman syndrome (GS)	Homo sapiens
+R-HSA-5619039	Defective SLC12A6 causes agenesis of the corpus callosum, with peripheral neuropathy (ACCPN)	Homo sapiens
+R-HSA-5619070	Defective SLC16A1 causes symptomatic deficiency in lactate transport (SDLT)	Homo sapiens
+R-HSA-5619035	Defective SLC17A5 causes Salla disease (SD) and ISSD	Homo sapiens
+R-HSA-5619076	Defective SLC17A8 causes autosomal dominant deafness 25 (DFNA25)	Homo sapiens
+R-HSA-5619067	Defective SLC1A1 is implicated in schizophrenia 18 (SCZD18) and dicarboxylic aminoaciduria (DCBXA)	Homo sapiens
+R-HSA-5619062	Defective SLC1A3 causes episodic ataxia 6 (EA6)	Homo sapiens
+R-HSA-5619111	Defective SLC20A2 causes idiopathic basal ganglia calcification 1 (IBGC1)	Homo sapiens
+R-HSA-5619071	Defective SLC22A12 causes renal hypouricemia 1 (RHUC1)	Homo sapiens
+R-HSA-5619066	Defective SLC22A18 causes lung cancer (LNCR) and embryonal rhabdomyosarcoma 1 (RMSE1)	Homo sapiens
+R-HSA-5619053	Defective SLC22A5 causes systemic primary carnitine deficiency (CDSP)	Homo sapiens
+R-HSA-5619077	Defective SLC24A1 causes congenital stationary night blindness 1D (CSNB1D)	Homo sapiens
+R-HSA-5619055	Defective SLC24A4 causes hypomineralized amelogenesis imperfecta (AI)	Homo sapiens
+R-HSA-5619036	Defective SLC24A5 causes oculocutaneous albinism 6 (OCA6)	Homo sapiens
+R-HSA-3560792	Defective SLC26A2 causes chondrodysplasias	Homo sapiens
+R-HSA-5619085	Defective SLC26A3 causes congenital secretory chloride diarrhea 1 (DIAR1)	Homo sapiens
+R-HSA-5619046	Defective SLC26A4 causes Pendred syndrome (PDS)	Homo sapiens
+R-HSA-5619108	Defective SLC27A4 causes ichthyosis prematurity syndrome (IPS)	Homo sapiens
+R-HSA-5619063	Defective SLC29A3 causes histiocytosis-lymphadenopathy plus syndrome (HLAS)	Homo sapiens
+R-HSA-5619043	Defective SLC2A1 causes GLUT1 deficiency syndrome 1 (GLUT1DS1)	Homo sapiens
+R-HSA-5619068	Defective SLC2A10 causes arterial tortuosity syndrome (ATS)	Homo sapiens
+R-HSA-5619098	Defective SLC2A2 causes Fanconi-Bickel syndrome (FBS)	Homo sapiens
+R-HSA-5619047	Defective SLC2A9 causes hypouricemia renal 2 (RHUC2)	Homo sapiens
+R-HSA-5619061	Defective SLC33A1 causes spastic paraplegia 42 (SPG42)	Homo sapiens
+R-HSA-5619040	Defective SLC34A1 causes hypophosphatemic nephrolithiasis/osteoporosis 1 (NPHLOP1)	Homo sapiens
+R-HSA-5619045	Defective SLC34A2 causes pulmonary alveolar microlithiasis (PALM)	Homo sapiens
+R-HSA-5619097	Defective SLC34A3 causes Hereditary hypophosphatemic rickets with hypercalciuria (HHRH)	Homo sapiens
+R-HSA-5663020	Defective SLC35A1 in sialic acid metabolism causes congenital disorder of glycosylation 2F (CDG2F)	Homo sapiens
+R-HSA-5619072	Defective SLC35A2 causes congenital disorder of glycosylation 2M (CDG2M)	Homo sapiens
+R-HSA-5619083	Defective SLC35A3 causes arthrogryposis, mental retardation, and seizures (AMRS)	Homo sapiens
+R-HSA-5619078	Defective SLC35C1 causes congenital disorder of glycosylation 2C (CDG2C)	Homo sapiens
+R-HSA-5619041	Defective SLC36A2 causes iminoglycinuria (IG) and hyperglycinuria (HG)	Homo sapiens
+R-HSA-5619088	Defective SLC39A4 causes acrodermatitis enteropathica, zinc-deficiency type (AEZ)	Homo sapiens
+R-HSA-5619113	Defective SLC3A1 causes cystinuria (CSNU)	Homo sapiens
+R-HSA-5655799	Defective SLC40A1 causes hemochromatosis 4 (HFE4) (duodenum)	Homo sapiens
+R-HSA-5619049	Defective SLC40A1 causes hemochromatosis 4 (HFE4) (macrophages)	Homo sapiens
+R-HSA-5619050	Defective SLC4A1 causes hereditary spherocytosis type 4 (HSP4),  distal renal tubular acidosis (dRTA) and dRTA with hemolytic anemia (dRTA-HA)	Homo sapiens
+R-HSA-5619054	Defective SLC4A4 causes renal tubular acidosis, proximal, with ocular abnormalities and mental retardation (pRTA-OA)	Homo sapiens
+R-HSA-5656364	Defective SLC5A1 causes congenital glucose/galactose malabsorption (GGM)	Homo sapiens
+R-HSA-5658208	Defective SLC5A2 causes renal glucosuria (GLYS1)	Homo sapiens
+R-HSA-5619096	Defective SLC5A5 causes thyroid dyshormonogenesis 1 (TDH1)	Homo sapiens
+R-HSA-5619114	Defective SLC5A7 in the neurotransmitter release cycle causes distal hereditary motor neuronopathy 7A (HMN7A)	Homo sapiens
+R-HSA-5619109	Defective SLC6A2 causes orthostatic intolerance (OI)	Homo sapiens
+R-HSA-5619089	Defective SLC6A5 causes hyperekplexia 3 (HKPX3)	Homo sapiens
+R-HSA-5619092	Defective SLC9A6 causes  X-linked, syndromic mental retardation,, Christianson type (MRXSCH)	Homo sapiens
+R-HSA-5619052	Defective SLC9A9 causes autism 16 (AUTS16)	Homo sapiens
+R-HSA-5619110	Defective SLCO1B1 causes hyperbilirubinemia, Rotor type (HBLRR)	Homo sapiens
+R-HSA-5619058	Defective SLCO1B3 causes hyperbilirubinemia, Rotor type (HBLRR)	Homo sapiens
+R-HSA-5619095	Defective SLCO2A1 causes primary, autosomal recessive hypertrophic osteoarthropathy 2 (PHOAR2)	Homo sapiens
+R-HSA-5619107	Defective TPR may confer susceptibility towards thyroid papillary carcinoma (TPC)	Homo sapiens
+R-HSA-5660862	Defective amino acid transport by SLC7A7 causes lysinuric protein intolerance (LPI)	Homo sapiens
+R-HSA-5660883	Defective amino acid transport by SLC7A9 causes cystinuria (CSNU)	Homo sapiens
+R-HSA-9661069	Defective binding of RB1 mutants to E2F1,(E2F2, E2F3)	Homo sapiens
+R-HSA-9701192	Defective homologous recombination repair (HRR) due to BRCA1 loss of function	Homo sapiens
+R-HSA-9701190	Defective homologous recombination repair (HRR) due to BRCA2 loss of function	Homo sapiens
+R-HSA-9701193	Defective homologous recombination repair (HRR) due to PALB2 loss of function	Homo sapiens
+R-HSA-5619081	Defective neurotransmitter clearance by SLC6A3 causes Parkinsonism-dystonia infantile (PKDYS)	Homo sapiens
+R-HSA-9710421	Defective pyroptosis	Homo sapiens
+R-HSA-9661070	Defective translocation of RB1 mutants to the nucleus	Homo sapiens
+R-HSA-5619037	Defective transport by SLC35A1 causes congenital disorder of glycosylation 2F (CDG2F)	Homo sapiens
+R-HSA-5658471	Defective transport by SLC5A7 causes distal hereditary motor neuronopathy 7A (HMN7A)	Homo sapiens
+R-HSA-5659735	Defective transport of amino acids by SLC6A19 causes Hartnup disorder (HND)	Homo sapiens
+R-HSA-5619044	Defective transport of neurotransmitters by SLC6A19 causes Hartnup disorder (HND)	Homo sapiens
+R-HSA-5660724	Defective transport of neurotransmitters by SLC6A3 causes Parkinsonism-dystonia infantile (PKDYS)	Homo sapiens
+R-HSA-3296482	Defects in vitamin and cofactor metabolism	Homo sapiens
+R-HSA-4641257	Degradation of AXIN	Homo sapiens
+R-HSA-9766229	Degradation of CDH1	Homo sapiens
+R-HSA-9932298	Degradation of CRY and PER proteins	Homo sapiens
+R-HSA-4641258	Degradation of DVL	Homo sapiens
+R-HSA-916853	Degradation of GABA	Homo sapiens
+R-HSA-5610780	Degradation of GLI1 by the proteasome	Homo sapiens
+R-HSA-5610783	Degradation of GLI2 by the proteasome	Homo sapiens
+R-HSA-195253	Degradation of beta-catenin by the destruction complex	Homo sapiens
+R-HSA-1474228	Degradation of the extracellular matrix	Homo sapiens
+R-HSA-9918485	Dengue Virus Attachment and Entry	Homo sapiens
+R-HSA-9918487	Dengue Virus Genome Translation and Replication	Homo sapiens
+R-HSA-9839923	Dengue Virus Infection	Homo sapiens
+R-HSA-9918481	Dengue Virus-Host Interactions	Homo sapiens
+R-HSA-9920588	Dengue virus activates/modulates innate and adaptive immune responses	Homo sapiens
+R-HSA-9920951	Dengue virus modulates apoptosis	Homo sapiens
+R-HSA-4419969	Depolymerization of the Nuclear Lamina	Homo sapiens
+R-HSA-606279	Deposition of new CENPA-containing nucleosomes at the centromere	Homo sapiens
+R-HSA-73927	Depurination	Homo sapiens
+R-HSA-73928	Depyrimidination	Homo sapiens
+R-HSA-8862803	Deregulated CDK5 triggers multiple neurodegenerative pathways in Alzheimer's disease models	Homo sapiens
+R-HSA-3299685	Detoxification of Reactive Oxygen Species	Homo sapiens
+R-HSA-5688426	Deubiquitination	Homo sapiens
+R-HSA-1266738	Developmental Biology	Homo sapiens
+R-HSA-9734767	Developmental Cell Lineages	Homo sapiens
+R-HSA-9820448	Developmental Cell Lineages of the Exocrine Pancreas	Homo sapiens
+R-HSA-9734779	Developmental Cell Lineages of the Integumentary System	Homo sapiens
+R-HSA-9927426	Developmental Lineage of Mammary Gland Alveolar Cells	Homo sapiens
+R-HSA-9927418	Developmental Lineage of Mammary Gland Luminal Epithelial Cells	Homo sapiens
+R-HSA-9927432	Developmental Lineage of Mammary Gland Myoepithelial Cells	Homo sapiens
+R-HSA-9938206	Developmental Lineage of Mammary Stem Cells	Homo sapiens
+R-HSA-9937080	Developmental Lineage of Multipotent Pancreatic Progenitor Cells	Homo sapiens
+R-HSA-9925561	Developmental Lineage of Pancreatic Acinar Cells	Homo sapiens
+R-HSA-9925563	Developmental Lineage of Pancreatic Ductal Cells	Homo sapiens
+R-HSA-9981148	Developmental Lineage of Pancreatic Endocrine Mid Progenitor Cells	Homo sapiens
+R-HSA-9924644	Developmental Lineages of the Mammary Gland	Homo sapiens
+R-HSA-9968734	Differentiation of Circulating Monocytes	Homo sapiens
+R-HSA-9725554	Differentiation of Keratinocytes in Interfollicular Epidermis in Mammalian Skin	Homo sapiens
+R-HSA-9945266	Differentiation of T cells	Homo sapiens
+R-HSA-9942503	Differentiation of naive CD4+ T cells to T helper 1 cells (Th1 cells)	Homo sapiens
+R-HSA-9976102	Differentiation of naive CD4+ T cells to T helper 2 cells (Th2 cells)	Homo sapiens
+R-HSA-4641262	Disassembly of the destruction complex and recruitment of AXIN to the membrane	Homo sapiens
+R-HSA-1643685	Disease	Homo sapiens
+R-HSA-5687613	Diseases associated with surfactant metabolism	Homo sapiens
+R-HSA-9605308	Diseases of Base Excision Repair	Homo sapiens
+R-HSA-9675136	Diseases of DNA Double-Strand Break Repair	Homo sapiens
+R-HSA-9675135	Diseases of DNA repair	Homo sapiens
+R-HSA-5260271	Diseases of Immune System	Homo sapiens
+R-HSA-5423599	Diseases of Mismatch Repair (MMR)	Homo sapiens
+R-HSA-9673013	Diseases of Telomere Maintenance	Homo sapiens
+R-HSA-9865118	Diseases of branched-chain amino acid catabolism	Homo sapiens
+R-HSA-5663084	Diseases of carbohydrate metabolism	Homo sapiens
+R-HSA-9675132	Diseases of cellular response to stress	Homo sapiens
+R-HSA-3781865	Diseases of glycosylation	Homo sapiens
+R-HSA-9671793	Diseases of hemostasis	Homo sapiens
+R-HSA-5668914	Diseases of metabolism	Homo sapiens
+R-HSA-9759774	Diseases of mitochondrial beta oxidation	Homo sapiens
+R-HSA-9675126	Diseases of mitotic cell cycle	Homo sapiens
+R-HSA-9735804	Diseases of nucleotide metabolism	Homo sapiens
+R-HSA-9645723	Diseases of programmed cell death	Homo sapiens
+R-HSA-5663202	Diseases of signal transduction by growth factor receptors and second messengers	Homo sapiens
+R-HSA-9675143	Diseases of the neuronal system	Homo sapiens
+R-HSA-9955698	Diseases of the urea cycle	Homo sapiens
+R-HSA-114516	Disinhibition of SNARE formation	Homo sapiens
+R-HSA-9675151	Disorders of Developmental Biology	Homo sapiens
+R-HSA-9697154	Disorders of Nervous System Development	Homo sapiens
+R-HSA-5619115	Disorders of transmembrane transporters	Homo sapiens
+R-HSA-110357	Displacement of DNA glycosylase by APEX1	Homo sapiens
+R-HSA-75205	Dissolution of Fibrin Clot	Homo sapiens
+R-HSA-212676	Dopamine Neurotransmitter Release Cycle	Homo sapiens
+R-HSA-8863795	Downregulation of ERBB2 signaling	Homo sapiens
+R-HSA-1358803	Downregulation of ERBB2:ERBB3 signaling	Homo sapiens
+R-HSA-1253288	Downregulation of ERBB4 signaling	Homo sapiens
+R-HSA-2173795	Downregulation of SMAD2/3:SMAD4 transcriptional activity	Homo sapiens
+R-HSA-2173788	Downregulation of TGF-beta receptor signaling	Homo sapiens
+R-HSA-202424	Downstream TCR signaling	Homo sapiens
+R-HSA-1168372	Downstream signaling events of B Cell Receptor (BCR)	Homo sapiens
+R-HSA-5654687	Downstream signaling of activated FGFR1	Homo sapiens
+R-HSA-5654696	Downstream signaling of activated FGFR2	Homo sapiens
+R-HSA-5654708	Downstream signaling of activated FGFR3	Homo sapiens
+R-HSA-5654716	Downstream signaling of activated FGFR4	Homo sapiens
+R-HSA-9748784	Drug ADME	Homo sapiens
+R-HSA-9665230	Drug resistance in ERBB2 KD mutants	Homo sapiens
+R-HSA-9665737	Drug resistance in ERBB2 TMD/JMD mutants	Homo sapiens
+R-HSA-9700649	Drug resistance of ALK mutants	Homo sapiens
+R-HSA-9702506	Drug resistance of FLT3 mutants	Homo sapiens
+R-HSA-9750126	Drug-induced formation of DNA interstrand crosslinks	Homo sapiens
+R-HSA-9754119	Drug-mediated inhibition of CDK4/CDK6 activity	Homo sapiens
+R-HSA-9652282	Drug-mediated inhibition of ERBB2 signaling	Homo sapiens
+R-HSA-9734091	Drug-mediated inhibition of MET activation	Homo sapiens
+R-HSA-5696400	Dual Incision in GG-NER	Homo sapiens
+R-HSA-6782135	Dual incision in TC-NER	Homo sapiens
+R-HSA-113510	E2F mediated regulation of DNA replication	Homo sapiens
+R-HSA-113507	E2F-enabled inhibition of pre-replication complex formation	Homo sapiens
+R-HSA-8866654	E3 ubiquitin ligases ubiquitinate target proteins	Homo sapiens
+R-HSA-3000178	ECM proteoglycans	Homo sapiens
+R-HSA-182971	EGFR downregulation	Homo sapiens
+R-HSA-212718	EGFR interacts with phospholipase C-gamma	Homo sapiens
+R-HSA-9619665	EGR2 and SOX10-mediated initiation of Schwann cell myelination	Homo sapiens
+R-HSA-9648025	EML4 and NUDC in mitotic spindle formation	Homo sapiens
+R-HSA-2682334	EPH-Ephrin signaling	Homo sapiens
+R-HSA-3928665	EPH-ephrin mediated repulsion of cells	Homo sapiens
+R-HSA-3928663	EPHA-mediated growth cone collapse	Homo sapiens
+R-HSA-3928662	EPHB-mediated forward signaling	Homo sapiens
+R-HSA-901032	ER Quality Control Compartment (ERQC)	Homo sapiens
+R-HSA-199977	ER to Golgi Anterograde Transport	Homo sapiens
+R-HSA-1236974	ER-Phagosome pathway	Homo sapiens
+R-HSA-8847993	ERBB2 Activates PTK6 Signaling	Homo sapiens
+R-HSA-6785631	ERBB2 Regulates Cell Motility	Homo sapiens
+R-HSA-427389	ERCC6 (CSB) and EHMT2 (G9a) positively regulate rRNA expression	Homo sapiens
+R-HSA-8939211	ESR-mediated signaling	Homo sapiens
+R-HSA-162594	Early Phase of HIV Life Cycle	Homo sapiens
+R-HSA-9772572	Early SARS-CoV-2 Infection Events	Homo sapiens
+R-HSA-114508	Effects of PIP2 hydrolysis	Homo sapiens
+R-HSA-1566948	Elastic fibre formation	Homo sapiens
+R-HSA-917729	Endosomal Sorting Complex Required For Transport (ESCRT)	Homo sapiens
+R-HSA-1236977	Endosomal/Vacuolar pathway	Homo sapiens
+R-HSA-380972	Energy dependent regulation of mTOR by LKB1-AMPK	Homo sapiens
+R-HSA-9956593	Enterobacterial factors antagonize host defense 	Homo sapiens
+R-HSA-168275	Entry of Influenza Virion into Host Cell via Endocytosis	Homo sapiens
+R-HSA-3928664	Ephrin signaling	Homo sapiens
+R-HSA-9917777	Epigenetic regulation by WDR5-containing histone modifying complexes	Homo sapiens
+R-HSA-9851695	Epigenetic regulation of adipogenesis genes by MLL3 and MLL4 complexes	Homo sapiens
+R-HSA-212165	Epigenetic regulation of gene expression	Homo sapiens
+R-HSA-9818564	Epigenetic regulation of gene expression by MLL3 and MLL4 complexes	Homo sapiens
+R-HSA-9758919	Epithelial-Mesenchymal Transition (EMT) during gastrulation	Homo sapiens
+R-HSA-9637679	Escape of Mtb from the phagocyte	Homo sapiens
+R-HSA-5657562	Essential fructosuria	Homo sapiens
+R-HSA-5662853	Essential pentosuria	Homo sapiens
+R-HSA-2468052	Establishment of Sister Chromatid Cohesion	Homo sapiens
+R-HSA-9018519	Estrogen-dependent gene expression	Homo sapiens
+R-HSA-9634638	Estrogen-dependent nuclear events downstream of ESR-membrane signaling	Homo sapiens
+R-HSA-9634635	Estrogen-stimulated signaling through PRKCZ	Homo sapiens
+R-HSA-71384	Ethanol oxidation	Homo sapiens
+R-HSA-156842	Eukaryotic Translation Elongation	Homo sapiens
+R-HSA-72613	Eukaryotic Translation Initiation	Homo sapiens
+R-HSA-72764	Eukaryotic Translation Termination	Homo sapiens
+R-HSA-9833109	Evasion by RSV of host interferon responses	Homo sapiens
+R-HSA-168274	Export of Viral Ribonucleoproteins from Nucleus	Homo sapiens
+R-HSA-9931509	Expression of BMAL (ARNTL), CLOCK, and NPAS2	Homo sapiens
+R-HSA-9911233	Expression of NOTCH2NL genes	Homo sapiens
+R-HSA-180786	Extension of Telomeres	Homo sapiens
+R-HSA-9009391	Extra-nuclear estrogen signaling	Homo sapiens
+R-HSA-1474244	Extracellular matrix organization	Homo sapiens
+R-HSA-8854050	FBXL7 down-regulates AURKA during mitotic entry and in early mitosis	Homo sapiens
+R-HSA-2644605	FBXW7 Mutants and NOTCH1 in Cancer	Homo sapiens
+R-HSA-2871809	FCERI mediated Ca+2 mobilization	Homo sapiens
+R-HSA-2871796	FCERI mediated MAPK activation	Homo sapiens
+R-HSA-2871837	FCERI mediated NF-kB activation	Homo sapiens
+R-HSA-2029481	FCGR activation	Homo sapiens
+R-HSA-9664422	FCGR3A-mediated phagocytosis	Homo sapiens
+R-HSA-190242	FGFR1 ligand binding and activation	Homo sapiens
+R-HSA-6803529	FGFR2 alternative splicing	Homo sapiens
+R-HSA-190241	FGFR2 ligand binding and activation	Homo sapiens
+R-HSA-1839126	FGFR2 mutant receptor activation	Homo sapiens
+R-HSA-190239	FGFR3 ligand binding and activation	Homo sapiens
+R-HSA-190322	FGFR4 ligand binding and activation	Homo sapiens
+R-HSA-5658623	FGFRL1 modulation of FGFR1 signaling	Homo sapiens
+R-HSA-9607240	FLT3 Signaling	Homo sapiens
+R-HSA-9702509	FLT3 mutants bind TKIs	Homo sapiens
+R-HSA-9706377	FLT3 signaling by CBL mutants	Homo sapiens
+R-HSA-9682385	FLT3 signaling in disease	Homo sapiens
+R-HSA-9706374	FLT3 signaling through SRC family kinases	Homo sapiens
+R-HSA-217271	FMO oxidises nucleophiles	Homo sapiens
+R-HSA-9614085	FOXO-mediated transcription	Homo sapiens
+R-HSA-9617828	FOXO-mediated transcription of cell cycle genes	Homo sapiens
+R-HSA-9614657	FOXO-mediated transcription of cell death genes	Homo sapiens
+R-HSA-9615017	FOXO-mediated transcription of oxidative stress, metabolic and neuronal genes	Homo sapiens
+R-HSA-9970672	FXIIa activates plasma kallikrein-kinin system	Homo sapiens
+R-HSA-983231	Factors involved in megakaryocyte development and platelet production	Homo sapiens
+R-HSA-6783310	Fanconi Anemia Pathway	Homo sapiens
+R-HSA-75157	FasL/ CD95L signaling	Homo sapiens
+R-HSA-8978868	Fatty acid metabolism	Homo sapiens
+R-HSA-2454202	Fc epsilon receptor (FCERI) signaling	Homo sapiens
+R-HSA-2029480	Fcgamma receptor (FCGR) dependent phagocytosis	Homo sapiens
+R-HSA-1187000	Fertilization	Homo sapiens
+R-HSA-1566977	Fibronectin matrix formation	Homo sapiens
+R-HSA-390450	Folding of actin by CCT/TriC	Homo sapiens
+R-HSA-163210	Formation of ATP by chemiosmotic coupling	Homo sapiens
+R-HSA-167152	Formation of HIV elongation complex in the absence of HIV Tat	Homo sapiens
+R-HSA-167200	Formation of HIV-1 elongation complex containing HIV-1 Tat	Homo sapiens
+R-HSA-5696395	Formation of Incision Complex in GG-NER	Homo sapiens
+R-HSA-112382	Formation of RNA Pol II elongation complex 	Homo sapiens
+R-HSA-2559584	Formation of Senescence-Associated Heterochromatin Foci (SAHF)	Homo sapiens
+R-HSA-6781823	Formation of TC-NER Pre-Incision Complex	Homo sapiens
+R-HSA-9772755	Formation of WDR5-containing histone-modifying complexes	Homo sapiens
+R-HSA-72689	Formation of a pool of free 40S subunits	Homo sapiens
+R-HSA-196025	Formation of annular gap junctions	Homo sapiens
+R-HSA-9796292	Formation of axial mesoderm	Homo sapiens
+R-HSA-9823730	Formation of definitive endoderm	Homo sapiens
+R-HSA-9761174	Formation of intermediate mesoderm	Homo sapiens
+R-HSA-9758920	Formation of lateral plate mesoderm	Homo sapiens
+R-HSA-9934037	Formation of neuronal progenitor and neuronal BAF (npBAF and nBAF)	Homo sapiens
+R-HSA-9793380	Formation of paraxial mesoderm	Homo sapiens
+R-HSA-2408499	Formation of selenosugars for excretion	Homo sapiens
+R-HSA-113418	Formation of the Early Elongation Complex	Homo sapiens
+R-HSA-167158	Formation of the HIV-1 Early Elongation Complex	Homo sapiens
+R-HSA-9823739	Formation of the anterior neural plate	Homo sapiens
+R-HSA-201722	Formation of the beta-catenin:TCF transactivating complex	Homo sapiens
+R-HSA-9933937	Formation of the canonical BAF (cBAF) complex	Homo sapiens
+R-HSA-9913351	Formation of the dystrophin-glycoprotein complex (DGC)	Homo sapiens
+R-HSA-9933946	Formation of the embryonic stem cell BAF (esBAF) complex	Homo sapiens
+R-HSA-9933947	Formation of the non-canonical BAF (ncBAF) complex	Homo sapiens
+R-HSA-9933939	Formation of the polybromo-BAF (pBAF) complex	Homo sapiens
+R-HSA-9832991	Formation of the posterior neural plate	Homo sapiens
+R-HSA-72695	Formation of the ternary complex, and subsequently, the 43S complex	Homo sapiens
+R-HSA-389960	Formation of tubulin folding intermediates by CCT/TriC	Homo sapiens
+R-HSA-5661270	Formation of xylulose-5-phosphate	Homo sapiens
+R-HSA-5652084	Fructose metabolism	Homo sapiens
+R-HSA-168270	Fusion and Uncoating of the Influenza Virion	Homo sapiens
+R-HSA-1538133	G0 and Early G1	Homo sapiens
+R-HSA-69236	G1 Phase	Homo sapiens
+R-HSA-69615	G1/S DNA Damage Checkpoints	Homo sapiens
+R-HSA-69206	G1/S Transition	Homo sapiens
+R-HSA-69205	G1/S-Specific Transcription	Homo sapiens
+R-HSA-68911	G2 Phase	Homo sapiens
+R-HSA-69481	G2/M Checkpoints	Homo sapiens
+R-HSA-69473	G2/M DNA damage checkpoint	Homo sapiens
+R-HSA-69478	G2/M DNA replication checkpoint	Homo sapiens
+R-HSA-69275	G2/M Transition	Homo sapiens
+R-HSA-180292	GAB1 signalosome	Homo sapiens
+R-HSA-977443	GABA receptor activation	Homo sapiens
+R-HSA-888568	GABA synthesis	Homo sapiens
+R-HSA-888590	GABA synthesis, release, reuptake and degradation	Homo sapiens
+R-HSA-9953170	GBP-mediated host defense	Homo sapiens
+R-HSA-5635851	GLI proteins bind promoters of Hh responsive genes to promote transcription	Homo sapiens
+R-HSA-5610785	GLI3 is processed to GLI3R by the proteasome	Homo sapiens
+R-HSA-430116	GP1b-IX-V activation signalling	Homo sapiens
+R-HSA-114604	GPVI-mediated activation cascade	Homo sapiens
+R-HSA-179812	GRB2 events in EGFR signaling	Homo sapiens
+R-HSA-1963640	GRB2 events in ERBB2 signaling	Homo sapiens
+R-HSA-1306955	GRB7 events in ERBB2 signaling	Homo sapiens
+R-HSA-9762114	GSK3B and BTRC:CUL1-mediated-degradation of NFE2L2	Homo sapiens
+R-HSA-9929356	GSK3B-mediated proteasomal degradation of PD-L1(CD274)	Homo sapiens
+R-HSA-72706	GTP hydrolysis and joining of the 60S ribosomal subunit	Homo sapiens
+R-HSA-70370	Galactose catabolism	Homo sapiens
+R-HSA-163841	Gamma carboxylation, hypusinylation, hydroxylation, and arylsulfatase activation	Homo sapiens
+R-HSA-159854	Gamma-carboxylation, transport, and amino-terminal cleavage of proteins	Homo sapiens
+R-HSA-190861	Gap junction assembly	Homo sapiens
+R-HSA-190873	Gap junction degradation	Homo sapiens
+R-HSA-190828	Gap junction trafficking	Homo sapiens
+R-HSA-157858	Gap junction trafficking and regulation	Homo sapiens
+R-HSA-5696397	Gap-filling DNA repair synthesis and ligation in GG-NER	Homo sapiens
+R-HSA-6782210	Gap-filling DNA repair synthesis and ligation in TC-NER	Homo sapiens
+R-HSA-9758941	Gastrulation	Homo sapiens
+R-HSA-211000	Gene Silencing by RNA	Homo sapiens
+R-HSA-8950505	Gene and protein expression by JAK-STAT signaling after Interleukin-12 stimulation	Homo sapiens
+R-HSA-74160	Gene expression (Transcription)	Homo sapiens
+R-HSA-202433	Generation of second messenger molecules	Homo sapiens
+R-HSA-212436	Generic Transcription Pathway	Homo sapiens
+R-HSA-9754189	Germ layer formation at gastrulation	Homo sapiens
+R-HSA-5696399	Global Genome Nucleotide Excision Repair (GG-NER)	Homo sapiens
+R-HSA-70263	Gluconeogenesis	Homo sapiens
+R-HSA-70326	Glucose metabolism	Homo sapiens
+R-HSA-210500	Glutamate Neurotransmitter Release Cycle	Homo sapiens
+R-HSA-8964539	Glutamate and glutamine metabolism	Homo sapiens
+R-HSA-399721	Glutamate binding, activation of AMPA receptors and synaptic plasticity	Homo sapiens
+R-HSA-70221	Glycogen breakdown (glycogenolysis)	Homo sapiens
+R-HSA-8982491	Glycogen metabolism	Homo sapiens
+R-HSA-3858516	Glycogen storage disease type 0 (liver GYS2)	Homo sapiens
+R-HSA-3828062	Glycogen storage disease type 0 (muscle GYS1)	Homo sapiens
+R-HSA-5357609	Glycogen storage disease type II (GAA)	Homo sapiens
+R-HSA-3878781	Glycogen storage disease type IV (GBE1)	Homo sapiens
+R-HSA-3274531	Glycogen storage disease type Ia (G6PC)	Homo sapiens
+R-HSA-3229133	Glycogen storage disease type Ib (SLC37A4)	Homo sapiens
+R-HSA-3814836	Glycogen storage disease type XV (GYG1)	Homo sapiens
+R-HSA-3229121	Glycogen storage diseases	Homo sapiens
+R-HSA-3322077	Glycogen synthesis	Homo sapiens
+R-HSA-70171	Glycolysis	Homo sapiens
+R-HSA-1630316	Glycosaminoglycan metabolism	Homo sapiens
+R-HSA-1971475	Glycosaminoglycan-protein linkage region biosynthesis	Homo sapiens
+R-HSA-9845576	Glycosphingolipid transport	Homo sapiens
+R-HSA-389661	Glyoxylate metabolism and glycine degradation	Homo sapiens
+R-HSA-432722	Golgi Associated Vesicle Biogenesis	Homo sapiens
+R-HSA-162658	Golgi Cisternae Pericentriolar Stack Reorganization	Homo sapiens
+R-HSA-8856688	Golgi-to-ER retrograde transport	Homo sapiens
+R-HSA-982772	Growth hormone receptor signaling	Homo sapiens
+R-HSA-3214847	HATs acetylate histones	Homo sapiens
+R-HSA-9609690	HCMV Early Events	Homo sapiens
+R-HSA-9609646	HCMV Infection	Homo sapiens
+R-HSA-9610379	HCMV Late Events	Homo sapiens
+R-HSA-1296061	HCN channels	Homo sapiens
+R-HSA-3214815	HDACs deacetylate histones	Homo sapiens
+R-HSA-8964011	HDL clearance	Homo sapiens
+R-HSA-8964058	HDL remodeling	Homo sapiens
+R-HSA-3214842	HDMs demethylate histones	Homo sapiens
+R-HSA-5685942	HDR through Homologous Recombination (HRR)	Homo sapiens
+R-HSA-5693567	HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)	Homo sapiens
+R-HSA-5685939	HDR through MMEJ (alt-NHEJ)	Homo sapiens
+R-HSA-5685938	HDR through Single Strand Annealing (SSA)	Homo sapiens
+R-HSA-5658034	HHAT G278V doesn't palmitoylate Hh-Np	Homo sapiens
+R-HSA-162906	HIV Infection	Homo sapiens
+R-HSA-162587	HIV Life Cycle	Homo sapiens
+R-HSA-167169	HIV Transcription Elongation	Homo sapiens
+R-HSA-167161	HIV Transcription Initiation	Homo sapiens
+R-HSA-167287	HIV elongation arrest and recovery	Homo sapiens
+R-HSA-3371511	HSF1 activation	Homo sapiens
+R-HSA-3371571	HSF1-dependent transactivation	Homo sapiens
+R-HSA-3371497	HSP90 chaperone cycle for steroid hormone receptors (SHR) in the presence of ligand	Homo sapiens
+R-HSA-5610787	Hedgehog 'off' state	Homo sapiens
+R-HSA-5632684	Hedgehog 'on' state	Homo sapiens
+R-HSA-5358346	Hedgehog ligand biogenesis	Homo sapiens
+R-HSA-9707616	Heme signaling	Homo sapiens
+R-HSA-109582	Hemostasis	Homo sapiens
+R-HSA-1638091	Heparan sulfate/heparin (HS-GAG) metabolism	Homo sapiens
+R-HSA-5657560	Hereditary fructose intolerance	Homo sapiens
+R-HSA-5387390	Hh mutants abrogate ligand secretion	Homo sapiens
+R-HSA-5362768	Hh mutants are degraded by ERAD	Homo sapiens
+R-HSA-70921	Histidine catabolism	Homo sapiens
+R-HSA-5693579	Homologous DNA Pairing and Strand Exchange	Homo sapiens
+R-HSA-5693538	Homology Directed Repair	Homo sapiens
+R-HSA-162909	Host Interactions of HIV factors	Homo sapiens
+R-HSA-450520	HuR (ELAVL1) binds and stabilizes mRNA	Homo sapiens
+R-HSA-2160916	Hyaluronan degradation	Homo sapiens
+R-HSA-2142845	Hyaluronan metabolism	Homo sapiens
+R-HSA-204626	Hypusine synthesis from eIF5A-lysine	Homo sapiens
+R-HSA-9684482	IFIT antiviral response	Homo sapiens
+R-HSA-9732724	IFNG signaling activates MAPKs	Homo sapiens
+R-HSA-937041	IKK complex recruitment mediated by RIP1	Homo sapiens
+R-HSA-1855196	IP3 and IP4 transport between cytosol and nucleus	Homo sapiens
+R-HSA-1855229	IP6 and IP7 transport between cytosol and nucleus	Homo sapiens
+R-HSA-1855215	IPs transport between ER lumen and cytosol	Homo sapiens
+R-HSA-1855156	IPs transport between ER lumen and nucleus	Homo sapiens
+R-HSA-1855184	IPs transport between cytosol and ER lumen	Homo sapiens
+R-HSA-1855192	IPs transport between nucleus and ER lumen	Homo sapiens
+R-HSA-1855170	IPs transport between nucleus and cytosol	Homo sapiens
+R-HSA-937039	IRAK1 recruits IKK complex	Homo sapiens
+R-HSA-975144	IRAK1 recruits IKK complex upon TLR7/8 or 9 stimulation	Homo sapiens
+R-HSA-937042	IRAK2 mediated activation of TAK1 complex	Homo sapiens
+R-HSA-975163	IRAK2 mediated activation of TAK1 complex upon TLR7/8 or 9 stimulation	Homo sapiens
+R-HSA-381070	IRE1alpha activates chaperones	Homo sapiens
+R-HSA-1169408	ISG15 antiviral mechanism	Homo sapiens
+R-HSA-168256	Immune System	Homo sapiens
+R-HSA-9938026	Immunoglobulin maturation	Homo sapiens
+R-HSA-198933	Immunoregulatory interactions between a Lymphoid and a non-Lymphoid cell	Homo sapiens
+R-HSA-9709603	Impaired BRCA2 binding to PALB2	Homo sapiens
+R-HSA-9709570	Impaired BRCA2 binding to RAD51	Homo sapiens
+R-HSA-9763198	Impaired BRCA2 binding to SEM1 (DSS1)	Homo sapiens
+R-HSA-9709275	Impaired BRCA2 translocation to the nucleus	Homo sapiens
+R-HSA-428543	Inactivation of CDC42 and RAC1	Homo sapiens
+R-HSA-9705462	Inactivation of CSF3 (G-CSF) signaling	Homo sapiens
+R-HSA-400508	Incretin synthesis, secretion, and inactivation	Homo sapiens
+R-HSA-9733458	Induction of Cell-Cell Fusion	Homo sapiens
+R-HSA-9640148	Infection with Enterobacteria	Homo sapiens
+R-HSA-9635486	Infection with Mycobacterium tuberculosis	Homo sapiens
+R-HSA-5663205	Infectious disease	Homo sapiens
+R-HSA-622312	Inflammasomes	Homo sapiens
+R-HSA-168255	Influenza Infection	Homo sapiens
+R-HSA-168273	Influenza Viral RNA Transcription and Replication	Homo sapiens
+R-HSA-168277	Influenza Virus Induced Apoptosis	Homo sapiens
+R-HSA-9670095	Inhibition of DNA recombination at telomere	Homo sapiens
+R-HSA-168315	Inhibition of Host mRNA Processing and RNA Silencing	Homo sapiens
+R-HSA-168305	Inhibition of Interferon Synthesis	Homo sapiens
+R-HSA-169131	Inhibition of PKR	Homo sapiens
+R-HSA-165181	Inhibition of TSC complex formation by AKT (PKB)	Homo sapiens
+R-HSA-9635644	Inhibition of membrane repair	Homo sapiens
+R-HSA-9636249	Inhibition of nitric oxide production	Homo sapiens
+R-HSA-113501	Inhibition of replication initiation of damaged DNA by RB1/E2F1	Homo sapiens
+R-HSA-141405	Inhibition of the proteolytic activity of APC/C required for the onset of anaphase by mitotic spindle checkpoint components	Homo sapiens
+R-HSA-2995383	Initiation of Nuclear Envelope (NE) Reformation	Homo sapiens
+R-HSA-8876493	InlA-mediated entry of Listeria monocytogenes into host cells	Homo sapiens
+R-HSA-8875360	InlB-mediated entry of Listeria monocytogenes into host cell	Homo sapiens
+R-HSA-168249	Innate Immune System	Homo sapiens
+R-HSA-1483249	Inositol phosphate metabolism	Homo sapiens
+R-HSA-9609523	Insertion of tail-anchored proteins into the endoplasmic reticulum membrane	Homo sapiens
+R-HSA-264876	Insulin processing	Homo sapiens
+R-HSA-428359	Insulin-like Growth Factor-2 mRNA Binding Proteins (IGF2BPs/IMPs/VICKZs) bind RNA	Homo sapiens
+R-HSA-163685	Integration of energy metabolism	Homo sapiens
+R-HSA-216083	Integrin cell surface interactions	Homo sapiens
+R-HSA-354192	Integrin signaling	Homo sapiens
+R-HSA-445095	Interaction between L1 and Ankyrins	Homo sapiens
+R-HSA-8854521	Interaction between PHLDA1 and AURKA	Homo sapiens
+R-HSA-9940951	Interaction of NuRD complexes with transcription factors	Homo sapiens
+R-HSA-177243	Interactions of Rev with host cellular proteins	Homo sapiens
+R-HSA-176034	Interactions of Tat with host cellular proteins	Homo sapiens
+R-HSA-176033	Interactions of Vpr with host cellular proteins	Homo sapiens
+R-HSA-880009	Interconversion of 2-oxoglutarate and 2-hydroxyglutarate	Homo sapiens
+R-HSA-499943	Interconversion of nucleotide di- and triphosphates	Homo sapiens
+R-HSA-351200	Interconversion of polyamines	Homo sapiens
+R-HSA-913531	Interferon Signaling	Homo sapiens
+R-HSA-909733	Interferon alpha/beta signaling	Homo sapiens
+R-HSA-877300	Interferon gamma signaling	Homo sapiens
+R-HSA-912526	Interleukin receptor SHC signaling	Homo sapiens
+R-HSA-446652	Interleukin-1 family signaling	Homo sapiens
+R-HSA-448706	Interleukin-1 processing	Homo sapiens
+R-HSA-9020702	Interleukin-1 signaling	Homo sapiens
+R-HSA-6783783	Interleukin-10 signaling	Homo sapiens
+R-HSA-447115	Interleukin-12 family signaling	Homo sapiens
+R-HSA-9020591	Interleukin-12 signaling	Homo sapiens
+R-HSA-448424	Interleukin-17 signaling	Homo sapiens
+R-HSA-9012546	Interleukin-18 signaling	Homo sapiens
+R-HSA-451927	Interleukin-2 family signaling	Homo sapiens
+R-HSA-8854691	Interleukin-20 family signaling	Homo sapiens
+R-HSA-9020933	Interleukin-23 signaling	Homo sapiens
+R-HSA-9020956	Interleukin-27 signaling	Homo sapiens
+R-HSA-512988	Interleukin-3, Interleukin-5 and GM-CSF signaling	Homo sapiens
+R-HSA-9014843	Interleukin-33 signaling	Homo sapiens
+R-HSA-8984722	Interleukin-35 Signalling	Homo sapiens
+R-HSA-9014826	Interleukin-36 pathway	Homo sapiens
+R-HSA-9008059	Interleukin-37 signaling	Homo sapiens
+R-HSA-9007892	Interleukin-38 signaling	Homo sapiens
+R-HSA-6785807	Interleukin-4 and Interleukin-13 signaling	Homo sapiens
+R-HSA-6783589	Interleukin-6 family signaling	Homo sapiens
+R-HSA-1266695	Interleukin-7 signaling	Homo sapiens
+R-HSA-8942233	Intestinal infectious diseases	Homo sapiens
+R-HSA-5659898	Intestinal saccharidase deficiencies	Homo sapiens
+R-HSA-6811442	Intra-Golgi and retrograde Golgi-to-ER traffic	Homo sapiens
+R-HSA-6811438	Intra-Golgi traffic	Homo sapiens
+R-HSA-8981607	Intracellular oxygen transport	Homo sapiens
+R-HSA-9006925	Intracellular signaling by second messengers	Homo sapiens
+R-HSA-5620924	Intraflagellar transport	Homo sapiens
+R-HSA-109606	Intrinsic Pathway for Apoptosis	Homo sapiens
+R-HSA-8941237	Invadopodia formation	Homo sapiens
+R-HSA-1296065	Inwardly rectifying K+ channels	Homo sapiens
+R-HSA-983712	Ion channel transport	Homo sapiens
+R-HSA-5578775	Ion homeostasis	Homo sapiens
+R-HSA-936837	Ion transport by P-type ATPases	Homo sapiens
+R-HSA-917937	Iron uptake and transport	Homo sapiens
+R-HSA-450321	JNK (c-Jun kinases) phosphorylation and  activation mediated by activated human TAK1	Homo sapiens
+R-HSA-5689877	Josephin domain DUBs	Homo sapiens
+R-HSA-9755511	KEAP1-NFE2L2 pathway	Homo sapiens
+R-HSA-450604	KSRP (KHSRP) binds and destabilizes mRNA	Homo sapiens
+R-HSA-1638074	Keratan sulfate/keratin metabolism	Homo sapiens
+R-HSA-6805567	Keratinization	Homo sapiens
+R-HSA-74182	Ketone body metabolism	Homo sapiens
+R-HSA-9830369	Kidney development	Homo sapiens
+R-HSA-9664420	Killing mechanisms	Homo sapiens
+R-HSA-983189	Kinesins	Homo sapiens
+R-HSA-156827	L13a-mediated translational silencing of Ceruloplasmin expression	Homo sapiens
+R-HSA-373760	L1CAM interactions	Homo sapiens
+R-HSA-8964038	LDL clearance	Homo sapiens
+R-HSA-8964041	LDL remodeling	Homo sapiens
+R-HSA-5682910	LGI-ADAM interactions	Homo sapiens
+R-HSA-3134973	LRR FLII-interacting protein 1 (LRRFIP1) activates type I IFN production	Homo sapiens
+R-HSA-5653890	Lactose synthesis	Homo sapiens
+R-HSA-69186	Lagging Strand Synthesis	Homo sapiens
+R-HSA-3000157	Laminin interactions	Homo sapiens
+R-HSA-162599	Late Phase of HIV Life Cycle	Homo sapiens
+R-HSA-9772573	Late SARS-CoV-2 Infection Events	Homo sapiens
+R-HSA-9615710	Late endosomal microautophagy	Homo sapiens
+R-HSA-1222499	Latent infection - Other responses of Mtb to phagocytosis	Homo sapiens
+R-HSA-69109	Leading Strand Synthesis	Homo sapiens
+R-HSA-9658195	Leishmania infection	Homo sapiens
+R-HSA-9664433	Leishmania parasite growth and survival	Homo sapiens
+R-HSA-9664417	Leishmania phagocytosis	Homo sapiens
+R-HSA-5632681	Ligand-receptor interactions	Homo sapiens
+R-HSA-8964572	Lipid particle organization	Homo sapiens
+R-HSA-9613354	Lipophagy	Homo sapiens
+R-HSA-8876384	Listeria monocytogenes entry into host cells	Homo sapiens
+R-HSA-446343	Localization of the PINCH-ILK-PARVIN complex to focal adhesions	Homo sapiens
+R-HSA-9620244	Long-term potentiation	Homo sapiens
+R-HSA-9944971	Loss of Function of KMT2D in Kabuki Syndrome	Homo sapiens
+R-HSA-9723907	Loss of Function of TP53 in Cancer	Homo sapiens
+R-HSA-9022534	Loss of MECP2 binding ability to 5hmC-DNA	Homo sapiens
+R-HSA-9022538	Loss of MECP2 binding ability to 5mC-DNA	Homo sapiens
+R-HSA-9022537	Loss of MECP2 binding ability to the NCoR/SMRT complex	Homo sapiens
+R-HSA-380259	Loss of Nlp from mitotic centrosomes	Homo sapiens
+R-HSA-9005891	Loss of function of MECP2 in Rett syndrome	Homo sapiens
+R-HSA-9022535	Loss of phosphorylation of MECP2 at T308	Homo sapiens
+R-HSA-380284	Loss of proteins required for interphase microtubule organization from the centrosome	Homo sapiens
+R-HSA-71064	Lysine catabolism	Homo sapiens
+R-HSA-8853383	Lysosomal oligosaccharide catabolism	Homo sapiens
+R-HSA-432720	Lysosome Vesicle Biogenesis	Homo sapiens
+R-HSA-68886	M Phase	Homo sapiens
+R-HSA-9820841	M-decay: degradation of maternal mRNAs by maternally stored factors	Homo sapiens
+R-HSA-450294	MAP kinase activation	Homo sapiens
+R-HSA-5674135	MAP2K and MAPK activation	Homo sapiens
+R-HSA-5684264	MAP3K8 (TPL2)-dependent MAPK1/3 activation	Homo sapiens
+R-HSA-5683057	MAPK family signaling cascades	Homo sapiens
+R-HSA-450282	MAPK targets/ Nuclear events mediated by MAP kinases	Homo sapiens
+R-HSA-5684996	MAPK1/MAPK3 signaling	Homo sapiens
+R-HSA-5687128	MAPK6/MAPK4 signaling	Homo sapiens
+R-HSA-2465910	MASTL Facilitates Mitotic Progression	Homo sapiens
+R-HSA-9851151	MDK and PTN in ALK signaling	Homo sapiens
+R-HSA-9022699	MECP2 regulates neuronal receptors and channels	Homo sapiens
+R-HSA-9022707	MECP2 regulates transcription factors	Homo sapiens
+R-HSA-9022927	MECP2 regulates transcription of genes involved in GABA signaling	Homo sapiens
+R-HSA-9022702	MECP2 regulates transcription of neuronal ligands	Homo sapiens
+R-HSA-6806942	MET Receptor Activation	Homo sapiens
+R-HSA-8851907	MET activates PI3K/AKT signaling	Homo sapiens
+R-HSA-8865999	MET activates PTPN11	Homo sapiens
+R-HSA-8851805	MET activates RAS signaling	Homo sapiens
+R-HSA-8875791	MET activates STAT3	Homo sapiens
+R-HSA-8875878	MET promotes cell motility	Homo sapiens
+R-HSA-8875656	MET receptor recycling	Homo sapiens
+R-HSA-2132295	MHC class II antigen presentation	Homo sapiens
+R-HSA-9856651	MITF-M-dependent gene expression	Homo sapiens
+R-HSA-9730414	MITF-M-regulated melanocyte development	Homo sapiens
+R-HSA-9841922	MLL4 and MLL3 complexes regulate expression of PPARG target genes in adipogenesis and hepatic steatosis	Homo sapiens
+R-HSA-165159	MTOR signalling	Homo sapiens
+R-HSA-1632852	Macroautophagy	Homo sapiens
+R-HSA-6791226	Major pathway of rRNA processing in the nucleolus and cytosol	Homo sapiens
+R-HSA-9636667	Manipulation of host energy metabolism	Homo sapiens
+R-HSA-9816359	Maternal to zygotic transition (MZT)	Homo sapiens
+R-HSA-9918432	Maturation of DENV proteins	Homo sapiens
+R-HSA-9828806	Maturation of hRSV A proteins	Homo sapiens
+R-HSA-9683610	Maturation of nucleoprotein	Homo sapiens
+R-HSA-9694631	Maturation of nucleoprotein	Homo sapiens
+R-HSA-9683673	Maturation of protein 3a	Homo sapiens
+R-HSA-9694719	Maturation of protein 3a	Homo sapiens
+R-HSA-9683683	Maturation of protein E	Homo sapiens
+R-HSA-9694493	Maturation of protein E	Homo sapiens
+R-HSA-9683612	Maturation of protein M	Homo sapiens
+R-HSA-9694594	Maturation of protein M	Homo sapiens
+R-HSA-9683686	Maturation of spike protein	Homo sapiens
+R-HSA-9694548	Maturation of spike protein	Homo sapiens
+R-HSA-1500620	Meiosis	Homo sapiens
+R-HSA-912446	Meiotic recombination	Homo sapiens
+R-HSA-1221632	Meiotic synapsis	Homo sapiens
+R-HSA-5662702	Melanin biosynthesis	Homo sapiens
+R-HSA-199991	Membrane Trafficking	Homo sapiens
+R-HSA-174490	Membrane binding and targetting of GAG proteins	Homo sapiens
+R-HSA-5579029	Metabolic disorders of biological oxidation enzymes	Homo sapiens
+R-HSA-1430728	Metabolism	Homo sapiens
+R-HSA-2022377	Metabolism of Angiotensinogen to Angiotensins	Homo sapiens
+R-HSA-8953854	Metabolism of RNA	Homo sapiens
+R-HSA-209776	Metabolism of amine-derived hormones	Homo sapiens
+R-HSA-71291	Metabolism of amino acids and derivatives	Homo sapiens
+R-HSA-71387	Metabolism of carbohydrates and carbohydrate derivatives	Homo sapiens
+R-HSA-8978934	Metabolism of cofactors	Homo sapiens
+R-HSA-6806667	Metabolism of fat-soluble vitamins	Homo sapiens
+R-HSA-2408550	Metabolism of ingested H2SeO4 and H2SeO3 into H2Se	Homo sapiens
+R-HSA-5263617	Metabolism of ingested MeSeO2H into MeSeH	Homo sapiens
+R-HSA-2408508	Metabolism of ingested SeMet, Sec, MeSec into H2Se	Homo sapiens
+R-HSA-556833	Metabolism of lipids	Homo sapiens
+R-HSA-202131	Metabolism of nitric oxide: NOS3 activation and regulation	Homo sapiens
+R-HSA-194441	Metabolism of non-coding RNA	Homo sapiens
+R-HSA-15869	Metabolism of nucleotides	Homo sapiens
+R-HSA-351202	Metabolism of polyamines	Homo sapiens
+R-HSA-189445	Metabolism of porphyrins	Homo sapiens
+R-HSA-392499	Metabolism of proteins	Homo sapiens
+R-HSA-196071	Metabolism of steroid hormones	Homo sapiens
+R-HSA-8957322	Metabolism of steroids	Homo sapiens
+R-HSA-196854	Metabolism of vitamins and cofactors	Homo sapiens
+R-HSA-196849	Metabolism of water-soluble vitamins and cofactors	Homo sapiens
+R-HSA-9638482	Metal ion assimilation from the host	Homo sapiens
+R-HSA-5689901	Metalloprotease DUBs	Homo sapiens
+R-HSA-2408552	Methylation of MeSeH for excretion	Homo sapiens
+R-HSA-203927	MicroRNA (miRNA) biogenesis	Homo sapiens
+R-HSA-190840	Microtubule-dependent trafficking of connexons from Golgi to the plasma membrane	Homo sapiens
+R-HSA-9715370	Miro GTPase Cycle	Homo sapiens
+R-HSA-5223345	Miscellaneous transport and binding events	Homo sapiens
+R-HSA-5358508	Mismatch Repair	Homo sapiens
+R-HSA-5358606	Mismatch repair (MMR) directed by MSH2:MSH3 (MutSbeta)	Homo sapiens
+R-HSA-5358565	Mismatch repair (MMR) directed by MSH2:MSH6 (MutSalpha)	Homo sapiens
+R-HSA-1369007	Mitochondrial ABC transporters	Homo sapiens
+R-HSA-9836573	Mitochondrial RNA degradation	Homo sapiens
+R-HSA-166187	Mitochondrial Uncoupling	Homo sapiens
+R-HSA-1592230	Mitochondrial biogenesis	Homo sapiens
+R-HSA-8949215	Mitochondrial calcium ion transport	Homo sapiens
+R-HSA-1362409	Mitochondrial iron-sulfur cluster biogenesis	Homo sapiens
+R-HSA-9937008	Mitochondrial mRNA modification	Homo sapiens
+R-HSA-9837999	Mitochondrial protein degradation	Homo sapiens
+R-HSA-1268020	Mitochondrial protein import	Homo sapiens
+R-HSA-9937383	Mitochondrial ribosome-associated quality control	Homo sapiens
+R-HSA-5368287	Mitochondrial translation	Homo sapiens
+R-HSA-5389840	Mitochondrial translation elongation	Homo sapiens
+R-HSA-5368286	Mitochondrial translation initiation	Homo sapiens
+R-HSA-5419276	Mitochondrial translation termination	Homo sapiens
+R-HSA-9841251	Mitochondrial unfolded protein response (UPRmt)	Homo sapiens
+R-HSA-5205647	Mitophagy	Homo sapiens
+R-HSA-68882	Mitotic Anaphase	Homo sapiens
+R-HSA-453279	Mitotic G1 phase and G1/S transition	Homo sapiens
+R-HSA-453274	Mitotic G2-G2/M phases	Homo sapiens
+R-HSA-2555396	Mitotic Metaphase and Anaphase	Homo sapiens
+R-HSA-68881	Mitotic Metaphase/Anaphase Transition	Homo sapiens
+R-HSA-68877	Mitotic Prometaphase	Homo sapiens
+R-HSA-68875	Mitotic Prophase	Homo sapiens
+R-HSA-69618	Mitotic Spindle Checkpoint	Homo sapiens
+R-HSA-68884	Mitotic Telophase/Cytokinesis	Homo sapiens
+R-HSA-9637628	Modulation by Mtb of host immune system	Homo sapiens
+R-HSA-9909505	Modulation of host responses by IFN-stimulated genes	Homo sapiens
+R-HSA-2206281	Mucopolysaccharidoses	Homo sapiens
+R-HSA-397014	Muscle contraction	Homo sapiens
+R-HSA-975871	MyD88 cascade initiated on plasma membrane	Homo sapiens
+R-HSA-975155	MyD88 dependent cascade initiated on endosome	Homo sapiens
+R-HSA-166166	MyD88-independent TLR4 cascade 	Homo sapiens
+R-HSA-166058	MyD88:MAL(TIRAP) cascade initiated on plasma membrane	Homo sapiens
+R-HSA-3785653	Myoclonic epilepsy of Lafora	Homo sapiens
+R-HSA-525793	Myogenesis	Homo sapiens
+R-HSA-975576	N-glycan antennae elongation in the medial/trans-Golgi	Homo sapiens
+R-HSA-964739	N-glycan trimming and elongation in the cis-Golgi	Homo sapiens
+R-HSA-532668	N-glycan trimming in the ER and Calnexin/Calreticulin cycle	Homo sapiens
+R-HSA-205025	NADE modulates death signalling	Homo sapiens
+R-HSA-389542	NADPH regeneration	Homo sapiens
+R-HSA-375165	NCAM signaling for neurite out-growth	Homo sapiens
+R-HSA-9636003	NEIL3-mediated resolution of ICLs	Homo sapiens
+R-HSA-168333	NEP/NS2 Interacts with the Cellular Export Machinery	Homo sapiens
+R-HSA-933543	NF-kB activation through FADD/RIP-1 pathway mediated by caspase-8 and -10	Homo sapiens
+R-HSA-209560	NF-kB is activated and signals survival	Homo sapiens
+R-HSA-9818028	NFE2L2 regulates pentose phosphate pathway genes	Homo sapiens
+R-HSA-9818035	NFE2L2 regulating ER-stress associated genes	Homo sapiens
+R-HSA-9818032	NFE2L2 regulating MDR associated enzymes	Homo sapiens
+R-HSA-9818025	NFE2L2 regulating TCA cycle genes	Homo sapiens
+R-HSA-9818027	NFE2L2 regulating anti-oxidant/detoxification enzymes	Homo sapiens
+R-HSA-9818026	NFE2L2 regulating inflammation associated genes	Homo sapiens
+R-HSA-9818030	NFE2L2 regulating tumorigenic genes	Homo sapiens
+R-HSA-205017	NFG and proNGF binds to p75NTR	Homo sapiens
+R-HSA-5676590	NIK-->noncanonical NF-kB signaling	Homo sapiens
+R-HSA-168638	NOD1/2 Signaling Pathway	Homo sapiens
+R-HSA-203754	NOSIP mediated eNOS trafficking	Homo sapiens
+R-HSA-203641	NOSTRIN mediated eNOS trafficking	Homo sapiens
+R-HSA-2122947	NOTCH1 Intracellular Domain Regulates Transcription	Homo sapiens
+R-HSA-2979096	NOTCH2 Activation and Transmission of Signal to the Nucleus	Homo sapiens
+R-HSA-2197563	NOTCH2 intracellular domain regulates transcription	Homo sapiens
+R-HSA-9013507	NOTCH3 Activation and Transmission of Signal to the Nucleus	Homo sapiens
+R-HSA-9013508	NOTCH3 Intracellular Domain Regulates Transcription	Homo sapiens
+R-HSA-9013700	NOTCH4 Activation and Transmission of Signal to the Nucleus	Homo sapiens
+R-HSA-9013695	NOTCH4 Intracellular Domain Regulates Transcription	Homo sapiens
+R-HSA-9768919	NPAS4 regulates expression of target genes	Homo sapiens
+R-HSA-9632974	NR1H2 & NR1H3 regulate gene expression linked to gluconeogenesis 	Homo sapiens
+R-HSA-9029558	NR1H2 & NR1H3 regulate gene expression linked to lipogenesis	Homo sapiens
+R-HSA-9031528	NR1H2 & NR1H3 regulate gene expression linked to triglyceride lipolysis in adipose	Homo sapiens
+R-HSA-9623433	NR1H2 & NR1H3 regulate gene expression to control bile acid homeostasis	Homo sapiens
+R-HSA-9031525	NR1H2 & NR1H3 regulate gene expression to limit cholesterol uptake 	Homo sapiens
+R-HSA-9024446	NR1H2 and NR1H3-mediated signaling	Homo sapiens
+R-HSA-9029569	NR1H3 & NR1H2 regulate gene expression linked to cholesterol transport and efflux	Homo sapiens
+R-HSA-193648	NRAGE signals death through JNK	Homo sapiens
+R-HSA-205043	NRIF signals cell death from the nucleus	Homo sapiens
+R-HSA-168276	NS1 Mediated Effects on Host Pathways	Homo sapiens
+R-HSA-420597	Nectin/Necl  trans heterodimerization	Homo sapiens
+R-HSA-8951664	Neddylation	Homo sapiens
+R-HSA-9764725	Negative Regulation of CDH1 Gene Transcription	Homo sapiens
+R-HSA-9974237	Negative Regulation of DNA Double Strand Break Response	Homo sapiens
+R-HSA-5250941	Negative epigenetic regulation of rRNA expression	Homo sapiens
+R-HSA-5674499	Negative feedback regulation of MAPK pathway	Homo sapiens
+R-HSA-5654726	Negative regulation of FGFR1 signaling	Homo sapiens
+R-HSA-5654727	Negative regulation of FGFR2 signaling	Homo sapiens
+R-HSA-5654732	Negative regulation of FGFR3 signaling	Homo sapiens
+R-HSA-5654733	Negative regulation of FGFR4 signaling	Homo sapiens
+R-HSA-9706369	Negative regulation of FLT3	Homo sapiens
+R-HSA-5675221	Negative regulation of MAPK pathway	Homo sapiens
+R-HSA-6807004	Negative regulation of MET activity	Homo sapiens
+R-HSA-9617324	Negative regulation of NMDA receptor-mediated neuronal transmission	Homo sapiens
+R-HSA-9604323	Negative regulation of NOTCH4 signaling	Homo sapiens
+R-HSA-5368598	Negative regulation of TCF-dependent signaling by DVL-interacting proteins	Homo sapiens
+R-HSA-3772470	Negative regulation of TCF-dependent signaling by WNT ligand antagonists	Homo sapiens
+R-HSA-8866904	Negative regulation of activity of TFAP2 (AP-2) family transcription factors	Homo sapiens
+R-HSA-199418	Negative regulation of the PI3K/AKT network	Homo sapiens
+R-HSA-936440	Negative regulators of DDX58/IFIH1 signaling	Homo sapiens
+R-HSA-373753	Nephrin family interactions	Homo sapiens
+R-HSA-9675108	Nervous system development	Homo sapiens
+R-HSA-373752	Netrin-1 signaling	Homo sapiens
+R-HSA-8863678	Neurodegenerative Diseases	Homo sapiens
+R-HSA-447043	Neurofascin interactions	Homo sapiens
+R-HSA-112316	Neuronal System	Homo sapiens
+R-HSA-194306	Neuropilin interactions with VEGF and VEGFR	Homo sapiens
+R-HSA-168799	Neurotoxicity of clostridium toxins	Homo sapiens
+R-HSA-112311	Neurotransmitter clearance	Homo sapiens
+R-HSA-112314	Neurotransmitter receptors and postsynaptic signal transmission	Homo sapiens
+R-HSA-112310	Neurotransmitter release cycle	Homo sapiens
+R-HSA-112313	Neurotransmitter uptake and metabolism In glial cells	Homo sapiens
+R-HSA-6798695	Neutrophil degranulation	Homo sapiens
+R-HSA-427413	NoRC negatively regulates rRNA expression	Homo sapiens
+R-HSA-9686114	Non-canonical inflammasome activation	Homo sapiens
+R-HSA-3000171	Non-integrin membrane-ECM interactions	Homo sapiens
+R-HSA-9017802	Noncanonical activation of NOTCH3	Homo sapiens
+R-HSA-5693571	Nonhomologous End-Joining (NHEJ)	Homo sapiens
+R-HSA-975957	Nonsense Mediated Decay (NMD) enhanced by the Exon Junction Complex (EJC)	Homo sapiens
+R-HSA-975956	Nonsense Mediated Decay (NMD) independent of the Exon Junction Complex (EJC)	Homo sapiens
+R-HSA-927802	Nonsense-Mediated Decay (NMD)	Homo sapiens
+R-HSA-181430	Norepinephrine Neurotransmitter Release Cycle	Homo sapiens
+R-HSA-350054	Notch-HLH transcription pathway	Homo sapiens
+R-HSA-447038	NrCAM interactions	Homo sapiens
+R-HSA-9937850	NuRD complex assembly	Homo sapiens
+R-HSA-2995410	Nuclear Envelope (NE) Reassembly	Homo sapiens
+R-HSA-2980766	Nuclear Envelope Breakdown	Homo sapiens
+R-HSA-3301854	Nuclear Pore Complex (NPC) Disassembly	Homo sapiens
+R-HSA-9930044	Nuclear RNA decay	Homo sapiens
+R-HSA-383280	Nuclear Receptor transcription pathway	Homo sapiens
+R-HSA-9759194	Nuclear events mediated by NFE2L2	Homo sapiens
+R-HSA-9725371	Nuclear events stimulated by ALK signaling in cancer	Homo sapiens
+R-HSA-180746	Nuclear import of Rev protein	Homo sapiens
+R-HSA-1251985	Nuclear signaling by ERBB4	Homo sapiens
+R-HSA-774815	Nucleosome assembly	Homo sapiens
+R-HSA-5696398	Nucleotide Excision Repair	Homo sapiens
+R-HSA-8956320	Nucleotide biosynthesis	Homo sapiens
+R-HSA-8956319	Nucleotide catabolism	Homo sapiens
+R-HSA-8956321	Nucleotide salvage	Homo sapiens
+R-HSA-168643	Nucleotide-binding domain, leucine rich repeat containing receptor (NLR) signaling pathways	Homo sapiens
+R-HSA-5173105	O-linked glycosylation	Homo sapiens
+R-HSA-1480926	O2/CO2 exchange in erythrocytes	Homo sapiens
+R-HSA-8983711	OAS antiviral response	Homo sapiens
+R-HSA-381753	Olfactory Signaling Pathway	Homo sapiens
+R-HSA-190704	Oligomerization of connexins into connexons	Homo sapiens
+R-HSA-2559585	Oncogene Induced Senescence	Homo sapiens
+R-HSA-6802957	Oncogenic MAPK signaling	Homo sapiens
+R-HSA-68949	Orc1 removal from chromatin	Homo sapiens
+R-HSA-1852241	Organelle biogenesis and maintenance	Homo sapiens
+R-HSA-449836	Other interleukin signaling	Homo sapiens
+R-HSA-416700	Other semaphorin interactions	Homo sapiens
+R-HSA-5689896	Ovarian tumor domain proteases	Homo sapiens
+R-HSA-2559580	Oxidative Stress Induced Senescence	Homo sapiens
+R-HSA-1234176	Oxygen-dependent proline hydroxylation of Hypoxia-inducible Factor Alpha	Homo sapiens
+R-HSA-5651801	PCNA-Dependent Long Patch Base Excision Repair	Homo sapiens
+R-HSA-4086400	PCP/CE pathway	Homo sapiens
+R-HSA-9931295	PD-L1(CD274) glycosylation and translocation to plasma membrane	Homo sapiens
+R-HSA-9861559	PDH complex synthesizes acetyl-CoA from PYR	Homo sapiens
+R-HSA-210990	PECAM1 interactions	Homo sapiens
+R-HSA-9954714	PELO:HBS1L and ABCE1 dissociate a ribosome on a non-stop mRNA	Homo sapiens
+R-HSA-381042	PERK regulates gene expression	Homo sapiens
+R-HSA-1963642	PI3K events in ERBB2 signaling	Homo sapiens
+R-HSA-1250342	PI3K events in ERBB4 signaling	Homo sapiens
+R-HSA-2219528	PI3K/AKT Signaling in Cancer	Homo sapiens
+R-HSA-6811555	PI5P Regulates TP53 Acetylation	Homo sapiens
+R-HSA-5205685	PINK1-PRKN Mediated Mitophagy	Homo sapiens
+R-HSA-1257604	PIP3 activates AKT signaling	Homo sapiens
+R-HSA-5601884	PIWI-interacting RNA (piRNA) biogenesis	Homo sapiens
+R-HSA-3214841	PKMTs methylate histone lysines	Homo sapiens
+R-HSA-9833482	PKR-mediated signaling	Homo sapiens
+R-HSA-1251932	PLCG1 events in ERBB2 signaling	Homo sapiens
+R-HSA-110362	POLB-Dependent Long Patch Base Excision Repair	Homo sapiens
+R-HSA-1989781	PPARA activates gene expression	Homo sapiens
+R-HSA-212300	PRC2 methylates histones and DNA	Homo sapiens
+R-HSA-6807070	PTEN Regulation	Homo sapiens
+R-HSA-8849474	PTK6 Activates STAT3	Homo sapiens
+R-HSA-8849472	PTK6 Down-Regulation	Homo sapiens
+R-HSA-8849473	PTK6 Expression	Homo sapiens
+R-HSA-8849470	PTK6 Regulates Cell Cycle	Homo sapiens
+R-HSA-8849468	PTK6 Regulates Proteins Involved in RNA Processing	Homo sapiens
+R-HSA-8849471	PTK6 Regulates RHO GTPases, RAS GTPase and MAP kinases	Homo sapiens
+R-HSA-8849469	PTK6 Regulates RTKs and Their Effectors AKT1 and DOK1	Homo sapiens
+R-HSA-8857538	PTK6 promotes HIF1A stabilization	Homo sapiens
+R-HSA-171306	Packaging Of Telomere Ends	Homo sapiens
+R-HSA-9753281	Paracetamol ADME	Homo sapiens
+R-HSA-6802955	Paradoxical activation of RAF signaling by kinase inactive BRAF	Homo sapiens
+R-HSA-9664407	Parasite infection	Homo sapiens
+R-HSA-9824443	Parasitic Infection Pathways	Homo sapiens
+R-HSA-167290	Pausing and recovery of HIV elongation	Homo sapiens
+R-HSA-167238	Pausing and recovery of Tat-mediated HIV elongation	Homo sapiens
+R-HSA-71336	Pentose phosphate pathway	Homo sapiens
+R-HSA-6791465	Pentose phosphate pathway disease	Homo sapiens
+R-HSA-156902	Peptide chain elongation	Homo sapiens
+R-HSA-209952	Peptide hormone biosynthesis	Homo sapiens
+R-HSA-2980736	Peptide hormone metabolism	Homo sapiens
+R-HSA-9033241	Peroxisomal protein import	Homo sapiens
+R-HSA-9005895	Pervasive developmental disorders	Homo sapiens
+R-HSA-9664873	Pexophagy	Homo sapiens
+R-HSA-5576892	Phase 0 - rapid depolarisation	Homo sapiens
+R-HSA-5576894	Phase 1 - inactivation of fast Na+ channels	Homo sapiens
+R-HSA-5576893	Phase 2 - plateau phase	Homo sapiens
+R-HSA-5576890	Phase 3 - rapid repolarisation	Homo sapiens
+R-HSA-5576886	Phase 4 - resting membrane potential	Homo sapiens
+R-HSA-211945	Phase I - Functionalization of compounds	Homo sapiens
+R-HSA-156580	Phase II - Conjugation of compounds	Homo sapiens
+R-HSA-8963691	Phenylalanine and tyrosine metabolism	Homo sapiens
+R-HSA-2160456	Phenylketonuria	Homo sapiens
+R-HSA-1483257	Phospholipid metabolism	Homo sapiens
+R-HSA-9931510	Phosphorylated BMAL1:CLOCK (ARNTL:CLOCK) activates expression of core clock genes	Homo sapiens
+R-HSA-9931529	Phosphorylation and nuclear translocation of BMAL1 (ARNTL) and CLOCK	Homo sapiens
+R-HSA-9931530	Phosphorylation and nuclear translocation of the CRY:PER:kinase complex	Homo sapiens
+R-HSA-202427	Phosphorylation of CD3 and TCR zeta chains	Homo sapiens
+R-HSA-9931512	Phosphorylation of CLOCK, acetylation of BMAL1 (ARNTL) at target gene promoters	Homo sapiens
+R-HSA-176417	Phosphorylation of Emi1	Homo sapiens
+R-HSA-69200	Phosphorylation of proteins involved in G1/S transition by active Cyclin E:Cdk2 complexes	Homo sapiens
+R-HSA-176412	Phosphorylation of the APC/C	Homo sapiens
+R-HSA-5578768	Physiological factors	Homo sapiens
+R-HSA-8963898	Plasma lipoprotein assembly	Homo sapiens
+R-HSA-174824	Plasma lipoprotein assembly, remodeling, and clearance	Homo sapiens
+R-HSA-8964043	Plasma lipoprotein clearance	Homo sapiens
+R-HSA-8963899	Plasma lipoprotein remodeling	Homo sapiens
+R-HSA-75892	Platelet Adhesion to exposed collagen	Homo sapiens
+R-HSA-76009	Platelet Aggregation (Plug Formation)	Homo sapiens
+R-HSA-76002	Platelet activation, signaling and aggregation	Homo sapiens
+R-HSA-114608	Platelet degranulation 	Homo sapiens
+R-HSA-418346	Platelet homeostasis	Homo sapiens
+R-HSA-156711	Polo-like kinase mediated events	Homo sapiens
+R-HSA-69091	Polymerase switching	Homo sapiens
+R-HSA-174411	Polymerase switching on the C-strand of the telomere	Homo sapiens
+R-HSA-9764790	Positive Regulation of CDH1 Gene Transcription	Homo sapiens
+R-HSA-5250913	Positive epigenetic regulation of rRNA expression	Homo sapiens
+R-HSA-438064	Post NMDA receptor activation events	Homo sapiens
+R-HSA-389977	Post-chaperonin tubulin folding pathway	Homo sapiens
+R-HSA-426496	Post-transcriptional silencing by small RNAs	Homo sapiens
+R-HSA-163125	Post-translational modification: synthesis of GPI-anchored proteins	Homo sapiens
+R-HSA-597592	Post-translational protein modification	Homo sapiens
+R-HSA-8957275	Post-translational protein phosphorylation	Homo sapiens
+R-HSA-9615933	Postmitotic nuclear pore complex (NPC) reformation	Homo sapiens
+R-HSA-1296071	Potassium Channels	Homo sapiens
+R-HSA-9679191	Potential therapeutics for SARS	Homo sapiens
+R-HSA-1912422	Pre-NOTCH Expression and Processing	Homo sapiens
+R-HSA-1912420	Pre-NOTCH Processing in Golgi	Homo sapiens
+R-HSA-1912399	Pre-NOTCH Processing in the Endoplasmic Reticulum	Homo sapiens
+R-HSA-1912408	Pre-NOTCH Transcription and Translation	Homo sapiens
+R-HSA-9757110	Prednisone ADME	Homo sapiens
+R-HSA-389957	Prefoldin mediated transfer of substrate  to CCT/TriC	Homo sapiens
+R-HSA-112308	Presynaptic depolarization and calcium channel opening	Homo sapiens
+R-HSA-5693616	Presynaptic phase of homologous DNA pairing and strand exchange	Homo sapiens
+R-HSA-9636383	Prevention of phagosomal-lysosomal fusion	Homo sapiens
+R-HSA-3215018	Processing and activation of SUMO	Homo sapiens
+R-HSA-72203	Processing of Capped Intron-Containing Pre-mRNA	Homo sapiens
+R-HSA-75067	Processing of Capped Intronless Pre-mRNA	Homo sapiens
+R-HSA-5693607	Processing of DNA double-strand break ends	Homo sapiens
+R-HSA-9979719	Processing of antigen in germinal center B cells	Homo sapiens
+R-HSA-174414	Processive synthesis on the C-strand of the telomere	Homo sapiens
+R-HSA-69183	Processive synthesis on the lagging strand	Homo sapiens
+R-HSA-5357801	Programmed Cell Death	Homo sapiens
+R-HSA-1170546	Prolactin receptor signaling	Homo sapiens
+R-HSA-70688	Proline catabolism	Homo sapiens
+R-HSA-9907900	Proteasome assembly	Homo sapiens
+R-HSA-391251	Protein folding	Homo sapiens
+R-HSA-9629569	Protein hydroxylation	Homo sapiens
+R-HSA-9857492	Protein lipoylation	Homo sapiens
+R-HSA-9609507	Protein localization	Homo sapiens
+R-HSA-8876725	Protein methylation	Homo sapiens
+R-HSA-5676934	Protein repair	Homo sapiens
+R-HSA-8852135	Protein ubiquitination	Homo sapiens
+R-HSA-6794362	Protein-protein interactions at synapses	Homo sapiens
+R-HSA-73817	Purine ribonucleoside monophosphate biosynthesis	Homo sapiens
+R-HSA-9660826	Purinergic signaling in leishmaniasis infection	Homo sapiens
+R-HSA-500753	Pyrimidine biosynthesis	Homo sapiens
+R-HSA-71737	Pyrophosphate hydrolysis	Homo sapiens
+R-HSA-5620971	Pyroptosis	Homo sapiens
+R-HSA-70268	Pyruvate metabolism	Homo sapiens
+R-HSA-8873719	RAB geranylgeranylation	Homo sapiens
+R-HSA-9013149	RAC1 GTPase cycle	Homo sapiens
+R-HSA-9013404	RAC2 GTPase cycle	Homo sapiens
+R-HSA-9013423	RAC3 GTPase cycle	Homo sapiens
+R-HSA-5673000	RAF activation	Homo sapiens
+R-HSA-112409	RAF-independent MAPK1/3 activation	Homo sapiens
+R-HSA-5673001	RAF/MAP kinase cascade	Homo sapiens
+R-HSA-9649913	RAS GTPase cycle mutants	Homo sapiens
+R-HSA-9648002	RAS processing	Homo sapiens
+R-HSA-6802953	RAS signaling downstream of NF1 loss-of-function variants	Homo sapiens
+R-HSA-8853659	RET signaling	Homo sapiens
+R-HSA-195258	RHO GTPase Effectors	Homo sapiens
+R-HSA-9012999	RHO GTPase cycle	Homo sapiens
+R-HSA-5663220	RHO GTPases Activate Formins	Homo sapiens
+R-HSA-5668599	RHO GTPases Activate NADPH Oxidases	Homo sapiens
+R-HSA-5627117	RHO GTPases Activate ROCKs	Homo sapiens
+R-HSA-5666185	RHO GTPases Activate Rhotekin and Rhophilins	Homo sapiens
+R-HSA-5663213	RHO GTPases Activate WASPs and WAVEs	Homo sapiens
+R-HSA-5625900	RHO GTPases activate CIT	Homo sapiens
+R-HSA-5626467	RHO GTPases activate IQGAPs	Homo sapiens
+R-HSA-5625970	RHO GTPases activate KTN1	Homo sapiens
+R-HSA-5627123	RHO GTPases activate PAKs	Homo sapiens
+R-HSA-5625740	RHO GTPases activate PKNs	Homo sapiens
+R-HSA-5627083	RHO GTPases regulate CFTR trafficking	Homo sapiens
+R-HSA-8980692	RHOA GTPase cycle	Homo sapiens
+R-HSA-9013026	RHOB GTPase cycle	Homo sapiens
+R-HSA-9706574	RHOBTB GTPase Cycle	Homo sapiens
+R-HSA-9013422	RHOBTB1 GTPase cycle	Homo sapiens
+R-HSA-9013418	RHOBTB2 GTPase cycle	Homo sapiens
+R-HSA-9706019	RHOBTB3 ATPase cycle	Homo sapiens
+R-HSA-9013106	RHOC GTPase cycle	Homo sapiens
+R-HSA-9013405	RHOD GTPase cycle	Homo sapiens
+R-HSA-9035034	RHOF GTPase cycle	Homo sapiens
+R-HSA-9013408	RHOG GTPase cycle	Homo sapiens
+R-HSA-9013407	RHOH GTPase cycle	Homo sapiens
+R-HSA-9013409	RHOJ GTPase cycle	Homo sapiens
+R-HSA-9013406	RHOQ GTPase cycle	Homo sapiens
+R-HSA-9013420	RHOU GTPase cycle	Homo sapiens
+R-HSA-9013424	RHOV GTPase cycle	Homo sapiens
+R-HSA-5213460	RIPK1-mediated regulated necrosis	Homo sapiens
+R-HSA-3214858	RMTs methylate histone arginines	Homo sapiens
+R-HSA-77075	RNA Pol II CTD phosphorylation and interaction with CE	Homo sapiens
+R-HSA-167160	RNA Pol II CTD phosphorylation and interaction with CE during HIV infection	Homo sapiens
+R-HSA-73772	RNA Polymerase I Promoter Escape	Homo sapiens
+R-HSA-73728	RNA Polymerase I Promoter Opening	Homo sapiens
+R-HSA-73864	RNA Polymerase I Transcription	Homo sapiens
+R-HSA-73762	RNA Polymerase I Transcription Initiation	Homo sapiens
+R-HSA-73863	RNA Polymerase I Transcription Termination	Homo sapiens
+R-HSA-167162	RNA Polymerase II HIV Promoter Escape	Homo sapiens
+R-HSA-674695	RNA Polymerase II Pre-transcription Events	Homo sapiens
+R-HSA-73776	RNA Polymerase II Promoter Escape	Homo sapiens
+R-HSA-73857	RNA Polymerase II Transcription	Homo sapiens
+R-HSA-75955	RNA Polymerase II Transcription Elongation	Homo sapiens
+R-HSA-75953	RNA Polymerase II Transcription Initiation	Homo sapiens
+R-HSA-76042	RNA Polymerase II Transcription Initiation And Promoter Clearance	Homo sapiens
+R-HSA-73779	RNA Polymerase II Transcription Pre-Initiation And Promoter Opening	Homo sapiens
+R-HSA-73856	RNA Polymerase II Transcription Termination	Homo sapiens
+R-HSA-749476	RNA Polymerase III Abortive And Retractive Initiation	Homo sapiens
+R-HSA-73780	RNA Polymerase III Chain Elongation	Homo sapiens
+R-HSA-74158	RNA Polymerase III Transcription	Homo sapiens
+R-HSA-76046	RNA Polymerase III Transcription Initiation	Homo sapiens
+R-HSA-76061	RNA Polymerase III Transcription Initiation From Type 1 Promoter	Homo sapiens
+R-HSA-76066	RNA Polymerase III Transcription Initiation From Type 2 Promoter	Homo sapiens
+R-HSA-76071	RNA Polymerase III Transcription Initiation From Type 3 Promoter	Homo sapiens
+R-HSA-73980	RNA Polymerase III Transcription Termination	Homo sapiens
+R-HSA-6807505	RNA polymerase II transcribes snRNA genes	Homo sapiens
+R-HSA-9696273	RND1 GTPase cycle	Homo sapiens
+R-HSA-9696270	RND2 GTPase cycle	Homo sapiens
+R-HSA-9696264	RND3 GTPase cycle	Homo sapiens
+R-HSA-9010642	ROBO receptors bind AKAP5	Homo sapiens
+R-HSA-9933387	RORA,B,C and NR1D1 (REV-ERBA) regulate gene expression	Homo sapiens
+R-HSA-1222556	ROS and RNS production in phagocytes	Homo sapiens
+R-HSA-9833110	RSV-host interactions	Homo sapiens
+R-HSA-8877330	RUNX1 and FOXP3 control the development of regulatory T lymphocytes (Tregs)	Homo sapiens
+R-HSA-8939243	RUNX1 interacts with co-factors whose precise effect on RUNX1 targets is not known	Homo sapiens
+R-HSA-8931987	RUNX1 regulates estrogen receptor mediated transcription	Homo sapiens
+R-HSA-8935964	RUNX1 regulates expression of components of tight junctions	Homo sapiens
+R-HSA-8936459	RUNX1 regulates genes involved in megakaryocyte differentiation and platelet function	Homo sapiens
+R-HSA-8939245	RUNX1 regulates transcription of genes involved in BCR signaling	Homo sapiens
+R-HSA-8939256	RUNX1 regulates transcription of genes involved in WNT signaling	Homo sapiens
+R-HSA-8939236	RUNX1 regulates transcription of genes involved in differentiation of HSCs	Homo sapiens
+R-HSA-8939242	RUNX1 regulates transcription of genes involved in differentiation of keratinocytes	Homo sapiens
+R-HSA-8939246	RUNX1 regulates transcription of genes involved in differentiation of myeloid cells	Homo sapiens
+R-HSA-8939247	RUNX1 regulates transcription of genes involved in interleukin signaling	Homo sapiens
+R-HSA-8941326	RUNX2 regulates bone development	Homo sapiens
+R-HSA-8941332	RUNX2 regulates genes involved in cell migration	Homo sapiens
+R-HSA-8941333	RUNX2 regulates genes involved in differentiation of myeloid cells	Homo sapiens
+R-HSA-8949275	RUNX3 Regulates Immune Response and Cell Migration	Homo sapiens
+R-HSA-8952158	RUNX3 regulates BCL2L11 (BIM) transcription	Homo sapiens
+R-HSA-8941855	RUNX3 regulates CDKN1A transcription	Homo sapiens
+R-HSA-8941856	RUNX3 regulates NOTCH signaling	Homo sapiens
+R-HSA-8951911	RUNX3 regulates RUNX1-mediated transcription	Homo sapiens
+R-HSA-8951430	RUNX3 regulates WNT signaling	Homo sapiens
+R-HSA-8951671	RUNX3 regulates YAP1-mediated transcription	Homo sapiens
+R-HSA-8951936	RUNX3 regulates p14-ARF	Homo sapiens
+R-HSA-9007101	Rab regulation of trafficking	Homo sapiens
+R-HSA-392517	Rap1 signalling	Homo sapiens
+R-HSA-8934903	Receptor Mediated Mitophagy	Homo sapiens
+R-HSA-110330	Recognition and association of DNA glycosylase with site containing an affected purine	Homo sapiens
+R-HSA-110328	Recognition and association of DNA glycosylase with site containing an affected pyrimidine	Homo sapiens
+R-HSA-110314	Recognition of DNA damage by PCNA-containing replication complex	Homo sapiens
+R-HSA-5693565	Recruitment and ATM-mediated phosphorylation of repair and signaling proteins at DNA double strand breaks	Homo sapiens
+R-HSA-380320	Recruitment of NuMA to mitotic centrosomes	Homo sapiens
+R-HSA-380270	Recruitment of mitotic centrosome proteins and complexes	Homo sapiens
+R-HSA-72731	Recycling of eIF2:GDP	Homo sapiens
+R-HSA-437239	Recycling pathway of L1	Homo sapiens
+R-HSA-8866376	Reelin signalling pathway	Homo sapiens
+R-HSA-5218859	Regulated Necrosis	Homo sapiens
+R-HSA-193692	Regulated proteolysis of p75NTR	Homo sapiens
+R-HSA-3248023	Regulation by TREX1	Homo sapiens
+R-HSA-176408	Regulation of APC/C activators between G1/S and early anaphase	Homo sapiens
+R-HSA-169911	Regulation of Apoptosis	Homo sapiens
+R-HSA-9708530	Regulation of BACH1 activity	Homo sapiens
+R-HSA-9764265	Regulation of CDH1 Expression and Function	Homo sapiens
+R-HSA-9764561	Regulation of CDH1 Function	Homo sapiens
+R-HSA-9764560	Regulation of CDH1 Gene Transcription	Homo sapiens
+R-HSA-9764562	Regulation of CDH1 mRNA translation by microRNAs	Homo sapiens
+R-HSA-9768727	Regulation of CDH1 posttranslational processing and trafficking to plasma membrane	Homo sapiens
+R-HSA-9759475	Regulation of CDH11 Expression and Function	Homo sapiens
+R-HSA-9762292	Regulation of CDH11 function	Homo sapiens
+R-HSA-9762293	Regulation of CDH11 gene transcription	Homo sapiens
+R-HSA-9759811	Regulation of CDH11 mRNA translation by microRNAs	Homo sapiens
+R-HSA-9764302	Regulation of CDH19 Expression and Function	Homo sapiens
+R-HSA-9764274	Regulation of Expression and Function of Type I Classical Cadherins	Homo sapiens
+R-HSA-9764260	Regulation of Expression and Function of Type II Classical Cadherins	Homo sapiens
+R-HSA-9617629	Regulation of FOXO transcriptional activity by acetylation	Homo sapiens
+R-HSA-9855719	Regulation of FXIIa and plasma kallikrein activity	Homo sapiens
+R-HSA-4641263	Regulation of FZD by ubiquitination	Homo sapiens
+R-HSA-9968551	Regulation of GBP-mediated host defense	Homo sapiens
+R-HSA-170822	Regulation of Glucokinase by Glucokinase Regulatory Protein	Homo sapiens
+R-HSA-9707587	Regulation of HMOX1 expression and activity	Homo sapiens
+R-HSA-3371453	Regulation of HSF1-mediated heat shock response	Homo sapiens
+R-HSA-9759476	Regulation of Homotypic Cell-Cell Adhesion	Homo sapiens
+R-HSA-912694	Regulation of IFNA/IFNB signaling	Homo sapiens
+R-HSA-877312	Regulation of IFNG signaling	Homo sapiens
+R-HSA-381426	Regulation of Insulin-like Growth Factor (IGF) transport and uptake by Insulin-like Growth Factor Binding Proteins (IGFBPs)	Homo sapiens
+R-HSA-9022692	Regulation of MECP2 expression and activity	Homo sapiens
+R-HSA-9854909	Regulation of MITF-M dependent genes involved in invasion	Homo sapiens
+R-HSA-9854907	Regulation of MITF-M dependent genes involved in metabolism	Homo sapiens
+R-HSA-9825895	Regulation of MITF-M-dependent genes involved in DNA replication, damage repair and senescence	Homo sapiens
+R-HSA-9824594	Regulation of MITF-M-dependent genes involved in apoptosis	Homo sapiens
+R-HSA-9825892	Regulation of MITF-M-dependent genes involved in cell cycle and proliferation	Homo sapiens
+R-HSA-9926550	Regulation of MITF-M-dependent genes involved in extracellular matrix, focal adhesion and epithelial-to-mesenchymal transition	Homo sapiens
+R-HSA-9857377	Regulation of MITF-M-dependent genes involved in lysosome biogenesis and autophagy	Homo sapiens
+R-HSA-9824585	Regulation of MITF-M-dependent genes involved in pigmentation	Homo sapiens
+R-HSA-9758274	Regulation of NF-kappa B signaling	Homo sapiens
+R-HSA-9818749	Regulation of NFE2L2 gene expression	Homo sapiens
+R-HSA-9768759	Regulation of NPAS4 gene expression	Homo sapiens
+R-HSA-211728	Regulation of PAK-2p34 activity by PS-GAP/RHG10	Homo sapiens
+R-HSA-9909615	Regulation of PD-L1(CD274) Post-translational modification	Homo sapiens
+R-HSA-9909648	Regulation of PD-L1(CD274) expression	Homo sapiens
+R-HSA-9909649	Regulation of PD-L1(CD274) transcription	Homo sapiens
+R-HSA-9909620	Regulation of PD-L1(CD274) translation	Homo sapiens
+R-HSA-2565942	Regulation of PLK1 Activity at G2/M Transition	Homo sapiens
+R-HSA-8943724	Regulation of PTEN gene transcription	Homo sapiens
+R-HSA-8948747	Regulation of PTEN localization	Homo sapiens
+R-HSA-8943723	Regulation of PTEN mRNA translation	Homo sapiens
+R-HSA-8948751	Regulation of PTEN stability and activity	Homo sapiens
+R-HSA-5658442	Regulation of RAS by GAPs	Homo sapiens
+R-HSA-8934593	Regulation of RUNX1 Expression and Activity	Homo sapiens
+R-HSA-8939902	Regulation of RUNX2 expression and activity	Homo sapiens
+R-HSA-8941858	Regulation of RUNX3 expression and activity	Homo sapiens
+R-HSA-388841	Regulation of T cell activation by CD28 family	Homo sapiens
+R-HSA-9824878	Regulation of TBK1, IKKε (IKBKE)-mediated activation of IRF3, IRF7 	Homo sapiens
+R-HSA-9828211	Regulation of TBK1, IKKε-mediated activation of IRF3, IRF7 upon TLR3 ligation	Homo sapiens
+R-HSA-5686938	Regulation of TLR by endogenous ligand	Homo sapiens
+R-HSA-5357905	Regulation of TNFR1 signaling	Homo sapiens
+R-HSA-5633007	Regulation of TP53 Activity	Homo sapiens
+R-HSA-6804758	Regulation of TP53 Activity through Acetylation	Homo sapiens
+R-HSA-6804759	Regulation of TP53 Activity through Association with Co-factors	Homo sapiens
+R-HSA-6804760	Regulation of TP53 Activity through Methylation	Homo sapiens
+R-HSA-6804756	Regulation of TP53 Activity through Phosphorylation	Homo sapiens
+R-HSA-6804757	Regulation of TP53 Degradation	Homo sapiens
+R-HSA-6804754	Regulation of TP53 Expression	Homo sapiens
+R-HSA-6806003	Regulation of TP53 Expression and Degradation	Homo sapiens
+R-HSA-2029482	Regulation of actin dynamics for phagocytic cup formation	Homo sapiens
+R-HSA-211733	Regulation of activated PAK-2p34 by proteasome mediated degradation	Homo sapiens
+R-HSA-186712	Regulation of beta-cell development	Homo sapiens
+R-HSA-1655829	Regulation of cholesterol biosynthesis by SREBP (SREBF)	Homo sapiens
+R-HSA-428542	Regulation of commissural axon pathfinding by SLIT and ROBO	Homo sapiens
+R-HSA-8985801	Regulation of cortical dendrite branching	Homo sapiens
+R-HSA-446388	Regulation of cytoskeletal remodeling and cell spreading by IPP complex components	Homo sapiens
+R-HSA-9842860	Regulation of endogenous retroelements	Homo sapiens
+R-HSA-9843940	Regulation of endogenous retroelements by KRAB-ZFP proteins	Homo sapiens
+R-HSA-9845323	Regulation of endogenous retroelements by Piwi-interacting RNAs (piRNAs)	Homo sapiens
+R-HSA-9843970	Regulation of endogenous retroelements by the Human Silencing Hub (HUSH) complex	Homo sapiens
+R-HSA-9010553	Regulation of expression of SLITs and ROBOs	Homo sapiens
+R-HSA-191650	Regulation of gap junction activity	Homo sapiens
+R-HSA-1234158	Regulation of gene expression by Hypoxia-inducible Factor	Homo sapiens
+R-HSA-210745	Regulation of gene expression in beta cells	Homo sapiens
+R-HSA-210747	Regulation of gene expression in early pancreatic precursor cells	Homo sapiens
+R-HSA-210746	Regulation of gene expression in endocrine-committed (NEUROG3+) progenitor cells	Homo sapiens
+R-HSA-210744	Regulation of gene expression in late stage (branching morphogenesis) pancreatic bud precursor cells	Homo sapiens
+R-HSA-9634600	Regulation of glycolysis by fructose 2,6-bisphosphate metabolism	Homo sapiens
+R-HSA-3134975	Regulation of innate immune responses to cytosolic DNA	Homo sapiens
+R-HSA-400206	Regulation of lipid metabolism by PPARalpha	Homo sapiens
+R-HSA-9614399	Regulation of localization of FOXO transcription factors	Homo sapiens
+R-HSA-450531	Regulation of mRNA stability by proteins that bind AU-rich elements	Homo sapiens
+R-HSA-453276	Regulation of mitotic cell cycle	Homo sapiens
+R-HSA-5675482	Regulation of necroptotic cell death	Homo sapiens
+R-HSA-350562	Regulation of ornithine decarboxylase (ODC)	Homo sapiens
+R-HSA-204174	Regulation of pyruvate dehydrogenase (PDH) complex	Homo sapiens
+R-HSA-9861718	Regulation of pyruvate metabolism	Homo sapiens
+R-HSA-912631	Regulation of signaling by CBL	Homo sapiens
+R-HSA-5362798	Release of Hh-Np from the secreting cell	Homo sapiens
+R-HSA-69166	Removal of the Flap Intermediate	Homo sapiens
+R-HSA-174437	Removal of the Flap Intermediate from the C-strand	Homo sapiens
+R-HSA-9821993	Replacement of protamines by nucleosomes in the male pronucleus	Homo sapiens
+R-HSA-9682706	Replication of the SARS-CoV-1 genome	Homo sapiens
+R-HSA-9694686	Replication of the SARS-CoV-2 genome	Homo sapiens
+R-HSA-4641265	Repression of WNT target genes	Homo sapiens
+R-HSA-1474165	Reproduction	Homo sapiens
+R-HSA-9665250	Resistance of ERBB2 KD mutants to AEE788	Homo sapiens
+R-HSA-9665249	Resistance of ERBB2 KD mutants to afatinib	Homo sapiens
+R-HSA-9665251	Resistance of ERBB2 KD mutants to lapatinib	Homo sapiens
+R-HSA-9665246	Resistance of ERBB2 KD mutants to neratinib	Homo sapiens
+R-HSA-9665247	Resistance of ERBB2 KD mutants to osimertinib	Homo sapiens
+R-HSA-9665244	Resistance of ERBB2 KD mutants to sapitinib	Homo sapiens
+R-HSA-9665245	Resistance of ERBB2 KD mutants to tesevatinib	Homo sapiens
+R-HSA-9665233	Resistance of ERBB2 KD mutants to trastuzumab	Homo sapiens
+R-HSA-110373	Resolution of AP sites via the multiple-nucleotide patch replacement pathway	Homo sapiens
+R-HSA-110381	Resolution of AP sites via the single-nucleotide replacement pathway	Homo sapiens
+R-HSA-73933	Resolution of Abasic Sites (AP sites)	Homo sapiens
+R-HSA-5693537	Resolution of D-Loop Structures	Homo sapiens
+R-HSA-5693568	Resolution of D-loop Structures through Holliday Junction Intermediates	Homo sapiens
+R-HSA-5693554	Resolution of D-loop Structures through Synthesis-Dependent Strand Annealing (SDSA)	Homo sapiens
+R-HSA-2500257	Resolution of Sister Chromatid Cohesion	Homo sapiens
+R-HSA-9820952	Respiratory Syncytial Virus Infection Pathway	Homo sapiens
+R-HSA-611105	Respiratory electron transport	Homo sapiens
+R-HSA-9820960	Respiratory syncytial virus (RSV) attachment and entry	Homo sapiens
+R-HSA-9820965	Respiratory syncytial virus (RSV) genome replication, transcription and translation	Homo sapiens
+R-HSA-9834752	Respiratory syncytial virus genome replication	Homo sapiens
+R-HSA-9828642	Respiratory syncytial virus genome transcription	Homo sapiens
+R-HSA-9648895	Response of EIF2AK1 (HRI) to heme deficiency	Homo sapiens
+R-HSA-9633012	Response of EIF2AK4 (GCN2) to amino acid deficiency	Homo sapiens
+R-HSA-9637690	Response of Mtb to phagocytosis	Homo sapiens
+R-HSA-76005	Response to elevated platelet cytosolic Ca2+	Homo sapiens
+R-HSA-5660526	Response to metal ions	Homo sapiens
+R-HSA-6811440	Retrograde transport at the Trans-Golgi-Network	Homo sapiens
+R-HSA-888593	Reuptake of GABA	Homo sapiens
+R-HSA-165054	Rev-mediated nuclear export of HIV RNA	Homo sapiens
+R-HSA-1475029	Reversible hydration of carbon dioxide	Homo sapiens
+R-HSA-9755088	Ribavirin ADME	Homo sapiens
+R-HSA-72702	Ribosomal scanning and start codon recognition	Homo sapiens
+R-HSA-9954709	Ribosome Quality Control (RQC) complex extracts and degrades nascent peptide	Homo sapiens
+R-HSA-9948299	Ribosome-associated quality control	Homo sapiens
+R-HSA-428890	Role of ABL in ROBO-SLIT signaling	Homo sapiens
+R-HSA-2730905	Role of LAT2/NTAL/LAB on calcium mobilization	Homo sapiens
+R-HSA-2029485	Role of phospholipids in phagocytosis	Homo sapiens
+R-HSA-69242	S Phase	Homo sapiens
+R-HSA-9679506	SARS-CoV Infections	Homo sapiens
+R-HSA-9679514	SARS-CoV-1 Genome Replication and Transcription	Homo sapiens
+R-HSA-9678108	SARS-CoV-1 Infection	Homo sapiens
+R-HSA-9692916	SARS-CoV-1 activates/modulates innate immune responses	Homo sapiens
+R-HSA-9735869	SARS-CoV-1 modulates host translation machinery	Homo sapiens
+R-HSA-9692912	SARS-CoV-1 targets PDZ proteins in cell-cell junction	Homo sapiens
+R-HSA-9735871	SARS-CoV-1 targets host intracellular signalling and regulatory pathways	Homo sapiens
+R-HSA-9692914	SARS-CoV-1-host interactions	Homo sapiens
+R-HSA-9692913	SARS-CoV-1-mediated effects on programmed cell death	Homo sapiens
+R-HSA-9694682	SARS-CoV-2 Genome Replication and Transcription	Homo sapiens
+R-HSA-9694516	SARS-CoV-2 Infection	Homo sapiens
+R-HSA-9705671	SARS-CoV-2 activates/modulates innate and adaptive immune responses	Homo sapiens
+R-HSA-9754560	SARS-CoV-2 modulates autophagy	Homo sapiens
+R-HSA-9754678	SARS-CoV-2 modulates host translation machinery	Homo sapiens
+R-HSA-9705677	SARS-CoV-2 targets PDZ proteins in cell-cell junction	Homo sapiens
+R-HSA-9755779	SARS-CoV-2 targets host intracellular signalling and regulatory pathways	Homo sapiens
+R-HSA-9705683	SARS-CoV-2-host interactions	Homo sapiens
+R-HSA-187577	SCF(Skp2)-mediated degradation of p27/p21	Homo sapiens
+R-HSA-174113	SCF-beta-TrCP mediated degradation of Emi1	Homo sapiens
+R-HSA-373756	SDK interactions	Homo sapiens
+R-HSA-399955	SEMA3A-Plexin repulsion signaling by inhibiting Integrin adhesion	Homo sapiens
+R-HSA-180336	SHC1 events in EGFR signaling	Homo sapiens
+R-HSA-1250196	SHC1 events in ERBB2 signaling	Homo sapiens
+R-HSA-1250347	SHC1 events in ERBB4 signaling	Homo sapiens
+R-HSA-427359	SIRT1 negatively regulates rRNA expression	Homo sapiens
+R-HSA-5619102	SLC transporter disorders	Homo sapiens
+R-HSA-425407	SLC-mediated transmembrane transport	Homo sapiens
+R-HSA-9860276	SLC15A4:TASL-dependent IRF5 activation	Homo sapiens
+R-HSA-8985586	SLIT2:ROBO1 increases RHOA activity	Homo sapiens
+R-HSA-2173796	SMAD2/SMAD3:SMAD4 heterotrimer regulates transcription	Homo sapiens
+R-HSA-9929491	SPOP-mediated proteasomal degradation of PD-L1(CD274)	Homo sapiens
+R-HSA-9958810	SRC activates STAT3 in a quantitative manner, through Cadherin-11 (CDH11), RAC1 and gp130 (IL6ST)	Homo sapiens
+R-HSA-1799339	SRP-dependent cotranslational protein targeting to membrane	Homo sapiens
+R-HSA-9701898	STAT3 nuclear events downstream of ALK signaling	Homo sapiens
+R-HSA-9645135	STAT5 Activation	Homo sapiens
+R-HSA-1834941	STING mediated induction of host immune responses	Homo sapiens
+R-HSA-3108232	SUMO E3 ligases SUMOylate target proteins	Homo sapiens
+R-HSA-2990846	SUMOylation	Homo sapiens
+R-HSA-3108214	SUMOylation of DNA damage response and repair proteins	Homo sapiens
+R-HSA-4655427	SUMOylation of DNA methylation proteins	Homo sapiens
+R-HSA-4615885	SUMOylation of DNA replication proteins	Homo sapiens
+R-HSA-4570464	SUMOylation of RNA binding proteins	Homo sapiens
+R-HSA-4085377	SUMOylation of SUMOylation proteins	Homo sapiens
+R-HSA-4551638	SUMOylation of chromatin organization proteins	Homo sapiens
+R-HSA-4755510	SUMOylation of immune response proteins	Homo sapiens
+R-HSA-4090294	SUMOylation of intracellular receptors	Homo sapiens
+R-HSA-9793242	SUMOylation of nuclear envelope proteins	Homo sapiens
+R-HSA-3899300	SUMOylation of transcription cofactors	Homo sapiens
+R-HSA-3232118	SUMOylation of transcription factors	Homo sapiens
+R-HSA-3232142	SUMOylation of ubiquitinylation proteins	Homo sapiens
+R-HSA-9932451	SWI/SNF chromatin remodelers	Homo sapiens
+R-HSA-3000480	Scavenging by Class A Receptors	Homo sapiens
+R-HSA-3000471	Scavenging by Class B Receptors	Homo sapiens
+R-HSA-3000484	Scavenging by Class F Receptors	Homo sapiens
+R-HSA-3000497	Scavenging by Class H Receptors	Homo sapiens
+R-HSA-2168880	Scavenging of heme from plasma	Homo sapiens
+R-HSA-9668328	Sealing of the nuclear envelope (NE) by ESCRT-III	Homo sapiens
+R-HSA-9760173	Secretion of toxins	Homo sapiens
+R-HSA-9663891	Selective autophagy	Homo sapiens
+R-HSA-2408522	Selenoamino acid metabolism	Homo sapiens
+R-HSA-2408557	Selenocysteine synthesis	Homo sapiens
+R-HSA-399954	Sema3A PAK dependent Axon repulsion	Homo sapiens
+R-HSA-400685	Sema4D in semaphorin signaling	Homo sapiens
+R-HSA-373755	Semaphorin interactions	Homo sapiens
+R-HSA-2559582	Senescence-Associated Secretory Phenotype (SASP)	Homo sapiens
+R-HSA-5693548	Sensing of DNA Double Strand Breaks	Homo sapiens
+R-HSA-9709957	Sensory Perception	Homo sapiens
+R-HSA-9717189	Sensory perception of taste	Homo sapiens
+R-HSA-9659379	Sensory processing of sound	Homo sapiens
+R-HSA-9662360	Sensory processing of sound by inner hair cells of the cochlea	Homo sapiens
+R-HSA-9662361	Sensory processing of sound by outer hair cells of the cochlea	Homo sapiens
+R-HSA-2467813	Separation of Sister Chromatids	Homo sapiens
+R-HSA-977347	Serine metabolism	Homo sapiens
+R-HSA-181429	Serotonin Neurotransmitter Release Cycle	Homo sapiens
+R-HSA-3282872	Severe congenital neutropenia type 4 (G6PC3)	Homo sapiens
+R-HSA-162582	Signal Transduction	Homo sapiens
+R-HSA-392518	Signal amplification	Homo sapiens
+R-HSA-391160	Signal regulatory protein family interactions	Homo sapiens
+R-HSA-445144	Signal transduction by L1	Homo sapiens
+R-HSA-201556	Signaling by ALK	Homo sapiens
+R-HSA-9725370	Signaling by ALK fusions and activated point mutants	Homo sapiens
+R-HSA-9700206	Signaling by ALK in cancer	Homo sapiens
+R-HSA-1502540	Signaling by Activin	Homo sapiens
+R-HSA-201451	Signaling by BMP	Homo sapiens
+R-HSA-6802952	Signaling by BRAF and RAF1 fusions	Homo sapiens
+R-HSA-9680350	Signaling by CSF1 (M-CSF) in myeloid cells	Homo sapiens
+R-HSA-9674555	Signaling by CSF3 (G-CSF)	Homo sapiens
+R-HSA-177929	Signaling by EGFR	Homo sapiens
+R-HSA-1643713	Signaling by EGFR in Cancer	Homo sapiens
+R-HSA-5637812	Signaling by EGFRvIII in Cancer	Homo sapiens
+R-HSA-1227986	Signaling by ERBB2	Homo sapiens
+R-HSA-9665348	Signaling by ERBB2 ECD mutants	Homo sapiens
+R-HSA-9664565	Signaling by ERBB2 KD Mutants	Homo sapiens
+R-HSA-9665686	Signaling by ERBB2 TMD/JMD mutants	Homo sapiens
+R-HSA-1227990	Signaling by ERBB2 in Cancer	Homo sapiens
+R-HSA-1236394	Signaling by ERBB4	Homo sapiens
+R-HSA-9006335	Signaling by Erythropoietin	Homo sapiens
+R-HSA-190236	Signaling by FGFR	Homo sapiens
+R-HSA-1226099	Signaling by FGFR in disease	Homo sapiens
+R-HSA-5654736	Signaling by FGFR1	Homo sapiens
+R-HSA-5655302	Signaling by FGFR1 in disease	Homo sapiens
+R-HSA-5654738	Signaling by FGFR2	Homo sapiens
+R-HSA-8851708	Signaling by FGFR2 IIIa TM	Homo sapiens
+R-HSA-2023837	Signaling by FGFR2 amplification mutants	Homo sapiens
+R-HSA-8853333	Signaling by FGFR2 fusions	Homo sapiens
+R-HSA-5655253	Signaling by FGFR2 in disease	Homo sapiens
+R-HSA-5654741	Signaling by FGFR3	Homo sapiens
+R-HSA-5655332	Signaling by FGFR3 in disease	Homo sapiens
+R-HSA-5654743	Signaling by FGFR4	Homo sapiens
+R-HSA-5655291	Signaling by FGFR4 in disease	Homo sapiens
+R-HSA-9703648	Signaling by FLT3 ITD and TKD mutants	Homo sapiens
+R-HSA-9703465	Signaling by FLT3 fusion proteins	Homo sapiens
+R-HSA-372790	Signaling by GPCR	Homo sapiens
+R-HSA-5358351	Signaling by Hedgehog	Homo sapiens
+R-HSA-2028269	Signaling by Hippo	Homo sapiens
+R-HSA-74752	Signaling by Insulin receptor	Homo sapiens
+R-HSA-449147	Signaling by Interleukins	Homo sapiens
+R-HSA-9669938	Signaling by KIT in disease	Homo sapiens
+R-HSA-9842663	Signaling by LTK	Homo sapiens
+R-HSA-9842640	Signaling by LTK in cancer	Homo sapiens
+R-HSA-2586552	Signaling by Leptin	Homo sapiens
+R-HSA-5637815	Signaling by Ligand-Responsive EGFR Variants in Cancer	Homo sapiens
+R-HSA-9652169	Signaling by MAP2K mutants	Homo sapiens
+R-HSA-9652817	Signaling by MAPK mutants	Homo sapiens
+R-HSA-6806834	Signaling by MET	Homo sapiens
+R-HSA-9660537	Signaling by MRAS-complex mutants	Homo sapiens
+R-HSA-8852405	Signaling by MST1	Homo sapiens
+R-HSA-1181150	Signaling by NODAL	Homo sapiens
+R-HSA-157118	Signaling by NOTCH	Homo sapiens
+R-HSA-1980143	Signaling by NOTCH1	Homo sapiens
+R-HSA-2691230	Signaling by NOTCH1 HD Domain Mutants in Cancer	Homo sapiens
+R-HSA-2894858	Signaling by NOTCH1 HD+PEST Domain Mutants in Cancer	Homo sapiens
+R-HSA-2644602	Signaling by NOTCH1 PEST Domain Mutants in Cancer	Homo sapiens
+R-HSA-2644603	Signaling by NOTCH1 in Cancer	Homo sapiens
+R-HSA-2660825	Signaling by NOTCH1 t(7;9)(NOTCH1:M1580_K2555) Translocation Mutant	Homo sapiens
+R-HSA-1980145	Signaling by NOTCH2	Homo sapiens
+R-HSA-9012852	Signaling by NOTCH3	Homo sapiens
+R-HSA-9013694	Signaling by NOTCH4	Homo sapiens
+R-HSA-166520	Signaling by NTRKs	Homo sapiens
+R-HSA-9006927	Signaling by Non-Receptor Tyrosine Kinases	Homo sapiens
+R-HSA-9006931	Signaling by Nuclear Receptors	Homo sapiens
+R-HSA-5638302	Signaling by Overexpressed Wild-Type EGFR in Cancer	Homo sapiens
+R-HSA-186797	Signaling by PDGF	Homo sapiens
+R-HSA-9671555	Signaling by PDGFR in disease	Homo sapiens
+R-HSA-8848021	Signaling by PTK6	Homo sapiens
+R-HSA-9656223	Signaling by RAF1 mutants	Homo sapiens
+R-HSA-6802949	Signaling by RAS mutants	Homo sapiens
+R-HSA-376176	Signaling by ROBO receptors	Homo sapiens
+R-HSA-9006934	Signaling by Receptor Tyrosine Kinases	Homo sapiens
+R-HSA-5362517	Signaling by Retinoic Acid	Homo sapiens
+R-HSA-194315	Signaling by Rho GTPases	Homo sapiens
+R-HSA-9716542	Signaling by Rho GTPases, Miro GTPases and RHOBTB3	Homo sapiens
+R-HSA-1433557	Signaling by SCF-KIT	Homo sapiens
+R-HSA-170834	Signaling by TGF-beta Receptor Complex	Homo sapiens
+R-HSA-3304351	Signaling by TGF-beta Receptor Complex in Cancer	Homo sapiens
+R-HSA-9006936	Signaling by TGFB family members	Homo sapiens
+R-HSA-9839373	Signaling by TGFBR3	Homo sapiens
+R-HSA-2404192	Signaling by Type 1 Insulin-like Growth Factor 1 Receptor (IGF1R)	Homo sapiens
+R-HSA-194138	Signaling by VEGF	Homo sapiens
+R-HSA-195721	Signaling by WNT	Homo sapiens
+R-HSA-4791275	Signaling by WNT in cancer	Homo sapiens
+R-HSA-6802948	Signaling by high-kinase activity BRAF mutants	Homo sapiens
+R-HSA-6802946	Signaling by moderate kinase activity BRAF mutants	Homo sapiens
+R-HSA-983705	Signaling by the B Cell Receptor (BCR)	Homo sapiens
+R-HSA-9649948	Signaling downstream of RAS mutants	Homo sapiens
+R-HSA-426486	Small interfering RNA (siRNA) biogenesis	Homo sapiens
+R-HSA-445355	Smooth Muscle Contraction	Homo sapiens
+R-HSA-9938024	Somatic hypermutation of immunoglobulin genes	Homo sapiens
+R-HSA-9968297	Somatic hypermutation of immunoglobulin genes by error-prone base excision repair (BER)	Homo sapiens
+R-HSA-9968295	Somatic hypermutation of immunoglobulin genes by error-prone mismatch repair (MMR)	Homo sapiens
+R-HSA-9824272	Somitogenesis	Homo sapiens
+R-HSA-9827857	Specification of primordial germ cells	Homo sapiens
+R-HSA-9834899	Specification of the neural plate border	Homo sapiens
+R-HSA-428157	Sphingolipid metabolism	Homo sapiens
+R-HSA-1295596	Spry regulation of FGF signaling	Homo sapiens
+R-HSA-69541	Stabilization of p53	Homo sapiens
+R-HSA-2672351	Stimuli-sensing channels	Homo sapiens
+R-HSA-9913635	Strand-asynchronous mitochondrial DNA replication	Homo sapiens
+R-HSA-390522	Striated Muscle Contraction	Homo sapiens
+R-HSA-1614635	Sulfur amino acid metabolism	Homo sapiens
+R-HSA-9635465	Suppression of apoptosis	Homo sapiens
+R-HSA-9636569	Suppression of autophagy	Homo sapiens
+R-HSA-9637687	Suppression of phagosomal maturation	Homo sapiens
+R-HSA-5683826	Surfactant metabolism	Homo sapiens
+R-HSA-69052	Switching of origins to a post-replicative state	Homo sapiens
+R-HSA-3000170	Syndecan interactions	Homo sapiens
+R-HSA-174495	Synthesis And Processing Of GAG, GAGPOL Polyproteins	Homo sapiens
+R-HSA-171286	Synthesis and processing of ENV and VPU	Homo sapiens
+R-HSA-69239	Synthesis of DNA	Homo sapiens
+R-HSA-1855183	Synthesis of IP2, IP, and Ins in the cytosol	Homo sapiens
+R-HSA-1855204	Synthesis of IP3 and IP4 in the cytosol	Homo sapiens
+R-HSA-1855231	Synthesis of IPs in the ER lumen	Homo sapiens
+R-HSA-1855191	Synthesis of IPs in the nucleus	Homo sapiens
+R-HSA-8866652	Synthesis of active ubiquitin: roles of E1 and E2 enzymes	Homo sapiens
+R-HSA-5358493	Synthesis of diphthamide-EEF2	Homo sapiens
+R-HSA-1855167	Synthesis of pyrophosphates in the cytosol	Homo sapiens
+R-HSA-6782861	Synthesis of wybutosine at G37 of tRNA(Phe)	Homo sapiens
+R-HSA-422085	Synthesis, secretion, and deacylation of Ghrelin	Homo sapiens
+R-HSA-381771	Synthesis, secretion, and inactivation of Glucagon-like Peptide-1 (GLP-1)	Homo sapiens
+R-HSA-400511	Synthesis, secretion, and inactivation of Glucose-dependent Insulinotropic Polypeptide (GIP)	Homo sapiens
+R-HSA-445989	TAK1-dependent IKK and NF-kappa-B activation  	Homo sapiens
+R-HSA-201681	TCF dependent signaling in response to WNT	Homo sapiens
+R-HSA-202403	TCR signaling	Homo sapiens
+R-HSA-5221030	TET1,2,3 and TDG demethylate DNA	Homo sapiens
+R-HSA-8866911	TFAP2 (AP-2) family regulates transcription of cell cycle factors	Homo sapiens
+R-HSA-8866910	TFAP2 (AP-2) family regulates transcription of growth factors and their receptors	Homo sapiens
+R-HSA-8866906	TFAP2 (AP-2) family regulates transcription of other transcription factors	Homo sapiens
+R-HSA-8869496	TFAP2A acts as a transcriptional repressor during retinoic acid induced cell differentiation	Homo sapiens
+R-HSA-2173789	TGF-beta receptor signaling activates SMADs	Homo sapiens
+R-HSA-2173791	TGF-beta receptor signaling in EMT (epithelial to mesenchymal transition)	Homo sapiens
+R-HSA-168927	TICAM1, RIP1-mediated IKK complex recruitment	Homo sapiens
+R-HSA-9014325	TICAM1,TRAF6-dependent induction of TAK1 complex	Homo sapiens
+R-HSA-9013973	TICAM1-dependent activation of IRF3/IRF7	Homo sapiens
+R-HSA-9013957	TLR3-mediated TICAM1-dependent programmed cell death	Homo sapiens
+R-HSA-5676594	TNF receptor superfamily (TNFSF) members mediating non-canonical NF-kB pathway	Homo sapiens
+R-HSA-75893	TNF signaling	Homo sapiens
+R-HSA-5357956	TNFR1-induced NF-kappa-B signaling pathway	Homo sapiens
+R-HSA-5357786	TNFR1-induced proapoptotic signaling	Homo sapiens
+R-HSA-5626978	TNFR1-mediated ceramide production	Homo sapiens
+R-HSA-5668541	TNFR2 non-canonical NF-kB pathway	Homo sapiens
+R-HSA-5669034	TNFs bind their physiological receptors	Homo sapiens
+R-HSA-5628897	TP53 Regulates Metabolic Genes	Homo sapiens
+R-HSA-6803207	TP53 Regulates Transcription of Caspase Activators and Caspases	Homo sapiens
+R-HSA-6791312	TP53 Regulates Transcription of Cell Cycle Genes	Homo sapiens
+R-HSA-5633008	TP53 Regulates Transcription of Cell Death Genes	Homo sapiens
+R-HSA-6796648	TP53 Regulates Transcription of DNA Repair Genes	Homo sapiens
+R-HSA-6803211	TP53 Regulates Transcription of Death Receptors and Ligands	Homo sapiens
+R-HSA-6803204	TP53 Regulates Transcription of Genes Involved in Cytochrome C Release	Homo sapiens
+R-HSA-6804116	TP53 Regulates Transcription of Genes Involved in G1 Cell Cycle Arrest	Homo sapiens
+R-HSA-6804114	TP53 Regulates Transcription of Genes Involved in G2 Cell Cycle Arrest	Homo sapiens
+R-HSA-6804115	TP53 regulates transcription of additional cell cycle genes whose exact role in the p53 pathway remain uncertain	Homo sapiens
+R-HSA-6803205	TP53 regulates transcription of several additional cell death genes whose specific roles in p53-dependent apoptosis remain uncertain	Homo sapiens
+R-HSA-918233	TRAF3-dependent IRF activation pathway	Homo sapiens
+R-HSA-933541	TRAF6 mediated IRF7 activation	Homo sapiens
+R-HSA-975110	TRAF6 mediated IRF7 activation in TLR7/8 or 9 signaling	Homo sapiens
+R-HSA-933542	TRAF6 mediated NF-kB activation	Homo sapiens
+R-HSA-975138	TRAF6 mediated induction of NFkB and MAP kinases upon TLR7/8 or 9 activation	Homo sapiens
+R-HSA-937072	TRAF6-mediated induction of TAK1 complex within TLR4 complex	Homo sapiens
+R-HSA-75158	TRAIL  signaling	Homo sapiens
+R-HSA-937061	TRIF (TICAM1)-mediated TLR4 signaling 	Homo sapiens
+R-HSA-2562578	TRIF-mediated programmed cell death	Homo sapiens
+R-HSA-3295583	TRP channels	Homo sapiens
+R-HSA-9033500	TYSND1 cleaves peroxisomal proteins	Homo sapiens
+R-HSA-1296346	Tandem pore domain potassium channels	Homo sapiens
+R-HSA-167243	Tat-mediated HIV elongation arrest and recovery	Homo sapiens
+R-HSA-167246	Tat-mediated elongation of the HIV-1 transcript	Homo sapiens
+R-HSA-174417	Telomere C-strand (Lagging Strand) Synthesis	Homo sapiens
+R-HSA-174430	Telomere C-strand synthesis initiation	Homo sapiens
+R-HSA-171319	Telomere Extension By Telomerase	Homo sapiens
+R-HSA-157579	Telomere Maintenance	Homo sapiens
+R-HSA-5656169	Termination of translesion DNA synthesis	Homo sapiens
+R-HSA-1474151	Tetrahydrobiopterin (BH4) synthesis, recycling, salvage and regulation	Homo sapiens
+R-HSA-844615	The AIM2 inflammasome	Homo sapiens
+R-HSA-9931521	The CRY:PER:kinase complex represses transactivation by the BMAL:CLOCK (ARNTL:CLOCK) complex	Homo sapiens
+R-HSA-844623	The IPAF inflammasome	Homo sapiens
+R-HSA-844455	The NLRP1 inflammasome	Homo sapiens
+R-HSA-844456	The NLRP3 inflammasome	Homo sapiens
+R-HSA-1663150	The activation of arylsulfatases	Homo sapiens
+R-HSA-8852276	The role of GTSE1 in G2/M progression after G2 checkpoint	Homo sapiens
+R-HSA-164952	The role of Nef in HIV-1 replication and disease pathogenesis	Homo sapiens
+R-HSA-8849175	Threonine catabolism	Homo sapiens
+R-HSA-456926	Thrombin signalling through proteinase activated receptors (PARs)	Homo sapiens
+R-HSA-210993	Tie2 Signaling	Homo sapiens
+R-HSA-420029	Tight junction interactions	Homo sapiens
+R-HSA-168142	Toll Like Receptor 10 (TLR10) Cascade	Homo sapiens
+R-HSA-181438	Toll Like Receptor 2 (TLR2) Cascade	Homo sapiens
+R-HSA-168164	Toll Like Receptor 3 (TLR3) Cascade	Homo sapiens
+R-HSA-166016	Toll Like Receptor 4 (TLR4) Cascade	Homo sapiens
+R-HSA-168176	Toll Like Receptor 5 (TLR5) Cascade	Homo sapiens
+R-HSA-168181	Toll Like Receptor 7/8 (TLR7/8) Cascade	Homo sapiens
+R-HSA-168138	Toll Like Receptor 9 (TLR9) Cascade	Homo sapiens
+R-HSA-168179	Toll Like Receptor TLR1:TLR2 Cascade	Homo sapiens
+R-HSA-168188	Toll Like Receptor TLR6:TLR2 Cascade	Homo sapiens
+R-HSA-168898	Toll-like Receptor Cascades	Homo sapiens
+R-HSA-1679131	Trafficking and processing of endosomal TLR	Homo sapiens
+R-HSA-5624138	Trafficking of myristoylated proteins to the cilium	Homo sapiens
+R-HSA-75944	Transcription from mitochondrial promoters	Homo sapiens
+R-HSA-1362277	Transcription of E2F targets under negative control by DREAM complex	Homo sapiens
+R-HSA-1362300	Transcription of E2F targets under negative control by p107 (RBL1) and p130 (RBL2) in complex with HDAC1	Homo sapiens
+R-HSA-9682708	Transcription of SARS-CoV-1 sgRNAs	Homo sapiens
+R-HSA-9694786	Transcription of SARS-CoV-2 sgRNAs	Homo sapiens
+R-HSA-167172	Transcription of the HIV genome	Homo sapiens
+R-HSA-6781827	Transcription-Coupled Nucleotide Excision Repair (TC-NER)	Homo sapiens
+R-HSA-8953750	Transcriptional Regulation by E2F6	Homo sapiens
+R-HSA-8986944	Transcriptional Regulation by MECP2	Homo sapiens
+R-HSA-9634815	Transcriptional Regulation by NPAS4	Homo sapiens
+R-HSA-3700989	Transcriptional Regulation by TP53	Homo sapiens
+R-HSA-8853884	Transcriptional Regulation by VENTX	Homo sapiens
+R-HSA-2151201	Transcriptional activation of mitochondrial biogenesis	Homo sapiens
+R-HSA-69560	Transcriptional activation of p53 responsive genes  	Homo sapiens
+R-HSA-2173793	Transcriptional activity of SMAD2/SMAD3:SMAD4 heterotrimer	Homo sapiens
+R-HSA-9856649	Transcriptional and post-translational regulation of MITF-M expression and activity	Homo sapiens
+R-HSA-8878171	Transcriptional regulation by RUNX1	Homo sapiens
+R-HSA-8878166	Transcriptional regulation by RUNX2	Homo sapiens
+R-HSA-8878159	Transcriptional regulation by RUNX3	Homo sapiens
+R-HSA-5578749	Transcriptional regulation by small RNAs	Homo sapiens
+R-HSA-8864260	Transcriptional regulation by the AP-2 (TFAP2) family of transcription factors	Homo sapiens
+R-HSA-9843743	Transcriptional regulation of brown and beige adipocyte differentiation	Homo sapiens
+R-HSA-9844594	Transcriptional regulation of brown and beige adipocyte differentiation by EBF2	Homo sapiens
+R-HSA-9616222	Transcriptional regulation of granulopoiesis	Homo sapiens
+R-HSA-452723	Transcriptional regulation of pluripotent stem cells	Homo sapiens
+R-HSA-9690406	Transcriptional regulation of testis differentiation	Homo sapiens
+R-HSA-381340	Transcriptional regulation of white adipocyte differentiation	Homo sapiens
+R-HSA-166020	Transfer of LPS from LBP carrier to CD14	Homo sapiens
+R-HSA-917977	Transferrin endocytosis and recycling	Homo sapiens
+R-HSA-72766	Translation	Homo sapiens
+R-HSA-72649	Translation initiation complex formation	Homo sapiens
+R-HSA-9727281	Translation of Accessory Proteins	Homo sapiens
+R-HSA-9679504	Translation of Replicase and Assembly of the Replication Transcription Complex	Homo sapiens
+R-HSA-9694676	Translation of Replicase and Assembly of the Replication Transcription Complex	Homo sapiens
+R-HSA-9683701	Translation of Structural Proteins	Homo sapiens
+R-HSA-9694635	Translation of Structural Proteins	Homo sapiens
+R-HSA-9828721	Translation of respiratory syncytial virus mRNAs	Homo sapiens
+R-HSA-110320	Translesion Synthesis by POLH	Homo sapiens
+R-HSA-5656121	Translesion synthesis by POLI	Homo sapiens
+R-HSA-5655862	Translesion synthesis by POLK	Homo sapiens
+R-HSA-110312	Translesion synthesis by REV1	Homo sapiens
+R-HSA-110313	Translesion synthesis by Y family DNA polymerases bypasses lesions on DNA template	Homo sapiens
+R-HSA-1445148	Translocation of SLC2A4 (GLUT4) to the plasma membrane	Homo sapiens
+R-HSA-202430	Translocation of ZAP-70 to Immunological synapse	Homo sapiens
+R-HSA-112315	Transmission across Chemical Synapses	Homo sapiens
+R-HSA-112307	Transmission across Electrical Synapses 	Homo sapiens
+R-HSA-174362	Transport and metabolism of PAPS	Homo sapiens
+R-HSA-72202	Transport of Mature Transcript to Cytoplasm	Homo sapiens
+R-HSA-159231	Transport of Mature mRNA Derived from an Intronless Transcript	Homo sapiens
+R-HSA-159236	Transport of Mature mRNA derived from an Intron-Containing Transcript	Homo sapiens
+R-HSA-159234	Transport of Mature mRNAs Derived from Intronless Transcripts	Homo sapiens
+R-HSA-168271	Transport of Ribonucleoproteins into the Host Nucleus	Homo sapiens
+R-HSA-190827	Transport of connexins along the secretory pathway	Homo sapiens
+R-HSA-190872	Transport of connexons to the plasma membrane	Homo sapiens
+R-HSA-382551	Transport of small molecules	Homo sapiens
+R-HSA-159230	Transport of the SLBP Dependant Mature mRNA	Homo sapiens
+R-HSA-159227	Transport of the SLBP independent Mature mRNA	Homo sapiens
+R-HSA-948021	Transport to the Golgi and subsequent modification	Homo sapiens
+R-HSA-75109	Triglyceride biosynthesis	Homo sapiens
+R-HSA-163560	Triglyceride catabolism	Homo sapiens
+R-HSA-8979227	Triglyceride metabolism	Homo sapiens
+R-HSA-450513	Tristetraprolin (TTP, ZFP36) binds and destabilizes mRNA	Homo sapiens
+R-HSA-71240	Tryptophan catabolism	Homo sapiens
+R-HSA-446107	Type I hemidesmosome assembly	Homo sapiens
+R-HSA-5689603	UCH proteinases	Homo sapiens
+R-HSA-5689880	Ub-specific processing proteases	Homo sapiens
+R-HSA-2142789	Ubiquinol biosynthesis	Homo sapiens
+R-HSA-69601	Ubiquitin-Mediated Degradation of Phosphorylated Cdc25A	Homo sapiens
+R-HSA-75815	Ubiquitin-dependent degradation of Cyclin D	Homo sapiens
+R-HSA-438066	Unblocking of NMDA receptors, glutamate binding and activation	Homo sapiens
+R-HSA-381119	Unfolded Protein Response (UPR)	Homo sapiens
+R-HSA-176974	Unwinding of DNA	Homo sapiens
+R-HSA-5339562	Uptake and actions of bacterial toxins	Homo sapiens
+R-HSA-5210891	Uptake and function of anthrax toxins	Homo sapiens
+R-HSA-5336415	Uptake and function of diphtheria toxin	Homo sapiens
+R-HSA-70635	Urea cycle	Homo sapiens
+R-HSA-194313	VEGF ligand-receptor interactions	Homo sapiens
+R-HSA-4420097	VEGFA-VEGFR2 Pathway	Homo sapiens
+R-HSA-5218921	VEGFR2 mediated cell proliferation	Homo sapiens
+R-HSA-5218920	VEGFR2 mediated vascular permeability	Homo sapiens
+R-HSA-8964046	VLDL clearance	Homo sapiens
+R-HSA-8866427	VLDLR internalisation and degradation	Homo sapiens
+R-HSA-5619094	Variant SLC6A14 may confer susceptibility towards obesity	Homo sapiens
+R-HSA-5660686	Variant SLC6A20 affecting amino acid transport contributes towards hyperglycinuria (HG) and iminoglycinuria (IG)	Homo sapiens
+R-HSA-5619101	Variant SLC6A20 affecting neurotransmitter transport contributes towards hyperglycinuria (HG) and iminoglycinuria (IG)	Homo sapiens
+R-HSA-5653656	Vesicle-mediated transport	Homo sapiens
+R-HSA-180585	Vif-mediated degradation of APOBEC3G	Homo sapiens
+R-HSA-9824446	Viral Infection Pathways	Homo sapiens
+R-HSA-168325	Viral Messenger RNA Synthesis	Homo sapiens
+R-HSA-168330	Viral RNP Complexes in the Host Cell Nucleus	Homo sapiens
+R-HSA-192823	Viral mRNA Translation	Homo sapiens
+R-HSA-9690722	Viral strategies to evade IFIT action	Homo sapiens
+R-HSA-9694322	Virion Assembly and Release	Homo sapiens
+R-HSA-9679509	Virion Assembly and Release	Homo sapiens
+R-HSA-168268	Virus Assembly and Release	Homo sapiens
+R-HSA-2187338	Visual phototransduction	Homo sapiens
+R-HSA-196791	Vitamin D (calciferol) metabolism	Homo sapiens
+R-HSA-1296072	Voltage gated Potassium channels	Homo sapiens
+R-HSA-180897	Vpr-mediated induction of apoptosis by mitochondrial outer membrane permeabilization	Homo sapiens
+R-HSA-180910	Vpr-mediated nuclear import of PICs	Homo sapiens
+R-HSA-180534	Vpu mediated degradation of CD4	Homo sapiens
+R-HSA-5620916	VxPx cargo-targeting to cilium	Homo sapiens
+R-HSA-3238698	WNT ligand biogenesis and trafficking	Homo sapiens
+R-HSA-201688	WNT mediated activation of DVL	Homo sapiens
+R-HSA-5140745	WNT5A-dependent internalization of FZD2, FZD5 and ROR2	Homo sapiens
+R-HSA-5099900	WNT5A-dependent internalization of FZD4	Homo sapiens
+R-HSA-8848584	Wax and plasmalogen biosynthesis	Homo sapiens
+R-HSA-381038	XBP1(S) activates chaperone genes	Homo sapiens
+R-HSA-2032785	YAP1- and WWTR1 (TAZ)-stimulated gene expression	Homo sapiens
+R-HSA-9820865	Z-decay: degradation of maternal mRNAs by zygotically expressed factors	Homo sapiens
+R-HSA-1606322	ZBP1(DAI) mediated induction of type I IFNs	Homo sapiens
+R-HSA-9954716	ZNF598 and the Ribosome-associated Quality Trigger (RQT) complex dissociate a ribosome stalled on a no-go mRNA	Homo sapiens
+R-HSA-9819196	Zygotic genome activation (ZGA)	Homo sapiens
+R-HSA-450302	activated TAK1 mediates p38 MAPK activation	Homo sapiens
+R-HSA-192869	cRNA Synthesis	Homo sapiens
+R-HSA-203615	eNOS activation	Homo sapiens
+R-HSA-72187	mRNA 3'-end processing	Homo sapiens
+R-HSA-72086	mRNA Capping	Homo sapiens
+R-HSA-75072	mRNA Editing	Homo sapiens
+R-HSA-9770562	mRNA Polyadenylation	Homo sapiens
+R-HSA-72172	mRNA Splicing	Homo sapiens
+R-HSA-72163	mRNA Splicing - Major Pathway	Homo sapiens
+R-HSA-72165	mRNA Splicing - Minor Pathway	Homo sapiens
+R-HSA-429958	mRNA decay by 3' to 5' exoribonuclease	Homo sapiens
+R-HSA-430039	mRNA decay by 5' to 3' exoribonuclease	Homo sapiens
+R-HSA-166208	mTORC1-mediated signalling	Homo sapiens
+R-HSA-69563	p53-Dependent G1 DNA Damage Response	Homo sapiens
+R-HSA-69580	p53-Dependent G1/S DNA damage checkpoint	Homo sapiens
+R-HSA-69613	p53-Independent G1/S DNA Damage Checkpoint	Homo sapiens
+R-HSA-193704	p75 NTR receptor-mediated signalling	Homo sapiens
+R-HSA-193670	p75NTR negatively regulates cell cycle via SC1	Homo sapiens
+R-HSA-209543	p75NTR recruits signalling complexes	Homo sapiens
+R-HSA-193697	p75NTR regulates axonogenesis	Homo sapiens
+R-HSA-193639	p75NTR signals via NF-kB	Homo sapiens
+R-HSA-6790901	rRNA modification in the nucleus and cytosol	Homo sapiens
+R-HSA-72312	rRNA processing	Homo sapiens
+R-HSA-8868766	rRNA processing in the mitochondrion	Homo sapiens
+R-HSA-8868773	rRNA processing in the nucleus and cytosol	Homo sapiens
+R-HSA-191859	snRNP Assembly	Homo sapiens
+R-HSA-379724	tRNA Aminoacylation	Homo sapiens
+R-HSA-6787450	tRNA modification in the mitochondrion	Homo sapiens
+R-HSA-6782315	tRNA modification in the nucleus and cytosol	Homo sapiens
+R-HSA-72306	tRNA processing	Homo sapiens
+R-HSA-6785470	tRNA processing in the mitochondrion	Homo sapiens
+R-HSA-6784531	tRNA processing in the nucleus	Homo sapiens
+R-HSA-9708296	tRNA-derived small RNA (tsRNA or tRNA-related fragment, tRF) biogenesis	Homo sapiens
+R-HSA-199992	trans-Golgi Network Vesicle Budding	Homo sapiens
+R-HSA-192814	vRNA Synthesis	Homo sapiens
+R-HSA-192905	vRNP Assembly	Homo sapiens

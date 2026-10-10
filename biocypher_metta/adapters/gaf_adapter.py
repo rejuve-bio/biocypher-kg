@@ -3,7 +3,7 @@ import gzip
 from Bio.UniProt.GOA import gafiterator
 
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.processors import HGNCProcessor, GOSubontologyProcessor
+from biocypher_metta.processors import HGNCProcessor, GOSubontologyProcessor, BioMartEnsemblProcessor
 
 # GAF files are defined here: https://geneontology.github.io/docs/go-annotation-file-gaf-format-2.2/
 
@@ -50,18 +50,36 @@ class GAFAdapter(Adapter):
         'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
         # dmel GAF file for GO annotations:
         # Flybase GAF file is updated more frequently than GO one.
-        'flybase': 'https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz'
+        'flybase': 'https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz',
         # other species/organism come here:
+        'mgi': 'https://current.geneontology.org/annotations/mgi.gaf.gz',
+        'rgd': 'https://current.geneontology.org/annotations/rgd.gaf.gz',
+        'wormbase': 'https://current.geneontology.org/annotations/wb.gaf.gz',
+    }
 
+    # BioMart-based species for gaf_type in ('mgi', 'rgd'): taxon_id -> (dataset, species_id_attr, species_code).
+    # WormBase/FlyBase aren't here because their GAF DB_Object_ID already IS the
+    # gene ID used in the KG (WBGene.../FBgn...), no lookup needed.
+    _BIOMART_CONFIGS = {
+        10116: ('rnorvegicus_gene_ensembl', 'rgd_id', 'rno'),
+        10090: ('mmusculus_gene_ensembl', 'mgi_id', 'mmu'),
     }
 
     def __init__(self, filepath, write_properties, add_provenance, label, taxon_id, gaf_type='human',
-                 hgnc_processor=None, go_subontology_processor=None):
+                 hgnc_processor=None, go_subontology_processor=None, biomart_cache_base_dir='aux_files'):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
                              ', '.join(GAFAdapter.SOURCES.keys()))
 
         self.filepath = filepath
+        self._biomart_processor = None
+        if gaf_type in ('mgi', 'rgd') and taxon_id in GAFAdapter._BIOMART_CONFIGS:
+            dataset, species_id_attr, sp_code = GAFAdapter._BIOMART_CONFIGS[taxon_id]
+            self._biomart_processor = BioMartEnsemblProcessor(
+                dataset=dataset,
+                species_id_attr=species_id_attr,
+                cache_dir=f"{biomart_cache_base_dir}/{sp_code}/biomart_ensembl",
+            )
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
         self.label = label
@@ -149,6 +167,20 @@ class GAFAdapter(Adapter):
                 elif self.type == 'flybase':
                     # label = "biological_process_gene"
                     source = ("gene", f"FlyBase:{source_raw}")    # Flybase use genes
+                elif self.type == 'wormbase':
+                    # WormBase GAF DB_Object_ID is already the WBGene ID used for gene nodes
+                    source = ("gene", f"WormBase:{source_raw}")
+                elif self.type in ('mgi', 'rgd') and self._biomart_processor is not None:
+                    # MGI/RGD GAF DB_Object_ID is an MGI/RGD ID, not the Ensembl gene ID
+                    # used for gene nodes - resolve via BioMart, skip if unmapped.
+                    ensembl_gene_id = self._biomart_processor.get_ensembl_gene(source_raw)
+                    if ensembl_gene_id is None and ':' in source_raw:
+                        ensembl_gene_id = self._biomart_processor.get_ensembl_gene(source_raw.split(':', 1)[1])
+                    if ensembl_gene_id is None:
+                        continue
+                    # ensembl_gene_id is an Ensembl gene ID (resolved via BioMart above),
+                    # so it must use the same CURIE prefix as the gene nodes themselves.
+                    source = ("gene", f"{Adapter.CURIE_PREFIX[self.taxon_id]}:{ensembl_gene_id}")
                 else:
                     # Default to UniProt for protein annotations
                     source = ("protein", f"UniProt:{source_raw}")

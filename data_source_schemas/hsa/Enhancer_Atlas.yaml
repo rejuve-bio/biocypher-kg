@@ -9,6 +9,7 @@ nodes:
       chr: str
       end: int
       start: int
+      taxon_id: int
 relationships:
   enhancer to gene association:
     url: http://singlecelldb.com/downloadv2.php

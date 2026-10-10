@@ -41,8 +41,10 @@ class HPOGeneDiseaseAdapter(Adapter):
         entrez_to_ensembl_map: str = None,
         label: str = "gene_disease",
         entrez_ensembl_processor=None,
+        taxon_id=9606,
     ):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.label = label
         self.source = "Human Phenotype Ontology"
         self.source_url = "https://hpo.jax.org/"
@@ -92,6 +94,7 @@ class HPOGeneDiseaseAdapter(Adapter):
 
                 props = {}
                 if self.write_properties:
+                    props["taxon_id"] = self.taxon_id
                     props["gene_symbol"] = gene_symbol
                     props["association_type"] = association_type
                     props["source_ref"] = source_ref

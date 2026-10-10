@@ -114,7 +114,7 @@ class PhysicalInteractionAdapter(Adapter):
             # Flybase doesn't informs which transcript or protein is interacting. So, use all...
             for source in source_ids:
                 for target in target_ids:                                        
-                    yield (sources[0], f'FlyBase:{source}'), (targets[0], f'FlyBase:{target}'), self.label, props                   
+                    yield (sources[0], f'FlyBase:{source}'), (targets[0], f'FlyBase:{target}'), f'{self.label}_{sources[0]}', props
                         
 
     def get_FB_ids(self, source_fbgn, target_fbgn, data_row):
@@ -155,8 +155,7 @@ class PhysicalInteractionAdapter(Adapter):
     def pre_process(self, fb_psimi_table: FlybasePrecomputedTable) -> FlybasePrecomputedTable:
         df = fb_psimi_table.to_pandas_dataframe()        
         # replace cells equal to "-" by ""
-        #df = df.map(lambda x: '' if str(x) == '-' else x)
-        df = df.applymap(lambda x: '' if str(x) == '-' else x)
+        df = df.map(lambda x: '' if str(x) == '-' else x)
 
         df["ID(s) Interactor A"] = df["ID(s) Interactor A"].apply(lambda x: self._remove_flybase_str(x) if x else x)
         df["ID(s) Interactor B"] = df["ID(s) Interactor B"].apply(lambda x: self._remove_flybase_str(x) if x else x)

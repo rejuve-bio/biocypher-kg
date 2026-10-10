@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-07-20T22:29:19.987652",
+  "processor": "ensembl_uniprot",
+  "entries": 13637,
+  "remote_metadata": {
+    "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/CAEEL_6239_idmapping.dat.gz": {
+      "url": "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/CAEEL_6239_idmapping.dat.gz",
+      "last_modified": "Wed, 10 Jun 2026 20:00:00 GMT",
+      "etag": "\"4c348d-653ebb0451000\"",
+      "content_length": "4994189",
+      "checked_at": "2026-07-20T22:29:20.808719"
+    }
+  }
+}

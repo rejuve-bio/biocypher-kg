@@ -11,14 +11,17 @@ nodes:
       gene_type: str
       start: int
       synonym: str[]
+      taxon_id: int
   transcript:
     url: https://www.gencodegenes.org/
     input_label: transcript
     description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
     properties:
+      taxon_id: int
       transcript_id: str
       transcript_name: str
       transcript_type: str
+      gene_name: str
   exon:
     url: https://www.gencodegenes.org/
     input_label: exon
@@ -27,6 +30,7 @@ nodes:
       end: int
       exon_number: int
       start: int
+      taxon_id: int
 relationships:
   transcribes to:
     url: https://www.gencodegenes.org/
@@ -41,6 +45,8 @@ relationships:
     description: An association between an exon and its gene
     source: exon
     target: transcript
+    properties:
+      taxon_id: int
   exon part_of gene:
     url: https://www.gencodegenes.org/
     input_label: part_of_gene
@@ -49,3 +55,5 @@ relationships:
       transcript or gene'
     source: exon
     target: gene
+    properties:
+      taxon_id: int

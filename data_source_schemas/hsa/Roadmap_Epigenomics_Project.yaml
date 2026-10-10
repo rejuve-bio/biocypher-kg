@@ -3,90 +3,90 @@ website: https://forgedb.cancer.gov
 relationships:
   chromatin state snp to anatomy:
     url: https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz
-    input_label: chromatin_state
+    input_label: chromatin_state_anatomy
     source: snp
     target: anatomy
     properties:
       state: str
   chromatin state snp to cell type:
     url: https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz
-    input_label: chromatin_state
+    input_label: chromatin_state_cell_type
     source: snp
     target: cell type
     properties:
       state: str
   chromatin state snp to cell line:
     url: https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz
-    input_label: chromatin_state
+    input_label: chromatin_state_cell_line
     source: snp
     target: cell line
     properties:
       state: str
   chromatin state snp to experimental factor:
     url: https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz
-    input_label: chromatin_state
+    input_label: chromatin_state_experimental_factor
     source: snp
     target: experimental factor
     properties:
       state: str
   chromatin state snp to tissue:
     url: https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.{0-9}.forgedb.csv.gz
-    input_label: chromatin_state
+    input_label: chromatin_state_tissue
     source: snp
     target: tissue
     properties:
       state: str
   histone modification snp to anatomy:
     url: https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz
-    input_label: histone_modification
+    input_label: histone_modification_anatomy
     description: A post-translational modification of histone proteins e.g methylation,
       acetylation, phosphorylation
     source: snp
     target: anatomy
   histone modification snp to cell type:
     url: https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz
-    input_label: histone_modification
+    input_label: histone_modification_cell_type
     source: snp
     target: cell type
   histone modification snp to cell line:
     url: https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz
-    input_label: histone_modification
+    input_label: histone_modification_cell_line
     source: snp
     target: cell line
   histone modification snp to experimental factor:
     url: https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz
-    input_label: histone_modification
+    input_label: histone_modification_experimental_factor
     source: snp
     target: experimental factor
   histone modification snp to tissue:
     url: https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.{0-9}.forgedb.csv.gz
-    input_label: histone_modification
+    input_label: histone_modification_tissue
     source: snp
     target: tissue
   dnase I hotspot snp to anatomy:
     url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
-    input_label: in_dnase_I_hotspot
+    input_label: in_dnase_I_hotspot_anatomy
     description: A region of chromatin that is sensitive to cleavage by the enzyme
       DNase I
     source: snp
     target: anatomy
   dnase I hotspot snp to cell type:
     url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
-    input_label: in_dnase_I_hotspot
+    input_label: in_dnase_I_hotspot_cell_type
     source: snp
     target: cell type
   dnase I hotspot snp to cell line:
     url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
-    input_label: in_dnase_I_hotspot
+    input_label: in_dnase_I_hotspot_cell_line
     source: snp
     target: cell line
   dnase I hotspot snp to experimental factor:
     url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
-    input_label: in_dnase_I_hotspot
+    input_label: in_dnase_I_hotspot_experimental_factor
     source: snp
     target: experimental factor
   dnase I hotspot snp to tissue:
     url: https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
-    input_label: in_dnase_I_hotspot
+    input_label: in_dnase_I_hotspot_tissue
     source: snp
     target: tissue

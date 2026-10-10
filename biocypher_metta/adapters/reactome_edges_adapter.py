@@ -72,7 +72,7 @@ class ReactomeEdgesAdapter(Adapter):
                       'protein_pathways', 'transcript_pathways',
                       'protein_reaction', 'transcript_reaction',
                       'small_molecule_to_pathway', 'small_molecule_to_reaction',
-                      'reaction_to_pathway', 'protein_role_in_reaction',
+                      'reaction_to_pathway',
                       'parent_pathway_of', 'child_pathway_of']
 
     # Labels that read pathway/reaction data files and should be filtered by entity type.
@@ -91,13 +91,15 @@ class ReactomeEdgesAdapter(Adapter):
     _PATHWAY_LABELS = frozenset({
         'genes_pathways', 'protein_pathways', 'transcript_pathways',
         'small_molecule_to_pathway',
+        'protein_positively_regulates_pathway', 'protein_negatively_regulates_pathway', 'protein_produced_by_pathway'
     })
     _REACTION_LABELS = frozenset({
         'gene_or_gene_product_reaction', 'protein_reaction', 'transcript_reaction',
-        'small_molecule_to_reaction',
+        'small_molecule_to_reaction', 'protein_positively_regulates_reaction', 'protein_negatively_regulates_reaction',
+        'protein_produced_by_reaction'
     })
 
-    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id, ensembl_uniprot_map_path=None):
+    def __init__(self, filepath, label, write_properties, add_provenance, taxon_id):
         """
         Added taxon_id parameter to handle multiple species data.
 
@@ -118,19 +120,14 @@ class ReactomeEdgesAdapter(Adapter):
         if self.taxon_id == 7227:
             self.connection = self.connect_to_flybase()
         # Load the Ensembl to UniProt mapping
-        self.ensembl_uniprot_map = {}
-        if ensembl_uniprot_map_path and taxon_id != 9606:
-            try:
-                import pickle
-                self.ensembl_uniprot_map = pickle.load(open(ensembl_uniprot_map_path, 'rb'))
-                print(f"Loaded {len(self.ensembl_uniprot_map)} Ensembl-UniProt mappings from pickle")
-            except Exception as e:
-                print(f"Warning: Could not load Ensembl-UniProt mapping: {e}")
-                self.ensembl_uniprot_map = {}
-        else:
-            processor = EnsemblUniProtProcessor()
-            processor.load_or_update()
-            self.ensembl_uniprot_map = processor.mapping
+        species_info = Adapter.SPECIES_INFO[taxon_id]
+        processor = EnsemblUniProtProcessor(
+            organism=species_info['ensembl_uniprot_organism'],
+            cache_dir=species_info['ensembl_uniprot_cache_directory'],
+            update_interval_hours=species_info['update_interval_hours']
+        )
+        processor.load_or_update()
+        self.ensembl_uniprot_map = processor.mapping
         super(ReactomeEdgesAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
@@ -212,10 +209,53 @@ class ReactomeEdgesAdapter(Adapter):
                                     not_mapped_no_processing += 1
                                     continue
                             source = (source_type, curie_entity_id)
-                            # target = pathway_id
-                            # Mandatory property for KGXWriter
-                            # props['id'] = f'{curie_entity_id}_{self.label}_{pathway_id}'
-                            # print(f"reactome: {props['id']}")
+                            yield source, pathway_id, self.label, props
+                        # Mouse only
+                        elif self.taxon_id == 10090 and (organism_pathway_prefix == 'R-MMU' or organism_pathway_prefix == 'R-NUL'):
+                            entity_id = entity_id.split('.')[0]
+                            if entity_id.startswith(("ENSMUSG", "ENSMUST")):
+                                curie_entity_id = f"Ensembl:{entity_id}"
+                            elif entity_id.startswith('CHEBI'):
+                                curie_entity_id = entity_id
+                            else:
+                                if self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
+                                    entity_id = self.ensembl_uniprot_map.get(entity_id)
+                                    curie_entity_id = f"{entity_id}"
+                                else:
+                                    not_mapped_no_processing += 1
+                                    continue
+                            source = (source_type, curie_entity_id)
+                            yield source, pathway_id, self.label, props
+                        # Rat only
+                        elif self.taxon_id == 10116 and (organism_pathway_prefix == 'R-RNO' or organism_pathway_prefix == 'R-NUL'):
+                            entity_id = entity_id.split('.')[0]
+                            if entity_id.startswith(("ENSRNOG", "ENSRNOT")):
+                                curie_entity_id = f"Ensembl:{entity_id}"
+                            elif entity_id.startswith('CHEBI'):
+                                curie_entity_id = entity_id
+                            else:
+                                if self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
+                                    entity_id = self.ensembl_uniprot_map.get(entity_id)
+                                    curie_entity_id = f"{entity_id}"
+                                else:
+                                    not_mapped_no_processing += 1
+                                    continue
+                            source = (source_type, curie_entity_id)
+                            yield source, pathway_id, self.label, props
+                        # C. elegans only
+                        elif self.taxon_id == 6239 and (organism_pathway_prefix == 'R-CEL' or organism_pathway_prefix == 'R-NUL'):
+                            if entity_id.startswith('CHEBI'):
+                                curie_entity_id = entity_id
+                            elif self.ensembl_uniprot_map and entity_id in self.ensembl_uniprot_map:
+                                uniprot_id = self.ensembl_uniprot_map.get(entity_id)
+                                curie_entity_id = f"UniProtKB:{uniprot_id}"
+                            elif self.ensembl_uniprot_map and entity_id.split('.')[0] in self.ensembl_uniprot_map:
+                                uniprot_id = self.ensembl_uniprot_map.get(entity_id.split('.')[0])
+                                curie_entity_id = f"UniProtKB:{uniprot_id}"
+                            else:
+                                not_mapped_no_processing += 1
+                                continue
+                            source = (source_type, curie_entity_id)
                             yield source, pathway_id, self.label, props
                 elif self.label == 'reaction_to_pathway':
                     pathway_id = data[0].strip()
@@ -247,22 +287,25 @@ class ReactomeEdgesAdapter(Adapter):
                         props['taxon_id'] = self.taxon_id
                         if self.label == 'parent_pathway_of':
                             source, target = parent, child
-                        else:  # 'child_pathway_of'
+                        elif  self.label ==  'child_pathway_of':
                             source, target = child, parent
                         yield source, target, self.label, props
             print(f'Entities not mapped to Uniprot IDs: {not_mapped_no_processing} out of {total_in_species_records}')
 
-    # @todo, I (Saulo) need to change this to make it easier to new species.
     def _get_entity_type(self, entity_id):
         """Return the entity type based on its identifier prefix."""
-        if entity_id.startswith(("FBgn", "ENSG")):
+        if entity_id.startswith(("FBgn", "ENSG", "ENSMUSG", "ENSRNOG", "WBGene")):
             return "gene"
-        elif entity_id.startswith(("FBpp", "ENSP")):
+        elif entity_id.startswith(("FBpp", "ENSP", "ENSMUSP", "ENSRNOP")):
             return "protein"
-        elif entity_id.startswith(("FBtr", "ENST")):
+        elif entity_id.startswith(("FBtr", "ENST", "ENSMUST", "ENSRNOT")):
             return "transcript"
         elif entity_id.startswith('CHEBI'):
             return 'small_molecule'
+        elif self.taxon_id == 6239:
+            # WormBase sequence IDs (e.g. AC3.2.1) lack a systematic type prefix;
+            # Reactome uses CDS/protein-level EnsemblMetazoa IDs for C. elegans.
+            return 'protein'
         else:
             return None
 

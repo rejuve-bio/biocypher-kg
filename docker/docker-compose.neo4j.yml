@@ -8,7 +8,6 @@ version: "3.9"
 services:
   neo4j:
     image: ${NEO4J_IMAGE:-neo4j:5.21}
-    container_name: ${NEO4J_CONTAINER:-neo4j_bio_atomspace}
     restart: always
     ports:
       # Loopback-only; use an SSH tunnel or reverse proxy for remote access.
@@ -64,3 +63,4 @@ volumes:
   neo4j_data:
   neo4j_logs:
   neo4j_plugins:
+

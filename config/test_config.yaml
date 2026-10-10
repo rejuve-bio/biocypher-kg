@@ -91,8 +91,8 @@ uniprotkb_sprot:
 
 uniprotkb_sprot_translates_to:
   adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
-    cls: UniprotAdapter
+    module: biocypher_metta.adapters.uniprot_protein_adapter
+    cls: UniprotProteinAdapter
     args:
       filepath: ./samples/hsa/uniprot_sprot_human_sample.dat.gz
       type: translates to
@@ -1070,7 +1070,7 @@ uberon:
   nodes: True
   edges: False
 
-uberon_subclass_of:
+anatomy_subclass_of:
   adapter:
     module: biocypher_metta.adapters.uberon_adapter
     cls: UberonAdapter
@@ -1078,7 +1078,7 @@ uberon_subclass_of:
       ontology: 'uberon'
       type: edge
       dry_run: True
-      label: uberon_subclass_of
+      label: anatomy_subclass_of
       cache_dir: ./ontology_dataset_cache
   outdir: uberon
   nodes: False

@@ -18,13 +18,24 @@ class UniprotProteinAdapter(Adapter):
     
   
     TRANSLATION_CONDITION_MAP = {
-        7227: lambda item: bool(item[0].startswith('EnsemblMetazoa') and 'FBtr' in item[1]),
-        9606: lambda item: bool(item[0].startswith('Ensembl') and 'ENST' in item[1]),
+        6239:  lambda item: bool(item[0].startswith('EnsemblMetazoa') and len(item) > 3 and 'WBGene' in item[3]),
+        7227:  lambda item: bool(item[0].startswith('EnsemblMetazoa') and 'FBtr' in item[1]),
+        9606:  lambda item: bool(item[0].startswith('Ensembl') and 'ENST' in item[1]),
+        10090: lambda item: bool(item[0].startswith('Ensembl') and 'ENSMUST' in item[1]),
+        10116: lambda item: bool(item[0].startswith('Ensembl') and 'ENSRNOT' in item[1]),
     }
 
+    # Index of the cross-reference tuple field that holds the target transcript ID.
+    # For every supported species, including C. elegans (DR EnsemblMetazoa; <transcript>;
+    # <protein>; <gene>.), item[1] is the transcript ID, so no per-species override is needed.
+    TRANSLATION_ID_FIELD = {}
+
     CURIE_PREFIX = {
-        7227: 'FlyBase',
-        9606: 'ENSEMBL'
+        6239:  'WormBase',
+        7227:  'FlyBase',
+        9606:  'ENSEMBL',
+        10090: 'ENSEMBL',
+        10116: 'ENSEMBL',
     }
 
     def __init__(self, filepath, write_properties, add_provenance, taxon_id, label, type=None, dbxref=None, mapping_file=None):
@@ -57,7 +68,7 @@ class UniprotProteinAdapter(Adapter):
                     if item != '-':
                         id = database_name + ':' + item
                         dbxrefs.append(id)
-            elif database_name in ['REFSEQ', 'ENSEMBL', 'MANE-SELECT', 'ENSEMBLMETAZOA']:
+            elif database_name in ['REFSEQ', 'ENSEMBL', 'ENSEMBLMETAZOA', 'MANE-SELECT',]:
                 for item in cross_reference[1:]:
                     if item != '-':
                         id = database_name + ':' + item.split('. ')[0]
@@ -95,17 +106,43 @@ class UniprotProteinAdapter(Adapter):
                         break        
         return isoforms
 
+    # Species-specific Ensembl/EnsemblMetazoa ID prefixes.
+    # None means no stable prefix exists (C. elegans transcript/protein use
+    # variable WormBase locus IDs); for those, any non-gene ID is accepted.
+    _ENSEMBL_PREFIXES = {
+        6239:  {'gene': 'WBGene', 'transcript': None,      'protein': None},
+        7227:  {'gene': 'FBgn',   'transcript': 'FBtr',    'protein': 'FBpp'},
+        9606:  {'gene': 'ENSG',   'transcript': 'ENST',    'protein': 'ENSP'},
+        10090: {'gene': 'ENSMUSG','transcript': 'ENSMUST', 'protein': 'ENSMUSP'},
+        10116: {'gene': 'ENSRNOG','transcript': 'ENSRNOT', 'protein': 'ENSRNOP'},
+    }
+
     def _matches_ensembl_label(self, syn):
-        """Return True only if syn matches the label (gene, transcript, protein)."""
-        if "gene" in self.label and "ENSG" in syn:
-            return True
-        if "transcript" in self.label and "ENST" in syn:
-            return True
-        if "_protein" in self.label and "ENSP" in syn:
-            return True
+        """Return True only if syn matches the label (gene, transcript, protein) for this species."""
+        prefixes = self._ENSEMBL_PREFIXES.get(self.taxon_id, self._ENSEMBL_PREFIXES[9606])
+        gene_pfx = prefixes['gene']
+        tx_pfx   = prefixes['transcript']
+        prot_pfx = prefixes['protein']
+        if "gene" in self.label:
+            return bool(gene_pfx and gene_pfx in syn)
+        if "transcript" in self.label:
+            if tx_pfx is None:
+                return bool(gene_pfx and gene_pfx not in syn)
+            return tx_pfx in syn
+        if "_protein" in self.label:
+            if prot_pfx is None:
+                return bool(gene_pfx and gene_pfx not in syn)
+            return prot_pfx in syn
         return False
 
     def get_nodes(self):
+        taxon_to_suffixes = defaultdict(lambda: None)
+        taxon_to_suffixes[6239] = 'CAEEL'
+        taxon_to_suffixes[7227] ='DROME'
+        taxon_to_suffixes[9606] = 'HUMAN'
+        taxon_to_suffixes[10090] = 'MOUSE'
+        taxon_to_suffixes[10116] = 'RAT'
+        
         with gzip.open(self.filepath, 'rt') as input_file:
             records = SwissProt.parse(input_file)
             for record in records:
@@ -151,6 +188,13 @@ class UniprotProteinAdapter(Adapter):
                         break
 
     def get_edges(self):
+        taxon_to_suffixes = defaultdict(lambda: None)
+        taxon_to_suffixes[6239] = 'CAEEL'
+        taxon_to_suffixes[7227] ='DROME'
+        taxon_to_suffixes[9606] = 'HUMAN'
+        taxon_to_suffixes[10090] = 'MOUSE'
+        taxon_to_suffixes[10116] = 'RAT'
+                
         with gzip.open(self.filepath, 'rt') as input_file:
             for record in SwissProt.parse(input_file):
                 # Use the exact NCBI Taxonomy ID embedded in the record (OX line).
@@ -161,10 +205,11 @@ class UniprotProteinAdapter(Adapter):
                 if self.type == 'translates to' or self.label == 'translates_to':
                     translation_conditions_hold = self.TRANSLATION_CONDITION_MAP.get(self.taxon_id)
                     if translation_conditions_hold:
-                        for item in record.cross_references:                 
+                        id_field = self.TRANSLATION_ID_FIELD.get(self.taxon_id, 1)
+                        for item in record.cross_references:
                             if translation_conditions_hold(item):
                                 prefix = self.CURIE_PREFIX.get(self.taxon_id, 'ENSEMBL')
-                                ensg_id = f"{prefix}:" + item[1].split(':')[-1].split('.')[0]
+                                ensg_id = f"{prefix}:" + item[id_field].split(':')[-1].split('.')[0]
                                 props = {}
                                 props['taxon_id'] = f'NCBITaxon:{self.taxon_id}'
                                 if self.write_properties and self.add_provenance:

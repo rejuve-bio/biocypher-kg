@@ -1,0 +1,88 @@
+name: OBO Foundry
+website: http://www.obofoundry.org
+nodes:
+  anatomy:
+    url: http://www.obofoundry.org/
+    input_label: anatomy
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+  biological process:
+    url: http://www.obofoundry.org/
+    input_label: biological_process
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+  molecular function:
+    url: http://www.obofoundry.org/
+    input_label: molecular_function
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+  cellular component:
+    url: http://www.obofoundry.org/
+    input_label: cellular_component
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+  small molecule:
+    url: http://www.obofoundry.org/
+    input_label: small_molecule
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+  disease:
+    url: http://www.obofoundry.org/
+    input_label: disease
+    properties:
+      alternative_ids: str[]
+      description: str
+      synonym: str[]
+      term_name: str
+relationships:
+  anatomy subclass of:
+    url: http://www.obofoundry.org/
+    input_label: anatomy_subclass_of
+    output_label: is_a
+    source: anatomy
+    target: anatomy
+  biological process subclass:
+    url: http://www.obofoundry.org/
+    input_label: biological_process_subclass_of
+    output_label: is_a
+    source: biological process
+    target: biological process
+  cellular component subclass:
+    url: http://www.obofoundry.org/
+    input_label: cellular_component_subclass_of
+    output_label: is_a
+    source: cellular component
+    target: cellular component
+  molecular function subclass:
+    url: http://www.obofoundry.org/
+    input_label: molecular_function_subclass_of
+    output_label: is_a
+    source: molecular function
+    target: molecular function
+  chebi subclass of:
+    url: http://www.obofoundry.org/
+    input_label: chebi_subclass_of
+    output_label: is_a
+    source: small molecule
+    target: small molecule
+  do subclass of:
+    url: http://www.obofoundry.org/
+    input_label: do_subclass_of
+    output_label: is_a
+    source: disease
+    target: disease

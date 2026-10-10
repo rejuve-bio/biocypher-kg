@@ -38,7 +38,12 @@ class StringPPIAdapter(Adapter):
             with open(ensembl_to_uniprot_map, "rb") as f:
                 self.ensembl2uniprot = pickle.load(f)
         else:
-            self.processor = EnsemblUniProtProcessor()
+            species_info = Adapter.SPECIES_INFO[taxon_id]
+            self.processor = EnsemblUniProtProcessor(
+                organism=species_info['ensembl_uniprot_organism'],
+                cache_dir=species_info['ensembl_uniprot_cache_directory'],
+                update_interval_hours=species_info['update_interval_hours']
+            )
             self.processor.load_or_update()
 
         if hasattr(self, 'processor') and self.processor is not None:

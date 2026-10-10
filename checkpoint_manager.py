@@ -74,7 +74,7 @@ class CheckpointManager:
         "created_at": "<ISO timestamp>",
         "updated_at": "<ISO timestamp>",
         "completed_adapters": ["adapter_a", "adapter_b", ...],
-        "failed_adapter": "<adapter_name> | null",
+        "failed_adapters": ["<adapter_name>", ...],   # empty list when none failed
         "nodes_count": {...},
         "nodes_props":  {...},    # lists (serialised sets)
         "edges_count":  {...},
@@ -130,7 +130,7 @@ class CheckpointManager:
         nodes_props: defaultdict,
         edges_count: Counter,
         datasets_dict: dict,
-        failed_adapter: Optional[str] = None,
+        failed_adapters: Optional[list] = None,
         elapsed_seconds: float = 0.0,
     ):
         """Atomically write the checkpoint file."""
@@ -140,7 +140,7 @@ class CheckpointManager:
             "created_at": self._state.get("created_at", now) if self._state else now,
             "updated_at": now,
             "completed_adapters": completed_adapters,
-            "failed_adapter": failed_adapter,
+            "failed_adapters": failed_adapters or [],
             "nodes_count": _serialize(nodes_count),
             "nodes_props": _serialize(nodes_props),
             "edges_count": _serialize(edges_count),
@@ -200,7 +200,12 @@ def prompt_resume_or_restart(checkpoint_manager: CheckpointManager) -> bool:
             False → start over (checkpoint will be deleted)
     """
     completed = checkpoint_manager.completed_adapters
-    failed = checkpoint_manager._state.get("failed_adapter")
+    # Prefer the new list-valued key; fall back to a pre-upgrade checkpoint that
+    # used the old singular "failed_adapter" string.
+    failed = checkpoint_manager._state.get("failed_adapters")
+    if failed is None:
+        legacy = checkpoint_manager._state.get("failed_adapter")
+        failed = [legacy] if legacy else []
     updated_at = checkpoint_manager._state.get("updated_at", "unknown")
 
     print("\n" + "=" * 60)
@@ -212,7 +217,7 @@ def prompt_resume_or_restart(checkpoint_manager: CheckpointManager) -> bool:
         for a in completed:
             print(f"               ✓ {a}")
     if failed:
-        print(f"  Failed on  : ✗ {failed}")
+        print(f"  Failed on  : ✗ {', '.join(failed)}")
     print("=" * 60)
 
     while True:

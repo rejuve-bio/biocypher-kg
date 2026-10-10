@@ -19,8 +19,9 @@ class PolyPhen2Adapter(Adapter):
     }
 
     def __init__(self, filepath, write_properties, add_provenance, label,
-                 chr=None, start=None, end=None):
+                 chr=None, start=None, end=None, taxon_id=9606):
         self.filepath = filepath
+        self.taxon_id = taxon_id
         self.chr = chr
         self.start = start
         self.end = end
@@ -90,7 +91,8 @@ class PolyPhen2Adapter(Adapter):
                         props['polyphen2_humdiv_prediction'] = self._get_prediction(pred_hdiv)
                         props['polyphen2_humvar_score'] = score_hvar
                         props['polyphen2_humvar_prediction'] = self._get_prediction(pred_hvar)
-                    
+                        props['taxon_id'] = self.taxon_id
+
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url

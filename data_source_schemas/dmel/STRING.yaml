@@ -7,5 +7,15 @@ relationships:
     source: protein
     target: protein
     properties:
-      taxon_id: int
       score: float
+      taxon_id: str
+  protein to protein coexpression association:
+    url: https://string-db.org/
+    input_label: protein_coexpressed_with
+    output_label: coexpressed_with
+    description: Indicates that two proteins are co-expressed, generally under the
+      same conditions. Based on STRING coexpression data.
+    source: protein
+    target: protein
+    properties:
+      coexpression_score: float

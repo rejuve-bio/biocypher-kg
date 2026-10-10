@@ -4,17 +4,32 @@ import logging
 import getpass
 import argparse
 import sys
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def _fmt_elapsed(seconds):
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    minutes, seconds = divmod(seconds, 60)
+    if minutes < 60:
+        return f"{int(minutes)}m {seconds:.1f}s"
+    hours, minutes = divmod(minutes, 60)
+    return f"{int(hours)}h {int(minutes)}m {seconds:.1f}s"
+
 class Neo4jLoader:
-    def __init__(self, uri, username, password):
+    def __init__(self, uri, username, password, csv_base_path=None):
         self.driver = None
         self.session = None
         self.uri = uri
         self.username = username
         self.password = password
+        # When set, rewrites file:/// URIs in cypher files to use this absolute path
+        # as the root, allowing Neo4j to read CSVs from outside its default import dir.
+        # Requires apoc.import.file.use_neo4j_config=false in apoc.conf.
+        self.csv_base_path = str(csv_base_path).rstrip('/') if csv_base_path else None
 
     def connect(self):
         """Establish connection and verify credentials"""
@@ -66,6 +81,10 @@ class Neo4jLoader:
     def process_cypher_file(self, file_path):
         with open(file_path, 'r') as f:
             content = f.read()
+
+        if self.csv_base_path:
+            content = content.replace("file:///", f"file:///{self.csv_base_path.lstrip('/')}/")
+
 
         queries = []
         current_query = []
@@ -130,6 +149,11 @@ def get_neo4j_credentials():
     parser.add_argument('--username', default="neo4j", help='Neo4j username')
     parser.add_argument('--password', default=None, help='Neo4j password (falls back to interactive prompt)')
     parser.add_argument('--env-file', default=None, help='Path to neo4j.env to load connection settings from')
+    parser.add_argument('--csv-base-path', default=None,
+                         help='Absolute host path to prepend to file:/// URIs in the .cypher files. '
+                              'Use when Neo4j\'s import dir is not configured to the output dir '
+                              '(requires apoc.import.file.use_neo4j_config=false). '
+                              'Omit for the default Docker setup where /import is bind-mounted to output-dir.')
 
     # Pre-parse to detect --env-file, then set argparse defaults from it
     pre = argparse.ArgumentParser(add_help=False)
@@ -142,6 +166,7 @@ def get_neo4j_credentials():
             username=env.get('NEO4J_USERNAME', 'neo4j'),
             password=env.get('NEO4J_PASSWORD'),
             output_dir=env.get('NEO4J_OUTPUT_DIR'),
+            csv_base_path=env.get('CSV_BASE_PATH'),
         )
 
     args = parser.parse_args()
@@ -157,7 +182,7 @@ def get_neo4j_credentials():
         sys.exit(1)
     loader.close()
 
-    return args.uri, args.username, password, args.output_dir
+    return args.uri, args.username, password, args.output_dir, args.csv_base_path
 
 def process_output_directory(output_dir):
     output_path = Path(output_dir)
@@ -173,40 +198,63 @@ def process_output_directory(output_dir):
 
     return query_dirs
 
+def _dir_label(dir_path, output_path):
+    rel = dir_path.relative_to(output_path)
+    return str(rel) if str(rel) != "." else "(root)"
+
+
 def main():
-    neo4j_uri, username, password, output_dir = get_neo4j_credentials()
-    
+    neo4j_uri, username, password, output_dir, csv_base_path = get_neo4j_credentials()
+    output_path = Path(output_dir)
+    all_start = time.time()
+
     try:
-        loader = Neo4jLoader(neo4j_uri, username, password)
+        loader = Neo4jLoader(neo4j_uri, username, password, csv_base_path=csv_base_path)
         if not loader.connect():
             return
-        
+
         loader.start_session()
         query_dirs = process_output_directory(output_dir)
-        
+
         if not query_dirs:
             logger.error(f"No directories containing Cypher query files found in {output_dir}")
             return
-        
+
         logger.info(f"Found {len(query_dirs)} directories containing Cypher queries")
-        
-        all_node_files = []
-        all_edge_files = []
-        
-        for dir_path in query_dirs:
-            files = loader.load_queries_from_directory(dir_path)
-            all_node_files.extend(files['nodes'])
-            all_edge_files.extend(files['edges'])
-        
+
+        dir_files = [(dir_path, loader.load_queries_from_directory(dir_path)) for dir_path in query_dirs]
+        species_time = {_dir_label(dir_path, output_path): 0.0 for dir_path, _ in dir_files}
+
+        all_node_files = [f for _, files in dir_files for f in files['nodes']]
         logger.info(f"Processing {len(all_node_files)} node files across all directories")
-        loader.process_all_files(all_node_files)
-        
+        for dir_path, files in dir_files:
+            label = _dir_label(dir_path, output_path)
+            start = time.time()
+            loader.process_all_files(files['nodes'])
+            species_time[label] += time.time() - start
+
+        all_edge_files = [f for _, files in dir_files for f in files['edges']]
         logger.info(f"Processing {len(all_edge_files)} edge files across all directories")
-        loader.process_all_files(all_edge_files)
-        
+        for dir_path, files in dir_files:
+            label = _dir_label(dir_path, output_path)
+            start = time.time()
+            loader.process_all_files(files['edges'])
+            species_time[label] += time.time() - start
+
+        all_elapsed = time.time() - all_start
+        logger.info("\n" + "=" * 60)
+        logger.info("  SPECIES TIMING SUMMARY")
+        logger.info("=" * 60)
+        name_width = max(len(name) for name in species_time)
+        for label, elapsed in species_time.items():
+            logger.info(f"  {label:<{name_width}} : {_fmt_elapsed(elapsed):>10}")
+        logger.info("-" * 60)
+        logger.info(f"  Total time (all directories): {_fmt_elapsed(all_elapsed)}")
+        logger.info("=" * 60)
+
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
-    
+
     finally:
         loader.close()
 
