@@ -27,6 +27,13 @@ services:
       NEO4J_DATABASE: "${NEO4J_DATABASE:-neo4j}"
       ARCHIVE_BASE: "${DATA_ROOT}/archives"
       MORK_URL: "${MORK_URL:-http://mork:8027}"
+    # Forward docker/console.env verbatim so ANY per-species endpoint (NEO4J_URI_<SP> /
+    # MORK_URL_<SP>) reaches the console with no per-species lines to maintain here, and
+    # survives recreation. The environment keys above still win for the values they set.
+    # Add a species by adding its NEO4J_URI_<SP> line to console.env, then recreate the console.
+    env_file:
+      - path: ./console.env
+        required: false
     volumes:
       # Mounted at the same path so Neo4j/MORK read builds where the Console writes them.
       - "${DATA_ROOT}:${DATA_ROOT}"

@@ -100,10 +100,10 @@ export default function ExploreGraph() {
     api.exploreTargets().then(setTargets).catch((e) => setTargetsErr(msgOf(e)));
   }, []);
 
-  // When any species has its own dedicated instance (per-species mode), show
-  // only those — a species without its own instance would otherwise fall back to
-  // the default endpoint and misleadingly mirror another species' graph. With no
-  // dedicated instances (single combined DB), show every species.
+  // The backend returns only configured instances: one entry per species in
+  // per-species mode, or a single "default" entry for a lone global instance. The
+  // explicit filter is a belt-and-suspenders guard so a non-explicit entry never
+  // sneaks in alongside explicit ones.
   const explicitTargets = (targets ?? []).filter((t) => t.explicit);
   const shown = explicitTargets.length > 0 ? explicitTargets : (targets ?? []);
   const speciesList = shown.map((t) => t.species);

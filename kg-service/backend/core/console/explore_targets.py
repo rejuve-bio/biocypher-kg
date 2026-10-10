@@ -7,10 +7,12 @@ endpoints via env vars:
     NEO4J_URI_<SPECIES>   e.g. NEO4J_URI_HSA=bolt://localhost:7687
     MORK_URL_<SPECIES>    e.g. MORK_URL_HSA=http://localhost:8432
 
-Species names come from species_config.yaml (hsa, mmu, ...). When a species has
-no specific var, it falls back to the global NEO4J_URI / MORK_URL, so a single
-combined instance keeps working until per-species instances are configured.
-Neo4j creds (NEO4J_USER / NEO4J_PASSWORD / NEO4J_DATABASE) are shared.
+Species names come from species_config.yaml. Setting any NEO4J_URI_<SP> /
+MORK_URL_<SP> puts the console in per-species mode: each species resolves only to
+its own endpoint with no cross-species fallback, and a species with no endpoint has
+no instance (it is omitted from Explore, not shown mirroring another species). With
+nothing per-species set, the global NEO4J_URI / MORK_URL is used as a single default
+instance. Neo4j creds (NEO4J_USER / NEO4J_PASSWORD / NEO4J_DATABASE) are shared.
 """
 import os
 from functools import lru_cache
@@ -61,16 +63,31 @@ def mork_url_for(species: str):
 
 
 def list_targets() -> list[dict]:
-    """Species and which endpoints they resolve to (no reachability probe)."""
-    out = []
-    for sp in species_list():
-        out.append({
-            "species": sp,
-            "explicit": species_specific(sp),
-            "neo4j_uri": neo4j_uri_for(sp),
-            "mork_url": mork_url_for(sp),
-        })
-    return out
+    """The instances the console is configured to explore, driven entirely by the env.
+
+    - Per-species mode (any NEO4J_URI_<SP> / MORK_URL_<SP> set): one entry per species
+      that actually has an endpoint. Unconfigured species are omitted, not shown as
+      empty, so Explore reflects exactly what is configured.
+    - Single-instance mode (only the global NEO4J_URI / MORK_URL): a single "default"
+      entry, not one card per species.
+    - Nothing configured: empty.
+
+    Manage which instances appear purely by editing docker/console.env (add or remove
+    NEO4J_URI_<SP> lines); no code or UI change needed.
+    """
+    if _any_explicit():
+        out = []
+        for sp in species_list():
+            nu, mu = neo4j_uri_for(sp), mork_url_for(sp)
+            if nu or mu:
+                out.append({"species": sp, "explicit": True, "neo4j_uri": nu, "mork_url": mu})
+        return out
+
+    nu = settings.NEO4J_URI or None
+    mu = settings.MORK_URL or None
+    if not (nu or mu):
+        return []
+    return [{"species": "default", "explicit": False, "neo4j_uri": nu, "mork_url": mu}]
 
 
 @lru_cache(maxsize=None)
