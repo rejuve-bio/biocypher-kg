@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import yaml from "js-yaml";
 import { api, type EntrySummary } from "../api/client";
+import { colorForName } from "../palette";
+
+// Per-type color (hashed from the name) for the little dot next to each entry.
+const dotStyle = (name: string) => ({ ["--dot"]: colorForName(name) } as React.CSSProperties);
 
 type Kind = "adapters" | "schema";
 type Data = Record<string, unknown>;
@@ -110,7 +114,7 @@ function TreeItem({ node, selected, onOpen }: { node: TNode; selected: string | 
         {has ? (
           <button className={`gc-caret ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-label="toggle">▸</button>
         ) : (
-          <span className="gc-dot" />
+          <span className="gc-dot" style={dotStyle(node.e.name)} />
         )}
         <button className="gc-tree-name" onClick={() => onOpen(node.e.name)} title={node.e.name} style={node.e.inherited ? { opacity: 0.65 } : undefined}>{node.e.name}</button>
         {node.e.inherited && <span style={BASE_TAG}>base</span>}
@@ -135,7 +139,7 @@ function NavContent({ items, kind, filtering, selected, onOpen }: { items: Entry
     <>
       {items.map((e) => (
         <div key={e.name} className={`gc-tree-row ${selected === e.name ? "active" : ""}`}>
-          <span className="gc-dot" />
+          <span className="gc-dot" style={dotStyle(e.name)} />
           <button className="gc-tree-name" onClick={() => onOpen(e.name)} title={e.name} style={e.inherited ? { opacity: 0.65 } : undefined}>{e.name}</button>
           {e.inherited && <span style={BASE_TAG}>base</span>}
         </div>

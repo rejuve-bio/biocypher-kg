@@ -674,8 +674,8 @@ details summary { cursor: pointer; }
 /* Leaf marker */
 .gc-dot { width: 16px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
 .gc-dot::before {
-  content: ""; width: 4px; height: 4px; border-radius: 50%;
-  background: color-mix(in srgb, var(--muted) 65%, transparent);
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--dot, color-mix(in srgb, var(--muted) 65%, transparent));
 }
 
 .gc-tree-name {
