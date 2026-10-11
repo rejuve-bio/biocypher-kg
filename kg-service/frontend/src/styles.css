@@ -145,14 +145,14 @@ body {
 }
 
 .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
 .field-hint { font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); opacity: 0.85; }
 
 /* ── Controls ────────────────────────────────────────────── */
 select, input[type="text"] {
-  background: var(--panel-2);
+  background: color-mix(in srgb, var(--accent) 6%, var(--panel-2));
   color: var(--text);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 14px;

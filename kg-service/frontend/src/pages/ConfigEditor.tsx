@@ -116,7 +116,7 @@ export default function ConfigEditor() {
             ))}
           </select>
         </label>
-        {sel !== "base" && (
+        {sel !== "base" && kind !== "schema" && (
           <label className="field">
             Dataset
             <select value={dataset} onChange={(e) => setDataset(e.target.value)}>
