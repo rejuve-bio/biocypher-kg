@@ -686,6 +686,10 @@ details summary { cursor: pointer; }
 }
 .gc-tree-name:hover { color: var(--accent); }
 .gc-tree-row.is-parent > .gc-tree-name { font-weight: 700; }
+/* Color the entry text by category: node types green, edge types cyan.
+   Mixed with --text so it stays readable on both light and dark. */
+.gc-nav-col:has(.dot-node) .gc-tree-name { color: color-mix(in srgb, var(--accent) 80%, var(--text)); }
+.gc-nav-col:has(.dot-edge) .gc-tree-name { color: color-mix(in srgb, var(--accent-2) 80%, var(--text)); }
 .gc-tree-count {
   font-size: 10px; font-weight: 700; color: var(--muted);
   background: color-mix(in srgb, var(--panel-2) 85%, transparent);
