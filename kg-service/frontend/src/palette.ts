@@ -31,11 +31,3 @@ export const PALETTE = [
 export function paletteColor(i: number): string {
   return PALETTE[((i % PALETTE.length) + PALETTE.length) % PALETTE.length];
 }
-
-// Stable, diverse color for a named type: hash the name into the palette so each
-// node/edge type reads with its own color in lists, the way it already does in the graph.
-export function colorForName(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (Math.imul(h, 31) + name.charCodeAt(i)) | 0;
-  return paletteColor(Math.abs(h));
-}

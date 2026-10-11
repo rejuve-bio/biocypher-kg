@@ -386,6 +386,9 @@ input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
 .group-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
 .group-dot.node { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
 .group-dot.edge { background: var(--accent-2); box-shadow: 0 0 8px var(--accent-2); }
+/* Differentiate node vs edge adapters by color, same as the config editor. */
+.adapter-group:has(.group-dot.node) .adapter-item .name { color: color-mix(in srgb, var(--accent) 80%, var(--text)); }
+.adapter-group:has(.group-dot.edge) .adapter-item .name { color: color-mix(in srgb, var(--accent-2) 80%, var(--text)); }
 .group-title { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; }
 .group-count { font-size: 12px; color: var(--muted); }
 .group-actions {
@@ -674,9 +677,12 @@ details summary { cursor: pointer; }
 /* Leaf marker */
 .gc-dot { width: 16px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
 .gc-dot::before {
-  content: ""; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--dot, color-mix(in srgb, var(--muted) 65%, transparent));
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: color-mix(in srgb, var(--muted) 60%, transparent);
 }
+/* Entry dots match their category: node green, edge cyan (same as the text). */
+.gc-nav-col:has(.dot-node) .gc-dot::before { background: var(--accent); }
+.gc-nav-col:has(.dot-edge) .gc-dot::before { background: var(--accent-2); }
 
 .gc-tree-name {
   background: none; border: none; color: var(--text); cursor: pointer;
