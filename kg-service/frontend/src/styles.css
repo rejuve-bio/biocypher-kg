@@ -679,6 +679,7 @@ details summary { cursor: pointer; }
   background: none; border: none; color: var(--text); cursor: pointer;
   padding: 4px 4px; font-size: 12.5px; text-align: left; flex: 1; min-width: 0;
   letter-spacing: 0.01em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .gc-tree-name:hover { color: var(--accent); }
 .gc-tree-row.is-parent > .gc-tree-name { font-weight: 700; }

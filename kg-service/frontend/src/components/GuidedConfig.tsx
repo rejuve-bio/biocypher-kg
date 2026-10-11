@@ -9,6 +9,7 @@ type Data = Record<string, unknown>;
 const BASE_TAG: React.CSSProperties = {
   fontSize: 9, letterSpacing: 0.3, opacity: 0.6, marginLeft: 6,
   border: "1px solid currentColor", borderRadius: 3, padding: "0 3px", textTransform: "uppercase",
+  flex: "none", whiteSpace: "nowrap",
 };
 
 // Render one entry as the YAML that will be written to the file (name as the
