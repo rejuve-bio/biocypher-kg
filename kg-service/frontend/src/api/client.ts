@@ -46,6 +46,9 @@ export const api = {
   listFlags: () =>
     json<{ flags: FlagInfo[] }>(fetch(`${BASE}/flags`)).then((d) => d.flags),
 
+  buildLimits: () =>
+    json<{ cpu_count: number; max_workers: number }>(fetch(`${BASE}/build/limits`)),
+
   validate: (req: BuildRequest) =>
     json<ValidationResult>(
       fetch(`${BASE}/builds/validate`, {

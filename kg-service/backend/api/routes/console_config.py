@@ -114,6 +114,15 @@ def get_flags():
     return {"flags": ci.list_flags()}
 
 
+@router.get("/build/limits")
+def get_build_limits():
+    """Host limits for build options, e.g. the CPU count that caps useful workers."""
+    import os
+    cpu = os.cpu_count() or 1
+    # The CLI default is min(8, CPUs); more workers than CPUs only oversubscribe.
+    return {"cpu_count": cpu, "max_workers": min(8, cpu)}
+
+
 @router.get("/mork/summary")
 def mork_summary():
     """Live MORK stats (atomspace, so counts/versions rather than a node/edge schema)."""

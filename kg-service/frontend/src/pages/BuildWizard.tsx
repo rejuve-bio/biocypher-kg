@@ -24,6 +24,7 @@ export default function BuildWizard() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [writerType, setWriterType] = useState<string>("metta");
   const [maxWorkers, setMaxWorkers] = useState<number>(1);
+  const [workerCap, setWorkerCap] = useState<number>(8);
   const [adapterFilter, setAdapterFilter] = useState<string>("");
   const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
   const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
@@ -43,6 +44,8 @@ export default function BuildWizard() {
         if (sp.length) setSelSpecies(sp[0].species);
       })
       .catch((e) => setLoadError(String(e)));
+    // Worker cap is a progressive enhancement; keep the default if the endpoint is absent.
+    api.buildLimits().then((lim) => setWorkerCap(Math.max(1, lim.max_workers))).catch(() => {});
   }, []);
 
   const isAll = selSpecies === "all";
@@ -368,10 +371,11 @@ export default function BuildWizard() {
           <label className="field">
             Workers
             <select value={maxWorkers} onChange={(e) => setMaxWorkers(Number(e.target.value))}>
-              <option value={1}>1 (sequential)</option>
-              <option value={2}>2</option>
-              <option value={4}>4</option>
-              <option value={8}>8 (fastest)</option>
+              {Array.from({ length: workerCap }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n === 1 ? "1 (sequential)" : n === workerCap ? `${n} (max, all cores)` : n}
+                </option>
+              ))}
             </select>
           </label>
         </div>
