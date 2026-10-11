@@ -5,6 +5,12 @@ import { api, type EntrySummary } from "../api/client";
 type Kind = "adapters" | "schema";
 type Data = Record<string, unknown>;
 
+// Marker shown next to entries inherited from the base (primer) schema.
+const BASE_TAG: React.CSSProperties = {
+  fontSize: 9, letterSpacing: 0.3, opacity: 0.6, marginLeft: 6,
+  border: "1px solid currentColor", borderRadius: 3, padding: "0 3px", textTransform: "uppercase",
+};
+
 // Render one entry as the YAML that will be written to the file (name as the
 // top-level key), matching the on-disk block.
 function entryToYaml(name: string, data: Data): string {
@@ -105,7 +111,8 @@ function TreeItem({ node, selected, onOpen }: { node: TNode; selected: string | 
         ) : (
           <span className="gc-dot" />
         )}
-        <button className="gc-tree-name" onClick={() => onOpen(node.e.name)} title={node.e.name}>{node.e.name}</button>
+        <button className="gc-tree-name" onClick={() => onOpen(node.e.name)} title={node.e.name} style={node.e.inherited ? { opacity: 0.65 } : undefined}>{node.e.name}</button>
+        {node.e.inherited && <span style={BASE_TAG}>base</span>}
         {has && <span className="gc-tree-count">{node.children.length}</span>}
       </div>
       {open && has && (
@@ -128,7 +135,8 @@ function NavContent({ items, kind, filtering, selected, onOpen }: { items: Entry
       {items.map((e) => (
         <div key={e.name} className={`gc-tree-row ${selected === e.name ? "active" : ""}`}>
           <span className="gc-dot" />
-          <button className="gc-tree-name" onClick={() => onOpen(e.name)} title={e.name}>{e.name}</button>
+          <button className="gc-tree-name" onClick={() => onOpen(e.name)} title={e.name} style={e.inherited ? { opacity: 0.65 } : undefined}>{e.name}</button>
+          {e.inherited && <span style={BASE_TAG}>base</span>}
         </div>
       ))}
     </>
@@ -137,6 +145,7 @@ function NavContent({ items, kind, filtering, selected, onOpen }: { items: Entry
 
 export default function GuidedConfig({ species, dataset, kind }: { species: string; dataset: string; kind: Kind }) {
   const [entries, setEntries] = useState<EntrySummary[] | null>(null);
+  const [inherited, setInherited] = useState<EntrySummary[]>([]);
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const [data, setData] = useState<Data | null>(null);
@@ -149,8 +158,11 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     setSelected(null);
     setData(null);
     setEntries(null);
+    setInherited([]);
     setMsg(null);
-    api.getConfigEntries(species, dataset, kind).then((r) => setEntries(r.entries)).catch((e) => setMsg({ kind: "err", text: msgOf(e) }));
+    api.getConfigEntries(species, dataset, kind)
+      .then((r) => { setEntries(r.entries); setInherited(r.inherited ?? []); })
+      .catch((e) => setMsg({ kind: "err", text: msgOf(e) }));
   }, [species, dataset, kind]);
 
   useEffect(() => {
@@ -158,13 +170,15 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
   }, [kind, biolink.length]);
 
   const openEntry = (name: string) => {
+    const fromBase = inherited.some((e) => e.name === name);
     setSelected(name);
     setData(null);
     setDirty(false);
     setMsg(null);
     setLoading(true);
     api
-      .getConfigEntry(species, dataset, kind, name)
+      // Inherited types live in the base schema; fetch them from there, read-only.
+      .getConfigEntry(fromBase ? "base" : species, fromBase ? "base" : dataset, kind, name)
       .then((r) => setData(r.data))
       .catch((e) => setMsg({ kind: "err", text: msgOf(e) }))
       .finally(() => setLoading(false));
@@ -192,7 +206,9 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
       } else {
         setMsg({ kind: "ok", text: `Saved ${selected}. Only that entry's lines changed.` });
       }
-      api.getConfigEntries(species, dataset, kind).then((r) => setEntries(r.entries)).catch(() => {});
+      api.getConfigEntries(species, dataset, kind)
+        .then((r) => { setEntries(r.entries); setInherited(r.inherited ?? []); })
+        .catch(() => {});
     } catch (e) {
       setMsg({ kind: "err", text: msgOf(e) });
     }
@@ -229,10 +245,13 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     }
   };
 
+  // Own (editable) entries plus the base/primer entries this species inherits (read-only).
+  const allEntries = useMemo(() => [...(entries ?? []), ...inherited], [entries, inherited]);
   const shown = useMemo(
-    () => (entries ?? []).filter((e) => e.name.toLowerCase().includes(filter.toLowerCase())),
-    [entries, filter],
+    () => allEntries.filter((e) => e.name.toLowerCase().includes(filter.toLowerCase())),
+    [allEntries, filter],
   );
+  const selIsInherited = !!selected && inherited.some((e) => e.name === selected);
   const isEdgeEntry = (e: EntrySummary) =>
     kind === "adapters" ? !!e.edges && !e.nodes : e.represented_as === "edge";
   const nodeGroup = shown.filter((e) => !isEdgeEntry(e));
@@ -275,6 +294,17 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
           <div className="muted" style={{ padding: 20 }}>Select an entry to edit, or add a new one.</div>
         ) : loading || !data ? (
           <div className="muted" style={{ padding: 20 }}>Loading {selected}…</div>
+        ) : selIsInherited ? (
+          <>
+            <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+              <h3 className="mono" style={{ margin: 0 }}>{selected}</h3>
+              <span className="muted" style={{ fontSize: 12 }}>from base schema · read-only</span>
+            </div>
+            <div className="alert" style={{ marginTop: 8 }}>
+              Inherited from the base (shared) schema. To change it, choose “Base (shared)” in the Species selector.
+            </div>
+            <pre className="gc-raw mono" style={{ marginTop: 10 }}>{entryToYaml(selected, data)}</pre>
+          </>
         ) : (
           <>
             <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>

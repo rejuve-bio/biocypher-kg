@@ -217,7 +217,24 @@ def list_schema(species: str, dataset: str) -> dict:
     }
 
 
+# Pseudo-species that targets the shared primer schema (config/primer_schema_config.yaml).
+# Every species inherits this base schema via merge_schemas() at build time; this lets the
+# console edit it in one place and show it (read-only) inside each species' schema view.
+BASE_SPECIES = "base"
+
+
+def _primer_schema_path() -> Path:
+    p = settings.repo_root_path / "config" / "primer_schema_config.yaml"
+    if not p.exists():
+        raise ConfigError(f"base (primer) schema not found: {p}")
+    return p
+
+
 def _config_path(species: str, dataset: str, kind: str) -> Path:
+    if species == BASE_SPECIES:
+        if kind != "schema":
+            raise ConfigError("The base (shared) config is a schema only; it has no adapters.")
+        return _primer_schema_path()
     if kind == "adapters":
         return resolve_adapters_config_path(species, dataset)
     if kind == "schema":
@@ -379,7 +396,12 @@ def _entry_summary(kind: str, name: str, val: dict) -> dict:
 
 
 def list_config_entries(species: str, dataset: str, kind: str) -> dict:
-    """Ordered list of the config's named entries + a light summary of each."""
+    """Ordered list of the config's named entries + a light summary of each.
+
+    For a species schema, also returns ``inherited``: the primer (base) entries that
+    this species does not override. They are shared and read-only here (edit them in
+    the base view), but surfaced so the full type set is visible, not hidden.
+    """
     path = _config_path(species, dataset, kind)
     doc = _load_config_dict(path)
     entries = [
@@ -387,8 +409,18 @@ def list_config_entries(species: str, dataset: str, kind: str) -> dict:
         for name, val in doc.items()
         if isinstance(val, dict)  # skip scalar keys like Title / input_dir
     ]
+    inherited: list[dict] = []
+    if kind == "schema" and species != BASE_SPECIES:
+        own = {e["name"] for e in entries}
+        primer = _load_config_dict(_primer_schema_path())
+        for name, val in primer.items():
+            if isinstance(val, dict) and str(name) not in own:
+                summary = _entry_summary("schema", str(name), val)
+                summary["inherited"] = True
+                inherited.append(summary)
     return {"species": species, "dataset": dataset, "kind": kind,
-            "path": str(path), "count": len(entries), "entries": entries}
+            "path": str(path), "count": len(entries),
+            "entries": entries, "inherited": inherited}
 
 
 def get_config_entry(species: str, dataset: str, kind: str, name: str) -> dict:

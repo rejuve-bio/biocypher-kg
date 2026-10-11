@@ -204,6 +204,8 @@ export interface EntrySummary {
   input_label?: string | null;
   biolink_category?: string | null;
   is_a?: string | string[] | null;
+  // true for entries inherited from the base (primer) schema: shared + read-only here
+  inherited?: boolean;
 }
 
 export interface ConfigEntries {
@@ -213,6 +215,8 @@ export interface ConfigEntries {
   path: string;
   count: number;
   entries: EntrySummary[];
+  // base (primer) schema entries this species does not override (schema views only)
+  inherited?: EntrySummary[];
 }
 
 // Observatory endpoints query the live Neo4j graph (mounted at /api, not /api/console).

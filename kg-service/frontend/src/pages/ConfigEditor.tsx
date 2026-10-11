@@ -48,13 +48,20 @@ export default function ConfigEditor() {
   const datasets = species.find((s) => s.species === sel)?.datasets ?? [];
 
   useEffect(() => {
-    setDataset(datasets.length ? datasets[0].name : "");
+    if (sel === "base") {
+      // The base (shared) primer schema has no datasets and no adapters.
+      setDataset("base");
+      setKind("schema");
+    } else {
+      setDataset(datasets.length ? datasets[0].name : "");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sel, species]);
 
   useEffect(() => {
     if (mode !== "yaml") return;
-    if (!sel || !dataset || !datasets.some((d) => d.name === dataset)) return;
+    if (!sel) return;
+    if (sel !== "base" && (!dataset || !datasets.some((d) => d.name === dataset))) return;
     let alive = true;
     setLoading(true);
     setMsg(null);
@@ -103,23 +110,26 @@ export default function ConfigEditor() {
         <label className="field">
           Species
           <select value={sel} onChange={(e) => setSel(e.target.value)}>
+            <option value="base">Base (shared)</option>
             {species.map((s) => (
-              <option key={s.species}>{s.species}</option>
+              <option key={s.species} value={s.species}>{s.species}</option>
             ))}
           </select>
         </label>
-        <label className="field">
-          Dataset
-          <select value={dataset} onChange={(e) => setDataset(e.target.value)}>
-            {datasets.map((d) => (
-              <option key={d.name}>{d.name}</option>
-            ))}
-          </select>
-        </label>
+        {sel !== "base" && (
+          <label className="field">
+            Dataset
+            <select value={dataset} onChange={(e) => setDataset(e.target.value)}>
+              {datasets.map((d) => (
+                <option key={d.name}>{d.name}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="field">
           File
           <select value={kind} onChange={(e) => setKind(e.target.value as Kind)}>
-            <option value="adapters">adapters config</option>
+            <option value="adapters" disabled={sel === "base"}>adapters config</option>
             <option value="schema">schema config</option>
           </select>
         </label>
