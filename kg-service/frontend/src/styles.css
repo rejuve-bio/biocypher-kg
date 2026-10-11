@@ -375,6 +375,15 @@ input[type="checkbox"]:checked {
   border-color: transparent;
   box-shadow: 0 2px 9px -2px color-mix(in srgb, var(--accent) 65%, transparent);
 }
+/* Adapter checkboxes match their category: node green, edge cyan. */
+.adapter-group:has(.group-dot.node) input[type="checkbox"]:checked {
+  background: var(--accent);
+  box-shadow: 0 2px 9px -2px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+.adapter-group:has(.group-dot.edge) input[type="checkbox"]:checked {
+  background: var(--accent-2);
+  box-shadow: 0 2px 9px -2px color-mix(in srgb, var(--accent-2) 65%, transparent);
+}
 input[type="checkbox"]:checked::before { transform: scale(1); }
 input[type="checkbox"]:focus-visible {
   outline: none;
