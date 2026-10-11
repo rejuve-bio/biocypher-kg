@@ -22,12 +22,12 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #ffffff;
-  --bg-accent-1: rgba(16, 185, 129, 0.10);
-  --bg-accent-2: rgba(6, 182, 212, 0.09);
+  --bg: #e9f1ef;
+  --bg-accent-1: rgba(16, 185, 129, 0.22);
+  --bg-accent-2: rgba(6, 182, 212, 0.18);
   --panel: #ffffff;
-  --panel-2: #f1f6f4;
-  --border: #dde7e3;
+  --panel-2: #eef5f3;
+  --border: #d2e0db;
   --text: #0f172a;
   --muted: #5b6b76;
   --accent: #059669;
@@ -642,6 +642,9 @@ details summary { cursor: pointer; }
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--panel-2) 70%, transparent);
 }
+/* Color-code the columns: node types green, edge types cyan. */
+.gc-nav-head:has(.dot-node) { background: color-mix(in srgb, var(--accent) 11%, var(--panel)); }
+.gc-nav-head:has(.dot-edge) { background: color-mix(in srgb, var(--accent-2) 11%, var(--panel)); }
 .gc-nav-head .muted { margin-left: auto; font-weight: 600; }
 .gc-nav-body { max-height: 600px; overflow: auto; padding: 8px 8px 8px 4px; }
 
