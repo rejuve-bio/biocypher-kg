@@ -45,6 +45,10 @@ class BuildRequest(BaseModel):
     skip_preflight: bool = False
     generate_data_source_schemas: bool = True
 
+    # Parallel adapter worker processes within a species build. 1 = sequential (safe
+    # on low memory); higher is faster but uses more RAM (too many can OOM the build).
+    max_workers: int = 1
+
 
 @dataclasses.dataclass
 class BuildJob:

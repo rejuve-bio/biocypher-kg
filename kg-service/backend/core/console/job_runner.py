@@ -81,10 +81,9 @@ def build_argv(req: BuildRequest, output_dir: str, resume: bool = False) -> list
         argv.append("--skip-preflight")
     if not req.generate_data_source_schemas:
         argv.append("--no-generate-data-source-schemas")
-    # Cap adapter parallelism: the CLI defaults to min(8, CPUs), which OOMs a
-    # memory-limited container (BrokenProcessPool). Default to 1 (sequential, safe);
-    # raise BUILD_MAX_WORKERS in console.env on a host with more Docker memory.
-    argv += ["--max-workers", os.environ.get("BUILD_MAX_WORKERS", "1")]
+    # Adapter parallelism, chosen per build. The CLI defaults to min(8, CPUs), which
+    # OOMs a memory-limited container (BrokenProcessPool); the request defaults to 1.
+    argv += ["--max-workers", str(req.max_workers)]
     # Explicit resume/restart so the CLI never blocks on its interactive prompt.
     argv.append("--resume" if resume else "--restart")
     return argv

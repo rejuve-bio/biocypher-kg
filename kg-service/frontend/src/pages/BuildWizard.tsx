@@ -23,6 +23,7 @@ export default function BuildWizard() {
   const [adaptersError, setAdaptersError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [writerType, setWriterType] = useState<string>("metta");
+  const [maxWorkers, setMaxWorkers] = useState<number>(1);
   const [adapterFilter, setAdapterFilter] = useState<string>("");
   const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
   const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
@@ -149,6 +150,7 @@ export default function BuildWizard() {
       skip_preflight: flagValues.skip_preflight ?? false,
       generate_data_source_schemas:
         flagValues.generate_data_source_schemas ?? true,
+      max_workers: maxWorkers,
     };
   }
 
@@ -363,6 +365,19 @@ export default function BuildWizard() {
               ))}
             </select>
           </label>
+          <label className="field">
+            Workers
+            <select value={maxWorkers} onChange={(e) => setMaxWorkers(Number(e.target.value))}>
+              <option value={1}>1 (sequential)</option>
+              <option value={2}>2</option>
+              <option value={4}>4</option>
+              <option value={8}>8 (fastest)</option>
+            </select>
+          </label>
+        </div>
+        <div className="field-hint" style={{ marginBottom: 12 }}>
+          ⚙️ Workers run adapters in parallel. More is faster but uses more memory;
+          too many can crash the build (out of memory). Use 1 on a low-memory host.
         </div>
         <div className="field-hint" style={{ marginBottom: 12 }}>
           📁 Output location is automatic: a dated folder
