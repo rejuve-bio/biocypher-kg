@@ -1,0 +1,7 @@
+chr	start	end	tf	score	signalValue	pValue	qValue	peak	file_accession	biosample	output_type
+2L	5000	5400	dl	142	8.5	1.2e-14	4.7e-11	200	ENCFF001ABC	Kc167	optimal IDR thresholded peaks
+2L	10000	10500	twi	310	12.3	2.5e-20	1.1e-16	250	ENCFF002DEF	S2	optimal IDR thresholded peaks
+2R	20000	20800	sna	88	5.1	3.4e-08	9.2e-05	400	ENCFF003GHI	Kc167	optimal IDR thresholded peaks
+3L	30000	30600	CG6854	205	9.7	5.6e-16	2.3e-12	300	ENCFF004JKL	S2	optimal IDR thresholded peaks
+3R	40000	40400	Mad	175	7.2	1.8e-12	6.5e-09	150	ENCFF005MNO	Kc167	optimal IDR thresholded peaks
+X	50000	50900	unmapped_tf	120	6.0	4.2e-10	1.5e-07	180	ENCFF006PQR	S2	optimal IDR thresholded peaks
