@@ -17,9 +17,12 @@ try:
     from backend.api.routes import entities  # type: ignore
 except ImportError:
     entities = None
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from neo4j.exceptions import ServiceUnavailable, AuthError
 from apscheduler.schedulers.background import BackgroundScheduler
 from backend.core.graph_info_cache import graph_info_cache
 from backend.core.console.job_registry import registry as build_registry
@@ -94,6 +97,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Observatory endpoints hit Neo4j directly. When it is down or misconfigured the
+# driver raises, which would otherwise surface as a bare 500 "Internal Server
+# Error" that says nothing. Translate those into a clear, actionable message
+# (the Console's own /explore endpoints already report reachability per species).
+@app.exception_handler(ServiceUnavailable)
+async def _neo4j_unavailable(request: Request, exc: ServiceUnavailable):
+    return JSONResponse(
+        status_code=503,
+        content={"detail": f"Could not reach Neo4j at {settings.NEO4J_URI}. Is the database running?"},
+    )
+
+
+@app.exception_handler(AuthError)
+async def _neo4j_auth_failed(request: Request, exc: AuthError):
+    return JSONResponse(
+        status_code=502,
+        content={"detail": f"Neo4j authentication failed at {settings.NEO4J_URI}. Check NEO4J_USER / NEO4J_PASSWORD."},
+    )
 
 if meta is not None:
     app.include_router(meta.router, prefix="/api", tags=["Meta"])
