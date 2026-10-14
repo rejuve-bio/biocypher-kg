@@ -58,7 +58,10 @@ def retry_load(job_id: str):
     job = _job_or_404(job_id)
     if not (job.kind or "").startswith("load-"):
         raise HTTPException(status_code=400, detail="Retry is only for load jobs.")
-    new_job = job_runner.retry_load(job_id)
+    try:
+        new_job = job_runner.retry_load(job_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
     if new_job is None:
         raise HTTPException(status_code=400, detail="Could not retry this load.")
     return {"id": new_job.id, "status": new_job.status.value,
@@ -80,7 +83,11 @@ def load_build(job_id: str, target: str):
     if target == "mork" and writer != "metta":
         raise HTTPException(status_code=400,
                             detail="MORK load needs a build made with writer_type 'metta'.")
-    load_job = job_runner.launch_load(job_id, target)
+    try:
+        load_job = job_runner.launch_load(job_id, target)
+    except ValueError as exc:
+        # e.g. the build's species has no Neo4j/MORK instance configured.
+        raise HTTPException(status_code=400, detail=str(exc))
     if load_job is None:
         raise HTTPException(status_code=404, detail="Source build not found.")
     return {"id": load_job.id, "status": load_job.status.value,

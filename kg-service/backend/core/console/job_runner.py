@@ -411,10 +411,12 @@ def build_load_argv(target: str, output_dir: str, species: str = None) -> list[s
 def _start_load(target: str, output_dir: str, params: dict) -> BuildJob:
     """Create + start a tracked load job for the given target + output dir."""
     job_id = uuid.uuid4().hex
+    # Build (and so validate) the argv before any filesystem/registry work, so an
+    # unconfigured target raises ValueError without leaving a stray job behind.
+    argv = build_load_argv(target, output_dir, params.get("species"))
     job_dir = registry.job_dir(job_id)
     job_dir.mkdir(parents=True, exist_ok=True)
     log_path = str(job_dir / "load.log")
-    argv = build_load_argv(target, output_dir, params.get("species"))
     job = BuildJob(
         id=job_id,
         status=JobStatus.QUEUED,
