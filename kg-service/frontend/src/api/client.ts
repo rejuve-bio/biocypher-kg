@@ -12,11 +12,17 @@ const BASE = "/api/console";
 async function json<T>(p: Promise<Response>): Promise<T> {
   const res = await p;
   if (!res.ok) {
-    let detail: unknown;
+    // Read the body exactly once. A non-JSON error body (proxy/timeout page,
+    // empty 5xx) must not crash the error path with "body stream already read".
+    const body = await res.text().catch(() => "");
+    let detail: unknown = body || `Request failed (${res.status})`;
     try {
-      detail = (await res.json())?.detail;
+      const parsed = JSON.parse(body);
+      if (parsed && typeof parsed === "object" && "detail" in parsed) {
+        detail = (parsed as { detail: unknown }).detail;
+      }
     } catch {
-      detail = await res.text();
+      // Body was not JSON; keep the raw text (or the status fallback).
     }
     throw new ApiError(res.status, detail);
   }
