@@ -39,7 +39,8 @@ class Settings(BaseSettings):
     # Keep at most this many finished build jobs; older ones are pruned.
     MAX_BUILD_HISTORY: int = 50
     # Keep at most this many build OUTPUT folders per (writer, species) under DATA_ROOT.
-    MAX_OUTPUT_BUILDS: int = 5
+    # Builds are large, so keep this small; raise it per deployment via the env file.
+    MAX_OUTPUT_BUILDS: int = 3
     # Executable used to launch the build (`uv run python create_knowledge_graph.py`).
     UV_BIN: str = "uv"
     # When true, mount the built frontend (frontend/dist) as static files at "/".
