@@ -36,8 +36,8 @@ class Settings(BaseSettings):
     DATA_ROOT: str = ""
     # Max concurrent builds; default 1 (two full builds can OOM a single host).
     MAX_CONCURRENT_BUILDS: int = 1
-    # Keep at most this many finished build jobs; older ones are pruned.
-    MAX_BUILD_HISTORY: int = 50
+    # Keep at most this many finished build jobs in History; older ones are pruned.
+    MAX_BUILD_HISTORY: int = 20
     # Keep at most this many build OUTPUT folders per (writer, species) under DATA_ROOT.
     # Builds are large, so keep this small; raise it per deployment via the env file.
     MAX_OUTPUT_BUILDS: int = 3
