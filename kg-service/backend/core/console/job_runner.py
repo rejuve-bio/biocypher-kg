@@ -84,6 +84,9 @@ def build_argv(req: BuildRequest, output_dir: str, resume: bool = False) -> list
     # Adapter parallelism, chosen per build. The CLI defaults to min(8, CPUs), which
     # OOMs a memory-limited container (BrokenProcessPool); the request defaults to 1.
     argv += ["--max-workers", str(req.max_workers)]
+    # Optional per-adapter row cap for small, bounded sample graphs (0 = no limit).
+    if getattr(req, "limit", 0) and req.limit > 0:
+        argv += ["--limit", str(req.limit)]
     # Explicit resume/restart so the CLI never blocks on its interactive prompt.
     argv.append("--resume" if resume else "--restart")
     return argv

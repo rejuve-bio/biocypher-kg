@@ -25,6 +25,8 @@ export default function BuildWizard() {
   const [writerType, setWriterType] = useState<string>("metta");
   const [maxWorkers, setMaxWorkers] = useState<number>(1);
   const [workerCap, setWorkerCap] = useState<number>(8);
+  // 0 = no limit; otherwise cap nodes AND edges written per adapter (small samples).
+  const [limit, setLimit] = useState<number>(0);
   const [adapterFilter, setAdapterFilter] = useState<string>("");
   const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
   const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
@@ -154,6 +156,7 @@ export default function BuildWizard() {
       generate_data_source_schemas:
         flagValues.generate_data_source_schemas ?? true,
       max_workers: maxWorkers,
+      limit,
     };
   }
 
@@ -378,10 +381,24 @@ export default function BuildWizard() {
               ))}
             </select>
           </label>
+          <label className="field">
+            Size limit
+            <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+              <option value={0}>No limit (full)</option>
+              <option value={100}>100 rows / adapter</option>
+              <option value={1000}>1,000 rows / adapter</option>
+              <option value={10000}>10,000 rows / adapter</option>
+              <option value={100000}>100,000 rows / adapter</option>
+            </select>
+          </label>
         </div>
         <div className="field-hint" style={{ marginBottom: 12 }}>
           ⚙️ Workers run adapters in parallel. More is faster but uses more memory;
           too many can crash the build (out of memory). Use 1 on a low-memory host.
+        </div>
+        <div className="field-hint" style={{ marginBottom: 12 }}>
+          ✂️ Size limit caps how many nodes and edges each adapter writes, for a
+          small, bounded sample graph. Leave at “No limit” for a complete build.
         </div>
         <div className="field-hint" style={{ marginBottom: 12 }}>
           📁 Output location is automatic: a dated folder

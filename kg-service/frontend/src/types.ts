@@ -59,6 +59,7 @@ export interface BuildRequest {
   skip_preflight: boolean;
   generate_data_source_schemas: boolean;
   max_workers: number;
+  limit: number;
 }
 
 export interface ValidationResult {

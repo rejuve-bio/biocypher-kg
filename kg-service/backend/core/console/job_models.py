@@ -49,6 +49,10 @@ class BuildRequest(BaseModel):
     # on low memory); higher is faster but uses more RAM (too many can OOM the build).
     max_workers: int = 1
 
+    # Cap nodes AND edges written per adapter (0 = no limit). Produces a small,
+    # bounded graph for quick samples without editing adapter configs.
+    limit: int = 0
+
 
 @dataclasses.dataclass
 class BuildJob:
