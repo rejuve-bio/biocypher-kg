@@ -157,6 +157,9 @@ export const api = {
   biolinkCategories: () =>
     json<{ categories: string[] }>(fetch(`${BASE}/biolink/categories`)).then((d) => d.categories),
 
+  dataSources: (species: string) =>
+    json<DataSources>(fetch(`${BASE}/species/${encodeURIComponent(species)}/data-sources`)),
+
   listOutput: (id: string) =>
     json<{
       output_dir: string;
@@ -199,6 +202,18 @@ export interface ConfigFile {
   path: string;
   content: string;
   warnings?: string[];
+}
+
+export interface DataSource {
+  key: string;
+  name: string;
+  urls: string[];
+}
+
+export interface DataSources {
+  species: string;
+  count: number;
+  sources: DataSource[];
 }
 
 export interface EntrySummary {

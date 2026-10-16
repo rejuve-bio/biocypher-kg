@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, ApiError } from "../api/client";
+import { api, ApiError, type DataSource } from "../api/client";
 import type {
   AdapterInfo,
   BuildRequest,
@@ -27,6 +27,8 @@ export default function BuildWizard() {
   const [workerCap, setWorkerCap] = useState<number>(8);
   // 0 = no limit; otherwise cap nodes AND edges written per adapter (small samples).
   const [limit, setLimit] = useState<number>(0);
+  const [dataSources, setDataSources] = useState<DataSource[] | null>(null);
+  const [sourcesOpen, setSourcesOpen] = useState<boolean>(false);
   const [adapterFilter, setAdapterFilter] = useState<string>("");
   const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
   const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
@@ -112,6 +114,16 @@ export default function BuildWizard() {
         setAdaptersError(String(e));
       });
   }, [selSpecies, selDataset]);
+
+  // Data sources are per-species (not per-dataset); shown as scope/context only.
+  useEffect(() => {
+    setDataSources(null);
+    if (isAll || !selSpecies) return;
+    api
+      .dataSources(selSpecies)
+      .then((d) => setDataSources(d.sources))
+      .catch(() => setDataSources([])); // non-fatal: just hide the panel contents
+  }, [selSpecies, isAll]);
 
   function toggleAdapter(name: string) {
     setSelected((prev) => {
@@ -313,6 +325,31 @@ export default function BuildWizard() {
 
       <div className="card">
         <h2><span className="step">2</span> Adapters {isAll ? "" : `(${nSelected}/${adapters.length})`}</h2>
+        {!isAll && dataSources && dataSources.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            <button type="button" className="linkbtn" onClick={() => setSourcesOpen((o) => !o)}>
+              {sourcesOpen ? "▾" : "▸"} Data sources ({dataSources.length})
+            </button>
+            {sourcesOpen && (
+              <ul className="data-sources" style={{ margin: "6px 0 0", paddingLeft: 18 }}>
+                {dataSources.map((s) => (
+                  <li key={s.key} style={{ marginBottom: 2 }}>
+                    <span>{s.name}</span>
+                    {s.urls[0] && (
+                      <a href={s.urls[0]} target="_blank" rel="noreferrer" style={{ marginLeft: 8, fontSize: 12 }}>
+                        source ↗
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="field-hint" style={{ marginTop: 4 }}>
+              🗃️ The external databases this species draws from. The build pulls only
+              the sources behind the adapters you select above.
+            </div>
+          </div>
+        )}
         {isAll ? (
           <div className="alert warn">
             All-species run: every adapter in each species is included automatically —

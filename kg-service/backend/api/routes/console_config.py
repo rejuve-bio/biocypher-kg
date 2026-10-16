@@ -98,6 +98,15 @@ def delete_config_entry(species: str, dataset: str, kind: str, name: str):
         raise HTTPException(status_code=400, detail=str(exc))
 
 
+@router.get("/species/{species}/data-sources")
+def get_data_sources(species: str):
+    """External data sources (name + url) a species draws from, for scope/context."""
+    try:
+        return ci.list_data_sources(species)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
 @router.get("/biolink/categories")
 def biolink_categories():
     """Distinct biolink categories used across the schema configs (for pickers)."""

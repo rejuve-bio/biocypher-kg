@@ -81,6 +81,41 @@ def load_species_config() -> dict:
     return load(str(path)) or {}
 
 
+def list_data_sources(species: str) -> dict:
+    """List the external data sources a species draws from (name + url).
+
+    Reads ``config/<species>/<species>_data_source_config.yaml``. The ``version``
+    field there is a resolution strategy, not a concrete version, so only name and
+    url(s) are surfaced here; the actual version used appears per build in the
+    graph-info datasets. Gives users scope ("what/where is this data from") before
+    they build.
+    """
+    import yaml
+
+    path = settings.repo_root_path / "config" / species / f"{species}_data_source_config.yaml"
+    if not path.exists():
+        raise ConfigError(f"No data source config for species '{species}' at {path}")
+    try:
+        data = yaml.safe_load(path.read_text()) or {}
+    except Exception as exc:  # noqa: BLE001 - surface a parse error as 404/400
+        raise ConfigError(f"Could not parse {path.name}: {exc}")
+
+    sources: list[dict] = []
+    for key, entry in data.items():
+        if key == "input_dir" or not isinstance(entry, dict):
+            continue
+        url = entry.get("url")
+        if isinstance(url, list):
+            urls = [u for u in url if isinstance(u, str)]
+        elif isinstance(url, str):
+            urls = [url]
+        else:
+            urls = []
+        sources.append({"key": key, "name": entry.get("name") or key, "urls": urls})
+    sources.sort(key=lambda s: str(s["name"]).lower())
+    return {"species": species, "count": len(sources), "sources": sources}
+
+
 def list_species_and_datasets() -> list[dict]:
     """List every species and its available datasets, with config existence flags."""
     cfg = load_species_config()
