@@ -1,5 +1,9 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+# Repo root (contains create_knowledge_graph.py); config.py is 3 levels under it.
+_REPO_ROOT_DEFAULT = str(Path(__file__).resolve().parents[3])
 
 class Settings(BaseSettings):
     # Neo4j
@@ -22,6 +26,35 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     APP_NAME: str = "BioCypher KG Observatory"
     APP_VERSION: str = "0.1.0"
+
+    # ===== Console (build management) =====
+    # Absolute path to the checkout; override via REPO_ROOT env var.
+    REPO_ROOT: str = _REPO_ROOT_DEFAULT
+    # Build artifacts dir; empty => <REPO_ROOT>/kg-service/.builds.
+    BUILDS_DIR: str = ""
+    # Base dir for auto-named build outputs when the output field is blank.
+    DATA_ROOT: str = ""
+    # Max concurrent builds; default 1 (two full builds can OOM a single host).
+    MAX_CONCURRENT_BUILDS: int = 1
+    # Keep at most this many finished build jobs in History; older ones are pruned.
+    MAX_BUILD_HISTORY: int = 20
+    # Keep at most this many build OUTPUT folders per (writer, species) under DATA_ROOT.
+    # Builds are large, so keep this small; raise it per deployment via the env file.
+    MAX_OUTPUT_BUILDS: int = 3
+    # Executable used to launch the build (`uv run python create_knowledge_graph.py`).
+    UV_BIN: str = "uv"
+    # When true, mount the built frontend (frontend/dist) as static files at "/".
+    SERVE_FRONTEND: bool = True
+
+    @property
+    def repo_root_path(self) -> Path:
+        return Path(self.REPO_ROOT).resolve()
+
+    @property
+    def builds_dir(self) -> Path:
+        if self.BUILDS_DIR:
+            return Path(self.BUILDS_DIR).resolve()
+        return self.repo_root_path / "kg-service" / ".builds"
 
     class Config:
         env_file = ".env"

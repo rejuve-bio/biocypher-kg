@@ -14,6 +14,7 @@ except ImportError:
 import copy
 import fnmatch
 import importlib
+import itertools
 import json
 import logging
 import multiprocessing as mp
@@ -524,6 +525,20 @@ def _try_generate_data_source_schemas(
 
 _WORKER_WRITER = None
 
+# Cap on nodes/edges written per adapter; 0 = unlimited. Set once in main() from
+# --limit. Forked workers (the pool uses the "fork" start method) inherit this
+# value from the parent, so both the sequential and parallel paths honour it.
+_ROW_LIMIT = 0
+
+
+def _limit_rows(gen):
+    """Cap a node/edge generator to _ROW_LIMIT rows (0 = unlimited).
+
+    Lets the console produce a small, bounded sample graph from any adapter
+    without editing each adapter: it just stops pulling rows after the cap.
+    """
+    return itertools.islice(gen, _ROW_LIMIT) if _ROW_LIMIT and _ROW_LIMIT > 0 else gen
+
 
 def _worker_init(writer_kwargs):
     """Pool initializer: construct this worker process's single writer."""
@@ -575,7 +590,7 @@ def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_
     adapter_nodes = adapter_edges = 0
 
     if write_nodes:
-        nodes = adapter.get_nodes()
+        nodes = _limit_rows(adapter.get_nodes())
         if not include_taxon_id:
             nodes = _strip_taxon_id(nodes, is_edge=False)
         freq_nodes, props = writer.write_nodes(nodes, path_prefix=outdir)
@@ -585,7 +600,7 @@ def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_
             adapter_nodes = sum(freq_nodes.values())
 
     if write_edges:
-        edges = adapter.get_edges()
+        edges = _limit_rows(adapter.get_edges())
         if not include_taxon_id:
             edges = _strip_taxon_id(edges, is_edge=True)
         freq_edges = writer.write_edges(edges, path_prefix=outdir)
@@ -1071,7 +1086,7 @@ def process_adapters(
 
         try:
             if write_nodes:
-                nodes = adapter.get_nodes()
+                nodes = _limit_rows(adapter.get_nodes())
                 if not include_taxon_id:
                     nodes = _strip_taxon_id(nodes, is_edge=False)
                 freq, props = writer.write_nodes(nodes, path_prefix=outdir)
@@ -1088,7 +1103,7 @@ def process_adapters(
                     nodes_props[node_label] = nodes_props[node_label].union(node_props)
 
             if write_edges:
-                edges = adapter.get_edges()
+                edges = _limit_rows(adapter.get_edges())
                 if not include_taxon_id:
                     edges = _strip_taxon_id(edges, is_edge=True)
                 freq = writer.write_edges(edges, path_prefix=outdir)
@@ -1491,6 +1506,14 @@ def main(
             "The networkx writer always runs sequentially."
         ),
     ),
+    limit: int = typer.Option(
+        0,
+        "--limit",
+        help=(
+            "Cap the number of nodes AND edges written per adapter (0 = no limit). "
+            "Produces a small, bounded graph for quick samples; applies to every adapter."
+        ),
+    ),
 ):
     """
     Main function. Call individual adapters to download and process data. Build
@@ -1512,6 +1535,13 @@ def main(
             f"Pre-flight check passed — all {len(adapters_dict)} adapter(s) have valid file paths."
         )
         raise typer.Exit(0)
+
+    # Row cap per adapter (0 = unlimited). Stored in a module global so both the
+    # sequential loop and the forked worker processes honour it (see _limit_rows).
+    global _ROW_LIMIT
+    _ROW_LIMIT = max(0, limit)
+    if _ROW_LIMIT:
+        logger.info(f"Row limit: capping each adapter to {_ROW_LIMIT:,} nodes and {_ROW_LIMIT:,} edges.")
 
     manual_mode = all([adapters_config, schema_config])
     species_mode = species is not None

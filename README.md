@@ -14,6 +14,17 @@ A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher
 
 Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` do not yet exist.
 
+## Web Console
+
+A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK — an alternative to the CLI. It runs the whole stack (Console + Neo4j, plus optional MORK) with a single Docker command.
+
+```bash
+cp docker/console.env.example docker/console.env   # set DATA_ROOT + NEO4J_PASSWORD
+./docker/up.sh                                      # then open http://localhost:9000/console/
+```
+
+`up.sh` connects to an existing Neo4j/MORK on the configured port, or starts a bundled one if none is found. Build output lands under `DATA_ROOT` and build history persists across rebuilds. Options — ports, remote `NEO4J_HOST`/`MORK_HOST`, memory — are documented in [`docker/console.env.example`](docker/console.env.example).
+
 ## Prerequisites
 
 - Python 3.10+  
