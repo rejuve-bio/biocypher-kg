@@ -1431,3 +1431,15 @@ alliance_gene_disease_is_marker_for:
   outdir: disease
   nodes: False
   edges: True
+
+abc_dmel_activity_by_contact:
+  adapter:
+    module: biocypher_metta.adapters.dmel.abc_dmel_adapter
+    cls: ABCDmelAdapter
+    args:
+      filepath: /mnt/hdd_1/biocypher-kg/input/dmel/abc/abc_dmel_variants.csv.gz
+      label: activity_by_contact
+      taxon_id: 7227
+  outdir: abc
+  nodes: False
+  edges: True

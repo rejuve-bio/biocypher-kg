@@ -1463,3 +1463,15 @@ reactome_positive_role_protein_to_reaction_or_pathway:
   outdir: reactome
   nodes: False
   edges: True
+
+abc_dmel_activity_by_contact:
+  adapter:
+    module: biocypher_metta.adapters.dmel.abc_dmel_adapter
+    cls: ABCDmelAdapter
+    args:
+      filepath: abc/abc_dmel_variants_sample.csv.gz
+      label: activity_by_contact
+      taxon_id: 7227
+  outdir: abc
+  nodes: False
+  edges: True
