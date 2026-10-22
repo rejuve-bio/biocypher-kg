@@ -1443,3 +1443,21 @@ abc_dmel_activity_by_contact:
   outdir: abc
   nodes: False
   edges: True
+
+motif_diff_tf_snp:                  # snp -> motif (TF gene) edges, MotifDiff output merged into one file
+  adapter:
+    module: biocypher_metta.adapters.motif_diff_adapter
+    cls: MotifDiffAdapter
+    args:
+      filepath: motif_diff/_mono_probNorm_average.diff
+      motif_map_path: jaspar/dmel_motif_map_v4.tsv
+      label: tf_snp
+      taxon_id: 7227
+      threshold: 0.001
+      variant_prefix: ""            # snp ids are 'RS<digits>' in the dmel KG (no DBSNP: prefix)
+      uppercase_variant: true
+      gene_prefix: ""               # gene ids are bare 'FBgn...'
+  outdir: MotifDiff
+  nodes: False
+  edges: True
+
