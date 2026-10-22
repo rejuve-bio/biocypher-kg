@@ -44,6 +44,13 @@ epd:
   local_files:
     epd: {pattern: "epd/Dm_EPDnew.bed.gz", stable_name: "epd/Dm_EPDnew.bed.gz"}
 
+eva:
+  name: EVA (European Variation Archive)
+  extract: false
+  url: https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9/by_species/drosophila_melanogaster/Release_6_plus_ISO1_MT/GCA_000001215.4_current_ids.vcf.gz
+  local_files:
+    eva_vcf: {pattern: "eva/7227_GCA_000001215.4_current_ids.vcf.gz", stable_name: "eva/7227_GCA_000001215.4_current_ids.vcf.gz"}
+
 flybase:
   name: Flybase 2026_01
   # Replaces the per-adapter FlybasePrecomputedTable.extract_date_string() logic:
