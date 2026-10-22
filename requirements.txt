@@ -184,7 +184,7 @@ parsley==1.3
     # via
     #   biocypher-metta (pyproject.toml)
     #   hgvs
-parso==0.8.5
+parso==0.8.7
     # via
     #   biocypher-metta (pyproject.toml)
     #   jedi

@@ -56,7 +56,7 @@ dependencies = [
     "packaging==25.0",
     "pandas==2.3.3",
     "parsley==1.3",
-    "parso==0.8.5",
+    "parso==0.8.7",
     "pexpect==4.9.0",
     "platformdirs==4.5.0",
     "pluggy==1.6.0",
