@@ -8,11 +8,17 @@ def prepare_config(changed_adapters, config_changed, changed_config_items):
     test_config = {}
     changed_adapter_list = changed_adapters.split(',') if changed_adapters else []
     changed_config_list = changed_config_items.split(',') if changed_config_items else []
-    
+
+    # Preserve non-adapter top-level keys (e.g. input_dir) so that
+    # relative filepaths inside adapter args resolve correctly.
+    for key, value in full_config.items():
+        if not isinstance(value, dict) or 'adapter' not in value:
+            test_config[key] = value
+
     if changed_adapter_list:
         for key, value in full_config.items():
             if not isinstance(value, dict) or 'adapter' not in value:
-                continue  # non-adapter top-level key, e.g. input_dir
+                continue
             adapter_name = value['adapter']['module'].split('.')[-1].replace('_adapter', '')
             if adapter_name in changed_adapter_list:
                 test_config[key] = value
