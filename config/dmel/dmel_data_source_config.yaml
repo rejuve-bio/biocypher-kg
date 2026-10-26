@@ -182,7 +182,7 @@ fca2:  # FlyCellAtlas2 -- not download-managed (static snapshot, see review_2026
 encode_modern_tfbs:
   name: ENCODE modERN TFBS
   description: Transcription factor binding sites from ENCODE modERN project for D. melanogaster
-  url: https://www.encodeproject.org/
+  source_url: https://www.encodeproject.org/
   local_files:
     modern_dmel_tfbs: {pattern: "encode/modern_dmel_tfbs.tsv", stable_name: "encode/modern_dmel_tfbs.tsv"}
     modern_tf_fbgn_map: {pattern: "encode/modern_tf_fbgn_map.tsv", stable_name: "encode/modern_tf_fbgn_map.tsv"}

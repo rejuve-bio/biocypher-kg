@@ -1494,8 +1494,8 @@ tfbs_transcription_factor_binding_site:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: encode/modern_dmel_tfbs.tsv
-      tf_map_path: encode/modern_tf_fbgn_map.tsv
+      filepath: tfbs/sample_modern_dmel_tfbs.tsv
+      tf_map_path: tfbs/sample_modern_tf_fbgn_map.tsv
       input_format: modern_tsv
       assembly: dm6
       gene_prefix: FlyBase
@@ -1513,8 +1513,8 @@ tfbs_gene_association:
     module: biocypher_metta.adapters.tfbs_adapter
     cls: TfbsAdapter
     args:
-      filepath: encode/modern_dmel_tfbs.tsv
-      tf_map_path: encode/modern_tf_fbgn_map.tsv
+      filepath: tfbs/sample_modern_dmel_tfbs.tsv
+      tf_map_path: tfbs/sample_modern_tf_fbgn_map.tsv
       input_format: modern_tsv
       assembly: dm6
       gene_prefix: FlyBase
