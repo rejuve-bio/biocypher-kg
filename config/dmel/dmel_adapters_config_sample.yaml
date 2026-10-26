@@ -1488,3 +1488,41 @@ reactome_positive_role_protein_to_reaction_or_pathway:
   outdir: reactome
   nodes: False
   edges: True
+
+tfbs_transcription_factor_binding_site:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: tfbs/sample_modern_dmel_tfbs.tsv
+      tf_map_path: tfbs/sample_modern_tf_fbgn_map.tsv
+      input_format: modern_tsv
+      assembly: dm6
+      gene_prefix: FlyBase
+      score_transform: raw
+      label: tfbs
+      taxon_id: 7227
+      source: ENCODE modERN
+      source_url: https://www.encodeproject.org/
+  outdir: tfbs
+  nodes: True
+  edges: False
+
+tfbs_gene_association:
+  adapter:
+    module: biocypher_metta.adapters.tfbs_adapter
+    cls: TfbsAdapter
+    args:
+      filepath: tfbs/sample_modern_dmel_tfbs.tsv
+      tf_map_path: tfbs/sample_modern_tf_fbgn_map.tsv
+      input_format: modern_tsv
+      assembly: dm6
+      gene_prefix: FlyBase
+      score_transform: raw
+      label: gene_tfbs
+      taxon_id: 7227
+      source: ENCODE modERN
+      source_url: https://www.encodeproject.org/
+  outdir: tfbs
+  nodes: False
+  edges: True
