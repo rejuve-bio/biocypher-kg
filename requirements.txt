@@ -38,7 +38,7 @@ charset-normalizer==3.4.4
     # via
     #   biocypher-metta (pyproject.toml)
     #   requests
-click==8.3.0
+click==8.5.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   typer
