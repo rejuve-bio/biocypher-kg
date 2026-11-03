@@ -187,19 +187,17 @@ The `Makefile` wraps both modes with interactive prompts — `make run` is the r
 
 ### Neo4j
 
-Production graph database. Deployed via Docker Compose at [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml). Configured via [`docker/neo4j.env.example`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/neo4j.env.example) (copy to `docker/neo4j.env`). Default ports: HTTP `7674`, Bolt `7887`.
+Graph database for the `neo4j` writer's output. Deployed via Docker Compose at [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml), configured via `docker/neo4j.env`. Default ports: HTTP `7674`, Bolt `7887`.
 
-Loading is handled by [`kg-service/neo4j_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/neo4j_loader.py) (`Neo4jLoader` class), which supports incremental updates with surgical deletion of changed datasets.
+Two loaders: [`scripts/neo4j_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/scripts/neo4j_loader.py) (`make neo4j-load-direct`, loads everything) and [`kg-service/neo4j_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/neo4j_loader.py) (`make neo4j-load`, versioned, with surgical deletion of changed datasets). See [Deployment Guide § Neo4j](../operations/deployment.md#neo4j).
 
 ### MORK server
 
-Rust-based OpenCog Hyperon MeTTa query engine. Deployed via [`biocypher-mork/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher-mork/docker-compose.yml). Exposes port **8027** by default.
-
-> **Note:** The kg-service `Settings` model in [`kg-service/backend/core/config.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/core/config.py) defaults `MORK_URL` to `http://localhost:8432`, which does not match the MORK container's port 8027. You must explicitly set `MORK_URL=http://localhost:8027` when running both services together. See [deployment.md](../operations/deployment.md).
+Rust MeTTa graph server for the `metta` writer's output. Deployed via [`biocypher-mork/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher-mork/docker-compose.yml). Exposes port **8027** by default; kg-service must be given `MORK_URL=http://localhost:8027` (its default is `8432`). See [Deployment Guide § MORK](../operations/deployment.md#mork).
 
 ### kg-service
 
-FastAPI application ([`kg-service/backend/api/main.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py)) exposing REST endpoints for graph metadata, version history, and summary statistics. A background scheduler refreshes `graph_info.json` every 72 hours. See [endpoints.md](../api/endpoints.md).
+FastAPI application ([`kg-service/backend/api/main.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py)) exposing REST endpoints for graph metadata, version history, and summary statistics. A background scheduler refreshes `graph_info.json` every 72 hours. It does not start on `main` yet; see [Deployment Guide § kg-service](../operations/deployment.md#kg-service) and [endpoints.md](../api/endpoints.md).
 
 ---
 
@@ -214,4 +212,4 @@ FastAPI application ([`kg-service/backend/api/main.py`](https://github.com/rejuv
 | Node and edge type reference | [data-model.md](../knowledge-graph/data-model.md) |
 | Data source catalogue | [adapter-catalog.md](../knowledge-graph/adapter-catalog.md) |
 | REST API reference | [endpoints.md](../api/endpoints.md) |
-| Docker deployment | [deployment.md](../operations/deployment.md) |
+| Deploying Neo4j, MORK, kg-service and external dependencies | [deployment.md](../operations/deployment.md) |
