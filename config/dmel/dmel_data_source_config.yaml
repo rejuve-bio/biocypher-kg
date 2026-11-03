@@ -178,3 +178,11 @@ fca2:  # FlyCellAtlas2 -- not download-managed (static snapshot, see review_2026
     fca2_fbgn_mir_gene: {pattern: "fca2/fca2_fbgn_mir_gene_output.tsv.gz", stable_name: "fca2/fca2_fbgn_mir_gene_output.tsv.gz"}
     fca2_fbgn_mir_transcript: {pattern: "fca2/fca2_fbgn_mir_transcript_output.tsv.gz", stable_name: "fca2/fca2_fbgn_mir_transcript_output.tsv.gz"}
     fca2_fbgn_transcript_gene: {pattern: "fca2/fca2_fbgn_transcriptGene_output.tsv.gz", stable_name: "fca2/fca2_fbgn_transcriptGene_output.tsv.gz"}
+
+encode_modern_tfbs:
+  name: ENCODE modERN TFBS
+  description: Transcription factor binding sites from ENCODE modERN project for D. melanogaster
+  source_url: https://www.encodeproject.org/
+  local_files:
+    modern_dmel_tfbs: {pattern: "encode/modern_dmel_tfbs.tsv", stable_name: "encode/modern_dmel_tfbs.tsv"}
+    modern_tf_fbgn_map: {pattern: "encode/modern_tf_fbgn_map.tsv", stable_name: "encode/modern_tf_fbgn_map.tsv"}
