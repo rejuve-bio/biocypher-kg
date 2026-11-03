@@ -96,7 +96,7 @@ dependencies = [
     "tqdm==4.70.1",
     "traitlets==5.16.1",
     "treelib==1.6.4",
-    "typer==0.20.0",
+    "typer==0.27.3",
     "typing-extensions==4.15.0",
     "tzdata==2026.6",
     "urllib3==2.6.3",
