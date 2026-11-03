@@ -72,40 +72,26 @@ curl "http://localhost:8000/api/graph-info?force_refresh=true"
 ```
 ❌ Auto-refresh failed: <error>
 ```
-There is no alerting configured for scheduler failures — monitor container logs: `docker logs <kg-service-container>`.
+There is no alerting configured for scheduler failures. kg-service runs as a host process (not a container), so watch the output of the `uvicorn` process.
 
 ---
 
-## Neo4j health
+## Service health
+
+Each service's full check is in the Deployment Guide: [Neo4j](deployment.md#verify-the-database), [MORK](deployment.md#4-verify-the-server), [kg-service](deployment.md#4-verify-the-api).
 
 ```bash
-# Browser UI
-open http://localhost:7674
+# Neo4j: container state and resource use (heap, page cache)
+make neo4j-status
+docker stats biocypher_neo4j-neo4j-1
 
-# API health check
-curl http://localhost:7674/db/data/  # Neo4j 5.x: use /db/neo4j/cluster/available
-
-# Via kg-service
-curl http://localhost:8000/health
-# {"status": "healthy", "neo4j": "connected"}
-```
-
-**Memory monitoring:** Watch Neo4j heap via container stats:
-```bash
-docker stats neo4j_bio_atomspace
-```
-
----
-
-## MORK health
-
-```bash
-# Health endpoint
+# MORK: container health check and status endpoint
+docker ps --filter name=mork-biocypher --format "{{.Status}}"   # "Up ... (healthy)"
 curl http://localhost:8027/status/-
 
-# Container health
-docker ps --filter name=mork-biocypher --format "{{.Status}}"
-# Should show: Up X hours (healthy)
+# kg-service (also reports Neo4j connectivity)
+curl http://localhost:8000/health
+# {"status": "healthy", "neo4j": "connected"}
 ```
 
 ---

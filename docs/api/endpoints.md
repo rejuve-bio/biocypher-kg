@@ -239,7 +239,7 @@ Get MORK statistics (calls `settings.MORK_SUMMARY_SCRIPT`).
 
 **Source:** [`kg-service/backend/api/routes/databases.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/databases.py)
 
-Note: `databases.py` imports `from backend.core.mork_client import MORKClient`. The module exists at `kg-service/backend/core/mork_client.py`, but the `GET /api/databases/mork/status` endpoint may still fail at runtime if MORK is unreachable due to the port mismatch (see [troubleshooting.md](../operations/troubleshooting.md)).
+> **Not currently served.** `main.py` never registers this router, so its routes return 404. Even once registered, `MORKClient` imports a `mork` Python package that isn't installed, so MORK would always report offline. See the Deployment Guide's [kg-service issues](../operations/deployment.md#kg-service-issues).
 
 ### `GET /api/databases`
 
@@ -258,7 +258,7 @@ Get connection status for a database.
 }
 ```
 
-> **Note:** The MORK status endpoint will return a connection error if MORK is not reachable. The most common cause is the port mismatch between the MORK container (`8027`) and the kg-service default (`8432`). Set `MORK_URL=http://localhost:8027` in `kg-service/.env` to resolve.
+> **Note:** For MORK, kg-service also needs `MORK_URL=http://localhost:8027`; its default is `8432`.
 
 ---
 
