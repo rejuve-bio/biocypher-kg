@@ -262,7 +262,7 @@ pytest==9.2.0
     #   pytest-cov
 pytest-cov==5.0.0
     # via biocypher-metta (pyproject.toml)
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   pandas
