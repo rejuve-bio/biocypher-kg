@@ -85,14 +85,10 @@ def test_dbsnp_and_data_folder_fields_check_the_choice(shared, monkeypatch):
     assert folders.locate("dbsnp", common, 1, kind="dbsnp")["matches"] == [str(shared["cache"])]
     with pytest.raises(folders.FolderError, match="No dbSNP cache here"):
         folders.locate("hsa", HSA, 2, kind="dbsnp")
+    with pytest.raises(folders.FolderError, match="hsa adapters read"):
+        folders.locate("hsa", HSA, 2, kind="source", species="hsa")
     monkeypatch.setattr(folders, "_writable", lambda p: str(p).startswith(str(shared["data"])))
     with pytest.raises(folders.FolderError, match="can't save in"):
         folders.locate("hsa", HSA, 2, kind="writable")
     input_dir = [{"name": "input", "dir": True}]
     assert folders.locate("kg-data", input_dir, 1, kind="writable")["matches"] == [str(shared["data"])]
-
-
-def test_a_species_field_only_takes_that_species_data(shared):
-    """Chosen in Finder for hsa: a folder without hsa's source files is refused."""
-    with pytest.raises(folders.FolderError, match="none of the files or folders the hsa adapters read"):
-        folders.locate("hsa", HSA, 2, kind="source", species="hsa")

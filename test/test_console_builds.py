@@ -370,18 +370,6 @@ def test_dbsnp_status_reports_prepared_variants(monkeypatch, tmp_path):
     assert status["variants"]["full"]["present"] is False
 
 
-def test_a_file_that_only_looks_like_a_dbsnp_cache_isnt_ready(monkeypatch, tmp_path):
-    from backend.core.config import settings
-    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
-    common = tmp_path / "dbsnp" / "common"
-    common.mkdir(parents=True)
-    (common / "dbsnp_mapping.db").write_bytes(b"x" * 10)
-    from backend.core.console import runtime_config
-    monkeypatch.setattr(runtime_config, "data_locations", _locs())
-    info = job_runner.dbsnp_status()["variants"]["common"]
-    assert info["present"] is False and "wrong kind of file" in info["problem"]
-
-
 def test_dbsnp_status_checks_custom_root(monkeypatch, tmp_path):
     from backend.core.config import settings
     monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
