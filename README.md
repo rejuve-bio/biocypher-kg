@@ -142,6 +142,8 @@ make download-direct # Download data sources with explicit parameters
 make test            # Run tests
 make clean           # Clean temporary files
 make distclean       # Full clean
+make neo4j-up        # Start Neo4j (also neo4j-reset/-down/-logs/-status/-load/-load-direct;
+                     # see docs/operations/deployment.md)
 ```
 
 ### Parallel Adapter Execution
@@ -321,13 +323,13 @@ The project template is structured as follows:
 │
 │ # Docker setup
 │
-├── Dockerfile
 ├── docker
 │   ├── biocypher_entrypoint_patch.sh
 │   ├── create_table.sh
 │   ├── import.sh
-│   ├── neo4j.env                  # Neo4j config (image, ports, paths, memory)
+│   ├── neo4j.env.example          # Template for docker/neo4j.env (image, ports, paths, memory)
 │   └── docker-compose.neo4j.yml   # Parameterized Neo4j compose file
+├── biocypher-mork/                # MORK server image, loader and persistence
 ├── docker-compose.yml
 ├── docker-variables.env
 │
@@ -383,97 +385,11 @@ The project supports multiple output formats for the knowledge graph:
 2. **Prolog Writer (`prolog_writer.py`)**: Generates knowledge graph data in the Prolog format.
 3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
 
-### Neo4j Deployment & Loading
+### Deployment (Neo4j, MORK, kg-service)
 
-#### 1. Configure `docker/neo4j.env`
-
-Copy the example file and fill in your values:
-
-```bash
-cp docker/neo4j.env.example docker/neo4j.env
-```
-
-Key settings:
-
-```ini
-NEO4J_OUTPUT_DIR=/path/to/output/<species>   # e.g. /mnt/hdd_1/biocypher-kg/output/cel
-NEO4J_AUTH=neo4j/your_password
-NEO4J_BOLT_PORT=7887
-NEO4J_HTTP_PORT=7674
-```
-
-> `NEO4J_OUTPUT_DIR` is mounted read-only as `/import` inside the container.
-> Cypher files use `file:///subdir/file.csv`, which Neo4j resolves against `/import`.
-> APOC is pre-configured to allow this (`apoc.import.file.use_neo4j_config=false`).
-
-#### 2. Start the container
-
-```bash
-make neo4j-up                                   # start with fresh volumes
-make neo4j-up NEO4J_ENV_FILE=docker/my.env     # use a custom env file
-```
-
-#### 3. Load data
-
-```bash
-# First run or after regenerating output — loads everything
-make neo4j-load-direct
-
-# Subsequent runs — only reloads files that changed (hash-based)
-make neo4j-load
-```
-
-#### 4. Other lifecycle commands
-
-```bash
-make neo4j-status    # show container status
-make neo4j-logs      # stream container logs
-make neo4j-down      # stop and remove container
-```
-
-#### Running the loader directly
-
-```bash
-# Direct load (no versioning) — using an env file
-uv run python scripts/neo4j_loader.py --env-file docker/neo4j.env
-
-# Explicit args
-uv run python scripts/neo4j_loader.py \
-  --output-dir /path/to/output/cel \
-  --uri bolt://localhost:7887 \
-  --username neo4j \
-  --password <password>
-```
-
-#### Loader options
-
-| Flag | Env var | Description |
-|---|---|---|
-| `--env-file` | — | Load all settings from a `neo4j.env` file |
-| `--output-dir` | `NEO4J_OUTPUT_DIR` | Directory with generated CSV + Cypher files |
-| `--uri` | `NEO4J_URI` | Neo4j bolt URI (default: `bolt://localhost:7687`) |
-| `--username` | `NEO4J_USERNAME` | Neo4j username (default: `neo4j`) |
-| `--password` | `NEO4J_PASSWORD` | Neo4j password |
-
-#### Manual `docker run` (without docker compose)
-
-If you prefer to start the container manually instead of `make neo4j-up`, you **must** mount the output directory as `/var/lib/neo4j/import` and enable APOC file access:
-
-```bash
-docker run -d \
-  -p <http_port>:7474 \
-  -p <bolt_port>:7687 \
-  --name neo4j_bio \
-  -v /path/to/output/<species>:/var/lib/neo4j/import:ro \
-  -e NEO4J_AUTH=neo4j/<password> \
-  -e NEO4JLABS_PLUGINS='["apoc"]' \
-  -e NEO4J_apoc_import_file_enabled=true \
-  -e NEO4J_apoc_import_file_use__neo4j__config=false \
-  -e NEO4J_dbms_security_procedures_unrestricted="apoc.*" \
-  neo4j:5.21
-```
-
-Without the `/var/lib/neo4j/import` mount, `LOAD CSV` calls in the Cypher files will fail with `NoSuchFileException`.
+Loading a build into Neo4j or the MORK server, and running kg-service, are covered in one place:
+**[docs/operations/deployment.md](docs/operations/deployment.md)**. It lists every backend and external service,
+their ports and settings, and the known issues on `main`.
 
 ## ⬇ Downloading data
 The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.

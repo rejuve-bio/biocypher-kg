@@ -30,7 +30,7 @@ Python 3.10 or higher (specified in `pyproject.toml` and `.python-version`).
 
 **Do I need all 106 dependencies installed?**
 
-`uv sync` installs the full dependency set. Some dependencies are only needed for specific adapters (e.g., `pysam` for genomic file handling, `psycopg2` for Reactome's PostgreSQL database). There is no optional dependency grouping.
+`uv sync` installs the full dependency set. Some dependencies are only needed for specific adapters (e.g., `pysam` for genomic file handling, `psycopg2` for the FlyBase Chado PostgreSQL database used by the dmel and Reactome edge adapters). There is no optional dependency grouping. kg-service's dependencies are separate; see [Deployment Guide § kg-service](../operations/deployment.md#kg-service).
 
 ---
 
@@ -114,6 +114,10 @@ See the CURIE prefix column in [data-model.md](../knowledge-graph/data-model.md#
 
 ## Neo4j and kg-service
 
+**How do I deploy Neo4j, MORK or kg-service?**
+
+Follow the [Deployment Guide](../operations/deployment.md). It covers every service, its ports and settings, and the known issues on `main`.
+
 **Why can't I connect to the kg-service?**
 
 Check if the service started: `curl http://localhost:8000/health`. If the service won't start at all, see the known import error in [troubleshooting.md](../operations/troubleshooting.md#kg-service-startup-failure).
@@ -146,7 +150,5 @@ uv run pytest test/test.py --adapter-test-mode full
 
 **Where are known issues tracked?**
 
-GitHub Issues at https://github.com/rejuve-bio/biocypher-kg/issues. Key open issues to be aware of:
-- `meta.py` and `entities.py` missing from `kg-service/backend/api/routes/` (service won't start)
-- MORK port mismatch: container exposes `8027`, kg-service defaults to `8432` — set `MORK_URL=http://localhost:8027` in `kg-service/.env`
+GitHub Issues at https://github.com/rejuve-bio/biocypher-kg/issues. Deployment-related issues (kg-service, MORK, Neo4j) are listed in the Deployment Guide's [Known issues](../operations/deployment.md#known-issues). Others to be aware of:
 - Species `rno` declared in `species_config.yaml` but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing

@@ -250,8 +250,16 @@ class BaseMappingProcessor(ABC):
 
     def save_mapping(self):
         import gzip
-        with gzip.open(self.mapping_file, 'wb') as f:
-            pickle.dump(self.mapping, f, protocol=pickle.HIGHEST_PROTOCOL)
+        # Write to a temp file and atomically swap it in, so lock-free readers on the
+        # fast path never see a partially written (truncated) gzip.
+        tmp_file = self.mapping_file.with_name(f"{self.mapping_file.name}.{os.getpid()}.tmp")
+        try:
+            with gzip.open(tmp_file, 'wb') as f:
+                pickle.dump(self.mapping, f, protocol=pickle.HIGHEST_PROTOCOL)
+            os.replace(tmp_file, self.mapping_file)
+        finally:
+            if tmp_file.exists():
+                tmp_file.unlink()
         logger.info(f"{self.name}: Saved compressed mapping to {self.mapping_file}")
 
     def load_mapping(self) -> Dict[str, Any]:

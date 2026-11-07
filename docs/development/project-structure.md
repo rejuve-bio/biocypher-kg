@@ -14,14 +14,13 @@ biocypher-kg/
 ├── requirements.txt            # Compiled transitive dependency list (uv pip compile output)
 ├── uv.lock                     # Exact lock file for reproducible installs (uv)
 ├── Makefile                    # Primary user interface: make run, make test, make neo4j-up ...
-├── docker-compose.yml          # 4-service compose: build, import, deploy, mork
-├── docker-variables.env        # BC_TABLE_NAME, NEO4J_AUTH, FILL_DB_ON_STARTUP
+├── docker-compose.yml          # mork service; legacy build/import/deploy services (broken, see deployment.md)
+├── docker-variables.env        # Legacy BioCypher template vars; not loaded by any compose file
 ├── .env.example                # Template for secrets — copy to .env and fill in
 ├── .python-version             # Pinned Python version for pyenv / uv
-├── README.md                   # Quickstart, make commands, Neo4j deployment
+├── README.md                   # Quickstart, make commands, data download, dbSNP cache
 ├── CONTRIBUTING.md             # Adapter development guide, schema workflow, PR checklist
-├── AGENTS.md                   # Documentation architecture instructions for AI agents
-└── MORK_README.md              # MORK/Hyperon integration overview
+└── AGENTS.md                   # Documentation architecture instructions for AI agents
 ```
 
 ---
@@ -215,17 +214,19 @@ kg-service/
 
 ```
 biocypher-mork/
-├── Dockerfile                  # Multi-stage Rust build (rustlang/rust:nightly base)
-├── docker-compose.yml          # Exposes port 8027 (HOST_PORT env var)
-├── entrypoint.sh
-├── client.py                   # Python MeTTa query client
+├── Dockerfile                  # Builds PathMap + MORK server (rustlang/rust:nightly base)
+├── docker-compose.yml          # Exposes port 8027 (HOST_PORT env var); needs .env
+├── entrypoint.sh               # Snapshot restore, WAL replay, periodic snapshots
+├── client.py                   # Python MORK HTTP client
 ├── wal_client.py               # Write-ahead log client
-├── data_loader.py              # Loads .metta files into MORK
+├── data_loader.py              # Loads .metta/.paths files into MORK
 ├── mork_persist/
-│   ├── snapshot.paths          # Snapshot file registry
+│   ├── snapshot.paths          # Binary snapshot of the graph
 │   └── wal.metta               # Write-ahead log
-└── README.md                   # -> MORK_README.md
+└── README.md                   # Pointer to docs/operations/deployment.md#mork
 ```
+
+Setup and operation: [Deployment Guide § MORK](../operations/deployment.md#mork).
 
 ---
 

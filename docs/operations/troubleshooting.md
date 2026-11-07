@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This document covers common failure modes and their resolution. For processor-specific errors, see [`biocypher_metta/processors/README.md`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/processors/README.md).
+This document covers common failure modes and their resolution. For processor-specific errors, see [`biocypher_metta/processors/README.md`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/processors/README.md). For service setup, and for code bugs that currently affect deployment, see the [Deployment Guide](deployment.md) and its [Known issues](deployment.md#known-issues).
 
 ---
 
@@ -60,18 +60,15 @@ FileNotFoundError: config/rno/rno_adapters_config.yaml
 
 ---
 
-### `BIOPORTAL_API_KEY` not set — Disease Ontology adapter fails
+### Disease Ontology adapter fails to download
 
-**Symptom:**
-```
-EnvironmentError: BIOPORTAL_API_KEY is not set
-```
+**Symptom:** The Disease Ontology adapter fails while loading `doid.owl`.
 
-**Cause:** `DiseaseOntologyAdapter` requires a BioPortal API key to download the Disease Ontology.
+**Cause:** `DiseaseOntologyAdapter` downloads from OBOLibrary, which needs no key but is occasionally unreachable. It retries via BioPortal only when `BIOPORTAL_API_KEY` is set.
 
 **Resolution:**
 1. Register for a free API key at [bioportal.bioontology.org/account](https://bioportal.bioontology.org/account)
-2. Add `BIOPORTAL_API_KEY=<your_key>` to `.env`
+2. Add `BIOPORTAL_API_KEY=<your_key>` to `.env` so the BioPortal fallback is used
 3. Or exclude the disease ontology adapter from the run: `--include-adapters <adapters_without_disease_ontology>`
 
 ---
@@ -116,7 +113,7 @@ GET /health → {"status": "unhealthy", "neo4j": "disconnected"}
 **Resolution:**
 1. Verify Neo4j is running: `make neo4j-status`
 2. Check port: default Bolt port is `7887` (not Neo4j's default `7687`) — verify `NEO4J_URI=bolt://localhost:7887`
-3. Verify credentials match `NEO4J_AUTH` in `docker/neo4j.env`
+3. Verify credentials match `NEO4J_AUTH` in `docker/neo4j.env`. kg-service reads `NEO4J_USER` (not `NEO4J_USERNAME`) and needs `NEO4J_DATABASE=neo4j`; see [Configure `kg-service/.env`](deployment.md#2-configure-kg-serviceenv)
 
 ---
 
@@ -141,7 +138,7 @@ Neo.ClientError.Procedure.ProcedureNotFound: There is no procedure with the name
 
 **Cause:** APOC plugin not loaded in the Neo4j container.
 
-**Resolution:** APOC is enabled by default in `docker/docker-compose.neo4j.yml`. If you're using a custom Neo4j container, add the APOC plugin. Verify with: `docker exec <container> ls /plugins/`.
+**Resolution:** APOC is enabled by default in `docker/docker-compose.neo4j.yml`. If you're using a custom Neo4j container, add the APOC plugin. Verify with: `docker exec biocypher_neo4j-neo4j-1 ls /plugins/`.
 
 ---
 
@@ -151,9 +148,21 @@ Neo.ClientError.Procedure.ProcedureNotFound: There is no procedure with the name
 
 **Symptom:** API endpoints for MORK return 500 errors or connection refused.
 
-**Cause:** Port mismatch — `kg-service/.env` has `MORK_URL=http://localhost:8432` but the MORK container exposes port `8027`.
+**Cause:** Port mismatch — kg-service defaults to `MORK_URL=http://localhost:8432` but the MORK container exposes port `8027`.
 
 **Resolution:** Set `MORK_URL=http://localhost:8027` in `kg-service/.env`.
+
+> Even with the right port, kg-service currently reports MORK as offline: its MORK client imports a `mork` Python package that isn't installed. See [kg-service issues](deployment.md#kg-service-issues).
+
+---
+
+### MORK container exits at startup
+
+**Symptom:** The `mork-biocypher` container restarts repeatedly; its logs show `ERROR: /app/persist not found` or `ERROR: /app/persist is not writable.`
+
+**Cause:** The container runs as UID 1000 and must write to the persist directory (`biocypher-mork/mork_persist/`, or the repo-root `mork_persist/` with the root compose file). Docker creates a missing bind-mount directory as root.
+
+**Resolution:** `sudo chown -R 1000:1000 <persist dir>` and restart. See [Run the server](deployment.md#1-run-the-server).
 
 ---
 
@@ -161,9 +170,9 @@ Neo.ClientError.Procedure.ProcedureNotFound: There is no procedure with the name
 
 **Symptom:** `docker ps` shows `(unhealthy)` for the MORK container.
 
-**Cause:** The MORK Rust server takes up to 60 seconds to start (Rust build + WAL replay). The health check starts 60 seconds after container start (`start_period: 60s`).
+**Cause:** On start, the container imports the last snapshot and replays the WAL before the server answers `/status/-`. A large snapshot can take longer than the health check's 60-second start period.
 
-**Resolution:** Wait for the startup period. Monitor with `docker logs mork-biocypher -f`. If it stays unhealthy after 5 minutes, check WAL integrity.
+**Resolution:** Wait for the restore to finish. Monitor with `docker logs mork-biocypher -f`. If it stays unhealthy after 5 minutes, check WAL integrity.
 
 ---
 
@@ -171,12 +180,12 @@ Neo.ClientError.Procedure.ProcedureNotFound: There is no procedure with the name
 
 **Symptom:** MORK fails to start, logs show WAL parse errors.
 
-**Cause:** `mork_persist/wal.metta` was written partially due to an interrupted write.
+**Cause:** `wal.metta` in the persist directory (`biocypher-mork/mork_persist/` by default) was written partially due to an interrupted write.
 
 **Resolution:**
 1. Stop the container
-2. Inspect `mork_persist/wal.metta` for truncated lines at the end
-3. Remove the last incomplete line or restore from `mork_persist/snapshot.paths`
+2. Inspect `wal.metta` for truncated lines at the end
+3. Remove the last incomplete line, or empty the file to fall back to `snapshot.paths`
 4. Restart the container
 
 ---
@@ -190,20 +199,20 @@ Neo.ClientError.Procedure.ProcedureNotFound: There is no procedure with the name
 **Cause:** `kg-service/backend/api/main.py` line 8 imports `meta` and `entities` from `backend.api.routes`, but neither file exists.
 
 **Resolution:** This is a known issue. Either:
-1. Remove lines 8 and 78–79 from `main.py` (comment out the broken imports and router registrations)
-2. Or wait for the maintainer to create `meta.py` and `entities.py`
+1. Remove `meta` and `entities` from the import on line 8 of `main.py`, and delete their `include_router` lines (78–79)
+2. Or wait for a fix; open PR [#379](https://github.com/rejuve-bio/biocypher-kg/pull/379) adds `meta.py`
 
-See [endpoints.md](../api/endpoints.md) for the full issue context.
+See [endpoints.md](../api/endpoints.md) for the full issue context, and the Deployment Guide's [Known issues](deployment.md#known-issues) for other kg-service problems.
 
 ---
 
-### `GET /api/databases/mork/status` returns 500
+### `GET /api/databases/mork/status` returns 404
 
-**Symptom:** The MORK status endpoint returns a connection error.
+**Symptom:** The MORK status endpoint isn't found.
 
-**Cause:** The MORK container (`biocypher-mork/docker-compose.yml`) exposes port `8027`, but the kg-service defaults to `MORK_URL=http://localhost:8432`.
+**Cause:** The route is defined in `backend/api/routes/databases.py`, but `main.py` never registers that router.
 
-**Resolution:** Set `MORK_URL=http://localhost:8027` in `kg-service/.env` and restart the kg-service.
+**Resolution:** None yet; this is a known issue.
 
 ---
 
