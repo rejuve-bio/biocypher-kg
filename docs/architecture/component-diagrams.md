@@ -173,7 +173,7 @@ classDiagram
 ```mermaid
 graph TD
     subgraph FastAPI["kg-service FastAPI (port 8000)"]
-        MAIN["main.py — CORS + scheduler — 72h refresh"]
+        MAIN["main.py: localhost-only protections + scheduler, 72h refresh"]
         SR["/api/summary"]
         UR["/api/updates"]
         GIR["/api/graph-info and /api/graph-info/status"]

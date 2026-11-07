@@ -16,7 +16,8 @@ This is the single guide for deploying BioCypher-KG and everything it depends on
 | [Pipeline host](#pipeline-host) | `create_knowledge_graph.py`, which builds the KG files | `uv` on the host (`make run*`) | — | Works |
 | [Neo4j](#neo4j) | Graph database for the `neo4j` writer's output | [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml) via `make neo4j-*` | `7674` HTTP, `7887` Bolt | Works |
 | [MORK](#mork) | MeTTa graph server for the `metta` writer's output | [`biocypher-mork/`](https://github.com/rejuve-bio/biocypher-kg/tree/main/biocypher-mork) Docker image | `8027` | Works, with setup caveats |
-| [kg-service](#kg-service) | FastAPI service for graph metadata and version history | `uvicorn` on the host | `8000` | **Does not start** ([Known issues](#known-issues)) |
+| [kg-service](#kg-service) | FastAPI service for graph metadata and version history | `uvicorn` on the host, or inside the Web Console image | `8000` | Works; some endpoints have [known issues](#kg-service-issues) |
+| [Web Console](#web-console) | Browser UI that downloads data, builds, loads and explores, per species | Docker: [`docker/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.yml) or [`docker/docker-compose.dist.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.dist.yml) | `9000` | Works |
 | [MeTTa consumers](#optional-metta-consumers) | Hyperon in-process space, DAS | Host scripts | — | Optional; not project dependencies |
 | [External services](#external-services) | Data-source hosts, FlyBase Chado, BioPortal, NCBI | Outbound network | — | — |
 
@@ -28,9 +29,12 @@ flowchart LR
     P -- "prolog, parquet,<br/>KGX, networkx" --> F["Files only"]
     N --> K["kg-service<br/>:8000"]
     M -.-> K
+    C["Web Console<br/>:9000"] -- "runs builds" --> P
+    C -- "per-species loads" --> N
+    C -- "per-species loads" --> M
 ```
 
-Neo4j publishes its ports on `127.0.0.1` only. MORK publishes `8027` on all interfaces, so firewall it on shared hosts.
+Neo4j, the root-compose MORK and the Web Console publish their ports on `127.0.0.1` only. The standalone MORK in `biocypher-mork/` publishes `8027` on all interfaces, so firewall it on shared hosts.
 
 ---
 
@@ -59,7 +63,6 @@ cp .env.example .env  # optional, see BIOPORTAL_API_KEY below
 
 Then build with `make run` (interactive), `make run-sample` or `make run-direct`. The [README](https://github.com/rejuve-bio/biocypher-kg/blob/main/README.md) is the full reference for running builds and downloading data.
 
-- **`uv.lock` is out of date** with `pyproject.toml`, so `uv sync --locked` fails. Plain `uv sync` (what `make setup` runs) re-resolves and rewrites `uv.lock`.
 - **`.env`** holds one setting, `BIOPORTAL_API_KEY`, and it is optional. The Disease Ontology adapter downloads from OBOLibrary and only falls back to BioPortal when that download fails and a key is set.
 
 ### Choose a writer for your backend
@@ -80,6 +83,8 @@ Full `hsa` builds need a prebuilt dbSNP cache. Sample builds use the bundled `au
 
 The supported setup is the parameterised compose file [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml), driven by `make neo4j-*` targets. It runs `neo4j:5.21` (Community edition) with APOC, mounts your build output read-only at `/import`, and keeps data in named volumes.
 
+Neo4j's import root is `/`, and `NEO4J_IMPORT_ROOT` is also mounted read-only at the same path inside the container. So a loader can import any build under that root by its absolute path (the [Web Console](#web-console) does). The `.cypher` files use relative `file:///` URLs, so `make neo4j-load` and `make neo4j-load-direct` add the `/import` prefix for you (Make variable `NEO4J_CONTAINER_IMPORT`).
+
 > Don't use the `build`, `import` and `deploy` services in the root `docker-compose.yml`. They are left over from the BioCypher project template and no longer work (see [Known issues](#known-issues)).
 
 ### 1. Configure `docker/neo4j.env`
@@ -95,13 +100,14 @@ cp docker/neo4j.env.example docker/neo4j.env   # gitignored
 | `NEO4J_BOLT_PORT` | `7887` | compose | |
 | `NEO4J_AUTH` | `neo4j/your_password_here` | compose | Applied only when the data volume is first created. After changing it, run `make neo4j-reset` |
 | `NEO4J_OUTPUT_DIR` | *(required)* | compose, both loaders | Host directory mounted read-only at `/import`. For one species, use that build's `--output-dir`. For several species in one instance, use the parent directory (see [step 4](#4-several-species)) |
+| `NEO4J_IMPORT_ROOT` | *(defaults to `NEO4J_OUTPUT_DIR`)* | compose | Absolute host directory mounted read-only at the same path, so builds anywhere under it load by absolute path |
 | `NEO4J_ARCHIVE_DIR` | — | `make neo4j-load` | Where versioned loads archive each changed dataset |
 | `NEO4J_PAGECACHE` / `NEO4J_HEAP_INIT` / `NEO4J_HEAP_MAX` | `4G` / `2G` / `4G` | compose | See [Memory](#memory) |
 | `NEO4J_URI` | `bolt://localhost:7887` | both loaders | Must use the `NEO4J_BOLT_PORT` port |
 | `NEO4J_USERNAME` | `neo4j` | both loaders | |
 | `NEO4J_PASSWORD` | — | both loaders | Must match the password in `NEO4J_AUTH` |
 | `NEO4J_IMPORT_BATCH_SIZE` | `50000` | `make neo4j-load` | APOC batch size |
-| `CSV_BASE_PATH` | *(unset)* | `make neo4j-load-direct` | Only for a non-Docker Neo4j whose import directory isn't `NEO4J_OUTPUT_DIR` |
+| `CSV_BASE_PATH` | `/import` | `make neo4j-load-direct` | Prefix for the `.cypher` files' `file:///` URLs. The default suits this compose file; change it only for a Neo4j whose import directory is elsewhere |
 | `NEO4J_CONTAINER` | `neo4j_bio_atomspace` | nothing | Ignored. The container is always named `biocypher_neo4j-neo4j-1` |
 
 ### 2. Start and manage the container
@@ -133,7 +139,7 @@ Use `neo4j-load-direct` for a clean load into an empty database (fresh volumes o
 Both loaders read `docker/neo4j.env` via `--env-file`; flags given on the command line override it.
 
 - `scripts/neo4j_loader.py`: `--env-file`, `--output-dir`, `--uri`, `--username`, `--password`, `--csv-base-path`. Without an env file, `--uri` defaults to `bolt://localhost:7687`, Neo4j's standard port, not the compose port.
-- `kg-service/neo4j_loader.py`: `--env-file`, `--output-dir`, `--archive-dir`, `--uri`, `--username`, `--password`, `--build-id` (default `build-<UTC timestamp>`), `--import-batch-size`, `--import-dir`. `--import-dir` is for a non-Docker Neo4j only and has no env-file key.
+- `kg-service/neo4j_loader.py`: `--env-file`, `--output-dir`, `--archive-dir`, `--uri`, `--username`, `--password`, `--database`, `--build-id` (default `build-<UTC timestamp>`), `--import-batch-size`, `--import-dir`. Settings missing from the flags and the env file are read from the process environment (`NEO4J_PASSWORD`, `NEO4J_DATABASE`, …), which keeps a password off the command line. `--import-dir` prefixes the `file:///` URLs; `make neo4j-load` passes `/import`. A dataset is finalized only when every one of its files loaded, so a retry reloads a partly failed dataset instead of skipping it.
 
 ### 4. Several species
 
@@ -221,14 +227,16 @@ mkdir -p mork_persist && sudo chown 1000:1000 mork_persist
 MORK_DATA_DIR=./output MORK_HOST_PORT=8027 docker compose up -d mork
 ```
 
-This variant differs from the standalone one in three ways:
+This variant differs from the standalone one in four ways:
 - The host-port variable is `MORK_HOST_PORT`, not `HOST_PORT`.
+- It publishes on `127.0.0.1` only.
 - Data defaults to `./output_human`.
 - Persistence lives in the repo-root `mork_persist/`, which doesn't exist until you create it. When loading data, export `SNAPSHOT_DIR=$PWD/mork_persist`.
 
 | Variable | Read by | Default | Purpose |
 |---|---|---|---|
 | `MORK_DATA_DIR` | both compose files | `./data` (in `biocypher-mork/`), `./output_human` (root) | Host directory mounted at `/app/data` |
+| `MORK_IMPORT_ROOT` | `biocypher-mork/docker-compose.yml` | *(unset: `MORK_DATA_DIR` at `/app/import-root`)* | Absolute host directory mounted read-only at the same path, so a loader can import any build under it by absolute path (`kg-service/mork_loader.py` does). Must be absolute |
 | `HOST_PORT` | `biocypher-mork/docker-compose.yml`, `data_loader.py` | `8027` | Host port |
 | `MORK_HOST_PORT` | root `docker-compose.yml` | `8027` | Host port |
 | `SNAPSHOT_INTERVAL_SECONDS` | both compose files | `300` | Seconds between snapshots |
@@ -268,7 +276,14 @@ DATASET_PATH=/path/to/output HOST_PORT=8027 uv run python biocypher-mork/data_lo
 - It doesn't clear existing data first. To reload from scratch, empty the graph as shown above.
 - With the root-compose variant, also set `SNAPSHOT_DIR=$PWD/mork_persist`.
 
-The repo has three other MORK loaders, but none of them currently works: `scripts/mork_loader.py`, `scripts/load_paths.py` and `kg-service/mork_loader.py` (see [Known issues](#known-issues)).
+[`kg-service/mork_loader.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/mork_loader.py) is the loader the [Web Console](#web-console) uses. It also works on its own, with these differences from `data_loader.py`:
+
+- **It replaces the namespace with one build.** If any dataset changed since its last load, it clears the `annotation` namespace and imports every `.metta` file of the build; if nothing changed, it does nothing. Data from other builds is removed.
+- **It imports by absolute path.** The server must see the build at the same path, so set `MORK_IMPORT_ROOT` to a directory that contains it.
+- **It checks before clearing.** A wrong or empty `--data-dir` fails before anything is cleared. If a load fails after the clear, it removes its version metadata so the next load is a full reload.
+- **Pass `--port` and `--archive-dir`.** Its defaults (`8432` and a team-server path) don't match this setup: `--data-dir /path/to/output --port 8027 --archive-dir /path/to/archives`. Version metadata goes to `<archive-dir>/mork/version_metadata.json`.
+
+`scripts/mork_loader.py` and `scripts/load_paths.py` still fail (see [Known issues](#known-issues)).
 
 ### 4. Verify the server
 
@@ -292,19 +307,11 @@ All three run `docker compose run --rm mork` from the repo root and call `/app/M
 
 ## kg-service
 
-> **Status: kg-service does not start on `main`.** `backend/api/main.py` imports the route modules `meta` and `entities`, and neither exists. Open PR [#379](https://github.com/rejuve-bio/biocypher-kg/pull/379) adds `meta.py`. To run the service before a fix lands, remove `meta` and `entities` from the import on line 8 and delete their two `include_router` lines. Several endpoints have further problems; see [Known issues](#known-issues).
-
-kg-service ("BioCypher KG Observatory") is a FastAPI app that serves graph metadata and version history. It reads from Neo4j and from the archive directory that `make neo4j-load` writes. It isn't containerized; run it on a host that can reach Neo4j.
+kg-service ("BioCypher KG Observatory") is a FastAPI app that serves graph metadata and version history. It reads from Neo4j and from the archive directory that `make neo4j-load` writes. This section runs it on its own, on a host that can reach Neo4j. The [Web Console](#web-console) runs the same app in a Docker image, along with its own routes and frontend. Some endpoints have problems; see [Known issues](#kg-service-issues).
 
 ### 1. Install
 
-kg-service's dependencies are not in the project's `pyproject.toml`. Install them into a separate environment:
-
-```bash
-cd kg-service
-uv venv                              # creates kg-service/.venv (gitignored)
-uv pip install -r requirements.txt
-```
+kg-service's dependencies are in the project's `pyproject.toml`, so `make setup` (`uv sync`) installs them with the rest of the project. `kg-service/requirements.txt` also lists `streamlit` and `plotly`, which the API doesn't use.
 
 ### 2. Configure `kg-service/.env`
 
@@ -341,10 +348,18 @@ Don't copy `docker/neo4j.env` into this file. Unknown keys fail validation (`ext
 
 ```bash
 cd kg-service
-.venv/bin/uvicorn backend.api.main:app --host 127.0.0.1 --port 8000
+uv run uvicorn backend.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-CORS allows every origin, so keep the service bound to `127.0.0.1` unless it sits behind a proxy. On startup the service schedules a `graph_info` refresh every 72 hours. If the cache file is missing, it also runs one refresh 5 seconds after start. The cache file's path is hardcoded (see [Known issues](#known-issues)).
+The service has no sign-in, so it is meant for this machine only:
+
+- It answers only requests whose `Host` is `localhost`, `127.0.0.1` or `[::1]`.
+- It refuses cross-site browser requests and sends no CORS headers.
+- It can't be shown in a frame on another site.
+
+Behind a reverse proxy or under another name, list the extra names (comma-separated) in `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS`, and put a sign-in in front of it.
+
+On startup the service schedules a `graph_info` refresh every 72 hours. If the cache file is missing, it also runs one refresh 5 seconds after start. The cache file's path is hardcoded (see [Known issues](#known-issues)).
 
 ### 4. Verify the API
 
@@ -353,11 +368,85 @@ curl http://localhost:8000/        # {"name": "BioCypher KG Observatory", "versi
 curl http://localhost:8000/health  # {"status": "healthy", "neo4j": "connected"}
 ```
 
-Interactive API docs are served at `http://localhost:8000/docs`. The endpoint reference is in [endpoints.md](../api/endpoints.md).
+The interactive API docs (`/docs`, `/redoc`, `/openapi.json`) are off unless you start the service with `CONSOLE_API_DOCS=1`; `GET /` lists `/docs` either way. The endpoint reference is in [endpoints.md](../api/endpoints.md).
 
-### Web Console (pending #379)
+---
 
-Open PR [#379](https://github.com/rejuve-bio/biocypher-kg/pull/379) adds a web console that configures and runs builds and loads them into Neo4j and MORK. It is started with `docker/up.sh` and configured through `docker/console.env.example`. The PR also changes the compose files described above. Whichever of #379 and this guide merges second should document the console here and re-check the Neo4j and MORK sections against the new compose files.
+## Web Console
+
+A browser UI for the whole flow, one species at a time:
+
+1. Pick a species and its data sources, and download what's missing.
+2. Build.
+3. Load the build into that species' own Neo4j and MORK.
+4. Explore the live schema, and edit the configs.
+
+It is kg-service plus a React frontend in one Docker image, served at `http://localhost:9000/console/`. Researchers set everything in its **Settings** page; they don't need the repo, an env file or Docker commands.
+
+### 1. Run it
+
+| | From a checkout | Without a checkout |
+|---|---|---|
+| Compose file | `docker/docker-compose.yml` (builds the image) | `docker/docker-compose.dist.yml` (pulls the published image) |
+| Start | `cp docker/console.env.example docker/console.env`, set `DATA_ROOT` and `NEO4J_PASSWORD`, then `./docker/up.sh` | `CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d` |
+| Console data folder | `DATA_ROOT` | `DATA_ROOT`, default `~/biocypher-kg-data` |
+
+- **Images.** `.github/workflows/publish-console-image.yml` publishes the image to GHCR on every push to `console`. `up.sh --no-build` uses a pulled image.
+- **Where Settings are kept.** Settings and build history live in the `console_builds` volume (`console_settings.json`, owner-only).
+- **`up.sh` and bundled databases.** `up.sh` also starts a bundled Neo4j or MORK (compose profiles `neo4j` and `mork`) when none answers on the configured port.
+
+### 2. Settings
+
+- **Species databases.** Each species has its own Neo4j and MORK, chosen per database:
+  - **Run here:** the console creates and starts `neo4j-<species>` / `mork-<species>` containers through the Docker socket.
+    - Neo4j uses `NEO4J_IMAGE` (default `neo4j:5.21`) and gets a generated password, shown under *In use*.
+    - MORK needs a local image: `MORK_IMAGE`, or what `up.sh` built (`biocypher-console-mork[-<species>]`).
+    - Remove deletes the container but keeps its data volume and password, so Set up brings it back.
+  - **Use existing:** your own database's address and, for Neo4j, its username, password and database, checked before they're saved.
+    - A database on this computer is entered as `localhost`; the console connects through `host.docker.internal`.
+    - An unencrypted address on another computer (`bolt://`, `http://`) is flagged; use `neo4j+s://`, `bolt+s://` or `https://` where the server offers it.
+- **Data locations.** *Browse…* opens the computer's own Finder. Browsers don't give the path, so the console finds the chosen folder by name and contents, then checks it:
+  - a species folder must hold some of the sources that species' adapters read, and the files must really be what their names say;
+  - a dbSNP cache must be a real SQLite cache from `scripts/update_dbsnp.py` (pickle caches are refused);
+  - the console data folder must be empty or already laid out as one.
+
+  Saving Settings and validating a build run the same checks.
+- **Build settings.** The data folder, builds at the same time, finished builds kept, and builds listed in History.
+
+### 3. Folders the console can see
+
+The console runs in Docker, so it only sees shared folders. Both compose files share these, at the same path inside the container:
+
+- `DATA_ROOT`, read-write;
+- `~/Desktop`, `~/Documents`, `~/Downloads` and `/Volumes`, read-only.
+
+Don't share the whole home folder instead. Docker Desktop for Mac passes every file change in a shared folder to its VM, and a home folder changes so often that the engine stops (`service fs failed: injecting event blocked for 60s`).
+
+### 4. Loading
+
+| | Neo4j | MORK |
+|---|---|---|
+| Loader | `kg-service/neo4j_loader.py`, with the species' own login. The password goes in through the environment, never the command line or the job log | `kg-service/mork_loader.py`. A MORK load replaces the namespace with that build (the UI warns before loading) |
+| Archives and version metadata | `ARCHIVE_BASE/<species>/neo4j/` | `ARCHIVE_BASE/<species>/mork/` |
+| Reads the build output from | the same absolute path. Console-run instances mount `DATA_ROOT` there; your own needs `NEO4J_IMPORT_ROOT` (or equivalent) | the same absolute path. Console-run instances mount `DATA_ROOT` there; your own needs `MORK_IMPORT_ROOT` |
+
+Console-run instances publish ports on `127.0.0.1` only:
+
+- **Neo4j:** Bolt `7687+i` and HTTP `7474+i`, where `i` is the species' position in `config/species_config.yaml` (hsa 0, dmel 1, …). A taken port block shifts by 10.
+- **MORK:** no host port. It takes no password, so only the console reaches it, over their shared Docker network.
+
+### 5. Security
+
+The console has no sign-in, so it listens on `127.0.0.1` only.
+
+- **It stops other websites using the browser against it:**
+  - The `Host` must be this machine, which blocks DNS rebinding.
+  - Cross-site requests are refused (`Sec-Fetch-Site`, `Origin`).
+  - It can't be framed, and it sends a strict Content-Security-Policy and `Cache-Control: no-store`.
+  - Settings can't change the program that runs builds, and the data folder can't be a system or top-level folder.
+- **Containers.** The console, and the Neo4j and MORK containers it creates, run with `no-new-privileges`.
+- **Image.** Env files are excluded from the image (`.dockerignore`).
+- **The Docker socket.** The console controls Docker on its host so it can run databases; keep it on `127.0.0.1`. For remote use, put it behind a reverse proxy with a sign-in, and set `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS`.
 
 ---
 
@@ -396,12 +485,15 @@ uv run --with hyperon python scripts/metta_space_import.py \
 | `7887` | Neo4j Bolt | `127.0.0.1` | `NEO4J_BOLT_PORT` |
 | `8027` | MORK HTTP | all interfaces | `HOST_PORT` (`biocypher-mork/`) or `MORK_HOST_PORT` (root compose) |
 | `8000` | kg-service | the `uvicorn --host` value | `uvicorn --port` |
+| `9000` | Web Console | `127.0.0.1` | `CONSOLE_PORT` |
+| `7687+i`, `7474+i` | Console-run Neo4j for the species at position `i` | `127.0.0.1` | the console ([Loading](#4-loading)) |
+| `7687`, `7474`, `8432` | The console stack's bundled Neo4j (Bolt, HTTP) and MORK, started by `up.sh` | `127.0.0.1` | `NEO4J_BOLT_PORT`, `NEO4J_HTTP_PORT`, `MORK_HOST_PORT` in `docker/console.env` |
 | `5432` (outbound) | FlyBase Chado | — | — |
 
 Other port numbers in the code are leftover defaults, not services you need to run:
 - `7687`: the `--uri` default in `scripts/neo4j_loader.py`
 - `27688`: kg-service `NEO4J_URI` and `version_manager.py`
-- `8432`: kg-service `MORK_URL`, `kg-service/mork_loader.py` and `test_mork_stats.py`
+- `8432`: kg-service `MORK_URL`, `kg-service/mork_loader.py` and `test_mork_stats.py` (and the console stack's bundled MORK, above)
 - `7474`/`7687`: the legacy root-compose `deploy` service
 
 ---
@@ -414,10 +506,7 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 
 | Issue | Effect | Workaround | Where |
 |---|---|---|---|
-| Imports the route modules `meta` and `entities`, which don't exist | Service doesn't start | Remove them from the import and the `include_router` calls. #379 adds `meta.py` | [`main.py:8`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py#L8), `:78-79` |
-| Dependencies aren't in `pyproject.toml` | `uv sync` doesn't install FastAPI and the other service dependencies | Use a separate venv ([Install](#1-install)) | `kg-service/requirements.txt` |
 | `MORK_SUMMARY_SCRIPT` defaults to `get_mork_summary.py`, which isn't in the repo | `/api/databases/mork/summary` fails | None | `backend/core/config.py:12` |
-| The MORK client imports a Python package `mork`, which isn't installed | MORK is always reported offline | None | `backend/core/mork_client.py:22` |
 | The `graph_info` cache path is hardcoded to `/mnt/hdd_1/abdu_md/...` | Cache refresh fails on other hosts | Edit the path | `backend/core/graph_info_cache.py:11` |
 | The `databases` router is never registered | Its endpoints return 404 | None | `backend/api/main.py` |
 | `version_diff.py` parses CSVs as comma-delimited, but the writer uses `\|` | Version comparisons are unreliable | None | `kg-service/version_diff.py`, `biocypher_metta/neo4j_csv_writer.py:17` |
@@ -428,7 +517,7 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 | Issue | Effect | Workaround | Where |
 |---|---|---|---|
 | `scripts/mork_client.py` reuses quotes inside an f-string, which needs Python 3.12 | `scripts/mork_loader.py` and `scripts/load_paths.py` fail with `SyntaxError` on 3.10 and 3.11 | Use `biocypher-mork/data_loader.py` | `scripts/mork_client.py:524` |
-| `kg-service/mork_loader.py` adds `kg-service/biocypher-mork` (which doesn't exist) to `sys.path`, and defaults to port `8432` | `ImportError` | Use `biocypher-mork/data_loader.py` | `kg-service/mork_loader.py:12` |
+| `kg-service/mork_loader.py` defaults to port `8432` and a team-server `--archive-dir` | A plain run targets the wrong port and path | Pass `--port` and `--archive-dir` (the Web Console does) | `kg-service/mork_loader.py`, `main()` |
 | The image doesn't build the MORK kernel CLI | `build_act.sh`, `build_paths.sh` and `mork_repl.py` fail | None | `biocypher-mork/Dockerfile:25-27` |
 | `data_loader.py` doesn't pass `host_data_dir` to the WAL client | File loads aren't written to the WAL and survive a restart only after a snapshot | Wait one snapshot interval, or `docker compose stop -t 300` | `biocypher-mork/data_loader.py:24` |
 | The container runs as UID 1000 and exits if `/app/persist` isn't writable; the root compose's `./mork_persist` doesn't exist | Container exits at start | `chown 1000:1000` the persist directory | `biocypher-mork/entrypoint.sh:20-23` |
@@ -436,13 +525,19 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 | `biocypher-mork/mork_persist/snapshot.paths` and `wal.metta` are tracked in git | A running server leaves the working tree dirty | Don't commit them | `biocypher-mork/mork_persist/` |
 | The Dockerfile clones MORK and PathMap without pinning a commit | Builds aren't reproducible | None | `biocypher-mork/Dockerfile:17,22` |
 
+### Web Console issues
+
+| Issue | Effect | Workaround | Where |
+|---|---|---|---|
+| No MORK image is published; *Run here* needs one on the machine | Without one, setting up MORK says it can't run on this computer | Build it with `docker/up.sh`, set `MORK_IMAGE`, or use *Use existing* | `kg-service/backend/core/console/instances.py` |
+| Folders outside Desktop, Documents, Downloads, `/Volumes` and the data folder aren't shared | Choosing one says the console can't open it | Move or copy the data into a shared folder | `docker/docker-compose*.yml` |
+
 ### Neo4j and pipeline issues
 
 | Issue | Effect | Workaround | Where |
 |---|---|---|---|
 | The root-compose `build`, `import` and `deploy` services are broken: `scripts/build.sh` runs `poetry install` and calls the pipeline with no arguments, and `scripts/import.sh` expects a `neo4j-admin` import script the writer never produces | No graph is produced | Use [Neo4j](#neo4j) | root `docker-compose.yml`, `scripts/build.sh`, `scripts/import.sh` |
 | The Neo4j compose uses 4.x setting names (`NEO4JLABS_PLUGINS`, `dbms.memory.*`) on a 5.x image | Works, but logs deprecation warnings | None needed | `docker/docker-compose.neo4j.yml:20,35-37` |
-| `uv.lock` pins `biocypher` 0.12.5; `pyproject.toml` pins 0.17.0 | `uv sync --locked` fails; `uv sync` rewrites the lockfile | Run plain `uv sync` | `uv.lock`, `pyproject.toml:15` |
 
 ---
 
@@ -453,4 +548,5 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 - [ ] Full human builds: dbSNP cache built and `--dbsnp-cache-root` set
 - [ ] **Neo4j:** `docker/neo4j.env` filled in, with `NEO4J_AUTH` matching `NEO4J_PASSWORD` and `NEO4J_OUTPUT_DIR` pointing at a `neo4j` build. Then `make neo4j-up`, load, and verify
 - [ ] **MORK:** `biocypher-mork/.env` created and `mork_persist/` writable by UID 1000. Then `docker compose up -d --build`, load with `data_loader.py` (`DATASET_PATH` set to the `MORK_DATA_DIR` directory), and wait for a snapshot
-- [ ] **kg-service** (once it starts): separate venv; `kg-service/.env` with every setting above, `ARCHIVE_BASE` set to `NEO4J_ARCHIVE_DIR` and `MORK_URL=http://localhost:8027`
+- [ ] **kg-service:** `kg-service/.env` with every setting above, `ARCHIVE_BASE` set to `NEO4J_ARCHIVE_DIR` and `MORK_URL=http://localhost:8027`; then `uv run uvicorn` from `kg-service/`
+- [ ] **Web Console:** started from `docker/docker-compose.yml` (`up.sh`) or `docker-compose.dist.yml`; each species' Neo4j and MORK set up or connected in Settings; data folders chosen there if you have them

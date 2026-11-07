@@ -196,13 +196,9 @@ Neo.ClientError.Procedure.ProcedureNotFound: There is no procedure with the name
 
 **Symptom:** kg-service crashes immediately on startup.
 
-**Cause:** `kg-service/backend/api/main.py` line 8 imports `meta` and `entities` from `backend.api.routes`, but neither file exists.
+**Cause:** An older `kg-service/backend/api/main.py` imported `meta` and `entities` from `backend.api.routes` before those files existed.
 
-**Resolution:** This is a known issue. Either:
-1. Remove `meta` and `entities` from the import on line 8 of `main.py`, and delete their `include_router` lines (78–79)
-2. Or wait for a fix; open PR [#379](https://github.com/rejuve-bio/biocypher-kg/pull/379) adds `meta.py`
-
-See [endpoints.md](../api/endpoints.md) for the full issue context, and the Deployment Guide's [Known issues](deployment.md#known-issues) for other kg-service problems.
+**Resolution:** Update to a version that includes `kg-service/backend/api/routes/meta.py` and `entities.py`. `main.py` now imports them optionally. See the Deployment Guide's [Known issues](deployment.md#known-issues) for other kg-service problems.
 
 ---
 
