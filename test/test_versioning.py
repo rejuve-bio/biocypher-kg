@@ -37,7 +37,7 @@ def test_url_regex_extracts_flybase_release_from_filename():
         "version": {"strategy": "url_regex", "pattern": r"fb_(\d{4}_\d{2})"},
     }
     vi = resolve_source("flybase", cfg)
-    assert vi.version == "2026_01"
+    assert vi.version == "2026_02"  # the release in the URL above
 
 
 def test_url_regex_no_match_captures_error_without_raising():
