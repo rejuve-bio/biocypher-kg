@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from backend.api.routes import versions
@@ -6,7 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import settings
 from backend.core.neo4j_client import neo4j_client
 from backend.api.routes import updates, summary, graph_info
-from backend.api.routes import console_config, builds
+from backend.api.routes import console_config, builds, console_settings, instances, connections
+from backend.api import security
+from backend.core.console import runtime_config
 
 # `meta`/`entities` routers may be absent on this branch; import optionally.
 try:
@@ -53,6 +56,20 @@ async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle (replaces deprecated @app.on_event handlers)."""
     logger.info(f"Starting {settings.APP_NAME}")
 
+    # Project any UI-saved settings onto the config object before anything connects,
+    # so DB clients and build settings use the stored values (store over env).
+    try:
+        runtime_config.apply()
+        logger.info("✅ Runtime settings applied")
+    except Exception as e:  # noqa: BLE001 - never block startup on config
+        logger.error(f"Applying runtime settings failed: {e}")
+    try:
+        # Give species connected before per-species logins their own login.
+        from backend.core.console import connections
+        connections.migrate()
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"Moving to per-species Neo4j logins failed: {e}")
+
     logger.info("🚀 Starting background scheduler...")
     scheduler.start()
     logger.info("✅ Background scheduler started (refresh every 72 hours)")
@@ -83,20 +100,22 @@ async def lifespan(app: FastAPI):
     neo4j_client.close()
 
 
+# The interactive API docs are a developer aid (and load scripts from a CDN); off
+# unless CONSOLE_API_DOCS=1.
+_docs = os.environ.get("CONSOLE_API_DOCS", "").strip() == "1"
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="Real-time API for BioCypher Knowledge Graphs",
     lifespan=lifespan,
+    docs_url="/docs" if _docs else None,
+    redoc_url="/redoc" if _docs else None,
+    openapi_url="/openapi.json" if _docs else None,
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Only this computer, only the console's own pages: no other website can use the
+# person's browser against it (see security.py). No wildcard CORS.
+security.install(app, CORSMiddleware)
 
 
 # Observatory endpoints hit Neo4j directly. When it is down or misconfigured the
@@ -107,7 +126,7 @@ app.add_middleware(
 async def _neo4j_unavailable(request: Request, exc: ServiceUnavailable):
     return JSONResponse(
         status_code=503,
-        content={"detail": f"Could not reach Neo4j at {settings.NEO4J_URI}. Is the database running?"},
+        content={"detail": "Can't reach Neo4j. Check that it's running in Settings > Species databases."},
     )
 
 
@@ -115,7 +134,7 @@ async def _neo4j_unavailable(request: Request, exc: ServiceUnavailable):
 async def _neo4j_auth_failed(request: Request, exc: AuthError):
     return JSONResponse(
         status_code=502,
-        content={"detail": f"Neo4j authentication failed at {settings.NEO4J_URI}. Check NEO4J_USER / NEO4J_PASSWORD."},
+        content={"detail": "Neo4j didn't accept the console's username or password. Check them in Settings > Species databases."},
     )
 
 if meta is not None:
@@ -129,6 +148,9 @@ app.include_router(graph_info.router, prefix="/api", tags=["graph-info"])
 
 # Console routers already carry the /api/console prefix and "Console" tag.
 app.include_router(console_config.router)
+app.include_router(console_settings.router)
+app.include_router(instances.router)
+app.include_router(connections.router)
 app.include_router(builds.router)
 
 

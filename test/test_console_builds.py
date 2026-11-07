@@ -22,6 +22,18 @@ def _wait_for(job_id, statuses, timeout=20.0):
     return registry.get(job_id)
 
 
+def _wait_until_idle(timeout=30.0):
+    """Wait for every build/load thread to finish, including the clean-up of old
+    builds each one runs after succeeding (it happens after the job is marked
+    done, so waiting for statuses isn't enough)."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        queued = any(j.status in {JobStatus.QUEUED, JobStatus.RUNNING} for j in registry.list())
+        if job_runner._semaphore._running == 0 and not queued:
+            return
+        time.sleep(0.05)
+
+
 def test_build_runs_to_success(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
                         lambda req, out, resume=False: [sys.executable, "-c", "print('hello-from-build')"])
@@ -101,11 +113,26 @@ def test_build_load_argv_targets():
     assert m[m.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
 
 
+def test_each_species_keeps_its_own_load_archives(monkeypatch):
+    """Each species has its own databases, so its loads keep their own version
+    metadata: loading one species must not overwrite another's."""
+    from backend.core.config import settings
+    from backend.core.console import explore_targets as et
+
+    monkeypatch.setattr(et, "mork_url_for", lambda sp: f"http://mork-{sp}:8027")
+    hsa = job_runner.build_load_argv("mork", "/out", "hsa")
+    dmel = job_runner.build_load_argv("mork", "/out", "dmel")
+    base = settings.ARCHIVE_BASE.rstrip("/")
+    assert hsa[hsa.index("--archive-dir") + 1] == f"{base}/hsa"
+    assert dmel[dmel.index("--archive-dir") + 1] == f"{base}/dmel"
+    assert job_runner.archive_base_for(None) == settings.ARCHIVE_BASE  # one shared instance
+
+
 def test_launch_load_creates_tracked_load_job(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
                         lambda req, out, resume=False: [sys.executable, "-c", "pass"])
     monkeypatch.setattr(job_runner, "build_load_argv",
-                        lambda target, out: [sys.executable, "-c", "print('loaded')"])
+                        lambda target, out, species=None: [sys.executable, "-c", "print('loaded')"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
     _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
 
@@ -121,7 +148,7 @@ def test_retry_load_reruns_same_target_and_dir(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
                         lambda req, out, resume=False: [sys.executable, "-c", "pass"])
     monkeypatch.setattr(job_runner, "build_load_argv",
-                        lambda target, out: [sys.executable, "-c", "import sys; sys.exit(1)"])
+                        lambda target, out, species=None: [sys.executable, "-c", "import sys; sys.exit(1)"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
     _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
 
@@ -131,7 +158,7 @@ def test_retry_load_reruns_same_target_and_dir(monkeypatch):
 
     # Retry a passing loader this time.
     monkeypatch.setattr(job_runner, "build_load_argv",
-                        lambda target, out: [sys.executable, "-c", "print('retried')"])
+                        lambda target, out, species=None: [sys.executable, "-c", "print('retried')"])
     retry = job_runner.retry_load(load.id)
     assert retry is not None
     assert retry.id != load.id
@@ -160,7 +187,7 @@ def test_load_summarized_on_build_not_a_separate_build(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
                         lambda req, out, resume=False: [sys.executable, "-c", "pass"])
     monkeypatch.setattr(job_runner, "build_load_argv",
-                        lambda target, out: [sys.executable, "-c", "print('loaded')"])
+                        lambda target, out, species=None: [sys.executable, "-c", "print('loaded')"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
     _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
     load = job_runner.launch_load(src.id, "neo4j")
@@ -176,6 +203,9 @@ def test_load_summarized_on_build_not_a_separate_build(monkeypatch):
 
 def test_prune_output_dirs_keeps_newest_per_writer_and_species(monkeypatch, tmp_path):
     from backend.core.config import settings
+    # Builds from earlier tests finish in the background and run their own clean-up
+    # of old builds; with DATA_ROOT pointed here that would race this one.
+    _wait_until_idle()
     monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
     monkeypatch.setattr(settings, "MAX_OUTPUT_BUILDS", 5)
 
@@ -308,3 +338,204 @@ def test_reconcile_marks_orphaned_running_as_failed(tmp_path):
     got = reg.get("orphan")
     assert got.status == JobStatus.FAILED
     assert "orphaned" in (got.error or "").lower()
+
+
+# ── Source-scoped downloads + the console-managed dbSNP cache ──────────────────
+
+def test_build_download_argv_multiple_sources():
+    """Several selected sources become repeated --source flags, de-duplicated."""
+    from backend.core.console.job_models import DownloadRequest
+    argv = job_runner.build_download_argv(
+        DownloadRequest(species="hsa", source="reactome", sources=["tflink", "reactome"]),
+        "/in/hsa",
+    )
+    picked = [argv[i + 1] for i, a in enumerate(argv) if a == "--source"]
+    assert picked == ["reactome", "tflink"]
+
+
+def test_dbsnp_status_reports_prepared_variants(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    from dbsnp_cache_helper import make_dbsnp_cache
+
+    db = make_dbsnp_cache(tmp_path / "dbsnp" / "common", "common")
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(runtime_config, "data_locations", _locs())
+    status = job_runner.dbsnp_status()
+    assert status["root"] == str(tmp_path / "dbsnp")
+    assert status["variants"]["common"] == {
+        "present": True, "bytes": db.stat().st_size, "built_at": "2026-11-01T02:00:00",
+        "problem": None, "root": str(tmp_path / "dbsnp"),
+    }
+    assert status["variants"]["full"]["present"] is False
+
+
+def test_a_file_that_only_looks_like_a_dbsnp_cache_isnt_ready(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    common = tmp_path / "dbsnp" / "common"
+    common.mkdir(parents=True)
+    (common / "dbsnp_mapping.db").write_bytes(b"x" * 10)
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(runtime_config, "data_locations", _locs())
+    info = job_runner.dbsnp_status()["variants"]["common"]
+    assert info["present"] is False and "wrong kind of file" in info["problem"]
+
+
+def test_dbsnp_status_checks_custom_root(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
+    from dbsnp_cache_helper import make_dbsnp_cache
+
+    make_dbsnp_cache(tmp_path / "mine" / "full", "full")
+    status = job_runner.dbsnp_status(str(tmp_path / "mine"))
+    assert status["custom"]["variants"]["full"]["present"] is True
+    assert status["custom"]["variants"]["common"]["present"] is False
+
+
+def test_purge_never_deletes_dbsnp_cache(monkeypatch, tmp_path):
+    """The shared dbSNP cache isn't one job's output; purging it must be refused."""
+    from backend.core.config import settings
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    common = tmp_path / "dbsnp" / "common"
+    common.mkdir(parents=True)
+    assert job_runner.purge_output_dir(str(common)) is False
+    assert common.is_dir()
+
+
+def test_data_status_finds_sources_outside_their_key_dir(monkeypatch, tmp_path):
+    """Presence follows the files a source declares (gtex_eqtl lands in gtex/eqtl/)
+    and versioned dirs (catlas in catlasv1/), not only input/<key>/."""
+    from backend.core.config import settings
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    hsa = tmp_path / "input" / "hsa"
+    (hsa / "gtex" / "eqtl").mkdir(parents=True)
+    (hsa / "gtex" / "eqtl" / "gtex.forgedb.csv.gz").write_bytes(b"x" * 5)
+    (hsa / "catlasv1").mkdir(parents=True)
+    (hsa / "catlasv1" / "cCRE_hg38.tsv.gz").write_bytes(b"x" * 7)
+    by_key = {s["key"]: s for s in job_runner.data_status("hsa")["sources"]}
+    assert by_key["gtex_eqtl"]["present"] is True
+    assert by_key["gtex_eqtl"]["bytes"] == 5
+    assert by_key["catlas"]["present"] is True
+    assert by_key["reactome"]["present"] is False
+
+
+# ── Data you already have: Settings > Data locations ──────────────────────────
+
+def _locs(input_dirs=None, dbsnp_root=None):
+    return lambda: {"input_dirs": input_dirs or {}, "dbsnp_root": dbsnp_root}
+
+
+def test_settings_folder_is_read_first_but_never_the_download_target(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
+    monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: None)
+    mine = tmp_path / "mine" / "hsa"
+    monkeypatch.setattr(runtime_config, "data_locations", _locs({"hsa": str(mine)}))
+    loc = job_runner.resolve_species_input("hsa")
+    downloads = str((tmp_path / "data" / "input" / "hsa").resolve())
+    assert loc == {"path": downloads, "origin": "console", "readonly": str(mine.resolve())}
+    assert job_runner.species_input_dir("hsa") == downloads
+    assert job_runner.species_read_dirs("hsa") == [str(mine.resolve()), downloads]
+
+
+def test_resolve_species_input_falls_back_to_config_dir(monkeypatch, tmp_path):
+    """With nothing downloaded, the adapters config's input_dir is the download folder
+    when it exists here (e.g. the team server), until the console has data of its own."""
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
+    monkeypatch.setattr(runtime_config, "data_locations", _locs())
+    server = tmp_path / "server" / "hsa"
+    server.mkdir(parents=True)
+    monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: str(server))
+    assert job_runner.resolve_species_input("hsa") == {
+        "path": str(server), "origin": "config", "readonly": None,
+    }
+    (tmp_path / "data" / "input" / "hsa" / "reactome").mkdir(parents=True)
+    assert job_runner.resolve_species_input("hsa")["origin"] == "console"
+
+
+def test_effective_input_dirs_read_only_first_and_sample_untouched(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
+    monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: None)
+    mine = tmp_path / "mine" / "hsa"
+    mine.mkdir(parents=True)
+    downloads = tmp_path / "data" / "input" / "hsa"
+    (downloads / "abc").mkdir(parents=True)
+    monkeypatch.setattr(runtime_config, "data_locations", _locs({"hsa": str(mine)}))
+    assert job_runner.effective_input_dirs(BuildRequest(species="hsa", dataset="sample")) == []
+    dirs = job_runner.effective_input_dirs(BuildRequest(species="hsa", dataset="full"))
+    assert dirs == [str(mine.resolve()), str(downloads.resolve())]
+    argv = job_runner.build_argv(BuildRequest(species="hsa", dataset="full"), "/out")
+    i = argv.index("--input-dir")
+    assert argv[i:i + 4] == ["--input-dir", dirs[0], "--extra-input-dir", dirs[1]]
+
+
+def test_data_status_reads_your_folder_first(monkeypatch, tmp_path):
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
+    monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: None)
+    mine = tmp_path / "mine" / "hsa"
+    (mine / "reactome").mkdir(parents=True)
+    (mine / "reactome" / "Ensembl2Reactome_All_Levels.txt").write_text("x")
+    downloads = tmp_path / "data" / "input" / "hsa"
+    (downloads / "abc").mkdir(parents=True)
+    (downloads / "abc" / "abc.forgedb.csv.gz").write_bytes(b"x")
+    monkeypatch.setattr(runtime_config, "data_locations", _locs({"hsa": str(mine)}))
+    status = job_runner.data_status("hsa")
+    by_key = {s["key"]: s for s in status["sources"]}
+    assert status["readonly_dir"] == str(mine.resolve())
+    assert by_key["reactome"]["location"] == "yours"
+    assert by_key["abc"]["location"] == "console"
+    assert by_key["uniprot"]["present"] is False
+
+
+def test_download_never_writes_into_a_read_only_folder(monkeypatch, tmp_path):
+    """If the download folder would fall inside your read-only data, refuse outright."""
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    from backend.core.console.job_models import DownloadRequest
+    data = tmp_path / "data"
+    monkeypatch.setattr(settings, "DATA_ROOT", str(data))
+    monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: None)
+    # "Your" folder is the whole data root, so <data>/input/hsa would sit inside it.
+    monkeypatch.setattr(runtime_config, "data_locations", _locs({"hsa": str(data)}))
+    with pytest.raises(ValueError, match="read-only"):
+        job_runner.launch_download(DownloadRequest(species="hsa", sources=["reactome"]))
+
+
+def test_purge_never_deletes_a_settings_data_folder(monkeypatch, tmp_path):
+    """Purge must refuse the user's own data (chosen in Settings), even with no
+    DATA_ROOT guard."""
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(settings, "DATA_ROOT", "")
+    mine = tmp_path / "mine" / "hsa"
+    mine.mkdir(parents=True)
+    monkeypatch.setattr(runtime_config, "data_locations", _locs({"hsa": str(mine)}))
+    monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: None)
+    assert job_runner.purge_output_dir(str(mine)) is False
+    assert job_runner.purge_output_dir(str(tmp_path / "mine")) is False  # its parent
+    assert mine.is_dir()
+
+
+def test_settings_dbsnp_cache_is_read_only(monkeypatch, tmp_path):
+    """A dbSNP cache chosen in Settings is used for the variants it has, but Prepare
+    writes to the console's own folder."""
+    from backend.core.config import settings
+    from backend.core.console import runtime_config
+    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
+    from dbsnp_cache_helper import make_dbsnp_cache
+
+    mine = tmp_path / "mine"
+    make_dbsnp_cache(mine / "common", "common")
+    monkeypatch.setattr(runtime_config, "data_locations", _locs(dbsnp_root=str(mine)))
+    status = job_runner.dbsnp_status()
+    assert status["variants"]["common"]["root"] == str(mine.resolve())
+    assert status["variants"]["full"]["root"] == str(tmp_path / "data" / "dbsnp")
+    assert job_runner.dbsnp_root() == tmp_path / "data" / "dbsnp"

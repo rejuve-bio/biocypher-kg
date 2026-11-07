@@ -54,6 +54,18 @@ class BuildRequest(BaseModel):
     limit: int = 0
 
 
+class DownloadRequest(BaseModel):
+    """A request to fetch a species' source data into the local input directory."""
+    species: str
+    # Restrict to one source id (e.g. "reactome"); None downloads every source.
+    source: Optional[str] = None
+    # Restrict to several source ids (e.g. the sources picked in the wizard). Merged
+    # with `source`; when both are empty, every source is downloaded.
+    sources: Optional[list[str]] = None
+    # Skip sha256 checksums in the manifest (much faster on huge files).
+    no_checksum: bool = True
+
+
 @dataclasses.dataclass
 class BuildJob:
     id: str

@@ -95,6 +95,9 @@ class MORKClient:
             return len(latest["datasets"])
         return 0
     
+    # get_atom_count reads at most this many atoms: a count at the cap means "at least".
+    ATOM_COUNT_CAP = 1000
+
     def get_atom_count(self):
         """Approximate atom count from the live MORK server.
 
@@ -104,7 +107,7 @@ class MORKClient:
         An empty-but-reachable atomspace legitimately returns 0.
         """
         with self.server.work_at("annotation") as scope:
-            data = scope.download_(max_results=1000)
+            data = scope.download_(max_results=self.ATOM_COUNT_CAP)
             data.block()
             if data.data:
                 lines = [l for l in data.data.split('\n') if l.strip() and not l.strip().startswith(';')]

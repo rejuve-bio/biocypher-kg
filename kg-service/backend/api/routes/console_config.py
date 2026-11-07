@@ -29,6 +29,15 @@ def get_adapters(species: str, dataset: str):
         raise HTTPException(status_code=404, detail=str(exc))
 
 
+@router.get("/species/{species}/datasets/{dataset}/adapters-by-source")
+def get_adapters_by_source(species: str, dataset: str):
+    """Adapters grouped by data source (for the source-first build wizard)."""
+    try:
+        return ci.group_adapters_by_source(species, dataset)
+    except ci.ConfigError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
 @router.get("/species/{species}/datasets/{dataset}/schema")
 def get_schema(species: str, dataset: str):
     """Shallow schema view (node/edge type names + per-source schema files)."""
@@ -186,7 +195,9 @@ def explore_schema(species: str, db: str = "neo4j"):
             schema = client.get_detailed_schema()
             counts = client.get_total_counts()
             top_entities = client.get_node_type_distribution()
-            top_connections = client.get_edge_type_distribution()
+            top_connections = client.get_edge_type_distribution()  # the top 30 only
+            # Count every relationship type, not the length of the capped list above.
+            edge_type_count = len(client.get_relationship_types())
         except Exception:  # noqa: BLE001 - instance down/unreachable
             return {"species": species, "db": db, "reachable": False,
                     "error": f"Could not reach Neo4j at {et.neo4j_uri_for(species)}."}
@@ -194,7 +205,7 @@ def explore_schema(species: str, db: str = "neo4j"):
             "species": species, "db": db, "reachable": True,
             "schema": schema,
             "node_types": len(schema.get("nodes", [])),
-            "edge_types": len(top_connections or []),
+            "edge_types": edge_type_count,
             "node_count": counts.get("node_count"),
             "edge_count": counts.get("edge_count"),
             "top_entities": top_entities,
@@ -230,6 +241,8 @@ def explore_schema(species: str, db: str = "neo4j"):
             "edge_types": result.get("edge_type_count"),
             "sampled": result.get("sampled"),
             "atom_count": atom_count,
+            # Counted from a bounded read: at the cap it's a lower bound, not the total.
+            "atom_count_capped": atom_count is not None and atom_count >= client.ATOM_COUNT_CAP,
             "version": latest,
         }
 

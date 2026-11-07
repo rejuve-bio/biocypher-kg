@@ -10,7 +10,12 @@ from typing import Optional
 from backend.core.config import settings
 from backend.core.console import config_introspect as ci
 from backend.core.console.job_models import BuildRequest
-from backend.core.console.job_runner import build_argv, check_only_argv
+from backend.core.console.job_runner import (
+    build_argv,
+    check_only_argv,
+    effective_input_dirs,
+    resolve_species_input,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -123,32 +128,91 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
                 )
 
     # --- dbSNP requirement for non-sample species-mode runs ---
-    # The pipeline hard-exits on a non-sample run without both cache root and variant.
-    if req.species and req.dataset != "sample":
+    # The pipeline filters to the selected adapters first and only loads dbSNP (and
+    # only then hard-exits without a cache) when one of them takes dbsnp_rsid_map /
+    # dbsnp_pos_map. Mirror that, so a build without variant sources needs no cache.
+    # An all-species run can't be inspected here, so stay conservative and require it.
+    needs_dbsnp = bool(req.species) and req.species.lower() == "all"
+    dbsnp_adapters: list = []
+    if adapters_dict is not None:
+        effective = adapters_dict
+        if req.include_adapters:
+            wanted = {a.lower() for a in req.include_adapters}
+            effective = {k: v for k, v in adapters_dict.items() if k.lower() in wanted}
+        dbsnp_adapters = [
+            k for k, v in effective.items() if isinstance(v, dict) and ci.adapter_needs_dbsnp(v)
+        ]
+        needs_dbsnp = bool(dbsnp_adapters)
+    if req.species and req.dataset != "sample" and needs_dbsnp:
         try:
             entry = ci._dataset_entry(req.species, req.dataset)
         except ci.ConfigError:
             entry = {}
         eff_root = (req.dbsnp_cache_root or entry.get("dbsnp_cache_root") or "").strip()
         eff_variant = (req.dbsnp_variant or entry.get("dbsnp_variant") or "").strip()
+        who = (
+            f" by the selected variant adapters ({', '.join(dbsnp_adapters[:4])}"
+            f"{', ...' if len(dbsnp_adapters) > 4 else ''})" if dbsnp_adapters else ""
+        )
         if not eff_root:
             static_errors.append(
-                "dbSNP cache root is required for non-sample runs — provide the dbSNP "
-                "cache path (or set dbsnp_cache_root in species_config.yaml)."
+                f"The dbSNP cache is required{who}. Prepare it from the console, or "
+                "provide a cache path (or set dbsnp_cache_root in species_config.yaml)."
             )
         if not eff_variant:
             static_errors.append(
-                "dbSNP variant is required for non-sample runs — choose 'common' or 'full'."
+                f"A dbSNP variant is required{who}: choose 'common' or 'full'."
             )
         elif eff_variant not in ("common", "full"):
             static_errors.append(
                 f"dbSNP variant must be 'common' or 'full' (got '{eff_variant}')."
             )
+        elif eff_root:
+            # Catch a wrong or broken cache now rather than when the build reaches the
+            # variant adapters. Only the SQLite cache counts: the pipeline would also
+            # load a dbsnp_mapping.pkl, and a pickle from someone else's folder can run
+            # code (see data_checks).
+            from backend.core.console import data_checks
+
+            cache_dir = _resolve(eff_root) / eff_variant
+            problem = data_checks.check_dbsnp_variant(cache_dir, eff_variant)
+            if problem and not (cache_dir / "dbsnp_mapping.db").is_file():
+                static_errors.append(
+                    f"No dbSNP '{eff_variant}' cache found at {cache_dir}. Prepare it from "
+                    "the console, or point the cache path at a root containing "
+                    f"{eff_variant}/dbsnp_mapping.db."
+                )
+            elif problem:
+                static_errors.append(
+                    f"The dbSNP '{eff_variant}' cache at {cache_dir} can't be used: {problem} "
+                    "Prepare it again from the console."
+                )
+
+    # --- a data folder chosen in Settings must exist (else every file looks missing) ---
+    if (req.species and req.species.lower() != "all" and req.dataset != "sample"
+            and not req.input_dir):
+        readonly = resolve_species_input(req.species)["readonly"]
+        if readonly and not Path(readonly).is_dir():
+            static_errors.append(
+                f"Can't find the data folder set for {req.species} ({readonly}). Pick it "
+                "again in Settings > Data locations, or clear it to download instead."
+            )
+        elif readonly:
+            from backend.core.console import data_checks
+
+            problem = data_checks.check_species_folder(req.species, Path(readonly))["problem"]
+            if problem:
+                static_errors.append(
+                    f"The data folder set for {req.species} ({readonly}) can't be used: "
+                    f"{problem} Choose another in Settings > Data locations, or clear it."
+                )
 
     # --- authoritative path check via --check-only ---
+    # Check the same input folders the build will read (your read-only folder, then
+    # the download folder), not the config's own input_dir.
     ran_check_only = False
     if run_check_only and adapters_config_abs and not static_errors:
-        argv = check_only_argv(adapters_config_abs, req.include_adapters, req.input_dir)
+        argv = check_only_argv(adapters_config_abs, req.include_adapters, effective_input_dirs(req))
         try:
             result = subprocess.run(
                 argv, cwd=str(settings.repo_root_path),

@@ -11,14 +11,17 @@ Species names come from species_config.yaml. Setting any NEO4J_URI_<SP> /
 MORK_URL_<SP> puts the console in per-species mode: each species resolves only to
 its own endpoint with no cross-species fallback, and a species with no endpoint has
 no instance (it is omitted from Explore, not shown mirroring another species). With
-nothing per-species set, the global NEO4J_URI / MORK_URL is used as a single default
-instance. Neo4j creds (NEO4J_USER / NEO4J_PASSWORD / NEO4J_DATABASE) are shared.
+nothing per-species set, a NEO4J_URI / MORK_URL set in the environment is used as a
+single default instance (never the built-in defaults). Each species' Neo4j login is
+its own; see connections.neo4j_login.
 """
 import os
 from functools import lru_cache
+from pathlib import Path
+from urllib.parse import urlparse, urlunparse
 
-from backend.core.config import settings
 from backend.core.console import config_introspect as ci
+from backend.core.console import runtime_config
 
 
 def species_list() -> list[str]:
@@ -35,8 +38,17 @@ def _env(name: str):
 
 
 def species_specific(species: str) -> bool:
-    """True if this species has at least one endpoint set explicitly."""
-    return bool(_env(f"NEO4J_URI_{species.upper()}") or _env(f"MORK_URL_{species.upper()}"))
+    """True if this species has at least one endpoint set explicitly (UI store or env)."""
+    o = runtime_config.species_override(species)
+    return bool(o.get("neo4j_uri") or o.get("mork_url")
+                or _env(f"NEO4J_URI_{species.upper()}") or _env(f"MORK_URL_{species.upper()}"))
+
+
+def _default_uri(name: str):
+    """A single default instance only when one is explicitly configured (environment
+    or an older saved setting), never the built-in placeholder address."""
+    saved = (runtime_config.load().get("global") or {}).get(name.lower())
+    return saved or _env(name)
 
 
 def _any_explicit() -> bool:
@@ -48,18 +60,18 @@ def neo4j_uri_for(species: str):
     """Per-species Neo4j URI. Never falls back to another species' instance: in
     per-species mode an unconfigured species returns None (not configured); the
     global default is used only in single-instance mode (nothing per-species set)."""
-    v = _env(f"NEO4J_URI_{species.upper()}")
+    v = runtime_config.species_override(species).get("neo4j_uri") or _env(f"NEO4J_URI_{species.upper()}")
     if v:
         return v
-    return None if _any_explicit() else (settings.NEO4J_URI or None)
+    return None if _any_explicit() else _default_uri("NEO4J_URI")
 
 
 def mork_url_for(species: str):
     """Per-species MORK URL, with the same no-cross-species-fallback rule."""
-    v = _env(f"MORK_URL_{species.upper()}")
+    v = runtime_config.species_override(species).get("mork_url") or _env(f"MORK_URL_{species.upper()}")
     if v:
         return v
-    return None if _any_explicit() else (settings.MORK_URL or None)
+    return None if _any_explicit() else _default_uri("MORK_URL")
 
 
 def list_targets() -> list[dict]:
@@ -83,28 +95,55 @@ def list_targets() -> list[dict]:
                 out.append({"species": sp, "explicit": True, "neo4j_uri": nu, "mork_url": mu})
         return out
 
-    nu = settings.NEO4J_URI or None
-    mu = settings.MORK_URL or None
+    nu = _default_uri("NEO4J_URI")
+    mu = _default_uri("MORK_URL")
     if not (nu or mu):
         return []
     return [{"species": "default", "explicit": False, "neo4j_uri": nu, "mork_url": mu}]
 
 
+_LOCAL_HOSTS = ("localhost", "127.0.0.1", "::1")
+
+
+def connect_address(address):
+    """The address to actually connect to. People type and see "localhost" for a
+    database on their computer, but inside Docker localhost is the console itself,
+    so the connection goes to host.docker.internal instead. Only connections use
+    this; what's saved and shown stays as typed."""
+    if not address or not Path("/.dockerenv").exists():
+        return address
+    p = urlparse(address)
+    if p.hostname not in _LOCAL_HOSTS:
+        return address
+    host = "[::1]" if p.hostname == "::1" else p.hostname
+    netloc = p.netloc.replace(host, "host.docker.internal", 1)
+    return urlunparse(p._replace(netloc=netloc))
+
+
 @lru_cache(maxsize=None)
-def _neo4j_client_for_uri(uri: str):
+def _neo4j_client_for(uri: str, user: str, password: str, database: str):
     from backend.core.neo4j_client import Neo4jClient
-    return Neo4jClient(uri=uri)
+    return Neo4jClient(uri=uri, user=user, password=password, database=database)
 
 
 def get_neo4j_client(species: str):
-    uri = neo4j_uri_for(species)
-    return _neo4j_client_for_uri(uri) if uri else None
+    """A client for the species' Neo4j, logged in with that species' own login."""
+    from backend.core.console import connections  # local: connections imports this module
+
+    login = connections.neo4j_login(species)
+    if not login:
+        return None
+    return _neo4j_client_for(connect_address(login["uri"]), login["user"], login["password"],
+                             login["database"])
 
 
 def get_mork_client(species: str):
-    """Construct a MORK client for the species (its constructor probes the server)."""
+    """Construct a MORK client for the species (its constructor probes the server),
+    reading that species' own version metadata (see job_runner.archive_base_for)."""
+    from backend.core.console import job_runner
     from backend.core.mork_client import MORKClient
     url = mork_url_for(species)
     if not url:
         return None
-    return MORKClient(mork_url=url)
+    return MORKClient(mork_url=connect_address(url),
+                      archive_base=job_runner.archive_base_for(species))

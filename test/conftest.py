@@ -25,6 +25,9 @@ if KG_SERVICE.is_dir() and str(KG_SERVICE) not in EXISTING_PATHS:
 os.environ.setdefault("BUILDS_DIR", tempfile.mkdtemp(prefix="kg_console_builds_"))
 # The Console reads REPO_ROOT for config introspection / shelling out to the CLI.
 os.environ.setdefault("REPO_ROOT", ROOT_STR)
+# FastAPI's TestClient calls itself "testserver"; the console otherwise only answers
+# to localhost (see kg-service/backend/api/security.py).
+os.environ.setdefault("CONSOLE_ALLOWED_HOSTS", "testserver")
 
 
 def pytest_addoption(parser):

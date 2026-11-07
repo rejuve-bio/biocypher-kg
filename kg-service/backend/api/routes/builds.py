@@ -9,6 +9,7 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, StreamingResponse
+from pydantic import BaseModel
 
 _GRAPH_INFO_KEYS = [
     "node_count", "edge_count", "dataset_count", "last_updated_at",
@@ -19,7 +20,7 @@ _GRAPH_INFO_KEYS = [
 ]
 
 from backend.core.console import job_runner
-from backend.core.console.job_models import BuildJob, BuildRequest, JobStatus
+from backend.core.console.job_models import BuildJob, BuildRequest, DownloadRequest, JobStatus
 from backend.core.console.job_registry import registry
 from backend.core.console.validation import validate_build
 
@@ -126,6 +127,55 @@ def list_builds(status: Optional[str] = Query(default=None)):
 @router.get("/builds/{job_id}")
 def get_build(job_id: str):
     return _enrich(_job_or_404(job_id))
+
+
+# ── Source-data download ──────────────────────────────────────────────────────
+
+@router.post("/downloads", status_code=201)
+def start_download(req: DownloadRequest):
+    """Fetch a species' source data into the local input dir (tracked like a build)."""
+    try:
+        job = job_runner.launch_download(req)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    if job is None:
+        raise HTTPException(status_code=400, detail="Could not start the download.")
+    return {"id": job.id, "status": job.status.value, "kind": job.kind, "job": job.to_dict()}
+
+
+@router.get("/downloads")
+def list_downloads(status: Optional[str] = Query(default=None)):
+    """List DOWNLOAD jobs, newest first (optional ?status= filter)."""
+    jobs = [j for j in registry.list(status=status) if (j.kind or "") == "download"]
+    return {"downloads": [j.to_dict() for j in jobs]}
+
+
+class DbsnpPrepareRequest(BaseModel):
+    variant: str = "common"
+
+
+@router.get("/dbsnp/status")
+def get_dbsnp_status(root: Optional[str] = Query(default=None)):
+    """Managed dbSNP cache: which variants are ready (size, build time) and any running
+    job. With ?root=<path>, also report whether that custom cache root is usable."""
+    return job_runner.dbsnp_status(root)
+
+
+@router.post("/dbsnp/prepare", status_code=201)
+def prepare_dbsnp(req: DbsnpPrepareRequest):
+    """Build the dbSNP cache for a variant into the data volume (tracked like a build)."""
+    try:
+        job = job_runner.launch_dbsnp_prepare(req.variant)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return {"id": job.id, "status": job.status.value, "kind": job.kind, "job": job.to_dict(),
+            "root": str(job_runner.dbsnp_root())}
+
+
+@router.get("/species/{species}/data-status")
+def get_data_status(species: str):
+    """Which source data is present locally for a species, and how much disk it uses."""
+    return job_runner.data_status(species)
 
 
 @router.post("/builds/{job_id}/resume", status_code=201)
@@ -255,12 +305,62 @@ def download_output(job_id: str, path: str = Query(...)):
 
 
 @router.delete("/builds/{job_id}")
-def delete_build(job_id: str):
-    """Cancel a running/queued job, or remove a finished one from the registry."""
+def delete_build(job_id: str, purge_output: bool = Query(default=False)):
+    """Cancel a running/queued job, or remove a finished one from the registry.
+
+    With ?purge_output=true, also delete the build's output folder on disk (for
+    reclaiming space on a local machine). The registry's own job dir is always
+    removed; the large output under DATA_ROOT is only removed when purge is set."""
     job = _job_or_404(job_id)
     if job.status in {JobStatus.QUEUED, JobStatus.RUNNING}:
         job_runner.cancel(job_id)
         return {"id": job_id, "status": registry.get(job_id).status.value,
                 "action": "cancelled"}
+    purged = False
+    if purge_output and job.output_dir:
+        purged = job_runner.purge_output_dir(job.output_dir)
     registry.remove(job_id)
-    return {"id": job_id, "action": "removed"}
+    return {"id": job_id, "action": "removed", "output_purged": purged}
+
+
+@router.get("/disk")
+def disk_usage():
+    """Local disk usage for the console (data root total, builds, input, free space)."""
+    return job_runner.disk_usage()
+
+
+@router.get("/estimate")
+def build_estimate(species: str, dataset: str):
+    """Rough scope for a planned build, so users know what to expect before running.
+
+    Returns what the most recent successful build of this species+dataset actually
+    produced (node/edge counts + output size) plus how much source data is present
+    locally. A real pre-build count is impossible without running adapters, so this
+    uses the last real build as the honest reference."""
+    last = None
+    for j in registry.list(status="succeeded"):
+        p = j.params or {}
+        if (j.kind or "build") == "build" and p.get("species") == species and p.get("dataset") == dataset:
+            gi = Path(j.output_dir) / "graph_info.json"
+            if gi.exists():
+                try:
+                    d = json.loads(gi.read_text())
+                    last = {
+                        "job_id": j.id,
+                        "node_count": d.get("node_count"),
+                        "edge_count": d.get("edge_count"),
+                        "data_size": d.get("data_size"),
+                        "created_at": j.created_at,
+                    }
+                except (json.JSONDecodeError, OSError):
+                    pass
+            break  # registry.list is newest-first
+    data = job_runner.data_status(species)
+    return {
+        "species": species,
+        "dataset": dataset,
+        "last_build": last,
+        "input_bytes": data.get("total_bytes", 0),
+        "input_present_sources": data.get("present_count", 0),
+        "input_total_sources": data.get("source_count", 0),
+    }

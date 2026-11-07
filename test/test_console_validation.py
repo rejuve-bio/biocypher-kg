@@ -38,31 +38,50 @@ def test_validate_unknown_adapter():
     assert any("Unknown adapters" in e for e in body["static_errors"])
 
 
-def test_validate_full_requires_dbsnp():
-    """Non-sample run without dbSNP cache/variant must be flagged invalid."""
+def test_validate_full_requires_dbsnp_for_variant_adapters():
+    """A full run with a dbSNP-dependent adapter (abc) must name the cache it lacks."""
     r = client.post("/api/console/builds/validate", json={
-        "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
+        "species": "hsa", "dataset": "full", "include_adapters": ["abc"],
     })
     body = r.json()
     assert body["valid"] is False
     joined = " ".join(body["static_errors"])
-    assert "dbSNP cache root is required" in joined
-    assert "dbSNP variant is required" in joined
+    assert "The dbSNP cache is required by the selected variant adapters (abc)" in joined
+    assert "A dbSNP variant is required" in joined
 
 
-def test_validate_full_with_dbsnp_clears_dbsnp_errors():
-    """Providing cache root + variant removes the dbSNP errors (paths may still fail)."""
+def test_validate_full_without_variant_adapters_needs_no_dbsnp():
+    """Like the pipeline, only require dbSNP when a selected adapter takes the maps."""
     r = client.post("/api/console/builds/validate", json={
         "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
-        "dbsnp_cache_root": "/tmp/dbsnp", "dbsnp_variant": "common",
     })
-    joined = " ".join(r.json()["static_errors"])
-    assert "dbSNP" not in joined
+    assert "dbSNP" not in " ".join(r.json()["static_errors"])
+
+
+def test_validate_full_with_dbsnp_clears_dbsnp_errors(tmp_path):
+    """A cache root holding <variant>/dbsnp_mapping.db satisfies the requirement."""
+    from dbsnp_cache_helper import make_dbsnp_cache
+
+    make_dbsnp_cache(tmp_path / "common", "common")
+    r = client.post("/api/console/builds/validate", json={
+        "species": "hsa", "dataset": "full", "include_adapters": ["abc"],
+        "dbsnp_cache_root": str(tmp_path), "dbsnp_variant": "common",
+    })
+    assert "dbSNP" not in " ".join(r.json()["static_errors"])
+
+
+def test_validate_flags_missing_dbsnp_cache_dir(tmp_path):
+    """A cache root without the chosen variant is caught before the build runs."""
+    r = client.post("/api/console/builds/validate", json={
+        "species": "hsa", "dataset": "full", "include_adapters": ["abc"],
+        "dbsnp_cache_root": str(tmp_path), "dbsnp_variant": "common",
+    })
+    assert any("No dbSNP 'common' cache found" in e for e in r.json()["static_errors"])
 
 
 def test_validate_bad_dbsnp_variant():
     r = client.post("/api/console/builds/validate", json={
-        "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
+        "species": "hsa", "dataset": "full", "include_adapters": ["abc"],
         "dbsnp_cache_root": "/tmp/dbsnp", "dbsnp_variant": "rare",
     })
     assert any("must be 'common' or 'full'" in e for e in r.json()["static_errors"])
@@ -106,12 +125,11 @@ def test_validate_sample_passes():
 def test_validate_full_reports_missing_paths():
     """Full dataset input files aren't present locally; expect missing paths.
 
-    dbSNP cache/variant are supplied so validation gets past the dbSNP requirement
-    and actually runs the --check-only path check.
+    gencode_gene takes no dbSNP maps, so no cache is needed and validation goes
+    straight to the --check-only path check.
     """
     r = client.post("/api/console/builds/validate", json={
         "species": "hsa", "dataset": "full", "include_adapters": ["gencode_gene"],
-        "dbsnp_cache_root": "/tmp/dbsnp", "dbsnp_variant": "common",
     })
     body = r.json()
     assert body["valid"] is False
