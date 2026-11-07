@@ -4,6 +4,7 @@ from version_manager import VersionManager
 from pathlib import Path
 from datetime import datetime
 import logging
+import os
 import argparse
 import re
 import sys
@@ -23,10 +24,21 @@ def _fmt_elapsed(seconds):
     return f"{int(hours)}h {int(minutes)}m {seconds:.1f}s"
 
 
+def fully_loaded(changed_datasets, failed_files) -> set:
+    """The changed datasets whose every file loaded. A dataset with ANY failed file
+    isn't loaded: finalizing it would store the hashes of all its files, so a retry
+    would see it as unchanged and skip the failed file forever."""
+    failed = {Path(f).parts[0] for f in failed_files}
+    return set(changed_datasets) - failed
+
+
 class Neo4jLoader:
     def __init__(self, uri, username, password, output_dir, archive_dir,
-                 import_batch_size: int = 50000, import_dir: str = None):
+                 import_batch_size: int = 50000, import_dir: str = None,
+                 database: str = None):
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
+        # None = the server's default database.
+        self.database = database or None
         self.output_dir = Path(output_dir)
         self.archive_dir = Path(archive_dir)
         self.import_batch_size = import_batch_size
@@ -48,7 +60,7 @@ class Neo4jLoader:
     def verify_connection(self):
         """Verify Neo4j connection"""
         try:
-            with self.driver.session() as session:
+            with self.driver.session(database=self.database) as session:
                 session.run("RETURN 1").consume()
             logger.info("✅ Neo4j connection verified")
             return True
@@ -80,7 +92,7 @@ class Neo4jLoader:
         logger.info("Starting surgical delete...")
         logger.info("="*60)
 
-        with self.driver.session() as session:
+        with self.driver.session(database=self.database) as session:
             for dataset in changed_datasets:
                 source = self.get_dataset_source_name(dataset)
 
@@ -132,7 +144,7 @@ class Neo4jLoader:
 
         deleted_node_sources = set()
 
-        with self.driver.session() as session:
+        with self.driver.session(database=self.database) as session:
             for file_path in changed_files:
                 path = Path(file_path)
                 file_name = path.name
@@ -226,7 +238,7 @@ class Neo4jLoader:
         fallback_source = dataset_folder.upper()
 
         try:
-            with self.driver.session() as session:
+            with self.driver.session(database=self.database) as session:
                 result = session.run(
                     """
                     MATCH (dm:DatasetMapping {folder: $folder, db_type: "neo4j"})
@@ -302,7 +314,7 @@ class Neo4jLoader:
             if current_query:
                 queries.append('\n'.join(current_query))
 
-            with self.driver.session() as session:
+            with self.driver.session(database=self.database) as session:
                 for query in queries:
                     query = query.strip()
                     if not query:
@@ -370,7 +382,7 @@ class Neo4jLoader:
         
         logger.info(f"  Adding metadata to [{folder_name}]...")
         
-        with self.driver.session() as session:
+        with self.driver.session(database=self.database) as session:
             mapping_result = session.run("""
                 MATCH (dm:DatasetMapping {folder: $folder, db_type: "neo4j"})
                 RETURN dm.source as source
@@ -505,7 +517,6 @@ class Neo4jLoader:
         ordered_files = sorted(changed_files, key=lambda p: (0 if Path(p).name.startswith("nodes_") else 1))
 
         failed_files = {}
-        loaded_datasets = set()
         dataset_time = {}   # dataset (top-level folder, e.g. species name in multi-species mode) -> seconds
 
         for file_path in ordered_files:
@@ -516,16 +527,9 @@ class Neo4jLoader:
 
             if not success:
                 failed_files[file_path] = "see error above"
-            else:
-                loaded_datasets.add(dataset)
 
-        failed_datasets = set()
-        for file_path in failed_files:
-            dataset = Path(file_path).parts[0]
-            if dataset not in loaded_datasets:
-                failed_datasets.add(dataset)
-
-        ok_datasets = set(changed_datasets) - failed_datasets
+        failed_datasets = set(changed_datasets) - fully_loaded(changed_datasets, failed_files)
+        ok_datasets = fully_loaded(changed_datasets, failed_files)
 
         # Only finalize for loaded datasets; storing hashes with nothing loaded poisons change detection and blocks retry.
         if ok_datasets:
@@ -619,6 +623,9 @@ def main():
                         help="Neo4j username (env: NEO4J_USERNAME, default: neo4j)")
     parser.add_argument("--password",
                         help="Neo4j password (env: NEO4J_PASSWORD)")
+    parser.add_argument("--database",
+                        help="Neo4j database to load into (env: NEO4J_DATABASE, "
+                             "default: the server's default database)")
     parser.add_argument("--build-id",
                         default=f"build-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
                         help="Build ID")
@@ -634,10 +641,12 @@ def main():
                              "configured to the output dir. Omit when running via Docker.")
     args = parser.parse_args()
 
-    # Merge env-file values: CLI flags take precedence over env-file
-    env = {}
+    # Precedence: CLI flags, then the env file, then the process environment (how
+    # the console passes the password: a command line is visible to every process
+    # and ends up in logs, an environment variable doesn't).
+    env = dict(os.environ)
     if args.env_file:
-        env = _load_env_file(args.env_file)
+        env.update(_load_env_file(args.env_file))
         logger.info(f"Loaded config from {args.env_file}")
 
     def resolve(cli_val, env_key, flag, default=None, required=False):
@@ -656,6 +665,7 @@ def main():
     uri         = resolve(args.uri,                 "NEO4J_URI",                "--uri",                required=True)
     username    = resolve(args.username,            "NEO4J_USERNAME",           "--username",           default="neo4j")
     password    = resolve(args.password,            "NEO4J_PASSWORD",           "--password",           required=True)
+    database    = resolve(args.database,            "NEO4J_DATABASE",           "--database")
     batch_size  = int(resolve(args.import_batch_size, "NEO4J_IMPORT_BATCH_SIZE", "--import-batch-size", default=50000))
 
     loader = Neo4jLoader(
@@ -666,6 +676,7 @@ def main():
         archive_dir,
         import_batch_size=batch_size,
         import_dir=args.import_dir,
+        database=database,
     )
 
     try:

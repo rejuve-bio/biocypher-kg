@@ -48,6 +48,16 @@ class MORKVersionManager:
         
         return hashes
     
+    def invalidate_metadata(self):
+        """Forget what was loaded. After the namespace has been cleared, the stored
+        hashes describe a graph that's gone: keeping them would make the next load
+        of that build report "no changes" and skip it."""
+        try:
+            self.metadata_file.unlink()
+            print(f"  Version metadata removed ({self.metadata_file}); the next load is a full reload.")
+        except FileNotFoundError:
+            pass
+
     def get_stored_metadata(self):
         """Retrieve stored metadata from JSON file"""
         if not self.metadata_file.exists():
@@ -234,28 +244,30 @@ def clear_annotation_namespace(server):
         print(f"  ⚠️  Error clearing namespace: {e}")
 
 
-def load_metta_files(server, data_dir):
-    """Load all .metta files from the given directory into MORK."""
-    path = Path(data_dir)
+def find_metta_files(data_dir):
+    """The .metta files to load, as absolute paths. Checked before anything is
+    cleared, so a wrong or empty directory never costs the loaded graph."""
+    path = Path(data_dir).resolve()  # absolute, so file:// URIs below are too
     if not path.exists():
         raise ValueError(f"[FAILED] Data directory '{path}' not found.")
-    
-    files = list(path.rglob("*.metta"))
+    files = sorted(path.rglob("*.metta"))
     if not files:
         raise ValueError(f"[WARNING] No .metta files found in '{path}'.")
-    
+    return files
+
+
+def load_metta_files(server, files):
+    """Load the given .metta files (from find_metta_files) into MORK."""
     print(f"\n[FILE] Found {len(files)} .metta files. Starting import...")
 
     successful_files = 0
     failed_files = 0
-    
-    data_dir_abs = Path(data_dir).resolve()
+
     with server.work_at("annotation") as scope:
         for file_path in files:
-            # Absolute host path — bind-mounted at the same location in the MORK container.
-            file_uri = f"file://{file_path.resolve()}"
-            relative_path = file_path.relative_to(data_dir_abs)
-            
+            # Absolute host path, bind-mounted at the same location in the MORK container.
+            file_uri = f"file://{file_path}"
+
             folder_path = file_path.parent.name
             print(f"  ...Importing {folder_path}/{file_path.name}")
             try:
@@ -354,9 +366,20 @@ def main():
         print(f"  Archiving [{dataset}] to {version}...")
         version_manager.archive_dataset(dataset, version)
     
+    # Find the files first: a wrong or empty directory must fail before the clear.
+    try:
+        files = find_metta_files(args.data_dir)
+    except ValueError as e:
+        print(f"\n❌ {e}\n   Nothing was changed in MORK.\n")
+        sys.exit(1)
+
     clear_annotation_namespace(server)
 
-    successful, failed = load_metta_files(server, args.data_dir)
+    try:
+        successful, failed = load_metta_files(server, files)
+    except Exception:
+        version_manager.invalidate_metadata()  # the old graph is gone already
+        raise
 
     # Verify by atom count (source of truth), not the import call; before metadata write so the marker atom isn't counted.
     print(f"\n🔎 Verifying ingestion (querying annotation namespace)...")
@@ -374,8 +397,11 @@ def main():
         print(f"❌ MORK LOAD FAILED")
         print(f"   Files loaded: {successful} / {successful + failed}   (failed: {failed})")
         print(f"   Atoms in MORK: {loaded_atoms}")
-        print(f"   Version metadata NOT updated — fix the cause above and retry.")
+        print(f"   Fix the cause above and retry.")
         print("="*60 + "\n")
+        # The namespace was cleared: drop the old hashes, or reloading the last
+        # good build would be skipped as "no changes", leaving this partial graph.
+        version_manager.invalidate_metadata()
         sys.exit(1)
 
     version_manager.store_metadata(version_info, args.build_id)

@@ -47,3 +47,14 @@ def test_finalize_stores_hashes_only_for_loaded_datasets(tmp_path, monkeypatch):
     # retry re-attempts it instead of being skipped as "unchanged".
     assert captured == {"gencode": "hashA"}
     assert "tadmap" not in captured
+
+
+def test_a_dataset_with_any_failed_file_is_not_finalized():
+    """One file of gencode loaded and one failed: gencode isn't finalized (its hash
+    stays unstored, so a retry loads the failed file), tadmap is."""
+    from neo4j_loader import fully_loaded
+
+    changed = ["gencode", "tadmap"]
+    failed = {"gencode/gene/edges_gene_transcript.cypher": "error"}
+    assert fully_loaded(changed, failed) == {"tadmap"}
+    assert fully_loaded(changed, {}) == {"gencode", "tadmap"}

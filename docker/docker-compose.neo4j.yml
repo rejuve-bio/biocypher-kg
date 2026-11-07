@@ -39,6 +39,9 @@ services:
       # Set the import root to "/" so absolute file:///<abs> URLs resolve to the real
       # absolute path (Neo4j resolves file:// relative to this root). Combined with the
       # same-path bind mount below, this lets the loader import from ANY directory.
+      # Relative URLs (file:///ensembl/...) now resolve from "/", so loads of the
+      # /import mount must pass that prefix: `make neo4j-load` and
+      # `make neo4j-load-direct` do (NEO4J_CONTAINER_IMPORT, default /import).
       NEO4J_server_directories_import: "/"
 
       # Memory tuning
