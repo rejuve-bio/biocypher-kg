@@ -21,8 +21,8 @@ gencode_gene:
       label: gene
       taxon_id: 9606
   outdir: ensembl/gene
-  nodes: True
-  edges: False
+  nodes: true
+  edges: false
 
 gencode_transcripts:
   adapter:

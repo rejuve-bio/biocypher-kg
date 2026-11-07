@@ -14,6 +14,45 @@ A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher
 
 Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` do not yet exist.
 
+## Web Console
+
+A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK — an alternative to the CLI. It runs the whole stack (Console + Neo4j, plus optional MORK) with a single Docker command.
+
+```bash
+cp docker/console.env.example docker/console.env   # set DATA_ROOT + NEO4J_PASSWORD
+./docker/up.sh                                      # then open http://localhost:9000/console/
+```
+
+`up.sh` connects to an existing Neo4j/MORK on the configured port, or starts a bundled one if none is found. Build output lands under `DATA_ROOT` and build history persists across rebuilds. Options — ports, remote `NEO4J_HOST`/`MORK_HOST`, memory — are documented in [`docker/console.env.example`](docker/console.env.example).
+
+**Building a KG in the console:**
+
+- **Sample** builds work offline from bundled data: pick a species, choose adapters, Launch build, then Load into Neo4j/MORK and open Explore.
+- **Full** builds need the source data. The wizard shows what is present for the species and a **Download data** button that fetches it into the console's local input dir (`DATA_ROOT/input/<species>`); full builds then read from there automatically. This wraps `biocypher_dataset_downloader` so the whole acquire → build → load flow stays in the UI.
+- An optional **size limit** caps nodes/edges per adapter for quick, bounded sample graphs; **Build history** shows disk usage and lets you delete a build (and its output files) to reclaim space.
+
+**Setting it up (Settings page):** everything a researcher needs is set in the console, with no env file.
+
+- **Species databases:** each species has its own Neo4j and MORK. *Run here* has the console create and start them (it uses the Docker socket the compose files mount); *Use existing* connects one you already run, with its own address and login, checked before it's saved. For a database on this computer type `localhost:7687`; the console reaches it through `host.docker.internal` itself. A connection to another computer that isn't encrypted (`bolt://`, `http://`) is flagged.
+- **Data locations:** Browse… opens Finder. Browsers never tell a page where a folder is, so the console finds the chosen folder by its name and contents, then checks it holds what the code reads: that species' source files, or a real dbSNP cache (`<root>/common|full/dbsnp_mapping.db`, the SQLite cache `scripts/update_dbsnp.py` builds; pickle caches are refused). Saving Settings and starting a build run the same checks.
+- **Folders the console can see:** the compose files share Desktop, Documents, Downloads and `/Volumes` read-only, plus the console data folder. Don't share the whole home folder instead: Docker Desktop passes every file change in a shared folder to its VM, and a home folder changes so often that the engine crashes.
+
+**No checkout needed:** [`docker/docker-compose.dist.yml`](docker/docker-compose.dist.yml) only pulls the published image and runs it; everything else is set in Settings.
+
+```bash
+CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d
+```
+
+**Security:** the console has no sign-in, so it only listens on this computer (published on `127.0.0.1`). It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy or another hostname, list the names in `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` (comma-separated) and put a sign-in in front of it. The API docs are off unless `CONSOLE_API_DOCS=1`.
+
+**Avoiding a local image build:** the console image can be built locally, or pulled prebuilt (CI publishes it to GHCR). To skip the local build (and the Docker Hub dependency it needs), pull the image and run without building:
+
+```bash
+export CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest
+docker compose -f docker/docker-compose.yml pull console
+./docker/up.sh --no-build
+```
+
 ## Prerequisites
 
 - Python 3.10+  

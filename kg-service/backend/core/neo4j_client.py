@@ -6,19 +6,26 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Neo4jClient:
-    def __init__(self):
+    def __init__(self, uri: str = None, user: str = None, password: str = None,
+                 database: str = None):
+        # Defaults read the live settings object, which runtime_config.apply() keeps
+        # in sync with the UI store, so a freshly built client uses current config.
+        # Per-species instances share creds and the database name; only the URI
+        # differs, so that is all callers typically override.
+        self.uri = uri or settings.NEO4J_URI
+        self.database = database or settings.NEO4J_DATABASE
         self.driver = GraphDatabase.driver(
-            settings.NEO4J_URI,
-            auth=(settings.NEO4J_USER, settings.NEO4J_PASSWORD)
+            self.uri,
+            auth=(user or settings.NEO4J_USER, password or settings.NEO4J_PASSWORD)
         )
-        logger.info(f"Connected to Neo4j at {settings.NEO4J_URI}")
+        logger.info(f"Connected to Neo4j at {self.uri}")
 
     def close(self):
         self.driver.close()
 
     def verify_connection(self) -> bool:
         try:
-            with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+            with self.driver.session(database=self.database) as session:
                 session.run("RETURN 1").consume()
             logger.info("[success:] Neo4j connection verified")
             return True
@@ -29,12 +36,12 @@ class Neo4jClient:
     # ===== DISCOVERY =====
 
     def get_labels(self) -> List[str]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("CALL db.labels() YIELD label RETURN label ORDER BY label")
             return [record["label"] for record in result]
 
     def get_relationship_types(self) -> List[str]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("CALL db.relationshipTypes() YIELD relationshipType RETURN relationshipType ORDER BY relationshipType")
             return [record["relationshipType"] for record in result]
     
@@ -44,7 +51,7 @@ class Neo4jClient:
         Always returns a dict with size_gb, even if None.
         """
         try:
-            with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+            with self.driver.session(database=self.database) as session:
                 result = session.run("""
                     CALL apoc.monitor.store()
                     YIELD totalStoreSize
@@ -62,7 +69,7 @@ class Neo4jClient:
         return {"size_gb": None, "method": "error"}
 
     def get_entity_properties(self, label: str) -> List[str]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE $label IN labels(n)
@@ -75,14 +82,14 @@ class Neo4jClient:
     # ===== COUNTS =====
 
     def get_total_counts(self) -> Dict[str, int]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             nodes = session.run("MATCH (n) RETURN count(n) as count").single()["count"]
             edges = session.run("MATCH ()-[r]->() RETURN count(r) as count").single()["count"]
             return {"node_count": nodes, "edge_count": edges}
 
     def get_node_type_distribution(self, limit: int = 20) -> list:
         """Get distribution of node types"""
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE NOT n:DatasetHash AND NOT n:DatasetVersion 
@@ -99,7 +106,7 @@ class Neo4jClient:
 
     def get_edge_type_distribution(self, limit: int = 30) -> list:
         """Get distribution of relationship types"""
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH ()-[r]->()
                 WITH type(r) as type, count(*) as count
@@ -112,7 +119,7 @@ class Neo4jClient:
                     for record in result]  # ← Changed "type" to "name"
 
     def get_last_updated(self) -> Optional[str]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE n.import_timestamp IS NOT NULL
@@ -125,7 +132,7 @@ class Neo4jClient:
 
     def get_entities(self, label: str, limit: int = 100, 
                      offset: int = 0, updated_since: Optional[str] = None) -> List[Dict]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             where = "WHERE $label IN labels(n)"
             params = {"label": label, "limit": limit, "offset": offset}
 
@@ -143,7 +150,7 @@ class Neo4jClient:
             return [dict(r["props"]) for r in result]
 
     def get_entity_by_id(self, label: str, entity_id: str) -> Optional[Dict]:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE $label IN labels(n) AND n.id = $id
@@ -152,7 +159,7 @@ class Neo4jClient:
             return dict(result["props"]) if result else None
 
     def get_entity_count(self, label: str) -> int:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE $label IN labels(n)
@@ -163,7 +170,7 @@ class Neo4jClient:
     # ===== UPDATES =====
 
     def get_updates_since(self, since_timestamp: str) -> Dict:
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (n)
                 WHERE n.import_timestamp > $since
@@ -194,7 +201,7 @@ class Neo4jClient:
 
     def get_detailed_schema(self) -> dict:
         """Get comprehensive schema with node properties and edge details"""
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             # Filter out metadata nodes
             node_result = session.run("""
                 MATCH (n)
@@ -251,7 +258,7 @@ class Neo4jClient:
 
     def get_frequent_relationships(self, limit: int = 50) -> list:
         """Get most frequent entity pair connections"""
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("""
                 MATCH (a)-[r]->(b)
                 WITH labels(a)[0] as source_type, 
@@ -273,7 +280,7 @@ class Neo4jClient:
 
     def get_datasets_with_metadata(self) -> list:
         """Get complete dataset metadata (batched to avoid memory issues)"""
-        with self.driver.session(database=settings.NEO4J_DATABASE) as session:
+        with self.driver.session(database=self.database) as session:
             # Get all datasets first
             datasets_result = session.run("""
                 MATCH (dv:DatasetVersion {db_type: "neo4j"})
@@ -335,4 +342,38 @@ class Neo4jClient:
                 })
             
             return datasets
-neo4j_client = Neo4jClient()
+
+
+class _DefaultNeo4jClient:
+    """Process-wide default Neo4j client used by the read endpoints.
+
+    It is a thin proxy: every attribute access resolves to an underlying
+    ``Neo4jClient`` built from the current settings, and that client is rebuilt
+    whenever ``runtime_config.version()`` changes (i.e. after a Settings save), so
+    UI edits to the connection take effect without restarting the process. The old
+    driver is closed on swap. Construction is lazy, so importing this module never
+    opens a connection on its own.
+    """
+
+    def __init__(self):
+        self._client: Optional[Neo4jClient] = None
+        self._version: Optional[int] = None
+
+    def _underlying(self) -> Neo4jClient:
+        from backend.core.console import runtime_config
+        v = runtime_config.version()
+        if self._client is None or v != self._version:
+            old, self._client, self._version = self._client, Neo4jClient(), v
+            if old is not None:
+                try:
+                    old.close()
+                except Exception:  # noqa: BLE001 - closing a stale driver must not raise
+                    pass
+        return self._client
+
+    def __getattr__(self, name):
+        # Only reached for names not set on the proxy itself (e.g. get_labels, close).
+        return getattr(self._underlying(), name)
+
+
+neo4j_client = _DefaultNeo4jClient()
