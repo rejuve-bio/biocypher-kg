@@ -22,3 +22,11 @@ output_*/
 # Docs/dev cruft
 .docx_render
 notebooks
+# Claude Code worktrees and session files (whole repo copies, with sample data)
+.claude
+# Local env files hold passwords and secrets. The compose files pass their values in
+# when containers start; they must never be baked into the image.
+**/*.env
+**/.env
+!**/*.env.example
+!**/.env.example

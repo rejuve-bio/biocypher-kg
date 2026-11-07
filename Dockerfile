@@ -1,16 +1,23 @@
-# syntax=docker/dockerfile:1
-#
 # BioCypher KG Console — single image running the FastAPI backend, serving the
 # built React frontend at /console, and able to launch KG builds (which shell out
 # to create_knowledge_graph.py). Because builds run with the repo root as cwd, the
 # whole repository and its pipeline dependencies live in this image.
 #
+# No "# syntax=" directive on purpose: it makes BuildKit pull docker/dockerfile
+# from Docker Hub before the build can start, which breaks on a flaky/offline
+# network. This Dockerfile uses only standard features, so the built-in frontend
+# is enough. Base images are ARGs so they can point at a mirror or local registry
+# when Docker Hub is unreachable (e.g. NODE_IMAGE=<mirror>/node:20-slim).
+#
 # Build:  docker build -t biocypher-kg-console .
 # Run:    docker run -p 9000:9000 biocypher-kg-console
 # Open:   http://localhost:9000/console/
 
+ARG NODE_IMAGE=node:20-slim
+ARG UV_IMAGE=ghcr.io/astral-sh/uv:python3.10-bookworm-slim
+
 # ---- Stage 1: build the frontend ----
-FROM node:20-slim AS frontend
+FROM ${NODE_IMAGE} AS frontend
 WORKDIR /fe
 COPY kg-service/frontend/package.json kg-service/frontend/package-lock.json ./
 RUN npm ci
@@ -18,7 +25,7 @@ COPY kg-service/frontend/ ./
 RUN npm run build          # -> /fe/dist
 
 # ---- Stage 2: python runtime (uv) ----
-FROM ghcr.io/astral-sh/uv:python3.10-bookworm-slim AS runtime
+FROM ${UV_IMAGE} AS runtime
 ENV DEBIAN_FRONTEND=noninteractive
 
 # System libraries required to build/run the heavy pipeline deps
