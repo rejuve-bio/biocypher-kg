@@ -86,7 +86,7 @@ export type JobStatus =
 export interface BuildJob {
   id: string;
   status: JobStatus;
-  kind?: string; // "build" | "load-neo4j" | "load-mork"
+  kind?: string; // "build" | "load-neo4j" | "load-mork" | "download" | "dbsnp"
   params: Record<string, unknown>;
   cmd: string[];
   cwd: string;

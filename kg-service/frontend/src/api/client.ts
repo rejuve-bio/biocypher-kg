@@ -35,6 +35,15 @@ export class ApiError extends Error {
   }
 }
 
+/** Human-readable byte size, e.g. 1536 -> "1.5 KB". */
+export function formatBytes(bytes: number | null | undefined): string {
+  if (!bytes || bytes <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+  const v = bytes / Math.pow(1024, i);
+  return `${v >= 10 || i === 0 ? Math.round(v) : v.toFixed(1)} ${units[i]}`;
+}
+
 export const api = {
   listSpecies: () =>
     json<{ species: SpeciesEntry[] }>(fetch(`${BASE}/species`)).then(
@@ -44,6 +53,11 @@ export const api = {
   listAdapters: (species: string, dataset: string) =>
     json<AdaptersResponse>(
       fetch(`${BASE}/species/${species}/datasets/${dataset}/adapters`),
+    ),
+
+  adaptersBySource: (species: string, dataset: string) =>
+    json<AdaptersBySource>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/adapters-by-source`),
     ),
 
   listWriters: () =>
@@ -86,6 +100,54 @@ export const api = {
   cancelBuild: (id: string) =>
     json<{ id: string; action: string }>(
       fetch(`${BASE}/builds/${id}`, { method: "DELETE" }),
+    ),
+
+  deleteBuild: (id: string, purgeOutput = false) =>
+    json<{ id: string; action: string; output_purged?: boolean }>(
+      fetch(`${BASE}/builds/${id}?purge_output=${purgeOutput}`, { method: "DELETE" }),
+    ),
+
+  // ── Source-data download + local disk ──
+  startDownload: (req: {
+    species: string;
+    source?: string | null;
+    sources?: string[];
+    no_checksum?: boolean;
+  }) =>
+    json<{ id: string; status: string; kind: string; job: BuildJob }>(
+      fetch(`${BASE}/downloads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req),
+      }),
+    ),
+
+  // ── dbSNP cache (prepared by the console into the data volume) ──
+  dbsnpStatus: (root?: string) =>
+    json<DbsnpStatus>(
+      fetch(`${BASE}/dbsnp/status${root ? `?root=${encodeURIComponent(root)}` : ""}`),
+    ),
+
+  prepareDbsnp: (variant: "common" | "full") =>
+    json<{ id: string; status: string; kind: string; root: string }>(
+      fetch(`${BASE}/dbsnp/prepare`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ variant }),
+      }),
+    ),
+
+  listDownloads: () =>
+    json<{ downloads: BuildJob[] }>(fetch(`${BASE}/downloads`)).then((d) => d.downloads),
+
+  dataStatus: (species: string) =>
+    json<DataStatus>(fetch(`${BASE}/species/${encodeURIComponent(species)}/data-status`)),
+
+  diskUsage: () => json<DiskUsage>(fetch(`${BASE}/disk`)),
+
+  estimate: (species: string, dataset: string) =>
+    json<BuildEstimate>(
+      fetch(`${BASE}/estimate?species=${encodeURIComponent(species)}&dataset=${encodeURIComponent(dataset)}`),
     ),
 
   resumeBuild: (id: string) =>
@@ -191,6 +253,74 @@ export const api = {
       fetch(`${BASE}/explore/schema?species=${encodeURIComponent(species)}&db=${db}`),
     ),
 
+  // ── Runtime settings (DB connections + build config) ──
+  getSettings: () => json<ConsoleSettings>(fetch(`${BASE}/settings`)),
+
+  saveSettings: (patch: SettingsPatch) =>
+    json<ConsoleSettings>(
+      fetch(`${BASE}/settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      }),
+    ),
+
+  dataLocations: () => json<DataLocationsInfo>(fetch(`${BASE}/settings/data-locations`)),
+
+  /** Subfolders the console can read (no path: where to start). kind "dbsnp" marks caches. */
+  /** Where a folder chosen in Finder is (browsers don't tell pages; the server finds it). */
+  locateFolder: (body: ChosenFolder & { kind?: FolderKind; species?: string }) =>
+    json<{ matches: string[] }>(
+      fetch(`${BASE}/settings/folders/locate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    ),
+
+  // ── Per-species Neo4j / MORK instances the console manages through Docker ──
+  instances: () => json<InstancesStatus>(fetch(`${BASE}/instances`)),
+
+  instanceAction: (species: string, kind: InstanceKind, action: InstanceAction) =>
+    json<{ species: string; kind: string; action: string }>(
+      fetch(`${BASE}/instances/${encodeURIComponent(species)}/${kind}/${action}`, {
+        method: "POST",
+      }),
+    ),
+
+  // ── What each species uses, and connecting your own databases ──
+  connections: (check = true) =>
+    json<{ species: SpeciesConnections[] }>(fetch(`${BASE}/connections?check=${check}`)),
+
+  connectExisting: (species: string, kind: InstanceKind, body: ExistingDatabase) =>
+    json<SpeciesConnections>(
+      fetch(`${BASE}/connections/${encodeURIComponent(species)}/${kind}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    ),
+
+  disconnect: (species: string, kind: InstanceKind) =>
+    json<SpeciesConnections>(
+      fetch(`${BASE}/connections/${encodeURIComponent(species)}/${kind}`, { method: "DELETE" }),
+    ),
+
+  /** Login of a Neo4j the console runs (for Neo4j Browser). Never your own database's. */
+  consoleLogin: (species: string) =>
+    json<{ user: string; password: string }>(
+      fetch(`${BASE}/connections/${encodeURIComponent(species)}/neo4j/login`),
+    ),
+
+  testConnection: (req: TestConnectionRequest) =>
+    json<TestResult>(
+      fetch(`${BASE}/settings/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req),
+      }),
+    ),
+
   outputDownloadUrl: (id: string, path: string) =>
     `${BASE}/builds/${id}/output/download?path=${encodeURIComponent(path)}`,
 };
@@ -208,6 +338,103 @@ export interface DataSource {
   key: string;
   name: string;
   urls: string[];
+}
+
+export interface SourceAdapter {
+  name: string;
+  nodes: boolean;
+  edges: boolean;
+  needs_dbsnp: boolean;
+}
+
+export interface AdapterGroup {
+  source: string;
+  name: string;
+  downloadable: boolean;
+  needs_dbsnp: boolean;
+  local_paths: string[];
+  present: boolean | null;
+  bytes: number | null;
+  urls: string[];
+  website: string | null;
+  // Where its data was found: "yours" (your read-only folder) or "console" (downloaded).
+  location: DataLocation | null;
+  adapters: SourceAdapter[];
+  adapter_count: number;
+  node_count: number;
+  edge_count: number;
+}
+
+export type DataLocation = "yours" | "console";
+
+export interface DbsnpVariantInfo {
+  present: boolean; // there and really a dbSNP cache
+  bytes: number;
+  built_at: string | null;
+  problem?: string | null; // why a file that's there can't be used
+  // The cache root a build should use for this variant (your read-only cache first).
+  root?: string;
+}
+
+export interface DbsnpStatus {
+  root: string; // where Prepare writes
+  readonly_root?: string | null; // a cache you already have, read-only
+  variants: Record<"common" | "full", DbsnpVariantInfo>;
+  job_id: string | null;
+  job_variant: string | null;
+  custom?: { root: string; variants: Record<"common" | "full", DbsnpVariantInfo> };
+}
+
+export interface AdaptersBySource {
+  species: string;
+  dataset: string;
+  input_dir: string;
+  groups: AdapterGroup[];
+}
+
+export interface DataStatusSource {
+  key: string;
+  name: string;
+  present: boolean;
+  bytes: number;
+  location?: DataLocation | null;
+}
+
+export interface DataStatus {
+  species: string;
+  input_dir: string; // downloads go here
+  input_origin?: "console" | "config";
+  readonly_dir?: string | null; // your data: read first, never written
+  exists: boolean;
+  manifest_present: boolean;
+  source_count: number;
+  present_count: number;
+  total_bytes: number;
+  sources: DataStatusSource[];
+}
+
+export interface DiskUsage {
+  data_root: string | null;
+  available: boolean;
+  free_bytes?: number;
+  total_bytes_fs?: number;
+  used_bytes?: number;
+  categories?: Record<string, number>;
+}
+
+export interface BuildEstimate {
+  species: string;
+  dataset: string;
+  last_build: {
+    job_id: string;
+    node_count: number | null;
+    edge_count: number | null;
+    data_size: string | null;
+    created_at: string | null;
+  } | null;
+  input_bytes: number;
+  input_present_sources: number;
+  input_total_sources: number;
 }
 
 export interface DataSources {
@@ -285,6 +512,148 @@ export interface ExploreTarget {
   mork_url: string | null;
 }
 
+export interface SpeciesEndpoint {
+  neo4j_uri?: string | null;
+  mork_url?: string | null;
+}
+
+export interface ConsoleSettings {
+  neo4j: { uri: string | null; user: string | null; database: string | null; password_set: boolean };
+  mork: { url: string | null };
+  build: {
+    data_root: string | null;
+    max_concurrent_builds: number | null;
+    max_output_builds: number | null;
+    max_build_history: number | null;
+  };
+  species: Record<string, SpeciesEndpoint>;
+  available_species: string[];
+}
+
+export interface SettingsPatch {
+  neo4j?: { uri?: string | null; user?: string | null; password?: string | null; database?: string | null };
+  mork?: { url?: string | null };
+  build?: {
+    data_root?: string | null;
+    max_concurrent_builds?: number | null;
+    max_output_builds?: number | null;
+    max_build_history?: number | null;
+  };
+  // A null value removes that species' overrides.
+  species?: Record<string, SpeciesEndpoint | null>;
+  // Folders that already hold data; null or "" clears an override.
+  data?: { input_dirs?: Record<string, string | null>; dbsnp_root?: string | null };
+}
+
+export type InstanceKind = "neo4j" | "mork";
+export type InstanceAction = "setup" | "stop" | "remove";
+
+/** What a folder field is for: a dbSNP cache, a species' source data, or the folder
+ * the console keeps its data in. The server checks the chosen folder really is that. */
+export type FolderKind = "dbsnp" | "source" | "writable";
+
+/** A folder chosen in Finder, as the browser describes it: its name and (a sample
+ * of) what's in it. count is how many entries it has, when the browser knows. */
+export interface ChosenFolder {
+  name: string;
+  entries: { name: string; dir: boolean; size?: number }[];
+  count: number | null;
+}
+
+/** Where a species' database comes from: run by the console, or your own. */
+export type ConnSource = "console" | "existing" | null;
+
+export interface ConnInfo {
+  source: ConnSource;
+  address: string | null;
+  from_env?: boolean; // preset when the console was installed, not set here
+  unencrypted?: boolean; // your own database on another computer, without encryption
+  // Present when checked: does it answer (and, for Neo4j, does the login work)?
+  ok?: boolean;
+  error?: string | null;
+  reason?: "auth" | "unreachable" | "database" | "address" | "other" | null;
+  // Neo4j only (MORK has no login).
+  user?: string;
+  database?: string;
+  password_set?: boolean;
+}
+
+export interface SpeciesConnections {
+  species: string;
+  neo4j: ConnInfo;
+  mork: ConnInfo;
+}
+
+export interface ExistingDatabase {
+  address: string;
+  user?: string;
+  password?: string;
+  database?: string;
+}
+
+export interface InstanceInfo {
+  name: string; // container name, e.g. neo4j-hsa
+  exists: boolean;
+  running: boolean;
+  state: string | null;
+  managed: boolean; // created by the console (vs. up.sh / by hand)
+  url: string; // how the console connects (bolt://neo4j-hsa:7687)
+  connected: boolean; // is the species' connection setting pointed at this instance?
+  open_url: string; // where to open it on this machine (Neo4j Browser)
+  progress: { state: "pulling" | "creating" | "starting" | "done" | "error"; message: string } | null;
+}
+
+export interface InstancesStatus {
+  docker: boolean; // can the console reach Docker to manage instances?
+  error?: string;
+  species: { species: string; neo4j: InstanceInfo; mork: InstanceInfo }[];
+}
+
+export interface SpeciesDataLocation {
+  species: string;
+  // Where downloads go: the console's own folder, or the adapters config's
+  // input_dir when that exists on this machine.
+  path: string;
+  origin: "console" | "config";
+  exists: boolean;
+  // A folder you chose: read first, never written.
+  readonly: string | null;
+  readonly_exists: boolean;
+  // Does your folder hold this species' data (the files its adapters read)?
+  readonly_check: { found: string[]; total: number; problem: string | null } | null;
+  override: string | null;
+  default: string;
+  config_dir: string | null;
+}
+
+export interface DataLocationsInfo {
+  in_docker: boolean;
+  species: SpeciesDataLocation[];
+  dbsnp: {
+    path: string; // where Prepare writes
+    override: string | null;
+    default: string;
+    readonly_root: string | null;
+    variants: Record<"common" | "full", DbsnpVariantInfo>;
+    readonly_variants: Record<"common" | "full", DbsnpVariantInfo> | null;
+    readonly_problem: string | null; // why your cache can't be used
+  };
+}
+
+export interface TestConnectionRequest {
+  target: "neo4j" | "mork";
+  uri?: string;
+  user?: string;
+  password?: string;
+  database?: string;
+  url?: string;
+}
+
+export interface TestResult {
+  reachable: boolean;
+  error?: string;
+}
+
 export interface ExploreSchema {
   species: string;
   db: "neo4j" | "mork";
@@ -296,6 +665,7 @@ export interface ExploreSchema {
   node_count?: number;
   edge_count?: number;
   atom_count?: number;
+  atom_count_capped?: boolean; // counted from a bounded read: a lower bound
   version?: string | null;
   sampled?: boolean;
   top_entities?: { name: string; count: number }[];

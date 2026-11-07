@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import yaml from "js-yaml";
 import { api, type EntrySummary } from "../api/client";
 
@@ -34,6 +34,27 @@ function coerce(s: string): unknown {
   if (/^-?\d+$/.test(t)) return parseInt(t, 10);
   if (/^-?\d+\.\d+$/.test(t)) return parseFloat(t);
   return s;
+}
+
+/** is_a is one parent or a list of them (shared gene/exon entries have several).
+ * Shown comma-separated, saved back as a string or a list; type names never
+ * contain commas. The text is kept locally so typing "a, " isn't undone. */
+function IsAInput({ value, onChange }: { value: unknown; onChange: (v: string | string[]) => void }) {
+  const [text, setText] = useState(Array.isArray(value) ? value.join(", ") : String(value ?? ""));
+  return (
+    <>
+      <input
+        className="input mono"
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+          const parts = e.target.value.split(",").map((p) => p.trim()).filter(Boolean);
+          onChange(parts.length > 1 ? parts : (parts[0] ?? ""));
+        }}
+      />
+      <span className="field-hint">Several parents: separate them with commas.</span>
+    </>
+  );
 }
 
 /** Editable list of key → scalar rows (adapter args). */
@@ -154,16 +175,25 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
   const [loading, setLoading] = useState(false);
   const [biolink, setBiolink] = useState<string[]>([]);
   const [msg, setMsg] = useState<{ kind: "ok" | "err" | "warn"; text: string } | null>(null);
+  // Which entry `data` was loaded for, and the latest entry request: a slower answer
+  // for an entry you've already left must never land in (and be saved into) another.
+  const [dataKey, setDataKey] = useState<string | null>(null);
+  const request = useRef(0);
+  const keyOf = (name: string) => [species, dataset, kind, name].join("\u0000");
 
   useEffect(() => {
+    let alive = true;
+    request.current += 1; // drop any entry still loading for the old config
     setSelected(null);
     setData(null);
+    setDataKey(null);
     setEntries(null);
     setInherited([]);
     setMsg(null);
     api.getConfigEntries(species, dataset, kind)
-      .then((r) => { setEntries(r.entries); setInherited(r.inherited ?? []); })
-      .catch((e) => setMsg({ kind: "err", text: msgOf(e) }));
+      .then((r) => { if (alive) { setEntries(r.entries); setInherited(r.inherited ?? []); } })
+      .catch((e) => alive && setMsg({ kind: "err", text: msgOf(e) }));
+    return () => { alive = false; };
   }, [species, dataset, kind]);
 
   useEffect(() => {
@@ -172,17 +202,24 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
 
   const openEntry = (name: string) => {
     const fromBase = inherited.some((e) => e.name === name);
+    const id = ++request.current;
+    const current = () => request.current === id;
     setSelected(name);
     setData(null);
+    setDataKey(null);
     setDirty(false);
     setMsg(null);
     setLoading(true);
     api
       // Inherited types live in the base schema; fetch them from there, read-only.
       .getConfigEntry(fromBase ? "base" : species, fromBase ? "base" : dataset, kind, name)
-      .then((r) => setData(r.data))
-      .catch((e) => setMsg({ kind: "err", text: msgOf(e) }))
-      .finally(() => setLoading(false));
+      .then((r) => {
+        if (!current()) return; // you've opened something else since
+        setData(r.data);
+        setDataKey(keyOf(name));
+      })
+      .catch((e) => current() && setMsg({ kind: "err", text: msgOf(e) }))
+      .finally(() => current() && setLoading(false));
   };
 
   const patch = (up: (d: Data) => void) => {
@@ -195,8 +232,11 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     setDirty(true);
   };
 
+  // Only data loaded (or started) for exactly this entry may be saved into it.
+  const canSave = !!selected && !!data && dataKey === keyOf(selected);
+
   const save = async () => {
-    if (!selected || !data) return;
+    if (!selected || !data || !canSave) return;
     setMsg(null);
     try {
       const res = await api.saveConfigEntry(species, dataset, kind, selected, data);
@@ -226,9 +266,11 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
       kind === "adapters"
         ? { adapter: { module: "", cls: "", args: {} }, outdir: "", nodes: true, edges: false }
         : { represented_as: "node", input_label: name, is_a: "", biolink_category: "", properties: {} };
+    request.current += 1; // a pending entry load mustn't replace the new one
     setEntries((prev) => [...(prev ?? []), { name }]);
     setSelected(name);
     setData(seed);
+    setDataKey(keyOf(name));
     setDirty(true);
   };
 
@@ -312,11 +354,11 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
               <h3 className="mono" style={{ margin: 0 }}>{selected}</h3>
               <div className="row">
                 <button className="secondary btn-sm" onClick={removeEntry}>Delete</button>
-                <button className="suggested btn-sm" disabled={!dirty} onClick={save}>Save entry</button>
+                <button className="suggested btn-sm" disabled={!dirty || !canSave} onClick={save}>Save entry</button>
               </div>
             </div>
 
-            {kind === "adapters" ? <AdapterForm data={data} patch={patch} /> : <SchemaForm data={data} patch={patch} biolink={biolink} />}
+            {kind === "adapters" ? <AdapterForm data={data} patch={patch} /> : <SchemaForm key={selected ?? ""} data={data} patch={patch} biolink={biolink} />}
 
             <details style={{ marginTop: 14 }}>
               <summary className="muted" style={{ fontSize: 12 }}>YAML (exactly as it will be written to the file)</summary>
@@ -377,7 +419,7 @@ function SchemaForm({ data, patch, biolink }: { data: Data; patch: (up: (d: Data
         <input className="input mono" value={String(data.input_label ?? "")} onChange={(e) => patch((d) => { d.input_label = e.target.value; })} />
       </Field>
       <Field label="is_a">
-        <input className="input mono" value={String(data.is_a ?? "")} onChange={(e) => patch((d) => { d.is_a = e.target.value; })} />
+        <IsAInput value={data.is_a} onChange={(v) => patch((d) => { d.is_a = v; })} />
       </Field>
       <Field label="Biolink category">
         <input className="input mono" list="biolink-cats" value={String(data.biolink_category ?? "")} onChange={(e) => patch((d) => { d.biolink_category = e.target.value; })} />

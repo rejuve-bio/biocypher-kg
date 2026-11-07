@@ -28,6 +28,11 @@ function humanSize(bytes: number): string {
   return `${n.toFixed(1)} ${units[i]}`;
 }
 
+// A MORK load isn't surgical like Neo4j's: if anything changed, the loader clears
+// MORK's annotation space and imports only this build's files.
+const MORK_REPLACES =
+  "If anything changed, MORK is cleared and refilled from this build alone: datasets that aren't in this build (for example from other adapters) are removed. If nothing changed, it's skipped.";
+
 export default function BuildDetail() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
@@ -60,7 +65,12 @@ export default function BuildDetail() {
         if (!alive) return;
         if (out?.exists) setFiles(out.files);
         if (gi?.present) setGraphInfo(gi.summary ?? null);
-        if (!TERMINAL.has(j.status)) {
+        // Keep polling while the build runs, and while any of its loads does: a
+        // finished build whose load is still going must show the load finishing.
+        const loadActive = Object.values(j.loads ?? {}).some(
+          (l) => l.status === "queued" || l.status === "running",
+        );
+        if (!TERMINAL.has(j.status) || loadActive) {
           timer = setTimeout(tick, 2000);
         }
       } catch (e) {
@@ -132,9 +142,12 @@ export default function BuildDetail() {
         onClick={() =>
           setPending({
             title: loaded ? `Reload ${T}?` : `Load into ${T}?`,
-            message: loaded
-              ? `${T} already holds this build. Reloading re-runs the surgical update on your live ${T} database, and it is skipped automatically if nothing has changed.`
-              : `This writes to your live ${T} database. Only datasets that changed are updated (a surgical load); everything else is left in place.`,
+            message:
+              target === "mork"
+                ? MORK_REPLACES
+                : loaded
+                  ? `${T} already holds this build. Reloading re-runs the surgical update on your live ${T} database, and it is skipped automatically if nothing has changed.`
+                  : `This writes to your live ${T} database. Only datasets that changed are updated (a surgical load); everything else is left in place.`,
             confirmLabel: loaded ? `Reload ${T}` : `Load ${T}`,
             run: () => onLoad(target),
           })
@@ -142,7 +155,9 @@ export default function BuildDetail() {
         disabled={inProgress}
         title={
           loaded
-            ? `Already loaded to ${T}. Reload re-syncs (surgical: skipped if unchanged) — useful if ${T} was reset.`
+            ? target === "mork"
+              ? "Already loaded to MORK. Reloading replaces MORK's data with this build (skipped if unchanged)."
+              : `Already loaded to ${T}. Reload re-syncs (surgical: skipped if unchanged), useful if ${T} was reset.`
             : inProgress
               ? `Loading into ${T}…`
               : undefined
@@ -169,7 +184,9 @@ export default function BuildDetail() {
           <div className="row">
             <JobStatusBadge status={job.status} />
             {!isBuild && (
-              <span className="tag edge">{(job.kind ?? "").replace("load-", "load→")}</span>
+              <span className="tag edge">
+                {job.kind === "dbsnp" ? "dbSNP cache" : (job.kind ?? "").replace("load-", "load→")}
+              </span>
             )}
             <span className="mono muted">{job.id}</span>
           </div>
@@ -206,9 +223,9 @@ export default function BuildDetail() {
                 onClick={() =>
                   setPending({
                     title: "Retry this load?",
-                    message: `This re-runs the failed load into your live ${
-                      (job.kind ?? "").includes("mork") ? "MORK" : "Neo4j"
-                    } database. Only changed datasets are applied (a surgical update).`,
+                    message: (job.kind ?? "").includes("mork")
+                      ? `This re-runs the failed load into MORK. ${MORK_REPLACES}`
+                      : "This re-runs the failed load into your live Neo4j database. Only changed datasets are applied (a surgical update).",
                     confirmLabel: "Retry load",
                     run: onRetry,
                   })
@@ -222,10 +239,8 @@ export default function BuildDetail() {
           </div>
         </div>
         <div className="row" style={{ marginTop: 12, gap: 24 }}>
-          <Meta label="Return code" value={job.return_code ?? "—"} />
           <Meta label="Started" value={fmt(job.started_at)} />
           <Meta label="Finished" value={fmt(job.finished_at)} />
-          <Meta label="PID" value={job.pid ?? "—"} />
         </div>
         {isBuild && job.loads && Object.keys(job.loads).length > 0 && (
           <div className="row" style={{ marginTop: 14, gap: 8, alignItems: "center" }}>

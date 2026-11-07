@@ -57,7 +57,9 @@ function SpeciesSchema({ species, db, compact }: { species: string; db: Db; comp
       : [
           ["Node types", data.node_types ?? "—"],
           ["Edge types", data.edge_types ?? "—"],
-          ["Atoms", data.atom_count != null ? data.atom_count.toLocaleString() : "—"],
+          data.atom_count_capped
+            ? ["Atoms (at least)", `${(data.atom_count ?? 0).toLocaleString()}+`]
+            : ["Atoms", data.atom_count != null ? data.atom_count.toLocaleString() : "—"],
           ["Version", data.version ?? "—"],
         ];
 
@@ -103,10 +105,18 @@ export default function ExploreGraph() {
   // The backend returns only configured instances: one entry per species in
   // per-species mode, or a single "default" entry for a lone global instance. The
   // explicit filter is a belt-and-suspenders guard so a non-explicit entry never
-  // sneaks in alongside explicit ones.
+  // sneaks in alongside explicit ones. Each tab shows only species that have that
+  // database (a species with Neo4j but no MORK isn't queried on the MORK tab).
   const explicitTargets = (targets ?? []).filter((t) => t.explicit);
-  const shown = explicitTargets.length > 0 ? explicitTargets : (targets ?? []);
+  const configured = explicitTargets.length > 0 ? explicitTargets : (targets ?? []);
+  const shown = configured.filter((t) => (db === "neo4j" ? !!t.neo4j_uri : !!t.mork_url));
   const speciesList = shown.map((t) => t.species);
+
+  // Switching tabs: a species focused on the other tab may not have this database.
+  useEffect(() => {
+    if (targets && species !== "all" && !speciesList.includes(species)) setSpecies("all");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [db, targets]);
 
   return (
     <div className="card">
@@ -137,7 +147,10 @@ export default function ExploreGraph() {
       {!targets && !targetsErr && <div className="muted" style={{ marginTop: 12 }}>Loading…</div>}
 
       {targets && speciesList.length === 0 && (
-        <div className="muted" style={{ marginTop: 12 }}>No species configured.</div>
+        <div className="muted" style={{ marginTop: 12 }}>
+          No species has {db === "neo4j" ? "a Neo4j" : "a MORK"} yet. Set one up in Settings ›
+          Species databases.
+        </div>
       )}
 
       {targets && species !== "all" && (

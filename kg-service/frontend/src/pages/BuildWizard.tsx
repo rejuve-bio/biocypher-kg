@@ -1,6 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, ApiError, type DataSource } from "../api/client";
+import { MOD, usePageHints } from "../components/Hints";
+import {
+  api,
+  ApiError,
+  formatBytes,
+  type DataStatus,
+  type BuildEstimate,
+  type AdapterGroup,
+  type DbsnpStatus,
+} from "../api/client";
 import type {
   AdapterInfo,
   BuildRequest,
@@ -20,6 +29,9 @@ export default function BuildWizard() {
   const [selSpecies, setSelSpecies] = useState<string>("");
   const [selDataset, setSelDataset] = useState<string>("");
   const [adapters, setAdapters] = useState<AdapterInfo[]>([]);
+  const [adapterGroups, setAdapterGroups] = useState<AdapterGroup[] | null>(null);
+  const [activeSource, setActiveSource] = useState<string | null>(null);
+  const [activeDownloadSource, setActiveDownloadSource] = useState<string | null>(null);
   const [adaptersError, setAdaptersError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [writerType, setWriterType] = useState<string>("metta");
@@ -27,11 +39,29 @@ export default function BuildWizard() {
   const [workerCap, setWorkerCap] = useState<number>(8);
   // 0 = no limit; otherwise cap nodes AND edges written per adapter (small samples).
   const [limit, setLimit] = useState<number>(0);
-  const [dataSources, setDataSources] = useState<DataSource[] | null>(null);
-  const [sourcesOpen, setSourcesOpen] = useState<boolean>(false);
+  // Local source-data status + a planned-build estimate (scope before building).
+  const [dataStatus, setDataStatus] = useState<DataStatus | null>(null);
+  const [estimate, setEstimate] = useState<BuildEstimate | null>(null);
+  const [downloadId, setDownloadId] = useState<string | null>(null);
+  const [downloadStatus, setDownloadStatus] = useState<string | null>(null);
+  const [dataError, setDataError] = useState<string | null>(null);
+  // First-run onboarding (dismissible, remembered per browser).
+  const [showHelp, setShowHelp] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("kg-console-onboarded") !== "1";
+    } catch {
+      return true;
+    }
+  });
   const [adapterFilter, setAdapterFilter] = useState<string>("");
   const [dbsnpVariant, setDbsnpVariant] = useState<string>("common");
   const [dbsnpCacheRoot, setDbsnpCacheRoot] = useState<string>("");
+  // dbSNP cache the console prepares into the data folder; status is polled while a
+  // prepare job runs. dbsnpOwnPath reveals the "use an existing cache" path field.
+  const [dbsnp, setDbsnp] = useState<DbsnpStatus | null>(null);
+  const [dbsnpPoke, setDbsnpPoke] = useState(0);
+  const [dbsnpBusy, setDbsnpBusy] = useState(false);
+  const [dbsnpOwnPath, setDbsnpOwnPath] = useState(false);
   const [flagValues, setFlagValues] = useState<Record<string, boolean>>({});
 
   const [validating, setValidating] = useState(false);
@@ -93,37 +123,167 @@ export default function BuildWizard() {
   }, [selDataset, datasets]);
 
   useEffect(() => {
+    // Answers for a species/dataset you've already switched away from are dropped:
+    // a late one would replace the list (selecting all of it), so the build would
+    // run adapters you can't see.
+    let current = true;
     setValidation(null);
     setAdaptersError(null);
-    // "all" has no single config to introspect — every adapter of each species runs.
+    // Clear the old list right away, so nothing from the last choice can be launched.
+    setAdapters([]);
+    setAdapterGroups(null);
+    setSelected(new Set());
+    // "all" has no single config to introspect: every adapter of each species runs.
     if (isAll || !selSpecies || !selDataset) {
-      setAdapters([]);
-      setSelected(new Set());
       return;
     }
     api
       .listAdapters(selSpecies, selDataset)
       .then((r) => {
+        if (!current) return;
         setAdapters(r.adapters);
         setSelected(new Set(r.adapters.map((a) => a.name))); // default: all
       })
       .catch((e) => {
-        // Scope the failure to this section — don't blow away the whole wizard.
+        if (!current) return;
+        // Scope the failure to this section; don't blow away the whole wizard.
         setAdapters([]);
         setSelected(new Set());
         setAdaptersError(String(e));
       });
+    // Source grouping drives the picker; fall back to the flat list on failure.
+    api
+      .adaptersBySource(selSpecies, selDataset)
+      .then((r) => {
+        if (!current) return;
+        setAdapterGroups(r.groups);
+        // Default the detail pane to the first source that has a schema to show.
+        setActiveSource(
+          (r.groups.find((g) => g.adapter_count > 0) ?? r.groups[0])?.source ?? null,
+        );
+      })
+      .catch(() => {
+        if (!current) return;
+        setAdapterGroups(null);
+        setActiveSource(null);
+      });
+    return () => {
+      current = false;
+    };
   }, [selSpecies, selDataset]);
 
-  // Data sources are per-species (not per-dataset); shown as scope/context only.
+  // Local data presence + a scope estimate for the chosen species/dataset.
   useEffect(() => {
-    setDataSources(null);
+    let current = true;
+    setDataStatus(null);
+    setEstimate(null);
     if (isAll || !selSpecies) return;
-    api
-      .dataSources(selSpecies)
-      .then((d) => setDataSources(d.sources))
-      .catch(() => setDataSources([])); // non-fatal: just hide the panel contents
-  }, [selSpecies, isAll]);
+    api.dataStatus(selSpecies).then((d) => current && setDataStatus(d)).catch(() => current && setDataStatus(null));
+    if (selDataset)
+      api.estimate(selSpecies, selDataset).then((e) => current && setEstimate(e)).catch(() => current && setEstimate(null));
+    return () => {
+      current = false;
+    };
+  }, [selSpecies, selDataset, isAll]);
+
+  // Poll a running download until it finishes, then refresh the data status.
+  useEffect(() => {
+    if (!downloadId) return;
+    let alive = true;
+    const tick = async () => {
+      try {
+        const j = await api.getBuild(downloadId);
+        if (!alive) return;
+        setDownloadStatus(j.status);
+        if (["succeeded", "failed", "cancelled"].includes(j.status)) {
+          if (selSpecies) {
+            api.dataStatus(selSpecies).then(setDataStatus).catch(() => {});
+            // Refresh per-source presence so the source cards update after a fetch.
+            if (selDataset)
+              api
+                .adaptersBySource(selSpecies, selDataset)
+                .then((r) => setAdapterGroups(r.groups))
+                .catch(() => {});
+          }
+          setActiveDownloadSource(null);
+          return; // terminal: stop polling
+        }
+      } catch {
+        /* transient; keep polling */
+      }
+      if (alive) setTimeout(tick, 2500);
+    };
+    tick();
+    return () => {
+      alive = false;
+    };
+  }, [downloadId, selSpecies, selDataset]);
+
+  // dbSNP cache status for non-sample runs. Re-checks a typed cache path (debounced)
+  // so the UI can say whether it's usable, and polls while a prepare job is running.
+  useEffect(() => {
+    if (!selSpecies || !selDataset || selDataset === "sample") {
+      setDbsnp(null);
+      return;
+    }
+    let alive = true;
+    let poll: number | undefined;
+    const load = () =>
+      api
+        .dbsnpStatus(dbsnpCacheRoot.trim() || undefined)
+        .then((s) => {
+          if (!alive) return;
+          setDbsnp(s);
+          if (s.job_id) poll = window.setTimeout(load, 5000);
+        })
+        .catch(() => {
+          if (alive) setDbsnp(null);
+        });
+    const debounce = window.setTimeout(load, 300);
+    return () => {
+      alive = false;
+      window.clearTimeout(debounce);
+      if (poll) window.clearTimeout(poll);
+    };
+  }, [selSpecies, selDataset, dbsnpCacheRoot, dbsnpPoke]);
+
+  function dismissHelp() {
+    setShowHelp(false);
+    try {
+      localStorage.setItem("kg-console-onboarded", "1");
+    } catch {
+      /* private mode: just hide for this session */
+    }
+  }
+
+  async function onDownload() {
+    if (!selSpecies || isAll) return;
+    setDataError(null);
+    try {
+      const res = await api.startDownload({ species: selSpecies });
+      setDownloadId(res.id);
+      setDownloadStatus(res.status);
+      setActiveDownloadSource(null);
+    } catch (e) {
+      setDataError(String(e));
+    }
+  }
+
+  // Fetch just one source's data (the downloader supports --source).
+  async function onDownloadSource(source: string) {
+    if (!selSpecies || isAll) return;
+    setDataError(null);
+    try {
+      const res = await api.startDownload({ species: selSpecies, source });
+      setDownloadId(res.id);
+      setDownloadStatus(res.status);
+      setActiveDownloadSource(source);
+    } catch (e) {
+      setDataError(String(e));
+    }
+  }
+
+  const downloadBusy = !!downloadId && (downloadStatus === "running" || downloadStatus === "queued");
 
   function toggleAdapter(name: string) {
     setSelected((prev) => {
@@ -136,6 +296,12 @@ export default function BuildWizard() {
 
   const nodeAdapters = useMemo(() => adapters.filter((a) => !a.edges), [adapters]);
   const edgeAdapters = useMemo(() => adapters.filter((a) => a.edges), [adapters]);
+  // Full adapter records keyed by name, so a source group can reuse the node/edge
+  // renderers (which want AdapterInfo) from the lighter grouped payload.
+  const adapterByName = useMemo(
+    () => new Map(adapters.map((a) => [a.name, a])),
+    [adapters],
+  );
 
   function setGroup(list: AdapterInfo[], on: boolean) {
     setSelected((prev) => {
@@ -145,6 +311,61 @@ export default function BuildWizard() {
     });
     setValidation(null);
   }
+
+  // Download just the selected sources that aren't on disk yet, as one job.
+  async function onDownloadMissing(sources: string[]) {
+    if (!selSpecies || isAll || !sources.length) return;
+    setDataError(null);
+    try {
+      const res = await api.startDownload({ species: selSpecies, sources });
+      setDownloadId(res.id);
+      setDownloadStatus(res.status);
+      setActiveDownloadSource(null);
+    } catch (e) {
+      setDataError(String(e));
+    }
+  }
+
+  async function onPrepareDbsnp() {
+    setDbsnpBusy(true);
+    setDataError(null);
+    try {
+      await api.prepareDbsnp(dbsnpVariant === "full" ? "full" : "common");
+      setDbsnpPoke((n) => n + 1);
+    } catch (e) {
+      setDataError(String(e));
+    } finally {
+      setDbsnpBusy(false);
+    }
+  }
+
+  // ── Readiness: what the selected sources need before a build can run ──
+  // A source counts as selected when all of its adapters are in the build.
+  const selectedGroups = (adapterGroups ?? []).filter(
+    (g) => g.adapter_count > 0 && g.adapters.every((a) => selected.has(a.name)),
+  );
+  const selectedData = selectedGroups.filter((g) => g.source !== "_shared");
+  const onDisk = selectedData.filter((g) => g.present);
+  const inYours = onDisk.filter((g) => g.location === "yours").length;
+  const toDownload = selectedData.filter((g) => g.downloadable && !g.present);
+  const byHand = selectedData.filter((g) => !g.downloadable && !g.present);
+  const dbsnpNeededBy = selectedGroups.filter((g) => g.needs_dbsnp).map((g) => g.name);
+  // The pipeline only loads dbSNP when a selected adapter needs it. All-species runs
+  // (and the flat fallback list) can't be inspected here, so assume it's needed.
+  const dbsnpNeeded =
+    !!selDataset &&
+    selDataset !== "sample" &&
+    (isAll || !adapterGroups ? true : dbsnpNeededBy.length > 0);
+  const variantKey: "common" | "full" = dbsnpVariant === "full" ? "full" : "common";
+  const customRoot = dbsnpCacheRoot.trim();
+  const managedInfo = dbsnp?.variants[variantKey];
+  const managedReady = !!managedInfo?.present;
+  const customReady = !!dbsnp?.custom?.variants[variantKey]?.present;
+  // A path typed here wins; otherwise the cache that has this variant (your read-only
+  // cache from Settings first, then the one the console prepared).
+  const effectiveDbsnpRoot =
+    customRoot || (managedReady && dbsnp ? managedInfo?.root ?? dbsnp.root : "");
+  const dbsnpFromYours = managedReady && !!dbsnp?.readonly_root && managedInfo?.root === dbsnp.readonly_root;
 
   function buildRequest(): BuildRequest {
     const allSelected = selected.size === adapters.length;
@@ -156,10 +377,10 @@ export default function BuildWizard() {
       writer_type: writerType,
       // Server decides where output goes: DATA_ROOT/<dated> if set, else repo default.
       output_dir: null,
-      // dbSNP only applies to non-sample runs; sample uses the bundled cache.
-      dbsnp_cache_root:
-        selDataset !== "sample" ? dbsnpCacheRoot.trim() || null : null,
-      dbsnp_variant: selDataset !== "sample" ? dbsnpVariant || null : null,
+      // dbSNP only when a selected source needs it (never for sample, which uses the
+      // bundled cache).
+      dbsnp_cache_root: dbsnpNeeded ? effectiveDbsnpRoot || null : null,
+      dbsnp_variant: dbsnpNeeded ? variantKey : null,
       write_properties: flagValues.write_properties ?? true,
       add_provenance: flagValues.add_provenance ?? true,
       include_taxon_id: flagValues.include_taxon_id ?? true,
@@ -201,18 +422,43 @@ export default function BuildWizard() {
     }
   }
 
+  // Validate and Launch in the bar along the bottom; ⌘↵ / Ctrl+Enter launches.
+  const canValidate = !validating && !!selDataset;
+  const canLaunch = !submitting && (isAll || selected.size > 0);
+  usePageHints([
+    { keys: [], label: validating ? "Validating…" : "Validate", onClick: onValidate, disabled: !canValidate },
+    { keys: [MOD, "↵"], label: submitting ? "Launching…" : "Launch build", onClick: onBuild, disabled: !canLaunch },
+  ]);
+  const launch = useRef({ onBuild, canLaunch });
+  launch.current = { onBuild, canLaunch };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && launch.current.canLaunch) {
+        e.preventDefault();
+        launch.current.onBuild();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   if (loadError) {
     return (
       <div className="alert err">
-        Failed to load Console data: {loadError}
-        <div className="muted" style={{ marginTop: 8 }}>
-          Is the API running (uvicorn backend.api.main:app) and REPO_ROOT correct?
-        </div>
+        The console couldn’t load what it needs: {loadError}
+        <div className="muted" style={{ marginTop: 8 }}>Reload the page to try again.</div>
       </div>
     );
   }
 
   const nSelected = selected.size;
+
+  // Source-level selection summary (a source counts as selected when all its
+  // adapters are in the build).
+  const selectableGroups = (adapterGroups ?? []).filter((g) => g.adapter_count > 0);
+  const selectedGroupCount = selectableGroups.filter((g) =>
+    g.adapters.every((a) => selected.has(a.name)),
+  ).length;
 
   const q = adapterFilter.trim().toLowerCase();
   const applyFilter = (list: AdapterInfo[]) =>
@@ -254,8 +500,191 @@ export default function BuildWizard() {
     );
   };
 
+  // Turn an internal adapter name into a readable type: drop the source prefix and
+  // the underscores (e.g. "uniprot_sprot_translates_to" -> "sprot translates to").
+  function readableType(name: string, source: string): string {
+    let n = name;
+    if (source && source !== "_shared" && n.startsWith(source + "_")) n = n.slice(source.length + 1);
+    return n.replace(/_/g, " ");
+  }
+
+  const groupAdapterInfos = (g: AdapterGroup) =>
+    g.adapters.map((a) => adapterByName.get(a.name)).filter((a): a is AdapterInfo => Boolean(a));
+
+  const groupMatches = (g: AdapterGroup) =>
+    !q ||
+    g.name.toLowerCase().includes(q) ||
+    g.adapters.some((a) => a.name.toLowerCase().includes(q));
+
+  // Left list: one compact selectable row per source. The checkbox includes the
+  // source in the build; clicking the row opens its schema in the detail pane.
+  const renderSourceListItem = (g: AdapterGroup) => {
+    const empty = g.adapter_count === 0;
+    const included = !empty && g.adapters.every((a) => selected.has(a.name));
+    const isShared = g.source === "_shared";
+    const active = activeSource === g.source;
+    return (
+      <div
+        className={`source-item${active ? " active" : ""}${included ? " on" : ""}`}
+        key={g.source}
+        onClick={() => setActiveSource(g.source)}
+      >
+        <input
+          type="checkbox"
+          checked={included}
+          disabled={empty}
+          onClick={(e) => e.stopPropagation()}
+          onChange={() => setGroup(groupAdapterInfos(g), !included)}
+        />
+        <span className="source-item-name">{g.name}</span>
+        {!isShared && (
+          <span
+            className={`src-dot ${g.present ? "ok" : "missing"}`}
+            title={g.present ? "downloaded" : "not downloaded"}
+          />
+        )}
+        <span className="muted source-item-count">{empty ? "—" : `${g.node_count}·${g.edge_count}`}</span>
+      </div>
+    );
+  };
+
+  // Right pane: the active source's schema as node/edge columns, plus its download
+  // controls (kept out of the list so navigating sources stays compact).
+  const renderSourceDetail = (g: AdapterGroup) => {
+    const empty = g.adapter_count === 0;
+    const isShared = g.source === "_shared";
+    const included = !empty && g.adapters.every((a) => selected.has(a.name));
+    const downloading = activeDownloadSource === g.source && downloadBusy;
+    const nodeTypes = g.adapters.filter((a) => a.nodes).map((a) => readableType(a.name, g.source));
+    const edgeTypes = g.adapters.filter((a) => a.edges).map((a) => readableType(a.name, g.source));
+    return (
+      <div className="source-detail-pane">
+        <div className="detail-head">
+          <div style={{ minWidth: 0 }}>
+            <div className="detail-title">{g.name}</div>
+            <div className="muted detail-sub">
+              {empty ? "Download-only source" : `${g.node_count} node · ${g.edge_count} edge types`}
+            </div>
+          </div>
+          {!empty && (
+            <label className="detail-include">
+              <input type="checkbox" checked={included} onChange={() => setGroup(groupAdapterInfos(g), !included)} />
+              Include in build
+            </label>
+          )}
+        </div>
+
+        {empty ? (
+          <span className="muted">This source provides data other adapters consume; it has no node or edge types of its own.</span>
+        ) : (
+          <div className="schema-cols">
+            <div className="schema-col">
+              <div className="schema-label node">Nodes ({nodeTypes.length})</div>
+              {nodeTypes.length ? (
+                <div className="schema-grid">
+                  {nodeTypes.map((t) => <span className="chip-tag node" key={t}>{t}</span>)}
+                </div>
+              ) : (
+                <span className="muted">none</span>
+              )}
+            </div>
+            <div className="schema-col">
+              <div className="schema-label edge">Edges ({edgeTypes.length})</div>
+              {edgeTypes.length ? (
+                <div className="schema-grid">
+                  {edgeTypes.map((t) => <span className="chip-tag edge" key={t}>{t}</span>)}
+                </div>
+              ) : (
+                <span className="muted">none</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="detail-foot">
+          {!isShared && (
+            <span className={`src-badge ${g.present ? "ok" : "missing"}`}>
+              {g.present
+                ? `${g.location === "yours" ? "in your folder" : "downloaded"}${
+                    g.bytes ? ` · ${formatBytes(g.bytes)}` : ""
+                  }`
+                : "not downloaded"}
+            </span>
+          )}
+          {/* Sources found in your read-only folder are never re-downloaded. */}
+          {g.downloadable && g.location !== "yours" && (
+            <button type="button" onClick={() => onDownloadSource(g.source)} disabled={downloadBusy}>
+              {downloading ? "Downloading…" : g.present ? "Re-download" : "Download"}
+            </button>
+          )}
+          {!g.downloadable && !isShared && !g.present && (
+            <span className="field-hint">
+              Not downloadable: place its files at{" "}
+              {g.local_paths.slice(0, 2).join(", ") || "the input folder"}
+            </span>
+          )}
+          {g.website && (
+            <a
+              href={g.website.startsWith("http") ? g.website : `https://${g.website}`}
+              target="_blank"
+              rel="noreferrer"
+              className="src-link"
+            >
+              website ↗
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
+      {showHelp && (
+        <div className="card onboarding" style={{ borderLeft: "3px solid var(--accent)" }}>
+          <div className="onboarding-head">
+            <div>
+              <h2 style={{ margin: 0 }}>Build your own knowledge graph</h2>
+              <p className="onboarding-lead">
+                Four steps from raw source data to a graph you can explore.
+              </p>
+            </div>
+            <button className="linkbtn" onClick={dismissHelp}>Dismiss ✕</button>
+          </div>
+          <div className="onboarding-steps">
+            <div className="ob-step">
+              <span className="ob-num">1</span>
+              <div className="ob-title">Pick a species &amp; dataset</div>
+              <div className="ob-desc">
+                <b>sample</b> works offline out of the box. <b>full</b> builds from the real
+                source data.
+              </div>
+            </div>
+            <div className="ob-step">
+              <span className="ob-num">2</span>
+              <div className="ob-title">Pick data sources</div>
+              <div className="ob-desc">
+                Choose the sources you want and see the node and edge types each one adds.
+              </div>
+            </div>
+            <div className="ob-step">
+              <span className="ob-num">3</span>
+              <div className="ob-title">Get the data</div>
+              <div className="ob-desc">
+                Download only the sources you picked, plus the dbSNP cache if a variant source
+                needs it.
+              </div>
+            </div>
+            <div className="ob-step">
+              <span className="ob-num">4</span>
+              <div className="ob-title">Build &amp; explore</div>
+              <div className="ob-desc">
+                Validate, build, load the result into Neo4j or MORK, then open <b>Explore</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="card">
         <h2><span className="step">1</span> Species &amp; Dataset</h2>
         <div className="row">
@@ -293,63 +722,55 @@ export default function BuildWizard() {
           </label>
         </div>
 
-        {selDataset && selDataset !== "sample" && (
-          <div className="row" style={{ marginTop: 14, alignItems: "flex-start" }}>
-            <label className="field">
-              dbSNP variant
-              <select
-                value={dbsnpVariant}
-                onChange={(e) => setDbsnpVariant(e.target.value)}
-              >
-                <option value="common">common</option>
-                <option value="full">full</option>
-              </select>
-            </label>
-            <label className="field" style={{ flex: 1, minWidth: 300 }}>
-              dbSNP cache path (required)
-              <input
-                type="text"
-                value={dbsnpCacheRoot}
-                onChange={(e) => setDbsnpCacheRoot(e.target.value)}
-                placeholder="/path/to/dbsnp  (root containing common/ and/or full/)"
-                style={{ width: "100%" }}
-              />
-              <span className="field-hint">
-                Required for non-sample runs — the dbSNP mapping cache built by
-                scripts/update_dbsnp.py. The chosen variant subfolder must exist under it.
-              </span>
-            </label>
+        {!isAll && selSpecies && (
+          <div style={{ marginTop: 14 }}>
+            {estimate && (
+              <div className="field-hint">
+                📊 {estimate.last_build
+                  ? `Last ${selDataset || "full"} build produced ${
+                      estimate.last_build.node_count?.toLocaleString() ?? "?"
+                    } nodes and ${
+                      estimate.last_build.edge_count?.toLocaleString() ?? "?"
+                    } edges${estimate.last_build.data_size ? ` (${estimate.last_build.data_size})` : ""}.`
+                  : `No previous ${selDataset || "full"} build of ${selSpecies} to estimate from yet.`}
+              </div>
+            )}
+            {dataStatus && (
+              <div className="field-hint" style={{ marginTop: 4 }}>
+                🗄️ Source data on disk: {dataStatus.present_count}/{dataStatus.source_count} sources
+                {dataStatus.total_bytes > 0 ? ` · ${formatBytes(dataStatus.total_bytes)}` : ""}
+              </div>
+            )}
+            {selDataset !== "sample" && dataStatus && (
+              <div className="field-hint" style={{ marginTop: 4 }}>
+                {dataStatus.readonly_dir && (
+                  <>📁 Your data (read-only): {dataStatus.readonly_dir} · </>
+                )}
+                ⬇ Downloads go to {dataStatus.input_dir}
+                {dataStatus.input_origin === "config"
+                  ? ` (from the ${selSpecies} adapters config)`
+                  : ""}{" "}
+                <button type="button" className="linkbtn" onClick={() => navigate("/settings")}>
+                  change
+                </button>
+              </div>
+            )}
+            <div className="field-hint" style={{ marginTop: 4 }}>
+              {selDataset === "sample"
+                ? "✅ Sample uses bundled data, so there is nothing to download."
+                : "Pick data sources below. You only download the ones you select."}
+            </div>
           </div>
         )}
       </div>
 
       <div className="card">
-        <h2><span className="step">2</span> Adapters {isAll ? "" : `(${nSelected}/${adapters.length})`}</h2>
-        {!isAll && dataSources && dataSources.length > 0 && (
-          <div style={{ marginBottom: 10 }}>
-            <button type="button" className="linkbtn" onClick={() => setSourcesOpen((o) => !o)}>
-              {sourcesOpen ? "▾" : "▸"} Data sources ({dataSources.length})
-            </button>
-            {sourcesOpen && (
-              <ul className="data-sources" style={{ margin: "6px 0 0", paddingLeft: 18 }}>
-                {dataSources.map((s) => (
-                  <li key={s.key} style={{ marginBottom: 2 }}>
-                    <span>{s.name}</span>
-                    {s.urls[0] && (
-                      <a href={s.urls[0]} target="_blank" rel="noreferrer" style={{ marginLeft: 8, fontSize: 12 }}>
-                        source ↗
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="field-hint" style={{ marginTop: 4 }}>
-              🗃️ The external databases this species draws from. The build pulls only
-              the sources behind the adapters you select above.
-            </div>
-          </div>
-        )}
+        <h2>
+          <span className="step">2</span> Data sources{" "}
+          {isAll || !adapterGroups
+            ? ""
+            : `(${selectedGroupCount}/${selectableGroups.length} selected)`}
+        </h2>
         {isAll ? (
           <div className="alert warn">
             All-species run: every adapter in each species is included automatically —
@@ -357,16 +778,20 @@ export default function BuildWizard() {
           </div>
         ) : (
         <>
-        <div className="row" style={{ marginBottom: 10 }}>
+        <p className="field-hint" style={{ margin: "0 0 12px" }}>
+          Pick the data sources to include. Click a source to see the node and edge types it
+          adds to your graph.
+        </p>
+        <div className="row" style={{ marginBottom: 12 }}>
           <input
             type="text"
             value={adapterFilter}
             onChange={(e) => setAdapterFilter(e.target.value)}
-            placeholder="🔍 Filter adapters…"
+            placeholder="🔍 Filter sources…"
             style={{ flex: 1, minWidth: 200 }}
           />
           <button onClick={() => setSelected(new Set(adapters.map((a) => a.name)))}>
-            Select all
+            All sources
           </button>
           <button onClick={() => setSelected(new Set())}>Clear</button>
         </div>
@@ -378,17 +803,190 @@ export default function BuildWizard() {
         {adaptersError && (
           <div className="alert err">Could not load adapters: {adaptersError}</div>
         )}
-        {renderGroup("Nodes", "node", applyFilter(nodeAdapters))}
-        {renderGroup("Edges", "edge", applyFilter(edgeAdapters))}
-        {adapters.length > 0 && q &&
-          !applyFilter(nodeAdapters).length &&
-          !applyFilter(edgeAdapters).length && (
-            <span className="muted">No adapters match “{adapterFilter}”.</span>
-          )}
+        {adapterGroups ? (
+          (() => {
+            // Only sources that actually contribute nodes/edges belong in the build
+            // picker; download-only sources with no adapter are not buildable.
+            const visible = adapterGroups.filter((g) => g.adapter_count > 0 && groupMatches(g));
+            if (!visible.length)
+              return <span className="muted">No sources match “{adapterFilter}”.</span>;
+            const active =
+              visible.find((g) => g.source === activeSource) ?? visible[0];
+            return (
+              <div className="source-browser">
+                <div className="source-list">{visible.map(renderSourceListItem)}</div>
+                {renderSourceDetail(active)}
+              </div>
+            );
+          })()
+        ) : (
+          <>
+            {renderGroup("Nodes", "node", applyFilter(nodeAdapters))}
+            {renderGroup("Edges", "edge", applyFilter(edgeAdapters))}
+          </>
+        )}
         {!adapters.length && selDataset && !adaptersError && (
-          <span className="muted">No adapters loaded.</span>
+          <span className="muted">No data sources loaded.</span>
         )}
         </>
+        )}
+
+        {selDataset && selDataset !== "sample" && (
+          <div className="readiness">
+            {!isAll && adapterGroups && (
+              <div className="ready-row">
+                <div className="ready-label">Data</div>
+                <div className="ready-body">
+                  <div>
+                    <b>{selectedData.length}</b> source{selectedData.length === 1 ? "" : "s"} selected ·{" "}
+                    {onDisk.length} on disk
+                    {inYours > 0 && ` (${inYours} in your folder)`}
+                    {toDownload.length > 0 && (
+                      <>
+                        {" "}· <b>{toDownload.length}</b> to download
+                      </>
+                    )}
+                  </div>
+                  {byHand.length > 0 && (
+                    <div className="field-hint">
+                      Not downloadable, so place their files in the input folder by hand:{" "}
+                      {byHand.map((g) => g.name).join(", ")} (expected at{" "}
+                      {byHand.flatMap((g) => g.local_paths).slice(0, 3).join(", ")}).
+                    </div>
+                  )}
+                  {downloadId && (
+                    <div className="field-hint">
+                      Download {downloadStatus}{" "}
+                      <button
+                        type="button"
+                        className="linkbtn"
+                        onClick={() => navigate(`/builds/${downloadId}`)}
+                      >
+                        view log
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="ready-actions">
+                  {toDownload.length > 0 ? (
+                    <button
+                      className="primary"
+                      onClick={() => onDownloadMissing(toDownload.map((g) => g.source))}
+                      disabled={downloadBusy}
+                    >
+                      {downloadBusy ? "Downloading…" : `Download ${toDownload.length} missing`}
+                    </button>
+                  ) : (
+                    <span className="ready-ok">✓ Selected data is on disk</span>
+                  )}
+                  <button type="button" className="linkbtn" onClick={onDownload} disabled={downloadBusy}>
+                    download all sources
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {dbsnpNeeded && (
+              <div className="ready-row">
+                <div className="ready-label">dbSNP</div>
+                <div className="ready-body">
+                  <div>
+                    Needed by{" "}
+                    {dbsnpNeededBy.length ? dbsnpNeededBy.join(", ") : "the selected variant sources"}{" "}
+                    to map variant IDs to genome positions.
+                  </div>
+                  <div className="row" style={{ gap: 10, marginTop: 6 }}>
+                    <select value={variantKey} onChange={(e) => setDbsnpVariant(e.target.value)}>
+                      <option value="common">common variants (smaller)</option>
+                      <option value="full">all variants</option>
+                    </select>
+                    {customRoot ? (
+                      customReady ? (
+                        <span className="ready-status ok">✓ Using {customRoot}/{variantKey}</span>
+                      ) : (
+                        <span className="ready-status warn">
+                          {dbsnp?.custom?.variants[variantKey]?.problem ??
+                            `No ${variantKey} cache found at ${customRoot}`}
+                        </span>
+                      )
+                    ) : managedReady && managedInfo ? (
+                      <span className="ready-status ok">
+                        ✓ Ready{dbsnpFromYours ? " in your folder (read-only)" : ""} ·{" "}
+                        {formatBytes(managedInfo.bytes)}
+                        {managedInfo.built_at ? ` · built ${managedInfo.built_at.slice(0, 10)}` : ""}
+                      </span>
+                    ) : dbsnp?.job_id ? (
+                      <span className="ready-status muted">
+                        Preparing the {dbsnp.job_variant ?? ""} cache, this takes a while…
+                      </span>
+                    ) : (
+                      <span className="ready-status warn">Not prepared yet</span>
+                    )}
+                  </div>
+                  {dbsnpOwnPath || customRoot ? (
+                    <>
+                      <label className="field" style={{ marginTop: 6 }}>
+                        Existing cache path
+                        <input
+                          type="text"
+                          value={dbsnpCacheRoot}
+                          onChange={(e) => setDbsnpCacheRoot(e.target.value)}
+                          placeholder="/path/to/dbsnp  (contains common/ or full/)"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        className="linkbtn"
+                        style={{ justifySelf: "start" }}
+                        onClick={() => {
+                          setDbsnpCacheRoot("");
+                          setDbsnpOwnPath(false);
+                        }}
+                      >
+                        use the console’s cache instead
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="linkbtn"
+                      style={{ justifySelf: "start" }}
+                      onClick={() => setDbsnpOwnPath(true)}
+                    >
+                      I already have a dbSNP cache
+                    </button>
+                  )}
+                  <div className="field-hint">
+                    Preparing downloads the dbSNP release from NCBI (about 30 GB) once and builds a
+                    lookup database in the data folder{dbsnp ? ` (${dbsnp.root})` : ""}. Every
+                    later build reuses it.
+                  </div>
+                </div>
+                <div className="ready-actions">
+                  {!customRoot && !managedReady && (
+                    <button
+                      className="primary"
+                      onClick={onPrepareDbsnp}
+                      disabled={dbsnpBusy || !!dbsnp?.job_id}
+                    >
+                      {dbsnp?.job_id ? "Preparing…" : `Prepare ${variantKey} cache`}
+                    </button>
+                  )}
+                  {dbsnp?.job_id && (
+                    <button
+                      type="button"
+                      className="linkbtn"
+                      onClick={() => navigate(`/builds/${dbsnp.job_id}`)}
+                    >
+                      view log
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {dataError && <div className="alert err">{dataError}</div>}
+          </div>
         )}
       </div>
 
@@ -440,8 +1038,8 @@ export default function BuildWizard() {
         <div className="field-hint" style={{ marginBottom: 12 }}>
           📁 Output location is automatic: a dated folder
           <span className="mono"> species-dataset-YYYYMMDD-HHMMSS </span>
-          under <span className="mono">DATA_ROOT</span> if configured, otherwise the
-          default build folder in the repo. The exact path is shown on the build page.
+          in the console data folder (Settings › Build settings). The exact path is shown
+          on the build page.
         </div>
         <div className="chips">
           {flags.map((f) => (
@@ -460,7 +1058,7 @@ export default function BuildWizard() {
       </div>
 
       <div className="card">
-        <h2>4 · Validate &amp; Build</h2>
+        <h2><span className="step">4</span> Validate &amp; Build</h2>
         <div className="row">
           <button
             className="secondary"

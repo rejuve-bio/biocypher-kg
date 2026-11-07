@@ -1,8 +1,10 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../api/client";
+import { api, formatBytes, type DiskUsage } from "../api/client";
 import type { BuildJob, JobStatus } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
+
+const TERMINAL = new Set(["succeeded", "failed", "cancelled"]);
 
 const ACTIVE = new Set(["queued", "running"]);
 const TARGET_LABEL: Record<string, string> = { neo4j: "Neo4j", mork: "MORK" };
@@ -21,6 +23,7 @@ function loadIcon(status: JobStatus): string {
 export default function BuildHistory() {
   const navigate = useNavigate();
   const [builds, setBuilds] = useState<BuildJob[]>([]);
+  const [disk, setDisk] = useState<DiskUsage | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,6 +34,8 @@ export default function BuildHistory() {
         .then((b) => alive && setBuilds(b))
         .catch((e) => alive && setError(String(e)));
     load();
+    // Disk usage walks the data tree, so fetch it once (and after a delete), not every poll.
+    api.diskUsage().then((d) => alive && setDisk(d)).catch(() => {});
     // Poll while any build is active (also refreshes each build's load status).
     const timer = setInterval(load, 3000);
     return () => {
@@ -49,11 +54,35 @@ export default function BuildHistory() {
     }
   }
 
+  async function onDelete(e: MouseEvent, jobId: string) {
+    e.stopPropagation();
+    if (
+      !window.confirm(
+        "Delete this build from history and remove its output files from disk? This cannot be undone.",
+      )
+    )
+      return;
+    try {
+      await api.deleteBuild(jobId, true);
+      setBuilds((prev) => prev.filter((b) => b.id !== jobId));
+      api.diskUsage().then(setDisk).catch(() => {});
+    } catch (err) {
+      setError(String(err));
+    }
+  }
+
   if (error) return <div className="alert err">{error}</div>;
 
   return (
     <div className="card">
       <h2>Build history</h2>
+      {disk?.available && (
+        <div className="field-hint" style={{ marginBottom: 10 }}>
+          💾 Disk: builds {formatBytes(disk.categories?.builds)} · input {formatBytes(disk.categories?.input)}
+          {" · "}archives {formatBytes(disk.categories?.archives)}
+          {disk.free_bytes != null ? ` · ${formatBytes(disk.free_bytes)} free` : ""}
+        </div>
+      )}
       {!builds.length && <div className="muted">No builds yet.</div>}
       {builds.length > 0 && (
         <table>
@@ -130,6 +159,16 @@ export default function BuildHistory() {
                         no checkpoint
                       </span>
                     ) : null}
+                    {TERMINAL.has(b.status) && (
+                      <button
+                        className="secondary btn-sm"
+                        onClick={(e) => onDelete(e, b.id)}
+                        title="Delete build and its output files from disk"
+                        style={{ marginLeft: 6 }}
+                      >
+                        🗑
+                      </button>
+                    )}
                   </td>
                 </tr>
               );
