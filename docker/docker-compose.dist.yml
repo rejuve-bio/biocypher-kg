@@ -1,0 +1,59 @@
+# Repo-free way to run the BioCypher KG Console from a prebuilt image.
+#
+# Unlike docker/docker-compose.yml (which builds from the source tree), this file
+# only PULLS the published image and runs it. You need just this one file: no
+# checkout, no console.env. Everything else (each species' databases, data folders,
+# build settings) is set from the Console's Settings page and persists in the named
+# volume below.
+#
+#   CONSOLE_IMAGE=ghcr.io/kedists/biocypher-kg-console:latest \
+#     docker compose -f docker-compose.dist.yml up -d
+#
+# Then open http://localhost:9000/console/.
+#
+# A database on this computer is entered as localhost in Settings; the console
+# connects to it through host.docker.internal on its own.
+name: biocypher-console
+
+services:
+  console:
+    image: ${CONSOLE_IMAGE:-ghcr.io/kedists/biocypher-kg-console:latest}
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      # Loopback-only; put it behind a reverse proxy for remote access.
+      - "127.0.0.1:${CONSOLE_PORT:-9000}:9000"
+    environment:
+      PORT: "9000"
+      # The console's data folder: downloads, builds and caches go here (mounted
+      # below).
+      DATA_ROOT: "${DATA_ROOT:-${HOME}/biocypher-kg-data}"
+      ARCHIVE_BASE: "${DATA_ROOT:-${HOME}/biocypher-kg-data}/archives"
+    volumes:
+      # Persists the Settings store (console_settings.json, which holds the saved
+      # connections) and the build history across restarts and image updates.
+      - console_builds:/app/kg-service/.builds
+      # Lets the console set up, start and stop each species' Neo4j and MORK from
+      # Settings > Species databases. This gives it control of Docker on this
+      # machine, so keep the console bound to localhost (as above).
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The data folder at the same path (the databases read build output from it).
+      - "${DATA_ROOT:-${HOME}/biocypher-kg-data}:${DATA_ROOT:-${HOME}/biocypher-kg-data}"
+      # What a Finder sidebar shows, read-only, so people choose their own data folders
+      # in Settings like in any "Choose a folder" window (same path on both sides).
+      # Don't share the whole home folder instead: Docker Desktop passes every file
+      # change in a shared folder to its VM, and a home folder changes so constantly
+      # that it crashes the engine. These folders are quiet enough (tested).
+      - "${HOME}/Desktop:${HOME}/Desktop:ro"
+      - "${HOME}/Documents:${HOME}/Documents:ro"
+      - "${HOME}/Downloads:${HOME}/Downloads:ro"
+      - "/Volumes:/Volumes:ro"  # external drives (macOS)
+    # Lets the container reach a Neo4j/MORK published on the host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Nothing in the console may gain more rights than it started with.
+    security_opt:
+      - "no-new-privileges:true"
+
+volumes:
+  console_builds:

@@ -7,7 +7,9 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    image: biocypher-kg-console
+    # CONSOLE_IMAGE lets a local user pull a prebuilt image (e.g. from GHCR) instead
+    # of building: set it + `up.sh --no-build` to avoid the local build entirely.
+    image: ${CONSOLE_IMAGE:-biocypher-kg-console}
     # Survive host reboots and daemon restarts; only a manual `down`/`stop` keeps it down.
     restart: unless-stopped
     ports:
@@ -38,13 +40,29 @@ services:
     volumes:
       # Mounted at the same path so Neo4j/MORK read builds where the Console writes them.
       - "${DATA_ROOT}:${DATA_ROOT}"
+      # What a Finder sidebar shows, read-only, so people choose their own data folders
+      # in Settings like in any "Choose a folder" window (same path on both sides).
+      # Don't share the whole home folder instead: Docker Desktop passes every file
+      # change in a shared folder to its VM, and a home folder changes so constantly
+      # that it crashes the engine. These folders are quiet enough (tested).
+      - "${HOME}/Desktop:${HOME}/Desktop:ro"
+      - "${HOME}/Documents:${HOME}/Documents:ro"
+      - "${HOME}/Downloads:${HOME}/Downloads:ro"
+      - "/Volumes:/Volumes:ro"  # external drives (macOS)
       # Named volume so build history survives image rebuilds.
       - console_builds:/app/kg-service/.builds
+      # Lets the console set up, start and stop each species' Neo4j and MORK from
+      # Settings > Species databases. This gives it control of Docker on this
+      # machine, so keep the console bound to localhost (as above).
+      - /var/run/docker.sock:/var/run/docker.sock
       # Repo config/ bind-mounted so Console config edits persist and builds use them.
       - ../config:/app/config
     # Lets the Console reach a Neo4j/MORK published on the host (attach case) on Linux.
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    # Nothing in the console may gain more rights than it started with.
+    security_opt:
+      - "no-new-privileges:true"
 
   neo4j:
     # up.sh enables this profile only when no Neo4j already exists on the target endpoint.
