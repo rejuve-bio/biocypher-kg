@@ -174,6 +174,13 @@ class SecurityMiddleware:
         extra = list(HEADERS)
         if path.startswith("/api"):
             extra.append((b"cache-control", b"no-store"))
+        elif path.startswith("/console/assets/"):
+            # Built files are named by their content: a new build has new names.
+            extra.append((b"cache-control", b"public, max-age=31536000, immutable"))
+        elif path == "/console" or path.startswith("/console/"):
+            # The page itself (index.html, every route): always ask, so an updated
+            # console is what the browser runs, not a copy kept from before.
+            extra.append((b"cache-control", b"no-cache"))
 
         async def send_with_headers(message):
             if message["type"] == "http.response.start":

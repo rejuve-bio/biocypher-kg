@@ -106,3 +106,12 @@ def test_on_a_server_everything_but_the_page_needs_the_password(monkeypatch):
     # On your own computer (no password) nothing changes.
     monkeypatch.delenv("CONSOLE_PASSWORD")
     assert local.get(URL).status_code == 200
+
+
+def test_an_updated_console_is_what_the_browser_runs():
+    """The page is always re-checked; built files (named by content) are kept."""
+    page = local.get("/console/settings")
+    assert page.headers.get("cache-control") == "no-cache"
+    asset = local.get("/console/assets/missing.js")
+    assert asset.headers.get("cache-control") == "public, max-age=31536000, immutable"
+    assert local.get(URL).headers.get("cache-control") == "no-store"

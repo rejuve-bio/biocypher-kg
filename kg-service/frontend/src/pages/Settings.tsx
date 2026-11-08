@@ -1025,20 +1025,24 @@ function FolderField({
   );
 }
 
-// Whether the console runs on another computer than this browser (a server); asked
-// once per page.
-let onServerKnown: boolean | null = null;
+// Whether the console runs on another computer than this browser (a server). Asked
+// once for the whole page (every folder field shares the answer), not once per field.
+let onServerAsk: Promise<boolean> | null = null;
 function useOnServer(): boolean {
-  const [on, setOn] = useState<boolean>(onServerKnown ?? false);
+  const [on, setOn] = useState(false);
   useEffect(() => {
-    if (onServerKnown !== null) return;
-    api
+    let alive = true;
+    onServerAsk ??= api
       .session()
-      .then((s) => {
-        onServerKnown = s.on_server;
-        setOn(s.on_server);
-      })
-      .catch(() => {});
+      .then((s) => s.on_server)
+      .catch(() => {
+        onServerAsk = null; // ask again next time
+        return false;
+      });
+    onServerAsk.then((v) => alive && setOn(v));
+    return () => {
+      alive = false;
+    };
   }, []);
   return on;
 }
@@ -1059,12 +1063,30 @@ function ServerFolderPicker({
   const [data, setData] = useState<FolderListing | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [retry, setRetry] = useState<string | null | undefined>(undefined); // what to load again
+
   function open(path: string | null, fallback = true) {
     setError(null);
+    setRetry(undefined);
+    // Never just hang: say so if the server doesn't answer in a few seconds.
+    const late = window.setTimeout(() => {
+      setError("the server isn't answering");
+      setRetry(path);
+    }, 8000);
     api
       .listFolders(path)
-      .then(setData)
-      .catch((e) => (path && fallback ? open(null, false) : setError(errText(e))));
+      .then((d) => {
+        window.clearTimeout(late);
+        setError(null);
+        setRetry(undefined);
+        setData(d);
+      })
+      .catch((e) => {
+        window.clearTimeout(late);
+        if (path && fallback) return open(null, false);
+        setError(errText(e));
+        setRetry(path);
+      });
   }
   useEffect(() => {
     open(start);
@@ -1093,8 +1115,21 @@ function ServerFolderPicker({
           ))}
           {data && !data.folders.length && <span className="picker-empty muted mono">no subfolders</span>}
           {!data && !error && <span className="picker-empty muted mono">loading…</span>}
+          {!data && error && <span className="picker-empty muted mono">nothing to show</span>}
         </div>
-        {error && <div className="field-hint warn">{error}</div>}
+        {error && (
+          <div className="field-hint warn">
+            {error}
+            {retry !== undefined && (
+              <>
+                {" · "}
+                <button type="button" className="linkbtn" onClick={() => open(retry, false)}>
+                  try again
+                </button>
+              </>
+            )}
+          </div>
+        )}
         <div className="field-hint" style={{ marginTop: 8 }}>
           new folder: choose its parent, then add the name in the field · made on save
         </div>
