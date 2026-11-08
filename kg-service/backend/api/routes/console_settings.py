@@ -105,7 +105,8 @@ def get_settings():
 # Where the console must never save builds (or delete old ones from).
 _SYSTEM_DIRS = ("/", "/app", "/bin", "/boot", "/dev", "/etc", "/lib", "/proc", "/root",
                 "/run", "/sbin", "/sys", "/usr", "/var", "/System", "/Library",
-                "/Applications", "/private", "/Users", "/home", "/Volumes")
+                "/Applications", "/private", "/Users", "/home", "/Volumes", "/mnt",
+                "/media", "/srv", "/data")
 
 
 def _check_folder(path: str) -> str:
@@ -126,7 +127,8 @@ def _check_writable_folder(path: str, label: str, check) -> str:
 
     p = _check_folder(path)
     real = os.path.realpath(p)
-    if real in _SYSTEM_DIRS or os.path.dirname(real) in ("/", "/Users", "/home", "/Volumes"):
+    if real in _SYSTEM_DIRS or os.path.dirname(real) in ("/", "/Users", "/home", "/Volumes",
+                                                         "/mnt", "/media"):
         raise HTTPException(status_code=400, detail=(
             f"“{p}” can't be the {label}. Choose a folder made for it, such as a new "
             "folder in your Documents or on an external drive."))

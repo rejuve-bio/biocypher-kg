@@ -15,6 +15,35 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 COMPOSE=(docker compose -f docker/docker-compose.yml)
 
+# The folders the console can see, at the same path inside it: where the data and
+# Builds folders are chosen, and what Browse… shows. Only folders that exist (Docker
+# never creates any), plus any in CONSOLE_SHARES (space-separated).
+# - Mac: what a Finder sidebar shows. Not the whole home folder: Docker Desktop passes
+#   every file change in a shared folder to its VM, and a home folder changes so
+#   often that the engine crashes.
+# - Linux (a server): the home folder and data disks; no such problem there.
+SHARES_FILE=docker/.console-shares.yml
+case "$(uname -s)" in
+  Darwin) candidates=("$HOME/Desktop" "$HOME/Documents" "$HOME/Downloads" /Volumes) ;;
+  *) candidates=("$HOME" /mnt /media /data /srv) ;;
+esac
+shares=()
+for d in "${candidates[@]}" ${CONSOLE_SHARES:-}; do
+  [ -d "$d" ] && shares+=("${d%/}")
+done
+{
+  echo "# Made by docker/up.sh: the folders the console can see on this computer."
+  echo "services:"
+  echo "  console:"
+  if [ ${#shares[@]} -eq 0 ]; then
+    echo "    volumes: []"
+  else
+    echo "    volumes:"
+    for d in "${shares[@]}"; do echo "      - \"$d:$d\""; done
+  fi
+} > "$SHARES_FILE"
+COMPOSE+=(-f "$SHARES_FILE")
+
 # --host <address>: where people open the console. Not this computer's name, so it
 # listens on the network, accepts that address, and asks for a password (made once,
 # kept in docker/.console-password). Remembered in docker/.console-host.
@@ -103,4 +132,5 @@ if [ -n "$host" ]; then
   echo "password → cat $PASSWORD_FILE"
   echo "on the network · allow port ${CONSOLE_PORT} only from your own IP in the server's firewall"
 fi
+echo "folders it can see → ${shares[*]:-none}"
 echo "set the data and Builds folders, Neo4j memory and each species' databases in Settings"

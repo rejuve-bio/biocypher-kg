@@ -445,11 +445,17 @@ Each adapter keeps its first rows, so a capped graph is a sample of each source,
 
 ### 3. Folders the console can see
 
-The console runs in Docker, so it only sees shared folders. Both compose files share these, at the same path inside the container: `~/Desktop`, `~/Documents`, `~/Downloads` and `/Volumes`.
+The console runs in Docker, so it only sees shared folders, at the same path inside the container. `up.sh` picks them for the computer it runs on and writes them to `docker/.console-shares.yml`, sharing only folders that exist (so Docker never creates empty ones):
 
-They're shared writable so the data and Builds folders can be anywhere in them. The console writes only into those two folders. Folders chosen as source data or a dbSNP cache are only read, and can't be chosen as a place to save.
+| Computer | Shared |
+|---|---|
+| Mac | `~/Desktop`, `~/Documents`, `~/Downloads`, `/Volumes` |
+| Linux (a server) | the home folder, and `/mnt`, `/media`, `/data`, `/srv` where present |
+| Either | any folders in `CONSOLE_SHARES` (space-separated), e.g. `CONSOLE_SHARES="/scratch" ./docker/up.sh` |
 
-Don't share the whole home folder instead. Docker Desktop for Mac passes every file change in a shared folder to its VM, and a home folder changes so often that the engine stops (`service fs failed: injecting event blocked for 60s`).
+These are what Browse… shows on a server, and where the data and Builds folders can be. They're shared writable for those two; the console writes only into them. Folders chosen as source data or a dbSNP cache are only read, and can't be chosen as a place to save.
+
+On a Mac, don't share the whole home folder. Docker Desktop for Mac passes every file change in a shared folder to its VM, and a home folder changes so often that the engine stops (`service fs failed: injecting event blocked for 60s`). Linux has no such problem. `docker-compose.dist.yml` (no checkout, no `up.sh`) shares the Mac set.
 
 ### 4. Loading
 

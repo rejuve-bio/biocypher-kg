@@ -28,18 +28,9 @@ services:
       CONSOLE_ALLOWED_HOSTS: "${CONSOLE_ALLOWED_HOSTS:-}"
       CONSOLE_ALLOWED_ORIGINS: "${CONSOLE_ALLOWED_ORIGINS:-}"
       CONSOLE_PASSWORD: "${CONSOLE_PASSWORD:-}"
+    # The folders the console can see (where the data and Builds folders are chosen)
+    # come from docker/.console-shares.yml, which up.sh writes for this computer.
     volumes:
-      # What a Finder sidebar shows, at the same path on both sides. The data and
-      # Builds folders are chosen here in Settings (Browse… opens Finder); there's no
-      # default folder. Writable for those two; the console only reads folders chosen
-      # as source data or a dbSNP cache.
-      # Don't share the whole home folder instead: Docker Desktop passes every file
-      # change in a shared folder to its VM, and a home folder changes so constantly
-      # that it crashes the engine. These folders are quiet enough (tested).
-      - "${HOME}/Desktop:${HOME}/Desktop"
-      - "${HOME}/Documents:${HOME}/Documents"
-      - "${HOME}/Downloads:${HOME}/Downloads"
-      - "/Volumes:/Volumes"  # external drives (macOS)
       # Named volume: Settings and build history survive image rebuilds.
       - console_builds:/app/kg-service/.builds
       # Lets the console set up, start and stop each species' Neo4j and MORK from
