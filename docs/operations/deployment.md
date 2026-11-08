@@ -331,14 +331,14 @@ Don't copy `docker/neo4j.env` into this file. Unknown keys fail validation (`ext
 
 | Setting | Code default | Set to |
 |---|---|---|
-| `NEO4J_URI` | `bolt://localhost:27688` | Your Bolt URI, e.g. `bolt://localhost:7887` |
-| `NEO4J_USER` | `YOUR_USERNAME_HERE` | `neo4j` |
-| `NEO4J_PASSWORD` | `YOUR_PASSWORD_HERE` | The Neo4j password |
-| `NEO4J_DATABASE` | `YOUR_DATABASE_NAME_HERE` | `neo4j` (Community edition serves only this database) |
-| `ARCHIVE_BASE` | `/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/` | The same directory as `NEO4J_ARCHIVE_DIR` |
+| `NEO4J_URI` | *(none: the observatory's Neo4j is off until set)* | Your Bolt URI, e.g. `bolt://localhost:7887` |
+| `NEO4J_USER` | *(none)* | `neo4j` |
+| `NEO4J_PASSWORD` | *(none)* | The Neo4j password |
+| `NEO4J_DATABASE` | *(none)* | `neo4j` (Community edition serves only this database) |
+| `ARCHIVE_BASE` | *(none)* | The same directory as `NEO4J_ARCHIVE_DIR` |
 | `VERSION_DIFF_SCRIPT` | `/home/abdum/services/biocypher-kg/version_diff.py` | Absolute path to `kg-service/version_diff.py` |
 | `MORK_SUMMARY_SCRIPT` | `/home/abdum/services/biocypher-kg/get_mork_summary.py` | No working value; that script isn't in the repo |
-| `MORK_URL` | `http://localhost:8432` | `http://localhost:8027` |
+| `MORK_URL` | *(none)* | `http://localhost:8027` |
 | `MORK_LIVE_STATS_ENABLED`, `CACHE_TTL`, `API_HOST`, `API_PORT`, `DEBUG` | — | Unused; no code reads them. The port comes from the `uvicorn` command |
 | `APP_NAME`, `APP_VERSION` | `BioCypher KG Observatory`, `0.1.0` | Returned by `GET /` |
 
@@ -388,12 +388,18 @@ It is kg-service plus a React frontend in one Docker image, served at `http://lo
 | | From a checkout | Without a checkout |
 |---|---|---|
 | Compose file | `docker/docker-compose.yml` (builds the image) | `docker/docker-compose.dist.yml` (pulls the published image) |
-| Start | `cp docker/console.env.example docker/console.env`, set `DATA_ROOT` and `NEO4J_PASSWORD`, then `./docker/up.sh` | `CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d` |
-| Console data folder | `DATA_ROOT` | `DATA_ROOT`, default `~/biocypher-kg-data` |
+| Start | `./docker/up.sh` | `CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d` |
+
+There's no env file and no defaults. Everything a researcher sets is in **Settings**: each species' databases, the data and Builds folders, Neo4j memory, and how builds run. The console writes only to folders and connects only to databases chosen there:
+
+- builds, downloads and dbSNP prepares wait until the folders they use are set (New Build lists what's missing, and validation refuses the build);
+- loads go only to the build's species' own database, with the login saved for it;
+- a console-run Neo4j waits for Neo4j memory.
 
 - **Images.** `.github/workflows/publish-console-image.yml` publishes the image to GHCR on every push to `console`. `up.sh --no-build` uses a pulled image.
+- **`up.sh`.** It builds the MORK image once when `biocypher-mork/` exists (*Run here* MORK uses it) and starts the console. It creates no folders.
 - **Where Settings are kept.** Settings and build history live in the `console_builds` volume (`console_settings.json`, owner-only).
-- **`up.sh` and bundled databases.** `up.sh` also starts a bundled Neo4j or MORK (compose profiles `neo4j` and `mork`) when none answers on the configured port.
+- **Set before it starts.** Only what Docker needs before the console runs: the port (`CONSOLE_PORT`, default 9000) and the image (`CONSOLE_IMAGE`), as shell variables when you start it.
 
 ### 2. Settings
 
@@ -402,7 +408,7 @@ It is kg-service plus a React frontend in one Docker image, served at `http://lo
     - Neo4j uses `NEO4J_IMAGE` (default `neo4j:5.21`) and gets a generated password, shown under *In use*.
     - MORK needs a local image: `MORK_IMAGE`, or what `up.sh` built (`biocypher-console-mork[-<species>]`).
     - Remove deletes the container but keeps its data volume and password, so Set up brings it back.
-  - **Use existing:** your own database's address and, for Neo4j, its username, password and database, checked before they're saved.
+  - **Use existing:** your own database's address and, for Neo4j, its username, password and database, all required (nothing is filled in for you) and checked before they're saved.
     - A database on this computer is entered as `localhost`; the console connects through `host.docker.internal`.
     - An unencrypted address on another computer (`bolt://`, `http://`) is flagged; use `neo4j+s://`, `bolt+s://` or `https://` where the server offers it.
 - **Data locations.** *Browse…* opens the computer's own Finder. Browsers don't give the path, so the console finds the chosen folder by name and contents, then checks it:
@@ -411,14 +417,35 @@ It is kg-service plus a React frontend in one Docker image, served at `http://lo
   - the console data folder must be empty or already laid out as one.
 
   Saving Settings and validating a build run the same checks.
-- **Build settings.** The data folder, builds at the same time, finished builds kept, and builds listed in History.
+- **Build settings.** The first three are required and have no defaults.
+  - **Builds folder:** where builds are saved, each in `<folder>/<writer>/<species>-<dataset>-<time>`. It can be any shared folder, including an external drive for big builds. It must be empty or already hold builds, since the console removes older builds it made there (only folders it made: dated, in a writer folder, holding build files).
+  - **Console data folder:** downloaded source data (`input/<species>`), the prepared dbSNP cache and load archives. A folder an adapters config names (a server's `input_dir`, say) is only used once chosen under Data locations.
+  - **Neo4j memory:** page cache and heap for each Neo4j the console runs.
+  - Builds at the same time, finished builds kept, and builds listed in History.
+
+  The Settings page shows a folder as chosen only when you chose it; otherwise the field is blank and says what it falls back to. New Build shows where the next build will be saved, and each build's page shows where it was.
+
+### Build size
+
+A build can be smaller than the full graph. Step 3 of New Build has one **Size** control with two units:
+
+- **Rows per adapter** passes `--limit`.
+- **Percent** of each source's full size becomes per-adapter caps, written to `adapter_limits.json` in the job folder and passed as `--adapter-limits`. The caps are kept in the build's params, so Resume uses the same ones.
+
+The full sizes come from the console's own builds:
+
+- Each build records what every adapter wrote in `graph_info.json` (`adapter_counts`), and whether a cap stopped it early.
+- When a build succeeds, its complete counts are saved in `sizes.json` in the console's builds folder, per species and dataset. Capped counts are never saved. Deleting old builds doesn't lose them.
+- New Build shows each source's size and a preview of what the build will write. Percent stays off until every selected source has a known size; building those sources once without a limit teaches the console their size.
+- The build page shows the build's size and the rows each adapter wrote, with ✂️ on adapters the limit cut short. History notes each build that wasn't full.
+
+Each adapter keeps its first rows, so a capped graph is a sample of each source, not a random subset of it.
 
 ### 3. Folders the console can see
 
-The console runs in Docker, so it only sees shared folders. Both compose files share these, at the same path inside the container:
+The console runs in Docker, so it only sees shared folders. Both compose files share these, at the same path inside the container: `~/Desktop`, `~/Documents`, `~/Downloads` and `/Volumes`.
 
-- `DATA_ROOT`, read-write;
-- `~/Desktop`, `~/Documents`, `~/Downloads` and `/Volumes`, read-only.
+They're shared writable so the data and Builds folders can be anywhere in them. The console writes only into those two folders. Folders chosen as source data or a dbSNP cache are only read, and can't be chosen as a place to save.
 
 Don't share the whole home folder instead. Docker Desktop for Mac passes every file change in a shared folder to its VM, and a home folder changes so often that the engine stops (`service fs failed: injecting event blocked for 60s`).
 
@@ -427,8 +454,10 @@ Don't share the whole home folder instead. Docker Desktop for Mac passes every f
 | | Neo4j | MORK |
 |---|---|---|
 | Loader | `kg-service/neo4j_loader.py`, with the species' own login. The password goes in through the environment, never the command line or the job log | `kg-service/mork_loader.py`. A MORK load replaces the namespace with that build (the UI warns before loading) |
-| Archives and version metadata | `ARCHIVE_BASE/<species>/neo4j/` | `ARCHIVE_BASE/<species>/mork/` |
-| Reads the build output from | the same absolute path. Console-run instances mount `DATA_ROOT` there; your own needs `NEO4J_IMPORT_ROOT` (or equivalent) | the same absolute path. Console-run instances mount `DATA_ROOT` there; your own needs `MORK_IMPORT_ROOT` |
+| Archives and version metadata | `<data folder>/archives/<species>/neo4j/` | `<data folder>/archives/<species>/mork/` |
+| Reads the build output from | the same absolute path. Console-run instances mount the data and Builds folders there; your own needs `NEO4J_IMPORT_ROOT` (or equivalent) | the same absolute path. Console-run instances mount the data and Builds folders there; your own needs `MORK_IMPORT_ROOT` |
+
+When the data folder, the Builds folder or Neo4j memory changes, the console re-creates the instances it runs to match, keeping their data volumes and logins. It does the same at start-up for any made with older settings. A load into an instance that can't see the build yet waits for that and says so.
 
 Console-run instances publish ports on `127.0.0.1` only:
 
@@ -443,10 +472,11 @@ The console has no sign-in, so it listens on `127.0.0.1` only.
   - The `Host` must be this machine, which blocks DNS rebinding.
   - Cross-site requests are refused (`Sec-Fetch-Site`, `Origin`).
   - It can't be framed, and it sends a strict Content-Security-Policy and `Cache-Control: no-store`.
-  - Settings can't change the program that runs builds, and the data folder can't be a system or top-level folder.
+  - Settings can't change the program that runs builds. The data and Builds folders can't be a system, home or drive's top folder, or hold source data the console only reads.
 - **Containers.** The console, and the Neo4j and MORK containers it creates, run with `no-new-privileges`.
 - **Image.** Env files are excluded from the image (`.dockerignore`).
-- **The Docker socket.** The console controls Docker on its host so it can run databases; keep it on `127.0.0.1`. For remote use, put it behind a reverse proxy with a sign-in, and set `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS`.
+- **The Docker socket.** The console controls Docker on its host so it can run databases; keep it on `127.0.0.1`. For remote use, put it behind a reverse proxy with a sign-in, and start it with `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` (comma-separated) set. These stay outside Settings on purpose: a page can't widen who may reach the console.
+- **Shared folders.** Desktop, Documents, Downloads and drives are writable to the console so you can save builds there; that's the trade for choosing folders in Settings instead of an env file.
 
 ---
 
@@ -487,13 +517,12 @@ uv run --with hyperon python scripts/metta_space_import.py \
 | `8000` | kg-service | the `uvicorn --host` value | `uvicorn --port` |
 | `9000` | Web Console | `127.0.0.1` | `CONSOLE_PORT` |
 | `7687+i`, `7474+i` | Console-run Neo4j for the species at position `i` | `127.0.0.1` | the console ([Loading](#4-loading)) |
-| `7687`, `7474`, `8432` | The console stack's bundled Neo4j (Bolt, HTTP) and MORK, started by `up.sh` | `127.0.0.1` | `NEO4J_BOLT_PORT`, `NEO4J_HTTP_PORT`, `MORK_HOST_PORT` in `docker/console.env` |
 | `5432` (outbound) | FlyBase Chado | — | — |
 
 Other port numbers in the code are leftover defaults, not services you need to run:
 - `7687`: the `--uri` default in `scripts/neo4j_loader.py`
-- `27688`: kg-service `NEO4J_URI` and `version_manager.py`
-- `8432`: kg-service `MORK_URL`, `kg-service/mork_loader.py` and `test_mork_stats.py` (and the console stack's bundled MORK, above)
+- `27688`: `version_manager.py`
+- `8432`: `kg-service/mork_loader.py` and `test_mork_stats.py`
 - `7474`/`7687`: the legacy root-compose `deploy` service
 
 ---
@@ -510,7 +539,6 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 | The `graph_info` cache path is hardcoded to `/mnt/hdd_1/abdu_md/...` | Cache refresh fails on other hosts | Edit the path | `backend/core/graph_info_cache.py:11` |
 | The `databases` router is never registered | Its endpoints return 404 | None | `backend/api/main.py` |
 | `version_diff.py` parses CSVs as comma-delimited, but the writer uses `\|` | Version comparisons are unreliable | None | `kg-service/version_diff.py`, `biocypher_metta/neo4j_csv_writer.py:17` |
-| Defaults point at ports `27688` (Neo4j) and `8432` (MORK) | Can't reach either service with the defaults | Set `NEO4J_URI` and `MORK_URL` | `backend/core/config.py:6,13` |
 
 ### MORK issues
 
@@ -529,8 +557,8 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 
 | Issue | Effect | Workaround | Where |
 |---|---|---|---|
-| No MORK image is published; *Run here* needs one on the machine | Without one, setting up MORK says it can't run on this computer | Build it with `docker/up.sh`, set `MORK_IMAGE`, or use *Use existing* | `kg-service/backend/core/console/instances.py` |
-| Folders outside Desktop, Documents, Downloads, `/Volumes` and the data folder aren't shared | Choosing one says the console can't open it | Move or copy the data into a shared folder | `docker/docker-compose*.yml` |
+| No MORK image is published; *Run here* needs one on the machine | Without one, setting up MORK says it can't run on this computer | Run `docker/up.sh` with `biocypher-mork/` present (it builds the image once), or use *Use existing* | `kg-service/backend/core/console/instances.py` |
+| Folders outside Desktop, Documents, Downloads and `/Volumes` aren't shared | Choosing one says the console can't open it | Move or copy the data into a shared folder | `docker/docker-compose*.yml` |
 
 ### Neo4j and pipeline issues
 
@@ -549,4 +577,4 @@ These are code issues. This guide documents current behaviour; fixes belong in s
 - [ ] **Neo4j:** `docker/neo4j.env` filled in, with `NEO4J_AUTH` matching `NEO4J_PASSWORD` and `NEO4J_OUTPUT_DIR` pointing at a `neo4j` build. Then `make neo4j-up`, load, and verify
 - [ ] **MORK:** `biocypher-mork/.env` created and `mork_persist/` writable by UID 1000. Then `docker compose up -d --build`, load with `data_loader.py` (`DATASET_PATH` set to the `MORK_DATA_DIR` directory), and wait for a snapshot
 - [ ] **kg-service:** `kg-service/.env` with every setting above, `ARCHIVE_BASE` set to `NEO4J_ARCHIVE_DIR` and `MORK_URL=http://localhost:8027`; then `uv run uvicorn` from `kg-service/`
-- [ ] **Web Console:** started from `docker/docker-compose.yml` (`up.sh`) or `docker-compose.dist.yml`; each species' Neo4j and MORK set up or connected in Settings; data folders chosen there if you have them
+- [ ] **Web Console:** started with `docker/up.sh` or `docker-compose.dist.yml` (no env file); the Builds folder, console data folder and Neo4j memory set in Settings; each species' Neo4j and MORK set up or connected there; your own data folders, if any, chosen there

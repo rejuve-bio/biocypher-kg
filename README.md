@@ -16,26 +16,27 @@ Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno
 
 ## Web Console
 
-A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK — an alternative to the CLI. It runs the whole stack (Console + Neo4j, plus optional MORK) with a single Docker command.
+A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK, as an alternative to the CLI. One command starts it; there's no env file:
 
 ```bash
-cp docker/console.env.example docker/console.env   # set DATA_ROOT + NEO4J_PASSWORD
-./docker/up.sh                                      # then open http://localhost:9000/console/
+./docker/up.sh   # then open http://localhost:9000/console/
 ```
 
-`up.sh` connects to an existing Neo4j/MORK on the configured port, or starts a bundled one if none is found. Build output lands under `DATA_ROOT` and build history persists across rebuilds. Options — ports, remote `NEO4J_HOST`/`MORK_HOST`, memory — are documented in [`docker/console.env.example`](docker/console.env.example).
+Everything else is set in the console's **Settings** page: each species' Neo4j and MORK, where builds are saved, your data folders, and how builds run. Build history persists across rebuilds.
 
 **Building a KG in the console:**
 
 - **Sample** builds work offline from bundled data: pick a species, choose adapters, Launch build, then Load into Neo4j/MORK and open Explore.
-- **Full** builds need the source data. The wizard shows what is present for the species and a **Download data** button that fetches it into the console's local input dir (`DATA_ROOT/input/<species>`); full builds then read from there automatically. This wraps `biocypher_dataset_downloader` so the whole acquire → build → load flow stays in the UI.
-- An optional **size limit** caps nodes/edges per adapter for quick, bounded sample graphs; **Build history** shows disk usage and lets you delete a build (and its output files) to reclaim space.
+- **Full** builds need the source data. The wizard shows what is present for the species and a **Download data** button that fetches it into the console data folder (`<data folder>/input/<species>`); full builds then read from there automatically. This wraps `biocypher_dataset_downloader` so the whole acquire → build → load flow stays in the UI.
+- **Build size** makes a smaller graph: a number of rows per adapter, or a percent of each source's full size. The console learns full sizes from builds without a limit, shows them when you pick sources, and previews what a build will write. Percent turns on once every selected source has a known size. Each adapter keeps its first rows, so a capped graph is a sample, not a random subset.
+- **Build history** shows each build's size and disk usage, and lets you delete a build (and its output files) to reclaim space.
 
-**Setting it up (Settings page):** everything a researcher needs is set in the console, with no env file.
+**Setting it up (Settings page):** everything a researcher needs is set in the console, with no env file and no defaults. The console only writes to folders and connects to databases chosen there, so nothing lands somewhere you didn't pick. Until the **console data folder** and **Builds folder** are set, New Build says so and won't build, download or prepare the dbSNP cache.
 
-- **Species databases:** each species has its own Neo4j and MORK. *Run here* has the console create and start them (it uses the Docker socket the compose files mount); *Use existing* connects one you already run, with its own address and login, checked before it's saved. For a database on this computer type `localhost:7687`; the console reaches it through `host.docker.internal` itself. A connection to another computer that isn't encrypted (`bolt://`, `http://`) is flagged.
+- **Species databases:** each species has its own Neo4j and MORK, with no shared or default instance or login. *Run here* has the console create and start them (it uses the Docker socket the compose files mount; Neo4j needs **Neo4j memory** chosen first); *Use existing* connects one you already run, with its address, username, password and database entered in full and checked before they're saved. For a database on this computer type `localhost:7687`; the console reaches it through `host.docker.internal` itself. A connection to another computer that isn't encrypted (`bolt://`, `http://`) is flagged.
 - **Data locations:** Browse… opens Finder. Browsers never tell a page where a folder is, so the console finds the chosen folder by its name and contents, then checks it holds what the code reads: that species' source files, or a real dbSNP cache (`<root>/common|full/dbsnp_mapping.db`, the SQLite cache `scripts/update_dbsnp.py` builds; pickle caches are refused). Saving Settings and starting a build run the same checks.
-- **Folders the console can see:** the compose files share Desktop, Documents, Downloads and `/Volumes` read-only, plus the console data folder. Don't share the whole home folder instead: Docker Desktop passes every file change in a shared folder to its VM, and a home folder changes so often that the engine crashes.
+- **Build settings (required):** the **Builds folder** (where builds are saved), the **console data folder** (downloads, the prepared dbSNP cache, load history) and **Neo4j memory** (for each Neo4j the console runs). Chosen with Browse… like the other folders. New Build shows where the next build goes, and each build's page shows where it went.
+- **Folders the console can see:** the compose files share Desktop, Documents, Downloads and `/Volumes`, writable so the data and Builds folders can be anywhere there. The console only writes into those two; source data and dbSNP folders are only read. Don't share the whole home folder instead: Docker Desktop passes every file change in a shared folder to its VM, and a home folder changes so often that the engine crashes.
 
 **No checkout needed:** [`docker/docker-compose.dist.yml`](docker/docker-compose.dist.yml) only pulls the published image and runs it; everything else is set in Settings.
 
@@ -43,7 +44,7 @@ cp docker/console.env.example docker/console.env   # set DATA_ROOT + NEO4J_PASSW
 CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d
 ```
 
-**Security:** the console has no sign-in, so it only listens on this computer (published on `127.0.0.1`). It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy or another hostname, list the names in `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` (comma-separated) and put a sign-in in front of it. The API docs are off unless `CONSOLE_API_DOCS=1`.
+**Security:** the console has no sign-in, so it only listens on this computer (published on `127.0.0.1`). It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy or another hostname, start it with the names in `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` (comma-separated) and put a sign-in in front of it; these stay outside Settings on purpose.
 
 **Avoiding a local image build:** the console image can be built locally, or pulled prebuilt (CI publishes it to GHCR). To skip the local build (and the Docker Hub dependency it needs), pull the image and run without building:
 
@@ -163,6 +164,13 @@ uv run python create_knowledge_graph.py \
 ```
 
 Each worker builds its own writer and writes to per-adapter output directories, so their outputs never collide. Adapters that would write the same output file (same output directory and label) are automatically run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works the same as in sequential mode.
+
+### Limiting the Build Size
+
+- **`--limit N`:** caps the nodes and the edges each adapter writes at `N` (0, the default, means no limit).
+- **`--adapter-limits FILE`:** gives adapters their own caps, from a JSON file such as `{"gencode_gene": {"nodes": 6000, "edges": 0}}`. A cap of 0 means no cap. Adapters not listed keep `--limit`.
+
+Each adapter keeps its first rows. `graph_info.json` records what each adapter wrote under `adapter_counts`, with `"complete": false` where a cap stopped it early. The Web Console learns full sizes from the complete counts and turns a percent into `--adapter-limits` caps.
 
 ### Pre-flight File Path Validation
 
