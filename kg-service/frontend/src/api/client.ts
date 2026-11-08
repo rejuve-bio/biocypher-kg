@@ -247,7 +247,13 @@ export const api = {
     ),
 
   // Signing in, when the console is on a server (it then asks for a password).
-  session: () => json<{ required: boolean; signed_in: boolean }>(fetch(`${BASE}/session`)),
+  session: () =>
+    json<{ required: boolean; signed_in: boolean; on_server: boolean }>(fetch(`${BASE}/session`)),
+  /** The server's folders for Browse… (no path: the places it can see). */
+  listFolders: (path?: string | null) =>
+    json<FolderListing>(
+      fetch(`${BASE}/settings/folders${path ? `?path=${encodeURIComponent(path)}` : ""}`),
+    ),
   login: (password: string) =>
     json<{ signed_in: boolean }>(
       fetch(`${BASE}/login`, {
@@ -553,6 +559,14 @@ export type InstanceAction = "setup" | "stop" | "remove";
  * console keeps its data in, or the Builds folder. The server checks the chosen
  * folder really is that. */
 export type FolderKind = "dbsnp" | "source" | "writable" | "builds";
+
+/** One level of the server's folders, for Browse… on a server. */
+export interface FolderListing {
+  path: string | null; // null: the places the console can see
+  parent: string | null; // null at a place: back goes to the places
+  writable: boolean;
+  folders: { name: string; path: string }[];
+}
 
 /** A folder chosen in Finder, as the browser describes it: its name and (a sample
  * of) what's in it. count is how many entries it has, when the browser knows. */

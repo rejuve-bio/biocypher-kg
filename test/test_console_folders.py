@@ -92,3 +92,19 @@ def test_dbsnp_and_data_folder_fields_check_the_choice(shared, monkeypatch):
         folders.locate("hsa", HSA, 2, kind="writable")
     input_dir = [{"name": "input", "dir": True}]
     assert folders.locate("kg-data", input_dir, 1, kind="writable")["matches"] == [str(shared["data"])]
+
+
+def test_on_a_server_browse_lists_only_the_places_it_can_see(monkeypatch, tmp_path):
+    """The browser's own picker shows the browser's computer, so on a server Browse…
+    lists the server's folders: only inside the shared places, names only."""
+    place = (tmp_path / "Documents").resolve()
+    (place / "kg" / "data").mkdir(parents=True)
+    (place / ".hidden").mkdir()
+    monkeypatch.setattr(folders, "places", lambda: [
+        {"path": str(place), "label": "Documents", "icon": "documents"}])
+    assert folders.listing(None)["folders"] == [{"name": "Documents", "path": str(place)}]
+    inside = folders.listing(str(place))
+    assert [f["name"] for f in inside["folders"]] == ["kg"] and inside["parent"] is None
+    assert folders.listing(str(place / "kg"))["parent"] == str(place)
+    with pytest.raises(folders.FolderError):
+        folders.listing(str(tmp_path))  # outside every place

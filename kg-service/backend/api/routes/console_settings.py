@@ -350,6 +350,18 @@ class ChosenFolder(BaseModel):
 _locate_lock = threading.Lock()
 
 
+@router.get("/settings/folders")
+def list_folders(path: Optional[str] = None):
+    """Folders on the console's computer, for Browse… when it runs on a server: the
+    places it can see, or the subfolders of one of them (names only)."""
+    from backend.core.console import folders
+
+    try:
+        return folders.listing(path)
+    except folders.FolderError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
 @router.post("/settings/folders/locate")
 def locate_folder(req: ChosenFolder):
     """Find where a folder chosen in Finder is (browsers don't say), among the

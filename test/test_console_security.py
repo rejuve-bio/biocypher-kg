@@ -96,7 +96,7 @@ def test_on_a_server_everything_but_the_page_needs_the_password(monkeypatch):
     server = TestClient(app, base_url="http://37.27.231.93:27431")
     assert server.get(URL).status_code == 401
     assert server.get("/console/").status_code != 401  # the page itself, to sign in
-    assert server.get("/api/console/session").json() == {"required": True, "signed_in": False}
+    assert server.get("/api/console/session").json() == {"required": True, "signed_in": False, "on_server": True}
     assert server.post("/api/console/login", json={"password": "nope"}).status_code == 401
     r = server.post("/api/console/login", json={"password": "s3cret-pass"})
     assert r.status_code == 200 and "httponly" in r.headers["set-cookie"].lower()

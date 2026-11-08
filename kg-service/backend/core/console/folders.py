@@ -256,3 +256,44 @@ def locate(name: str, entries: List[dict], count: Optional[int] = None,
     if not good:
         raise FolderError(f"“{name}” can't be used here. {problems[0]}")
     return {"matches": [str(m) for m in good]}
+
+
+def _inside(path: Path, roots: List[str]) -> bool:
+    p = str(path)
+    return any(p == r or p.startswith(r.rstrip("/") + "/") for r in roots)
+
+
+def listing(path: Optional[str] = None) -> dict:
+    """The folders Browse… shows when the console runs on a server (the browser's own
+    picker only sees the computer the browser runs on). No path: the places the
+    console can see. A path: its subfolders, only inside those places. Names only:
+    nothing is opened or changed."""
+    roots = [pl["path"] for pl in places()]
+    if not path:
+        return {"path": None, "parent": None, "writable": False,
+                "folders": [{"name": pl["label"], "path": pl["path"]} for pl in places()]}
+    target = Path(path).resolve()
+    if not target.is_dir() or not _inside(target, roots):
+        raise FolderError("The console can't open that folder.")
+    names = []
+    try:
+        with os.scandir(target) as it:
+            for e in it:
+                if e.name.startswith(".") or e.name in _SKIP:
+                    continue
+                try:
+                    if e.is_dir():
+                        names.append(e.name)
+                except OSError:
+                    continue
+    except OSError:
+        raise FolderError("The console can't open that folder.")
+    names.sort(key=str.lower)
+    up = target.parent
+    return {
+        "path": str(target),
+        # Back up while still inside a place; from a place itself, back to the list.
+        "parent": str(up) if str(target) not in roots and _inside(up, roots) else None,
+        "writable": _writable(target),
+        "folders": [{"name": n, "path": str(target / n)} for n in names[:1000]],
+    }

@@ -16,9 +16,13 @@ class Login(BaseModel):
 
 @router.get("/session")
 def session(request: Request):
-    """Whether a password is required here, and whether this browser has signed in."""
+    """Whether a password is required here, whether this browser has signed in, and
+    whether the console runs on another computer than the browser (a server: Browse…
+    then lists the server's folders instead of opening this computer's Finder)."""
+    host = security.hostname(request.headers.get("host", ""))
     return {"required": bool(security.password()),
-            "signed_in": security.signed_in(request.headers.get("cookie"))}
+            "signed_in": security.signed_in(request.headers.get("cookie")),
+            "on_server": bool(security.password()) or host not in security.LOCAL_HOSTS}
 
 
 @router.post("/login")

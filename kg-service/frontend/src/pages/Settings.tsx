@@ -9,6 +9,7 @@ import type {
   ExistingDatabase,
   ChosenFolder,
   FolderKind,
+  FolderListing,
   InstanceInfo,
   InstanceAction,
   InstanceKind,
@@ -942,10 +943,17 @@ function FolderField({
   const [finding, setFinding] = useState<string | null>(null); // the chosen folder's name
   const [error, setError] = useState<string | null>(null);
   const [choices, setChoices] = useState<string[] | null>(null); // identical copies
+  // On a server, the browser's own picker would show this computer, not the server.
+  const onServer = useOnServer();
+  const [picking, setPicking] = useState(false);
 
   async function browse() {
     setError(null);
     setChoices(null);
+    if (onServer) {
+      setPicking(true);
+      return;
+    }
     let chosen: ChosenFolder | null;
     try {
       chosen = await chooseInFinder(kind);
@@ -1002,6 +1010,108 @@ function FolderField({
       )}
       {error && <span className="field-hint warn">{error}</span>}
       {hint}
+      {picking && (
+        <ServerFolderPicker
+          label={label}
+          start={value.trim() || null}
+          onChoose={(path) => {
+            onChange(path);
+            setPicking(false);
+          }}
+          onClose={() => setPicking(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Whether the console runs on another computer than this browser (a server); asked
+// once per page.
+let onServerKnown: boolean | null = null;
+function useOnServer(): boolean {
+  const [on, setOn] = useState<boolean>(onServerKnown ?? false);
+  useEffect(() => {
+    if (onServerKnown !== null) return;
+    api
+      .session()
+      .then((s) => {
+        onServerKnown = s.on_server;
+        setOn(s.on_server);
+      })
+      .catch(() => {});
+  }, []);
+  return on;
+}
+
+/** Browse… on a server: the server's folders the console can see, one level at a
+ * time. Nothing is changed here; a new folder is made when Settings saves its path. */
+function ServerFolderPicker({
+  label,
+  start,
+  onChoose,
+  onClose,
+}: {
+  label: string;
+  start: string | null;
+  onChoose: (path: string) => void;
+  onClose: () => void;
+}) {
+  const [data, setData] = useState<FolderListing | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  function open(path: string | null, fallback = true) {
+    setError(null);
+    api
+      .listFolders(path)
+      .then(setData)
+      .catch((e) => (path && fallback ? open(null, false) : setError(errText(e))));
+  }
+  useEffect(() => {
+    open(start);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-card picker-card" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <h3 className="modal-title">{label} · server</h3>
+        <div className="picker-path mono">{data?.path ?? "folders the console can see"}</div>
+        <div className="picker-list">
+          {data?.path && (
+            <button type="button" className="picker-row" onClick={() => open(data.parent, false)}>
+              ..
+            </button>
+          )}
+          {data?.folders.map((f) => (
+            <button type="button" key={f.path} className="picker-row" onClick={() => open(f.path, false)}>
+              {f.name}/
+              {!data.path && <span className="muted"> {f.path}</span>}
+            </button>
+          ))}
+          {data && !data.folders.length && <span className="picker-empty muted mono">no subfolders</span>}
+          {!data && !error && <span className="picker-empty muted mono">loading…</span>}
+        </div>
+        {error && <div className="field-hint warn">{error}</div>}
+        <div className="field-hint" style={{ marginTop: 8 }}>
+          new folder: choose its parent, then add the name in the field · made on save
+        </div>
+        <div className="row" style={{ justifyContent: "flex-end", marginTop: 14 }}>
+          <button type="button" className="secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="suggested"
+            disabled={!data?.path}
+            onClick={() => data?.path && onChoose(data.path)}
+          >
+            Choose this folder
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
