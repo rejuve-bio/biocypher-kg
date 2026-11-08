@@ -84,3 +84,25 @@ def test_the_data_folder_cant_be_a_system_or_top_level_folder(path):
 ])
 def test_unencrypted_connections_to_other_computers_are_flagged(address, warn):
     assert connections.unencrypted(address) is warn
+
+
+def test_on_a_server_everything_but_the_page_needs_the_password(monkeypatch):
+    """up.sh --host: the console is on the network, so it asks for the password first."""
+    from backend.api.routes import session
+
+    monkeypatch.setenv("CONSOLE_PASSWORD", "s3cret-pass")
+    monkeypatch.setenv("CONSOLE_ALLOWED_HOSTS", "testserver,37.27.231.93")
+    monkeypatch.setattr(session.time, "sleep", lambda s: None)
+    server = TestClient(app, base_url="http://37.27.231.93:27431")
+    assert server.get(URL).status_code == 401
+    assert server.get("/console/").status_code != 401  # the page itself, to sign in
+    assert server.get("/api/console/session").json() == {"required": True, "signed_in": False}
+    assert server.post("/api/console/login", json={"password": "nope"}).status_code == 401
+    r = server.post("/api/console/login", json={"password": "s3cret-pass"})
+    assert r.status_code == 200 and "httponly" in r.headers["set-cookie"].lower()
+    assert server.get(URL).status_code == 200
+    server.post("/api/console/logout")
+    assert server.get(URL).status_code == 401
+    # On your own computer (no password) nothing changes.
+    monkeypatch.delenv("CONSOLE_PASSWORD")
+    assert local.get(URL).status_code == 200

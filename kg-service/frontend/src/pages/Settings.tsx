@@ -660,6 +660,8 @@ function DbCell({
 
 const LABEL: Record<InstanceKind, string> = { neo4j: "Neo4j", mork: "MORK" };
 
+const ON_THIS_COMPUTER = ["localhost", "127.0.0.1", "[::1]", "::1"].includes(window.location.hostname);
+
 /** The instance the console runs: its state, and set up / start / stop / remove. */
 function RunHere({
   info,
@@ -710,7 +712,8 @@ function RunHere({
               {info.exists ? "Start" : "Set up"}
             </button>
           )}
-          {info.running && info.name.includes("neo4j") && (
+          {/* Its ports are on the console's computer only, so the link works there. */}
+          {info.running && info.name.includes("neo4j") && ON_THIS_COMPUTER && (
             <a className="src-link" href={info.open_url} target="_blank" rel="noreferrer">
               browser ↗
             </a>

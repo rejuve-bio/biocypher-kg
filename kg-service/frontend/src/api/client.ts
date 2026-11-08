@@ -9,8 +9,12 @@ import type {
 
 const BASE = "/api/console";
 
+/** Fired when the console asks for its password (on a server, see App's SignIn). */
+export const SIGN_IN_EVENT = "kg-console-sign-in";
+
 async function json<T>(p: Promise<Response>): Promise<T> {
   const res = await p;
+  if (res.status === 401) window.dispatchEvent(new Event(SIGN_IN_EVENT));
   if (!res.ok) {
     // Read the body exactly once. A non-JSON error body (proxy/timeout page,
     // empty 5xx) must not crash the error path with "body stream already read".
@@ -241,6 +245,18 @@ export const api = {
     json<{ present: boolean; manifest?: ConfigManifest }>(
       fetch(`${BASE}/builds/${id}/config-snapshot`),
     ),
+
+  // Signing in, when the console is on a server (it then asks for a password).
+  session: () => json<{ required: boolean; signed_in: boolean }>(fetch(`${BASE}/session`)),
+  login: (password: string) =>
+    json<{ signed_in: boolean }>(
+      fetch(`${BASE}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      }),
+    ),
+  logout: () => json<{ signed_in: boolean }>(fetch(`${BASE}/logout`, { method: "POST" })),
 
   exploreTargets: () =>
     json<{ targets: ExploreTarget[] }>(fetch(`${BASE}/explore/targets`)).then((d) => d.targets),

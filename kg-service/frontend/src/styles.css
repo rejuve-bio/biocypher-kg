@@ -1502,3 +1502,8 @@ a.link, .src-link { color: var(--accent); }
 .set-list .stepper .stepper-btn { font-size: 20px; color: var(--muted); }
 .set-list .stepper .stepper-btn:hover:not(:disabled) { color: var(--accent); background: transparent; border-color: transparent; }
 .set-list .stepper input[type="number"] { font-size: 15px; }
+
+/* Sign-in (the console on a server): one centred card. */
+.signin { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.signin-card { width: min(360px, 100%); display: grid; gap: 14px; }
+.signin-card .brand { padding-bottom: 4px; }

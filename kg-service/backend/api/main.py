@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import settings
 from backend.core.neo4j_client import neo4j_client
 from backend.api.routes import updates, summary, graph_info
-from backend.api.routes import console_config, builds, console_settings, instances, connections
+from backend.api.routes import console_config, builds, console_settings, instances, connections, session
 from backend.api import security
 from backend.core.console import runtime_config
 
@@ -158,6 +158,7 @@ app.include_router(console_settings.router)
 app.include_router(instances.router)
 app.include_router(connections.router)
 app.include_router(builds.router)
+app.include_router(session.router)
 
 
 @app.get("/")

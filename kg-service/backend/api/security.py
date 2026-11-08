@@ -1,8 +1,11 @@
 """Browser-facing protections for the console's pages and API.
 
-The console has no sign-in: it is a single-person tool that only listens on this
-computer (the compose files publish it on 127.0.0.1). What a loopback-only web app
-still has to stop is other websites using the person's own browser against it:
+On a computer of your own the console only listens there (127.0.0.1) and has no
+sign-in. Started with a server address (``docker/up.sh --host <ip>``) it listens on
+the network and asks for a password first (CONSOLE_PASSWORD, made by up.sh): it
+controls Docker on that machine, so nothing but its own page files is served
+without it. Either way it has to stop other websites using the person's own
+browser against it:
 
 - DNS rebinding: a website whose name points at 127.0.0.1 would count as "the same
   site" as the console. Every request must name this computer (localhost,
@@ -20,7 +23,10 @@ CONSOLE_ALLOWED_HOSTS and CONSOLE_ALLOWED_ORIGINS (comma-separated).
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import os
+from http.cookies import SimpleCookie
 from typing import Iterable, Optional
 
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
@@ -81,6 +87,44 @@ def allowed_origin(origin: str, host_header: str, scheme: str) -> bool:
     return origin == same or origin in _listed("CONSOLE_ALLOWED_ORIGINS")
 
 
+# ── Sign-in: only when CONSOLE_PASSWORD is set (the console is on the network) ──
+
+SESSION_COOKIE = "kg_console_session"
+# Without signing in: the page files (so the sign-in screen can show), signing in
+# itself, and the bare name/health replies. Nothing else.
+_OPEN_PATHS = {"/api/console/session", "/api/console/login", "/api/console/logout",
+               "/", "/health"}
+
+
+def password() -> str:
+    return os.environ.get("CONSOLE_PASSWORD", "")
+
+
+def session_token(pw: str) -> str:
+    """What the session cookie holds: derived from the password, so a new password
+    signs everyone out, and nothing is kept on the server."""
+    return hmac.new(pw.encode(), b"kg-console-session", hashlib.sha256).hexdigest()
+
+
+def signed_in(cookie_header: Optional[str]) -> bool:
+    pw = password()
+    if not pw:
+        return True
+    jar = SimpleCookie()
+    try:
+        jar.load(cookie_header or "")
+    except Exception:  # noqa: BLE001 - a malformed cookie is just not signed in
+        return False
+    got = jar.get(SESSION_COOKIE)
+    return bool(got) and hmac.compare_digest(got.value, session_token(pw))
+
+
+def needs_sign_in(path: str, cookie_header: Optional[str]) -> bool:
+    if not password() or path in _OPEN_PATHS or path == "/console" or path.startswith("/console/"):
+        return False
+    return not signed_in(cookie_header)
+
+
 def allowed_cors_origins() -> list:
     """Origins allowed to call the API from another page (none by default: the
     console's pages are served by the API itself)."""
@@ -115,9 +159,11 @@ class SecurityMiddleware:
         why = refusal(headers.get("host", ""), path, scope.get("method", "GET"),
                       headers.get("origin"), headers.get("sec-fetch-site"),
                       scope.get("scheme", "http"))
+        if not why and needs_sign_in(path, headers.get("cookie")):
+            why = "sign in"
         if why:
             body = why.encode()
-            status = 400 if why.startswith("This console only") else 403
+            status = 400 if why.startswith("This console only") else 401 if why == "sign in" else 403
             await send({"type": "http.response.start", "status": status,
                         "headers": [(b"content-type", b"text/plain; charset=utf-8"),
                                     (b"content-length", str(len(body)).encode()),

@@ -4,6 +4,7 @@ import BuildWizard from "./pages/BuildWizard";
 import BuildHistory from "./pages/BuildHistory";
 import BuildDetail from "./pages/BuildDetail";
 import { HintsProvider, typing } from "./components/Hints";
+import { api, ApiError, SIGN_IN_EVENT } from "./api/client";
 
 // Lazy so their heavy libraries (CodeMirror, Cytoscape) ship in their own chunks.
 const ConfigEditor = lazy(() => import("./pages/ConfigEditor"));
@@ -27,7 +28,17 @@ function sectionIndex(pathname: string): number {
   return i < 0 ? 0 : i;
 }
 
+type Auth = { required: boolean; signed_in: boolean };
+
 export default function App() {
+  // On a server the console asks for a password first; on your own computer it doesn't.
+  const [auth, setAuth] = useState<Auth | null>(null);
+  useEffect(() => {
+    api.session().then(setAuth).catch(() => setAuth({ required: false, signed_in: true }));
+    const signedOut = () => setAuth((a) => (a ? { ...a, signed_in: false } : a));
+    window.addEventListener(SIGN_IN_EVENT, signedOut);
+    return () => window.removeEventListener(SIGN_IN_EVENT, signedOut);
+  }, []);
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       return (localStorage.getItem("kg-theme") as Theme) || "dark";
@@ -77,6 +88,11 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   });
 
+  if (auth === null) return <div className="signin" />;
+  if (auth.required && !auth.signed_in) {
+    return <SignIn onSignedIn={() => setAuth({ required: true, signed_in: true })} />;
+  }
+
   return (
     <HintsProvider global={[{ keys: ["Q", "E"], label: "Switch section" }]}>
     <div className="app">
@@ -107,6 +123,15 @@ export default function App() {
           >
             <span className="theme-glyph" />
           </button>
+          {auth.required && (
+            <button
+              type="button"
+              className="linkbtn"
+              onClick={() => api.logout().finally(() => setAuth({ required: true, signed_in: false }))}
+            >
+              sign out
+            </button>
+          )}
         </div>
       </header>
       <main className="content">
@@ -142,5 +167,52 @@ export default function App() {
       </main>
     </div>
     </HintsProvider>
+  );
+}
+
+/** The password screen, when the console is on a server (up.sh --host). */
+function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await api.login(password);
+      onSignedIn();
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 401 ? "wrong password" : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="signin">
+      <form className="card signin-card" onSubmit={submit}>
+        <div className="brand">
+          <span className="brand-mark" aria-hidden="true">kg</span>
+          <span className="brand-text">BioCypher KG Console</span>
+        </div>
+        <label className="field">
+          Password
+          <input
+            type="password"
+            autoFocus
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        {error && <span className="field-hint warn">{error}</span>}
+        <button type="submit" className="primary" disabled={!password || busy}>
+          {busy ? "Signing in…" : "Sign in"}
+        </button>
+        <span className="field-hint">printed when the console was started on this server</span>
+      </form>
+    </div>
   );
 }
