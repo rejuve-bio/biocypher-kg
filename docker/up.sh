@@ -99,7 +99,8 @@ done
 echo
 echo "console → http://${host:-localhost}:${CONSOLE_PORT}/console/"
 if [ -n "$host" ]; then
-  echo "password → $CONSOLE_PASSWORD   (kept in $PASSWORD_FILE)"
+  # Not printed, so it doesn't end up in pasted output or terminal logs.
+  echo "password → cat $PASSWORD_FILE"
   echo "on the network · allow port ${CONSOLE_PORT} only from your own IP in the server's firewall"
 fi
 echo "set the data and Builds folders, Neo4j memory and each species' databases in Settings"

@@ -211,7 +211,7 @@ function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
         <button type="submit" className="primary" disabled={!password || busy}>
           {busy ? "Signing in…" : "Sign in"}
         </button>
-        <span className="field-hint">printed when the console was started on this server</span>
+        <span className="field-hint">on the server: cat docker/.console-password</span>
       </form>
     </div>
   );
