@@ -19,7 +19,8 @@ Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno
 A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK, as an alternative to the CLI. One command starts it; there's no env file:
 
 ```bash
-./docker/up.sh   # then open http://localhost:9000/console/
+./docker/up.sh                        # prints the address to open, e.g. http://localhost:20087/console/
+./docker/up.sh --host 37.27.231.93    # on a server: open it at the server's address, with a password
 ```
 
 Everything else is set in the console's **Settings** page: each species' Neo4j and MORK, where builds are saved, your data folders, and how builds run. Build history persists across rebuilds.
@@ -44,7 +45,7 @@ Everything else is set in the console's **Settings** page: each species' Neo4j a
 CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d
 ```
 
-**Security:** the console has no sign-in, so it only listens on this computer (published on `127.0.0.1`). It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy or another hostname, start it with the names in `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` (comma-separated) and put a sign-in in front of it; these stay outside Settings on purpose.
+**Security:** on your own computer the console only listens there (published on `127.0.0.1`) and has no sign-in. On a server, `./docker/up.sh --host <address>` puts it on the network at that address and makes it ask for a password, which `up.sh` creates once, prints, and keeps in `docker/.console-password` (the address and port are remembered too). The console controls Docker on that server, so also allow its port only from your own IP in the server's firewall (`ufw` doesn't cover ports Docker publishes), and remember plain http doesn't encrypt the password. It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy under another name, add that name to `CONSOLE_ALLOWED_HOSTS` (and `CONSOLE_ALLOWED_ORIGINS`, comma-separated); these stay outside Settings on purpose.
 
 **Avoiding a local image build:** the console image can be built locally, or pulled prebuilt (CI publishes it to GHCR). To skip the local build (and the Docker Hub dependency it needs), pull the image and run without building:
 

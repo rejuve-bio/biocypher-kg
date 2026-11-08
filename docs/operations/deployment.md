@@ -17,7 +17,7 @@ This is the single guide for deploying BioCypher-KG and everything it depends on
 | [Neo4j](#neo4j) | Graph database for the `neo4j` writer's output | [`docker/docker-compose.neo4j.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.neo4j.yml) via `make neo4j-*` | `7674` HTTP, `7887` Bolt | Works |
 | [MORK](#mork) | MeTTa graph server for the `metta` writer's output | [`biocypher-mork/`](https://github.com/rejuve-bio/biocypher-kg/tree/main/biocypher-mork) Docker image | `8027` | Works, with setup caveats |
 | [kg-service](#kg-service) | FastAPI service for graph metadata and version history | `uvicorn` on the host, or inside the Web Console image | `8000` | Works; some endpoints have [known issues](#kg-service-issues) |
-| [Web Console](#web-console) | Browser UI that downloads data, builds, loads and explores, per species | Docker: [`docker/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.yml) or [`docker/docker-compose.dist.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.dist.yml) | `9000` | Works |
+| [Web Console](#web-console) | Browser UI that downloads data, builds, loads and explores, per species | Docker: [`docker/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.yml) or [`docker/docker-compose.dist.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/docker-compose.dist.yml) | picked by `up.sh` (`9000` with the dist compose) | Works |
 | [MeTTa consumers](#optional-metta-consumers) | Hyperon in-process space, DAS | Host scripts | — | Optional; not project dependencies |
 | [External services](#external-services) | Data-source hosts, FlyBase Chado, BioPortal, NCBI | Outbound network | — | — |
 
@@ -29,7 +29,7 @@ flowchart LR
     P -- "prolog, parquet,<br/>KGX, networkx" --> F["Files only"]
     N --> K["kg-service<br/>:8000"]
     M -.-> K
-    C["Web Console<br/>:9000"] -- "runs builds" --> P
+    C["Web Console"] -- "runs builds" --> P
     C -- "per-species loads" --> N
     C -- "per-species loads" --> M
 ```
@@ -381,7 +381,7 @@ A browser UI for the whole flow, one species at a time:
 3. Load the build into that species' own Neo4j and MORK.
 4. Explore the live schema, and edit the configs.
 
-It is kg-service plus a React frontend in one Docker image, served at `http://localhost:9000/console/`. Researchers set everything in its **Settings** page; they don't need the repo, an env file or Docker commands.
+It is kg-service plus a React frontend in one Docker image, served at `http://localhost:<port>/console/`. Researchers set everything in its **Settings** page; they don't need the repo, an env file or Docker commands.
 
 ### 1. Run it
 
@@ -399,7 +399,9 @@ There's no env file and no defaults. Everything a researcher sets is in **Settin
 - **Images.** `.github/workflows/publish-console-image.yml` publishes the image to GHCR on every push to `console`. `up.sh --no-build` uses a pulled image.
 - **`up.sh`.** It builds the MORK image once when `biocypher-mork/` exists (*Run here* MORK uses it) and starts the console. It creates no folders.
 - **Where Settings are kept.** Settings and build history live in the `console_builds` volume (`console_settings.json`, owner-only).
-- **Set before it starts.** Only what Docker needs before the console runs: the port (`CONSOLE_PORT`, default 9000) and the image (`CONSOLE_IMAGE`), as shell variables when you start it.
+- **On a server.** `./docker/up.sh --host <address>` (the server's IP or name) listens on the network instead of `127.0.0.1`, accepts that address, and asks for a password before anything but its own page files. `up.sh` creates the password once (24 random characters), prints it, and keeps it owner-only in `docker/.console-password`; the address is kept in `docker/.console-host`, so a plain `./docker/up.sh` keeps it. `--host localhost` goes back to this computer only. Sign-in sets an HttpOnly, SameSite=Strict cookie for 30 days, derived from the password, so a new password signs everyone out. Neo4j Browser links are hidden there, since console-run Neo4j stays on the server's `127.0.0.1`.
+- **Port.** `up.sh` picks a random free port (20000 to 39999) the first time, so it never collides with another service, and keeps it in `docker/.console-port` so the address stays the same. It picks a new one only if that port gets taken, and prints the address each time. `CONSOLE_PORT=<port> ./docker/up.sh` chooses it yourself; the dist compose uses 9000 unless you set it.
+- **Set before it starts.** Only what Docker needs before the console runs: the port (above) and the image (`CONSOLE_IMAGE`), as shell variables when you start it.
 
 ### 2. Settings
 
@@ -466,7 +468,7 @@ Console-run instances publish ports on `127.0.0.1` only:
 
 ### 5. Security
 
-The console has no sign-in, so it listens on `127.0.0.1` only.
+On your own computer the console listens on `127.0.0.1` only and has no sign-in. On a server (`up.sh --host`) it listens on the network and asks for its password first; allow its port only from your own IP in the server's firewall (Hetzner's Cloud Firewall, say: `ufw` doesn't cover ports Docker publishes), since plain http doesn't encrypt the password.
 
 - **It stops other websites using the browser against it:**
   - The `Host` must be this machine, which blocks DNS rebinding.
@@ -475,7 +477,7 @@ The console has no sign-in, so it listens on `127.0.0.1` only.
   - Settings can't change the program that runs builds. The data and Builds folders can't be a system, home or drive's top folder, or hold source data the console only reads.
 - **Containers.** The console, and the Neo4j and MORK containers it creates, run with `no-new-privileges`.
 - **Image.** Env files are excluded from the image (`.dockerignore`).
-- **The Docker socket.** The console controls Docker on its host so it can run databases; keep it on `127.0.0.1`. For remote use, put it behind a reverse proxy with a sign-in, and start it with `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` (comma-separated) set. These stay outside Settings on purpose: a page can't widen who may reach the console.
+- **The Docker socket.** The console controls Docker on its host so it can run databases, which is why it asks for a password whenever it's on the network. Behind a reverse proxy under another name, add that name to `CONSOLE_ALLOWED_HOSTS` (and `CONSOLE_ALLOWED_ORIGINS`) when you start it. These stay outside Settings on purpose: a page can't widen who may reach the console.
 - **Shared folders.** Desktop, Documents, Downloads and drives are writable to the console so you can save builds there; that's the trade for choosing folders in Settings instead of an env file.
 
 ---
@@ -515,7 +517,7 @@ uv run --with hyperon python scripts/metta_space_import.py \
 | `7887` | Neo4j Bolt | `127.0.0.1` | `NEO4J_BOLT_PORT` |
 | `8027` | MORK HTTP | all interfaces | `HOST_PORT` (`biocypher-mork/`) or `MORK_HOST_PORT` (root compose) |
 | `8000` | kg-service | the `uvicorn --host` value | `uvicorn --port` |
-| `9000` | Web Console | `127.0.0.1` | `CONSOLE_PORT` |
+| random, 20000 to 39999 (`9000` with the dist compose) | Web Console | `127.0.0.1`, or every interface with `up.sh --host` (password required) | `docker/.console-port`, or `CONSOLE_PORT` |
 | `7687+i`, `7474+i` | Console-run Neo4j for the species at position `i` | `127.0.0.1` | the console ([Loading](#4-loading)) |
 | `5432` (outbound) | FlyBase Chado | — | — |
 
