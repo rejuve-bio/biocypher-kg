@@ -197,6 +197,11 @@ config/tmp*.yaml
 
 # Local docker env files (may contain secrets); keep the *.env.example templates
 docker/*.env
+# The port docker/up.sh picked for the console (kept so the address stays the same)
+docker/.console-port
+# The address and password docker/up.sh --host keeps for the console
+docker/.console-host
+docker/.console-password
 !docker/*.env.example
 
 # Host output dir mounted into the Console container (HOST_OUTPUT_DIR)

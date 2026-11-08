@@ -21,14 +21,16 @@ services:
     pull_policy: always
     restart: unless-stopped
     ports:
-      # Loopback-only; put it behind a reverse proxy for remote access.
-      - "127.0.0.1:${CONSOLE_PORT:-9000}:9000"
+      # This computer only, unless CONSOLE_BIND (with CONSOLE_ALLOWED_HOSTS and a
+      # CONSOLE_PASSWORD) puts it on the network.
+      - "${CONSOLE_BIND:-127.0.0.1}:${CONSOLE_PORT:-9000}:9000"
     environment:
       PORT: "9000"
       # Only for running behind a reverse proxy under another name (see the
       # deployment guide); empty means this computer only.
       CONSOLE_ALLOWED_HOSTS: "${CONSOLE_ALLOWED_HOSTS:-}"
       CONSOLE_ALLOWED_ORIGINS: "${CONSOLE_ALLOWED_ORIGINS:-}"
+      CONSOLE_PASSWORD: "${CONSOLE_PASSWORD:-}"
     volumes:
       # Persists the Settings store (console_settings.json, which holds the saved
       # connections) and the build history across restarts and image updates.

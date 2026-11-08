@@ -16,8 +16,9 @@ services:
     # Survive host reboots and daemon restarts; only a manual `down`/`stop` keeps it down.
     restart: unless-stopped
     ports:
-      # Bind to loopback only: reachable from this computer, not the network.
-      - "127.0.0.1:${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
+      # This computer only (127.0.0.1), unless up.sh --host puts it on the network,
+      # where it asks for the password up.sh made (CONSOLE_PASSWORD).
+      - "${CONSOLE_BIND:-127.0.0.1}:${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
     environment:
       PORT: "${CONSOLE_PORT:-9000}"
       REPO_ROOT: /app
@@ -26,6 +27,7 @@ services:
       # deployment guide); empty means this computer only.
       CONSOLE_ALLOWED_HOSTS: "${CONSOLE_ALLOWED_HOSTS:-}"
       CONSOLE_ALLOWED_ORIGINS: "${CONSOLE_ALLOWED_ORIGINS:-}"
+      CONSOLE_PASSWORD: "${CONSOLE_PASSWORD:-}"
     volumes:
       # What a Finder sidebar shows, at the same path on both sides. The data and
       # Builds folders are chosen here in Settings (Browse… opens Finder); there's no
