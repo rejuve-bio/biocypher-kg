@@ -346,7 +346,7 @@ export default function Settings() {
                   · keeps the newest, removes older
                 </span>
               ) : (
-                <span className="field-hint warn">required before any build</span>
+                <span className="field-hint warn">required before any build · type a path or browse · new folders are made on save</span>
               )
             }
           />
@@ -358,7 +358,8 @@ export default function Settings() {
             kind="writable"
             hint={
               <span className={`field-hint${strOrNull(dataRoot) ? "" : " warn"}`}>
-                {strOrNull(dataRoot) ? "" : "required · "}downloads · dbSNP cache · load history
+                {strOrNull(dataRoot) ? "" : "required · new folders are made on save · "}downloads · dbSNP
+                cache · load history
               </span>
             }
           />

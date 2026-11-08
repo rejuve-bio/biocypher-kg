@@ -117,15 +117,33 @@ def _check_folder(path: str) -> str:
 
 
 def _check_writable_folder(path: str, label: str, check) -> str:
-    """A folder the console saves in (the data folder, the Builds folder): an existing
-    folder it can write, not a system, home or drive's top folder, and passing
-    ``check`` (data_checks) for what it's for. Old builds are deleted from these."""
+    """A folder the console saves in (the data folder, the Builds folder): one it can
+    write, not a system, home or drive's top folder, not your read-only source data,
+    and passing ``check`` (data_checks) for what it's for. Old builds are deleted
+    from these. A new path is created here (inside a folder the console can see),
+    so the folders can be made from Settings alone, on a server too."""
+    from backend.core.console import folders, job_runner
+
     p = _check_folder(path)
     real = os.path.realpath(p)
     if real in _SYSTEM_DIRS or os.path.dirname(real) in ("/", "/Users", "/home", "/Volumes"):
         raise HTTPException(status_code=400, detail=(
             f"“{p}” can't be the {label}. Choose a folder made for it, such as a new "
             "folder in your Documents or on an external drive."))
+    for d in job_runner._protected_data_dirs():  # your own source data stays read-only
+        if Path(real) == d or d in Path(real).parents:
+            raise HTTPException(status_code=400, detail=(
+                f"“{p}” holds source data the console only reads. Choose another folder "
+                f"for the {label}."))
+    if not os.path.exists(real):
+        roots = [pl["path"] for pl in folders.places()]
+        if folders.in_docker() and not folders._allowed(Path(real), roots):
+            raise HTTPException(status_code=400, detail=(
+                f"The console can't make “{p}”: it can only save in {', '.join(roots) or 'shared folders'}."))
+        try:
+            os.makedirs(real)
+        except OSError as exc:
+            raise HTTPException(status_code=400, detail=f"The console can't make “{p}”: {exc.strerror}.")
     if not os.path.isdir(real) or not os.access(real, os.W_OK):
         raise HTTPException(status_code=400, detail=(
             f"The console can't save in “{p}”. Choose a folder in your Desktop, Documents "
@@ -133,13 +151,6 @@ def _check_writable_folder(path: str, label: str, check) -> str:
     problem = check(Path(real))
     if problem:
         raise HTTPException(status_code=400, detail=f"{label[0].upper()}{label[1:]}: {problem}")
-    from backend.core.console import job_runner
-
-    for d in job_runner._protected_data_dirs():  # your own source data stays read-only
-        if Path(real) == d or d in Path(real).parents:
-            raise HTTPException(status_code=400, detail=(
-                f"“{p}” holds source data the console only reads. Choose another folder "
-                f"for the {label}."))
     return p
 
 

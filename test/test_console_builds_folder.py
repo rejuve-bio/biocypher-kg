@@ -70,6 +70,14 @@ def test_nothing_runs_until_its_folders_are_set(folders, monkeypatch):
         job_runner.build_load_argv("mork", "/out", "hsa")
 
 
+def test_a_new_folder_typed_in_settings_is_made(folders):
+    """On a server there's no Finder: typing a new path for either folder makes it."""
+    new = folders / "kg" / "builds"
+    r = local.put(URL, json={"build": {"output_root": str(new), "data_root": str(folders / "kg" / "data")}})
+    assert r.status_code == 200, r.text
+    assert new.is_dir() and (folders / "kg" / "data").is_dir()
+
+
 def test_the_builds_folder_must_be_made_for_builds(folders):
     mine = folders / "documents"
     mine.mkdir()
