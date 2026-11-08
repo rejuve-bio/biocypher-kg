@@ -31,6 +31,8 @@ export default function Settings() {
 
   // Build settings (kept as strings; coerced on save).
   const [dataRoot, setDataRoot] = useState("");
+  const [buildsRoot, setBuildsRoot] = useState("");
+  const [memory, setMemory] = useState("");
   const [maxConc, setMaxConc] = useState("");
   const [maxOut, setMaxOut] = useState("");
   const [maxHist, setMaxHist] = useState("");
@@ -57,7 +59,10 @@ export default function Settings() {
 
   function hydrate(s: ConsoleSettings) {
     setCurrent(s);
+    // Only what you chose; a blank field shows the default it falls back to.
     setDataRoot(s.build.data_root ?? "");
+    setBuildsRoot(s.build.output_root ?? "");
+    setMemory(s.build.neo4j_memory ?? "");
     setMaxConc(s.build.max_concurrent_builds?.toString() ?? "");
     setMaxOut(s.build.max_output_builds?.toString() ?? "");
     setMaxHist(s.build.max_build_history?.toString() ?? "");
@@ -168,6 +173,8 @@ export default function Settings() {
       const patch: SettingsPatch = {
         build: {
           data_root: strOrNull(dataRoot),
+          output_root: strOrNull(buildsRoot),
+          neo4j_memory: memory || null,
           max_concurrent_builds: numOrNull(maxConc),
           max_output_builds: numOrNull(maxOut),
           max_build_history: numOrNull(maxHist),
@@ -184,7 +191,7 @@ export default function Settings() {
       hydrate(updated);
       // Re-resolve: the saved folders change where each species' data comes from.
       hydrateLocations(await api.dataLocations());
-      status({ text: "Settings saved.", tone: "ok" });
+      status({ text: "saved", tone: "ok" });
     } catch (e) {
       status({ text: errText(e), tone: "err" }, 15000);
     } finally {
@@ -196,13 +203,13 @@ export default function Settings() {
   function onReset() {
     if (current) hydrate(current);
     if (locations) hydrateLocations(locations);
-    status({ text: "Changes undone." });
+    status({ text: "reverted" });
   }
 
   // Save and Undo live in the bar along the bottom; ⌘S / Ctrl+S saves.
   usePageHints([
     { keys: [MOD, "S"], label: saving ? "Saving…" : "Save", onClick: onSave, disabled: saving || loading },
-    { keys: [], label: "↺ Undo changes", onClick: onReset, disabled: saving || loading },
+    { keys: [], label: "Undo", onClick: onReset, disabled: saving || loading },
   ]);
   const saveRef = useRef(onSave);
   saveRef.current = onSave;
@@ -218,7 +225,7 @@ export default function Settings() {
   }, []);
 
   if (loading) return <div className="muted">Loading settings…</div>;
-  if (loadError) return <div className="card danger">Could not load settings: {loadError}</div>;
+  if (loadError) return <div className="card danger">settings failed to load: {loadError}</div>;
 
   const instBy = new Map((inst?.species ?? []).map((row) => [row.species, row]));
   const connBy = new Map((conns ?? []).map((row) => [row.species, row]));
@@ -232,10 +239,7 @@ export default function Settings() {
     <div style={{ display: "grid", gap: 16, maxWidth: 860, margin: "0 auto", width: "100%" }}>
       <div>
         <h1>Settings</h1>
-        <div className="muted">
-          Each species' databases, where your data is, and how builds run. Saved on the server and
-          used right away.
-        </div>
+        <div className="muted mono">databases · folders · builds · applied on save</div>
       </div>
 
       {/* ── In use: what each species reads from and loads into right now ── */}
@@ -252,8 +256,8 @@ export default function Settings() {
             {checking ? "checking…" : "check again"}
           </button>
         </div>
-        <div className="muted" style={{ margin: "6px 0 12px" }}>
-          What each species reads from in Explore and loads builds into.
+        <div className="muted mono" style={{ margin: "6px 0 12px" }}>
+          what each species explores and loads into
         </div>
         {!conns ? (
           <div className="muted">Loading…</div>
@@ -278,14 +282,13 @@ export default function Settings() {
       {/* ── Species databases: run one here, or connect one you have ── */}
       <div className="card">
         <h2>Species databases</h2>
-        <div className="muted" style={{ marginBottom: 12 }}>
-          <b>Run here</b>: the console creates the database and its login. <b>Use existing</b>: a
-          database you already run, with its own address and login.
+        <div className="muted mono" style={{ marginBottom: 12 }}>
+          <b>run here</b> console creates it · <b>use existing</b> your own, your login
         </div>
         {!inst || !conns ? (
           <div className="muted">Loading…</div>
         ) : rowNames.length === 0 ? (
-          <div className="muted">No species found in the config.</div>
+          <div className="muted">no species in the config</div>
         ) : (
           <div className="inst-table">
             <div className="inst-row inst-head">
@@ -304,6 +307,7 @@ export default function Settings() {
                     conn={connBy.get(name)?.[kind]}
                     species={name}
                     docker={docker}
+                    blocked={kind === "neo4j" && !current?.build.neo4j_memory ? "set Neo4j memory below first" : null}
                     onAction={(a) => onInstance(name, kind, a)}
                     onConnect={(body) => onConnect(name, kind, body)}
                     onDisconnect={() => onDisconnect(name, kind)}
@@ -315,7 +319,7 @@ export default function Settings() {
         )}
         {inst && !docker && (
           <div className="field-hint warn" style={{ marginTop: 8 }}>
-            This console can’t run databases on this computer. Use existing ones instead.
+            can't run databases here · use existing
           </div>
         )}
         {instErr && (
@@ -330,17 +334,51 @@ export default function Settings() {
         <h2>Build settings</h2>
         <div className="set-list">
           <FolderField
+            label="Builds folder"
+            value={buildsRoot}
+            onChange={setBuildsRoot}
+            placeholder="required"
+            kind="builds"
+            hint={
+              strOrNull(buildsRoot) ? (
+                <span className="field-hint">
+                  → {strOrNull(buildsRoot)!.replace(/\/$/, "")}/&lt;writer&gt;/&lt;species&gt;-&lt;dataset&gt;-&lt;time&gt;
+                  · keeps the newest, removes older
+                </span>
+              ) : (
+                <span className="field-hint warn">required before any build</span>
+              )
+            }
+          />
+          <FolderField
             label="Console data folder"
             value={dataRoot}
             onChange={setDataRoot}
-            placeholder="Browse… to choose in Finder"
+            placeholder="required"
             kind="writable"
             hint={
-              <span className="field-hint">
-                Downloads, finished builds and prepared caches are kept here.
+              <span className={`field-hint${strOrNull(dataRoot) ? "" : " warn"}`}>
+                {strOrNull(dataRoot) ? "" : "required · "}downloads · dbSNP cache · load history
               </span>
             }
           />
+          <label className="field">
+            Neo4j memory
+            <select value={memory} onChange={(e) => setMemory(e.target.value)}>
+              <option value="" disabled>
+                choose…
+              </option>
+              {["1G", "2G", "4G", "8G", "16G"].map((m) => (
+                <option key={m} value={m}>
+                  {m.replace("G", " GB")}
+                </option>
+              ))}
+            </select>
+            <span className={`field-hint${memory ? "" : " warn"}`}>
+              {memory ? "" : "required to run Neo4j here · "}per console-run Neo4j · change restarts
+              them, data kept
+            </span>
+          </label>
           <label className="field">
             Builds at the same time
             <NumberStepper value={maxConc} onChange={setMaxConc} min={1} />
@@ -360,10 +398,8 @@ export default function Settings() {
       {locations && (
         <div className="card">
           <h2>Data locations</h2>
-          <div className="muted" style={{ marginBottom: 12 }}>
-            Already have the source files or a dbSNP cache on this computer? Choose their folders
-            here. The console only reads them, never changes them, and downloads anything missing.
-            Leave a field blank if you don’t have your own copy.
+          <div className="muted mono" style={{ marginBottom: 12 }}>
+            your own copies · read-only · missing data is downloaded · blank = none
           </div>
           <div className="set-list">
             {locations.species.map((loc) => (
@@ -374,7 +410,7 @@ export default function Settings() {
                 label={`${loc.species} source data`}
                 value={inputDirs[loc.species] ?? ""}
                 onChange={(v) => setInputDirs((d) => ({ ...d, [loc.species]: v }))}
-                placeholder="Browse… to choose in Finder"
+                placeholder="none"
                 hint={<LocationHint loc={loc} typed={inputDirs[loc.species] ?? ""} />}
               />
             ))}
@@ -382,7 +418,7 @@ export default function Settings() {
               label="dbSNP cache"
               value={dbsnpRoot}
               onChange={setDbsnpRoot}
-              placeholder="Browse… to choose your dbSNP cache in Finder"
+              placeholder="none"
               kind="dbsnp"
               hint={<DbsnpHint info={locations.dbsnp} typed={dbsnpRoot} />}
             />
@@ -487,7 +523,7 @@ function InUseCell({
         {conn.address ? (
           <code className="use-addr">{conn.address}</code>
         ) : (
-          <span>only the console can reach it</span>
+          <span>console-only</span>
         )}
         {kind === "neo4j" ? (
           <span>
@@ -507,7 +543,7 @@ function InUseCell({
                   <button
                     type="button"
                     className="linkbtn"
-                    title="For signing in to Neo4j Browser"
+                    title="for Neo4j Browser"
                     onClick={reveal}
                   >
                     show
@@ -522,9 +558,8 @@ function InUseCell({
             {conn.database && conn.database !== "neo4j" && <> · database <b>{conn.database}</b></>}
           </span>
         ) : (
-          <span>no login (MORK doesn’t use one)</span>
+          <span>no login</span>
         )}
-        {conn.from_env && <span>preset when the console was installed</span>}
       </div>
       {conn.unencrypted && <div className="field-hint warn">{UNENCRYPTED[kind]}</div>}
       {checked && !conn.ok && conn.error && <div className="field-hint warn">{conn.error}</div>}
@@ -536,9 +571,8 @@ function InUseCell({
 type DbMode = "here" | "own";
 
 const UNENCRYPTED: Record<InstanceKind, string> = {
-  neo4j:
-    "Not encrypted: the password and data cross the network unprotected. Use a secure address (starting with neo4j+s:// or bolt+s://) if the server has one.",
-  mork: "Not encrypted: data crosses the network unprotected. Use an https:// address if the server has one.",
+  neo4j: "not encrypted · use neo4j+s:// or bolt+s:// if the server supports it",
+  mork: "not encrypted · use https:// if the server supports it",
 };
 
 /** Same rule as the server: another computer, and an address that doesn't encrypt. */
@@ -568,6 +602,7 @@ function DbCell({
   conn,
   species,
   docker,
+  blocked,
   onAction,
   onConnect,
   onDisconnect,
@@ -577,6 +612,7 @@ function DbCell({
   conn?: ConnInfo;
   species: string;
   docker: boolean;
+  blocked?: string | null; // why Run here can't set up or start it yet
   onAction: (action: InstanceAction) => void;
   onConnect: (body: ExistingDatabase) => Promise<void>;
   onDisconnect: () => Promise<void>;
@@ -607,7 +643,7 @@ function DbCell({
         </span>
       )}
       {mode === "here" && info ? (
-        <RunHere info={info} what={`${species}’s ${LABEL[kind]}`} onAction={onAction} />
+        <RunHere info={info} what={`${species}’s ${LABEL[kind]}`} blocked={blocked} onAction={onAction} />
       ) : (
         <UseExisting
           kind={kind}
@@ -628,10 +664,12 @@ const LABEL: Record<InstanceKind, string> = { neo4j: "Neo4j", mork: "MORK" };
 function RunHere({
   info,
   what,
+  blocked,
   onAction,
 }: {
   info: InstanceInfo;
   what: string; // e.g. "hsa’s Neo4j"
+  blocked?: string | null;
   onAction: (action: InstanceAction) => void;
 }) {
   const working = isWorking(info);
@@ -662,7 +700,13 @@ function RunHere({
             </button>
           )}
           {!info.running && (
-            <button type="button" className="inst-btn" onClick={() => onAction("setup")}>
+            <button
+              type="button"
+              className="inst-btn"
+              disabled={!!blocked}
+              title={blocked ?? undefined}
+              onClick={() => onAction("setup")}
+            >
               {info.exists ? "Start" : "Set up"}
             </button>
           )}
@@ -675,7 +719,7 @@ function RunHere({
             <button
               type="button"
               className="linkbtn"
-              title="Stop it. Start brings it back as it was."
+              title="start restores it"
               onClick={() => onAction("stop")}
             >
               stop
@@ -685,11 +729,11 @@ function RunHere({
             <button
               type="button"
               className="linkbtn danger"
-              title="Remove it from this computer. Its data and password are kept."
+              title="data and password kept"
               onClick={() => {
                 if (
                   window.confirm(
-                    `Remove ${what} from this computer? Its data and password are kept, so Set up brings it back as it was.`,
+                    `Remove ${what}? Its data and password are kept.`,
                   )
                 )
                   onAction("remove");
@@ -701,6 +745,7 @@ function RunHere({
         </div>
       )}
       {failed && <div className="field-hint warn">{info.progress!.message}</div>}
+      {blocked && !info.running && !working && <div className="field-hint warn">{blocked}</div>}
     </>
   );
 }
@@ -724,8 +769,8 @@ function UseExisting({
 }) {
   const neo4j = kind === "neo4j";
   const savedAddress = own?.address ?? "";
-  const savedUser = own?.user ?? "neo4j";
-  const savedDb = own?.database ?? "neo4j";
+  const savedUser = own?.user ?? "";
+  const savedDb = own?.database ?? "";
   const [address, setAddress] = useState(savedAddress);
   const [user, setUser] = useState(savedUser);
   const [password, setPassword] = useState("");
@@ -746,7 +791,9 @@ function UseExisting({
     !savedAddress ||
     addr !== savedAddress ||
     (neo4j && (user.trim() !== savedUser || database.trim() !== savedDb || password !== ""));
-  const ready = !!addr && changed && (!neo4j || !!password || keepsPassword);
+  const ready =
+    !!addr && changed &&
+    (!neo4j || (!!user.trim() && !!database.trim() && (!!password || keepsPassword)));
 
   async function connect() {
     setBusy(true);
@@ -782,7 +829,7 @@ function UseExisting({
         ? "not working"
         : "in use"
       : info?.connected
-        ? "not in use: this species uses the one run here"
+        ? "not in use · run-here one is"
         : "not connected";
   const dot = busy || !savedAddress ? "missing" : own?.ok === false ? "bad" : own?.ok ? "ok" : "missing";
 
@@ -805,7 +852,7 @@ function UseExisting({
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder={neo4j ? "e.g. localhost:7687" : "e.g. localhost:8027"}
+            placeholder={neo4j ? "localhost:7687" : "localhost:8027"}
           />
         </label>
         {isUnencrypted(kind, address) && <span className="field-hint warn">{UNENCRYPTED[kind]}</span>}
@@ -813,7 +860,7 @@ function UseExisting({
           <div className="inst-login">
             <label className="mini-field">
               <span>Username</span>
-              <input type="text" value={user} onChange={(e) => setUser(e.target.value)} autoComplete="off" />
+              <input type="text" value={user} onChange={(e) => setUser(e.target.value)} placeholder="neo4j" autoComplete="off" />
             </label>
             <label className="mini-field">
               <span>Password</span>
@@ -827,22 +874,22 @@ function UseExisting({
             </label>
             <label className="mini-field">
               <span>Database</span>
-              <input type="text" value={database} onChange={(e) => setDatabase(e.target.value)} />
+              <input type="text" value={database} onChange={(e) => setDatabase(e.target.value)} placeholder="neo4j" />
             </label>
           </div>
         ) : (
-          <span className="field-hint">MORK has no login: the address is all it needs.</span>
+          <span className="field-hint">no login · address only</span>
         )}
         <div className="inst-actions">
           <button type="submit" className="inst-btn" disabled={!ready || busy}>
             {busy ? "Checking…" : savedAddress ? "Save" : "Connect"}
           </button>
-          {savedAddress && !own?.from_env && (
+          {savedAddress && (
             <button
               type="button"
               className="linkbtn"
               disabled={busy}
-              title="Stop using this database. The database itself is left alone."
+              title="stop using it · the database is untouched"
               onClick={disconnect}
             >
               disconnect
@@ -853,7 +900,7 @@ function UseExisting({
       {savedAddress && info?.running && (
         // The console's own instance keeps running after you switch away from it.
         <div className="inst-actions inst-note">
-          <span>The one run here is still running, unused</span>
+          <span>run-here one still running, unused</span>
           <button type="button" className="linkbtn" onClick={() => onAction("stop")}>
             stop
           </button>
@@ -930,10 +977,10 @@ function FolderField({
           {finding ? "Finding…" : "Browse…"}
         </button>
       </div>
-      {finding && <span className="field-hint">Finding “{finding}” on this computer…</span>}
+      {finding && <span className="field-hint">locating “{finding}”…</span>}
       {choices && (
         <div className="folder-choices">
-          <span className="field-hint">There’s more than one copy of that folder. Which one?</span>
+          <span className="field-hint">several copies · pick one</span>
           {choices.map((path) => (
             <button
               type="button"
@@ -1013,34 +1060,30 @@ async function chooseInFinder(kind?: FolderKind): Promise<ChosenFolder | null> {
 /** Your read-only source folder for a species, and where downloads go. */
 function LocationHint({ loc, typed }: { loc: SpeciesDataLocation; typed: string }) {
   if (typed.trim() !== (loc.override ?? "")) {
-    return <span className="field-hint">Unsaved: save to use this folder.</span>;
+    return <span className="field-hint">unsaved</span>;
   }
-  const downloads =
-    loc.origin === "config"
-      ? `${loc.path} (from the ${loc.species} adapters config)`
-      : loc.path;
+  const downloads = loc.path ?? "set the console data folder";
   if (loc.readonly) {
     const check = loc.readonly_check;
     if (!loc.readonly_exists) {
-      return <span className="field-hint warn">Can’t find this folder. Pick it again, or clear it.</span>;
+      return <span className="field-hint warn">folder not found · choose again or clear</span>;
     }
     if (check?.problem) {
       return <span className="field-hint warn">{check.problem}</span>;
     }
     return (
       <span className="field-hint ok">
-        ✓ Holds {check?.found.length ?? 0} of the {check?.total ?? 0} {loc.species} sources, read
-        from here first. Anything missing downloads to {downloads}.
+        {check?.found.length ?? 0}/{check?.total ?? 0} sources · read-only · missing → {downloads}
       </span>
     );
   }
-  return <span className="field-hint">No folder of your own; downloads go to {downloads}.</span>;
+  return <span className="field-hint">downloads → {downloads}</span>;
 }
 
 /** Whether a usable dbSNP cache is in your read-only folder or the console's own. */
 function DbsnpHint({ info, typed }: { info: DataLocationsInfo["dbsnp"]; typed: string }) {
   if (typed.trim() !== (info.override ?? "")) {
-    return <span className="field-hint">Unsaved: save to use this folder.</span>;
+    return <span className="field-hint">unsaved</span>;
   }
   const readyIn = (v: Record<"common" | "full", DbsnpVariantInfo> | null) =>
     v ? (["common", "full"] as const).filter((k) => v[k].present) : [];
@@ -1052,12 +1095,11 @@ function DbsnpHint({ info, typed }: { info: DataLocationsInfo["dbsnp"]; typed: s
     }
     return yours.length ? (
       <span className="field-hint ok">
-        ✓ Read-only: found the {yours.join(" and ")} cache here. Preparing any other variant
-        writes to {info.path}.
+        {yours.join(" + ")} · read-only · other variants → {info.path ?? "data folder (not set)"}
       </span>
     ) : (
       <span className="field-hint warn">
-        No cache found here. It should contain common/ or full/ with dbsnp_mapping.db.
+        no cache here · expects common/ or full/ with dbsnp_mapping.db
       </span>
     );
   }
@@ -1065,18 +1107,17 @@ function DbsnpHint({ info, typed }: { info: DataLocationsInfo["dbsnp"]; typed: s
   if (!console_.length && broken) {
     return (
       <span className="field-hint warn">
-        The console’s {broken} cache can’t be used: {info.variants[broken].problem} Prepare it
-        again from New Build.
+        {broken} cache unusable: {info.variants[broken].problem} · prepare again in New Build
       </span>
     );
   }
   return console_.length ? (
     <span className="field-hint ok">
-      ✓ Using the console’s {console_.join(" and ")} cache at {info.path}.
+      {console_.join(" + ")} · {info.path ?? "data folder (not set)"}
     </span>
   ) : (
     <span className="field-hint">
-      No cache yet. Prepare one from New Build when a selected source needs it.
+      none yet · prepared from New Build when needed
     </span>
   );
 }

@@ -142,14 +142,13 @@ export default function ExploreGraph() {
       </div>
 
       {targetsErr && (
-        <div className="alert err" style={{ marginTop: 12 }}>Could not load species: {targetsErr}</div>
+        <div className="alert err" style={{ marginTop: 12 }}>species failed to load: {targetsErr}</div>
       )}
       {!targets && !targetsErr && <div className="muted" style={{ marginTop: 12 }}>Loading…</div>}
 
       {targets && speciesList.length === 0 && (
         <div className="muted" style={{ marginTop: 12 }}>
-          No species has {db === "neo4j" ? "a Neo4j" : "a MORK"} yet. Set one up in Settings ›
-          Species databases.
+          no {db === "neo4j" ? "Neo4j" : "MORK"} yet · set one up in Settings
         </div>
       )}
 

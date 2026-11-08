@@ -1,7 +1,7 @@
 """Console-managed Neo4j/MORK instances: what gets created (no Docker needed).
 
-Instances must match what docker/up.sh creates (names, ports, volumes) so the two
-approaches share data.
+Instances must match what older docker/up.sh versions created (names, ports,
+volumes), so databases made that way keep their data when the console runs them.
 """
 import pytest
 

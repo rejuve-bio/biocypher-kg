@@ -38,6 +38,8 @@ class MorkSettings(BaseModel):
 
 class BuildSettings(BaseModel):
     data_root: Optional[str] = None
+    output_root: Optional[str] = None  # the Builds folder; null = the data folder
+    neo4j_memory: Optional[str] = Field(default=None, pattern=r"^(1|2|4|8|16)G$")
     max_concurrent_builds: Optional[int] = Field(default=None, ge=1, le=64)
     max_output_builds: Optional[int] = Field(default=None, ge=1, le=1000)
     max_build_history: Optional[int] = Field(default=None, ge=1, le=10000)
@@ -77,17 +79,13 @@ class TestRequest(BaseModel):
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 def _effective_species() -> Dict[str, dict]:
-    """Per-species endpoints as the console uses them: saved here, else from the
-    environment (NEO4J_URI_<SP> / MORK_URL_<SP>). Showing both means the Settings page
-    reflects every connection in use, and a save makes them console-owned."""
+    """Per-species endpoints, as saved in Settings."""
     out: Dict[str, dict] = {}
     for sp in et.species_list():
-        key = sp.upper()
         saved = runtime_config.species_override(sp)
-        neo = saved.get("neo4j_uri") or et._env(f"NEO4J_URI_{key}")
-        mork = saved.get("mork_url") or et._env(f"MORK_URL_{key}")
+        neo, mork = saved.get("neo4j_uri"), saved.get("mork_url")
         if neo or mork:
-            out[key] = {"neo4j_uri": neo, "mork_url": mork}
+            out[sp.upper()] = {"neo4j_uri": neo, "mork_url": mork}
     return out
 
 
@@ -118,24 +116,43 @@ def _check_folder(path: str) -> str:
     return os.path.normpath(str(p))
 
 
-def _check_data_root(path: str) -> str:
-    """The console data folder: an existing folder the console can save in, and not a
-    system or top-level folder (old builds are deleted from it)."""
+def _check_writable_folder(path: str, label: str, check) -> str:
+    """A folder the console saves in (the data folder, the Builds folder): an existing
+    folder it can write, not a system, home or drive's top folder, and passing
+    ``check`` (data_checks) for what it's for. Old builds are deleted from these."""
     p = _check_folder(path)
     real = os.path.realpath(p)
     if real in _SYSTEM_DIRS or os.path.dirname(real) in ("/", "/Users", "/home", "/Volumes"):
         raise HTTPException(status_code=400, detail=(
-            f"“{p}” can't be the console data folder. Choose a folder made for it, "
-            "such as one inside the current console data folder."))
+            f"“{p}” can't be the {label}. Choose a folder made for it, such as a new "
+            "folder in your Documents or on an external drive."))
     if not os.path.isdir(real) or not os.access(real, os.W_OK):
         raise HTTPException(status_code=400, detail=(
-            f"The console can't save in “{p}”. Choose a folder inside the console data folder."))
+            f"The console can't save in “{p}”. Choose a folder in your Desktop, Documents "
+            "or Downloads, or on an external drive."))
+    problem = check(Path(real))
+    if problem:
+        raise HTTPException(status_code=400, detail=f"{label[0].upper()}{label[1:]}: {problem}")
+    from backend.core.console import job_runner
+
+    for d in job_runner._protected_data_dirs():  # your own source data stays read-only
+        if Path(real) == d or d in Path(real).parents:
+            raise HTTPException(status_code=400, detail=(
+                f"“{p}” holds source data the console only reads. Choose another folder "
+                f"for the {label}."))
+    return p
+
+
+def _check_data_root(path: str) -> str:
     from backend.core.console import data_checks
 
-    problem = data_checks.check_data_folder(Path(real))
-    if problem:
-        raise HTTPException(status_code=400, detail=f"Console data folder: {problem}")
-    return p
+    return _check_writable_folder(path, "console data folder", data_checks.check_data_folder)
+
+
+def _check_output_root(path: str) -> str:
+    from backend.core.console import data_checks
+
+    return _check_writable_folder(path, "Builds folder", data_checks.check_builds_folder)
 
 
 def _same_path(a: Optional[str], b: Optional[str]) -> bool:
@@ -182,13 +199,15 @@ def put_settings(patch: SettingsPatch):
         glob["mork_url"] = patch.mork.url
     if patch.build is not None:
         b = patch.build
-        for field in ("data_root", "max_concurrent_builds", "max_output_builds",
-                      "max_build_history"):
-            if field in b.__fields_set__:
+        for field in ("data_root", "output_root", "neo4j_memory", "max_concurrent_builds",
+                      "max_output_builds", "max_build_history"):
+            if field in b.model_fields_set:
                 glob[field] = getattr(b, field)
-        # Checked when it changes (an unchanged value was accepted before).
+        # Checked when they change (an unchanged value was accepted before).
         if glob.get("data_root") and not _same_path(glob["data_root"], settings.DATA_ROOT):
             glob["data_root"] = _check_data_root(glob["data_root"])
+        if glob.get("output_root") and not _same_path(glob["output_root"], settings.OUTPUT_ROOT):
+            glob["output_root"] = _check_output_root(glob["output_root"])
     if glob:
         store_patch["global"] = glob
 
@@ -234,8 +253,22 @@ def put_settings(patch: SettingsPatch):
     if not store_patch:
         raise HTTPException(status_code=400, detail="No settings provided to update.")
 
+    before = _instance_inputs()
     runtime_config.save(store_patch)
+    if _instance_inputs() != before:
+        # The databases the console runs read builds from these folders, with this
+        # memory: bring them up to date (their data and logins are kept).
+        from backend.core.console import instances
+
+        instances.refresh_in_background()
     return _settings_response()
+
+
+def _instance_inputs() -> tuple:
+    """What the databases the console runs are made with, from Settings."""
+    from backend.core.console import runtime_config as rc
+
+    return (settings.DATA_ROOT, rc.builds_folder(), settings.NEO4J_MEMORY)
 
 
 @router.get("/settings/data-locations")
@@ -261,11 +294,11 @@ def get_data_locations():
             "species": name,
             "path": loc["path"],
             "origin": loc["origin"],
-            "exists": Path(loc["path"]).is_dir(),
+            "exists": bool(loc["path"]) and Path(loc["path"]).is_dir(),
             "readonly": loc["readonly"],
             "readonly_exists": bool(loc["readonly"]) and Path(loc["readonly"]).is_dir(),
             "override": locs["input_dirs"].get(name),
-            "default": str(job_runner.console_input_dir(name)),
+            "default": loc["path"],
             "config_dir": job_runner.config_input_dir(name),
         })
     root = job_runner.dbsnp_root()
@@ -275,8 +308,8 @@ def get_data_locations():
         "in_docker": Path("/.dockerenv").exists(),
         "species": species,
         "dbsnp": {
-            "path": str(root),  # where Prepare writes
-            "default": str(root),
+            "path": str(root) if root else None,  # where Prepare writes (None: no data folder)
+            "default": str(root) if root else None,
             "override": locs["dbsnp_root"],
             "readonly_root": str(readonly) if readonly else None,
             "variants": job_runner.dbsnp_variants_at(root),

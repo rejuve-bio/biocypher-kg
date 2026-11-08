@@ -245,3 +245,24 @@ def check_data_folder(folder: Path) -> Optional[str]:
         return None
     return ("This folder already holds other things. Choose an empty folder, or one the "
             "console already uses (it has folders like input/ and metta/).")
+
+
+def check_builds_folder(folder: Path) -> Optional[str]:
+    """None if the console can save builds here: an empty folder, or one that already
+    holds builds (metta/, neo4j/...) or is a console data folder. Old builds are
+    cleaned out of it, so a folder that holds other things is refused."""
+    from backend.core.console import config_introspect as ci
+
+    folder = Path(folder)
+    if not folder.is_dir():
+        return "Can't find this folder."
+    if not os.access(folder, os.W_OK):
+        return "The console can't save in this folder."
+    try:
+        entries = [e for e in folder.iterdir() if not e.name.startswith(".")]
+    except OSError:
+        return "The console can't open this folder."
+    if not entries or any(e.is_dir() and e.name in _console_layout() for e in entries):
+        return None
+    return ("This folder already holds other things. Choose an empty folder, or one that "
+            f"already has your builds (folders like {', '.join(ci.WRITER_TYPES[:2])}/).")

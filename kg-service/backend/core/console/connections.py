@@ -25,14 +25,14 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Tuple
 from urllib.parse import urlparse
 
-from backend.core.config import settings
 from backend.core.console import explore_targets as et
 from backend.core.console import runtime_config
 
 KINDS = ("neo4j", "mork")
-DEFAULT_USER = "neo4j"
-DEFAULT_DATABASE = "neo4j"
-_PLACEHOLDERS = {"", "YOUR_PASSWORD_HERE", "YOUR_USERNAME_HERE"}
+# The login and database of a Neo4j the console runs: what it creates them with (Neo4j
+# Community's built-in user and only database), not a guess for anyone else's.
+CONSOLE_USER = "neo4j"
+CONSOLE_DATABASE = "neo4j"
 _NEO4J_FIELDS = ("neo4j_uri", "neo4j_user", "neo4j_password", "neo4j_database")
 
 
@@ -49,30 +49,20 @@ def _check(species: str, kind: str) -> None:
         raise ConnectError(f"Unknown species '{species}'.")
 
 
-def shared_login() -> Optional[dict]:
-    """The one login older setups used for every species (NEO4J_USER / NEO4J_PASSWORD
-    in the environment). Only a fallback for databases created before each species
-    had its own login."""
-    password = settings.NEO4J_PASSWORD or ""
-    if password in _PLACEHOLDERS:
-        return None
-    user = settings.NEO4J_USER or ""
-    return {"user": user if user not in _PLACEHOLDERS else DEFAULT_USER, "password": password}
-
-
 def neo4j_login(species: str) -> Optional[dict]:
     """How the console reaches a species' Neo4j and logs in: uri, user, password,
-    database. None when the species has no Neo4j."""
+    database, exactly as saved in Settings (no shared or guessed login). None when the
+    species has no Neo4j."""
     uri = et.neo4j_uri_for(species)
     if not uri:
         return None
     saved = runtime_config.species_override(species)
-    shared = shared_login() or {}
+    console = source(species, "neo4j", uri) == "console"
     return {
         "uri": uri,
-        "user": saved.get("neo4j_user") or shared.get("user") or DEFAULT_USER,
-        "password": saved.get("neo4j_password") or shared.get("password") or "",
-        "database": saved.get("neo4j_database") or settings.NEO4J_DATABASE or DEFAULT_DATABASE,
+        "user": saved.get("neo4j_user") or (CONSOLE_USER if console else ""),
+        "password": saved.get("neo4j_password") or "",
+        "database": saved.get("neo4j_database") or (CONSOLE_DATABASE if console else ""),
     }
 
 
@@ -81,7 +71,7 @@ def managed_login(species: str) -> Optional[dict]:
     m = (runtime_config.load().get("managed") or {}).get(species.upper()) or {}
     if not m.get("neo4j_password"):
         return None
-    return {"user": m.get("neo4j_user") or DEFAULT_USER, "password": m["neo4j_password"]}
+    return {"user": m.get("neo4j_user") or CONSOLE_USER, "password": m["neo4j_password"]}
 
 
 def save_managed_login(species: str, login: dict) -> None:
@@ -111,16 +101,6 @@ def source(species: str, kind: str, address: Optional[str]) -> Optional[str]:
     from backend.core.console import instances  # local: instances imports this module
 
     return "console" if address == instances.internal_url(species, kind) else "existing"
-
-
-def from_env(species: str, kind: str) -> bool:
-    """Preset by the environment (NEO4J_URI_<SP> / MORK_URL_<SP>), not in the console."""
-    field = "neo4j_uri" if kind == "neo4j" else "mork_url"
-    if runtime_config.species_override(species).get(field):
-        return False
-    # Either this species' own variable, or the single default every species falls
-    # back to when none has its own (NEO4J_URI / MORK_URL).
-    return bool(et.neo4j_uri_for(species) if kind == "neo4j" else et.mork_url_for(species))
 
 
 # ── Checks ─────────────────────────────────────────────────────────────────────
@@ -247,7 +227,6 @@ def _neo4j_status(species: str, check: bool, local: Optional[dict] = None) -> di
         "user": login["user"],
         "database": login["database"],
         "password_set": bool(login["password"]),
-        "from_env": from_env(species, "neo4j"),
     }
     if check:
         ok, message, reason = probe_neo4j(login["uri"], login["user"], login["password"],
@@ -264,7 +243,7 @@ def _mork_status(species: str, check: bool, local: Optional[dict] = None) -> dic
         return {"source": None, "address": None}
     src = source(species, "mork", url)
     shown = _shown(species, "mork", url, src, local)
-    out = {"source": src, "address": shown, "from_env": from_env(species, "mork"),
+    out = {"source": src, "address": shown,
            "unencrypted": src == "existing" and unencrypted(url)}
     if check:
         ok, message, reason = probe_mork(url)
@@ -308,8 +287,10 @@ def connect_existing(species: str, kind: str, address: str, user: Optional[str] 
         runtime_config.save({"species": {key: {"mork_url": address}}})
         return species_status(species)
 
-    user = (user or "").strip() or DEFAULT_USER
-    database = (database or "").strip() or DEFAULT_DATABASE
+    user = (user or "").strip()
+    database = (database or "").strip()
+    if not user or not database:
+        raise ConnectError("enter the username and database")
     if not password:
         # Blank keeps the saved password, but only for the database it was saved for.
         saved = runtime_config.species_override(species)
@@ -332,12 +313,6 @@ def disconnect(species: str, kind: str) -> dict:
     _check(species, kind)
     fields = _NEO4J_FIELDS if kind == "neo4j" else ("mork_url",)
     runtime_config.save({"species": {species.upper(): {f: None for f in fields}}})
-    if from_env(species, kind):
-        raise ConnectError(
-            f"{species}'s {'Neo4j' if kind == 'neo4j' else 'MORK'} was preset when the "
-            "console was installed, so it can't be disconnected here. You can connect a "
-            "different one instead."
-        )
     return species_status(species)
 
 
@@ -350,35 +325,3 @@ def console_login(species: str) -> dict:
     if not login or source(species, "neo4j", login["uri"]) != "console":
         raise ConnectError(f"{species} isn't using a Neo4j the console runs.")
     return {"user": login["user"], "password": login["password"]}
-
-
-def migrate() -> None:
-    """Connections made before each species had its own login relied on the shared
-    environment login. Copy it onto each such species (and onto the console-run
-    ones' kept login), so every species carries its own."""
-    shared = shared_login()
-    if not shared:
-        return
-    from backend.core.console import instances  # local: instances imports this module
-
-    store = runtime_config.load()
-    managed = store.get("managed") or {}
-    species_patch, managed_patch = {}, {}
-    for key, entry in (store.get("species") or {}).items():
-        if not isinstance(entry, dict) or not entry.get("neo4j_uri") or entry.get("neo4j_password"):
-            continue
-        species_patch[key] = {"neo4j_user": entry.get("neo4j_user") or shared["user"],
-                              "neo4j_password": shared["password"]}
-        try:
-            is_console = entry["neo4j_uri"] == instances.internal_url(key.lower(), "neo4j")
-        except Exception:  # noqa: BLE001 - species no longer in the config
-            is_console = False
-        if is_console and not (managed.get(key) or {}).get("neo4j_password"):
-            managed_patch[key] = {"neo4j_user": shared["user"], "neo4j_password": shared["password"]}
-    patch = {}
-    if species_patch:
-        patch["species"] = species_patch
-    if managed_patch:
-        patch["managed"] = managed_patch
-    if patch:
-        runtime_config.save(patch)

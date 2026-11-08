@@ -82,7 +82,7 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-mark">🧬</span>
+          <span className="brand-mark" aria-hidden="true">kg</span>
           <span className="brand-text">BioCypher KG Console</span>
         </div>
         <nav className="tabs" aria-label="Sections">
@@ -101,10 +101,11 @@ export default function App() {
         <div className="topbar-end">
           <button
             className="theme-toggle"
-            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            title={`${theme === "dark" ? "light" : "dark"} mode`}
+            aria-label={`${theme === "dark" ? "light" : "dark"} mode`}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
-            {theme === "dark" ? "☀️" : "🌙"}
+            <span className="theme-glyph" />
           </button>
         </div>
       </header>

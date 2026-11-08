@@ -71,8 +71,10 @@ def _subprocess_env() -> dict:
     return env
 
 
-def build_argv(req: BuildRequest, output_dir: str, resume: bool = False) -> list[str]:
-    """Construct the exact argv to launch a build. Single source of truth."""
+def build_argv(req: BuildRequest, output_dir: str, resume: bool = False,
+               limits_file: Optional[str] = None) -> list[str]:
+    """Construct the exact argv to launch a build. Single source of truth.
+    ``limits_file`` is where launch() wrote req.adapter_limits."""
     argv = [settings.UV_BIN, "run", "python", "create_knowledge_graph.py"]
     if req.species:
         argv += ["--species", req.species, "--dataset", req.dataset]
@@ -108,6 +110,9 @@ def build_argv(req: BuildRequest, output_dir: str, resume: bool = False) -> list
     # Optional per-adapter row cap for small, bounded sample graphs (0 = no limit).
     if getattr(req, "limit", 0) and req.limit > 0:
         argv += ["--limit", str(req.limit)]
+    # Or caps per adapter (a percentage of known sizes, resolved at launch).
+    if getattr(req, "adapter_limits", None):
+        argv += ["--adapter-limits", limits_file or "<written-at-launch>"]
     # Explicit resume/restart so the CLI never blocks on its interactive prompt.
     argv.append("--resume" if resume else "--restart")
     return argv
@@ -129,15 +134,27 @@ def check_only_argv(adapters_config_abs: str,
     return argv
 
 
+def builds_root() -> Optional[Path]:
+    """Where builds are saved: the Builds folder chosen in Settings, else the console
+    data folder. None when neither is set (development without a data folder)."""
+    from backend.core.console import runtime_config
+
+    root = runtime_config.builds_folder()
+    return Path(root) if root else None
+
+
 def resolve_output_dir(req: BuildRequest, job_dir: Path) -> str:
-    """Where the build writes: explicit output_dir -> dated DATA_ROOT dir -> <job_dir>/output."""
+    """Where the build writes: explicit output_dir (a resume), else a dated folder in
+    the Builds folder, <builds>/<writer>/<species>-<dataset>-<time>. There's no
+    fallback: without a Builds folder set in Settings this raises."""
+    from backend.core.console import runtime_config
+
     if req.output_dir:
         return _abs(req.output_dir)
-    if settings.DATA_ROOT:
-        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
-        name = f"{req.species}-{req.dataset}-{ts}" if req.species else f"build-{ts}"
-        return _abs(str(Path(settings.DATA_ROOT) / req.writer_type / name))
-    return str(job_dir / "output")
+    runtime_config.require("builds")
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+    name = f"{req.species}-{req.dataset}-{ts}" if req.species else f"build-{ts}"
+    return _abs(str(builds_root() / req.writer_type / name))
 
 
 def read_checkpoint(output_dir: str) -> Optional[dict]:
@@ -188,14 +205,27 @@ def _count_adapters(req: BuildRequest) -> Optional[int]:
 
 
 def launch(req: BuildRequest, resume: bool = False) -> BuildJob:
-    """Create a job, persist it QUEUED, and start a worker thread that runs the build."""
+    """Create a job, persist it QUEUED, and start a worker thread that runs the build.
+    Both folders must be set in Settings first (runtime_config.require)."""
+    from backend.core.console import runtime_config
+
+    runtime_config.require("data", "builds")
     job_id = uuid.uuid4().hex
     job_dir = registry.job_dir(job_id)
     job_dir.mkdir(parents=True, exist_ok=True)
     output_dir = resolve_output_dir(req, job_dir)
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     log_path = str(job_dir / "build.log")
-    argv = build_argv(req, output_dir, resume=resume)
+    # A percentage becomes caps per adapter now, from the sizes known today, and is
+    # kept in the params so a resume uses exactly the same caps.
+    from backend.core.console import sizes
+
+    req.adapter_limits = sizes.resolve(req)
+    limits_file = None
+    if req.adapter_limits:
+        limits_file = str(job_dir / "adapter_limits.json")
+        Path(limits_file).write_text(json.dumps(req.adapter_limits, indent=2, sort_keys=True))
+    argv = build_argv(req, output_dir, resume=resume, limits_file=limits_file)
 
     (job_dir / "params.json").write_text(req.model_dump_json(indent=2))
 
@@ -291,6 +321,15 @@ def _run_job(job_id: str, argv: list[str], log_path: str) -> None:
             except Exception as exc:  # noqa: BLE001 - provenance is best-effort
                 logger.warning("Config snapshot skipped: %s", exc)
             try:
+                from backend.core.console import sizes
+
+                done = registry.get(job_id) or job
+                learned = sizes.record_build(done)
+                if learned:
+                    logger.info("Learned the sizes of %d adapter(s) from build %s", learned, job_id)
+            except Exception as exc:  # noqa: BLE001 - sizes are a convenience
+                logger.warning("Size record skipped: %s", exc)
+            try:
                 n = prune_output_dirs()
                 if n:
                     logger.info("Pruned %d old build output dir(s)", n)
@@ -354,14 +393,29 @@ def snapshot_build_config(job: BuildJob) -> Optional[dict]:
 
 # Matches the ...-YYYYMMDD-HHMMSS suffix of an auto-named build dir.
 _BUILD_TS_SUFFIX = re.compile(r"-\d{8}-\d{6}$")
+# What a build leaves in its folder, from its first moments (checkpoint) to the end.
+_BUILD_MARKERS = ("graph_info.json", "kg_checkpoint.json", "build_config")
+
+
+def is_console_build(path: Path) -> bool:
+    """A folder a console build made: named <species>-<dataset>-<time>, in a writer
+    folder (metta/, neo4j/...), holding what builds write. The Builds folder can be
+    anywhere you choose, so nothing else is ever deleted as an old build."""
+    from backend.core.console import config_introspect as ci
+
+    return (path.is_dir() and bool(_BUILD_TS_SUFFIX.search(path.name))
+            and path.parent.name in ci.WRITER_TYPES
+            and any((path / m).exists() for m in _BUILD_MARKERS))
 
 
 def prune_output_dirs(keep: Optional[int] = None) -> int:
-    """Keep only the newest ``keep`` build output folders per (writer folder, species)
-    under DATA_ROOT, deleting older ones. Leaves ``archives/`` and ``configs/`` alone,
-    and never removes a folder a queued/running build is writing to."""
+    """Keep only the newest ``keep`` builds per (writer folder, species) in the Builds
+    folder, deleting older ones. Only console builds (is_console_build) are counted
+    or removed, and never one a queued/running build is writing to."""
+    from backend.core.console import config_introspect as ci
+
     keep = keep if keep is not None else settings.MAX_OUTPUT_BUILDS
-    root = Path(settings.DATA_ROOT) if settings.DATA_ROOT else None
+    root = builds_root()
     if root is None or keep <= 0 or not root.is_dir():
         return 0
 
@@ -371,17 +425,13 @@ def prune_output_dirs(keep: Optional[int] = None) -> int:
         if j.output_dir and j.status in {JobStatus.QUEUED, JobStatus.RUNNING}
     }
 
-    # Scan DATA_ROOT itself (legacy flat builds) plus each writer subdir (metta/, neo4j/…).
-    skip = {"archives", "configs", "dbsnp"}
-    parents = [root] + [
-        c for c in root.iterdir()
-        if c.is_dir() and c.name not in skip and not _BUILD_TS_SUFFIX.search(c.name)
-    ]
-
     groups: dict[tuple, list[Path]] = {}
-    for parent in parents:
+    for writer in ci.WRITER_TYPES:
+        parent = root / writer
+        if not parent.is_dir():
+            continue
         for d in parent.iterdir():
-            if d.is_dir() and _BUILD_TS_SUFFIX.search(d.name):
+            if is_console_build(d):
                 species = d.name.split("-", 1)[0]
                 groups.setdefault((str(parent), species), []).append(d)
 
@@ -416,13 +466,16 @@ def _redact_argv(argv: list[str]) -> list[str]:
     return out
 
 
-def archive_base_for(species: Optional[str] = None) -> str:
+def archive_base_for(species: Optional[str] = None) -> Optional[str]:
     """Where a species' loads keep archives and version metadata. Each species has
     its own databases, so each gets its own folder (ARCHIVE_BASE/<species>);
     otherwise loading one species would overwrite the hashes and version the
     others' Explore cards show. Without a species (one shared instance) it's
-    ARCHIVE_BASE itself. The loaders append neo4j/ or mork/."""
-    base = settings.ARCHIVE_BASE
+    ARCHIVE_BASE itself. The loaders append neo4j/ or mork/. Kept in the console
+    data folder, so they move with it; None until that's set in Settings."""
+    if not settings.DATA_ROOT:
+        return None
+    base = str(Path(settings.DATA_ROOT) / "archives")
     return str(Path(base) / species) if species else base
 
 
@@ -436,17 +489,18 @@ def build_load_argv(target: str, output_dir: str, species: str = None) -> list[s
     """
     from urllib.parse import urlparse
     from backend.core.console import explore_targets as et
+    from backend.core.console import runtime_config
+
+    if not species:
+        raise ValueError("load needs the build's species (each species has its own databases)")
+    runtime_config.require("data")
     # The loaders append the target subdir (neo4j/mork) to this.
     archive_dir = archive_base_for(species)
     if target == "neo4j":
         from backend.core.console import connections
 
-        if species:
-            # The species' own database and login (Settings > Species databases).
-            login = connections.neo4j_login(species)
-        else:
-            login = {"uri": settings.NEO4J_URI, "user": settings.NEO4J_USER,
-                     "password": settings.NEO4J_PASSWORD, "database": settings.NEO4J_DATABASE}
+        # The species' own database and login (Settings > Species databases).
+        login = connections.neo4j_login(species)
         if not login:
             raise ValueError(
                 f"{species} has no Neo4j yet. Set one up or connect one in "
@@ -462,7 +516,7 @@ def build_load_argv(target: str, output_dir: str, species: str = None) -> list[s
                 "--password", login["password"],
                 "--database", login["database"]]
     if target == "mork":
-        url = et.mork_url_for(species) if species else settings.MORK_URL
+        url = et.mork_url_for(species)
         if not url:
             raise ValueError(
                 f"{species} has no MORK yet. Set one up or connect one in "
@@ -483,6 +537,13 @@ def _start_load(target: str, output_dir: str, params: dict) -> BuildJob:
     # Build (and so validate) the argv before any filesystem/registry work, so an
     # unconfigured target raises ValueError without leaving a stray job behind.
     argv = build_load_argv(target, output_dir, params.get("species"))
+    # A database the console runs reads the build from a folder it was made with;
+    # after the Builds folder moves it's re-created first (instances.refresh).
+    from backend.core.console import instances
+
+    problem = instances.cannot_read(params.get("species"), target, output_dir)
+    if problem:
+        raise ValueError(problem)
     job_dir = registry.job_dir(job_id)
     job_dir.mkdir(parents=True, exist_ok=True)
     log_path = str(job_dir / "load.log")
@@ -562,15 +623,12 @@ def loads_for(build_id: str) -> dict:
 # wrap it as a tracked job so the whole acquire -> build -> load flow stays in the UI.
 
 
-def console_input_dir(species: str) -> Path:
-    """The console's own download folder for a species: DATA_ROOT/input/<species>,
-    or <repo>/input/<species> when DATA_ROOT is unset (dev without a data root)."""
-    root = settings.DATA_ROOT or str(settings.repo_root_path / "input")
-    base = Path(root)
-    # Keep the input tree beside build output (archives/, configs/) under DATA_ROOT.
-    if settings.DATA_ROOT:
-        base = base / "input"
-    return (base / species).resolve()
+def console_input_dir(species: str) -> Optional[Path]:
+    """The console's own download folder for a species, <data folder>/input/<species>,
+    or None until the console data folder is set in Settings."""
+    if not settings.DATA_ROOT:
+        return None
+    return (Path(settings.DATA_ROOT) / "input" / species).resolve()
 
 
 def _user_path(p: str) -> Path:
@@ -595,29 +653,21 @@ def resolve_species_input(species: str) -> dict:
     ``readonly``: a folder chosen in Settings > Data locations (data you already have).
     The console reads from it first and never writes to it.
 
-    ``path`` / ``origin``: the writable folder downloads go into, also read:
-      "console": the console's own folder, when it already holds data;
-      "config":  else the adapters config's input_dir, when that path exists here, so a
-                 host that already keeps the data there (the team server) needs no setup;
-      "console": else the console's folder, which downloads create.
-    Presence checks, builds and validation read both (read-only first).
+    ``path``: the console's download folder (<data folder>/input/<species>), also
+    read; None until the data folder is set. Nothing else is used on its own: a folder
+    an adapters config names (a server's input_dir, say) is used only once chosen in
+    Settings > Data locations. Presence checks, builds and validation read both
+    (read-only first).
     """
     from backend.core.console import runtime_config  # local: keep import graph simple
 
     override = runtime_config.data_locations()["input_dirs"].get(species)
     readonly = str(_user_path(override)) if override else None
     console_dir = console_input_dir(species)
-    if console_dir.is_dir() and any(console_dir.iterdir()):
-        path, origin = str(console_dir), "console"
-    else:
-        cfg_dir = config_input_dir(species)
-        if cfg_dir and Path(cfg_dir).is_dir():
-            path, origin = cfg_dir, "config"
-        else:
-            path, origin = str(console_dir), "console"
+    path = str(console_dir) if console_dir else None
     if readonly == path:
         readonly = None  # pointing "your data" at the download folder itself
-    return {"path": path, "origin": origin, "readonly": readonly}
+    return {"path": path, "origin": "console", "readonly": readonly}
 
 
 def species_input_dir(species: str) -> Optional[str]:
@@ -630,7 +680,7 @@ def species_input_dir(species: str) -> Optional[str]:
 def species_read_dirs(species: str) -> list:
     """Folders a species' source files are read from, in priority order."""
     loc = resolve_species_input(species)
-    return ([loc["readonly"]] if loc["readonly"] else []) + [loc["path"]]
+    return [d for d in (loc["readonly"], loc["path"]) if d]
 
 
 def effective_input_dirs(req: BuildRequest) -> list:
@@ -681,6 +731,9 @@ def build_download_argv(req: DownloadRequest, output_dir: str) -> list[str]:
 
 def launch_download(req: DownloadRequest) -> Optional[BuildJob]:
     """Start a tracked download job that fetches a species' source data locally."""
+    from backend.core.console import runtime_config
+
+    runtime_config.require("data")  # downloads go into the console data folder
     cfg = settings.repo_root_path / _data_source_config_rel(req.species)
     if not cfg.exists():
         raise ValueError(f"No data source config for species '{req.species}' ({cfg}).")
@@ -727,12 +780,12 @@ def launch_download(req: DownloadRequest) -> Optional[BuildJob]:
 DBSNP_VARIANTS = ("common", "full")
 
 
-def dbsnp_root() -> Path:
-    """Where the console prepares (writes) its dbSNP cache: <DATA_ROOT>/dbsnp, else
-    <REPO_ROOT>/dbsnp_cache. A cache chosen in Settings is only read, never written."""
-    if settings.DATA_ROOT:
-        return Path(settings.DATA_ROOT) / "dbsnp"
-    return settings.repo_root_path / "dbsnp_cache"
+def dbsnp_root() -> Optional[Path]:
+    """Where the console prepares (writes) its dbSNP cache, <data folder>/dbsnp, or
+    None until the data folder is set. A cache chosen in Settings is only read."""
+    if not settings.DATA_ROOT:
+        return None
+    return Path(settings.DATA_ROOT) / "dbsnp"
 
 
 def dbsnp_readonly_root() -> Optional[Path]:
@@ -750,13 +803,17 @@ def _active_dbsnp_job() -> Optional[BuildJob]:
     return None
 
 
-def dbsnp_variants_at(root: Path) -> dict:
+def dbsnp_variants_at(root: Optional[Path]) -> dict:
     """Per-variant readiness of a dbSNP cache root (<root>/<variant>/dbsnp_mapping.db).
     ``present`` means usable: the file is there and really is a dbSNP cache (see
-    data_checks); ``problem`` says why a file that's there can't be used."""
+    data_checks); ``problem`` says why a file that's there can't be used. No root
+    (the data folder isn't set) means nothing is there."""
     from backend.core.console import data_checks
 
     variants: dict = {}
+    if root is None:
+        return {v: {"present": False, "bytes": 0, "built_at": None, "problem": None}
+                for v in DBSNP_VARIANTS}
     for variant in DBSNP_VARIANTS:
         db = root / variant / "dbsnp_mapping.db"
         exists = db.is_file()
@@ -781,15 +838,16 @@ def dbsnp_status(custom_root: Optional[str] = None) -> dict:
     build fails on it). Each variant carries the ``root`` a build should use."""
     root = dbsnp_root()
     readonly = dbsnp_readonly_root()
-    roots = ([readonly] if readonly else []) + [root]
+    roots = [r for r in (readonly, root) if r]
     at = {r: dbsnp_variants_at(r) for r in roots}
     variants: dict = {}
     for variant in DBSNP_VARIANTS:
         where = next((r for r in roots if at[r][variant]["present"]), root)
-        variants[variant] = {**at[where][variant], "root": str(where)}
+        info = at[where][variant] if where in at else dbsnp_variants_at(None)[variant]
+        variants[variant] = {**info, "root": str(where) if where else None}
     active = _active_dbsnp_job()
     out = {
-        "root": str(root),
+        "root": str(root) if root else None,  # None: the data folder isn't set
         "readonly_root": str(readonly) if readonly else None,
         "variants": variants,
         "job_id": active.id if active else None,
@@ -809,6 +867,9 @@ def launch_dbsnp_prepare(variant: str) -> BuildJob:
         raise ValueError(f"dbSNP variant must be one of {DBSNP_VARIANTS} (got '{variant}').")
     if _active_dbsnp_job():
         raise ValueError("A dbSNP cache job is already running.")
+    from backend.core.console import runtime_config
+
+    runtime_config.require("data")
     cache_dir = dbsnp_root() / variant
     cache_dir.mkdir(parents=True, exist_ok=True)
     # --force: (re)build now rather than only when the 90-day refresh is due.
@@ -908,8 +969,9 @@ def data_status(species: str) -> dict:
     your read-only folder first and then the download folder. Each source records
     where it was found ("yours" or "console") so the UI can say what is downloadable."""
     loc = resolve_species_input(species)
-    input_dir = Path(loc["path"])
-    roots = ([(Path(loc["readonly"]), "yours")] if loc["readonly"] else []) + [(input_dir, "console")]
+    input_dir = Path(loc["path"]) if loc["path"] else None
+    roots = ([(Path(loc["readonly"]), "yours")] if loc["readonly"] else []) + (
+        [(input_dir, "console")] if input_dir else [])
     try:
         sources = ci.list_data_sources(species).get("sources", [])
     except Exception:  # noqa: BLE001 - no config -> no sources
@@ -928,11 +990,11 @@ def data_status(species: str) -> dict:
                     "location": where})
     return {
         "species": species,
-        "input_dir": str(input_dir),          # downloads go here
-        "input_origin": loc["origin"],        # console | config
+        "input_dir": str(input_dir) if input_dir else None,  # downloads go here (None: not set)
+        "input_origin": loc["origin"],
         "readonly_dir": loc["readonly"],      # your data, read first, never written
         "exists": any(root.is_dir() for root, _ in roots),
-        "manifest_present": (input_dir / "download_manifest.json").exists(),
+        "manifest_present": bool(input_dir) and (input_dir / "download_manifest.json").exists(),
         "source_count": len(out),
         "present_count": sum(1 for o in out if o["present"]),
         "total_bytes": sum(o["bytes"] for o in out),
@@ -966,8 +1028,9 @@ def _protected_data_dirs() -> list:
 
 
 def purge_output_dir(output_dir: str) -> bool:
-    """Delete a build's output folder (for reclaiming disk). Refuses to touch the
-    shared archives/configs/input trees or anything outside DATA_ROOT."""
+    """Delete a build's output folder (for reclaiming disk). Only a console build
+    (is_console_build), and never the shared archives/configs/input/dbSNP trees or
+    data you pointed the console at."""
     if not output_dir:
         return False
     try:
@@ -978,8 +1041,8 @@ def purge_output_dir(output_dir: str) -> bool:
         return False
     # The managed dbSNP cache is shared by every build and takes hours to rebuild;
     # never purge it as if it were one job's output.
-    dbsnp = dbsnp_root().resolve()
-    if target == dbsnp or dbsnp in target.parents:
+    dbsnp = dbsnp_root()
+    if dbsnp and (target == dbsnp.resolve() or dbsnp.resolve() in target.parents):
         return False
     # Nor data the console was pointed at rather than created (a folder chosen in
     # Settings, or an adapters config's input_dir): a download job's "output" is that
@@ -987,37 +1050,36 @@ def purge_output_dir(output_dir: str) -> bool:
     for d in _protected_data_dirs():
         if target == d or d in target.parents or target in d.parents:
             return False
-    if settings.DATA_ROOT:
-        root = Path(settings.DATA_ROOT).resolve()
-        # Must live under DATA_ROOT, and never be a protected shared dir or the root.
-        if root not in target.parents or target.name in {"archives", "configs", "input"}:
-            return False
+    # A build's folder wherever the Builds folder was when it ran: named and laid
+    # out like one, so a folder that merely sits in a chosen folder is never removed.
+    if not is_console_build(target):
+        return False
     shutil.rmtree(target, ignore_errors=True)
     return not target.exists()
 
 
 def disk_usage() -> dict:
-    """Disk usage for the console's data root: builds, input, archives, and free space."""
+    """Disk usage: builds (the Builds folder), and input, archives and configs (the
+    console data folder), with the free space where builds are saved."""
+    from backend.core.console import config_introspect as ci
+
     info: dict = {"data_root": settings.DATA_ROOT or None}
     root = Path(settings.DATA_ROOT) if settings.DATA_ROOT else None
+    builds = builds_root()
+    info["builds_root"] = str(builds) if builds else None
     if root is None or not root.is_dir():
         info["available"] = False
         return info
     try:
-        usage = shutil.disk_usage(str(root))
+        usage = shutil.disk_usage(str(builds if builds and builds.is_dir() else root))
         info["free_bytes"] = usage.free
         info["total_bytes_fs"] = usage.total
     except OSError:
         pass
     categories: dict[str, int] = {}
-    for name in ("archives", "configs", "input"):
+    for name in ("archives", "configs", "input", "dbsnp"):
         categories[name] = _dir_size(root / name)
-    # Everything else under the root counts as build output.
-    build_bytes = 0
-    for child in root.iterdir():
-        if child.is_dir() and child.name not in ("archives", "configs", "input"):
-            build_bytes += _dir_size(child)
-    categories["builds"] = build_bytes
+    categories["builds"] = sum(_dir_size(builds / w) for w in ci.WRITER_TYPES) if builds else 0
     info["available"] = True
     info["categories"] = categories
     info["used_bytes"] = sum(categories.values())

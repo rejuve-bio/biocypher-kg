@@ -1,18 +1,17 @@
 """Runtime, UI-editable Console configuration.
 
-The prebuilt image ships without the repo's ``docker/console.env``, so DB
-connections and build settings cannot be handed to it as a file. This module keeps
-those settings in a small JSON file on the persisted builds volume, editable from
-the Settings page, and layers them over the environment:
+Everything a researcher sets lives in the Settings page, never an env file: each
+species' databases, the data and builds folders, and how builds run. This module
+keeps those settings in a small JSON file on the persisted builds volume and
+projects them onto the process-wide ``settings`` object:
 
-    runtime store  >  environment / .env  >  code defaults
+    saved in Settings  >  unset
 
-A value set in the store wins over the matching env var; where the store is silent,
-the env value (or the ``Settings`` default) shows through. ``apply()`` projects the
-store's values onto the process-wide ``settings`` object, so the many call sites
-that read ``settings.X`` at call time honour the store with no change. The few
-readers that cache at import (the default Neo4j client, ``versions.get_neo4j_driver``)
-read dynamically or rebuild on the version counter below.
+Folders and databases have no defaults: what the console writes to or connects to is
+only ever what someone chose here. ``require()`` names what's missing, and every
+build, download, dbSNP prepare and load checks it first. ``apply()`` projects the
+saved values (and clears any that were cleared), so the many call sites that read
+``settings.X`` at call time honour Settings with no change.
 
 Secrets note: the Neo4j password is stored here in plain text (file mode 600). That
 is the deliberate trade for a repo-free, fully UI-driven deploy, and the Console is
@@ -40,6 +39,8 @@ _GLOBAL_KEYS: Dict[str, str] = {
     "neo4j_database": "NEO4J_DATABASE",
     "mork_url": "MORK_URL",
     "data_root": "DATA_ROOT",
+    "output_root": "OUTPUT_ROOT",
+    "neo4j_memory": "NEO4J_MEMORY",
     "max_concurrent_builds": "MAX_CONCURRENT_BUILDS",
     "max_output_builds": "MAX_OUTPUT_BUILDS",
     "max_build_history": "MAX_BUILD_HISTORY",
@@ -47,6 +48,10 @@ _GLOBAL_KEYS: Dict[str, str] = {
     # installed. Letting a request change it would let it run any program.
 }
 _INT_KEYS = {"max_concurrent_builds", "max_output_builds", "max_build_history"}
+
+# What each setting is when nothing is saved (unset, for folders and memory): taken
+# once, before anything is applied, so clearing a field takes effect right away.
+_DEFAULTS: Dict[str, Any] = {attr: getattr(settings, attr) for attr in _GLOBAL_KEYS.values()}
 
 
 def store_path() -> Path:
@@ -99,14 +104,46 @@ def _coerce(key: str, value: Any) -> Any:
 
 
 def apply(data: Optional[Dict[str, Any]] = None) -> None:
-    """Project the store's global values onto the process-wide settings object."""
+    """Project the saved values onto the process-wide settings object; a value that
+    isn't saved (or was cleared) gets its default back."""
     g = (data if data is not None else load()).get("global", {}) or {}
     for key, attr in _GLOBAL_KEYS.items():
+        value = _DEFAULTS[attr]
         if key in g and g[key] not in (None, ""):
             try:
-                setattr(settings, attr, _coerce(key, g[key]))
+                value = _coerce(key, g[key])
             except (TypeError, ValueError):
-                continue  # ignore a malformed value rather than break startup
+                pass  # ignore a malformed value rather than break startup
+        setattr(settings, attr, value)
+
+
+def builds_folder() -> Optional[str]:
+    """Where builds are saved: the Builds folder chosen in Settings, or None."""
+    return settings.OUTPUT_ROOT or None
+
+
+class SetupError(ValueError):
+    """Something must be set in Settings first; the message is shown as-is."""
+
+
+# What must be chosen in Settings before the console uses it: no defaults.
+_REQUIRED = {
+    "data": ("DATA_ROOT", "console data folder"),
+    "builds": ("OUTPUT_ROOT", "Builds folder"),
+    "memory": ("NEO4J_MEMORY", "Neo4j memory"),
+}
+
+
+def missing(*what: str) -> list:
+    """The required settings among ``what`` (data, builds, memory) not set yet."""
+    return [_REQUIRED[k][1] for k in what if not getattr(settings, _REQUIRED[k][0], None)]
+
+
+def require(*what: str) -> None:
+    """Raise SetupError naming whatever of ``what`` isn't set in Settings yet."""
+    gaps = missing(*what)
+    if gaps:
+        raise SetupError(f"set in Settings first: {', '.join(gaps)}")
 
 
 def rebuild_clients() -> None:
@@ -175,7 +212,9 @@ def has_species_overrides() -> bool:
 
 
 def effective(masked: bool = True) -> Dict[str, Any]:
-    """The effective config for the Settings UI (store over env/defaults).
+    """The effective config for the Settings UI (saved over defaults). Folders say
+    what you chose (None when you haven't) apart from what's in use, so the page never
+    shows a default as if it had been chosen.
 
     With masked=True the password is replaced by a ``password_set`` boolean.
     """
@@ -196,7 +235,12 @@ def effective(masked: bool = True) -> Dict[str, Any]:
         },
         "mork": {"url": val("mork_url", "MORK_URL")},
         "build": {
-            "data_root": val("data_root", "DATA_ROOT"),
+            # Required, no defaults: None until chosen in Settings.
+            "data_root": g.get("data_root") or None,
+            "output_root": g.get("output_root") or None,
+            "neo4j_memory": g.get("neo4j_memory") or None,
+            # What a build still needs set here (empty when ready).
+            "missing": missing("data", "builds"),
             "max_concurrent_builds": val("max_concurrent_builds", "MAX_CONCURRENT_BUILDS"),
             "max_output_builds": val("max_output_builds", "MAX_OUTPUT_BUILDS"),
             "max_build_history": val("max_build_history", "MAX_BUILD_HISTORY"),

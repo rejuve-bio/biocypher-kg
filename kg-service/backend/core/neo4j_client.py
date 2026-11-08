@@ -372,8 +372,14 @@ class _DefaultNeo4jClient:
         return self._client
 
     def __getattr__(self, name):
-        # Only reached for names not set on the proxy itself (e.g. get_labels, close).
+        # Only reached for names not set on the proxy itself (e.g. get_labels).
+        if not settings.NEO4J_URI:
+            raise RuntimeError("no Neo4j configured for the observatory (NEO4J_URI)")
         return getattr(self._underlying(), name)
+
+    def close(self):
+        if self._client is not None:
+            self._client.close()
 
 
 neo4j_client = _DefaultNeo4jClient()

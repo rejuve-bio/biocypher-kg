@@ -78,7 +78,7 @@ function KeyValueRows({ obj, onChange }: { obj: Data; onChange: (o: Data) => voi
         <div className="kv-row" key={i}>
           <input className="input mono" value={k} placeholder="key" onChange={(e) => setKey(i, e.target.value)} />
           <input className="input mono" value={v == null ? "" : String(v)} placeholder="value" onChange={(e) => setVal(k, e.target.value)} />
-          <button className="secondary btn-sm" onClick={() => remove(k)} title="remove">✕</button>
+          <button className="secondary btn-sm" onClick={() => remove(k)} title="remove">×</button>
         </div>
       ))}
       <button className="secondary btn-sm" onClick={add}>+ add</button>
@@ -243,9 +243,9 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
       setDirty(false);
       const warns = res.warnings ?? [];
       if (warns.length) {
-        setMsg({ kind: "warn", text: `Saved ${selected}, but ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
+        setMsg({ kind: "warn", text: `saved ${selected} · ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
       } else {
-        setMsg({ kind: "ok", text: `Saved ${selected}. Only that entry's lines changed.` });
+        setMsg({ kind: "ok", text: `saved ${selected} · only its lines changed` });
       }
       api.getConfigEntries(species, dataset, kind)
         .then((r) => { setEntries(r.entries); setInherited(r.inherited ?? []); })
@@ -256,10 +256,10 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
   };
 
   const addEntry = () => {
-    const name = window.prompt(`New ${kind === "adapters" ? "adapter" : "type"} name:`)?.trim();
+    const name = window.prompt(`${kind === "adapters" ? "adapter" : "type"} name`)?.trim();
     if (!name) return;
     if (entries?.some((e) => e.name === name)) {
-      setMsg({ kind: "err", text: `An entry named "${name}" already exists.` });
+      setMsg({ kind: "err", text: `"${name}" already exists` });
       return;
     }
     const seed: Data =
@@ -276,13 +276,13 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
 
   const removeEntry = async () => {
     if (!selected) return;
-    if (!window.confirm(`Delete entry "${selected}" from the ${kind} config?`)) return;
+    if (!window.confirm(`Delete "${selected}" from the ${kind} config?`)) return;
     try {
       await api.deleteConfigEntry(species, dataset, kind, selected);
       setEntries((prev) => (prev ?? []).filter((e) => e.name !== selected));
       setSelected(null);
       setData(null);
-      setMsg({ kind: "ok", text: `Deleted ${selected}.` });
+      setMsg({ kind: "ok", text: `deleted ${selected}` });
     } catch (e) {
       setMsg({ kind: "err", text: msgOf(e) });
     }
@@ -334,7 +334,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
 
         <div className="gc-form">
         {!selected ? (
-          <div className="muted" style={{ padding: 20 }}>Select an entry to edit, or add a new one.</div>
+          <div className="muted" style={{ padding: 20 }}>select or add an entry</div>
         ) : loading || !data ? (
           <div className="muted" style={{ padding: 20 }}>Loading {selected}…</div>
         ) : selIsInherited ? (
@@ -344,7 +344,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
               <span className="muted" style={{ fontSize: 12 }}>from base schema · read-only</span>
             </div>
             <div className="alert" style={{ marginTop: 8 }}>
-              Inherited from the base (shared) schema. To change it, choose “Base (shared)” in the Species selector.
+              inherited · edit it under Species › Base (shared)
             </div>
             <pre className="gc-raw mono" style={{ marginTop: 10 }}>{entryToYaml(selected, data)}</pre>
           </>
@@ -361,7 +361,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
             {kind === "adapters" ? <AdapterForm data={data} patch={patch} /> : <SchemaForm key={selected ?? ""} data={data} patch={patch} biolink={biolink} />}
 
             <details style={{ marginTop: 14 }}>
-              <summary className="muted" style={{ fontSize: 12 }}>YAML (exactly as it will be written to the file)</summary>
+              <summary className="muted" style={{ fontSize: 12 }}>YAML</summary>
               <pre className="gc-raw mono">{entryToYaml(selected, data)}</pre>
             </details>
           </>
@@ -467,7 +467,7 @@ function PropertiesEditor({ obj, onChange }: { obj: Data; onChange: (o: Data) =>
             <input className="input mono" value={k} placeholder="name" onChange={(e) => setName(i, e.target.value)} />
             <input className="input mono" value={String(o.type ?? "")} placeholder="str" onChange={(e) => setField(k, "type", e.target.value)} />
             <input className="input mono" list="biolink-cats" value={String(o.biolink ?? "")} placeholder="biolink slot" onChange={(e) => setField(k, "biolink", e.target.value)} />
-            <button className="secondary btn-sm" onClick={() => remove(k)} title="remove">✕</button>
+            <button className="secondary btn-sm" onClick={() => remove(k)} title="remove">×</button>
           </div>
         );
       })}

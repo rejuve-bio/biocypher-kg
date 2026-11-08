@@ -36,7 +36,7 @@ def _wait_until_idle(timeout=30.0):
 
 def test_build_runs_to_success(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "print('hello-from-build')"])
+                        lambda req, out, **_: [sys.executable, "-c", "print('hello-from-build')"])
     req = BuildRequest(species="hsa", dataset="sample", include_adapters=["gencode_gene"])
     job = job_runner.launch(req)
     final = _wait_for(job.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
@@ -47,7 +47,7 @@ def test_build_runs_to_success(monkeypatch):
 
 def test_build_nonzero_exit_fails(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "import sys; sys.exit(3)"])
+                        lambda req, out, **_: [sys.executable, "-c", "import sys; sys.exit(3)"])
     job = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
     final = _wait_for(job.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
     assert final.status == JobStatus.FAILED
@@ -56,7 +56,7 @@ def test_build_nonzero_exit_fails(monkeypatch):
 
 def test_cancel_running_job(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "import time; time.sleep(60)"])
+                        lambda req, out, **_: [sys.executable, "-c", "import time; time.sleep(60)"])
     job = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
     running = _wait_for(job.id, {JobStatus.RUNNING})
     assert running.status == JobStatus.RUNNING
@@ -82,11 +82,11 @@ def test_resolve_output_dir_dated_when_blank(monkeypatch, tmp_path):
     from backend.core.config import settings
     from backend.core.console.job_runner import resolve_output_dir
     import re
-    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    monkeypatch.setattr(settings, "OUTPUT_ROOT", str(tmp_path))
     req = BuildRequest(species="hsa", dataset="sample")  # no output_dir; writer_type defaults
     out = resolve_output_dir(req, tmp_path / "job")
-    assert out.startswith(str(tmp_path))
-    # Grouped by writer type: <DATA_ROOT>/<writer>/<species>-<dataset>-<timestamp>
+    assert out.startswith(str(tmp_path.resolve()))
+    # Grouped by writer type: <Builds folder>/<writer>/<species>-<dataset>-<timestamp>
     assert re.search(rf"/{req.writer_type}/hsa-sample-\d{{8}}-\d{{6}}$", out), out
 
 
@@ -98,19 +98,24 @@ def test_resolve_output_dir_explicit_wins(monkeypatch, tmp_path):
     assert resolve_output_dir(req, tmp_path / "job") == "/custom/out"
 
 
-def test_build_load_argv_targets():
-    from backend.core.console.job_runner import build_load_argv
-    from backend.core.config import settings
-    n = build_load_argv("neo4j", "/out")
+def test_build_load_argv_targets(monkeypatch):
+    from backend.core.console import connections, explore_targets as et
+    from backend.core.console.job_runner import archive_base_for, build_load_argv
+    monkeypatch.setattr(connections, "neo4j_login", lambda sp: {
+        "uri": "bolt://lab:7687", "user": "alice", "password": "pw", "database": "kg"})
+    monkeypatch.setattr(et, "mork_url_for", lambda sp: "http://mork-hsa:8027")
+    n = build_load_argv("neo4j", "/out", "hsa")
     assert "kg-service/neo4j_loader.py" in n
     assert "--output-dir" in n and "/out" in n and "--uri" in n
-    # ARCHIVE_BASE is passed verbatim; the loader appends the target subdir itself
-    # (…/neo4j, …/mork) — matching what versions.py reads. Do NOT pre-append target.
-    assert n[n.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
-    m = build_load_argv("mork", "/out")
+    # The archive folder is passed as is; the loader appends neo4j/ or mork/ itself.
+    assert n[n.index("--archive-dir") + 1] == archive_base_for("hsa")
+    m = build_load_argv("mork", "/out", "hsa")
     assert "kg-service/mork_loader.py" in m
     assert "--data-dir" in m and "/out" in m
-    assert m[m.index("--archive-dir") + 1] == settings.ARCHIVE_BASE
+    assert m[m.index("--archive-dir") + 1] == archive_base_for("hsa")
+    # Every load goes to a species' own database: no shared default to fall back on.
+    with pytest.raises(ValueError, match="species"):
+        build_load_argv("neo4j", "/out")
 
 
 def test_each_species_keeps_its_own_load_archives(monkeypatch):
@@ -122,15 +127,16 @@ def test_each_species_keeps_its_own_load_archives(monkeypatch):
     monkeypatch.setattr(et, "mork_url_for", lambda sp: f"http://mork-{sp}:8027")
     hsa = job_runner.build_load_argv("mork", "/out", "hsa")
     dmel = job_runner.build_load_argv("mork", "/out", "dmel")
-    base = settings.ARCHIVE_BASE.rstrip("/")
+    base = f"{settings.DATA_ROOT.rstrip('/')}/archives"  # kept in the console data folder
     assert hsa[hsa.index("--archive-dir") + 1] == f"{base}/hsa"
     assert dmel[dmel.index("--archive-dir") + 1] == f"{base}/dmel"
-    assert job_runner.archive_base_for(None) == settings.ARCHIVE_BASE  # one shared instance
+    monkeypatch.setattr(settings, "DATA_ROOT", "")
+    assert job_runner.archive_base_for("hsa") is None  # no data folder, no archives
 
 
 def test_launch_load_creates_tracked_load_job(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+                        lambda req, out, **_: [sys.executable, "-c", "pass"])
     monkeypatch.setattr(job_runner, "build_load_argv",
                         lambda target, out, species=None: [sys.executable, "-c", "print('loaded')"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
@@ -146,7 +152,7 @@ def test_launch_load_creates_tracked_load_job(monkeypatch):
 
 def test_retry_load_reruns_same_target_and_dir(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+                        lambda req, out, **_: [sys.executable, "-c", "pass"])
     monkeypatch.setattr(job_runner, "build_load_argv",
                         lambda target, out, species=None: [sys.executable, "-c", "import sys; sys.exit(1)"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
@@ -172,7 +178,7 @@ def test_retry_load_reruns_same_target_and_dir(monkeypatch):
 
 def test_retry_load_rejects_build_jobs(monkeypatch):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+                        lambda req, out, **_: [sys.executable, "-c", "pass"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
     _wait_for(src.id, {JobStatus.SUCCEEDED, JobStatus.FAILED})
     # A build job isn't a load job → not retryable.
@@ -185,7 +191,7 @@ def test_load_summarized_on_build_not_a_separate_build(monkeypatch):
     """A load is an action on a build: it's a load-kind job (the /builds list filters
     those out), and the build reports it via loads_for()."""
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+                        lambda req, out, **_: [sys.executable, "-c", "pass"])
     monkeypatch.setattr(job_runner, "build_load_argv",
                         lambda target, out, species=None: [sys.executable, "-c", "print('loaded')"])
     src = job_runner.launch(BuildRequest(species="hsa", dataset="sample"))
@@ -206,7 +212,7 @@ def test_prune_output_dirs_keeps_newest_per_writer_and_species(monkeypatch, tmp_
     # Builds from earlier tests finish in the background and run their own clean-up
     # of old builds; with DATA_ROOT pointed here that would race this one.
     _wait_until_idle()
-    monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
+    monkeypatch.setattr(settings, "OUTPUT_ROOT", str(tmp_path))
     monkeypatch.setattr(settings, "MAX_OUTPUT_BUILDS", 5)
 
     def make(rel: str):
@@ -273,7 +279,7 @@ def test_build_argv_resume_flag():
 
 def test_resume_without_checkpoint_returns_none(monkeypatch, tmp_path):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+                        lambda req, out, **_: [sys.executable, "-c", "pass"])
     req = BuildRequest(species="hsa", dataset="sample")
     req.output_dir = str(tmp_path / "nockpt")
     job = job_runner.launch(req)
@@ -284,7 +290,7 @@ def test_resume_without_checkpoint_returns_none(monkeypatch, tmp_path):
 
 def test_resume_with_checkpoint_launches_new_job(monkeypatch, tmp_path):
     monkeypatch.setattr(job_runner, "build_argv",
-                        lambda req, out, resume=False: [sys.executable, "-c", "pass"])
+                        lambda req, out, **_: [sys.executable, "-c", "pass"])
     out = tmp_path / "withckpt"
     out.mkdir()
     (out / "kg_checkpoint.json").write_text(
@@ -428,9 +434,9 @@ def test_settings_folder_is_read_first_but_never_the_download_target(monkeypatch
     assert job_runner.species_read_dirs("hsa") == [str(mine.resolve()), downloads]
 
 
-def test_resolve_species_input_falls_back_to_config_dir(monkeypatch, tmp_path):
-    """With nothing downloaded, the adapters config's input_dir is the download folder
-    when it exists here (e.g. the team server), until the console has data of its own."""
+def test_source_data_folders_are_only_ever_ones_set_in_settings(monkeypatch, tmp_path):
+    """No defaults: an adapters config's input_dir that exists here (a server's, say)
+    is never used on its own, and without a data folder there's nowhere to download."""
     from backend.core.config import settings
     from backend.core.console import runtime_config
     monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path / "data"))
@@ -439,10 +445,12 @@ def test_resolve_species_input_falls_back_to_config_dir(monkeypatch, tmp_path):
     server.mkdir(parents=True)
     monkeypatch.setattr(job_runner, "config_input_dir", lambda sp: str(server))
     assert job_runner.resolve_species_input("hsa") == {
-        "path": str(server), "origin": "config", "readonly": None,
+        "path": str((tmp_path / "data" / "input" / "hsa").resolve()), "origin": "console",
+        "readonly": None,
     }
-    (tmp_path / "data" / "input" / "hsa" / "reactome").mkdir(parents=True)
-    assert job_runner.resolve_species_input("hsa")["origin"] == "console"
+    monkeypatch.setattr(settings, "DATA_ROOT", "")
+    assert job_runner.resolve_species_input("hsa")["path"] is None
+    assert job_runner.species_read_dirs("hsa") == []
 
 
 def test_effective_input_dirs_read_only_first_and_sample_untouched(monkeypatch, tmp_path):

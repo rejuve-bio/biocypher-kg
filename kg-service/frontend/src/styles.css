@@ -138,7 +138,17 @@ body::after {
   background: linear-gradient(90deg, transparent, var(--border) 18%, var(--border) 82%, transparent);
 }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; padding-bottom: 12px; }
-.brand-mark { font-size: 18px; filter: saturate(0.6) drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 45%, transparent)); }
+.brand-mark {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--accent); padding: 2px 5px; border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 0 10px -2px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+/* Theme toggle: a half-filled circle (dark/light), drawn rather than an emoji. */
+.theme-glyph {
+  display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+  border: 1.5px solid currentColor; background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
 .brand-text {
   font-size: 12px;
   font-weight: 600;
@@ -331,7 +341,15 @@ div.field { display: flex; flex-direction: column; gap: 6px; }
 .folder-row > button { min-width: 96px; }
 .folder-choices { display: grid; justify-items: start; gap: 2px; }
 .folder-choices .linkbtn { text-transform: none; letter-spacing: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-.field-hint { font-size: 11.5px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); }
+.field-hint { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); }
+/* A terse key/value readout (step 3: workers, size, saved in), like a terminal listing. */
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 16px; margin: 0 0 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted); }
+.kv dt { color: var(--dim); text-transform: uppercase; letter-spacing: 0.06em; }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.kv .warn-text { color: var(--warn); }
+/* "set in Settings first": folders have no defaults, so New Build waits for them. */
+.setup-needed { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; margin: 0 0 16px; }
 .field-hint.ok { color: var(--ok); }
 .field-hint.warn { color: var(--warn); }
 
@@ -465,7 +483,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* ── Onboarding / help banner (New Build) ─────────────────── */
 .onboarding-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.onboarding-lead { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+.onboarding-lead { margin: 6px 0 0; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
 .onboarding-steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -488,7 +506,7 @@ input[type="number"]::-webkit-inner-spin-button {
   margin-bottom: 10px;
 }
 .ob-title { font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 4px; }
-.ob-desc { font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+.ob-desc { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.6; color: var(--muted); }
 .ob-desc b { color: var(--text); font-weight: 600; }
 
 /* ── Source-grouped adapter picker (New Build, step 2) ────── */
@@ -996,6 +1014,10 @@ input[type="checkbox"]:disabled { opacity: 0.4; cursor: not-allowed; }
   text-shadow: 0 0 10px color-mix(in srgb, var(--text) 30%, transparent);
 }
 .group-actions:has(.seg-on) .linkbtn:not(.seg-on):hover:not(:disabled) { color: var(--accent); }
+/* Build size: the unit switch beside its choices, then what the build will write. */
+.size-control { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.size-control .group-actions { margin-left: 0; }
+.size-preview { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--text); margin: -2px 0 12px; }
 /* A small text button. */
 .linkbtn {
   background: transparent;

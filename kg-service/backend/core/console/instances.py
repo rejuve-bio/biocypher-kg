@@ -158,18 +158,47 @@ def _mork_image(species: str, images: list) -> Optional[str]:
     return next((t for t in tags if "mork" in t.split(":")[0]), None)
 
 
+def build_folders() -> list:
+    """The folders a database the console runs reads builds from, read-only, at the
+    same path as in the console: the console data folder and the Builds folder (once,
+    when one holds the other). Settings decides both, so a change re-creates the
+    databases (refresh_in_background)."""
+    from backend.core.console import runtime_config
+
+    out: list = []
+    for folder in (settings.DATA_ROOT, runtime_config.builds_folder()):
+        if not folder:
+            continue
+        f = os.path.normpath(folder)
+        if any(f == o or f.startswith(o.rstrip("/") + "/") for o in out):
+            continue
+        out = [o for o in out if not o.startswith(f.rstrip("/") + "/")] + [f]
+    return sorted(out)
+
+
+def _memory() -> Optional[str]:
+    """Neo4j memory from Settings ("2G"), or None: it's required, with no default."""
+    m = str(settings.NEO4J_MEMORY or "")
+    return m if m[:-1].isdigit() and m.endswith("G") else None
+
+
+NO_MEMORY = "set Neo4j memory in Settings first"
+
+
 def container_spec(species: str, kind: str, ctx: dict, image: str,
                    login: Optional[dict] = None) -> dict:
     """The Engine API create body for a species' Neo4j or MORK. ``login`` is the
     Neo4j login to create it with (see _neo4j_setup_login)."""
     name = container_name(species, kind)
     project, sp = ctx["project"], species
-    data_root = settings.DATA_ROOT
+    folders = [f"{f}:{f}:ro" for f in build_folders()]  # loaders read builds here
     ports = host_ports(species, kind)
     labels = {"kg-console.managed": "true", "kg-console.species": sp, "kg-console.kind": kind}
     networking = {"EndpointsConfig": {ctx["network"]: {"Aliases": [name]}}}
     restart = {"Name": "unless-stopped"}
     if kind == "neo4j":
+        if not _memory():
+            raise InstanceError(NO_MEMORY)
         password = (login or {}).get("password") or ""
         if len(password) < 8:
             # Neo4j refuses shorter initial passwords and would exit on start.
@@ -185,12 +214,11 @@ def container_spec(species: str, kind: str, ctx: dict, image: str,
             "NEO4J_dbms_security_procedures_unrestricted": "apoc.*",
             "NEO4J_dbms_security_allow__csv__import__from__file__urls": "true",
             "NEO4J_server_directories_import": "/",
-            "NEO4J_server_memory_pagecache_size": os.environ.get("NEO4J_PAGECACHE", "1G"),
-            "NEO4J_server_memory_heap_max__size": os.environ.get("NEO4J_HEAP_MAX", "1G"),
+            # Settings > Build settings > Neo4j memory.
+            "NEO4J_server_memory_pagecache_size": _memory(),
+            "NEO4J_server_memory_heap_max__size": _memory(),
         }
-        binds = [f"{project}_neo4j_data_{sp}:/data", f"{project}_neo4j_logs_{sp}:/logs"]
-        if data_root:  # loaders import build output from here (same path everywhere)
-            binds.append(f"{data_root}:{data_root}:ro")
+        binds = [f"{project}_neo4j_data_{sp}:/data", f"{project}_neo4j_logs_{sp}:/logs"] + folders
         return {
             "Image": image,
             "Env": [f"{k}={v}" for k, v in env.items()],
@@ -209,9 +237,7 @@ def container_spec(species: str, kind: str, ctx: dict, image: str,
             },
             "NetworkingConfig": networking,
         }
-    binds = [f"{project}_mork_persist_{sp}:/app/persist"]
-    if data_root:  # MORK reads the console's .metta output from here
-        binds.append(f"{data_root}:{data_root}:ro")
+    binds = [f"{project}_mork_persist_{sp}:/app/persist"] + folders
     # No port on this computer: MORK takes no password, so anything that could reach
     # it (any program, or a web page through the browser) could change its data.
     # The console reaches it on the private network it shares with it.
@@ -332,7 +358,7 @@ def _ensure_image(image: str, species: str, kind: str) -> None:
     status, _ = _docker("GET", f"/images/{quote(image, safe='')}/json")
     if status == 200:
         return
-    _set_progress(species, kind, "pulling", f"Downloading {LABELS[kind]} (first time only)…")
+    _set_progress(species, kind, "pulling", f"downloading {LABELS[kind]}… (first time only)")
     repo, _, tag = image.rpartition(":") if ":" in image.split("/")[-1] else (image, "", "latest")
     status, data = _docker("POST", f"/images/create?fromImage={quote(repo)}&tag={quote(tag)}",
                            timeout=1800)
@@ -365,9 +391,9 @@ def _neo4j_setup_login(species: str, has_container: bool) -> dict:
     """The login the console uses for the Neo4j it runs for a species.
 
     Kept from an earlier setup if there was one: Remove keeps the data volume, and
-    Neo4j keeps the password it was first created with. Data from before the console
-    kept logins (compose, up.sh, older consoles) was made with the shared environment
-    login. Anything new gets a generated password."""
+    Neo4j keeps the password it was first created with. Data made with a password the
+    console never had can only be used with "Use existing". Anything new gets a
+    generated password."""
     from backend.core.console import connections
 
     login = connections.managed_login(species)
@@ -377,9 +403,6 @@ def _neo4j_setup_login(species: str, has_container: bool) -> dict:
         f"{_self_context()['project']}_neo4j_data_{species}"
     )
     if data_exists:
-        shared = connections.shared_login()
-        if shared:
-            return shared
         raise InstanceError(
             f"{species} already has Neo4j data from an earlier setup, made with a password "
             "the console doesn't have. Use “Use existing” and enter that password."
@@ -392,7 +415,7 @@ def _check_login(species: str, name: str, login: dict) -> None:
     lag the HTTP port by a moment, so retry briefly while it's unreachable."""
     from backend.core.console import connections
 
-    _set_progress(species, "neo4j", "starting", "Signing in…")
+    _set_progress(species, "neo4j", "starting", "signing in…")
     deadline = time.monotonic() + 60
     while True:
         ok, message, reason = connections.probe_neo4j(
@@ -423,11 +446,11 @@ def _create_and_start(species: str, kind: str, spec: dict) -> str:
     them, they're only for opening the instance from this machine."""
     name = container_name(species, kind)
     for _attempt in range(5):
-        _set_progress(species, kind, "creating", "Setting up…")
+        _set_progress(species, kind, "creating", "creating…")
         status, data = _docker("POST", f"/containers/create?name={quote(name)}", spec)
         if status not in (200, 201):
             raise _fail("Couldn't set it up. Try again.", f"create {name}: {_error(data)}")
-        _set_progress(species, kind, "starting", "Starting…")
+        _set_progress(species, kind, "starting", "starting…")
         status, data = _docker("POST", f"/containers/{quote(name)}/start")
         if status in (204, 304):
             return name
@@ -496,7 +519,7 @@ def _wait_ready(species: str, kind: str, name: str) -> None:
     """A started container isn't a working database yet: Neo4j takes a while to boot
     (longer on first start, while it installs APOC). Wait until it answers, so the UI
     only says "connected" (and offers the browser link) once it is."""
-    _set_progress(species, kind, "starting", "Finishing start-up (a few minutes the first time)…")
+    _set_progress(species, kind, "starting", "starting… (first time: a few minutes)")
     deadline = time.monotonic() + READY_TIMEOUT
     while True:
         c = _find(species, kind, _containers())
@@ -513,9 +536,122 @@ def _wait_ready(species: str, kind: str, name: str) -> None:
         time.sleep(2)
 
 
+# ── Keeping them in step with Settings ─────────────────────────────────────────
+
+def _inspect(name: str) -> dict:
+    status, data = _docker("GET", f"/containers/{quote(name)}/json")
+    return data if status == 200 and isinstance(data, dict) else {}
+
+
+def _shared_folders(container: dict) -> list:
+    """The folders a container was made with, as it sees them (each bind's target).
+    Not the source: Docker Desktop reports that as /host_mnt/Users/..., and the
+    target is the path builds are read at anyway (same path as in the console)."""
+    out = []
+    for b in (container.get("HostConfig") or {}).get("Binds") or []:
+        parts = b.split(":")
+        if not b.startswith("/") or len(parts) < 2:
+            continue  # a named volume (the database's own data)
+        out.append(parts[-2] if len(parts) >= 3 else parts[-1])
+    return sorted(out)
+
+
+def out_of_date(container: dict) -> bool:
+    """Was this database made with other folders or memory than Settings has now?
+    ``container`` is its inspect data. Only shared folders and memory are compared."""
+    if _shared_folders(container) != build_folders():
+        return True
+    env = (container.get("Config") or {}).get("Env") or []
+    if _memory() and any(e.startswith("NEO4J_AUTH=") for e in env):  # a Neo4j
+        return f"NEO4J_server_memory_heap_max__size={_memory()}" not in env
+    return False
+
+
+def _managed(c: Optional[dict]) -> bool:
+    return bool(c) and (c.get("Labels") or {}).get("kg-console.managed") == "true"
+
+
+def _remove_container(name: str) -> None:
+    """Stop (letting MORK save its data) and remove a container; volumes are kept."""
+    _docker("POST", f"/containers/{quote(name)}/stop?t=60", timeout=90)
+    status, data = _docker("DELETE", f"/containers/{quote(name)}?force=1", timeout=90)
+    if status not in (204, 404):
+        raise _fail("Couldn't update it. Try again.", f"remove {name}: {_error(data)}")
+
+
+def refresh() -> list:
+    """Re-create each running database the console runs that's out of date with
+    Settings (folders, memory), keeping its data and login. A stopped one is
+    updated when it's next started. Returns the (species, kind) refreshed."""
+    if not docker_available():
+        return []
+    done = []
+    for sp in et.species_list():
+        for kind in KINDS:
+            c = _find(sp, kind, _containers())
+            if not _managed(c) or c.get("State") != "running":
+                continue
+            if kind == "neo4j" and not _memory():
+                continue  # can't re-create it without its memory; it keeps running as is
+            name = _name_of(c)
+            if not out_of_date(_inspect(name)):
+                continue
+            with _lock:
+                if (_progress.get((sp, kind)) or {}).get("state") in ("pulling", "creating", "starting"):
+                    continue
+            _set_progress(sp, kind, "starting", "updating to settings…")
+            _setup_worker(sp, kind)  # re-creates it: it's out of date
+            done.append((sp, kind))
+    return done
+
+
+_refreshing = threading.Lock()
+
+
+def refresh_in_background() -> None:
+    """refresh(), off the request thread (a Neo4j takes a while to come back)."""
+    def run():
+        if not _refreshing.acquire(blocking=False):
+            return
+        try:
+            refresh()
+        except Exception:  # noqa: BLE001 - never let this take the console down
+            logger.exception("Updating the databases to Settings failed")
+        finally:
+            _refreshing.release()
+
+    threading.Thread(target=run, daemon=True).start()
+
+
+def cannot_read(species: Optional[str], kind: str, path: str) -> Optional[str]:
+    """Why the database the console runs for this species can't read a build at
+    ``path`` yet (it was made before the folders changed), or None when it can, or
+    when it isn't one the console runs. Starts updating it."""
+    if not species or not docker_available():
+        return None
+    try:
+        c = _find(species, kind, _containers())
+    except InstanceError:
+        return None
+    if not _managed(c):
+        return None
+    roots = _shared_folders(_inspect(_name_of(c)))
+    p = os.path.normpath(path)
+    if any(p == r or p.startswith(r.rstrip("/") + "/") for r in roots):
+        return None
+    refresh_in_background()
+    return (f"{species} {LABELS[kind]} is updating to read the Builds folder · "
+            "load again once it's running")
+
+
 def _setup_worker(species: str, kind: str) -> None:
     try:
         existing = _find(species, kind, _containers())
+        if _managed(existing) and out_of_date(_inspect(_name_of(existing))):
+            # Made with other folders or memory: make it again (data and login kept).
+            _set_progress(species, kind, "starting", "updating to settings…")
+            _remove_container(_name_of(existing))
+            existing = None
         login = None
         if kind == "neo4j":
             from backend.core.console import connections
@@ -526,7 +662,7 @@ def _setup_worker(species: str, kind: str) -> None:
         if existing:
             # Already there (made by the console, compose or up.sh): start and connect it.
             name = _name_of(existing)
-            _set_progress(species, kind, "starting", "Starting…")
+            _set_progress(species, kind, "starting", "starting…")
             status, data = _docker("POST", f"/containers/{quote(name)}/start")
             if status not in (204, 304):  # 304 = already running
                 raise _fail("Couldn't start it. Try again.", f"start {name}: {_error(data)}")
@@ -547,12 +683,12 @@ def _setup_worker(species: str, kind: str) -> None:
         if kind == "neo4j":
             _check_login(species, name, login)
         _wire(species, kind, login)
-        _set_progress(species, kind, "done", "Running and in use.")
+        _set_progress(species, kind, "done", "running · in use")
     except InstanceError as exc:
         _set_progress(species, kind, "error", str(exc))
     except Exception:  # noqa: BLE001 - report anything unexpected to the UI
         logger.exception("Instance setup failed for %s %s", kind, species)
-        _set_progress(species, kind, "error", "Setup failed. Try again.")
+        _set_progress(species, kind, "error", "setup failed · try again")
 
 
 def setup(species: str, kind: str) -> None:
@@ -560,12 +696,14 @@ def setup(species: str, kind: str) -> None:
     if kind not in KINDS:
         raise InstanceError(f"Unknown instance kind '{kind}'.")
     _species_index(species)  # validates the species
+    if kind == "neo4j" and not _memory():
+        raise InstanceError(NO_MEMORY)
     if not docker_available():
         raise InstanceError(NO_DOCKER)
     with _lock:
         if (_progress.get((species, kind)) or {}).get("state") in ("pulling", "creating", "starting"):
             raise InstanceError(f"{species}'s {LABELS[kind]} is already being set up.")
-    _set_progress(species, kind, "starting", "Preparing…")
+    _set_progress(species, kind, "starting", "preparing…")
     threading.Thread(target=_setup_worker, args=(species, kind), daemon=True).start()
 
 

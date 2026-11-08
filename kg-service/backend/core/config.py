@@ -7,14 +7,17 @@ _REPO_ROOT_DEFAULT = str(Path(__file__).resolve().parents[3])
 
 class Settings(BaseSettings):
     # Neo4j
-    NEO4J_URI: str = "bolt://localhost:27688"
-    NEO4J_USER: str = "YOUR_USERNAME_HERE"
-    NEO4J_PASSWORD: str = "YOUR_PASSWORD_HERE"
-    NEO4J_DATABASE: str = "YOUR_DATABASE_NAME_HERE"
-    ARCHIVE_BASE: str = "/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/"
+    # The observatory's one Neo4j/MORK (kg-service run on its own, set in kg-service/.env).
+    # No defaults: unset means not configured, so nothing connects to a guessed address.
+    # The console never uses these; each species' databases are set in Settings.
+    NEO4J_URI: str = ""
+    NEO4J_USER: str = ""
+    NEO4J_PASSWORD: str = ""
+    NEO4J_DATABASE: str = ""
+    ARCHIVE_BASE: str = ""
     VERSION_DIFF_SCRIPT: str = "/home/abdum/services/biocypher-kg/version_diff.py"
     MORK_SUMMARY_SCRIPT: str = "/home/abdum/services/biocypher-kg/get_mork_summary.py"
-    MORK_URL: str = "http://localhost:8432"
+    MORK_URL: str = ""
     MORK_LIVE_STATS_ENABLED: bool = False
 
     # Cache
@@ -32,8 +35,13 @@ class Settings(BaseSettings):
     REPO_ROOT: str = _REPO_ROOT_DEFAULT
     # Build artifacts dir; empty => <REPO_ROOT>/kg-service/.builds.
     BUILDS_DIR: str = ""
-    # Base dir for auto-named build outputs when the output field is blank.
+    # Required, set in Settings; no defaults (see runtime_config.require):
+    # the console data folder (downloads, prepared dbSNP cache, load archives),
     DATA_ROOT: str = ""
+    # where builds are saved (Settings > Builds folder),
+    OUTPUT_ROOT: str = ""
+    # and memory for each Neo4j the console runs (page cache and heap each).
+    NEO4J_MEMORY: str = ""
     # Max concurrent builds; default 1 (two full builds can OOM a single host).
     MAX_CONCURRENT_BUILDS: int = 1
     # Keep at most this many finished build jobs in History; older ones are pruned.

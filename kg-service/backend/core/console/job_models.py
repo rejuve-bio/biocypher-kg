@@ -53,6 +53,14 @@ class BuildRequest(BaseModel):
     # bounded graph for quick samples without editing adapter configs.
     limit: int = 0
 
+    # Or: this percent of each selected adapter's known size (see sizes.py). Needs
+    # every selected adapter's size known; becomes adapter_limits at launch.
+    percent: Optional[float] = Field(default=None, gt=0, le=100)
+
+    # Caps per adapter, {adapter: {"nodes": N, "edges": M}}: resolved from `percent`
+    # at launch and kept with the build, so a resumed build uses the same caps.
+    adapter_limits: Optional[dict[str, dict[str, int]]] = None
+
 
 class DownloadRequest(BaseModel):
     """A request to fetch a species' source data into the local input directory."""

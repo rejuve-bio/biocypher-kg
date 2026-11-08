@@ -145,9 +145,10 @@ export const api = {
 
   diskUsage: () => json<DiskUsage>(fetch(`${BASE}/disk`)),
 
-  estimate: (species: string, dataset: string) =>
-    json<BuildEstimate>(
-      fetch(`${BASE}/estimate?species=${encodeURIComponent(species)}&dataset=${encodeURIComponent(dataset)}`),
+  /** Each adapter's known full size for a species+dataset (learned from builds). */
+  sizes: (species: string, dataset: string) =>
+    json<KnownSizes>(
+      fetch(`${BASE}/sizes?species=${encodeURIComponent(species)}&dataset=${encodeURIComponent(dataset)}`),
     ),
 
   resumeBuild: (id: string) =>
@@ -240,10 +241,6 @@ export const api = {
     json<{ present: boolean; manifest?: ConfigManifest }>(
       fetch(`${BASE}/builds/${id}/config-snapshot`),
     ),
-
-  morkSummary: () => json<MorkSummary>(fetch(`${BASE}/mork/summary`)),
-
-  morkSchema: () => json<MorkSchema>(fetch(`${BASE}/mork/schema`)),
 
   exploreTargets: () =>
     json<{ targets: ExploreTarget[] }>(fetch(`${BASE}/explore/targets`)).then((d) => d.targets),
@@ -377,7 +374,7 @@ export interface DbsnpVariantInfo {
 }
 
 export interface DbsnpStatus {
-  root: string; // where Prepare writes
+  root: string | null; // where Prepare writes; null until the data folder is set
   readonly_root?: string | null; // a cache you already have, read-only
   variants: Record<"common" | "full", DbsnpVariantInfo>;
   job_id: string | null;
@@ -402,8 +399,8 @@ export interface DataStatusSource {
 
 export interface DataStatus {
   species: string;
-  input_dir: string; // downloads go here
-  input_origin?: "console" | "config";
+  input_dir: string | null; // downloads go here; null until the data folder is set
+  input_origin?: "console";
   readonly_dir?: string | null; // your data: read first, never written
   exists: boolean;
   manifest_present: boolean;
@@ -422,19 +419,19 @@ export interface DiskUsage {
   categories?: Record<string, number>;
 }
 
-export interface BuildEstimate {
+/** One adapter's full size, learned from a build that wasn't cut short by a size
+ * limit. null for a kind the adapter doesn't write. */
+export interface KnownSize {
+  nodes: number | null;
+  edges: number | null;
+  job_id: string;
+  built_at: string | null;
+}
+
+export interface KnownSizes {
   species: string;
   dataset: string;
-  last_build: {
-    job_id: string;
-    node_count: number | null;
-    edge_count: number | null;
-    data_size: string | null;
-    created_at: string | null;
-  } | null;
-  input_bytes: number;
-  input_present_sources: number;
-  input_total_sources: number;
+  adapters: Record<string, KnownSize>;
 }
 
 export interface DataSources {
@@ -487,24 +484,6 @@ export interface DetailedSchema {
   edges: { data: { source: string; target: string; possible_connections: string[] } }[];
 }
 
-export interface MorkSummary {
-  reachable: boolean;
-  error?: string;
-  atom_count?: number | null;
-  dataset_count?: number | null;
-  latest_version?: { version?: string | null; build_id?: string | null; timestamp?: string | null } | null;
-  versions?: unknown[];
-}
-
-export interface MorkSchema {
-  reachable: boolean;
-  error?: string;
-  schema?: DetailedSchema;
-  node_type_count?: number;
-  edge_type_count?: number;
-  sampled?: boolean;
-}
-
 export interface ExploreTarget {
   species: string;
   explicit: boolean;
@@ -521,7 +500,11 @@ export interface ConsoleSettings {
   neo4j: { uri: string | null; user: string | null; database: string | null; password_set: boolean };
   mork: { url: string | null };
   build: {
+    // Required, no defaults: null until chosen in Settings.
     data_root: string | null;
+    output_root: string | null; // the Builds folder
+    neo4j_memory: string | null; // memory for each Neo4j the console runs, e.g. "2G"
+    missing: string[]; // what a build still needs set, e.g. ["Builds folder"]
     max_concurrent_builds: number | null;
     max_output_builds: number | null;
     max_build_history: number | null;
@@ -535,6 +518,8 @@ export interface SettingsPatch {
   mork?: { url?: string | null };
   build?: {
     data_root?: string | null;
+    output_root?: string | null;
+    neo4j_memory?: string | null;
     max_concurrent_builds?: number | null;
     max_output_builds?: number | null;
     max_build_history?: number | null;
@@ -548,9 +533,10 @@ export interface SettingsPatch {
 export type InstanceKind = "neo4j" | "mork";
 export type InstanceAction = "setup" | "stop" | "remove";
 
-/** What a folder field is for: a dbSNP cache, a species' source data, or the folder
- * the console keeps its data in. The server checks the chosen folder really is that. */
-export type FolderKind = "dbsnp" | "source" | "writable";
+/** What a folder field is for: a dbSNP cache, a species' source data, the folder the
+ * console keeps its data in, or the Builds folder. The server checks the chosen
+ * folder really is that. */
+export type FolderKind = "dbsnp" | "source" | "writable" | "builds";
 
 /** A folder chosen in Finder, as the browser describes it: its name and (a sample
  * of) what's in it. count is how many entries it has, when the browser knows. */
@@ -566,7 +552,6 @@ export type ConnSource = "console" | "existing" | null;
 export interface ConnInfo {
   source: ConnSource;
   address: string | null;
-  from_env?: boolean; // preset when the console was installed, not set here
   unencrypted?: boolean; // your own database on another computer, without encryption
   // Present when checked: does it answer (and, for Neo4j, does the login work)?
   ok?: boolean;
@@ -611,10 +596,9 @@ export interface InstancesStatus {
 
 export interface SpeciesDataLocation {
   species: string;
-  // Where downloads go: the console's own folder, or the adapters config's
-  // input_dir when that exists on this machine.
-  path: string;
-  origin: "console" | "config";
+  // Where downloads go: <data folder>/input/<species>; null until the data folder is set.
+  path: string | null;
+  origin: "console";
   exists: boolean;
   // A folder you chose: read first, never written.
   readonly: string | null;
@@ -622,7 +606,7 @@ export interface SpeciesDataLocation {
   // Does your folder hold this species' data (the files its adapters read)?
   readonly_check: { found: string[]; total: number; problem: string | null } | null;
   override: string | null;
-  default: string;
+  default: string | null;
   config_dir: string | null;
 }
 
@@ -630,9 +614,9 @@ export interface DataLocationsInfo {
   in_docker: boolean;
   species: SpeciesDataLocation[];
   dbsnp: {
-    path: string; // where Prepare writes
+    path: string | null; // where Prepare writes; null until the data folder is set
     override: string | null;
-    default: string;
+    default: string | null;
     readonly_root: string | null;
     variants: Record<"common" | "full", DbsnpVariantInfo>;
     readonly_variants: Record<"common" | "full", DbsnpVariantInfo> | null;
@@ -711,6 +695,8 @@ export interface GraphInfoSummary {
   top_connections: { name: string; count: number }[] | null;
   datasets?: DatasetComposition[] | null;
   schema?: DetailedSchema | null;
+  // What each adapter wrote; complete = false when a size limit cut it short.
+  adapter_counts?: Record<string, { nodes: number | null; edges: number | null; complete: boolean }> | null;
 }
 
 export interface DatasetComposition {

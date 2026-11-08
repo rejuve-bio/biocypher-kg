@@ -40,7 +40,10 @@ logger = logging.getLogger(__name__)
 scheduler = BackgroundScheduler()
 
 def refresh_graph_info():
-    """Background task to refresh graph_info.json"""
+    """Background task to refresh graph_info.json (the observatory's own Neo4j, only
+    when kg-service/.env sets one: there's no default)."""
+    if not settings.NEO4J_URI:
+        return
     try:
         logger.info("🔄 Auto-refreshing graph_info.json...")
         graph_info_cache.refresh()
@@ -64,16 +67,17 @@ async def lifespan(app: FastAPI):
     except Exception as e:  # noqa: BLE001 - never block startup on config
         logger.error(f"Applying runtime settings failed: {e}")
     try:
-        # Give species connected before per-species logins their own login.
-        from backend.core.console import connections
-        connections.migrate()
+        # Databases the console runs read builds from the folders in Settings; any
+        # made with other folders (or memory) are brought up to date, data kept.
+        from backend.core.console import instances
+        instances.refresh_in_background()
     except Exception as e:  # noqa: BLE001
-        logger.error(f"Moving to per-species Neo4j logins failed: {e}")
+        logger.error(f"Updating the databases to Settings failed: {e}")
 
     logger.info("🚀 Starting background scheduler...")
     scheduler.start()
     logger.info("✅ Background scheduler started (refresh every 72 hours)")
-    if not graph_info_cache.cache_file.exists():
+    if settings.NEO4J_URI and not graph_info_cache.cache_file.exists():
         logger.info("📊 Scheduling initial graph_info.json generation (background)...")
         scheduler.add_job(
             refresh_graph_info, "date",
@@ -90,8 +94,10 @@ async def lifespan(app: FastAPI):
     except Exception as e:  # noqa: BLE001 - never block startup on this
         logger.error(f"Build registry reconciliation failed: {e}")
 
-    # Observatory: verify Neo4j (non-fatal — Console works without it).
-    neo4j_client.verify_connection()
+    # Observatory: verify its Neo4j when one is configured (non-fatal; the console
+    # doesn't use it).
+    if settings.NEO4J_URI:
+        neo4j_client.verify_connection()
 
     yield
 
@@ -164,6 +170,8 @@ def root():
 
 @app.get("/health")
 def health():
+    if not settings.NEO4J_URI:
+        return {"status": "healthy", "neo4j": "not configured"}
     connected = neo4j_client.verify_connection()
     return {
         "status": "healthy" if connected else "unhealthy",

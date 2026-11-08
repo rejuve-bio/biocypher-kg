@@ -1,15 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MOD, usePageHints } from "../components/Hints";
 import {
   api,
   ApiError,
   formatBytes,
   type DataStatus,
-  type BuildEstimate,
+  type KnownSize,
   type AdapterGroup,
   type DbsnpStatus,
 } from "../api/client";
+import {
+  compact,
+  datesText,
+  PERCENT_CHOICES,
+  preview,
+  ROW_CHOICES,
+  sourceSize,
+  type SizeUnit,
+} from "../sizes";
 import type {
   AdapterInfo,
   BuildRequest,
@@ -37,11 +46,19 @@ export default function BuildWizard() {
   const [writerType, setWriterType] = useState<string>("metta");
   const [maxWorkers, setMaxWorkers] = useState<number>(1);
   const [workerCap, setWorkerCap] = useState<number>(8);
-  // 0 = no limit; otherwise cap nodes AND edges written per adapter (small samples).
+  // Size: rows per adapter (0 = no limit), or a percent of each adapter's known size.
+  const [sizeUnit, setSizeUnit] = useState<SizeUnit>("rows");
   const [limit, setLimit] = useState<number>(0);
+  const [percent, setPercent] = useState<number>(10);
+  // Each adapter's full size, learned from earlier builds (sizes.py on the server).
+  const [known, setKnown] = useState<Record<string, KnownSize>>({});
+  // Where builds are saved (Settings > Builds folder), shown in step 3.
+  const [buildsFolder, setBuildsFolder] = useState<string | null>(null);
+  // What Settings still needs before any build (folders have no defaults).
+  const [missing, setMissing] = useState<string[]>([]);
+  const [dataFolder, setDataFolder] = useState<string | null>(null);
   // Local source-data status + a planned-build estimate (scope before building).
   const [dataStatus, setDataStatus] = useState<DataStatus | null>(null);
-  const [estimate, setEstimate] = useState<BuildEstimate | null>(null);
   const [downloadId, setDownloadId] = useState<string | null>(null);
   const [downloadStatus, setDownloadStatus] = useState<string | null>(null);
   const [dataError, setDataError] = useState<string | null>(null);
@@ -80,6 +97,14 @@ export default function BuildWizard() {
       .catch((e) => setLoadError(String(e)));
     // Worker cap is a progressive enhancement; keep the default if the endpoint is absent.
     api.buildLimits().then((lim) => setWorkerCap(Math.max(1, lim.max_workers))).catch(() => {});
+    api
+      .getSettings()
+      .then((s) => {
+        setBuildsFolder(s.build.output_root);
+        setDataFolder(s.build.data_root);
+        setMissing(s.build.missing);
+      })
+      .catch(() => {});
   }, []);
 
   const isAll = selSpecies === "all";
@@ -176,11 +201,11 @@ export default function BuildWizard() {
   useEffect(() => {
     let current = true;
     setDataStatus(null);
-    setEstimate(null);
+    setKnown({});
     if (isAll || !selSpecies) return;
     api.dataStatus(selSpecies).then((d) => current && setDataStatus(d)).catch(() => current && setDataStatus(null));
     if (selDataset)
-      api.estimate(selSpecies, selDataset).then((e) => current && setEstimate(e)).catch(() => current && setEstimate(null));
+      api.sizes(selSpecies, selDataset).then((r) => current && setKnown(r.adapters)).catch(() => current && setKnown({}));
     return () => {
       current = false;
     };
@@ -389,7 +414,8 @@ export default function BuildWizard() {
       generate_data_source_schemas:
         flagValues.generate_data_source_schemas ?? true,
       max_workers: maxWorkers,
-      limit,
+      limit: sizeUnit === "rows" ? limit : 0,
+      percent: sizeUnit === "percent" && !isAll ? percent : null,
     };
   }
 
@@ -422,9 +448,35 @@ export default function BuildWizard() {
     }
   }
 
+  // Size: Percent needs every chosen adapter's full size; the preview shows what
+  // this build will write, from the known sizes and the chosen limit.
+  const chosenAdapters = isAll ? [] : Array.from(selected);
+  const sizeAhead = preview(chosenAdapters, known, sizeUnit, limit, percent);
+  const percentReady = !isAll && chosenAdapters.length > 0 && sizeAhead.unknown.length === 0;
+  const percentWhyNot = isAll
+    ? "percent: one species at a time"
+    : !chosenAdapters.length
+      ? "percent: pick sources first"
+      : `percent: ${sizeAhead.unknown.length} adapter(s) unsized · build them once, no limit`;
+  const sizePreviewText = (() => {
+    if (sizeUnit === "percent" && !percentReady) return percentWhyNot;
+    if (!chosenAdapters.length) return "";
+    const from = sizeAhead.dates.length ? ` · sized ${datesText(sizeAhead.dates)}` : "";
+    const counts = `≈ ${sizeAhead.nodes.toLocaleString()} nodes · ${sizeAhead.edges.toLocaleString()} edges`;
+    if (!sizeAhead.known) return "size unknown · build once, no limit, to learn it";
+    if (sizeAhead.unknown.length) {
+      const cap = limit > 0 && sizeUnit === "rows" ? ` (≤ ${limit.toLocaleString()} rows each)` : "";
+      return `${counts}${from} + ${sizeAhead.unknown.length} unsized${cap}`;
+    }
+    return `${counts}${from}`;
+  })();
+
   // Validate and Launch in the bar along the bottom; ⌘↵ / Ctrl+Enter launches.
   const canValidate = !validating && !!selDataset;
-  const canLaunch = !submitting && (isAll || selected.size > 0);
+  // Percent chosen but no longer possible (a source of unknown size was added): the
+  // size line says why, and Launch waits until Rows is picked or the sizes are known.
+  const sizeBlocked = sizeUnit === "percent" && !percentReady;
+  const canLaunch = !submitting && (isAll || selected.size > 0) && !sizeBlocked && !missing.length;
   usePageHints([
     { keys: [], label: validating ? "Validating…" : "Validate", onClick: onValidate, disabled: !canValidate },
     { keys: [MOD, "↵"], label: submitting ? "Launching…" : "Launch build", onClick: onBuild, disabled: !canLaunch },
@@ -450,8 +502,6 @@ export default function BuildWizard() {
       </div>
     );
   }
-
-  const nSelected = selected.size;
 
   // Source-level selection summary (a source counts as selected when all its
   // adapters are in the build).
@@ -516,6 +566,19 @@ export default function BuildWizard() {
     g.name.toLowerCase().includes(q) ||
     g.adapters.some((a) => a.name.toLowerCase().includes(q));
 
+  // A source's full size, once every adapter of it has been built without a limit.
+  const adapterNames = (g: AdapterGroup) => g.adapters.map((a) => a.name);
+  const sizeLabel = (g: AdapterGroup) => {
+    const size = sourceSize(adapterNames(g), known);
+    return size ? compact(size.nodes + size.edges) : "";
+  };
+  const sizeTitle = (g: AdapterGroup) => {
+    const size = sourceSize(adapterNames(g), known);
+    return size
+      ? `${size.nodes.toLocaleString()} nodes · ${size.edges.toLocaleString()} edges`
+      : "size unknown";
+  };
+
   // Left list: one compact selectable row per source. The checkbox includes the
   // source in the build; clicking the row opens its schema in the detail pane.
   const renderSourceListItem = (g: AdapterGroup) => {
@@ -543,7 +606,7 @@ export default function BuildWizard() {
             title={g.present ? "downloaded" : "not downloaded"}
           />
         )}
-        <span className="muted source-item-count">{empty ? "—" : `${g.node_count}·${g.edge_count}`}</span>
+        <span className="muted source-item-count" title={sizeTitle(g)}>{sizeLabel(g)}</span>
       </div>
     );
   };
@@ -563,19 +626,23 @@ export default function BuildWizard() {
           <div style={{ minWidth: 0 }}>
             <div className="detail-title">{g.name}</div>
             <div className="muted detail-sub">
-              {empty ? "Download-only source" : `${g.node_count} node · ${g.edge_count} edge types`}
+              {empty
+                ? "download only"
+                : `${g.node_count} node · ${g.edge_count} edge types · ${
+                    sourceSize(adapterNames(g), known) ? sizeTitle(g) : "size unknown"
+                  }`}
             </div>
           </div>
           {!empty && (
             <label className="detail-include">
               <input type="checkbox" checked={included} onChange={() => setGroup(groupAdapterInfos(g), !included)} />
-              Include in build
+              include
             </label>
           )}
         </div>
 
         {empty ? (
-          <span className="muted">This source provides data other adapters consume; it has no node or edge types of its own.</span>
+          <span className="muted">feeds other adapters · no types of its own</span>
         ) : (
           <div className="schema-cols">
             <div className="schema-col">
@@ -613,14 +680,13 @@ export default function BuildWizard() {
           )}
           {/* Sources found in your read-only folder are never re-downloaded. */}
           {g.downloadable && g.location !== "yours" && (
-            <button type="button" onClick={() => onDownloadSource(g.source)} disabled={downloadBusy}>
+            <button type="button" onClick={() => onDownloadSource(g.source)} disabled={downloadBusy || !dataFolder}>
               {downloading ? "Downloading…" : g.present ? "Re-download" : "Download"}
             </button>
           )}
           {!g.downloadable && !isShared && !g.present && (
             <span className="field-hint">
-              Not downloadable: place its files at{" "}
-              {g.local_paths.slice(0, 2).join(", ") || "the input folder"}
+              manual · place files at {g.local_paths.slice(0, 2).join(", ") || "the input folder"}
             </span>
           )}
           {g.website && (
@@ -640,46 +706,46 @@ export default function BuildWizard() {
 
   return (
     <>
+      {missing.length > 0 && (
+        <div className="alert warn setup-needed">
+          set in Settings first: {missing.join(", ")} ·{" "}
+          <Link className="link" to="/settings">
+            settings
+          </Link>
+        </div>
+      )}
       {showHelp && (
         <div className="card onboarding" style={{ borderLeft: "3px solid var(--accent)" }}>
           <div className="onboarding-head">
             <div>
               <h2 style={{ margin: 0 }}>Build your own knowledge graph</h2>
-              <p className="onboarding-lead">
-                Four steps from raw source data to a graph you can explore.
-              </p>
+              <p className="onboarding-lead">source data → graph, in four steps</p>
             </div>
-            <button className="linkbtn" onClick={dismissHelp}>Dismiss ✕</button>
+            <button className="linkbtn" onClick={dismissHelp}>dismiss</button>
           </div>
           <div className="onboarding-steps">
             <div className="ob-step">
               <span className="ob-num">1</span>
               <div className="ob-title">Pick a species &amp; dataset</div>
               <div className="ob-desc">
-                <b>sample</b> works offline out of the box. <b>full</b> builds from the real
-                source data.
+                <b>sample</b> bundled, offline · <b>full</b> real source data
               </div>
             </div>
             <div className="ob-step">
               <span className="ob-num">2</span>
               <div className="ob-title">Pick data sources</div>
-              <div className="ob-desc">
-                Choose the sources you want and see the node and edge types each one adds.
-              </div>
+              <div className="ob-desc">choose sources · see the types each adds</div>
             </div>
             <div className="ob-step">
               <span className="ob-num">3</span>
               <div className="ob-title">Get the data</div>
-              <div className="ob-desc">
-                Download only the sources you picked, plus the dbSNP cache if a variant source
-                needs it.
-              </div>
+              <div className="ob-desc">download what you picked · dbSNP if needed</div>
             </div>
             <div className="ob-step">
               <span className="ob-num">4</span>
               <div className="ob-title">Build &amp; explore</div>
               <div className="ob-desc">
-                Validate, build, load the result into Neo4j or MORK, then open <b>Explore</b>.
+                validate · build · load into Neo4j or MORK · <b>explore</b>
               </div>
             </div>
           </div>
@@ -724,32 +790,16 @@ export default function BuildWizard() {
 
         {!isAll && selSpecies && (
           <div style={{ marginTop: 14 }}>
-            {estimate && (
-              <div className="field-hint">
-                📊 {estimate.last_build
-                  ? `Last ${selDataset || "full"} build produced ${
-                      estimate.last_build.node_count?.toLocaleString() ?? "?"
-                    } nodes and ${
-                      estimate.last_build.edge_count?.toLocaleString() ?? "?"
-                    } edges${estimate.last_build.data_size ? ` (${estimate.last_build.data_size})` : ""}.`
-                  : `No previous ${selDataset || "full"} build of ${selSpecies} to estimate from yet.`}
-              </div>
-            )}
             {dataStatus && (
               <div className="field-hint" style={{ marginTop: 4 }}>
-                🗄️ Source data on disk: {dataStatus.present_count}/{dataStatus.source_count} sources
+                on disk: {dataStatus.present_count}/{dataStatus.source_count} sources
                 {dataStatus.total_bytes > 0 ? ` · ${formatBytes(dataStatus.total_bytes)}` : ""}
               </div>
             )}
             {selDataset !== "sample" && dataStatus && (
               <div className="field-hint" style={{ marginTop: 4 }}>
-                {dataStatus.readonly_dir && (
-                  <>📁 Your data (read-only): {dataStatus.readonly_dir} · </>
-                )}
-                ⬇ Downloads go to {dataStatus.input_dir}
-                {dataStatus.input_origin === "config"
-                  ? ` (from the ${selSpecies} adapters config)`
-                  : ""}{" "}
+                {dataStatus.readonly_dir && <>yours (read-only): {dataStatus.readonly_dir} · </>}
+                downloads → {dataStatus.input_dir ?? "set the console data folder"} ·{" "}
                 <button type="button" className="linkbtn" onClick={() => navigate("/settings")}>
                   change
                 </button>
@@ -757,8 +807,8 @@ export default function BuildWizard() {
             )}
             <div className="field-hint" style={{ marginTop: 4 }}>
               {selDataset === "sample"
-                ? "✅ Sample uses bundled data, so there is nothing to download."
-                : "Pick data sources below. You only download the ones you select."}
+                ? "sample: bundled data · nothing to download"
+                : "only the sources you select are downloaded"}
             </div>
           </div>
         )}
@@ -773,21 +823,19 @@ export default function BuildWizard() {
         </h2>
         {isAll ? (
           <div className="alert warn">
-            All-species run: every adapter in each species is included automatically —
-            per-adapter selection isn’t available for “all”.
+            all species: every adapter included · no per-source picking
           </div>
         ) : (
         <>
         <p className="field-hint" style={{ margin: "0 0 12px" }}>
-          Pick the data sources to include. Click a source to see the node and edge types it
-          adds to your graph.
+          check to include · click for its node and edge types
         </p>
         <div className="row" style={{ marginBottom: 12 }}>
           <input
             type="text"
             value={adapterFilter}
             onChange={(e) => setAdapterFilter(e.target.value)}
-            placeholder="🔍 Filter sources…"
+            placeholder="filter sources"
             style={{ flex: 1, minWidth: 200 }}
           />
           <button onClick={() => setSelected(new Set(adapters.map((a) => a.name)))}>
@@ -797,11 +845,11 @@ export default function BuildWizard() {
         </div>
         {!selDataset && (
           <div className="alert warn">
-            No dataset with config files is available for this species yet.
+            no dataset with config files for this species
           </div>
         )}
         {adaptersError && (
-          <div className="alert err">Could not load adapters: {adaptersError}</div>
+          <div className="alert err">adapters failed to load: {adaptersError}</div>
         )}
         {adapterGroups ? (
           (() => {
@@ -809,7 +857,7 @@ export default function BuildWizard() {
             // picker; download-only sources with no adapter are not buildable.
             const visible = adapterGroups.filter((g) => g.adapter_count > 0 && groupMatches(g));
             if (!visible.length)
-              return <span className="muted">No sources match “{adapterFilter}”.</span>;
+              return <span className="muted">no match for “{adapterFilter}”</span>;
             const active =
               visible.find((g) => g.source === activeSource) ?? visible[0];
             return (
@@ -826,7 +874,7 @@ export default function BuildWizard() {
           </>
         )}
         {!adapters.length && selDataset && !adaptersError && (
-          <span className="muted">No data sources loaded.</span>
+          <span className="muted">loading sources…</span>
         )}
         </>
         )}
@@ -849,9 +897,8 @@ export default function BuildWizard() {
                   </div>
                   {byHand.length > 0 && (
                     <div className="field-hint">
-                      Not downloadable, so place their files in the input folder by hand:{" "}
-                      {byHand.map((g) => g.name).join(", ")} (expected at{" "}
-                      {byHand.flatMap((g) => g.local_paths).slice(0, 3).join(", ")}).
+                      manual: {byHand.map((g) => g.name).join(", ")} → place files at{" "}
+                      {byHand.flatMap((g) => g.local_paths).slice(0, 3).join(", ")}
                     </div>
                   )}
                   {downloadId && (
@@ -872,14 +919,14 @@ export default function BuildWizard() {
                     <button
                       className="primary"
                       onClick={() => onDownloadMissing(toDownload.map((g) => g.source))}
-                      disabled={downloadBusy}
+                      disabled={downloadBusy || !dataFolder}
                     >
                       {downloadBusy ? "Downloading…" : `Download ${toDownload.length} missing`}
                     </button>
                   ) : (
-                    <span className="ready-ok">✓ Selected data is on disk</span>
+                    <span className="ready-ok">on disk</span>
                   )}
-                  <button type="button" className="linkbtn" onClick={onDownload} disabled={downloadBusy}>
+                  <button type="button" className="linkbtn" onClick={onDownload} disabled={downloadBusy || !dataFolder}>
                     download all sources
                   </button>
                 </div>
@@ -891,47 +938,46 @@ export default function BuildWizard() {
                 <div className="ready-label">dbSNP</div>
                 <div className="ready-body">
                   <div>
-                    Needed by{" "}
-                    {dbsnpNeededBy.length ? dbsnpNeededBy.join(", ") : "the selected variant sources"}{" "}
-                    to map variant IDs to genome positions.
+                    for {dbsnpNeededBy.length ? dbsnpNeededBy.join(", ") : "variant sources"} · maps
+                    variant IDs to positions
                   </div>
                   <div className="row" style={{ gap: 10, marginTop: 6 }}>
                     <select value={variantKey} onChange={(e) => setDbsnpVariant(e.target.value)}>
-                      <option value="common">common variants (smaller)</option>
-                      <option value="full">all variants</option>
+                      <option value="common">common (smaller)</option>
+                      <option value="full">full</option>
                     </select>
                     {customRoot ? (
                       customReady ? (
-                        <span className="ready-status ok">✓ Using {customRoot}/{variantKey}</span>
+                        <span className="ready-status ok">using {customRoot}/{variantKey}</span>
                       ) : (
                         <span className="ready-status warn">
                           {dbsnp?.custom?.variants[variantKey]?.problem ??
-                            `No ${variantKey} cache found at ${customRoot}`}
+                            `no ${variantKey} cache at ${customRoot}`}
                         </span>
                       )
                     ) : managedReady && managedInfo ? (
                       <span className="ready-status ok">
-                        ✓ Ready{dbsnpFromYours ? " in your folder (read-only)" : ""} ·{" "}
+                        ready{dbsnpFromYours ? " · yours, read-only" : ""} ·{" "}
                         {formatBytes(managedInfo.bytes)}
                         {managedInfo.built_at ? ` · built ${managedInfo.built_at.slice(0, 10)}` : ""}
                       </span>
                     ) : dbsnp?.job_id ? (
                       <span className="ready-status muted">
-                        Preparing the {dbsnp.job_variant ?? ""} cache, this takes a while…
+                        preparing {dbsnp.job_variant ?? ""} cache…
                       </span>
                     ) : (
-                      <span className="ready-status warn">Not prepared yet</span>
+                      <span className="ready-status warn">not prepared</span>
                     )}
                   </div>
                   {dbsnpOwnPath || customRoot ? (
                     <>
                       <label className="field" style={{ marginTop: 6 }}>
-                        Existing cache path
+                        cache path
                         <input
                           type="text"
                           value={dbsnpCacheRoot}
                           onChange={(e) => setDbsnpCacheRoot(e.target.value)}
-                          placeholder="/path/to/dbsnp  (contains common/ or full/)"
+                          placeholder="/path/to/dbsnp (holds common/ or full/)"
                         />
                       </label>
                       <button
@@ -943,7 +989,7 @@ export default function BuildWizard() {
                           setDbsnpOwnPath(false);
                         }}
                       >
-                        use the console’s cache instead
+                        use the console’s cache
                       </button>
                     </>
                   ) : (
@@ -953,13 +999,12 @@ export default function BuildWizard() {
                       style={{ justifySelf: "start" }}
                       onClick={() => setDbsnpOwnPath(true)}
                     >
-                      I already have a dbSNP cache
+                      use my own cache
                     </button>
                   )}
                   <div className="field-hint">
-                    Preparing downloads the dbSNP release from NCBI (about 30 GB) once and builds a
-                    lookup database in the data folder{dbsnp ? ` (${dbsnp.root})` : ""}. Every
-                    later build reuses it.
+                    prepare once · ~30 GB from NCBI → {dbsnp?.root ?? "the data folder (not set)"} ·
+                    reused by every build
                   </div>
                 </div>
                 <div className="ready-actions">
@@ -967,7 +1012,7 @@ export default function BuildWizard() {
                     <button
                       className="primary"
                       onClick={onPrepareDbsnp}
-                      disabled={dbsnpBusy || !!dbsnp?.job_id}
+                      disabled={dbsnpBusy || !!dbsnp?.job_id || !dataFolder}
                     >
                       {dbsnp?.job_id ? "Preparing…" : `Prepare ${variantKey} cache`}
                     </button>
@@ -1011,36 +1056,78 @@ export default function BuildWizard() {
             <select value={maxWorkers} onChange={(e) => setMaxWorkers(Number(e.target.value))}>
               {Array.from({ length: workerCap }, (_, i) => i + 1).map((n) => (
                 <option key={n} value={n}>
-                  {n === 1 ? "1 (sequential)" : n === workerCap ? `${n} (max, all cores)` : n}
+                  {n === 1 ? "1 · sequential" : n === workerCap ? `${n} · max` : n}
                 </option>
               ))}
             </select>
           </label>
-          <label className="field">
-            Size limit
-            <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-              <option value={0}>No limit (full)</option>
-              <option value={100}>100 rows / adapter</option>
-              <option value={1000}>1,000 rows / adapter</option>
-              <option value={10000}>10,000 rows / adapter</option>
-              <option value={100000}>100,000 rows / adapter</option>
-            </select>
-          </label>
+          <div className="field">
+            <span className="field-label">Size</span>
+            <div className="size-control">
+              <span className="group-actions">
+                <button
+                  type="button"
+                  className={`linkbtn ${sizeUnit === "rows" ? "seg-on" : ""}`}
+                  onClick={() => setSizeUnit("rows")}
+                >
+                  rows
+                </button>
+                <button
+                  type="button"
+                  className={`linkbtn ${sizeUnit === "percent" ? "seg-on" : ""}`}
+                  onClick={() => setSizeUnit("percent")}
+                  disabled={!percentReady}
+                  title={percentReady ? "% of each source's full size" : percentWhyNot}
+                >
+                  percent
+                </button>
+              </span>
+              {sizeUnit === "rows" ? (
+                <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+                  {ROW_CHOICES.map((n) => (
+                    <option key={n} value={n}>
+                      {n === 0 ? "full" : `${n.toLocaleString()} rows / adapter`}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <select value={percent} onChange={(e) => setPercent(Number(e.target.value))}>
+                  {PERCENT_CHOICES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}%
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="field-hint" style={{ marginBottom: 12 }}>
-          ⚙️ Workers run adapters in parallel. More is faster but uses more memory;
-          too many can crash the build (out of memory). Use 1 on a low-memory host.
-        </div>
-        <div className="field-hint" style={{ marginBottom: 12 }}>
-          ✂️ Size limit caps how many nodes and edges each adapter writes, for a
-          small, bounded sample graph. Leave at “No limit” for a complete build.
-        </div>
-        <div className="field-hint" style={{ marginBottom: 12 }}>
-          📁 Output location is automatic: a dated folder
-          <span className="mono"> species-dataset-YYYYMMDD-HHMMSS </span>
-          in the console data folder (Settings › Build settings). The exact path is shown
-          on the build page.
-        </div>
+        {sizePreviewText && <div className="size-preview">{sizePreviewText}</div>}
+        <dl className="kv">
+          <dt>workers</dt>
+          <dd>parallel adapters · more = faster, more memory</dd>
+          <dt>size</dt>
+          <dd>rows, or % of full size · keeps each adapter&apos;s first rows</dd>
+          <dt>saved in</dt>
+          <dd>
+            {buildsFolder ? (
+              <>
+                {buildsFolder.replace(/\/$/, "")}/{writerType}/{selSpecies || "species"}-
+                {selDataset || "dataset"}-&lt;time&gt; ·{" "}
+                <Link className="link" to="/settings">
+                  change
+                </Link>
+              </>
+            ) : (
+              <span className="warn-text">
+                not set ·{" "}
+                <Link className="link" to="/settings">
+                  set the Builds folder
+                </Link>
+              </span>
+            )}
+          </dd>
+        </dl>
         <div className="chips">
           {flags.map((f) => (
             <label className="chip" key={f.name} title={f.help}>
@@ -1070,7 +1157,7 @@ export default function BuildWizard() {
           <button
             className="primary"
             onClick={onBuild}
-            disabled={submitting || (!isAll && !nSelected)}
+            disabled={!canLaunch}
           >
             {submitting ? "Launching…" : "Launch build"}
           </button>
@@ -1086,12 +1173,12 @@ function ValidationPanel({ result }: { result: ValidationResult }) {
     <div style={{ marginTop: 14 }}>
       {result.valid ? (
         <div className="alert ok">
-          ✓ Valid{result.checked_paths ? " — all input paths exist" : ""} (
-          {result.resolved.num_adapters} adapter
-          {result.resolved.num_adapters === 1 ? "" : "s"})
+          valid · {result.resolved.num_adapters} adapter
+          {result.resolved.num_adapters === 1 ? "" : "s"}
+          {result.checked_paths ? " · input paths ok" : ""}
         </div>
       ) : (
-        <div className="alert err">✗ Not valid — see below</div>
+        <div className="alert err">invalid</div>
       )}
 
       {result.static_errors.map((e, i) => (
@@ -1101,13 +1188,13 @@ function ValidationPanel({ result }: { result: ValidationResult }) {
       ))}
       {result.static_warnings.map((w, i) => (
         <div className="alert warn" key={`w${i}`}>
-          ⚠ {w}
+          {w}
         </div>
       ))}
 
       {Object.keys(result.missing_paths).length > 0 && (
         <div className="alert err">
-          <strong>Missing input files:</strong>
+          <strong>missing input files</strong>
           {Object.entries(result.missing_paths).map(([adapter, args]) => (
             <div key={adapter} style={{ marginTop: 6 }}>
               <div className="mono">[{adapter}]</div>
@@ -1122,7 +1209,7 @@ function ValidationPanel({ result }: { result: ValidationResult }) {
       )}
 
       <details style={{ marginTop: 8 }}>
-        <summary className="muted">Command preview</summary>
+        <summary className="muted">command</summary>
         <div className="mono" style={{ marginTop: 6 }}>
           {result.resolved.cmd_preview.join(" ")}
         </div>

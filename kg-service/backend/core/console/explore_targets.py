@@ -15,7 +15,6 @@ nothing per-species set, a NEO4J_URI / MORK_URL set in the environment is used a
 single default instance (never the built-in defaults). Each species' Neo4j login is
 its own; see connections.neo4j_login.
 """
-import os
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
@@ -31,75 +30,32 @@ def species_list() -> list[str]:
         return []
 
 
-def _env(name: str):
-    v = os.environ.get(name)
-    v = v.strip() if v else ""
-    return v or None
-
-
 def species_specific(species: str) -> bool:
-    """True if this species has at least one endpoint set explicitly (UI store or env)."""
+    """True if this species has at least one database set in Settings."""
     o = runtime_config.species_override(species)
-    return bool(o.get("neo4j_uri") or o.get("mork_url")
-                or _env(f"NEO4J_URI_{species.upper()}") or _env(f"MORK_URL_{species.upper()}"))
-
-
-def _default_uri(name: str):
-    """A single default instance only when one is explicitly configured (environment
-    or an older saved setting), never the built-in placeholder address."""
-    saved = (runtime_config.load().get("global") or {}).get(name.lower())
-    return saved or _env(name)
-
-
-def _any_explicit() -> bool:
-    """True if any species has its own instance (per-species mode)."""
-    return any(species_specific(sp) for sp in species_list())
+    return bool(o.get("neo4j_uri") or o.get("mork_url"))
 
 
 def neo4j_uri_for(species: str):
-    """Per-species Neo4j URI. Never falls back to another species' instance: in
-    per-species mode an unconfigured species returns None (not configured); the
-    global default is used only in single-instance mode (nothing per-species set)."""
-    v = runtime_config.species_override(species).get("neo4j_uri") or _env(f"NEO4J_URI_{species.upper()}")
-    if v:
-        return v
-    return None if _any_explicit() else _default_uri("NEO4J_URI")
+    """The species' own Neo4j, as set in Settings, or None. There is no default or
+    shared instance: a species without one has no Neo4j."""
+    return runtime_config.species_override(species).get("neo4j_uri") or None
 
 
 def mork_url_for(species: str):
-    """Per-species MORK URL, with the same no-cross-species-fallback rule."""
-    v = runtime_config.species_override(species).get("mork_url") or _env(f"MORK_URL_{species.upper()}")
-    if v:
-        return v
-    return None if _any_explicit() else _default_uri("MORK_URL")
+    """The species' own MORK, as set in Settings, or None (no default instance)."""
+    return runtime_config.species_override(species).get("mork_url") or None
 
 
 def list_targets() -> list[dict]:
-    """The instances the console is configured to explore, driven entirely by the env.
-
-    - Per-species mode (any NEO4J_URI_<SP> / MORK_URL_<SP> set): one entry per species
-      that actually has an endpoint. Unconfigured species are omitted, not shown as
-      empty, so Explore reflects exactly what is configured.
-    - Single-instance mode (only the global NEO4J_URI / MORK_URL): a single "default"
-      entry, not one card per species.
-    - Nothing configured: empty.
-
-    Manage which instances appear purely by editing docker/console.env (add or remove
-    NEO4J_URI_<SP> lines); no code or UI change needed.
-    """
-    if _any_explicit():
-        out = []
-        for sp in species_list():
-            nu, mu = neo4j_uri_for(sp), mork_url_for(sp)
-            if nu or mu:
-                out.append({"species": sp, "explicit": True, "neo4j_uri": nu, "mork_url": mu})
-        return out
-
-    nu = _default_uri("NEO4J_URI")
-    mu = _default_uri("MORK_URL")
-    if not (nu or mu):
-        return []
-    return [{"species": "default", "explicit": False, "neo4j_uri": nu, "mork_url": mu}]
+    """The databases Explore shows: one entry per species that has one set in
+    Settings > Species databases. Species without one are left out."""
+    out = []
+    for sp in species_list():
+        nu, mu = neo4j_uri_for(sp), mork_url_for(sp)
+        if nu or mu:
+            out.append({"species": sp, "explicit": True, "neo4j_uri": nu, "mork_url": mu})
+    return out
 
 
 _LOCAL_HOSTS = ("localhost", "127.0.0.1", "::1")

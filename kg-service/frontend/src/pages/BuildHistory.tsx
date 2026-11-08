@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { api, formatBytes, type DiskUsage } from "../api/client";
 import type { BuildJob, JobStatus } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
+import { sizeSetting } from "../sizes";
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled"]);
 
-const ACTIVE = new Set(["queued", "running"]);
 const TARGET_LABEL: Record<string, string> = { neo4j: "Neo4j", mork: "MORK" };
 
 function loadPillClass(status: JobStatus): string {
@@ -15,14 +15,14 @@ function loadPillClass(status: JobStatus): string {
   return "loadpill run"; // queued / running
 }
 function loadIcon(status: JobStatus): string {
-  if (status === "succeeded") return "✓";
-  if (status === "failed" || status === "cancelled") return "⟲";
+  if (status === "succeeded") return "ok";
+  if (status === "failed" || status === "cancelled") return "failed";
   return "…";
 }
 
 export default function BuildHistory() {
   const navigate = useNavigate();
-  const [builds, setBuilds] = useState<BuildJob[]>([]);
+  const [builds, setBuilds] = useState<BuildJob[] | null>(null); // null until the first load
   const [disk, setDisk] = useState<DiskUsage | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,13 +58,13 @@ export default function BuildHistory() {
     e.stopPropagation();
     if (
       !window.confirm(
-        "Delete this build from history and remove its output files from disk? This cannot be undone.",
+        "Delete this build and its files? This can't be undone.",
       )
     )
       return;
     try {
       await api.deleteBuild(jobId, true);
-      setBuilds((prev) => prev.filter((b) => b.id !== jobId));
+      setBuilds((prev) => prev && prev.filter((b) => b.id !== jobId));
       api.diskUsage().then(setDisk).catch(() => {});
     } catch (err) {
       setError(String(err));
@@ -78,13 +78,14 @@ export default function BuildHistory() {
       <h2>Build history</h2>
       {disk?.available && (
         <div className="field-hint" style={{ marginBottom: 10 }}>
-          💾 Disk: builds {formatBytes(disk.categories?.builds)} · input {formatBytes(disk.categories?.input)}
+          disk · builds {formatBytes(disk.categories?.builds)} · input {formatBytes(disk.categories?.input)}
           {" · "}archives {formatBytes(disk.categories?.archives)}
           {disk.free_bytes != null ? ` · ${formatBytes(disk.free_bytes)} free` : ""}
         </div>
       )}
-      {!builds.length && <div className="muted">No builds yet.</div>}
-      {builds.length > 0 && (
+      {builds === null && !error && <div className="muted">Loading…</div>}
+      {builds?.length === 0 && <div className="muted">No builds yet.</div>}
+      {builds && builds.length > 0 && (
         <table>
           <thead>
             <tr>
@@ -100,6 +101,7 @@ export default function BuildHistory() {
           <tbody>
             {builds.map((b) => {
               const p = b.params as Record<string, unknown>;
+              const size = (b.kind ?? "build") === "build" ? sizeSetting(p) : "Full";
               const loads = b.loads ?? {};
               const loadEntries = Object.entries(loads);
               return (
@@ -110,10 +112,14 @@ export default function BuildHistory() {
                 >
                   <td>
                     <JobStatusBadge status={b.status} />
-                    {ACTIVE.has(b.status) ? " ⏳" : ""}
                   </td>
                   <td>
                     {String(p.species ?? "—")} / {String(p.dataset ?? "—")}
+                    {size !== "full" && (
+                      <span className="muted mono" title="build size">
+                        {" "}· {size}
+                      </span>
+                    )}
                   </td>
                   <td>{String(p.writer_type ?? "—")}</td>
                   <td>
@@ -123,7 +129,7 @@ export default function BuildHistory() {
                           <span
                             key={target}
                             className={loadPillClass(l.status)}
-                            title={`Load → ${TARGET_LABEL[target] ?? target}: ${l.status} — click for log`}
+                            title={`${TARGET_LABEL[target] ?? target} · ${l.status} · open log`}
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/builds/${l.job_id}`);
@@ -148,13 +154,13 @@ export default function BuildHistory() {
                         onClick={(e) => onResume(e, b.id)}
                         title="Resume from checkpoint"
                       >
-                        ⟲ Resume
+                        Resume
                       </button>
                     ) : (b.status === "failed" || b.status === "cancelled") ? (
                       <span
                         className="muted"
                         style={{ fontSize: 11 }}
-                        title="No checkpoint was written (stopped before the first adapter completed)"
+                        title="stopped before any adapter finished"
                       >
                         no checkpoint
                       </span>
@@ -163,10 +169,10 @@ export default function BuildHistory() {
                       <button
                         className="secondary btn-sm"
                         onClick={(e) => onDelete(e, b.id)}
-                        title="Delete build and its output files from disk"
+                        title="delete build and files"
                         style={{ marginLeft: 6 }}
                       >
-                        🗑
+                        Delete
                       </button>
                     )}
                   </td>

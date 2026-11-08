@@ -51,7 +51,8 @@ class MORKClient:
 
         self.mork_url = mork_url
         self.server = mork_cls(mork_url)
-        self.archive_dir = Path(archive_base) / "mork"
+        # No archives folder (nothing set): no version history, rather than a guess.
+        self.archive_dir = Path(archive_base) / "mork" if archive_base else Path("/nonexistent/mork")
         self.metadata_file = self.archive_dir / "version_metadata.json"
     
     def get_latest_version(self):

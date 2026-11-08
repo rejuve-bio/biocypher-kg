@@ -94,9 +94,9 @@ export default function ConfigEditor() {
       setDirty(false);
       const warns = r.warnings ?? [];
       if (warns.length) {
-        setMsg({ kind: "warn", text: `Saved, but ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
+        setMsg({ kind: "warn", text: `saved · ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
       } else {
-        setMsg({ kind: "ok", text: "Saved. Revert with git if needed." });
+        setMsg({ kind: "ok", text: "saved" });
       }
     } catch (e) {
       setMsg({ kind: "err", text: msgOf(e) });
@@ -181,16 +181,16 @@ export default function ConfigEditor() {
               disabled={!dirty || loading || !content}
               onClick={() =>
                 setPending({
-                  title: "Save config changes?",
-                  message: `This overwrites ${path}. New builds of ${sel}/${dataset} will use the updated config. The file is validated on save, and you can revert it with git if needed.`,
+                  title: "Save config?",
+                  message: `Overwrites ${path}. Used by new ${sel}/${dataset} builds.`,
                   confirmLabel: "Save",
                   run: save,
                 })
               }
             >
-              💾 Save
+              Save
             </button>
-            <span className="field-hint">Validated on save; invalid YAML is rejected and nothing is overwritten.</span>
+            <span className="field-hint">validated on save · invalid YAML is rejected</span>
           </div>
         </>
       )}

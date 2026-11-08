@@ -141,34 +141,6 @@ def get_build_limits():
     return {"cpu_count": cpu, "max_workers": min(8, cpu)}
 
 
-@router.get("/mork/summary")
-def mork_summary():
-    """Live MORK stats (atomspace, so counts/versions rather than a node/edge schema)."""
-    from backend.core.config import settings
-    from backend.core.mork_client import MORKClient
-
-    def _safe(fn):
-        try:
-            return fn()
-        except Exception:  # noqa: BLE001
-            return None
-
-    try:
-        client = MORKClient()
-        atom_count = client.get_atom_count()
-    except ImportError as exc:  # MORK client library missing (a deploy problem)
-        return {"reachable": False, "error": str(exc)}
-    except Exception:  # noqa: BLE001 - server down or unreachable at MORK_URL
-        return {"reachable": False, "error": f"Could not connect to MORK at {settings.MORK_URL}."}
-    return {
-        "reachable": True,
-        "atom_count": atom_count,
-        "dataset_count": _safe(client.get_dataset_count),
-        "latest_version": _safe(client.get_latest_version),
-        "versions": _safe(client.get_all_versions) or [],
-    }
-
-
 @router.get("/explore/targets")
 def explore_targets():
     """Species and the Neo4j/MORK endpoints they resolve to (for the Explore selector)."""
@@ -247,23 +219,3 @@ def explore_schema(species: str, db: str = "neo4j"):
         }
 
     raise HTTPException(status_code=400, detail=f"Unknown db '{db}' (expected neo4j or mork)")
-
-
-@router.get("/mork/schema")
-def mork_schema():
-    """Live MORK node/edge schema, derived from the atomspace structure.
-
-    MORK has no native schema, so this projects the KG atom shapes (read-only)
-    and returns the same node/edge schema the Neo4j Explore graph uses.
-    """
-    from backend.core.config import settings
-    from backend.core.mork_client import MORKClient
-
-    try:
-        client = MORKClient()
-        result = client.get_schema()
-    except ImportError as exc:  # MORK client library missing (a deploy problem)
-        return {"reachable": False, "error": str(exc)}
-    except Exception:  # noqa: BLE001 - server down or unreachable at MORK_URL
-        return {"reachable": False, "error": f"Could not connect to MORK at {settings.MORK_URL}."}
-    return {"reachable": True, **result}

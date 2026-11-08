@@ -60,6 +60,13 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
     static_warnings: list[str] = []
     missing_paths: dict[str, dict[str, str]] = {}
 
+    # --- Settings: both folders are chosen there before any build (no defaults) ---
+    from backend.core.console import runtime_config
+
+    gaps = runtime_config.missing("data", "builds")
+    if gaps:
+        static_errors.append(f"set in Settings first: {', '.join(gaps)}")
+
     # --- writer ---
     if req.writer_type.lower() not in ci.WRITER_TYPES:
         static_errors.append(
@@ -187,6 +194,15 @@ def validate_build(req: BuildRequest, run_check_only: bool = True) -> dict:
                     f"The dbSNP '{eff_variant}' cache at {cache_dir} can't be used: {problem} "
                     "Prepare it again from the console."
                 )
+
+    # --- a size limit as a percentage needs every selected adapter's size known ---
+    if req.percent or req.adapter_limits:
+        from backend.core.console import sizes
+
+        try:
+            sizes.resolve(req)
+        except sizes.SizeError as exc:
+            static_errors.append(str(exc))
 
     # --- a data folder chosen in Settings must exist (else every file looks missing) ---
     if (req.species and req.species.lower() != "all" and req.dataset != "sample"

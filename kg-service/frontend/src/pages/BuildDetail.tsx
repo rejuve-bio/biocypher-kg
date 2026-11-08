@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { api, type GraphInfoSummary, type ConfigManifest } from "../api/client";
 import type { BuildJob } from "../types";
 import JobStatusBadge from "../components/JobStatusBadge";
+import { sizeSetting } from "../sizes";
 import ConfirmDialog, { type Confirmable } from "../components/ConfirmDialog";
 
 // Lazy so Cytoscape ships in its own chunk, only on build pages that show a schema.
@@ -31,7 +32,7 @@ function humanSize(bytes: number): string {
 // A MORK load isn't surgical like Neo4j's: if anything changed, the loader clears
 // MORK's annotation space and imports only this build's files.
 const MORK_REPLACES =
-  "If anything changed, MORK is cleared and refilled from this build alone: datasets that aren't in this build (for example from other adapters) are removed. If nothing changed, it's skipped.";
+  "Replaces MORK's data with this build only. Skipped if nothing changed.";
 
 export default function BuildDetail() {
   const { id = "" } = useParams();
@@ -146,8 +147,8 @@ export default function BuildDetail() {
               target === "mork"
                 ? MORK_REPLACES
                 : loaded
-                  ? `${T} already holds this build. Reloading re-runs the surgical update on your live ${T} database, and it is skipped automatically if nothing has changed.`
-                  : `This writes to your live ${T} database. Only datasets that changed are updated (a surgical load); everything else is left in place.`,
+                  ? `Re-syncs your live ${T}. Skipped if nothing changed.`
+                  : `Writes to your live ${T}. Only changed datasets are updated.`,
             confirmLabel: loaded ? `Reload ${T}` : `Load ${T}`,
             run: () => onLoad(target),
           })
@@ -156,14 +157,12 @@ export default function BuildDetail() {
         title={
           loaded
             ? target === "mork"
-              ? "Already loaded to MORK. Reloading replaces MORK's data with this build (skipped if unchanged)."
-              : `Already loaded to ${T}. Reload re-syncs (surgical: skipped if unchanged), useful if ${T} was reset.`
-            : inProgress
-              ? `Loading into ${T}…`
-              : undefined
+              ? "loaded · reload replaces MORK's data"
+              : `loaded · reload re-syncs ${T}`
+            : undefined
         }
       >
-        {inProgress ? `⇪ Loading ${T}…` : loaded ? `⟲ Reload ${T}` : `⇪ Load to ${T}`}
+        {inProgress ? `Loading ${T}…` : loaded ? `Reload ${T}` : `Load to ${T}`}
       </button>
     );
   }
@@ -173,6 +172,10 @@ export default function BuildDetail() {
 
   const active = !TERMINAL.has(job.status);
   const isBuild = (job.kind ?? "build") === "build";
+  // What each adapter wrote (graph_info "adapter_counts"), marking the ones a size
+  // limit stopped early. The rest are full sizes, which Percent builds use.
+  const adapterCounts = Object.entries(graphInfo?.adapter_counts ?? {});
+  const cutShort = adapterCounts.filter(([, c]) => !c.complete).length;
   const writer = (job.params as { writer_type?: string })?.writer_type;
   const canLoadNeo4j = isBuild && job.status === "succeeded" && writer === "neo4j";
   const canLoadMork = isBuild && job.status === "succeeded" && writer === "metta";
@@ -185,23 +188,22 @@ export default function BuildDetail() {
             <JobStatusBadge status={job.status} />
             {!isBuild && (
               <span className="tag edge">
-                {job.kind === "dbsnp" ? "dbSNP cache" : (job.kind ?? "").replace("load-", "load→")}
+                {job.kind === "dbsnp" ? "dbSNP cache" : (job.kind ?? "").replace("load-", "load → ")}
               </span>
             )}
             <span className="mono muted">{job.id}</span>
           </div>
           <div className="row">
             <Link className="link" to="/history">
-              ← All builds
+              ← builds
             </Link>
             {active && (
               <button
                 className="danger"
                 onClick={() =>
                   setPending({
-                    title: "Stop this running build?",
-                    message:
-                      "The build in progress will be stopped now. Adapters that already finished are kept as a checkpoint, so you can resume later instead of starting from scratch.",
+                    title: "Stop this build?",
+                    message: "Finished adapters are kept, so you can resume later.",
                     confirmLabel: "Stop build",
                     cancelLabel: "Keep building",
                     tone: "danger",
@@ -214,7 +216,7 @@ export default function BuildDetail() {
             )}
             {job.resumable && (
               <button className="secondary" onClick={onResume}>
-                ⟲ Resume
+                Resume
               </button>
             )}
             {job.retryable && (
@@ -224,14 +226,14 @@ export default function BuildDetail() {
                   setPending({
                     title: "Retry this load?",
                     message: (job.kind ?? "").includes("mork")
-                      ? `This re-runs the failed load into MORK. ${MORK_REPLACES}`
-                      : "This re-runs the failed load into your live Neo4j database. Only changed datasets are applied (a surgical update).",
+                      ? MORK_REPLACES
+                      : "Writes to your live Neo4j. Only changed datasets are updated.",
                     confirmLabel: "Retry load",
                     run: onRetry,
                   })
                 }
               >
-                ⟲ Retry load
+                Retry load
               </button>
             )}
             {canLoadNeo4j && renderLoadBtn("neo4j")}
@@ -241,7 +243,13 @@ export default function BuildDetail() {
         <div className="row" style={{ marginTop: 12, gap: 24 }}>
           <Meta label="Started" value={fmt(job.started_at)} />
           <Meta label="Finished" value={fmt(job.finished_at)} />
+          {isBuild && <Meta label="Build size" value={sizeSetting(job.params)} />}
         </div>
+        {isBuild && job.output_dir && (
+          <div style={{ marginTop: 12 }}>
+            <Meta label="Saved in" value={job.output_dir} />
+          </div>
+        )}
         {isBuild && job.loads && Object.keys(job.loads).length > 0 && (
           <div className="row" style={{ marginTop: 14, gap: 8, alignItems: "center" }}>
             <span className="muted" style={{ fontSize: 12 }}>Loaded into</span>
@@ -249,7 +257,7 @@ export default function BuildDetail() {
               <span
                 key={target}
                 className={loadPillClass(l.status)}
-                title={`${l.status} — view load log`}
+                title={`${l.status} · open log`}
                 onClick={() => navigate(`/builds/${l.job_id}`)}
               >
                 {target === "neo4j" ? "Neo4j" : "MORK"} {loadIcon(l.status)}
@@ -275,8 +283,7 @@ export default function BuildDetail() {
           (job.checkpoint || job.status === "running") && (
             <div style={{ marginTop: 12 }}>
               <div className="muted" style={{ fontSize: 12, marginBottom: 4 }}>
-                Progress: {job.checkpoint?.completed_count ?? 0}/{job.total_adapters}{" "}
-                adapters
+                {job.checkpoint?.completed_count ?? 0}/{job.total_adapters} adapters
               </div>
               <div className="progress">
                 <div
@@ -296,19 +303,16 @@ export default function BuildDetail() {
           )}
         {job.checkpoint && (
           <div className="alert ok" style={{ marginTop: 10 }}>
-            Checkpoint: <strong>{job.checkpoint.completed_count}</strong> adapter
-            {job.checkpoint.completed_count === 1 ? "" : "s"} completed
-            {job.checkpoint.failed_adapter
-              ? ` · failed on ${job.checkpoint.failed_adapter}`
-              : ""}
-            {job.resumable ? " — Resume continues from here." : ""}
+            checkpoint · <strong>{job.checkpoint.completed_count}</strong> adapter
+            {job.checkpoint.completed_count === 1 ? "" : "s"} done
+            {job.checkpoint.failed_adapter ? ` · failed on ${job.checkpoint.failed_adapter}` : ""}
+            {job.resumable ? " · resume continues here" : ""}
           </div>
         )}
         {job.error && <div className="alert err" style={{ marginTop: 10 }}>{job.error}</div>}
         <details style={{ marginTop: 10 }}>
-          <summary className="muted">Command &amp; output dir</summary>
+          <summary className="muted">command</summary>
           <div className="mono" style={{ marginTop: 6 }}>{job.cmd.join(" ")}</div>
-          <div className="mono muted" style={{ marginTop: 6 }}>→ {job.output_dir}</div>
         </details>
       </div>
 
@@ -322,20 +326,13 @@ export default function BuildDetail() {
             stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
           }}
         >
-          {lines.length ? lines.join("\n") : "(no output yet)"}
+          {lines.length ? lines.join("\n") : "no output yet"}
         </div>
       </div>
 
       {(graphInfo || (files && files.length > 0)) && (
         <div className="card">
           <h2>Results {active ? "· updating live" : ""}</h2>
-          <div className="alert ok" style={{ marginBottom: 14 }}>
-            📁 Files were written to <span className="mono">{job.output_dir}</span>
-            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
-              They're already on disk there — the download links below are just a
-              convenience (useful when the Console runs on a remote server).
-            </div>
-          </div>
           {graphInfo && (
             <div className="row" style={{ gap: 24, marginBottom: 14 }}>
               <Meta label="Nodes" value={fmtNum(graphInfo.node_count)} />
@@ -376,7 +373,7 @@ export default function BuildDetail() {
           {graphInfo?.schema && graphInfo.schema.nodes.length > 0 && (
             <div style={{ margin: "6px 0 18px" }}>
               <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-                Schema (interactive)
+                Schema
               </div>
               <Suspense fallback={<div className="muted">Loading schema…</div>}>
                 <SchemaGraph
@@ -385,6 +382,39 @@ export default function BuildDetail() {
                   topConnections={graphInfo.top_connections}
                 />
               </Suspense>
+            </div>
+          )}
+          {adapterCounts.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+                Rows by adapter
+                {cutShort > 0 ? ` · ${cutShort} cut by size limit` : " · full sizes, now known"}
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Adapter</th>
+                    <th style={{ textAlign: "right" }}>Nodes</th>
+                    <th style={{ textAlign: "right" }}>Edges</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adapterCounts.map(([name, c]) => (
+                    <tr key={name}>
+                      <td className="mono" style={{ whiteSpace: "nowrap" }}>
+                        {name}
+                        {!c.complete && (
+                          <span className="muted" title="stopped early by the size limit">
+                            {" "}· cut
+                          </span>
+                        )}
+                      </td>
+                      <td className="mono" style={{ textAlign: "right" }}>{c.nodes == null ? "—" : fmtNum(c.nodes)}</td>
+                      <td className="mono" style={{ textAlign: "right" }}>{c.edges == null ? "—" : fmtNum(c.edges)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
           {graphInfo?.datasets && graphInfo.datasets.length > 0 && (
@@ -453,7 +483,7 @@ export default function BuildDetail() {
                     type="text"
                     value={fileFilter}
                     onChange={(e) => setFileFilter(e.target.value)}
-                    placeholder="🔍 Filter files…"
+                    placeholder="filter files"
                     style={{ minWidth: 220 }}
                   />
                 </div>
@@ -475,7 +505,7 @@ export default function BuildDetail() {
                   </tbody>
                 </table>
                 {!shown.length && (
-                  <span className="muted">No files match “{fileFilter}”.</span>
+                  <span className="muted">no match for “{fileFilter}”</span>
                 )}
               </>
             );
@@ -504,8 +534,8 @@ function loadPillClass(status: string): string {
   return "loadpill run"; // queued / running
 }
 function loadIcon(status: string): string {
-  if (status === "succeeded") return "✓";
-  if (status === "failed" || status === "cancelled") return "⟲";
+  if (status === "succeeded") return "ok";
+  if (status === "failed" || status === "cancelled") return "failed";
   return "…";
 }
 

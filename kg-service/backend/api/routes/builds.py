@@ -15,6 +15,7 @@ _GRAPH_INFO_KEYS = [
     "node_count", "edge_count", "dataset_count", "last_updated_at",
     "kg_format", "data_size", "top_entities", "top_connections",
     "datasets",  # per-adapter node/edge type composition
+    "adapter_counts",  # what each adapter wrote, and whether a size limit cut it short
     "schema",  # node types + source/target edges (drives the schema graph, any writer)
     "frequent_relationships",
 ]
@@ -108,7 +109,10 @@ def create_build(req: BuildRequest):
     if not result["valid"]:
         raise HTTPException(status_code=400, detail={"message": "Validation failed",
                                                      "validation": result})
-    job = job_runner.launch(req)
+    try:
+        job = job_runner.launch(req)
+    except ValueError as exc:  # sizes changed since validating, or a folder isn't set
+        raise HTTPException(status_code=400, detail=str(exc))
     return {
         "id": job.id,
         "status": job.status.value,
@@ -136,7 +140,7 @@ def start_download(req: DownloadRequest):
     """Fetch a species' source data into the local input dir (tracked like a build)."""
     try:
         job = job_runner.launch_download(req)
-    except ValueError as exc:
+    except ValueError as exc:  # incl. runtime_config.SetupError: a folder isn't set
         raise HTTPException(status_code=400, detail=str(exc))
     if job is None:
         raise HTTPException(status_code=400, detail="Could not start the download.")
@@ -169,7 +173,7 @@ def prepare_dbsnp(req: DbsnpPrepareRequest):
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     return {"id": job.id, "status": job.status.value, "kind": job.kind, "job": job.to_dict(),
-            "root": str(job_runner.dbsnp_root())}
+            "root": str(job_runner.dbsnp_root() or "")}
 
 
 @router.get("/species/{species}/data-status")
@@ -329,38 +333,12 @@ def disk_usage():
     return job_runner.disk_usage()
 
 
-@router.get("/estimate")
-def build_estimate(species: str, dataset: str):
-    """Rough scope for a planned build, so users know what to expect before running.
+@router.get("/sizes")
+def known_sizes(species: str, dataset: str):
+    """Each adapter's known full size for this species+dataset (see sizes.py): what
+    the console has learned from builds that weren't cut short by a size limit."""
+    from backend.core.console import sizes
 
-    Returns what the most recent successful build of this species+dataset actually
-    produced (node/edge counts + output size) plus how much source data is present
-    locally. A real pre-build count is impossible without running adapters, so this
-    uses the last real build as the honest reference."""
-    last = None
-    for j in registry.list(status="succeeded"):
-        p = j.params or {}
-        if (j.kind or "build") == "build" and p.get("species") == species and p.get("dataset") == dataset:
-            gi = Path(j.output_dir) / "graph_info.json"
-            if gi.exists():
-                try:
-                    d = json.loads(gi.read_text())
-                    last = {
-                        "job_id": j.id,
-                        "node_count": d.get("node_count"),
-                        "edge_count": d.get("edge_count"),
-                        "data_size": d.get("data_size"),
-                        "created_at": j.created_at,
-                    }
-                except (json.JSONDecodeError, OSError):
-                    pass
-            break  # registry.list is newest-first
-    data = job_runner.data_status(species)
-    return {
-        "species": species,
-        "dataset": dataset,
-        "last_build": last,
-        "input_bytes": data.get("total_bytes", 0),
-        "input_present_sources": data.get("present_count", 0),
-        "input_total_sources": data.get("source_count", 0),
-    }
+    return {"species": species, "dataset": dataset, "adapters": sizes.known(species, dataset)}
+
+

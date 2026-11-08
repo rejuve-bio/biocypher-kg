@@ -59,7 +59,10 @@ export interface BuildRequest {
   skip_preflight: boolean;
   generate_data_source_schemas: boolean;
   max_workers: number;
+  // Size: rows per adapter (0 = no limit), or a percent of each adapter's known
+  // size (turned into per-adapter caps when the build launches).
   limit: number;
+  percent?: number | null;
 }
 
 export interface ValidationResult {

@@ -28,6 +28,15 @@ os.environ.setdefault("REPO_ROOT", ROOT_STR)
 # FastAPI's TestClient calls itself "testserver"; the console otherwise only answers
 # to localhost (see kg-service/backend/api/security.py).
 os.environ.setdefault("CONSOLE_ALLOWED_HOSTS", "testserver")
+# A console that has been set up: its required settings (no defaults, see
+# runtime_config.require) chosen as Settings would. Tests of the not-set-up case
+# clear them with monkeypatch.
+os.environ.setdefault("DATA_ROOT", tempfile.mkdtemp(prefix="kg_console_data_"))
+os.environ.setdefault("OUTPUT_ROOT", tempfile.mkdtemp(prefix="kg_console_out_"))
+os.environ.setdefault("NEO4J_MEMORY", "1G")
+# Never reach this computer's real Docker: the console can stop and re-create the
+# databases it runs (instances.py), so tests fake Docker where they need it.
+os.environ.setdefault("DOCKER_SOCK", str(Path(tempfile.gettempdir()) / "kg-console-tests-no-docker.sock"))
 
 
 def pytest_addoption(parser):

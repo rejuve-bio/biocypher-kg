@@ -6,12 +6,14 @@ console finds it: it looks for a folder with that name and the same contents amo
 the folders it can open.
 
 The console runs in Docker and only sees folders shared into its container. The
-compose files share what a Finder sidebar shows, read-only: Desktop, Documents,
-Downloads and external drives (/Volumes), plus the console's own data folder. Not
-the whole home folder: Docker Desktop passes every file change in a shared folder to
-its VM, and a home folder's constant changes crash the engine. Outside Docker, your
-home folder and drives are searched. Names and sizes only: nothing is opened or
-changed.
+compose files share what a Finder sidebar shows: Desktop, Documents, Downloads and
+external drives (/Volumes), plus the console's default data folder. They're shared
+writable so the data and Builds folders can be anywhere there; the console only
+writes into those two, and only reads folders chosen as source data or a dbSNP
+cache. Not the whole home folder: Docker Desktop passes every file change in a
+shared folder to its VM, and a home folder's constant changes crash the engine.
+Outside Docker, your home folder and drives are searched. Searching reads names and
+sizes only: nothing is opened or changed.
 """
 from __future__ import annotations
 
@@ -206,7 +208,8 @@ def locate(name: str, entries: List[dict], count: Optional[int] = None,
     """Where is the folder someone chose in Finder? Returns {"matches": [paths]}:
     one normally, more if identical copies exist. Then it must be what the field
     is for (data_checks): kind="dbsnp" a real dbSNP cache, kind="source" that
-    species' source data, kind="writable" a folder the console can keep its data in."""
+    species' source data, kind="writable" a folder the console can keep its data in,
+    kind="builds" a folder it can save builds in."""
     name = _nfc((name or "").strip())
     if not name:
         raise FolderError("Choose a folder.")
@@ -240,12 +243,13 @@ def locate(name: str, entries: List[dict], count: Optional[int] = None,
         problems = [data_checks.check_dbsnp_root(m)[1] for m in matches]
     elif kind == "source":
         problems = [data_checks.check_species_folder(species or "", m)["problem"] for m in matches]
-    elif kind == "writable":
+    elif kind in ("writable", "builds"):
+        check = data_checks.check_data_folder if kind == "writable" else data_checks.check_builds_folder
         problems = [None if _writable(m) else
-                    (f"The console can't save in “{name}”. Choose a folder inside the console "
-                     f"data folder{f' ({_data_root()})' if _data_root() else ''}.")
+                    (f"The console can't save in “{name}”. Choose a folder in your Desktop, "
+                     "Documents or Downloads, or on an external drive.")
                     for m in matches]
-        problems = [p or data_checks.check_data_folder(m) for p, m in zip(problems, matches)]
+        problems = [p or check(m) for p, m in zip(problems, matches)]
     else:
         problems = [None] * len(matches)
     good = [m for m, p in zip(matches, problems) if p is None]
