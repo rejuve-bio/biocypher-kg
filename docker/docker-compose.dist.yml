@@ -2,9 +2,9 @@
 #
 # Unlike docker/docker-compose.yml (which builds from the source tree), this file
 # only PULLS the published image and runs it. You need just this one file: no
-# checkout, no console.env. Everything else (each species' databases, data folders,
-# build settings) is set from the Console's Settings page and persists in the named
-# volume below.
+# checkout, no env file. Everything else (each species' databases, the data and
+# Builds folders, build settings) is set in the Console's Settings page and persists
+# in the named volume below.
 #
 #   CONSOLE_IMAGE=ghcr.io/kedists/biocypher-kg-console:latest \
 #     docker compose -f docker-compose.dist.yml up -d
@@ -25,10 +25,10 @@ services:
       - "127.0.0.1:${CONSOLE_PORT:-9000}:9000"
     environment:
       PORT: "9000"
-      # The console's data folder: downloads, builds and caches go here (mounted
-      # below).
-      DATA_ROOT: "${DATA_ROOT:-${HOME}/biocypher-kg-data}"
-      ARCHIVE_BASE: "${DATA_ROOT:-${HOME}/biocypher-kg-data}/archives"
+      # Only for running behind a reverse proxy under another name (see the
+      # deployment guide); empty means this computer only.
+      CONSOLE_ALLOWED_HOSTS: "${CONSOLE_ALLOWED_HOSTS:-}"
+      CONSOLE_ALLOWED_ORIGINS: "${CONSOLE_ALLOWED_ORIGINS:-}"
     volumes:
       # Persists the Settings store (console_settings.json, which holds the saved
       # connections) and the build history across restarts and image updates.
@@ -37,17 +37,17 @@ services:
       # Settings > Species databases. This gives it control of Docker on this
       # machine, so keep the console bound to localhost (as above).
       - /var/run/docker.sock:/var/run/docker.sock
-      # The data folder at the same path (the databases read build output from it).
-      - "${DATA_ROOT:-${HOME}/biocypher-kg-data}:${DATA_ROOT:-${HOME}/biocypher-kg-data}"
-      # What a Finder sidebar shows, read-only, so people choose their own data folders
-      # in Settings like in any "Choose a folder" window (same path on both sides).
+      # What a Finder sidebar shows, at the same path on both sides. The data and
+      # Builds folders are chosen here in Settings (Browse… opens Finder); there's no
+      # default folder. Writable for those two; the console only reads folders chosen
+      # as source data or a dbSNP cache.
       # Don't share the whole home folder instead: Docker Desktop passes every file
       # change in a shared folder to its VM, and a home folder changes so constantly
       # that it crashes the engine. These folders are quiet enough (tested).
-      - "${HOME}/Desktop:${HOME}/Desktop:ro"
-      - "${HOME}/Documents:${HOME}/Documents:ro"
-      - "${HOME}/Downloads:${HOME}/Downloads:ro"
-      - "/Volumes:/Volumes:ro"  # external drives (macOS)
+      - "${HOME}/Desktop:${HOME}/Desktop"
+      - "${HOME}/Documents:${HOME}/Documents"
+      - "${HOME}/Downloads:${HOME}/Downloads"
+      - "/Volumes:/Volumes"  # external drives (macOS)
     # Lets the container reach a Neo4j/MORK published on the host.
     extra_hosts:
       - "host.docker.internal:host-gateway"
