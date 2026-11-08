@@ -163,3 +163,14 @@ def test_loading_waits_for_a_database_to_see_the_builds_folder(monkeypatch):
     assert instances.cannot_read("hsa", "neo4j", "/data/kg/metta/hsa-sample-1") is None
     problem = instances.cannot_read("hsa", "neo4j", "/Volumes/Big/builds/metta/hsa-sample-1")
     assert "updating to read the Builds folder" in problem and refreshed == [True]
+
+
+def test_build_numbers_stay_in_their_range(folders, monkeypatch):
+    for attr in ("MAX_CONCURRENT_BUILDS", "MAX_OUTPUT_BUILDS", "MAX_BUILD_HISTORY"):
+        monkeypatch.setattr(settings, attr, getattr(settings, attr))  # restored after
+    assert local.put(URL, json={"build": {"max_concurrent_builds": 22}}).status_code == 422
+    assert local.put(URL, json={"build": {"max_concurrent_builds": 4}}).status_code == 200
+    # A value saved before the limits existed is brought into range.
+    runtime_config.save({"global": {"max_output_builds": 1000}})
+    assert settings.MAX_OUTPUT_BUILDS == 50
+    assert local.get(URL).json()["build"]["limits"]["max_concurrent_builds"] == [1, 4]

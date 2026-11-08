@@ -165,6 +165,12 @@ export default function Settings() {
     return Number.isFinite(n) ? n : null;
   };
   const strOrNull = (v: string): string | null => (v.trim() === "" ? null : v.trim());
+  const inRange = (k: LimitKey, v: string): number | null => {
+    const n = numOrNull(v);
+    if (n === null) return null;
+    const [lo, hi] = limitOf(current, k);
+    return Math.min(hi, Math.max(lo, Math.round(n)));
+  };
 
   async function onSave() {
     setSaving(true);
@@ -176,9 +182,10 @@ export default function Settings() {
           data_root: strOrNull(dataRoot),
           output_root: strOrNull(buildsRoot),
           neo4j_memory: memory || null,
-          max_concurrent_builds: numOrNull(maxConc),
-          max_output_builds: numOrNull(maxOut),
-          max_build_history: numOrNull(maxHist),
+          // Kept in range even if a typed number is still in its field.
+          max_concurrent_builds: inRange("max_concurrent_builds", maxConc),
+          max_output_builds: inRange("max_output_builds", maxOut),
+          max_build_history: inRange("max_build_history", maxHist),
         },
         // Blank folder fields clear the override, so the default applies again.
         data: {
@@ -228,6 +235,7 @@ export default function Settings() {
   if (loading) return <div className="muted">Loading settings…</div>;
   if (loadError) return <div className="card danger">settings failed to load: {loadError}</div>;
 
+  const lim = (k: LimitKey) => limitOf(current, k);
   const instBy = new Map((inst?.species ?? []).map((row) => [row.species, row]));
   const connBy = new Map((conns ?? []).map((row) => [row.species, row]));
   const docker = !!inst?.docker;
@@ -383,15 +391,22 @@ export default function Settings() {
           </label>
           <label className="field">
             Builds at the same time
-            <NumberStepper value={maxConc} onChange={setMaxConc} min={1} />
+            <NumberStepper value={maxConc} onChange={setMaxConc} min={lim("max_concurrent_builds")[0]} max={lim("max_concurrent_builds")[1]} />
+            <span className="field-hint">
+              {lim("max_concurrent_builds").join(" to ")} · each build also runs several workers
+            </span>
           </label>
           <label className="field">
             Finished builds kept
-            <NumberStepper value={maxOut} onChange={setMaxOut} min={1} />
+            <NumberStepper value={maxOut} onChange={setMaxOut} min={lim("max_output_builds")[0]} max={lim("max_output_builds")[1]} />
+            <span className="field-hint">
+              {lim("max_output_builds").join(" to ")} · per writer and species · older ones are deleted
+            </span>
           </label>
           <label className="field">
             Builds listed in History
-            <NumberStepper value={maxHist} onChange={setMaxHist} min={1} />
+            <NumberStepper value={maxHist} onChange={setMaxHist} min={lim("max_build_history")[0]} max={lim("max_build_history")[1]} />
+            <span className="field-hint">{lim("max_build_history").join(" to ")}</span>
           </label>
         </div>
       </div>
@@ -431,34 +446,64 @@ export default function Settings() {
   );
 }
 
+// The allowed range of each number in Build settings (the server sends its own).
+type LimitKey = "max_concurrent_builds" | "max_output_builds" | "max_build_history";
+const LIMITS: Record<LimitKey, [number, number]> = {
+  max_concurrent_builds: [1, 4],
+  max_output_builds: [1, 50],
+  max_build_history: [1, 500],
+};
+function limitOf(current: ConsoleSettings | null, k: LimitKey): [number, number] {
+  return current?.build.limits?.[k] ?? LIMITS[k];
+}
+
 /** A themed numeric input with −/+ buttons, replacing the browser's native spinner. */
 function NumberStepper({
   value,
   onChange,
   min = 1,
+  max,
 }: {
   value: string;
   onChange: (v: string) => void;
   min?: number;
+  max?: number;
 }) {
+  const hi = max ?? Number.MAX_SAFE_INTEGER;
+  const clamp = (n: number) => Math.min(hi, Math.max(min, n));
   const num = value.trim() === "" ? null : Number(value);
   const step = (delta: number) => {
-    // Empty lands on min for either button; otherwise clamp at min.
+    // Empty lands on min for either button; otherwise stay within min..max.
     const cur = num !== null && Number.isFinite(num) ? num : min - delta;
-    onChange(String(Math.max(min, cur + delta)));
+    onChange(String(clamp(cur + delta)));
   };
   return (
     <div className="stepper">
-      <button type="button" className="stepper-btn" onClick={() => step(-1)} aria-label="Decrease">
+      <button
+        type="button"
+        className="stepper-btn"
+        onClick={() => step(-1)}
+        disabled={num !== null && num <= min}
+        aria-label="Decrease"
+      >
         −
       </button>
       <input
         type="number"
         min={min}
+        max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        // A typed number outside the range is brought back into it.
+        onBlur={() => num !== null && Number.isFinite(num) && onChange(String(clamp(Math.round(num))))}
       />
-      <button type="button" className="stepper-btn" onClick={() => step(1)} aria-label="Increase">
+      <button
+        type="button"
+        className="stepper-btn"
+        onClick={() => step(1)}
+        disabled={num !== null && num >= hi}
+        aria-label="Increase"
+      >
         +
       </button>
     </div>

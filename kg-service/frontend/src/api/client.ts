@@ -530,6 +530,7 @@ export interface ConsoleSettings {
     max_concurrent_builds: number | null;
     max_output_builds: number | null;
     max_build_history: number | null;
+    limits?: Record<"max_concurrent_builds" | "max_output_builds" | "max_build_history", [number, number]>;
   };
   species: Record<string, SpeciesEndpoint>;
   available_species: string[];

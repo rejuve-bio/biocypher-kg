@@ -49,6 +49,14 @@ _GLOBAL_KEYS: Dict[str, str] = {
 }
 _INT_KEYS = {"max_concurrent_builds", "max_output_builds", "max_build_history"}
 
+# The range each number in Build settings may take. Builds at the same time stays
+# small: each build already runs several adapter workers, and full builds are heavy.
+LIMITS: Dict[str, tuple] = {
+    "max_concurrent_builds": (1, 4),
+    "max_output_builds": (1, 50),
+    "max_build_history": (1, 500),
+}
+
 # What each setting is when nothing is saved (unset, for folders and memory): taken
 # once, before anything is applied, so clearing a field takes effect right away.
 _DEFAULTS: Dict[str, Any] = {attr: getattr(settings, attr) for attr in _GLOBAL_KEYS.values()}
@@ -99,7 +107,8 @@ def _bump() -> None:
 
 def _coerce(key: str, value: Any) -> Any:
     if key in _INT_KEYS:
-        return int(value)  # may raise; caller guards
+        lo, hi = LIMITS[key]
+        return min(hi, max(lo, int(value)))  # may raise; caller guards. Older values are kept in range
     return value
 
 
@@ -241,9 +250,10 @@ def effective(masked: bool = True) -> Dict[str, Any]:
             "neo4j_memory": g.get("neo4j_memory") or None,
             # What a build still needs set here (empty when ready).
             "missing": missing("data", "builds"),
-            "max_concurrent_builds": val("max_concurrent_builds", "MAX_CONCURRENT_BUILDS"),
-            "max_output_builds": val("max_output_builds", "MAX_OUTPUT_BUILDS"),
-            "max_build_history": val("max_build_history", "MAX_BUILD_HISTORY"),
+            "max_concurrent_builds": settings.MAX_CONCURRENT_BUILDS,
+            "max_output_builds": settings.MAX_OUTPUT_BUILDS,
+            "max_build_history": settings.MAX_BUILD_HISTORY,
+            "limits": {k: list(v) for k, v in LIMITS.items()},
         },
         "species": load().get("species") or {},
         "data": data_locations(),

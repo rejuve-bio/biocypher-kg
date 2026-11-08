@@ -40,9 +40,10 @@ class BuildSettings(BaseModel):
     data_root: Optional[str] = None
     output_root: Optional[str] = None  # the Builds folder; null = the data folder
     neo4j_memory: Optional[str] = Field(default=None, pattern=r"^(1|2|4|8|16)G$")
-    max_concurrent_builds: Optional[int] = Field(default=None, ge=1, le=64)
-    max_output_builds: Optional[int] = Field(default=None, ge=1, le=1000)
-    max_build_history: Optional[int] = Field(default=None, ge=1, le=10000)
+    # Ranges: runtime_config.LIMITS (also shown on the Settings page).
+    max_concurrent_builds: Optional[int] = Field(default=None, ge=1, le=4)
+    max_output_builds: Optional[int] = Field(default=None, ge=1, le=50)
+    max_build_history: Optional[int] = Field(default=None, ge=1, le=500)
 
 
 class SpeciesEndpoint(BaseModel):
