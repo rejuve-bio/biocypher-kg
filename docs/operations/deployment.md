@@ -443,6 +443,17 @@ The full sizes come from the console's own builds:
 
 Each adapter keeps its first rows, so a capped graph is a sample of each source, not a random subset of it.
 
+### Config
+
+Each console instance has its own copy of the config: what the Config page edits and its builds read. The image carries the shipped config (`/app/.config-shipped`, read-only); the instance's copy lives in the `console_config` volume at `/app/config`. So:
+
+- edits stay with that instance, across restarts and image updates, and never change a repo or the image;
+- at start-up, every file the instance hasn't edited is brought up to the shipped version (new files added, ones no longer shipped removed); edited files keep the instance's version (`config/.console-edits.json` records which);
+- the Config page says whether the open file is the shipped version or edited on this console, flags it when the shipped version changed since the edit, and offers *reset to shipped*;
+- each build still records the exact config it used (`build_config/`).
+
+Run from a checkout without Docker, there is no shipped copy: `config/` is the repo's own and edits go there.
+
 ### 3. Folders the console can see
 
 The console runs in Docker, so it only sees shared folders, at the same path inside the container. `up.sh` picks them for the computer it runs on and writes them to `docker/.console-shares.yml`, sharing only folders that exist (so Docker never creates empty ones):
@@ -464,6 +475,8 @@ On a Mac, don't share the whole home folder. Docker Desktop for Mac passes every
 | Loader | `kg-service/neo4j_loader.py`, with the species' own login. The password goes in through the environment, never the command line or the job log | `kg-service/mork_loader.py`. A MORK load replaces the namespace with that build (the UI warns before loading) |
 | Archives and version metadata | `<data folder>/archives/<species>/neo4j/` | `<data folder>/archives/<species>/mork/` |
 | Reads the build output from | the same absolute path. Console-run instances mount the data and Builds folders there; your own needs `NEO4J_IMPORT_ROOT` (or equivalent) | the same absolute path. Console-run instances mount the data and Builds folders there; your own needs `MORK_IMPORT_ROOT` |
+
+**All-species builds.** A build with species *all species* writes one folder per species (`<build>/<species>/`). Loading it starts one load per species, each folder into that species' own Neo4j or MORK; species without one are skipped and listed, so nothing goes into another species' database. Each species' load has its own status, log and Retry, and the build page and History show them per species.
 
 When the data folder, the Builds folder or Neo4j memory changes, the console re-creates the instances it runs to match, keeping their data volumes and logins. It does the same at start-up for any made with older settings. A load into an instance that can't see the build yet waits for that and says so.
 
