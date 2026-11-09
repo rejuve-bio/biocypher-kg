@@ -45,6 +45,8 @@ export default function BuildDetail() {
   const [snapshot, setSnapshot] = useState<ConfigManifest | null>(null);
   const [pending, setPending] = useState<Confirmable | null>(null);
   const [fileFilter, setFileFilter] = useState("");
+  const [notice, setNotice] = useState<string | null>(null);
+  const [refresh, setRefresh] = useState(0); // restarts polling (e.g. after loads start)
   const logRef = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
 
@@ -83,7 +85,7 @@ export default function BuildDetail() {
       alive = false;
       clearTimeout(timer);
     };
-  }, [id]);
+  }, [id, refresh]);
 
   // Auto-scroll the log to the bottom unless the user scrolled up.
   useEffect(() => {
@@ -117,9 +119,19 @@ export default function BuildDetail() {
   async function onLoad(target: "neo4j" | "mork") {
     try {
       const res = await api.loadBuild(id, target);
-      navigate(`/builds/${res.id}`);
+      if (res.jobs) {
+        // All species: one load per species, shown on this page as they run.
+        const skipped = (res.skipped ?? []).map((s) => `${s.species} (${s.reason})`);
+        setNotice(
+          `loading ${res.jobs.map((j) => j.species).join(", ")}` +
+            (skipped.length ? ` · skipped: ${skipped.join(", ")}` : ""),
+        );
+        setRefresh((n) => n + 1);
+      } else if (res.id) {
+        navigate(`/builds/${res.id}`);
+      }
     } catch (e) {
-      setError(String(e));
+      setNotice(e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -134,21 +146,28 @@ export default function BuildDetail() {
 
   function renderLoadBtn(target: "neo4j" | "mork") {
     const T = target === "neo4j" ? "Neo4j" : "MORK";
-    const st = job?.loads?.[target]?.status;
-    const inProgress = st === "running" || st === "queued";
-    const loaded = st === "succeeded";
+    // Every load of this target (one per species for an all-species build).
+    const mine = Object.entries(job?.loads ?? {})
+      .filter(([key, l]) => (l.target ?? key) === target)
+      .map(([, l]) => l);
+    const inProgress = mine.some((l) => l.status === "running" || l.status === "queued");
+    const loaded = mine.length > 0 && mine.every((l) => l.status === "succeeded");
+    const each = allSpecies ? " each species" : "";
     return (
       <button
         className="secondary"
         onClick={() =>
           setPending({
-            title: loaded ? `Reload ${T}?` : `Load into ${T}?`,
+            title: loaded ? `Reload${each} ${T}?` : `Load${each} into ${T}?`,
             message:
-              target === "mork"
+              (allSpecies
+                ? `Each species goes into its own ${T}. Species without one are skipped. `
+                : "") +
+              (target === "mork"
                 ? MORK_REPLACES
                 : loaded
                   ? `Re-syncs your live ${T}. Skipped if nothing changed.`
-                  : `Writes to your live ${T}. Only changed datasets are updated.`,
+                  : `Writes to your live ${T}. Only changed datasets are updated.`),
             confirmLabel: loaded ? `Reload ${T}` : `Load ${T}`,
             run: () => onLoad(target),
           })
@@ -162,7 +181,7 @@ export default function BuildDetail() {
             : undefined
         }
       >
-        {inProgress ? `Loading ${T}…` : loaded ? `Reload ${T}` : `Load to ${T}`}
+        {inProgress ? `Loading ${T}…` : loaded ? `Reload${each} ${T}` : `Load${each} to ${T}`}
       </button>
     );
   }
@@ -172,6 +191,7 @@ export default function BuildDetail() {
 
   const active = !TERMINAL.has(job.status);
   const isBuild = (job.kind ?? "build") === "build";
+  const allSpecies = String((job.params as { species?: string })?.species ?? "").toLowerCase() === "all";
   // What each adapter wrote (graph_info "adapter_counts"), marking the ones a size
   // limit stopped early. The rest are full sizes, which Percent builds use.
   const adapterCounts = Object.entries(graphInfo?.adapter_counts ?? {});
@@ -253,14 +273,15 @@ export default function BuildDetail() {
         {isBuild && job.loads && Object.keys(job.loads).length > 0 && (
           <div className="row" style={{ marginTop: 14, gap: 8, alignItems: "center" }}>
             <span className="muted" style={{ fontSize: 12 }}>Loaded into</span>
-            {Object.entries(job.loads).map(([target, l]) => (
+            {Object.entries(job.loads).map(([key, l]) => (
               <span
-                key={target}
+                key={key}
                 className={loadPillClass(l.status)}
                 title={`${l.status} · open log`}
                 onClick={() => navigate(`/builds/${l.job_id}`)}
               >
-                {target === "neo4j" ? "Neo4j" : "MORK"} {loadIcon(l.status)}
+                {(l.target ?? key) === "neo4j" ? "Neo4j" : "MORK"}
+                {allSpecies && l.species ? ` ${l.species}` : ""} {loadIcon(l.status)}
               </span>
             ))}
           </div>
@@ -310,6 +331,7 @@ export default function BuildDetail() {
           </div>
         )}
         {job.error && <div className="alert err" style={{ marginTop: 10 }}>{job.error}</div>}
+        {notice && <div className="alert ok mono" style={{ marginTop: 10 }}>{notice}</div>}
         <details style={{ marginTop: 10 }}>
           <summary className="muted">command</summary>
           <div className="mono" style={{ marginTop: 6 }}>{job.cmd.join(" ")}</div>

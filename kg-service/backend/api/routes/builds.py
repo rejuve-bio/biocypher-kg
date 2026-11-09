@@ -85,6 +85,19 @@ def load_build(job_id: str, target: str):
     if target == "mork" and writer != "metta":
         raise HTTPException(status_code=400,
                             detail="MORK load needs a build made with writer_type 'metta'.")
+    if job_runner.is_all_species(job):
+        # One load per species, each into that species' own database.
+        try:
+            res = job_runner.launch_load_all(job_id, target)
+        except ValueError as exc:  # e.g. the data folder isn't set
+            raise HTTPException(status_code=400, detail=str(exc))
+        if res is None:
+            raise HTTPException(status_code=404, detail="Source build not found.")
+        if not res["jobs"]:
+            why = "; ".join(f"{s['species']}: {s['reason']}" for s in res["skipped"]) or "no species folders"
+            raise HTTPException(status_code=400, detail=f"nothing to load · {why}")
+        return {"jobs": [{"id": j.id, "species": (j.params or {}).get("species")} for j in res["jobs"]],
+                "skipped": res["skipped"]}
     try:
         load_job = job_runner.launch_load(job_id, target)
     except ValueError as exc:

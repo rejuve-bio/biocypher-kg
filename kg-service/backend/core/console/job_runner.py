@@ -597,8 +597,54 @@ def retry_load(job_id: str) -> Optional[BuildJob]:
     })
 
 
+def is_all_species(job: Optional[BuildJob]) -> bool:
+    return bool(job) and str((job.params or {}).get("species") or "").lower() == "all"
+
+
+def species_outputs(output_dir: str) -> list:
+    """An all-species build's per-species folders, [(species, path)]: the CLI writes
+    each species it built into <output>/<species>/ (species without the dataset
+    are skipped, so they have none)."""
+    from backend.core.console import explore_targets as et
+
+    out = []
+    for sp in et.species_list():
+        d = Path(output_dir) / sp
+        if d.is_dir() and any(d.iterdir()):
+            out.append((sp, str(d)))
+    return out
+
+
+def launch_load_all(build_job_id: str, target: str) -> Optional[dict]:
+    """Load an all-species build: each species' folder into that species' own Neo4j
+    or MORK (never one shared database). Species without one, or whose load can't
+    start, are listed in "skipped" with why. Returns {"jobs", "skipped"}."""
+    from backend.core.console import explore_targets as et
+
+    src = registry.get(build_job_id)
+    if src is None:
+        return None
+    jobs, skipped = [], []
+    for sp, folder in species_outputs(src.output_dir):
+        has_db = et.neo4j_uri_for(sp) if target == "neo4j" else et.mork_url_for(sp)
+        if not has_db:
+            skipped.append({"species": sp, "reason": f"no {'Neo4j' if target == 'neo4j' else 'MORK'} set up"})
+            continue
+        try:
+            jobs.append(_start_load(target, folder, {
+                "source_build": build_job_id,
+                "species": sp,
+                "dataset": (src.params or {}).get("dataset"),
+            }))
+        except ValueError as exc:
+            skipped.append({"species": sp, "reason": str(exc)})
+    return {"jobs": jobs, "skipped": skipped}
+
+
 def loads_for(build_id: str) -> dict:
-    """Latest load job per target (neo4j/mork) that loaded this build's output."""
+    """Latest load job per target (neo4j/mork) that loaded this build's output. For an
+    all-species build, one per target and species, keyed "<target>:<species>"."""
+    all_species = is_all_species(registry.get(build_id))
     out: dict = {}
     for j in registry.list():
         if not (j.kind or "").startswith("load-"):
@@ -607,12 +653,15 @@ def loads_for(build_id: str) -> dict:
         if p.get("source_build") != build_id:
             continue
         target = p.get("target") or (j.kind or "").removeprefix("load-")
-        cur = out.get(target)
+        key = f"{target}:{p.get('species')}" if all_species else target
+        cur = out.get(key)
         if cur is None or (j.created_at or "") > (cur["created_at"] or ""):
-            out[target] = {
+            out[key] = {
                 "job_id": j.id,
                 "status": j.status.value,
                 "created_at": j.created_at,
+                "target": target,
+                "species": p.get("species"),
             }
     return out
 

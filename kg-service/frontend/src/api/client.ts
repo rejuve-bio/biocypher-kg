@@ -160,8 +160,16 @@ export const api = {
       fetch(`${BASE}/builds/${id}/resume`, { method: "POST" }),
     ),
 
+  // One load job, or for an all-species build one per species ("jobs") plus the
+  // species skipped because they have no database ("skipped").
   loadBuild: (id: string, target: "neo4j" | "mork") =>
-    json<{ id: string; status: string; kind: string }>(
+    json<{
+      id?: string;
+      status?: string;
+      kind?: string;
+      jobs?: { id: string; species: string }[];
+      skipped?: { species: string; reason: string }[];
+    }>(
       fetch(`${BASE}/builds/${id}/load/${target}`, { method: "POST" }),
     ),
 

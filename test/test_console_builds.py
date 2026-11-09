@@ -535,3 +535,37 @@ def test_settings_dbsnp_cache_is_read_only(monkeypatch, tmp_path):
     assert status["variants"]["common"]["root"] == str(mine.resolve())
     assert status["variants"]["full"]["root"] == str(tmp_path / "data" / "dbsnp")
     assert job_runner.dbsnp_root() == tmp_path / "data" / "dbsnp"
+
+
+def test_an_all_species_build_loads_each_species_into_its_own_database(monkeypatch, tmp_path):
+    """Each species' folder goes into that species' own Neo4j; one without is skipped."""
+    from backend.core.console import explore_targets as et
+
+    out = tmp_path / "all-sample-20260101-000000"
+    for sp in ("hsa", "dmel"):
+        (out / sp).mkdir(parents=True)
+        (out / sp / "graph_info.json").write_text("{}")
+    build = BuildJob(id="allbuild1", status=JobStatus.SUCCEEDED, kind="build",
+                     params={"species": "all", "dataset": "sample", "writer_type": "neo4j"},
+                     cmd=[], cwd=".", output_dir=str(out), log_path="")
+    registry.add(build)
+    monkeypatch.setattr(et, "species_list", lambda: ["hsa", "dmel"])
+    monkeypatch.setattr(et, "neo4j_uri_for", lambda sp: "bolt://neo4j-hsa:7687" if sp == "hsa" else None)
+    started = []
+
+    def fake_start(target, folder, params):
+        job = BuildJob(id=f"load-{params['species']}", status=JobStatus.SUCCEEDED, kind=f"load-{target}",
+                       params={"target": target, **params}, cmd=[], cwd=".", output_dir=folder,
+                       log_path="", created_at="2026-01-01T00:00:00")
+        registry.add(job)
+        started.append((params["species"], folder))
+        return job
+
+    monkeypatch.setattr(job_runner, "_start_load", fake_start)
+    res = job_runner.launch_load_all("allbuild1", "neo4j")
+    assert started == [("hsa", str(out / "hsa"))]
+    assert res["skipped"] == [{"species": "dmel", "reason": "no Neo4j set up"}]
+    loads = job_runner.loads_for("allbuild1")
+    assert list(loads) == ["neo4j:hsa"] and loads["neo4j:hsa"]["species"] == "hsa"
+    for j in ("allbuild1", "load-hsa"):
+        registry.remove(j)

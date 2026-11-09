@@ -114,6 +114,8 @@ export interface LoadSummary {
   job_id: string;
   status: JobStatus;
   created_at: string | null;
+  target?: string; // neo4j | mork
+  species?: string | null; // for an all-species build: which species' load
 }
 
 export interface CheckpointInfo {

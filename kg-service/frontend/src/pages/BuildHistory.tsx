@@ -129,13 +129,14 @@ export default function BuildHistory() {
                           <span
                             key={target}
                             className={loadPillClass(l.status)}
-                            title={`${TARGET_LABEL[target] ?? target} · ${l.status} · open log`}
+                            title={`${TARGET_LABEL[l.target ?? target] ?? target}${l.species && target.includes(":") ? ` ${l.species}` : ""} · ${l.status} · open log`}
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/builds/${l.job_id}`);
                             }}
                           >
-                            {TARGET_LABEL[target] ?? target} {loadIcon(l.status)}
+                            {TARGET_LABEL[l.target ?? target] ?? target}
+                            {l.species && target.includes(":") ? ` ${l.species}` : ""} {loadIcon(l.status)}
                           </span>
                         ))}
                       </span>
