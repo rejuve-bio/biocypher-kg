@@ -183,6 +183,12 @@ export const api = {
       fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}`),
     ),
 
+  /** Put the shipped version of a config file back (drops this console's edit). */
+  resetConfig: (species: string, dataset: string, kind: "adapters" | "schema") =>
+    json<ConfigFile>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/config/${kind}/reset`, { method: "POST" }),
+    ),
+
   saveConfig: (
     species: string,
     dataset: string,
@@ -359,6 +365,11 @@ export interface ConfigFile {
   path: string;
   content: string;
   warnings?: string[];
+  // This console's own copy of the config (see backend config_store):
+  managed?: boolean; // the instance has its own copy (false: a checkout's config/)
+  edited?: boolean; // this instance changed this file
+  shipped_changed?: boolean; // the shipped file changed since that edit
+  edited_at?: string | null;
 }
 
 export interface DataSource {

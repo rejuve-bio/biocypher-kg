@@ -46,6 +46,9 @@ RUN uv sync --frozen --no-install-project
 
 # Copy the repository (needed: builds run create_knowledge_graph.py from here).
 COPY . .
+# The shipped config, read-only. /app/config is each instance's own copy (a volume):
+# edits made in the console stay there, and files it hasn't edited follow this one.
+RUN rm -rf /app/config/__pycache__ && cp -a /app/config /app/.config-shipped
 
 # Drop in the built frontend so the backend can serve it at /console.
 COPY --from=frontend /fe/dist ./kg-service/frontend/dist

@@ -59,6 +59,16 @@ async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle (replaces deprecated @app.on_event handlers)."""
     logger.info(f"Starting {settings.APP_NAME}")
 
+    # This instance's config: bring files it hasn't edited up to the shipped ones
+    # (an image update), keeping its edits. Before anything reads the config.
+    try:
+        from backend.core.console import config_store
+        changed = config_store.sync()
+        if any(changed[k] for k in ("updated", "added", "removed")):
+            logger.info(f"Config synced to the shipped one: {changed}")
+    except Exception as e:  # noqa: BLE001 - never block startup on this
+        logger.error(f"Syncing the config failed: {e}")
+
     # Project any UI-saved settings onto the config object before anything connects,
     # so DB clients and build settings use the stored values (store over env).
     try:

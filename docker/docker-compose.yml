@@ -37,8 +37,9 @@ services:
       # Settings > Species databases. This gives it control of Docker on this
       # machine, so keep the console bound to localhost (as above).
       - /var/run/docker.sock:/var/run/docker.sock
-      # Repo config/ bind-mounted so Console config edits persist and builds use them.
-      - ../config:/app/config
+      # This instance's own config: what the Config page edits and builds read. The
+      # repo's config/ is never changed; files not edited here follow the image.
+      - console_config:/app/config
     # Lets the console reach a database you run on this computer (Settings > Use existing).
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -59,3 +60,4 @@ services:
 
 volumes:
   console_builds:
+  console_config:

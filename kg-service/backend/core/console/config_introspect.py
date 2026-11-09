@@ -540,10 +540,25 @@ def _config_path(species: str, dataset: str, kind: str) -> Path:
 
 
 def read_config_text(species: str, dataset: str, kind: str) -> dict:
-    """Return the raw text of a species/dataset config file for editing."""
+    """Return the raw text of a species/dataset config file for editing, and whether
+    this instance edited it (config_store.status)."""
+    from backend.core.console import config_store
+
     path = _config_path(species, dataset, kind)
     return {"species": species, "dataset": dataset, "kind": kind,
-            "path": str(path), "content": path.read_text()}
+            "path": str(path), "content": path.read_text(), **config_store.status(path)}
+
+
+def reset_config(species: str, dataset: str, kind: str) -> dict:
+    """Put the shipped version of a config file back (this instance's edit is dropped)."""
+    from backend.core.console import config_store
+
+    path = _config_path(species, dataset, kind)
+    try:
+        config_store.reset(path)
+    except ValueError as exc:
+        raise ConfigError(str(exc))
+    return read_config_text(species, dataset, kind)
 
 
 _BIOLINK_RE = None  # compiled lazily in _validate_schema_doc
@@ -615,7 +630,8 @@ def save_config_text(species: str, dataset: str, kind: str, content: str) -> dic
 
     Validation happens on a temp file in the same directory so relative ``!include``s
     resolve. Schema configs also get biolink/structure validation: errors block the
-    save, warnings are returned. History/revert is git's job (config/ is tracked).
+    save, warnings are returned. The edit stays with this console instance
+    (config_store), never the shipped config.
     """
     load = _load_yaml_with_includes()
     path = _config_path(species, dataset, kind)
@@ -638,8 +654,12 @@ def save_config_text(species: str, dataset: str, kind: str, content: str) -> dic
             raise ConfigError("Schema validation failed:\n- " + "\n- ".join(errors))
 
     tmp.replace(path)
+    from backend.core.console import config_store
+
+    config_store.mark_edited(path)
     return {"species": species, "dataset": dataset, "kind": kind,
-            "path": str(path), "content": content, "warnings": warnings}
+            "path": str(path), "content": content, "warnings": warnings,
+            **config_store.status(path)}
 
 
 # ===== Guided (structured) config editing =====

@@ -165,7 +165,17 @@ function NavContent({ items, kind, filtering, selected, onOpen }: { items: Entry
   );
 }
 
-export default function GuidedConfig({ species, dataset, kind }: { species: string; dataset: string; kind: Kind }) {
+export default function GuidedConfig({
+  species,
+  dataset,
+  kind,
+  onSaved,
+}: {
+  species: string;
+  dataset: string;
+  kind: Kind;
+  onSaved?: () => void; // the file changed (so its edited state can be shown)
+}) {
   const [entries, setEntries] = useState<EntrySummary[] | null>(null);
   const [inherited, setInherited] = useState<EntrySummary[]>([]);
   const [filter, setFilter] = useState("");
@@ -241,6 +251,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     try {
       const res = await api.saveConfigEntry(species, dataset, kind, selected, data);
       setDirty(false);
+      onSaved?.();
       const warns = res.warnings ?? [];
       if (warns.length) {
         setMsg({ kind: "warn", text: `saved ${selected} · ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
@@ -279,6 +290,7 @@ export default function GuidedConfig({ species, dataset, kind }: { species: stri
     if (!window.confirm(`Delete "${selected}" from the ${kind} config?`)) return;
     try {
       await api.deleteConfigEntry(species, dataset, kind, selected);
+      onSaved?.();
       setEntries((prev) => (prev ?? []).filter((e) => e.name !== selected));
       setSelected(null);
       setData(null);

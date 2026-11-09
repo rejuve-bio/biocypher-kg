@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { yaml } from "@codemirror/lang-yaml";
-import { api } from "../api/client";
+import { api, type ConfigFile } from "../api/client";
 import type { SpeciesEntry } from "../types";
 import ConfirmDialog, { type Confirmable } from "../components/ConfirmDialog";
 import GuidedConfig from "../components/GuidedConfig";
@@ -86,12 +86,45 @@ export default function ConfigEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sel, dataset, kind, mode]);
 
+  // This console's own copy of the open file: shipped, or edited here.
+  const [fileState, setFileState] = useState<ConfigFile | null>(null);
+  const [stateTick, setStateTick] = useState(0);
+  const [resets, setResets] = useState(0); // reloads the guided editor after a reset
+  useEffect(() => {
+    if (!sel || !dataset) return;
+    if (sel !== "base" && !datasets.some((d) => d.name === dataset)) return;
+    let alive = true;
+    api
+      .getConfig(sel, dataset, kind)
+      .then((r) => alive && setFileState(r))
+      .catch(() => alive && setFileState(null));
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sel, dataset, kind, stateTick]);
+
+  async function resetToShipped() {
+    setMsg(null);
+    try {
+      const r = await api.resetConfig(sel, dataset, kind);
+      setContent(r.content);
+      setDirty(false);
+      setFileState(r);
+      setResets((n) => n + 1);
+      setMsg({ kind: "ok", text: "back to the shipped version" });
+    } catch (e) {
+      setMsg({ kind: "err", text: msgOf(e) });
+    }
+  }
+
   async function save() {
     setMsg(null);
     try {
       const r = await api.saveConfig(sel, dataset, kind, content);
       setContent(r.content);
       setDirty(false);
+      setFileState(r);
       const warns = r.warnings ?? [];
       if (warns.length) {
         setMsg({ kind: "warn", text: `saved · ${warns.length} warning${warns.length > 1 ? "s" : ""}:\n- ${warns.join("\n- ")}` });
@@ -140,8 +173,46 @@ export default function ConfigEditor() {
         </span>
       </div>
 
+      {fileState?.managed && (
+        <div className="field-hint config-state" style={{ marginTop: 10 }}>
+          {fileState.edited ? (
+            <>
+              <span className="warn-text">edited on this console</span>
+              {fileState.edited_at ? ` · ${fileState.edited_at.slice(0, 10)}` : ""}
+              {fileState.shipped_changed && (
+                <span className="warn-text"> · the shipped version changed since</span>
+              )}
+              {" · "}
+              <button
+                type="button"
+                className="linkbtn"
+                onClick={() =>
+                  setPending({
+                    title: "Reset to the shipped version?",
+                    message: "This console's edits to this file are dropped.",
+                    confirmLabel: "Reset",
+                    tone: "danger",
+                    run: resetToShipped,
+                  })
+                }
+              >
+                reset to shipped
+              </button>
+            </>
+          ) : (
+            "shipped version · edits stay on this console"
+          )}
+        </div>
+      )}
+
       {mode === "guided" && sel && dataset && (
-        <GuidedConfig species={sel} dataset={dataset} kind={kind} />
+        <GuidedConfig
+          key={`${sel}/${dataset}/${kind}/${resets}`}
+          species={sel}
+          dataset={dataset}
+          kind={kind}
+          onSaved={() => setStateTick((n) => n + 1)}
+        />
       )}
 
       {mode === "yaml" && (
@@ -182,7 +253,9 @@ export default function ConfigEditor() {
               onClick={() =>
                 setPending({
                   title: "Save config?",
-                  message: `Overwrites ${path}. Used by new ${sel}/${dataset} builds.`,
+                  message: fileState?.managed
+                    ? `Saved on this console only. Used by its new ${sel}/${dataset} builds.`
+                    : `Overwrites ${path}. Used by new ${sel}/${dataset} builds.`,
                   confirmLabel: "Save",
                   run: save,
                 })

@@ -35,6 +35,8 @@ services:
       # Persists the Settings store (console_settings.json, which holds the saved
       # connections) and the build history across restarts and image updates.
       - console_builds:/app/kg-service/.builds
+      # This instance's own config (Config page edits stay here, never in the image).
+      - console_config:/app/config
       # Lets the console set up, start and stop each species' Neo4j and MORK from
       # Settings > Species databases. This gives it control of Docker on this
       # machine, so keep the console bound to localhost (as above).
@@ -59,3 +61,4 @@ services:
 
 volumes:
   console_builds:
+  console_config:
