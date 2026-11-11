@@ -86,20 +86,91 @@ def test_read_and_save_config_roundtrip(tmp_path, monkeypatch):
     assert "nodes: false" in cfg.read_text()
 
 
-def test_group_adapters_by_source_hsa_full():
-    """Sources carry what the wizard needs: which need the dbSNP cache, which can't be
-    downloaded, and overrides/versioned dirs attribute adapters to the right source."""
-    groups = {g["source"]: g for g in ci.group_adapters_by_source("hsa", "full")["groups"]}
-    assert groups["abc"]["needs_dbsnp"] is True
-    assert groups["reactome"]["needs_dbsnp"] is False
-    # adapter_source_map.yaml pins the Roadmap adapters (forgedb/roadmap/...) here.
-    roadmap = groups["roadmap_dhs"]
+def _groups(species, dataset):
+    return {g["source"]: g for g in ci.group_adapters_by_source(species, dataset)["groups"]}
+
+
+def _keys(group):
+    return sorted(d["key"] for d in group["downloads"])
+
+
+def test_sources_are_the_ones_the_schema_folder_lists():
+    """The wizard's sources are data_source_schemas/<species>/'s: each adapter goes
+    under the source its code declares, with the downloads its files come from."""
+    from pathlib import Path
+    groups = _groups("hsa", "full")
+    files = {p.stem for p in (Path(__file__).resolve().parents[1] / "data_source_schemas" / "hsa").glob("*.yaml")}
+    with_adapters = {k for k, g in groups.items() if g["adapters"]}
+    assert with_adapters <= files and {"GTEx", "CATLAS", "ENCODE", "OBO_Foundry"} <= with_adapters
+
+    assert _keys(groups["ENCODE"]) == ["cCRE", "tfbs"]          # one source, two downloads
+    assert groups["OBO_Foundry"]["downloads"] == []              # the build fetches ontologies
+    assert groups["OBO_Foundry"]["adapter_count"] > 10
+    roadmap = groups["Roadmap_Epigenomics_Project"]
     assert {a["name"] for a in roadmap["adapters"]} == {
         "roadmap_dhs", "roadmap_chromatin_state", "roadmap_h3_mark",
     }
-    assert roadmap["downloadable"] is False  # local_files only, nothing to fetch
-    assert groups["_shared"]["needs_dbsnp"] is False
-    assert groups["catlas"]["adapter_count"] > 0  # catlasv1/ resolves to catlas
+    assert _keys(roadmap) == ["forgedb"] and roadmap["downloadable"] is True
+    assert groups["TopLD"]["downloadable"] is False  # its download folder is gone
+    assert groups["TopLD"]["local_paths"]            # so it says where to put the files
+    assert groups["ABC"]["needs_dbsnp"] is True
+    assert groups["REACTOME"]["needs_dbsnp"] is False
+    assert _keys(groups["GTEx"]) == ["gtex"] and groups["GTEx"]["adapter_count"] == 2
+    # A download no adapter reads is still listed, so it can be fetched.
+    assert groups["download:dbvar"]["adapters"] == [] and _keys(groups["download:dbvar"]) == ["dbvar"]
+
+
+def test_the_list_follows_the_schema_folder(monkeypatch, tmp_path):
+    """A build rewrites data_source_schemas/<species>/: the stamp the wizard watches
+    changes, and a source only the folder lists shows up (not buildable), with the
+    types its file describes."""
+    import shutil
+    from pathlib import Path
+    folder = tmp_path / "hsa"
+    shutil.copytree(Path(__file__).resolve().parents[1] / "data_source_schemas" / "hsa", folder)
+    monkeypatch.setattr(ci, "_schema_folder", lambda species: folder)
+
+    before = ci.sources_stamp("hsa", "full")
+    (folder / "New_Source.yaml").write_text(
+        "name: New Source\nnodes:\n  thing:\n    input_label: thing\n"
+        "relationships:\n  thing to gene:\n    input_label: thing_gene\n"
+        "    output_label: binds\n    source: thing\n    target: gene\n")
+    assert ci.sources_stamp("hsa", "full") != before
+
+    groups = _groups("hsa", "full")
+    new = groups["New_Source"]
+    assert new["name"] == "New Source" and new["in_folder"] and new["adapters"] == []
+    edge = next(t for t in new["types"] if t["kind"] == "edge")
+    assert (edge["source"], edge["verb"], edge["target"]) == ("thing", "binds", "gene")
+
+    # A source with adapters: each type says what writes it and what it connects.
+    gtex = {t["name"]: t for t in groups["GTEx"]["types"]}
+    eqtl = gtex["gtex variant to gene expression association"]
+    assert (eqtl["source"], eqtl["target"], eqtl["adapters"]) == ("snp", "gene", ["gtex_eqtl"])
+    assert "p_value" in eqtl["properties"]
+
+    # Without an output_label the edge is named after its input_label, so gene to
+    # disease relations stay told apart.
+    alliance = {t["name"]: t["verb"] for t in groups["Alliance_for_Genome_Resources"]["types"]}
+    assert alliance["gene to disease marker association"] == "is_marker_for"
+    assert alliance["gene biomarker via orthology disease"] == "biomarker_via_orthology"
+
+
+def test_adapters_are_credited_only_with_the_types_they_write():
+    """The GO adapters take ontology: 'go'; that once matched every 'go_*' edge label
+    (go gene, go gene product), which no adapter writes. Likewise the CL adapters
+    (ontology: 'cl') were credited with each other's edges."""
+    obo = {t["name"]: t for t in _groups("hsa", "full")["OBO_Foundry"]["types"]}
+    assert "go gene" not in obo and "go gene product" not in obo
+    assert all(t["source"] and t["target"] for t in obo.values() if t["kind"] == "edge")
+    assert obo["cl part of"]["adapters"] == ["cl_part_of"]
+
+
+def test_fly_sources_share_and_name_their_downloads():
+    groups = _groups("dmel", "full")
+    assert _keys(groups["GOA"]) == ["flybase"]                   # fly GO annotations ship with FlyBase
+    assert "flybase" in _keys(groups["FLYBASE"])
+    assert groups["EVA_Release_9"]["name"] == "EVA Release 9"    # not "EVA Release 9 –"
 
 
 def test_localhost_addresses_reach_this_computer_from_docker(monkeypatch):
@@ -121,3 +192,15 @@ def test_localhost_addresses_reach_this_computer_from_docker(monkeypatch):
     assert connections.normalize_address("mork", "myserver:8027/") == "http://myserver:8027"
     assert connections.normalize_address("neo4j", "neo4j+s://x.databases.neo4j.io") == \
         "neo4j+s://x.databases.neo4j.io"
+
+
+def test_adapters_land_under_their_real_source():
+    """Sample data is bundled under other paths (GENCODE's under ensembl/), and some
+    adapters list their files (filepaths: [...]): neither hides where their data comes
+    from."""
+    gencode = _groups("hsa", "sample")["GENCODE"]
+    assert "gencode_gene" in [a["name"] for a in gencode["adapters"]]
+    assert _keys(gencode) == ["gencode"]
+    flybase = _groups("dmel", "full")["FLYBASE"]
+    assert "dmel_ptp_physical_interaction" in [a["name"] for a in flybase["adapters"]]
+    assert "flybase" in _keys(flybase)

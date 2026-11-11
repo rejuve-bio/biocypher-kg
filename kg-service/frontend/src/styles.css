@@ -1523,3 +1523,123 @@ a.link, .src-link { color: var(--accent); }
 }
 .picker-list .picker-row:hover { background: color-mix(in srgb, var(--text) 6%, transparent); color: var(--accent); }
 .picker-empty { padding: 10px 12px; font-size: 11.5px; }
+
+/* ═══ Build > Data sources: how many sources, and each source's node and edge types
+   as rows (edges as source -relation-> target), with a bar for how many the last
+   full build wrote. ═══ */
+.card h2 .h-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 20px; padding: 0 6px;
+  border: 1px solid var(--border); border-radius: 2px;
+  color: var(--text); font-size: 11px; letter-spacing: 0; font-variant-numeric: tabular-nums;
+}
+.card h2 .h-sub { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; }
+
+.source-item.dim .source-item-name { color: var(--dim); }
+.source-item.dim { cursor: default; }
+.source-item.dim.active .source-item-name { color: color-mix(in srgb, var(--accent) 55%, var(--dim)); }
+
+.source-detail-pane { --node-c: #39c977; --edge-c: #35c3d6; }
+:root[data-theme="light"] .source-detail-pane { --node-c: #15924f; --edge-c: #0d8597; }
+.schema-cols { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
+@media (max-width: 560px) { .schema-cols { grid-template-columns: minmax(0, 1fr); } }
+.schema-cols.dim { opacity: 0.6; }
+.schema-label { display: flex; align-items: center; gap: 8px; }
+.schema-label.node { color: var(--node-c); }
+.schema-label.edge { color: var(--edge-c); }
+.schema-n {
+  color: var(--muted); font-weight: 600; letter-spacing: 0; font-variant-numeric: tabular-nums;
+}
+.type-none { font-size: 12px; }
+
+.type-list {
+  /* max-content rows: a row clips its content (overflow), which would otherwise let
+     the grid squash rows to fit the scroll height. */
+  display: grid; gap: 4px; align-content: start; grid-auto-rows: max-content;
+  max-height: 340px; overflow-y: auto; padding-right: 2px;
+  scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text) 22%, transparent) transparent;
+}
+.type-row {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  padding: 6px 10px 7px;
+  background: var(--row);
+  border: 1px solid var(--border-soft);
+  border-left: 2px solid var(--kind-c);
+  border-radius: 2px;
+  font-size: 12px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.type-row.node { --kind-c: var(--node-c); }
+.type-row.edge { --kind-c: var(--edge-c); }
+.type-row:hover {
+  border-color: color-mix(in srgb, var(--kind-c) 45%, transparent);
+  border-left-color: var(--kind-c);
+  background: color-mix(in srgb, var(--kind-c) 6%, var(--row));
+}
+.type-dot {
+  width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: var(--node-c); box-shadow: 0 0 6px color-mix(in srgb, var(--node-c) 70%, transparent);
+}
+.type-name {
+  flex: 1; min-width: 0; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* How many of this type the last full build wrote: a meter against the source's
+   largest type, then the number. Fixed width, so every row lines up. */
+.type-size {
+  flex: none; width: 88px; margin-left: auto;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+}
+.type-meter {
+  flex: none; width: 40px; height: 4px; border-radius: 2px; overflow: hidden;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+.type-meter > i {
+  display: block; height: 100%; border-radius: 2px;
+  background: color-mix(in srgb, var(--kind-c) 80%, transparent);
+}
+.type-count {
+  flex: none; min-width: 30px; text-align: right;
+  color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums;
+}
+
+/* source -relation-> target */
+.triple { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0; }
+.triple .end {
+  flex: 0 1 auto; min-width: 0; max-width: 38%;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--node-c) 45%, transparent);
+  background: color-mix(in srgb, var(--node-c) 8%, transparent);
+  border-radius: 2px;
+  color: var(--text); font-size: 11px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.triple .rel {
+  flex: 1 1 0; min-width: 30px;
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 3px 0 4px;
+}
+.triple .line {
+  position: relative; flex: 1 1 8px; min-width: 6px; height: 1px;
+  background: color-mix(in srgb, var(--edge-c) 55%, transparent);
+}
+.triple .line.arrow::after {
+  content: ""; position: absolute; right: -2px; top: -4px;
+  border-left: 6px solid color-mix(in srgb, var(--edge-c) 85%, transparent);
+  border-top: 4.5px solid transparent; border-bottom: 4.5px solid transparent;
+}
+.triple .verb {
+  flex: 0 1 auto; min-width: 0;
+  color: var(--edge-c); font-size: 10px; letter-spacing: 0.04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.triple .rel:not(:has(.verb)) { gap: 0; }
+.type-tag {
+  flex: none; max-width: 30%;
+  padding: 0 6px;
+  border: 1px dashed color-mix(in srgb, var(--edge-c) 45%, transparent);
+  border-radius: 2px;
+  color: var(--muted); font-size: 10px; letter-spacing: 0.04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}

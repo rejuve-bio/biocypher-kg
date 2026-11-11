@@ -957,8 +957,8 @@ def _source_paths(input_dir: Path, source: dict, dirs_by_key: dict) -> list:
     """Where one data source's files are in a species input dir ([] if absent).
 
     Prefers the exact files the source declares (local_files), because several
-    sources don't land under input/<key>/: GENCODE goes to ensembl/, GTEx to gtex/,
-    Roadmap under forgedb/. Falls back to the source's (possibly versioned) directory.
+    sources don't land under input/<key>/: GENCODE goes to ensembl/, Roadmap under
+    forgedb/. Falls back to the source's (possibly versioned) directory.
     """
     found: list = []
     for rel in source.get("local_paths") or []:
@@ -1000,8 +1000,8 @@ def _dir_size(path: Path) -> int:
 
 def _dirs_by_key(root: Path, sources: list) -> dict:
     """Candidate directories per source under one root: its own <key>/ plus any
-    versioned dir resolving to it (catlasv1/ -> catlas, gtex/ -> gtex_eqtl), the same
-    rule as grouping."""
+    dir resolving to it (a versioned one such as abcv2/ -> abc, or a shorter one that
+    names a single key), the same rule as grouping."""
     key_by_lower = {s["key"].lower(): s["key"] for s in sources}
     dirs: dict = {s["key"]: [root / s["key"]] for s in sources}
     if root.is_dir():

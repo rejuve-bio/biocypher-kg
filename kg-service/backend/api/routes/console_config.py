@@ -38,6 +38,13 @@ def get_adapters_by_source(species: str, dataset: str):
         raise HTTPException(status_code=404, detail=str(exc))
 
 
+@router.get("/species/{species}/datasets/{dataset}/sources-stamp")
+def get_sources_stamp(species: str, dataset: str):
+    """Cheap: changes when the schema folder or the configs the source list is made
+    from change, so the wizard knows to reload it."""
+    return {"stamp": ci.sources_stamp(species, dataset)}
+
+
 @router.get("/species/{species}/datasets/{dataset}/schema")
 def get_schema(species: str, dataset: str):
     """Shallow schema view (node/edge type names + per-source schema files)."""

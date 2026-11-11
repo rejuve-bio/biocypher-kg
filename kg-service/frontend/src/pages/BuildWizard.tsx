@@ -9,6 +9,7 @@ import {
   type KnownSize,
   type AdapterGroup,
   type DbsnpStatus,
+  type SourceType,
 } from "../api/client";
 import {
   compact,
@@ -27,6 +28,30 @@ import type {
   ValidationResult,
 } from "../types";
 
+// A source's downloads the console can fetch: not ones found in your read-only folder,
+// and not ones placed by hand.
+const fetchable = (g: AdapterGroup) => g.downloads.filter((d) => d.downloadable && d.location !== "yours");
+// Of those, the ones not on disk yet.
+const missingDownloads = (g: AdapterGroup) => g.downloads.filter((d) => d.downloadable && !d.present);
+// Sources whose adapters read no download (OBO Foundry ontologies: the build fetches them).
+const needsNoData = (g: AdapterGroup) => g.downloads.length === 0;
+const pretty = (s?: string | null) => (s ?? "").replace(/_/g, " ");
+const words = (s?: string | null) => (s ?? "").toLowerCase().split(/[\s_]+/).filter(Boolean);
+// What sets apart edge types that look the same in the graph (same ends, same
+// relation): the words of the type's name that aren't its ends, relation or filler.
+// "omim subclass of" -> "omim"; "protein has_xref cofactor" -> "cofactor".
+const FILLER = new Set(["to", "of", "in", "a", "the", "is", "association", "subclass"]);
+const edgeTag = (t: SourceType) => {
+  const known = new Set([...words(t.source), ...words(t.target), ...words(t.verb), ...FILLER]);
+  return words(t.name).filter((w) => !known.has(w)).join(" ");
+};
+const tripleKey = (t: SourceType) => `${t.source}|${t.verb}|${t.target}`;
+// Hover text for a node or edge type: its full name, what it is, its properties.
+const typeTitle = (t: SourceType) =>
+  [t.name, t.description ?? "", t.properties.length ? `properties: ${t.properties.join(", ")}` : ""]
+    .filter(Boolean)
+    .join("\n");
+
 export default function BuildWizard() {
   const navigate = useNavigate();
 
@@ -39,6 +64,9 @@ export default function BuildWizard() {
   const [selDataset, setSelDataset] = useState<string>("");
   const [adapters, setAdapters] = useState<AdapterInfo[]>([]);
   const [adapterGroups, setAdapterGroups] = useState<AdapterGroup[] | null>(null);
+  // What the source list was made from (see the reload effect below).
+  const sourcesStamp = useRef<string | null>(null);
+  const listedAdapters = useRef<Set<string>>(new Set());
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [activeDownloadSource, setActiveDownloadSource] = useState<string | null>(null);
   const [adaptersError, setAdaptersError] = useState<string | null>(null);
@@ -157,6 +185,7 @@ export default function BuildWizard() {
     // Clear the old list right away, so nothing from the last choice can be launched.
     setAdapters([]);
     setAdapterGroups(null);
+    sourcesStamp.current = null;
     setSelected(new Set());
     // "all" has no single config to introspect: every adapter of each species runs.
     if (isAll || !selSpecies || !selDataset) {
@@ -182,6 +211,7 @@ export default function BuildWizard() {
       .then((r) => {
         if (!current) return;
         setAdapterGroups(r.groups);
+        sourcesStamp.current = r.stamp;
         // Default the detail pane to the first source that has a schema to show.
         setActiveSource(
           (r.groups.find((g) => g.adapter_count > 0) ?? r.groups[0])?.source ?? null,
@@ -196,6 +226,51 @@ export default function BuildWizard() {
       current = false;
     };
   }, [selSpecies, selDataset]);
+
+  // The source list follows data_source_schemas/<species>/ and the configs: when a
+  // build rewrites the folder or a config changes, reload it in place. Adapters that
+  // appear are picked (like on first load); ones that are gone are dropped.
+  useEffect(() => {
+    if (isAll || !selSpecies || !selDataset) return;
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = async () => {
+      if (document.visibilityState === "visible" && sourcesStamp.current) {
+        try {
+          const stamp = await api.sourcesStamp(selSpecies, selDataset);
+          if (alive && stamp !== sourcesStamp.current) {
+            const [ad, gr] = await Promise.all([
+              api.listAdapters(selSpecies, selDataset),
+              api.adaptersBySource(selSpecies, selDataset),
+            ]);
+            if (!alive) return;
+            const before = listedAdapters.current;
+            const now = new Set(ad.adapters.map((a) => a.name));
+            setAdapters(ad.adapters);
+            setSelected((prev) => {
+              const next = new Set([...prev].filter((n) => now.has(n)));
+              now.forEach((n) => !before.has(n) && next.add(n));
+              return next;
+            });
+            setAdapterGroups(gr.groups);
+            sourcesStamp.current = gr.stamp;
+          }
+        } catch {
+          /* transient; try again next tick */
+        }
+      }
+      if (alive) timer = setTimeout(tick, 4000);
+    };
+    timer = setTimeout(tick, 4000);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [selSpecies, selDataset, isAll]);
+
+  useEffect(() => {
+    listedAdapters.current = new Set(adapters.map((a) => a.name));
+  }, [adapters]);
 
   // Local data presence + a scope estimate for the chosen species/dataset.
   useEffect(() => {
@@ -294,15 +369,15 @@ export default function BuildWizard() {
     }
   }
 
-  // Fetch just one source's data (the downloader supports --source).
-  async function onDownloadSource(source: string) {
+  // Fetch just one source's data: every download its adapters read.
+  async function onDownloadSource(g: AdapterGroup) {
     if (!selSpecies || isAll) return;
     setDataError(null);
     try {
-      const res = await api.startDownload({ species: selSpecies, source });
+      const res = await api.startDownload({ species: selSpecies, sources: fetchable(g).map((d) => d.key) });
       setDownloadId(res.id);
       setDownloadStatus(res.status);
-      setActiveDownloadSource(source);
+      setActiveDownloadSource(g.source);
     } catch (e) {
       setDataError(String(e));
     }
@@ -369,11 +444,13 @@ export default function BuildWizard() {
   const selectedGroups = (adapterGroups ?? []).filter(
     (g) => g.adapter_count > 0 && g.adapters.every((a) => selected.has(a.name)),
   );
-  const selectedData = selectedGroups.filter((g) => g.source !== "_shared");
+  const selectedData = selectedGroups.filter((g) => !needsNoData(g));
   const onDisk = selectedData.filter((g) => g.present);
   const inYours = onDisk.filter((g) => g.location === "yours").length;
-  const toDownload = selectedData.filter((g) => g.downloadable && !g.present);
-  const byHand = selectedData.filter((g) => !g.downloadable && !g.present);
+  const toDownload = selectedData.filter((g) => missingDownloads(g).length > 0);
+  // Every download they're missing, once (two sources can share one: fly GOA and FlyBase).
+  const missingKeys = [...new Set(toDownload.flatMap((g) => missingDownloads(g).map((d) => d.key)))];
+  const byHand = selectedData.filter((g) => g.local_paths.length > 0);
   const dbsnpNeededBy = selectedGroups.filter((g) => g.needs_dbsnp).map((g) => g.name);
   // The pipeline only loads dbSNP when a selected adapter needs it. All-species runs
   // (and the flat fallback list) can't be inspected here, so assume it's needed.
@@ -506,6 +583,9 @@ export default function BuildWizard() {
   // Source-level selection summary (a source counts as selected when all its
   // adapters are in the build).
   const selectableGroups = (adapterGroups ?? []).filter((g) => g.adapter_count > 0);
+  // Every source the list shows: the ones this config builds, plus the ones only the
+  // schema folder lists (shown dimmed). Downloads no source reads aren't sources.
+  const listedSources = (adapterGroups ?? []).filter((g) => g.adapter_count > 0 || g.in_folder);
   const selectedGroupCount = selectableGroups.filter((g) =>
     g.adapters.every((a) => selected.has(a.name)),
   ).length;
@@ -552,10 +632,10 @@ export default function BuildWizard() {
 
   // Turn an internal adapter name into a readable type: drop the source prefix and
   // the underscores (e.g. "uniprot_sprot_translates_to" -> "sprot translates to").
-  function readableType(name: string, source: string): string {
-    let n = name;
-    if (source && source !== "_shared" && n.startsWith(source + "_")) n = n.slice(source.length + 1);
-    return n.replace(/_/g, " ");
+  function readableType(name: string, g: AdapterGroup): string {
+    const prefixes = [g.source.toLowerCase(), ...g.downloads.map((d) => d.key.toLowerCase())];
+    const prefix = prefixes.find((p) => name.toLowerCase().startsWith(p + "_"));
+    return (prefix ? name.slice(prefix.length + 1) : name).replace(/_/g, " ");
   }
 
   const groupAdapterInfos = (g: AdapterGroup) =>
@@ -584,13 +664,14 @@ export default function BuildWizard() {
   const renderSourceListItem = (g: AdapterGroup) => {
     const empty = g.adapter_count === 0;
     const included = !empty && g.adapters.every((a) => selected.has(a.name));
-    const isShared = g.source === "_shared";
+    const noData = needsNoData(g);
     const active = activeSource === g.source;
     return (
       <div
-        className={`source-item${active ? " active" : ""}${included ? " on" : ""}`}
+        className={`source-item${active ? " active" : ""}${included ? " on" : ""}${empty ? " dim" : ""}`}
         key={g.source}
         onClick={() => setActiveSource(g.source)}
+        title={empty ? "no adapter in this config" : undefined}
       >
         <input
           type="checkbox"
@@ -600,7 +681,7 @@ export default function BuildWizard() {
           onChange={() => setGroup(groupAdapterInfos(g), !included)}
         />
         <span className="source-item-name">{g.name}</span>
-        {!isShared && (
+        {!noData && !empty && (
           <span
             className={`src-dot ${g.present ? "ok" : "missing"}`}
             title={g.present ? "downloaded" : "not downloaded"}
@@ -611,15 +692,100 @@ export default function BuildWizard() {
     );
   };
 
-  // Right pane: the active source's schema as node/edge columns, plus its download
-  // controls (kept out of the list so navigating sources stays compact).
+  // Right pane: the active source's node and edge types, plus its download controls
+  // (kept out of the list so navigating sources stays compact).
   const renderSourceDetail = (g: AdapterGroup) => {
     const empty = g.adapter_count === 0;
-    const isShared = g.source === "_shared";
+    const noData = needsNoData(g);
     const included = !empty && g.adapters.every((a) => selected.has(a.name));
     const downloading = activeDownloadSource === g.source && downloadBusy;
-    const nodeTypes = g.adapters.filter((a) => a.nodes).map((a) => readableType(a.name, g.source));
-    const edgeTypes = g.adapters.filter((a) => a.edges).map((a) => readableType(a.name, g.source));
+    const someOnDisk = g.downloads.some((d) => d.present);
+    // When a source reads several downloads (ENCODE: cCRE and tfbs), say which is which.
+    const downloadsTitle = g.downloads
+      .map((d) => `${d.name}: ${d.present ? "on disk" : d.downloadable ? "not downloaded" : "place by hand"}`)
+      .join("\n");
+
+    // The types, from the source's schema file. A source whose adapters the schema
+    // generator couldn't read falls back to one entry per adapter.
+    const types: SourceType[] = g.types.length
+      ? g.types
+      : g.adapters.flatMap((a) =>
+          (["node", "edge"] as const)
+            .filter((k) => (k === "node" ? a.nodes : a.edges))
+            .map((kind) => ({
+              name: readableType(a.name, g), kind, description: null, properties: [],
+              adapters: [a.name], split: false,
+            })),
+        );
+    // How many of a type the last full build wrote (null: not built yet, or written
+    // together with other types by one adapter, so it can't be told apart).
+    const typeCount = (t: SourceType): number | null => {
+      if (t.split || !t.adapters.length) return null;
+      let n = 0;
+      for (const a of t.adapters) {
+        const v = known[a]?.[t.kind === "node" ? "nodes" : "edges"];
+        if (v == null) return null;
+        n += v;
+      }
+      return n;
+    };
+    const counts = new Map(types.map((t) => [`${t.kind}:${t.name}`, typeCount(t)]));
+    const largest = Math.max(1, ...[...counts.values()].map((n) => n ?? 0));
+    const nodes = types.filter((t) => t.kind === "node");
+    const edges = types.filter((t) => t.kind === "edge");
+    // Edge types that would draw the same (same ends and relation) get a tag.
+    const tripleUses = new Map<string, number>();
+    edges.forEach((t) => tripleUses.set(tripleKey(t), (tripleUses.get(tripleKey(t)) ?? 0) + 1));
+
+    // Size column: a small meter and the number, the same width on every row of a
+    // source that has any known size (so rows shade alike and their ends line up).
+    const anySize = [...counts.values()].some((n) => n != null);
+    const sizeOf = (t: SourceType) => {
+      if (!anySize) return null;
+      const n = counts.get(`${t.kind}:${t.name}`);
+      return (
+        <span className="type-size">
+          {n != null && (
+            <>
+              <span className="type-meter">
+                <i style={{ width: `${Math.max(6, (n / largest) * 100)}%` }} />
+              </span>
+              <span className="type-count">{compact(n)}</span>
+            </>
+          )}
+        </span>
+      );
+    };
+    const renderNodeType = (t: SourceType) => (
+      <div className="type-row node" key={t.name} title={typeTitle(t)}>
+        <span className="type-dot" />
+        <span className="type-name">{t.name}</span>
+        {sizeOf(t)}
+      </div>
+    );
+    // An edge as what it connects: source -relation-> target.
+    const renderEdgeType = (t: SourceType) => (
+      <div className="type-row edge" key={t.name} title={typeTitle(t)}>
+        {t.source && t.target ? (
+          <span className="triple">
+            <span className="end">{pretty(t.source)}</span>
+            <span className="rel">
+              <span className="line" />
+              {t.verb && <span className="verb">{pretty(t.verb)}</span>}
+              <span className="line arrow" />
+            </span>
+            <span className="end">{pretty(t.target)}</span>
+          </span>
+        ) : (
+          <span className="type-name">{t.name}</span>
+        )}
+        {(tripleUses.get(tripleKey(t)) ?? 0) > 1 && edgeTag(t) && (
+          <span className="type-tag">{edgeTag(t)}</span>
+        )}
+        {sizeOf(t)}
+      </div>
+    );
+
     return (
       <div className="source-detail-pane">
         <div className="detail-head">
@@ -627,10 +793,10 @@ export default function BuildWizard() {
             <div className="detail-title">{g.name}</div>
             <div className="muted detail-sub">
               {empty
-                ? "download only"
-                : `${g.node_count} node · ${g.edge_count} edge types · ${
-                    sourceSize(adapterNames(g), known) ? sizeTitle(g) : "size unknown"
-                  }`}
+                ? "no adapter in this config"
+                : sourceSize(adapterNames(g), known)
+                  ? `${sizeTitle(g)} · last built`
+                  : "size unknown"}
             </div>
           </div>
           {!empty && (
@@ -641,53 +807,51 @@ export default function BuildWizard() {
           )}
         </div>
 
-        {empty ? (
-          <span className="muted">feeds other adapters · no types of its own</span>
+        {types.length === 0 ? (
+          <span className="muted">no node or edge types</span>
         ) : (
-          <div className="schema-cols">
+          <div className={`schema-cols${empty ? " dim" : ""}`}>
             <div className="schema-col">
-              <div className="schema-label node">Nodes ({nodeTypes.length})</div>
-              {nodeTypes.length ? (
-                <div className="schema-grid">
-                  {nodeTypes.map((t) => <span className="chip-tag node" key={t}>{t}</span>)}
-                </div>
+              <div className="schema-label node">Nodes <span className="schema-n">{nodes.length}</span></div>
+              {nodes.length ? (
+                <div className="type-list">{nodes.map(renderNodeType)}</div>
               ) : (
-                <span className="muted">none</span>
+                <span className="muted type-none">none</span>
               )}
             </div>
             <div className="schema-col">
-              <div className="schema-label edge">Edges ({edgeTypes.length})</div>
-              {edgeTypes.length ? (
-                <div className="schema-grid">
-                  {edgeTypes.map((t) => <span className="chip-tag edge" key={t}>{t}</span>)}
-                </div>
+              <div className="schema-label edge">Edges <span className="schema-n">{edges.length}</span></div>
+              {edges.length ? (
+                <div className="type-list">{edges.map(renderEdgeType)}</div>
               ) : (
-                <span className="muted">none</span>
+                <span className="muted type-none">none</span>
               )}
             </div>
           </div>
         )}
 
         <div className="detail-foot">
-          {!isShared && (
-            <span className={`src-badge ${g.present ? "ok" : "missing"}`}>
+          {empty ? null : noData ? (
+            <span className="muted">nothing to download · the build fetches it</span>
+          ) : (
+            <span className={`src-badge ${g.present ? "ok" : "missing"}`} title={downloadsTitle}>
               {g.present
                 ? `${g.location === "yours" ? "in your folder" : "downloaded"}${
                     g.bytes ? ` · ${formatBytes(g.bytes)}` : ""
                   }`
-                : "not downloaded"}
+                : someOnDisk
+                  ? "partly downloaded"
+                  : "not downloaded"}
             </span>
           )}
           {/* Sources found in your read-only folder are never re-downloaded. */}
-          {g.downloadable && g.location !== "yours" && (
-            <button type="button" onClick={() => onDownloadSource(g.source)} disabled={downloadBusy || !dataFolder}>
-              {downloading ? "Downloading…" : g.present ? "Re-download" : "Download"}
+          {fetchable(g).length > 0 && (
+            <button type="button" onClick={() => onDownloadSource(g)} disabled={downloadBusy || !dataFolder}>
+              {downloading ? "Downloading…" : missingDownloads(g).length === 0 ? "Re-download" : "Download"}
             </button>
           )}
-          {!g.downloadable && !isShared && !g.present && (
-            <span className="field-hint">
-              manual · place files at {g.local_paths.slice(0, 2).join(", ") || "the input folder"}
-            </span>
+          {g.local_paths.length > 0 && (
+            <span className="field-hint">manual · place files at {g.local_paths.slice(0, 2).join(", ")}</span>
           )}
           {g.website && (
             <a
@@ -792,7 +956,7 @@ export default function BuildWizard() {
           <div style={{ marginTop: 14 }}>
             {dataStatus && (
               <div className="field-hint" style={{ marginTop: 4 }}>
-                on disk: {dataStatus.present_count}/{dataStatus.source_count} sources
+                on disk: {dataStatus.present_count}/{dataStatus.source_count} downloads
                 {dataStatus.total_bytes > 0 ? ` · ${formatBytes(dataStatus.total_bytes)}` : ""}
               </div>
             )}
@@ -816,10 +980,13 @@ export default function BuildWizard() {
 
       <div className="card">
         <h2>
-          <span className="step">2</span> Data sources{" "}
-          {isAll || !adapterGroups
-            ? ""
-            : `(${selectedGroupCount}/${selectableGroups.length} selected)`}
+          <span className="step">2</span> Data sources
+          {!isAll && adapterGroups && (
+            <>
+              <span className="h-count">{listedSources.length}</span>
+              <span className="h-sub">{selectedGroupCount} selected</span>
+            </>
+          )}
         </h2>
         {isAll ? (
           <div className="alert warn">
@@ -853,9 +1020,9 @@ export default function BuildWizard() {
         )}
         {adapterGroups ? (
           (() => {
-            // Only sources that actually contribute nodes/edges belong in the build
-            // picker; download-only sources with no adapter are not buildable.
-            const visible = adapterGroups.filter((g) => g.adapter_count > 0 && groupMatches(g));
+            // The schema folder's sources (plus any an adapter declares that the folder
+            // doesn't have yet). Downloads no adapter reads aren't listed here.
+            const visible = listedSources.filter(groupMatches);
             if (!visible.length)
               return <span className="muted">no match for “{adapterFilter}”</span>;
             const active =
@@ -918,7 +1085,7 @@ export default function BuildWizard() {
                   {toDownload.length > 0 ? (
                     <button
                       className="primary"
-                      onClick={() => onDownloadMissing(toDownload.map((g) => g.source))}
+                      onClick={() => onDownloadMissing(missingKeys)}
                       disabled={downloadBusy || !dataFolder}
                     >
                       {downloadBusy ? "Downloading…" : `Download ${toDownload.length} missing`}

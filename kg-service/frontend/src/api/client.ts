@@ -64,6 +64,12 @@ export const api = {
       fetch(`${BASE}/species/${species}/datasets/${dataset}/adapters-by-source`),
     ),
 
+  // Changes when the schema folder or the configs behind the source list change.
+  sourcesStamp: (species: string, dataset: string) =>
+    json<{ stamp: string }>(
+      fetch(`${BASE}/species/${species}/datasets/${dataset}/sources-stamp`),
+    ).then((d) => d.stamp),
+
   listWriters: () =>
     json<{ writers: string[] }>(fetch(`${BASE}/writers`)).then((d) => d.writers),
 
@@ -385,13 +391,42 @@ export interface SourceAdapter {
   needs_dbsnp: boolean;
 }
 
+/** A node or edge type a source writes, as its schema file describes it. */
+export interface SourceType {
+  name: string;
+  kind: "node" | "edge";
+  description: string | null;
+  properties: string[];
+  source?: string | null; // edges: what it connects
+  target?: string | null;
+  verb?: string | null; // edges: the relation (e.g. associated_with)
+  adapters: string[]; // the adapters that write it
+  split: boolean; // one of them writes other types too: its count isn't this type's alone
+}
+
+/** One entry of a species' data source config: a download a source's adapters read. */
+export interface SourceDownload {
+  key: string;
+  name: string;
+  downloadable: boolean; // false: its files are placed by hand (local_paths)
+  present: boolean | null;
+  bytes: number | null;
+  location: DataLocation | null;
+  local_paths: string[];
+  urls: string[];
+}
+
+/** A data source as data_source_schemas/<species>/ lists it (GTEx, CATLAS, OBO
+ * Foundry, ...), with the downloads its adapters read (none for ontologies, which the
+ * build fetches itself). */
 export interface AdapterGroup {
   source: string;
   name: string;
-  downloadable: boolean;
+  downloads: SourceDownload[];
+  downloadable: boolean; // at least one of its downloads can be fetched
   needs_dbsnp: boolean;
-  local_paths: string[];
-  present: boolean | null;
+  local_paths: string[]; // where to put what can't be downloaded and isn't there yet
+  present: boolean; // every download it needs is on disk
   bytes: number | null;
   urls: string[];
   website: string | null;
@@ -401,6 +436,8 @@ export interface AdapterGroup {
   adapter_count: number;
   node_count: number;
   edge_count: number;
+  in_folder: boolean; // data_source_schemas/<species>/ has its file
+  types: SourceType[];
 }
 
 export type DataLocation = "yours" | "console";
@@ -428,6 +465,7 @@ export interface AdaptersBySource {
   dataset: string;
   input_dir: string;
   groups: AdapterGroup[];
+  stamp: string; // see api.sourcesStamp
 }
 
 export interface DataStatusSource {

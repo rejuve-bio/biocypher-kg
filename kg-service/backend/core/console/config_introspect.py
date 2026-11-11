@@ -85,6 +85,18 @@ def load_species_config() -> dict:
 _DOWNLOAD_FIELDS = {"url", "directories", "zip_extract", "bed_url", "ep_base_url", "bucket"}
 
 
+def _flat_urls(val) -> list:
+    """Every link in a source's ``url`` value, whatever its shape: a string, a list,
+    a {filename: url} map or a {sub_folder: links} map."""
+    if isinstance(val, str):
+        return [val]
+    if isinstance(val, dict):
+        val = list(val.values())
+    if isinstance(val, list):
+        return [u for v in val for u in _flat_urls(v)]
+    return []
+
+
 def list_data_sources(species: str) -> dict:
     """List the external data sources a species draws from (name + url).
 
@@ -108,13 +120,7 @@ def list_data_sources(species: str) -> dict:
     for key, entry in data.items():
         if key == "input_dir" or not isinstance(entry, dict):
             continue
-        url = entry.get("url")
-        if isinstance(url, list):
-            urls = [u for u in url if isinstance(u, str)]
-        elif isinstance(url, str):
-            urls = [url]
-        else:
-            urls = []
+        urls = _flat_urls(entry.get("url"))
         local_paths = [
             lf.get("stable_name") or lf.get("pattern")
             for lf in (entry.get("local_files") or {}).values()
@@ -267,23 +273,26 @@ def _match_source(seg: str, source_keys: set) -> Optional[str]:
 def _source_candidates(entry: dict, source_keys: set) -> list:
     """Source keys referenced by an adapter's file-path args, in first-seen order.
 
-    Scans any string arg that looks like a path (contains "/"), plus a slash-less
-    ``filepath`` whose whole value is the source dir (e.g. ``filepath: coxpressdb``).
+    Scans any string arg (or list of them) that looks like a path (contains "/"),
+    plus a slash-less ``filepath`` whose whole value is the source dir
+    (e.g. ``filepath: coxpressdb``).
     """
     args = (entry.get("adapter") or {}).get("args") or {}
     cands: list = []
     for key, val in args.items():
-        if not isinstance(val, str) or not val:
-            continue
-        if "/" in val:
-            seg = val.split("/", 1)[0]
-        elif key == "filepath":
-            seg = val
-        else:
-            continue
-        m = _match_source(seg, source_keys)
-        if m and m not in cands:
-            cands.append(m)
+        # A list of paths (filepaths: [...]) counts like single ones, in order.
+        for v in (val if isinstance(val, list) else [val]):
+            if not isinstance(v, str) or not v:
+                continue
+            if "/" in v:
+                seg = v.split("/", 1)[0]
+            elif key == "filepath":
+                seg = v
+            else:
+                continue
+            m = _match_source(seg, source_keys)
+            if m and m not in cands:
+                cands.append(m)
     return cands
 
 
@@ -302,6 +311,23 @@ def _derive_source(name: str, entry: dict, source_keys: set) -> Optional[str]:
     return cands[0] if len(cands) == 1 else sorted(cands)[0]
 
 
+def _sources_in_full(species: str, source_keys: set) -> dict:
+    """adapter name -> the source the full dataset gives it. Sample data is bundled
+    under other paths (GENCODE's under ensembl/, say), so a sample adapter's path can
+    miss its source; the same adapter in the full config names it."""
+    try:
+        full, _ = load_adapters_dict(species, "full")
+    except Exception:  # noqa: BLE001 - a species without a full dataset
+        return {}
+    out = {}
+    for name, entry in full.items():
+        if isinstance(entry, dict):
+            src = _derive_source(name, entry, source_keys)
+            if src:
+                out[name] = src
+    return out
+
+
 def load_adapter_source_overrides(species: str) -> dict:
     """Optional config/<species>/adapter_source_map.yaml mapping adapter -> source."""
     import yaml
@@ -315,32 +341,231 @@ def load_adapter_source_overrides(species: str) -> dict:
     return {str(k): str(v) for k, v in data.items() if isinstance(k, str) and v}
 
 
-def _load_source_schema_index(species: str) -> list:
-    """Per-source generated schema files: their website + the input_labels they define.
+@functools.lru_cache(maxsize=1)
+def _schema_generator():
+    """The data-source schema generator (repo-root schema_generator/), set up only to
+    read which source each adapter declares."""
+    _load_yaml_with_includes()  # puts the repo root on sys.path
+    from schema_generator.generate_data_source_schemas import SchemaGenerator  # type: ignore
 
-    The schema generator writes one file per data source (data_source_schemas/<sp>/),
-    with a curated ``website`` (a real homepage, not a download URL) and node/edge
-    ``input_label``s. We match a source to its file by input_label overlap.
-    """
+    return SchemaGenerator, SchemaGenerator.for_analysis(
+        settings.repo_root_path / "biocypher_metta" / "adapters")
+
+
+# module -> (adapter file mtime, (source name, source url) or None)
+_declared: dict = {}
+
+
+def _declared_source(module: str) -> Optional[tuple]:
+    """(source name, source url) an adapter's code declares, as the schema generator
+    reads it; re-read only when the adapter file changes."""
+    sg, gen = _schema_generator()
+    path = gen.adapters_dir / gen.get_adapter_file_from_module(module)
+    try:
+        mtime = path.stat().st_mtime
+    except OSError:
+        return None
+    hit = _declared.get(module)
+    if hit and hit[0] == mtime:
+        return hit[1]
+    gen.adapter_cache.pop(str(path.relative_to(gen.adapters_dir)), None)
+    import warnings
+
+    try:
+        # Parsing an adapter warns about its own odd strings (e.g. "\G" escapes).
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", (DeprecationWarning, SyntaxWarning))
+            found = gen.declared_source(module)
+    except Exception:  # noqa: BLE001 - an adapter the generator can't parse
+        found = None
+    _declared[module] = (mtime, found)
+    return found
+
+
+def _origin(url) -> Optional[str]:
+    from urllib.parse import urlparse
+
+    p = urlparse(url) if isinstance(url, str) else None
+    return f"{p.scheme}://{p.netloc}" if p and p.scheme in ("http", "https") and p.netloc else None
+
+
+def schema_sources(species: str, adapters: dict) -> dict:
+    """adapter name -> {"key", "name", "website"}: the data source the adapter's code
+    declares, exactly as data_source_schemas/<species>/ lists sources (one file per
+    source, named by the generator). Name and website come from that file when it is
+    there (a build regenerates it), else from what the adapter declares."""
     import yaml
-    out: list = []
-    d = settings.repo_root_path / "data_source_schemas" / species
-    if not d.is_dir():
-        return out
-    for p in sorted(d.glob("*.yaml")):
-        try:
-            s = yaml.safe_load(p.read_text()) or {}
-        except Exception:  # noqa: BLE001 - skip an unreadable schema file
+
+    sg, _ = _schema_generator()
+    folder = _schema_folder(species)
+    by_file: dict = {}
+    out: dict = {}
+    for name, entry in adapters.items():
+        module = ((entry.get("adapter") or {}).get("module")) if isinstance(entry, dict) else None
+        found = _declared_source(module) if module else None
+        if not found:
             continue
-        labels: set = set()
-        for sect in ("nodes", "relationships"):
-            for ent in (s.get(sect) or {}).values():
-                il = ent.get("input_label") if isinstance(ent, dict) else None
-                if isinstance(il, str):
-                    labels.add(il)
-                elif isinstance(il, list):
-                    labels.update(x for x in il if isinstance(x, str))
-        out.append({"website": s.get("website"), "labels": labels})
+        source_name, source_url = found
+        filename = sg.source_filename(source_name)
+        if filename not in by_file:
+            meta: dict = {}
+            try:
+                meta = yaml.safe_load((folder / filename).read_text()) or {}
+            except (OSError, yaml.YAMLError):
+                pass
+            by_file[filename] = {
+                "key": filename[: -len(".yaml")],
+                "name": meta.get("name") or source_name,
+                "website": meta.get("website") or _origin(source_url),
+            }
+        out[name] = by_file[filename]
+    return out
+
+
+def _schema_folder(species: str) -> Path:
+    return settings.repo_root_path / "data_source_schemas" / species
+
+
+def _schema_files(species: str) -> dict:
+    """{file stem: parsed schema file} for data_source_schemas/<species>/, read fresh
+    each time so the list follows the folder as builds rewrite it."""
+    import yaml
+
+    out: dict = {}
+    folder = _schema_folder(species)
+    for path in sorted(folder.glob("*.yaml")) if folder.is_dir() else []:
+        try:
+            data = yaml.safe_load(path.read_text()) or {}
+        except (OSError, yaml.YAMLError):
+            continue
+        if isinstance(data, dict):
+            out[path.stem] = data
+    return out
+
+
+def sources_stamp(species: str, dataset: str) -> str:
+    """Changes whenever anything the source list is made from changes: the schema
+    folder (a build rewrites it), the species' configs, the shared schema."""
+    import hashlib
+
+    paths = list(_schema_folder(species).glob("*.yaml"))
+    paths += list((settings.repo_root_path / "config" / species).glob("*.yaml"))
+    paths += [settings.repo_root_path / "config" / "species_config.yaml",
+              settings.repo_root_path / "config" / "primer_schema_config.yaml"]
+    h = hashlib.sha1(f"{species}/{dataset}".encode())
+    for path in sorted(paths):
+        try:
+            st = path.stat()
+        except OSError:
+            continue
+        h.update(f"{path.name}:{st.st_mtime_ns}:{st.st_size};".encode())
+    return h.hexdigest()[:16]
+
+
+# (species, dataset) -> (stamp, merged schema config, {adapter: [{"name", "kind"}]})
+_types_cache: dict = {}
+
+
+def _adapter_types(species: str, dataset: str, adapters: dict) -> tuple:
+    """(merged schema config, {adapter name: [{"name", "kind"}]}): the schema types each
+    adapter writes, resolved the way the schema generator resolves them when it writes
+    data_source_schemas/<species>/. Cached until a config or an adapter file changes."""
+    import contextlib
+    import hashlib
+    import io
+    import json
+    import warnings
+
+    sg, base = _schema_generator()
+    schema_path = resolve_schema_config_path(species, dataset)
+    files = {schema_path, settings.repo_root_path / "config" / "primer_schema_config.yaml"}
+    for entry in adapters.values():
+        module = ((entry.get("adapter") or {}).get("module")) if isinstance(entry, dict) else None
+        if module:
+            files.add(base.adapters_dir / base.get_adapter_file_from_module(module))
+    h = hashlib.sha1(json.dumps(adapters, sort_keys=True, default=str).encode())
+    for f in sorted(files, key=str):
+        try:
+            h.update(f"{f}:{f.stat().st_mtime_ns};".encode())
+        except OSError:
+            pass
+    stamp = h.hexdigest()
+    hit = _types_cache.get((species, dataset))
+    if hit and hit[0] == stamp:
+        return hit[1], hit[2]
+
+    schema = sg.load_schema_config(str(schema_path), include_primer=True)
+    gen = sg.for_analysis(base.adapters_dir, schema_config=schema)
+    types: dict = {}
+    # The generator reports what it can't resolve on stdout and warns about odd
+    # strings in adapter files; neither belongs in the console's log.
+    with contextlib.redirect_stdout(io.StringIO()), warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for name, entry in adapters.items():
+            if not isinstance(entry, dict):
+                continue
+            try:
+                types[name] = gen.adapter_types(name, entry)
+            except Exception:  # noqa: BLE001 - one unreadable adapter must not break the list
+                types[name] = []
+    _types_cache[(species, dataset)] = (stamp, schema, types)
+    return schema, types
+
+
+def _type_detail(name: str, kind: str, file_entry: Optional[dict], schema_entry: Optional[dict]) -> dict:
+    """What the wizard shows for one node or edge type: from the source's schema file
+    when it lists the type, else from the schema config."""
+    e = file_entry if isinstance(file_entry, dict) else (schema_entry if isinstance(schema_entry, dict) else {})
+    props = e.get("properties")
+    out = {
+        "name": name,
+        "kind": kind,
+        "description": e.get("description"),
+        "properties": sorted(props) if isinstance(props, dict) else [],
+    }
+    if kind == "edge":
+        src = e.get("source") or (schema_entry or {}).get("source")
+        tgt = e.get("target") or (schema_entry or {}).get("target")
+        out["source"] = src if isinstance(src, str) else (src[0] if isinstance(src, list) and src else None)
+        out["target"] = tgt if isinstance(tgt, str) else (tgt[0] if isinstance(tgt, list) and tgt else None)
+        # The relation the graph gets: output_label, or, without one, the input_label
+        # (what the writers name the edge then: e.g. is_marker_for).
+        verb = (e.get("output_label") or (schema_entry or {}).get("output_label")
+                or e.get("input_label") or (schema_entry or {}).get("input_label"))
+        if isinstance(verb, list):
+            verb = verb[0] if verb else None
+        out["verb"] = verb if isinstance(verb, str) else None
+    return out
+
+
+def _group_types(adapter_names: list, types: dict, schema: dict, file: Optional[dict]) -> list:
+    """A source's node and edge types, each with the adapters that write it. ``split``:
+    one of those adapters writes other types of the same kind too, so its known
+    count can't be put on this type alone."""
+    order: list = []
+    by_name: dict = {}
+    for a in adapter_names:
+        mine = types.get(a) or []
+        for t in mine:
+            key = (t["kind"], t["name"])
+            if key not in by_name:
+                section = (file or {}).get("nodes" if t["kind"] == "node" else "relationships") or {}
+                by_name[key] = {**_type_detail(t["name"], t["kind"], section.get(t["name"]),
+                                               schema.get(t["name"])),
+                                "adapters": [], "split": False}
+                order.append(key)
+            by_name[key]["adapters"].append(a)
+            if sum(1 for x in mine if x["kind"] == t["kind"]) > 1:
+                by_name[key]["split"] = True
+    return [by_name[k] for k in order]
+
+
+def _file_types(file: dict) -> list:
+    """Types a schema file lists, for a source no adapter in this config writes."""
+    out = []
+    for section, kind in (("nodes", "node"), ("relationships", "edge")):
+        for name, e in ((file or {}).get(section) or {}).items():
+            out.append({**_type_detail(name, kind, e, None), "adapters": [], "split": False})
     return out
 
 
@@ -351,19 +576,18 @@ def adapter_needs_dbsnp(entry: dict) -> bool:
     return "dbsnp_rsid_map" in args or "dbsnp_pos_map" in args
 
 
-def _adapter_labels(entry: dict) -> set:
-    """input_label-ish arg values declared by an adapter (join key to schema files)."""
-    args = (entry.get("adapter") or {}).get("args") or {}
-    return {v for k, v in args.items() if "label" in k and isinstance(v, str)}
-
-
 def group_adapters_by_source(species: str, dataset: str) -> dict:
     """Adapters for a species/dataset grouped by data source, for the build wizard.
 
-    Each group carries the source's local presence (so the UI can offer a scoped
-    download) and its adapters split into node/edge flags. Declared sources with no
-    adapters (download-only) are still listed; unmappable adapters go to a shared
-    group that is not itself downloadable.
+    The sources are the ones data_source_schemas/<species>/ lists: each adapter goes
+    under the source its code declares (GTEx, CATLAS, OBO Foundry, ...), the same rule
+    the schema generator uses to write that folder.
+
+    Each source also lists the downloads its adapters read (``downloads``: entries of
+    the species' data source config, with whether each is on disk). A source can need
+    several (ENCODE: cCRE and tfbs), several sources can share one (fly GOA reads the
+    FlyBase download), and some need none (OBO Foundry ontologies are fetched by the
+    build). Downloads no adapter reads are still listed, on their own.
     """
     from backend.core.console import job_runner  # local import avoids an import cycle
 
@@ -372,108 +596,105 @@ def group_adapters_by_source(species: str, dataset: str) -> dict:
         source_meta = {s["key"]: s for s in list_data_sources(species).get("sources", [])}
     except ConfigError:
         source_meta = {}
-    source_keys = set(source_meta)
-    # Source keys can be mixed-case (e.g. "cCRE"); match case-insensitively but group
-    # under the real key so presence/metadata still resolve.
-    key_by_lower = {k.lower(): k for k in source_keys}
+    # Download keys can be mixed-case (e.g. "cCRE"); match case-insensitively but
+    # report the real key so presence/metadata still resolve.
+    key_by_lower = {k.lower(): k for k in source_meta}
     lower_keys = set(key_by_lower)
     overrides = load_adapter_source_overrides(species)
+    in_full = _sources_in_full(species, lower_keys) if dataset != "full" else {}
+    declared = schema_sources(species, adapters)
+    schema, types = _adapter_types(species, dataset, adapters)
+    folder = _schema_files(species)
 
     presence: dict = {}
     try:
         for s in job_runner.data_status(species).get("sources", []):
-            presence[s["key"]] = {"present": s.get("present"), "bytes": s.get("bytes"),
-                                  "location": s.get("location")}
+            presence[s["key"]] = s
     except Exception:  # noqa: BLE001 - presence is a nicety, not required
         pass
 
+    def download(key: str) -> dict:
+        meta, here = source_meta.get(key, {}), presence.get(key, {})
+        return {
+            "key": key,
+            "name": meta.get("name") or key,
+            "downloadable": bool(meta.get("downloadable", True)),
+            "present": here.get("present"),
+            "bytes": here.get("bytes"),
+            # "yours" (your read-only folder) or "console" (downloaded), when present
+            "location": here.get("location"),
+            "local_paths": meta.get("local_paths", []),
+            "urls": meta.get("urls", []),
+        }
+
     groups: dict = {}
-
-    def ensure(key: str, name: Optional[str] = None, downloadable: bool = True) -> dict:
-        if key not in groups:
-            meta = source_meta.get(key, {})
-            groups[key] = {
-                "source": key,
-                "name": name or meta.get("name") or key,
-                "downloadable": downloadable and meta.get("downloadable", True),
-                "local_paths": meta.get("local_paths", []),
-                "present": presence.get(key, {}).get("present"),
-                "bytes": presence.get(key, {}).get("bytes"),
-                # "yours" (your read-only folder) or "console" (downloaded), when present
-                "location": presence.get(key, {}).get("location"),
-                "urls": meta.get("urls", []),
-                "website": None,
-                "adapters": [],
-            }
-        return groups[key]
-
-    # Pre-create declared sources so download-only ones (e.g. afca/fca2) still appear.
-    for key in sorted(source_keys):
-        ensure(key)
-
     for name, entry in adapters.items():
         if not isinstance(entry, dict):
             continue
-        src = overrides.get(name) or _derive_source(name, entry, lower_keys)
+        dl = overrides.get(name) or _derive_source(name, entry, lower_keys) or in_full.get(name)
+        dl = key_by_lower.get(dl.lower(), dl) if dl else None
+        src = declared.get(name)
         if src:
-            src = key_by_lower.get(src.lower(), src)  # back to the real (cased) key
-        if not src:
-            src = SHARED_SOURCE
-            ensure(SHARED_SOURCE, name="Ontologies / shared", downloadable=False)
-        ensure(src)["adapters"].append({
+            key, gname, website = src["key"], src["name"], src["website"]
+        elif dl:  # an adapter the generator can't read: fall back to its download
+            key, gname, website = dl, source_meta.get(dl, {}).get("name") or dl, None
+        else:
+            key, gname, website = SHARED_SOURCE, "Ontologies / shared", None
+        g = groups.setdefault(key, {"source": key, "name": gname, "website": website,
+                                    "downloads": [], "adapters": []})
+        if dl and dl not in g["downloads"]:
+            g["downloads"].append(dl)
+        g["adapters"].append({
             "name": name,
             "nodes": bool(entry.get("nodes", False)),
             "edges": bool(entry.get("edges", False)),
             "needs_dbsnp": adapter_needs_dbsnp(entry),
         })
 
-    # Resolve each source's homepage from the generated schema files. Match by the
-    # input_labels an adapter shares with a file, weighting rare labels higher (a
-    # label unique to one source identifies it; a generic one like "gene" does not).
-    # Fall back to the download host's origin so we never link to a raw file.
-    import collections as _collections
-    from urllib.parse import urlparse as _urlparse
+    # Sources the folder lists that no adapter in this config writes (their adapters are
+    # off, or in another dataset's config): listed, not buildable.
+    for stem, data in folder.items():
+        if stem not in groups:
+            groups[stem] = {"source": stem, "name": data.get("name") or stem,
+                            "website": data.get("website"), "downloads": [], "adapters": []}
 
-    schema_index = _load_source_schema_index(species)
-    dfreq = _collections.Counter()
-    for sf in schema_index:
-        for lab in sf["labels"]:
-            dfreq[lab] += 1
-
-    def _origin_of(urls: list):
-        for u in urls or []:
-            if isinstance(u, str):
-                p = _urlparse(u)
-                if p.scheme in ("http", "https") and p.netloc:
-                    return f"{p.scheme}://{p.netloc}"
-        return None
+    # Downloads no adapter here reads (e.g. fly fca2), so they can still be fetched.
+    used = {k for g in groups.values() for k in g["downloads"]}
+    for key in sorted(set(source_meta) - used):
+        groups["download:" + key] = {"source": "download:" + key,
+                                     "name": source_meta[key].get("name") or key,
+                                     "website": None, "downloads": [key], "adapters": []}
 
     out = []
     for g in groups.values():
+        dls = [download(k) for k in g["downloads"]]
+        g["downloads"] = dls
+        on_disk = [d for d in dls if d["present"]]
+        g["present"] = bool(dls) and len(on_disk) == len(dls)
+        g["bytes"] = sum(d["bytes"] or 0 for d in on_disk) or None
+        g["location"] = (None if not on_disk else
+                         "yours" if all(d["location"] == "yours" for d in on_disk) else "console")
+        g["downloadable"] = any(d["downloadable"] for d in dls)
+        # Where to put what can't be downloaded and isn't there yet.
+        g["local_paths"] = [p for d in dls if not d["downloadable"] and not d["present"]
+                            for p in d["local_paths"]]
+        g["urls"] = [u for d in dls for u in d["urls"]]
+        g["website"] = g["website"] or next((_origin(u) for u in g["urls"] if _origin(u)), None)
         g["adapter_count"] = len(g["adapters"])
         g["node_count"] = sum(1 for a in g["adapters"] if a["nodes"])
         g["edge_count"] = sum(1 for a in g["adapters"] if a["edges"])
         g["needs_dbsnp"] = any(a["needs_dbsnp"] for a in g["adapters"])
-        website = None
-        if g["adapters"] and schema_index:
-            glabels: set = set()
-            for a in g["adapters"]:
-                e = adapters.get(a["name"])
-                if isinstance(e, dict):
-                    glabels |= _adapter_labels(e)
-            best, best_score = None, 0.0
-            for sf in schema_index:
-                score = sum(1.0 / dfreq[lab] for lab in (glabels & sf["labels"]) if dfreq[lab])
-                if score > best_score:
-                    best_score, best = score, sf
-            # Require at least one source-specific (rare) label's worth of signal.
-            if best and best.get("website") and best_score >= 1.0:
-                website = best["website"]
-        g["website"] = website or _origin_of(g.get("urls"))
+        # Whether data_source_schemas/<species>/ has this source's file (a build writes it).
+        g["in_folder"] = g["source"] in folder
+        g["types"] = (_group_types([a["name"] for a in g["adapters"]], types, schema, folder.get(g["source"]))
+                      if g["adapters"] else _file_types(folder.get(g["source"])))
         out.append(g)
-    # Shared bucket last; otherwise alphabetical by display name.
-    out.sort(key=lambda x: (x["source"] == SHARED_SOURCE, str(x["name"]).lower()))
-    return {"species": species, "dataset": dataset, "input_dir": input_dir, "groups": out}
+    # Sources with adapters first, alphabetical; then sources only the folder lists;
+    # then downloads no adapter reads.
+    out.sort(key=lambda x: (not x["adapters"], not x["in_folder"], x["source"] == SHARED_SOURCE,
+                            str(x["name"]).lower()))
+    return {"species": species, "dataset": dataset, "input_dir": input_dir, "groups": out,
+            "stamp": sources_stamp(species, dataset)}
 
 
 def list_schema(species: str, dataset: str) -> dict:
