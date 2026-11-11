@@ -99,6 +99,13 @@ async def lifespan(app: FastAPI):
         logger.info("✓ Existing cache file found, using it")
 
     try:
+        # The build page's source lists: work out the slow parts now, in the background.
+        from backend.core.console import config_introspect
+        config_introspect.warm_source_caches()
+    except Exception as e:  # noqa: BLE001 - never block startup on this
+        logger.error(f"Warming the source lists failed: {e}")
+
+    try:
         build_registry.reconcile()
         logger.info("✅ Build registry reconciled")
     except Exception as e:  # noqa: BLE001 - never block startup on this

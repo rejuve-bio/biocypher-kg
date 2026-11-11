@@ -205,8 +205,29 @@ def load_adapters_dict(species: str, dataset: str) -> tuple[dict, Optional[str]]
     return adapters, input_dir
 
 
+# (what, species, dataset) -> (sources_stamp, value): lists rebuilt only when a config
+# or the schema folder changes (sources_stamp), not on every page switch.
+_by_stamp: dict = {}
+
+
+def _until_configs_change(what: str, species: str, dataset: str, compute):
+    import copy
+
+    stamp = sources_stamp(species, dataset)
+    hit = _by_stamp.get((what, species, dataset))
+    if not (hit and hit[0] == stamp):
+        hit = (stamp, compute())
+        _by_stamp[(what, species, dataset)] = hit
+    return copy.deepcopy(hit[1])  # callers may change what they get
+
+
 def list_adapters(species: str, dataset: str) -> dict:
     """List adapters declared in a species/dataset adapters config."""
+    return _until_configs_change("adapters", species, dataset,
+                                 lambda: _list_adapters(species, dataset))
+
+
+def _list_adapters(species: str, dataset: str) -> dict:
     adapters, input_dir = load_adapters_dict(species, dataset)
     out: list[dict] = []
     for name, entry in adapters.items():
@@ -512,6 +533,30 @@ def _adapter_types(species: str, dataset: str, adapters: dict) -> tuple:
     return schema, types
 
 
+def warm_source_caches() -> None:
+    """Work out, ahead of time, what every species' source list needs that is slow the
+    first time (each adapter's declared source and schema types), so switching
+    species in the build page is quick from the start. Runs in a background thread."""
+    import logging
+    import threading
+
+    def run():
+        try:
+            species_cfg = load_species_config()
+        except Exception:  # noqa: BLE001
+            return
+        for species, datasets in species_cfg.items():
+            for dataset in (datasets or {}) if isinstance(datasets, dict) else ():
+                try:
+                    list_adapters(species, dataset)
+                    _until_configs_change("sources", species, dataset,
+                                          lambda: _static_source_groups(species, dataset))
+                except Exception as exc:  # noqa: BLE001 - a species without configs
+                    logging.getLogger(__name__).debug("warming %s/%s: %s", species, dataset, exc)
+
+    threading.Thread(target=run, name="warm-source-caches", daemon=True).start()
+
+
 def _type_detail(name: str, kind: str, file_entry: Optional[dict], schema_entry: Optional[dict]) -> dict:
     """What the wizard shows for one node or edge type: from the source's schema file
     when it lists the type, else from the schema config."""
@@ -591,6 +636,38 @@ def group_adapters_by_source(species: str, dataset: str) -> dict:
     """
     from backend.core.console import job_runner  # local import avoids an import cycle
 
+    static = _until_configs_change("sources", species, dataset,
+                                   lambda: _static_source_groups(species, dataset))
+    presence: dict = {}
+    try:
+        for s in job_runner.data_status(species).get("sources", []):
+            presence[s["key"]] = s
+    except Exception:  # noqa: BLE001 - presence is a nicety, not required
+        pass
+
+    for g in static["groups"]:
+        dls = g["downloads"]
+        for d in dls:
+            here = presence.get(d["key"], {})
+            d["present"] = here.get("present")
+            d["bytes"] = here.get("bytes")
+            # "yours" (your read-only folder) or "console" (downloaded), when present
+            d["location"] = here.get("location")
+        on_disk = [d for d in dls if d["present"]]
+        g["present"] = bool(dls) and len(on_disk) == len(dls)
+        g["bytes"] = sum(d["bytes"] or 0 for d in on_disk) or None
+        g["location"] = (None if not on_disk else
+                         "yours" if all(d["location"] == "yours" for d in on_disk) else "console")
+        # Where to put what can't be downloaded and isn't there yet.
+        g["local_paths"] = [p for d in dls if not d["downloadable"] and not d["present"]
+                            for p in d["local_paths"]]
+    static["stamp"] = sources_stamp(species, dataset)
+    return static
+
+
+def _static_source_groups(species: str, dataset: str) -> dict:
+    """Everything in the source list but what's on disk: rebuilt only when a config or
+    the schema folder changes."""
     adapters, input_dir = load_adapters_dict(species, dataset)
     try:
         source_meta = {s["key"]: s for s in list_data_sources(species).get("sources", [])}
@@ -606,23 +683,12 @@ def group_adapters_by_source(species: str, dataset: str) -> dict:
     schema, types = _adapter_types(species, dataset, adapters)
     folder = _schema_files(species)
 
-    presence: dict = {}
-    try:
-        for s in job_runner.data_status(species).get("sources", []):
-            presence[s["key"]] = s
-    except Exception:  # noqa: BLE001 - presence is a nicety, not required
-        pass
-
     def download(key: str) -> dict:
-        meta, here = source_meta.get(key, {}), presence.get(key, {})
+        meta = source_meta.get(key, {})
         return {
             "key": key,
             "name": meta.get("name") or key,
             "downloadable": bool(meta.get("downloadable", True)),
-            "present": here.get("present"),
-            "bytes": here.get("bytes"),
-            # "yours" (your read-only folder) or "console" (downloaded), when present
-            "location": here.get("location"),
             "local_paths": meta.get("local_paths", []),
             "urls": meta.get("urls", []),
         }
@@ -669,15 +735,7 @@ def group_adapters_by_source(species: str, dataset: str) -> dict:
     for g in groups.values():
         dls = [download(k) for k in g["downloads"]]
         g["downloads"] = dls
-        on_disk = [d for d in dls if d["present"]]
-        g["present"] = bool(dls) and len(on_disk) == len(dls)
-        g["bytes"] = sum(d["bytes"] or 0 for d in on_disk) or None
-        g["location"] = (None if not on_disk else
-                         "yours" if all(d["location"] == "yours" for d in on_disk) else "console")
         g["downloadable"] = any(d["downloadable"] for d in dls)
-        # Where to put what can't be downloaded and isn't there yet.
-        g["local_paths"] = [p for d in dls if not d["downloadable"] and not d["present"]
-                            for p in d["local_paths"]]
         g["urls"] = [u for d in dls for u in d["urls"]]
         g["website"] = g["website"] or next((_origin(u) for u in g["urls"] if _origin(u)), None)
         g["adapter_count"] = len(g["adapters"])
@@ -693,8 +751,7 @@ def group_adapters_by_source(species: str, dataset: str) -> dict:
     # then downloads no adapter reads.
     out.sort(key=lambda x: (not x["adapters"], not x["in_folder"], x["source"] == SHARED_SOURCE,
                             str(x["name"]).lower()))
-    return {"species": species, "dataset": dataset, "input_dir": input_dir, "groups": out,
-            "stamp": sources_stamp(species, dataset)}
+    return {"species": species, "dataset": dataset, "input_dir": input_dir, "groups": out}
 
 
 def list_schema(species: str, dataset: str) -> dict:

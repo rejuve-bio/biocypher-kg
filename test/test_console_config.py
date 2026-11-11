@@ -166,6 +166,18 @@ def test_adapters_are_credited_only_with_the_types_they_write():
     assert obo["cl part of"]["adapters"] == ["cl_part_of"]
 
 
+def test_source_lists_are_worked_out_at_start_up():
+    """The slow part of a species' source list (each adapter's schema types) is done
+    in the background when the console starts, so the first switch is quick."""
+    import threading
+    ci._types_cache.clear()
+    ci.warm_source_caches()
+    for t in threading.enumerate():
+        if t.name == "warm-source-caches":
+            t.join(timeout=120)
+    assert {("hsa", "sample"), ("dmel", "full"), ("cel", "sample")} <= set(ci._types_cache)
+
+
 def test_fly_sources_share_and_name_their_downloads():
     groups = _groups("dmel", "full")
     assert _keys(groups["GOA"]) == ["flybase"]                   # fly GO annotations ship with FlyBase
