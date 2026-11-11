@@ -94,7 +94,7 @@ export default function App() {
   }
 
   return (
-    <HintsProvider global={[{ keys: ["Q", "E"], label: "Switch section" }]}>
+    <HintsProvider global={[]}>
     <div className="app">
       <header className="topbar">
         <div className="brand">

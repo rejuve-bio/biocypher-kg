@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MOD, usePageHints } from "../components/Hints";
+import { MOD, useStatus } from "../components/Hints";
 import {
   api,
   ApiError,
@@ -558,11 +558,39 @@ export default function BuildWizard() {
     };
   }
 
+  // Step 4, where the validation result and launch problems show.
+  const buildCard = useRef<HTMLDivElement>(null);
+  const showBuildCard = () => {
+    const card = buildCard.current;
+    if (!card) return;
+    const inView = () => {
+      const r = card.getBoundingClientRect();
+      return r.top >= 0 && r.top < window.innerHeight - 120;
+    };
+    if (inView()) return;
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Some browsers skip smooth scrolling (reduced motion, a background tab): jump.
+    window.setTimeout(() => !inView() && card.scrollIntoView({ block: "center" }), 700);
+  };
+  const status = useStatus();
+
   async function onValidate() {
     setValidating(true);
     setValidation(null);
     try {
-      setValidation(await api.validate(buildRequest()));
+      const result = await api.validate(buildRequest());
+      setValidation(result);
+      // Say it in the bar too: the full result is in step 4, often off screen.
+      const missingFiles = Object.keys(result.missing_paths ?? {}).length;
+      status(
+        result.valid
+          ? { text: "valid · ready to launch", tone: "ok" }
+          : {
+              text: `invalid · ${result.static_errors[0] ?? `${missingFiles} adapter(s) missing input files`}`,
+              tone: "err",
+            },
+      );
+      showBuildCard();
     } catch (e) {
       setLoadError(String(e));
     } finally {
@@ -610,23 +638,32 @@ export default function BuildWizard() {
     return `${counts}${from}`;
   })();
 
-  // Validate and Launch in the bar along the bottom; ⌘↵ / Ctrl+Enter launches.
+  // Validate and Launch are in step 4; ⌘↵ / Ctrl+Enter launches.
   const canValidate = !validating && !!selDataset;
   // Percent chosen but no longer possible (a source of unknown size was added): the
   // size line says why, and Launch waits until Rows is picked or the sizes are known.
   const sizeBlocked = sizeUnit === "percent" && !percentReady;
-  const canLaunch = !submitting && (isAll || selected.size > 0) && !sizeBlocked && !missing.length;
-  usePageHints([
-    { keys: [], label: validating ? "Validating…" : "Validate", onClick: onValidate, disabled: !canValidate },
-    { keys: [MOD, "↵"], label: submitting ? "Launching…" : "Launch build", onClick: onBuild, disabled: !canLaunch },
-  ]);
-  const launch = useRef({ onBuild, canLaunch });
-  launch.current = { onBuild, canLaunch };
+  // Why a build can't launch yet (null: it can).
+  const launchBlocker = missing.length
+    ? `set in Settings first: ${missing.join(", ")}`
+    : !isAll && selected.size === 0
+      ? "pick at least one source"
+      : sizeBlocked
+        ? percentWhyNot
+        : null;
+  const canLaunch = !submitting && !launchBlocker;
+  const explainLaunch = () => {
+    if (launchBlocker) status({ text: `can't launch · ${launchBlocker}`, tone: "err" });
+    showBuildCard();
+  };
+  const launch = useRef({ onBuild, canLaunch, explainLaunch });
+  launch.current = { onBuild, canLaunch, explainLaunch };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && launch.current.canLaunch) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
-        launch.current.onBuild();
+        if (launch.current.canLaunch) launch.current.onBuild();
+        else launch.current.explainLaunch();
       }
     };
     window.addEventListener("keydown", onKey);
@@ -1372,13 +1409,13 @@ export default function BuildWizard() {
         </div>
       </div>
 
-      <div className="card">
+      <div className="card" ref={buildCard}>
         <h2><span className="step">4</span> Validate &amp; Build</h2>
         <div className="row">
           <button
             className="secondary"
             onClick={onValidate}
-            disabled={validating || !selDataset}
+            disabled={!canValidate}
           >
             {validating ? "Validating…" : "Validate"}
           </button>
@@ -1386,10 +1423,21 @@ export default function BuildWizard() {
             className="primary"
             onClick={onBuild}
             disabled={!canLaunch}
+            title={`Launch build (${MOD}+Enter)`}
           >
             {submitting ? "Launching…" : "Launch build"}
           </button>
         </div>
+        {launchBlocker && (
+          <div className="field-hint launch-blocker">
+            can't launch · {launchBlocker}
+            {missing.length > 0 && (
+              <>
+                {" "}· <Link to="/settings">settings</Link>
+              </>
+            )}
+          </div>
+        )}
         {validation && <ValidationPanel result={validation} />}
       </div>
     </>

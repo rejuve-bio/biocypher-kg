@@ -1607,3 +1607,5 @@ a.link, .src-link { color: var(--accent); }
 .sk-label {
   margin-bottom: 8px; color: var(--muted); font-size: 11px; letter-spacing: 0.08em;
 }
+
+.launch-blocker { margin-top: 8px; color: var(--warn); }
