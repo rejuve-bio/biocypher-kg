@@ -547,7 +547,6 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .src-link:hover { text-decoration: underline; }
 .source-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto; }
-.source-card .adapter-group { margin-top: 8px; }
 
 /* Source as a single selectable unit (select the source, not its adapters). */
 .source-card { transition: border-color 0.15s, background 0.15s; }
@@ -971,29 +970,10 @@ input[type="checkbox"]:checked {
   border-color: var(--accent);
   box-shadow: 0 0 10px -2px color-mix(in srgb, var(--accent) 70%, transparent);
 }
-/* Adapter checkboxes match their category: node teal, edge blue. */
-.adapter-group:has(.group-dot.node) input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
-.adapter-group:has(.group-dot.edge) input[type="checkbox"]:checked {
-  background: var(--accent-2);
-  border-color: var(--accent-2);
-  box-shadow: 0 0 10px -2px color-mix(in srgb, var(--accent-2) 70%, transparent);
-}
 input[type="checkbox"]:checked::before { transform: scale(1); }
 input[type="checkbox"]:focus-visible { outline: none; box-shadow: var(--glow); }
 input[type="checkbox"]:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ── Adapter groups ──────────────────────────────────────── */
-.adapter-group { margin-top: 14px; }
-.adapter-group:first-of-type { margin-top: 4px; }
-.group-head { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; padding: 0 2px; }
-.group-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
-.group-dot.node { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
-.group-dot.edge { background: var(--accent-2); box-shadow: 0 0 8px var(--accent-2); }
-/* Differentiate node vs edge adapters by color, same as the config editor. */
-.adapter-group:has(.group-dot.node) .adapter-item .name { color: color-mix(in srgb, var(--accent) 80%, var(--text)); }
-.adapter-group:has(.group-dot.edge) .adapter-item .name { color: color-mix(in srgb, var(--accent-2) 80%, var(--text)); }
-.group-title { font-weight: 700; font-size: 13px; letter-spacing: 0.02em; }
-.group-count { font-size: 12px; color: var(--muted); }
 /* A row of options (e.g. "Run here | Use existing", "Neo4j | MORK"): when one is
    chosen it's bright and the rest are dim, like a two-way setting. */
 .group-actions {
@@ -1039,31 +1019,6 @@ input[type="checkbox"]:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 .linkbtn.seg-on { color: var(--text-strong); }
 
-/* ── Adapter grid ────────────────────────────────────────── */
-.adapter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 5px;
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 6px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--panel-2) 45%, transparent);
-}
-.adapter-item {
-  display: flex; align-items: flex-start; gap: 9px;
-  font-size: 13px; padding: 7px 10px; border-radius: 8px;
-  overflow: hidden; border: 1px solid transparent;
-  transition: background 0.12s, border-color 0.12s;
-}
-.adapter-item:hover { background: var(--panel-2); }
-.adapter-item:has(input:checked) {
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
-}
-.adapter-item input { flex: none; margin: 3px 0 0; }
-.adapter-item .name { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; line-height: 1.35; }
 .tag { flex: none; margin-top: 1px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; }
 .tag.node { color: var(--teal); background: color-mix(in srgb, var(--teal) 16%, transparent); }
 .tag.edge { color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 16%, transparent); }
@@ -1386,13 +1341,6 @@ details summary { cursor: pointer; }
 }
 .source-item.active .source-item-name { color: var(--accent); }
 
-.adapter-grid { border: 1px solid var(--border); border-radius: 2px; background: var(--row); }
-.adapter-item { border-radius: 2px; }
-.adapter-item:hover { background: color-mix(in srgb, var(--text) 5%, transparent); }
-.adapter-item:has(input:checked) {
-  background: color-mix(in srgb, var(--accent) 7%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-}
 .tag { border-radius: 2px; letter-spacing: 0.08em; }
 .chip-tag { border-radius: 2px; background: color-mix(in srgb, var(--text) 4%, transparent); }
 .src-badge { border-radius: 2px; letter-spacing: 0.08em; }
@@ -1559,32 +1507,59 @@ a.link, .src-link { color: var(--accent); }
   max-height: 340px; overflow-y: auto; padding-right: 2px;
   scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text) 22%, transparent) transparent;
 }
-.type-row {
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; gap: 8px; min-width: 0;
-  padding: 6px 10px 7px;
+/* A column of types: one panel, rows split by hairlines. */
+.tp-panel {
+  border: 1px solid var(--border-soft); border-radius: 2px;
   background: var(--row);
-  border: 1px solid var(--border-soft);
-  border-left: 2px solid var(--kind-c);
-  border-radius: 2px;
-  font-size: 12px;
-  transition: border-color 0.15s, background 0.15s;
+  max-height: 360px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text) 22%, transparent) transparent;
 }
-.type-row.node { --kind-c: var(--node-c); }
-.type-row.edge { --kind-c: var(--edge-c); }
-.type-row:hover {
-  border-color: color-mix(in srgb, var(--kind-c) 45%, transparent);
-  border-left-color: var(--kind-c);
-  background: color-mix(in srgb, var(--kind-c) 6%, var(--row));
+.tp-panel.node { --kind: var(--node-c); }
+.tp-panel.edge { --kind: var(--edge-c); }
+.tp-row {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 8px 12px; font-size: 12px;
+  transition: background 0.12s;
 }
-.type-dot {
+.tp-panel > .tp-row + .tp-row { border-top: 1px solid var(--border-soft); }
+.tp-row:hover { background: color-mix(in srgb, var(--kind) 7%, transparent); }
+.tp-dot {
   width: 7px; height: 7px; flex: none; border-radius: 50%;
-  background: var(--node-c); box-shadow: 0 0 6px color-mix(in srgb, var(--node-c) 70%, transparent);
+  background: var(--node-c);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--node-c) 60%, transparent);
 }
-.type-name {
+.tp-name {
   flex: 1; min-width: 0; color: var(--text);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
+/* Edges, grouped by what they connect: "gene -> disease", then its relations. */
+.tp-pair { padding-bottom: 4px; }
+.tp-pair + .tp-pair { border-top: 1px solid var(--border-soft); }
+.tp-pair-head {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  padding: 10px 12px 4px;
+  font-size: 11px; letter-spacing: 0.04em;
+}
+.tp-end {
+  display: inline-flex; align-items: center; gap: 6px; min-width: 0;
+  color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tp-arrow {
+  flex: none; width: 26px; height: 10px;
+  fill: none; stroke: var(--edge-c); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
+}
+/* A relation under its pair, on a thin guide from the pair's start. */
+.tp-rel { position: relative; padding: 6px 12px 6px 30px; }
+.tp-rel::before, .tp-rel::after {
+  content: ""; position: absolute; left: 15px;
+  border-color: color-mix(in srgb, var(--edge-c) 35%, transparent); border-style: solid; border-width: 0;
+}
+.tp-rel::before { top: 0; bottom: 0; border-left-width: 1px; }
+.tp-rel:last-child::before { bottom: 50%; }
+.tp-rel::after { top: 50%; width: 8px; border-top-width: 1px; }
+.tp-rel .tp-name { color: var(--edge-c); }
+
 /* How many of this type the last full build wrote: a meter against the source's
    largest type, then the number. Fixed width, so every row lines up. */
 .type-size {
@@ -1597,44 +1572,13 @@ a.link, .src-link { color: var(--accent); }
 }
 .type-meter > i {
   display: block; height: 100%; border-radius: 2px;
-  background: color-mix(in srgb, var(--kind-c) 80%, transparent);
+  background: color-mix(in srgb, var(--kind) 80%, transparent);
 }
 .type-count {
   flex: none; min-width: 30px; text-align: right;
   color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums;
 }
 
-/* source -relation-> target */
-.triple { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0; }
-.triple .end {
-  flex: 0 1 auto; min-width: 0; max-width: 38%;
-  padding: 1px 7px;
-  border: 1px solid color-mix(in srgb, var(--node-c) 45%, transparent);
-  background: color-mix(in srgb, var(--node-c) 8%, transparent);
-  border-radius: 2px;
-  color: var(--text); font-size: 11px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.triple .rel {
-  flex: 1 1 0; min-width: 30px;
-  display: flex; align-items: center; gap: 5px;
-  padding: 0 3px 0 4px;
-}
-.triple .line {
-  position: relative; flex: 1 1 8px; min-width: 6px; height: 1px;
-  background: color-mix(in srgb, var(--edge-c) 55%, transparent);
-}
-.triple .line.arrow::after {
-  content: ""; position: absolute; right: -2px; top: -4px;
-  border-left: 6px solid color-mix(in srgb, var(--edge-c) 85%, transparent);
-  border-top: 4.5px solid transparent; border-bottom: 4.5px solid transparent;
-}
-.triple .verb {
-  flex: 0 1 auto; min-width: 0;
-  color: var(--edge-c); font-size: 10px; letter-spacing: 0.04em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.triple .rel:not(:has(.verb)) { gap: 0; }
 .type-tag {
   flex: none; max-width: 30%;
   padding: 0 6px;
@@ -1642,4 +1586,24 @@ a.link, .src-link { color: var(--accent); }
   border-radius: 2px;
   color: var(--muted); font-size: 10px; letter-spacing: 0.04em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Loading outline for the source list (the shape of what's coming). */
+.sk {
+  display: block; border-radius: 2px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--text) 6%, transparent) 0%,
+    color-mix(in srgb, var(--text) 13%, transparent) 50%,
+    color-mix(in srgb, var(--text) 6%, transparent) 100%);
+  background-size: 200% 100%;
+  animation: sk-sweep 1.3s ease-in-out infinite;
+}
+.sk-item { cursor: default; }
+.sk-box { width: 14px; height: 14px; flex: none; }
+.sk-line { height: 10px; }
+.sk-row { height: 32px; }
+@keyframes sk-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+.sk-label {
+  margin-bottom: 8px; color: var(--muted); font-size: 11px; letter-spacing: 0.08em;
 }

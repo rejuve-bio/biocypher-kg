@@ -52,6 +52,44 @@ const typeTitle = (t: SourceType) =>
     .filter(Boolean)
     .join("\n");
 
+// Each species/dataset's adapters and sources, kept while the console is open: going
+// back to a species shows its list at once (refreshed behind it), and the others are
+// fetched in the background after the first, so a first switch is quick too.
+interface SourcesEntry {
+  adapters: AdapterInfo[];
+  groups: AdapterGroup[];
+  stamp: string;
+}
+const sourcesCache = new Map<string, SourcesEntry>();
+const sourcesInFlight = new Map<string, Promise<SourcesEntry>>();
+// A request that never answers (sent while the console was restarting, say) gives up
+// after this long, so the page asks again instead of waiting on it for good.
+const SOURCES_TIMEOUT_MS = 12000;
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error("the console didn't answer in time")), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+  });
+}
+function loadSources(species: string, dataset: string): Promise<SourcesEntry> {
+  const key = `${species}/${dataset}`;
+  let pending = sourcesInFlight.get(key);
+  if (!pending) {
+    pending = withTimeout(Promise.all([
+      api.listAdapters(species, dataset),
+      api.adaptersBySource(species, dataset),
+    ]), SOURCES_TIMEOUT_MS)
+      .then(([ad, gr]) => {
+        const entry = { adapters: ad.adapters, groups: gr.groups, stamp: gr.stamp };
+        sourcesCache.set(key, entry);
+        return entry;
+      })
+      .finally(() => sourcesInFlight.delete(key));
+    sourcesInFlight.set(key, pending);
+  }
+  return pending;
+}
+
 export default function BuildWizard() {
   const navigate = useNavigate();
 
@@ -64,6 +102,7 @@ export default function BuildWizard() {
   const [selDataset, setSelDataset] = useState<string>("");
   const [adapters, setAdapters] = useState<AdapterInfo[]>([]);
   const [adapterGroups, setAdapterGroups] = useState<AdapterGroup[] | null>(null);
+  const [sourcesRetry, setSourcesRetry] = useState(0); // bumped by "try again"
   // What the source list was made from (see the reload effect below).
   const sourcesStamp = useRef<string | null>(null);
   const listedAdapters = useRef<Set<string>>(new Set());
@@ -175,6 +214,21 @@ export default function BuildWizard() {
     setDbsnpVariant(d?.dbsnp_variant || "common");
   }, [selDataset, datasets]);
 
+  // Fresh adapters and sources for the open species/dataset, keeping what's picked:
+  // adapters that appear are picked (like on first load), ones that are gone dropped.
+  function applyFresh(entry: SourcesEntry) {
+    const before = listedAdapters.current;
+    const now = new Set(entry.adapters.map((a) => a.name));
+    setAdapters(entry.adapters);
+    setSelected((prev) => {
+      const next = new Set([...prev].filter((n) => now.has(n)));
+      now.forEach((n) => !before.has(n) && next.add(n));
+      return next;
+    });
+    setAdapterGroups(entry.groups);
+    sourcesStamp.current = entry.stamp;
+  }
+
   useEffect(() => {
     // Answers for a species/dataset you've already switched away from are dropped:
     // a late one would replace the list (selecting all of it), so the build would
@@ -182,50 +236,83 @@ export default function BuildWizard() {
     let current = true;
     setValidation(null);
     setAdaptersError(null);
-    // Clear the old list right away, so nothing from the last choice can be launched.
-    setAdapters([]);
-    setAdapterGroups(null);
     sourcesStamp.current = null;
-    setSelected(new Set());
     // "all" has no single config to introspect: every adapter of each species runs.
     if (isAll || !selSpecies || !selDataset) {
+      setAdapters([]);
+      setAdapterGroups(null);
+      setSelected(new Set());
       return;
     }
-    api
-      .listAdapters(selSpecies, selDataset)
-      .then((r) => {
+    // A list seen before shows at once; otherwise clear the old one right away, so
+    // nothing from the last choice can be launched, and show it loading.
+    const show = (entry: SourcesEntry) => {
+      setAdapters(entry.adapters);
+      setSelected(new Set(entry.adapters.map((a) => a.name))); // default: all
+      setAdapterGroups(entry.groups);
+      sourcesStamp.current = entry.stamp;
+      // Default the detail pane to the first source that has a schema to show.
+      setActiveSource((entry.groups?.find((g) => g.adapter_count > 0) ?? entry.groups?.[0])?.source ?? null);
+    };
+    const cached = sourcesCache.get(`${selSpecies}/${selDataset}`);
+    if (cached) {
+      show(cached);
+    } else {
+      setAdapters([]);
+      setAdapterGroups(null);
+      setSelected(new Set());
+    }
+    // A few tries before giving up (the console may be restarting).
+    const attempt = (left: number): Promise<SourcesEntry> =>
+      loadSources(selSpecies, selDataset).catch((e) =>
+        left > 0 && current
+          ? new Promise<void>((r) => setTimeout(r, 1500)).then(() => attempt(left - 1))
+          : Promise.reject(e),
+      );
+    attempt(3)
+      .then((entry) => {
         if (!current) return;
-        setAdapters(r.adapters);
-        setSelected(new Set(r.adapters.map((a) => a.name))); // default: all
+        if (cached) applyFresh(entry); // what's on disk may have changed since
+        else show(entry);
+        prefetchOtherSources();
       })
       .catch((e) => {
         if (!current) return;
         // Scope the failure to this section; don't blow away the whole wizard.
-        setAdapters([]);
-        setSelected(new Set());
-        setAdaptersError(String(e));
-      });
-    // Source grouping drives the picker; fall back to the flat list on failure.
-    api
-      .adaptersBySource(selSpecies, selDataset)
-      .then((r) => {
-        if (!current) return;
-        setAdapterGroups(r.groups);
-        sourcesStamp.current = r.stamp;
-        // Default the detail pane to the first source that has a schema to show.
-        setActiveSource(
-          (r.groups.find((g) => g.adapter_count > 0) ?? r.groups[0])?.source ?? null,
-        );
-      })
-      .catch(() => {
-        if (!current) return;
-        setAdapterGroups(null);
-        setActiveSource(null);
+        if (!cached) setAdaptersError(String(e));
       });
     return () => {
       current = false;
     };
-  }, [selSpecies, selDataset]);
+  }, [selSpecies, selDataset, sourcesRetry]);
+
+  // Fetch every species/dataset's list in the background, one at a time, as soon as
+  // the species are known, so switching to them is quick.
+  const prefetched = useRef(false);
+  function prefetchOtherSources() {
+    if (prefetched.current || !species.length) return;
+    prefetched.current = true;
+    const todo = species.flatMap((sp) =>
+      sp.datasets.filter((d) => d.adapters_config_exists).map((d) => [sp.species, d.name] as const),
+    );
+    (async () => {
+      for (const [sp, ds] of todo) {
+        if (sourcesCache.has(`${sp}/${ds}`)) continue;
+        try {
+          await loadSources(sp, ds);
+        } catch {
+          /* fetched again when picked */
+        }
+      }
+    })();
+  }
+
+  useEffect(() => {
+    if (!species.length) return;
+    const t = setTimeout(prefetchOtherSources, 150); // the open species' list goes first
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [species]);
 
   // The source list follows data_source_schemas/<species>/ and the configs: when a
   // build rewrites the folder or a config changes, reload it in place. Adapters that
@@ -239,21 +326,8 @@ export default function BuildWizard() {
         try {
           const stamp = await api.sourcesStamp(selSpecies, selDataset);
           if (alive && stamp !== sourcesStamp.current) {
-            const [ad, gr] = await Promise.all([
-              api.listAdapters(selSpecies, selDataset),
-              api.adaptersBySource(selSpecies, selDataset),
-            ]);
-            if (!alive) return;
-            const before = listedAdapters.current;
-            const now = new Set(ad.adapters.map((a) => a.name));
-            setAdapters(ad.adapters);
-            setSelected((prev) => {
-              const next = new Set([...prev].filter((n) => now.has(n)));
-              now.forEach((n) => !before.has(n) && next.add(n));
-              return next;
-            });
-            setAdapterGroups(gr.groups);
-            sourcesStamp.current = gr.stamp;
+            const entry = await loadSources(selSpecies, selDataset);
+            if (alive) applyFresh(entry);
           }
         } catch {
           /* transient; try again next tick */
@@ -300,9 +374,8 @@ export default function BuildWizard() {
             api.dataStatus(selSpecies).then(setDataStatus).catch(() => {});
             // Refresh per-source presence so the source cards update after a fetch.
             if (selDataset)
-              api
-                .adaptersBySource(selSpecies, selDataset)
-                .then((r) => setAdapterGroups(r.groups))
+              loadSources(selSpecies, selDataset)
+                .then((entry) => setAdapterGroups(entry.groups))
                 .catch(() => {});
           }
           setActiveDownloadSource(null);
@@ -385,17 +458,6 @@ export default function BuildWizard() {
 
   const downloadBusy = !!downloadId && (downloadStatus === "running" || downloadStatus === "queued");
 
-  function toggleAdapter(name: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
-    });
-    setValidation(null);
-  }
-
-  const nodeAdapters = useMemo(() => adapters.filter((a) => !a.edges), [adapters]);
-  const edgeAdapters = useMemo(() => adapters.filter((a) => a.edges), [adapters]);
   // Full adapter records keyed by name, so a source group can reuse the node/edge
   // renderers (which want AdapterInfo) from the lighter grouped payload.
   const adapterByName = useMemo(
@@ -591,45 +653,6 @@ export default function BuildWizard() {
   ).length;
 
   const q = adapterFilter.trim().toLowerCase();
-  const applyFilter = (list: AdapterInfo[]) =>
-    q ? list.filter((a) => a.name.toLowerCase().includes(q)) : list;
-
-  const renderItem = (a: AdapterInfo) => (
-    <label className="adapter-item" key={a.name} title={a.module ?? ""}>
-      <input
-        type="checkbox"
-        checked={selected.has(a.name)}
-        onChange={() => toggleAdapter(a.name)}
-      />
-      <span className="name">{a.name}</span>
-    </label>
-  );
-
-  const renderGroup = (title: string, kind: "node" | "edge", list: AdapterInfo[]) => {
-    if (!list.length) return null;
-    const sel = list.filter((a) => selected.has(a.name)).length;
-    return (
-      <div className="adapter-group">
-        <div className="group-head">
-          <span className={`group-dot ${kind}`} />
-          <span className="group-title">{title}</span>
-          <span className="group-count">
-            {sel}/{list.length}
-          </span>
-          <span className="group-actions">
-            <button className="linkbtn" onClick={() => setGroup(list, true)}>
-              all
-            </button>
-            <button className="linkbtn" onClick={() => setGroup(list, false)}>
-              none
-            </button>
-          </span>
-        </div>
-        <div className="adapter-grid">{list.map(renderItem)}</div>
-      </div>
-    );
-  };
-
   // Turn an internal adapter name into a readable type: drop the source prefix and
   // the underscores (e.g. "uniprot_sprot_translates_to" -> "sprot translates to").
   function readableType(name: string, g: AdapterGroup): string {
@@ -658,6 +681,35 @@ export default function BuildWizard() {
       ? `${size.nodes.toLocaleString()} nodes · ${size.edges.toLocaleString()} edges`
       : "size unknown";
   };
+
+  // While a species' sources load: the same layout, in outline.
+  const renderSourcesLoading = () => (
+    <>
+    <div className="sk-label">loading sources…</div>
+    <div className="source-browser" aria-busy="true" aria-label="loading sources">
+      <div className="source-list">
+        {Array.from({ length: 9 }, (_, i) => (
+          <div className="source-item sk-item" key={i}>
+            <span className="sk sk-box" />
+            <span className="sk sk-line" style={{ width: `${48 + ((i * 29) % 40)}%` }} />
+          </div>
+        ))}
+      </div>
+      <div className="source-detail-pane">
+        <span className="sk sk-line" style={{ width: "38%", height: 14 }} />
+        <span className="sk sk-line" style={{ width: "22%" }} />
+        <div className="schema-cols">
+          <div className="type-list">
+            {[0, 1].map((i) => <span className="sk sk-row" key={i} />)}
+          </div>
+          <div className="type-list">
+            {[0, 1, 2, 3].map((i) => <span className="sk sk-row" key={i} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
+  );
 
   // Left list: one compact selectable row per source. The checkbox includes the
   // source in the build; clicking the row opens its schema in the detail pane.
@@ -757,32 +809,41 @@ export default function BuildWizard() {
       );
     };
     const renderNodeType = (t: SourceType) => (
-      <div className="type-row node" key={t.name} title={typeTitle(t)}>
-        <span className="type-dot" />
-        <span className="type-name">{t.name}</span>
+      <div className="tp-row" key={t.name} title={typeTitle(t)}>
+        <span className="tp-dot" />
+        <span className="tp-name">{t.name}</span>
         {sizeOf(t)}
       </div>
     );
-    // An edge as what it connects: source -relation-> target.
-    const renderEdgeType = (t: SourceType) => (
-      <div className="type-row edge" key={t.name} title={typeTitle(t)}>
-        {t.source && t.target ? (
-          <span className="triple">
-            <span className="end">{pretty(t.source)}</span>
-            <span className="rel">
-              <span className="line" />
-              {t.verb && <span className="verb">{pretty(t.verb)}</span>}
-              <span className="line arrow" />
-            </span>
-            <span className="end">{pretty(t.target)}</span>
-          </span>
-        ) : (
-          <span className="type-name">{t.name}</span>
+    // Edges grouped by what they connect (gene -> disease), one row per relation.
+    type Pair = { key: string; source?: string | null; target?: string | null; edges: SourceType[] };
+    const pairs: Pair[] = [];
+    for (const t of edges) {
+      const key = t.source && t.target ? `${t.source}|${t.target}` : "";
+      let pair = pairs.find((x) => x.key === key);
+      if (!pair) pairs.push((pair = { key, source: t.source, target: t.target, edges: [] }));
+      pair.edges.push(t);
+    }
+    const renderPair = (pair: Pair) => (
+      <div className="tp-pair" key={pair.key || "other"}>
+        {pair.key && (
+          <div className="tp-pair-head">
+            <span className="tp-end"><span className="tp-dot" />{pretty(pair.source)}</span>
+            <svg className="tp-arrow" viewBox="0 0 26 10" aria-hidden="true">
+              <path d="M1 5h22M18 1.5l4.5 3.5-4.5 3.5" />
+            </svg>
+            <span className="tp-end"><span className="tp-dot" />{pretty(pair.target)}</span>
+          </div>
         )}
-        {(tripleUses.get(tripleKey(t)) ?? 0) > 1 && edgeTag(t) && (
-          <span className="type-tag">{edgeTag(t)}</span>
-        )}
-        {sizeOf(t)}
+        {pair.edges.map((t) => (
+          <div className={`tp-row${pair.key ? " tp-rel" : ""}`} key={t.name} title={typeTitle(t)}>
+            <span className="tp-name">{pair.key ? pretty(t.verb) || t.name : t.name}</span>
+            {(tripleUses.get(tripleKey(t)) ?? 0) > 1 && edgeTag(t) && (
+              <span className="type-tag">{edgeTag(t)}</span>
+            )}
+            {sizeOf(t)}
+          </div>
+        ))}
       </div>
     );
 
@@ -814,7 +875,7 @@ export default function BuildWizard() {
             <div className="schema-col">
               <div className="schema-label node">Nodes <span className="schema-n">{nodes.length}</span></div>
               {nodes.length ? (
-                <div className="type-list">{nodes.map(renderNodeType)}</div>
+                <div className="tp-panel node">{nodes.map(renderNodeType)}</div>
               ) : (
                 <span className="muted type-none">none</span>
               )}
@@ -822,7 +883,7 @@ export default function BuildWizard() {
             <div className="schema-col">
               <div className="schema-label edge">Edges <span className="schema-n">{edges.length}</span></div>
               {edges.length ? (
-                <div className="type-list">{edges.map(renderEdgeType)}</div>
+                <div className="tp-panel edge">{pairs.map(renderPair)}</div>
               ) : (
                 <span className="muted type-none">none</span>
               )}
@@ -1016,7 +1077,12 @@ export default function BuildWizard() {
           </div>
         )}
         {adaptersError && (
-          <div className="alert err">adapters failed to load: {adaptersError}</div>
+          <div className="alert err">
+            sources failed to load: {adaptersError}{" "}
+            <button type="button" className="linkbtn" onClick={() => setSourcesRetry((n) => n + 1)}>
+              try again
+            </button>
+          </div>
         )}
         {adapterGroups ? (
           (() => {
@@ -1035,13 +1101,8 @@ export default function BuildWizard() {
             );
           })()
         ) : (
-          <>
-            {renderGroup("Nodes", "node", applyFilter(nodeAdapters))}
-            {renderGroup("Edges", "edge", applyFilter(edgeAdapters))}
-          </>
-        )}
-        {!adapters.length && selDataset && !adaptersError && (
-          <span className="muted">loading sources…</span>
+          // Until the source selector is ready (or the error above, if it can't load).
+          !adaptersError && selDataset && renderSourcesLoading()
         )}
         </>
         )}
