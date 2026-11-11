@@ -9,9 +9,8 @@
 # where <source_key> is a key from hsa_data_source_config.yaml. An override always
 # wins over derivation.
 
-# The Roadmap Epigenomics adapters read from forgedb/roadmap/..., which no path rule
-# can tie to a source. roadmap_dhs is the source that declares this data, so group
-# all three under it (they also need the dbSNP cache).
-roadmap_dhs: roadmap_dhs
-roadmap_chromatin_state: roadmap_dhs
-roadmap_h3_mark: roadmap_dhs
+# The Roadmap Epigenomics adapters read from forgedb/roadmap/..., which the forgedb
+# source downloads. Pinned so they stay together (they also need the dbSNP cache).
+roadmap_dhs: forgedb
+roadmap_chromatin_state: forgedb
+roadmap_h3_mark: forgedb

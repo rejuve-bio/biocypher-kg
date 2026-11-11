@@ -398,8 +398,8 @@ def test_purge_never_deletes_dbsnp_cache(monkeypatch, tmp_path):
 
 
 def test_data_status_finds_sources_outside_their_key_dir(monkeypatch, tmp_path):
-    """Presence follows the files a source declares (gtex_eqtl lands in gtex/eqtl/)
-    and versioned dirs (catlas in catlasv1/), not only input/<key>/."""
+    """Presence follows the files a source declares (GENCODE lands in ensembl/), and
+    each source's own folder (gtex/eqtl/, catlasv1/)."""
     from backend.core.config import settings
     monkeypatch.setattr(settings, "DATA_ROOT", str(tmp_path))
     hsa = tmp_path / "input" / "hsa"
@@ -407,10 +407,13 @@ def test_data_status_finds_sources_outside_their_key_dir(monkeypatch, tmp_path):
     (hsa / "gtex" / "eqtl" / "gtex.forgedb.csv.gz").write_bytes(b"x" * 5)
     (hsa / "catlasv1").mkdir(parents=True)
     (hsa / "catlasv1" / "cCRE_hg38.tsv.gz").write_bytes(b"x" * 7)
+    (hsa / "ensembl").mkdir(parents=True)
+    (hsa / "ensembl" / "gencode.gtf.gz").write_bytes(b"x" * 3)
     by_key = {s["key"]: s for s in job_runner.data_status("hsa")["sources"]}
-    assert by_key["gtex_eqtl"]["present"] is True
-    assert by_key["gtex_eqtl"]["bytes"] == 5
-    assert by_key["catlas"]["present"] is True
+    assert by_key["gtex"]["present"] is True
+    assert by_key["gtex"]["bytes"] == 5
+    assert by_key["catlasv1"]["present"] is True
+    assert by_key["gencode"]["present"] is True and by_key["gencode"]["bytes"] == 3
     assert by_key["reactome"]["present"] is False
 
 
