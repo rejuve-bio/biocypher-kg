@@ -59,6 +59,10 @@ gencode:
 
 reactome:
   name: Reactome
+  # reactome/reactome_reaction_exporter_All_species.txt (read by the reaction and
+  # reaction-role adapters) is not a public download: Reactome made it for us on
+  # request, and the public reactome_reaction_exporter.txt holds human reactions
+  # only. Place it in reactome/ by hand, or leave those adapters out of the build.
   url:
     - https://reactome.org/download/current/ReactomePathways.txt
     - https://reactome.org/download/current/ReactomePathwaysRelation.txt

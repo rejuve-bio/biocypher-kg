@@ -188,7 +188,7 @@ Run with `uv run python biocypher_cli/cli.py`. Supports Human and Drosophila mel
 kg-service/
 ├── backend/
 │   ├── api/
-│   │   ├── main.py             # FastAPI app, CORS, 72-hour cache refresh scheduler
+│   │   ├── main.py             # FastAPI app, localhost-only protections, 72-hour cache refresh scheduler
 │   │   └── routes/
 │   │       ├── __init__.py
 │   │       ├── summary.py      # GET /api/summary

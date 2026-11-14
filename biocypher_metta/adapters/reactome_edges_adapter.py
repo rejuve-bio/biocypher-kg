@@ -149,6 +149,14 @@ class ReactomeEdgesAdapter(Adapter):
                     entity_id, pathway_id = data[0].strip(), data[1].strip()
                     organism_pathway_prefix = pathway_id[:5]  # e.g., 'R-DME', 'R-HSA'
                     pathway_id = f'{pathway_id}'
+                    if organism_pathway_prefix == 'R-NUL':
+                        # R-NUL events carry no species prefix, but every row names its
+                        # organism in the species column. Keep only this species' rows, as
+                        # ReactomeAdapter does for the R-NUL reaction nodes themselves;
+                        # otherwise every species gets every R-NUL row (cow, chicken, ...).
+                        species_full_name = Adapter.SPECIES_INFO.get(self.taxon_id, {}).get('full_name')
+                        if len(data) < 6 or data[5].strip() != species_full_name:
+                            continue
                     if organism_pathway_prefix in organism_taxon_map or organism_pathway_prefix.startswith('R-NUL'):
                         # taxon = organism_taxon_map[organism_pathway_prefix]
                         props = base_props.copy()

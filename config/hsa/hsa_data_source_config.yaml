@@ -17,7 +17,7 @@ alliance:
     - https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz  # gene to disease
     - https://download.alliancegenome.org/8.3.0/EXPRESSION-ALLIANCE/COMBINED/EXPRESSION-ALLIANCE_COMBINED_6.tsv.gz  # gene to expression location (ontologies like GO, FBbt, etc) NO HUMAN DATA
     - https://download.alliancegenome.org/8.3.0/INTERACTION-MOL/COMBINED/INTERACTION-MOL_COMBINED_5.tsv.gz          # Format is like that processed by dmel.dmel_physical_interaction_psimi_adapter
-    - https://download.alliancegenome.org/8.3.0/ORTHOLOGY-ALLIANCE/COMBINED/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz    
+    - https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz  # 8.3.0 copy is gone; latest release
   local_files:
     alliance_disease: {pattern: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/DISEASE-ALLIANCE_COMBINED.tsv.gz"}
     alliance_orthology: {pattern: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz", stable_name: "alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz"}
@@ -38,9 +38,10 @@ cadd:
   local_files:
     cadd: {pattern: "cadd/cadd.forgedb.csv.gz", stable_name: "cadd/cadd.forgedb.csv.gz"}
 
-catlas:
+catlasv1:  # the key is the folder the CATLAS adapters read (catlasv1/)
   name: CATLAS Single-Cell Chromatin Accessibility Atlas (v1, hg38)
   version: {strategy: url_regex, pattern: 'catlas(v\d+)', vtype: sequential}
+  extract: false  # the adapters read cCRE_hg38.tsv.gz as is
   url:
     cCRE_hg38.tsv.gz: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/cCRE_hg38.tsv.gz
     Cell_ontology.tsv: https://decoder-genetics.wustl.edu/catlasv1/humanenhancer/data/Cell_ontology.tsv
@@ -267,12 +268,15 @@ gencode:
   local_files:
     gtf: {pattern: "gencode/gencode.v*.chr_patch_hapl_scaff.annotation.gtf.gz", stable_name: "ensembl/gencode.gtf.gz"}
 
-gtex_eqtl:
-  name: GTEx eQTL
-  version: {strategy: url_regex, pattern: 'GTEx_Analysis_(v\d+)', vtype: sequential}
-  # bucket: adult-gtex
-  # path: bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
-  url: https://storage.googleapis.com/adult-gtex/bulk-qtl/v10/single-tissue-cis-qtl/GTEx_Analysis_v10_eQTL.tar
+gtex:  # the key is the folder the GTEx adapters read (gtex/eqtl/)
+  name: GTEx eQTL (ForgeDB)
+  # The GTEx eQTL and expression adapters both read ForgeDB's GTEx export, not the
+  # raw GTEx tarball (storage.googleapis.com/adult-gtex/bulk-qtl/v10/...eQTL.tar).
+  version: {strategy: url_regex, pattern: '/gtex/(v[\d.]+)/', vtype: semver}
+  extract: false
+  url:
+    eqtl:
+      - https://forgedb.cancer.gov/api/gtex/v1.0/gtex.forgedb.csv.gz
   local_files:
     gtex_forgedb: {pattern: "gtex/eqtl/gtex.forgedb.csv.gz", stable_name: "gtex/eqtl/gtex.forgedb.csv.gz"}
 
@@ -287,10 +291,11 @@ gwas:
 hocomoco:
   name: HOCOMOCOv11
   version: {strategy: static, value: v11}
-  extract_tar: true
+  # The PWM archive holds pwm/*.pwm and is unpacked here, so the motifs land at
+  # hocomoco/pwm/ and the annotation at hocomoco/, where the adapter reads them.
   url:
-    annotation: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
-    pwm: https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
+    - https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv
+    - https://hocomoco11.autosome.org/final_bundle/hocomoco11/core/HUMAN/mono/HOCOMOCOv11_core_pwm_HUMAN_mono.tar.gz
   local_files:
     hocomoco_annotation: {pattern: "hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv", stable_name: "hocomoco/HOCOMOCOv11_core_annotation_HUMAN_mono.tsv"}
 
@@ -313,20 +318,20 @@ polyphen2:
 reactome:
   name: Reactome
   url:
-    - https://reactome.org/download/current/ReactomePathways.txt
-    - https://reactome.org/download/current/ReactomePathwaysRelation.txt
-    - https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
-    - https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
-    - https://reactome.org/download/current/ReactionPMIDS.txt
-    - https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
-    - https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
-    - https://reactome.org/download/current/Pathways2GoTerms_human.txt
-    - https://reactome.org/download/current/Reactions2GoTerms_human.txt
-    - https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
-    # Adapter config expects this saved as reactome_reaction_exporter_All_species.txt
-    # (its historical name from a one-off Reactome export) — the real download
-    # URL/filename is just reactome_reaction_exporter.txt.
-    - https://reactome.org/download/current/reactome_reaction_exporter.txt
+    ReactomePathways.txt: https://reactome.org/download/current/ReactomePathways.txt
+    ReactomePathwaysRelation.txt: https://reactome.org/download/current/ReactomePathwaysRelation.txt
+    Ensembl2Reactome_All_Levels.txt: https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt
+    Ensembl2ReactomeReactions.txt: https://reactome.org/download/current/Ensembl2ReactomeReactions.txt
+    ReactionPMIDS.txt: https://reactome.org/download/current/ReactionPMIDS.txt
+    ChEBI2Reactome_All_Levels.txt: https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt
+    ChEBI2ReactomeReactions.txt: https://reactome.org/download/current/ChEBI2ReactomeReactions.txt
+    Pathways2GoTerms_human.txt: https://reactome.org/download/current/Pathways2GoTerms_human.txt
+    Reactions2GoTerms_human.txt: https://reactome.org/download/current/Reactions2GoTerms_human.txt
+    reactome.all_species.interactions.tab-delimited.txt: https://reactome.org/download/current/interactors/reactome.all_species.interactions.tab-delimited.txt
+    # The adapters read the reaction exporter as reactome_reaction_exporter_All_species.txt
+    # (the name of a one-off export Reactome made for us). The public file holds
+    # human reactions only, which is what this species needs.
+    reactome_reaction_exporter_All_species.txt: https://reactome.org/download/current/reactome_reaction_exporter.txt
   local_files:
     reactome_all_levels: {pattern: "reactome/Ensembl2Reactome_All_Levels.txt", stable_name: "reactome/Ensembl2Reactome_All_Levels.txt"}
     reactome_chebi_pathways: {pattern: "reactome/ChEBI2Reactome_All_Levels.txt", stable_name: "reactome/ChEBI2Reactome_All_Levels.txt"}
@@ -355,6 +360,8 @@ rna_central:
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/homo_sapiens.GRCh38.bed.gz
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
 
+# Roadmap DHS, chromatin states and H3 marks now download from ForgeDB: see
+# the forgedb source below. The notes that follow are from before that.
 # # ONLY  these are available for roadmap and they are on Bizon server
 # roadmap:
 #   name: Roadmap Epigenomics Project
@@ -404,22 +411,23 @@ tflink:
   local_files:
     tflink: {pattern: "tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat_v*.tsv.gz", stable_name: "tflink/TFLink_Homo_sapiens_interactions_All_simpleFormat.tsv.gz"}
 
-topld:
+topld:  # no longer downloadable: place the files below by hand
   name: TopLD
-  extract: false
-  url:
-    AFR: 
-      # - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr1_no_filter_0.2_1000000_LD.csv.gz
-      - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
-    EAS: 
-      - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-      # - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr1_no_filter_0.2_1000000_LD.csv.gz
-    EUR: 
-      - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz
-      # - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr1_no_filter_0.2_1000000_LD.csv.gz
-    SAS: 
-      - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
-      # - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+  # TopLD took its download folder down (topld.genetics.unc.edu/downloads/downloads
+  # answers 404, as does the site's own Download link). The old links, for reference:
+  # url:
+  #   AFR: 
+  #     # - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr1_no_filter_0.2_1000000_LD.csv.gz
+  #     - http://topld.genetics.unc.edu/downloads/downloads/AFR/SNV/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz
+  #   EAS: 
+  #     - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+  #     # - http://topld.genetics.unc.edu/downloads/downloads/EAS/SNV/EAS_chr1_no_filter_0.2_1000000_LD.csv.gz
+  #   EUR: 
+  #     - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr16_no_filter_0.2_1000000_LD.csv.gz
+  #     # - http://topld.genetics.unc.edu/downloads/downloads/EUR/SNV/EUR_chr1_no_filter_0.2_1000000_LD.csv.gz
+  #   SAS: 
+  #     - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr16_no_filter_0.2_1000000_LD.csv.gz
+  #     # - http://topld.genetics.unc.edu/downloads/downloads/SAS/SNV/SAS_chr1_no_filter_0.2_1000000_LD.csv.gz
   local_files:
     topld_afr: {pattern: "topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz", stable_name: "topld/AFR/AFR_chr16_no_filter_0.2_1000000_LD.csv.gz"}
     topld_eas: {pattern: "topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz", stable_name: "topld/EAS/EAS_chr16_no_filter_0.2_1000000_LD.csv.gz"}
@@ -445,7 +453,38 @@ peregrine:  # PEREGRINE enhancer predictions -- not download-managed, obtain man
     peregrine_gene_link: {pattern: "peregrine/enhancer_gene_link_18.tsv.gz", stable_name: "peregrine/enhancer_gene_link_18.tsv.gz"}
     peregrine_sources: {pattern: "peregrine/PEREGRINEenhancersources.gz", stable_name: "peregrine/PEREGRINEenhancersources.gz"}
 
-roadmap_dhs:  # Roadmap DHS forgedb export -- not download-managed, obtain manually
-  name: roadmap_dhs
+forgedb:  # the key is the folder the Roadmap adapters read (forgedb/roadmap/...)
+  name: Roadmap Epigenomics (ForgeDB)
+  # ForgeDB's Roadmap exports: DNase hotspots (160 MB), chromatin states (10 parts,
+  # about 18 GB) and H3 marks (10 parts, about 4.4 GB).
+  version: {strategy: url_regex, pattern: '/forge2\.erc2-DHS/(v[\d.]+)/', vtype: semver}
+  extract: false
+  url:
+    roadmap/dhs:
+      - https://forgedb.cancer.gov/api/forge2.erc2-DHS/v1.0/forge2.erc2-DHS.forgedb.csv.gz
+    roadmap/chromatin_state:
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.0.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.1.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.2.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.3.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.4.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.5.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.6.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.7.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.8.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-chromatin15state-all/v1.0/forge2.erc2-chromatin15state-all.9.forgedb.csv.gz
+    roadmap/h3_marks:
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.0.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.1.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.2.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.3.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.4.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.5.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.6.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.7.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.8.forgedb.csv.gz
+      - https://forgedb.cancer.gov/api/forge2.erc2-H3-all/v1.0/forge2.erc2-H3-all.9.forgedb.csv.gz
   local_files:
     roadmap_dhs: {pattern: "forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz", stable_name: "forgedb/roadmap/dhs/forge2.erc2-DHS.forgedb.csv.gz"}
+    roadmap_chromatin_state: {pattern: "forgedb/roadmap/chromatin_state/forge2.erc2-chromatin15state-all.*.forgedb.csv.gz"}
+    roadmap_h3_marks: {pattern: "forgedb/roadmap/h3_marks/forge2.erc2-H3-all.*.forgedb.csv.gz"}

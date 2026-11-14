@@ -63,13 +63,22 @@ def _is_filename_url_dict(d: dict) -> bool:
     )
 
 
+def _is_tar(path: Path) -> bool:
+    return path.name.lower().endswith(('.tar', '.tar.gz', '.tgz'))
+
+
+def _is_archive(path: Path) -> bool:
+    """Files extract unpacks: .gz, .zip and tar archives (.tar, .tar.gz, .tgz)."""
+    return path.suffix in ('.gz', '.zip') or _is_tar(path)
+
+
 def _post_processed_path(output_path: Path, extract: bool, compress: str | None,
                          comment: str | None, move_to_dest: Path | None) -> Path:
     """Return the path where a file will land after all post-processing.
     Used to detect files already handled in a previous run."""
     p = output_path
-    if extract and not _should_skip_extract(comment) and p.suffix in ('.gz', '.zip'):
-        if p.suffix == '.gz':
+    if extract and not _should_skip_extract(comment) and _is_archive(p):
+        if p.suffix == '.gz' and not _is_tar(p):
             p = p.with_suffix('')
     elif compress == 'gzip' and p.suffix != '.gz':
         p = p.with_suffix(p.suffix + '.gz')
@@ -386,7 +395,27 @@ class DownloadManager:
     # ------------------------------------------------------------------
 
     def _extract_compressed(self, file_path: Path) -> Path:
-        """Decompress a .gz or .zip file in place. Returns the resulting path."""
+        """Decompress a .gz, .zip or tar archive in place. Returns the resulting path
+        (the folder, for archives that hold several files)."""
+        if _is_tar(file_path):
+            # Unpacked beside the archive, keeping its folders (an archive of pwm/*.pwm
+            # lands as <folder>/pwm/*.pwm). Only plain files and folders inside the
+            # target folder are written: no links, absolute paths or "..".
+            target = file_path.parent.resolve()
+            with tarfile.open(file_path, 'r:*') as tf:
+                members = []
+                for m in tf.getmembers():
+                    dest = (target / m.name).resolve()
+                    if (m.isfile() or m.isdir()) and dest.is_relative_to(target):
+                        members.append(m)
+                    else:
+                        logger.warning(f"Skipped {m.name} in {file_path.name} (not a plain file inside the folder)")
+                # Python's own "data" filter too, where it has one (3.10.12+).
+                safe = {'filter': 'data'} if hasattr(tarfile, 'data_filter') else {}
+                tf.extractall(target, members=members, **safe)
+            file_path.unlink()
+            logger.info(f"Extracted {file_path.name} → {file_path.parent}")
+            return file_path.parent
         if file_path.suffix == '.gz':
             extracted_path = file_path.with_suffix('')
             with gzip.open(file_path, 'rb') as f_in, open(extracted_path, 'wb') as f_out:
@@ -526,7 +555,7 @@ class DownloadManager:
             return 0, 0, [filename], 0
 
         # Extract or compress
-        if extract and not _should_skip_extract(comment) and output_path.suffix in ('.gz', '.zip'):
+        if extract and not _should_skip_extract(comment) and _is_archive(output_path):
             output_path = self._extract_compressed(output_path)
         elif compress == 'gzip' and output_path.suffix != '.gz':
             output_path = self._compress_gzip(output_path)
@@ -543,7 +572,8 @@ class DownloadManager:
                 source_dir.rmdir()
 
         # Sample
-        sc = self._create_sample(output_path) if output_path.exists() else 0
+        # An archive unpacked to a folder: its files are sampled by _ensure_samples.
+        sc = self._create_sample(output_path) if output_path.is_file() else 0
 
         logger.info(f"Downloaded {url}")
         return 1, 0, [], sc

@@ -1,0 +1,16 @@
+# Adapter -> data-source overrides for the source-grouped build wizard (hsa).
+#
+# The wizard derives an adapter's source from the first path segment of its input
+# files (e.g. filepath: "bgee/..."  ->  bgee). Adapters it can't attribute land in
+# "Ontologies / shared". Pin any adapter to a source here:
+#
+#     <adapter_name>: <source_key>
+#
+# where <source_key> is a key from hsa_data_source_config.yaml. An override always
+# wins over derivation.
+
+# The Roadmap Epigenomics adapters read from forgedb/roadmap/..., which the forgedb
+# source downloads. Pinned so they stay together (they also need the dbSNP cache).
+roadmap_dhs: forgedb
+roadmap_chromatin_state: forgedb
+roadmap_h3_mark: forgedb

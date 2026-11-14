@@ -333,16 +333,23 @@ neo4j-logs: ## Stream Neo4j container logs
 neo4j-status: ## Show Neo4j container status
 	docker compose -p $(NEO4J_PROJECT_NAME) --env-file $(NEO4J_ENV_FILE) -f docker/docker-compose.neo4j.yml ps
 
+# Where docker/docker-compose.neo4j.yml mounts the output dir inside the container.
+# Its import root is "/" (so the Console can load builds from any directory), so the
+# cypher files' relative file:/// URLs need this prefix.
+NEO4J_CONTAINER_IMPORT ?= /import
+
 neo4j-load: check-uv ## Load data with version tracking (incremental — only reloads changed datasets)
 	@export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python kg-service/neo4j_loader.py \
-		--env-file $(NEO4J_ENV_FILE)
+		--env-file $(NEO4J_ENV_FILE) \
+		--import-dir $(NEO4J_CONTAINER_IMPORT)
 
 neo4j-load-direct: check-uv ## Load ALL data directly, skipping version check
 	@set -a; . $(NEO4J_ENV_FILE); set +a; \
 	export PATH="$$HOME/.local/bin:$$PATH"; \
 	uv run python scripts/neo4j_loader.py \
-		--env-file $(NEO4J_ENV_FILE)
+		--env-file $(NEO4J_ENV_FILE) \
+		--csv-base-path "$${CSV_BASE_PATH:-$(NEO4J_CONTAINER_IMPORT)}"
 
 # ─── Data download ───────────────────────────────────────────────────────────
 

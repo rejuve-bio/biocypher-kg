@@ -14,6 +14,7 @@ except ImportError:
 import copy
 import fnmatch
 import importlib
+import itertools
 import json
 import logging
 import multiprocessing as mp
@@ -38,7 +39,7 @@ from biocypher_metta.networkx_writer import NetworkXWriter
 from biocypher_metta.parquet_writer import ParquetWriter
 from biocypher_metta.processors import DBSNPProcessor
 from biocypher_metta.prolog_writer import PrologWriter
-from biocypher_metta.provenance import ProvenanceLookup
+from biocypher_metta.provenance import ProvenanceLookup, source_id_for_adapter
 from checkpoint_manager import CheckpointManager, prompt_resume_or_restart
 from config.yaml_loader import load_yaml_with_includes
 from schema_generator.generate_data_source_schemas import SchemaGenerator
@@ -297,16 +298,39 @@ def _is_path_arg(name: str) -> bool:
     return name in _PATH_ARG_NAMES or any(name.endswith(s) for s in _PATH_ARG_SUFFIXES)
 
 
-def _maybe_prepend(value: str, input_dir: Path) -> str:
-    """Prepend input_dir to a bare path string (no leading /, ./, ../)."""
+def _exists_under(root: Path, rel: str) -> bool:
+    """True if ``rel`` names an existing file/dir under ``root`` (or a glob that matches)."""
+    if (root / rel).exists():
+        return True
+    return any(c in rel for c in "*?[") and any(root.glob(rel))
+
+
+def _maybe_prepend(value: str, input_dirs) -> str:
+    """Resolve a bare path string (no leading /, ./, ../) against the input dir(s).
+
+    ``input_dirs`` is one directory or an ordered list (e.g. a read-only folder of data
+    the user already has, then the console's download folder). The first directory
+    that holds the path wins; failing that, the first whose folder for the path's top
+    segment exists (prefix-style args); failing that, the first directory, so a
+    missing-file error points there.
+    """
     v = value.strip()
     if not v or v.startswith("/") or v.startswith("./") or v.startswith("../"):
         return v
-    return str(input_dir / v)
+    roots = [Path(r) for r in (input_dirs if isinstance(input_dirs, (list, tuple)) else [input_dirs])]
+    for root in roots:
+        if _exists_under(root, v):
+            return str(root / v)
+    head = v.split("/", 1)[0]
+    if head != v:
+        for root in roots:
+            if (root / head).is_dir():
+                return str(root / v)
+    return str(roots[0] / v)
 
 
-def _resolve_input_paths(adapters_dict: dict, input_dir: Path) -> None:
-    """Prepend input_dir to every bare relative path string in adapter args."""
+def _resolve_input_paths(adapters_dict: dict, input_dir) -> None:
+    """Resolve every bare relative path string in adapter args against the input dir(s)."""
     for adapter_entry in adapters_dict.values():
         if not isinstance(adapter_entry, dict):
             continue
@@ -358,6 +382,7 @@ def _has_bare_paths(adapters_dict: dict) -> bool:
 def _load_adapters_config(
     config_path: Path, context: str, input_dir: Optional[Path] = None,
     manifest_path: Optional[Path] = None,
+    extra_input_dirs: Optional[List[Path]] = None,
 ) -> dict:
     with open(config_path, "r") as fp:
         try:
@@ -368,26 +393,40 @@ def _load_adapters_config(
             raise typer.Exit(1)
     yaml_input_dir = adapters_dict.pop("input_dir", None)
     resolved = input_dir or (Path(yaml_input_dir) if yaml_input_dir else None)
-    if resolved is not None:
-        _resolve_input_paths(adapters_dict, resolved)
+    # Search order for relative paths: the input dir, then any extra (read-only) dirs.
+    roots = ([resolved] if resolved is not None else []) + [Path(p) for p in (extra_input_dirs or [])]
+    if roots:
+        _resolve_input_paths(adapters_dict, roots)
     elif _has_bare_paths(adapters_dict):
         logger.warning(
             "Adapter config contains bare (un-prefixed) paths but no input_dir was set. "
             "Pass --input-dir or add 'input_dir:' to the config."
         )
 
-    # Attach dataset provenance from the download manifest, if available. Explicit
-    # --manifest wins; otherwise look for download_manifest.json beside input_dir.
-    chosen_manifest = manifest_path
-    if chosen_manifest is None and resolved is not None:
-        candidate = Path(resolved) / "download_manifest.json"
-        if candidate.exists():
-            chosen_manifest = candidate
-    if chosen_manifest is not None:
-        lookup = ProvenanceLookup(chosen_manifest)
-        if lookup:
-            matched = lookup.attach(adapters_dict)
-            logger.info(f"Attached provenance to {matched}/{len(adapters_dict)} adapters for {context}")
+    # Attach dataset provenance from the download manifest(s). Explicit --manifest wins;
+    # otherwise use download_manifest.json beside each input dir, earlier dirs first
+    # (the same priority their files get).
+    if manifest_path is not None:
+        manifests = [manifest_path]
+    else:
+        manifests = [r / "download_manifest.json" for r in roots if (r / "download_manifest.json").exists()]
+    lookups = [lk for lk in (ProvenanceLookup(m) for m in manifests) if lk]
+    if len(lookups) == 1:
+        matched = lookups[0].attach(adapters_dict)
+        logger.info(f"Attached provenance to {matched}/{len(adapters_dict)} adapters for {context}")
+    elif lookups:
+        # attach() resets unmatched adapters, so merge instead: first manifest that
+        # knows an adapter's source wins.
+        matched = 0
+        for entry in adapters_dict.values():
+            if not isinstance(entry, dict):
+                continue
+            sid = source_id_for_adapter(entry)
+            prov = next((p for p in (lk.for_source(sid) for lk in lookups) if p), None)
+            entry["provenance"] = prov
+            matched += bool(prov)
+        logger.info(f"Attached provenance to {matched}/{len(adapters_dict)} adapters for {context} "
+                    f"from {len(lookups)} manifests")
 
     return adapters_dict
 
@@ -524,6 +563,82 @@ def _try_generate_data_source_schemas(
 
 _WORKER_WRITER = None
 
+# Cap on nodes/edges written per adapter; 0 = unlimited. Set once in main() from
+# --limit. Forked workers (the pool uses the "fork" start method) inherit this
+# value from the parent, so both the sequential and parallel paths honour it.
+_ROW_LIMIT = 0
+
+
+# Caps per adapter, from --adapter-limits: {adapter: {"nodes": N, "edges": M}}
+# (0 or missing = no cap for that kind). A listed adapter uses these instead of
+# --limit; others keep --limit. Like _ROW_LIMIT, set in main() and inherited by
+# forked workers. The console uses it for "percent of known size".
+_ADAPTER_LIMITS: dict = {}
+
+# What each adapter wrote this run, saved to graph_info.json as "adapter_counts":
+# {adapter: {"nodes": n, "edges": m, "complete": bool}}. "complete" is False when a
+# cap cut the adapter short, so only complete counts are the source's real size.
+# Filled in the main process (both paths) and kept in the checkpoint on resume.
+_ADAPTER_COUNTS: dict = {}
+
+
+def _cap(adapter_name, kind):
+    """The row cap for one adapter's nodes or edges (0 = none)."""
+    caps = _ADAPTER_LIMITS.get(adapter_name) if adapter_name is not None else None
+    if caps is not None:
+        return max(0, int(caps.get(kind) or 0))
+    return _ROW_LIMIT if _ROW_LIMIT and _ROW_LIMIT > 0 else 0
+
+
+class _RowsRead:
+    """Counts the rows an adapter yields before the cap, to tell whether the cap
+    cut it short (it read as many rows as the cap allowed)."""
+
+    def __init__(self, rows):
+        self._rows = rows
+        self.count = 0
+
+    def __iter__(self):
+        for row in self._rows:
+            self.count += 1
+            yield row
+
+
+def _limit_rows(gen, adapter_name=None, kind="nodes"):
+    """Cap a node/edge generator for one adapter (see _cap). Returns the capped rows
+    and a reader whose .count says how many rows the adapter yielded.
+
+    Lets the console produce a small, bounded graph from any adapter without
+    editing it: it just stops pulling rows after the cap.
+    """
+    read = _RowsRead(gen)
+    cap = _cap(adapter_name, kind)
+    return (itertools.islice(read, cap) if cap else read), read
+
+
+def _read_adapter_limits(path) -> dict:
+    """Parse --adapter-limits: {"<adapter>": {"nodes": N, "edges": M}}, ints >= 0."""
+    raw = json.loads(Path(path).read_text())
+    if not isinstance(raw, dict):
+        raise typer.BadParameter("--adapter-limits must hold a JSON object of adapters.")
+    out = {}
+    for name, caps in raw.items():
+        if not isinstance(caps, dict):
+            raise typer.BadParameter(f"--adapter-limits: '{name}' needs {{\"nodes\": N, \"edges\": M}}.")
+        out[str(name)] = {k: max(0, int(caps.get(k) or 0)) for k in ("nodes", "edges")}
+    return out
+
+
+def _cut_short(adapter_name, kind, read) -> bool:
+    cap = _cap(adapter_name, kind)
+    return bool(cap) and read is not None and read.count >= cap
+
+
+def _counts_entry(nodes, edges, write_nodes, write_edges, complete):
+    return {"nodes": nodes if write_nodes else None,
+            "edges": edges if write_edges else None,
+            "complete": bool(complete)}
+
 
 def _worker_init(writer_kwargs):
     """Pool initializer: construct this worker process's single writer."""
@@ -573,9 +688,10 @@ def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_
     freq_nodes, props, freq_edges = {}, {}, {}
     empty = []
     adapter_nodes = adapter_edges = 0
+    nodes_read = edges_read = None
 
     if write_nodes:
-        nodes = adapter.get_nodes()
+        nodes, nodes_read = _limit_rows(adapter.get_nodes(), adapter_name, "nodes")
         if not include_taxon_id:
             nodes = _strip_taxon_id(nodes, is_edge=False)
         freq_nodes, props = writer.write_nodes(nodes, path_prefix=outdir)
@@ -585,7 +701,7 @@ def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_
             adapter_nodes = sum(freq_nodes.values())
 
     if write_edges:
-        edges = adapter.get_edges()
+        edges, edges_read = _limit_rows(adapter.get_edges(), adapter_name, "edges")
         if not include_taxon_id:
             edges = _strip_taxon_id(edges, is_edge=True)
         freq_edges = writer.write_edges(edges, path_prefix=outdir)
@@ -594,6 +710,8 @@ def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_
         else:
             adapter_edges = sum(freq_edges.values())
 
+    complete = not (_cut_short(adapter_name, "nodes", nodes_read)
+                    or _cut_short(adapter_name, "edges", edges_read))
     return {
         "adapter_name": adapter_name,
         "freq_nodes": dict(freq_nodes),
@@ -607,6 +725,7 @@ def _run_single_adapter(adapter_name, adapter_entry, schema_dict, include_taxon_
         "write_edges": write_edges,
         "adapter_nodes": adapter_nodes,
         "adapter_edges": adapter_edges,
+        "complete": complete,
         "empty": empty,
         "elapsed": time.time() - adapter_start,
         "error": None,
@@ -847,6 +966,9 @@ def _process_adapters_parallel(
                     logger.warning(f"Adapter '{empty_name}' produced 0 {empty_kind}.")
                     empty_output_adapters.append((empty_name, empty_kind))
                 adapter_times[name] = res["elapsed"]
+                _ADAPTER_COUNTS[name] = _counts_entry(
+                    res["adapter_nodes"], res["adapter_edges"], res["write_nodes"],
+                    res["write_edges"], res.get("complete", True))
                 if res["dataset_name"] is None:
                     logger.warning(
                         f"Dataset name is None for adapter: {name}. "
@@ -880,6 +1002,7 @@ def _process_adapters_parallel(
                         datasets_dict=datasets_dict,
                         failed_adapters=None,
                         elapsed_seconds=time.time() - total_start,
+                        adapter_counts=_ADAPTER_COUNTS,
                     )
 
             # On the first failure: stop starting new groups, but keep draining and
@@ -904,6 +1027,7 @@ def _process_adapters_parallel(
                 datasets_dict=datasets_dict,
                 failed_adapters=failed_adapters,
                 elapsed_seconds=time.time() - total_start,
+                adapter_counts=_ADAPTER_COUNTS,
             )
             logger.info(
                 "Checkpoint saved. Re-run the pipeline to resume "
@@ -956,10 +1080,12 @@ def process_adapters(
             raise typer.Exit(1)
         logger.info("Pre-flight path check passed.")
 
+    _ADAPTER_COUNTS.clear()
     if checkpoint_manager is not None and checkpoint_manager.completed_adapters:
         nodes_count, nodes_props, edges_count, datasets_dict = (
             checkpoint_manager.restore_accumulators()
         )
+        _ADAPTER_COUNTS.update(checkpoint_manager.adapter_counts)
         logger.info(
             f"Restored accumulators: "
             f"{sum(nodes_count.values())} nodes, "
@@ -1068,10 +1194,11 @@ def process_adapters(
 
         adapter_nodes = 0
         adapter_edges = 0
+        nodes_read = edges_read = None
 
         try:
             if write_nodes:
-                nodes = adapter.get_nodes()
+                nodes, nodes_read = _limit_rows(adapter.get_nodes(), adapter_name, "nodes")
                 if not include_taxon_id:
                     nodes = _strip_taxon_id(nodes, is_edge=False)
                 freq, props = writer.write_nodes(nodes, path_prefix=outdir)
@@ -1088,7 +1215,7 @@ def process_adapters(
                     nodes_props[node_label] = nodes_props[node_label].union(node_props)
 
             if write_edges:
-                edges = adapter.get_edges()
+                edges, edges_read = _limit_rows(adapter.get_edges(), adapter_name, "edges")
                 if not include_taxon_id:
                     edges = _strip_taxon_id(edges, is_edge=True)
                 freq = writer.write_edges(edges, path_prefix=outdir)
@@ -1125,6 +1252,7 @@ def process_adapters(
                     datasets_dict=datasets_dict,
                     failed_adapters=[adapter_name],
                     elapsed_seconds=time.time() - total_start,
+                    adapter_counts=_ADAPTER_COUNTS,
                 )
                 logger.info(
                     f"Checkpoint saved. Re-run the pipeline to resume from adapter '{adapter_name}'."
@@ -1134,6 +1262,10 @@ def process_adapters(
         adapter_elapsed = time.time() - adapter_start
         adapter_times[adapter_name] = adapter_elapsed
         completed_adapters.append(adapter_name)
+        _ADAPTER_COUNTS[adapter_name] = _counts_entry(
+            adapter_nodes, adapter_edges, write_nodes, write_edges,
+            not (_cut_short(adapter_name, "nodes", nodes_read)
+                 or _cut_short(adapter_name, "edges", edges_read)))
         counts_parts = []
         if write_nodes:
             counts_parts.append(f"nodes: {adapter_nodes:,}")
@@ -1153,6 +1285,7 @@ def process_adapters(
                 datasets_dict=datasets_dict,
                 failed_adapters=None,
                 elapsed_seconds=time.time() - total_start,
+                adapter_counts=_ADAPTER_COUNTS,
             )
             # logger.info(f"Checkpoint updated after adapter: {adapter_name}")
 
@@ -1175,6 +1308,8 @@ def _write_graph_info(
         graph_info["datasets"].append(datasets_dict[dataset_name])
 
     graph_info["dataset_count"] = len(graph_info["datasets"])
+    # What each adapter wrote, and whether a cap cut it short (see _ADAPTER_COUNTS).
+    graph_info["adapter_counts"] = {k: _ADAPTER_COUNTS[k] for k in sorted(_ADAPTER_COUNTS)}
 
     file_path = Path(output_dir) / "graph_info.json"
     with open(file_path, "w") as fp:
@@ -1473,6 +1608,15 @@ def main(
             "Overrides the input_dir field declared in the config YAML."
         ),
     ),
+    extra_input_dir: Optional[List[Path]] = typer.Option(
+        None,
+        "--extra-input-dir",
+        help=(
+            "More directories to look in for input files, searched in order after the input "
+            "dir (repeatable). Each relative path resolves to the first directory holding it, "
+            "e.g. data you already have, kept read-only, plus a folder of downloads."
+        ),
+    ),
     manifest: Optional[Path] = typer.Option(
         None,
         "--manifest",
@@ -1491,6 +1635,22 @@ def main(
             "The networkx writer always runs sequentially."
         ),
     ),
+    limit: int = typer.Option(
+        0,
+        "--limit",
+        help=(
+            "Cap the number of nodes AND edges written per adapter (0 = no limit). "
+            "Produces a small, bounded graph for quick samples; applies to every adapter."
+        ),
+    ),
+    adapter_limits: Optional[Path] = typer.Option(
+        None,
+        "--adapter-limits",
+        help=(
+            'JSON file of caps per adapter: {"<adapter>": {"nodes": N, "edges": M}} '
+            "(0 = no cap). Listed adapters use their own caps instead of --limit."
+        ),
+    ),
 ):
     """
     Main function. Call individual adapters to download and process data. Build
@@ -1500,7 +1660,10 @@ def main(
         if adapters_config is None:
             logger.error("--adapters-config is required with --check-only")
             raise typer.Exit(1)
-        adapters_dict = _load_adapters_config(adapters_config, str(adapters_config), input_dir=input_dir)
+        adapters_dict = _load_adapters_config(
+            adapters_config, str(adapters_config), input_dir=input_dir,
+            extra_input_dirs=extra_input_dir,
+        )
         if include_adapters:
             include_lower = [a.lower() for a in include_adapters]
             adapters_dict = {k: v for k, v in adapters_dict.items() if _adapter_matches(k, include_lower)}
@@ -1512,6 +1675,17 @@ def main(
             f"Pre-flight check passed — all {len(adapters_dict)} adapter(s) have valid file paths."
         )
         raise typer.Exit(0)
+
+    # Row cap per adapter (0 = unlimited). Stored in a module global so both the
+    # sequential loop and the forked worker processes honour it (see _limit_rows).
+    global _ROW_LIMIT
+    _ROW_LIMIT = max(0, limit)
+    if _ROW_LIMIT:
+        logger.info(f"Row limit: capping each adapter to {_ROW_LIMIT:,} nodes and {_ROW_LIMIT:,} edges.")
+    if adapter_limits is not None:
+        _ADAPTER_LIMITS.clear()
+        _ADAPTER_LIMITS.update(_read_adapter_limits(adapter_limits))
+        logger.info(f"Per-adapter caps for {len(_ADAPTER_LIMITS)} adapter(s) from {adapter_limits}.")
 
     manual_mode = all([adapters_config, schema_config])
     species_mode = species is not None
@@ -1537,10 +1711,11 @@ def main(
         )
         raise typer.Exit(1)
 
-    if species == "all" and input_dir:
+    if species == "all" and (input_dir or extra_input_dir):
         logger.error(
-            "--input-dir cannot be used with --species all: each species requires its own "
-            "input directory. Use the input_dir: field in each species-specific adapter config instead."
+            "--input-dir/--extra-input-dir cannot be used with --species all: each species "
+            "requires its own input directory. Use the input_dir: field in each "
+            "species-specific adapter config instead."
         )
         raise typer.Exit(1)
 
@@ -1877,7 +2052,10 @@ def main(
         }
 
         schema_dict = preprocess_schema(schema_config)
-        adapters_dict = _load_adapters_config(adapters_config, str(adapters_config), input_dir=input_dir, manifest_path=manifest)
+        adapters_dict = _load_adapters_config(
+            adapters_config, str(adapters_config), input_dir=input_dir, manifest_path=manifest,
+            extra_input_dirs=extra_input_dir,
+        )
 
         if include_adapters:
             original_count = len(adapters_dict)

@@ -132,6 +132,7 @@ class CheckpointManager:
         datasets_dict: dict,
         failed_adapters: Optional[list] = None,
         elapsed_seconds: float = 0.0,
+        adapter_counts: Optional[dict] = None,
     ):
         """Atomically write the checkpoint file."""
         now = datetime.utcnow().isoformat()
@@ -146,6 +147,8 @@ class CheckpointManager:
             "edges_count": _serialize(edges_count),
             "datasets_dict": _serialize(datasets_dict),
             "elapsed_seconds": elapsed_seconds,
+            # What each finished adapter wrote (create_knowledge_graph._ADAPTER_COUNTS).
+            "adapter_counts": adapter_counts or {},
         }
         # Write atomically via a temp file
         tmp = self.checkpoint_path.with_suffix(".tmp")
@@ -169,6 +172,13 @@ class CheckpointManager:
         if self._state is None:
             return []
         return self._state.get("completed_adapters", [])
+
+    @property
+    def adapter_counts(self) -> dict:
+        """Per-adapter counts saved so far ({} for checkpoints made before they were kept)."""
+        if not self._state:
+            return {}
+        return dict(self._state.get("adapter_counts") or {})
 
     def restore_accumulators(self):
         """Return (nodes_count, nodes_props, edges_count, datasets_dict) from checkpoint."""

@@ -728,7 +728,7 @@ rna_central_non_coding_rna:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
+      filepath: rna_central/rattus_norvegicus.GRCr8.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       label: non_coding_rna
       type: non_coding_rna
@@ -742,7 +742,7 @@ rna_central_non_coding_rna_biological_process:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
+      filepath: rna_central/rattus_norvegicus.GRCr8.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       type: biological process rna
       label: biological_process_rna
@@ -756,7 +756,7 @@ rna_central_non_coding_rna_molecular_function:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
+      filepath: rna_central/rattus_norvegicus.GRCr8.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       type: molecular function rna
       label: molecular_function_rna
@@ -770,7 +770,7 @@ rna_central_non_coding_rna_cellular_component:
     module: biocypher_metta.adapters.rna_central_adapter
     cls: RNACentralAdapter
     args:
-      filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
+      filepath: rna_central/rattus_norvegicus.GRCr8.bed.gz
       rfam_filepath: rna_central/rnacentral_rfam_annotations.tsv.gz
       type: cellular component rna
       label: cellular_component_rna
@@ -784,7 +784,7 @@ rna_central_gene_overlap:
     module: biocypher_metta.adapters.rna_central_gene_overlap_adapter
     cls: RnaCentralGeneOverlapAdapter
     args:
-      bed_filepath: rna_central/rattus_norvegicus.mRatBN7.2.bed.gz
+      bed_filepath: rna_central/rattus_norvegicus.GRCr8.bed.gz
       gtf_filepath: ensembl/Rattus_norvegicus.gtf.gz
       label: ncrna_overlaps_gene
       reverse_label: gene_overlaps_ncrna

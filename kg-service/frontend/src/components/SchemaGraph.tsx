@@ -1,0 +1,339 @@
+import { useEffect, useRef, useState } from "react";
+import cytoscape from "cytoscape";
+import fcose from "cytoscape-fcose";
+import type { DetailedSchema } from "../api/client";
+import { paletteColor } from "../palette";
+
+type Count = { name: string; count: number };
+
+type Props = {
+  schema: DetailedSchema;
+  topEntities?: Count[] | null;
+  topConnections?: Count[] | null;
+  height?: number;
+  // When false, hide the per-type "N nodes"/"N relationships" figures (used for
+  // MORK, whose schema is derived from the atomspace without exact counts).
+  showCounts?: boolean;
+};
+
+type Rel = { name: string; count: number };
+
+type Selected =
+  | { kind: "node"; id: string; count: number; props: string[]; color: string }
+  | { kind: "edge"; source: string; target: string; rels: Rel[] }
+  | null;
+
+// fcose (a fast, high-quality force layout) untangles dense schemas far better
+// than the built-in cose. Register once; fall back to cose if it ever fails.
+let layoutName = "cose";
+let registered = false;
+function ensureLayout() {
+  if (registered) return;
+  registered = true;
+  try {
+    cytoscape.use(fcose);
+    layoutName = "fcose";
+  } catch {
+    layoutName = "cose";
+  }
+}
+
+function makeLayout(): cytoscape.LayoutOptions {
+  return {
+    name: layoutName,
+    quality: "proof",
+    animate: true,
+    animationDuration: 600,
+    randomize: true,
+    padding: 44,
+    nodeDimensionsIncludeLabels: true,
+    idealEdgeLength: 155,
+    nodeRepulsion: 13000,
+    gravity: 0.28,
+    gravityRange: 3.6,
+    numIter: 2500,
+    packComponents: true, // keep disconnected node types tidily grouped, not scattered
+  } as unknown as cytoscape.LayoutOptions;
+}
+
+function cssVar(name: string, fallback: string): string {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+
+export default function SchemaGraph({ schema, topEntities, topConnections, height = 660, showCounts = true }: Props) {
+  const [selected, setSelected] = useState<Selected>(null);
+  const [legend, setLegend] = useState<{ label: string; color: string }[]>([]);
+  const [theme, setTheme] = useState(() =>
+    document.documentElement.dataset.theme === "light" ? "light" : "dark",
+  );
+  const cyEl = useRef<HTMLDivElement | null>(null);
+  const cyRef = useRef<cytoscape.Core | null>(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const mo = new MutationObserver(() =>
+      setTheme(root.dataset.theme === "light" ? "light" : "dark"),
+    );
+    mo.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => mo.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!cyEl.current) return;
+    ensureLayout();
+    setSelected(null);
+
+    const nodeTypes = schema.nodes.map((n) => n.data.id);
+    const nodeColor: Record<string, string> = {};
+    nodeTypes.forEach((t, i) => (nodeColor[t] = paletteColor(i)));
+    setLegend(nodeTypes.map((t) => ({ label: t, color: nodeColor[t] })));
+
+    const relCount = new Map((topConnections ?? []).map((e) => [e.name.toLowerCase(), e.count]));
+    const nodeCount = new Map((topEntities ?? []).map((e) => [e.name.toLowerCase(), e.count]));
+
+    const ids = new Set(nodeTypes);
+    const els: cytoscape.ElementDefinition[] = schema.nodes.map((n) => ({
+      data: {
+        id: n.data.id,
+        label: n.data.id,
+        props: n.data.properties,
+        count: nodeCount.get(n.data.id.toLowerCase()) ?? 0,
+        color: nodeColor[n.data.id],
+      },
+    }));
+
+    // Collapse every relationship between the same ordered (source -> target)
+    // pair into ONE edge; the panel lists the individual relationship types.
+    // This removes the overlapping-parallel-edge spaghetti from the default view.
+    const pairs = new Map<string, { source: string; target: string; rels: Rel[] }>();
+    for (const e of schema.edges) {
+      const { source: s, target: t } = e.data;
+      for (const end of [s, t]) {
+        if (!ids.has(end)) {
+          els.push({ data: { id: end, label: end, props: [], count: 0, color: paletteColor(ids.size) } });
+          ids.add(end);
+        }
+      }
+      const key = `${s}\u0000${t}`;
+      const entry = pairs.get(key) ?? { source: s, target: t, rels: [] };
+      for (const rel of e.data.possible_connections) {
+        if (!entry.rels.some((r) => r.name === rel)) {
+          entry.rels.push({ name: rel, count: relCount.get(rel.toLowerCase()) ?? 0 });
+        }
+      }
+      pairs.set(key, entry);
+    }
+    for (const [key, p] of pairs) {
+      const label = p.rels.length === 1 ? p.rels[0].name : `${p.rels[0].name} +${p.rels.length - 1}`;
+      els.push({
+        data: {
+          id: `e\u0000${key}`,
+          source: p.source,
+          target: p.target,
+          label,
+          rels: p.rels,
+        },
+      });
+    }
+
+    const textc = cssVar("--text", "#e8eef8");
+    const panel2 = cssVar("--panel-2", "#273449");
+    const muted = cssVar("--muted", "#8798b5");
+    const accent2 = cssVar("--accent-2", "#06b6d4");
+
+    cyRef.current?.destroy();
+    const cy = cytoscape({
+      container: cyEl.current,
+      elements: els,
+      wheelSensitivity: 0.2,
+      minZoom: 0.2,
+      maxZoom: 3,
+      style: [
+        {
+          selector: "node",
+          style: {
+            "background-color": "data(color)",
+            width: 60,
+            height: 60,
+            label: "data(label)",
+            color: textc,
+            "font-size": 11,
+            "font-weight": 600,
+            "text-valign": "center",
+            "text-halign": "center",
+            "text-wrap": "wrap",
+            "text-max-width": "78px",
+            "text-outline-width": 2,
+            "text-outline-color": panel2,
+            "text-outline-opacity": 0.65,
+            "border-width": 3,
+            "border-color": panel2,
+            "overlay-opacity": 0,
+            "transition-property": "opacity, border-color, border-width",
+            "transition-duration": 0.15,
+          },
+        },
+        { selector: "node:selected", style: { "border-width": 4, "border-color": accent2 } },
+        {
+          selector: "edge",
+          style: {
+            // Neutral by default so the graph reads as a clean constellation;
+            // relationship identity lives in the focus label + details panel.
+            width: 2,
+            "line-color": muted,
+            "line-opacity": 0.32,
+            "target-arrow-color": muted,
+            "target-arrow-shape": "triangle",
+            "arrow-scale": 1,
+            "curve-style": "bezier",
+            "control-point-step-size": 46,
+            label: "data(label)",
+            "text-opacity": 0,
+            "font-size": 9,
+            color: textc,
+            "text-rotation": "autorotate",
+            "text-background-color": panel2,
+            "text-background-opacity": 0.92,
+            "text-background-padding": 3,
+            "overlay-opacity": 0,
+            "transition-property": "opacity, line-opacity, width",
+            "transition-duration": 0.15,
+          },
+        },
+        { selector: "node.faded", style: { opacity: 0.12 } },
+        { selector: "edge.faded", style: { opacity: 0.05 } },
+        {
+          selector: "edge.hl",
+          style: {
+            "line-color": accent2,
+            "line-opacity": 1,
+            "target-arrow-color": accent2,
+            width: 3.5,
+            "text-opacity": 1,
+          },
+        },
+      ] as cytoscape.StylesheetStyle[],
+    });
+    cyRef.current = cy;
+
+    const layout = cy.layout(makeLayout());
+    layout.one("layoutstop", () => cy.fit(undefined, 44));
+    layout.run();
+
+    const focus = (hood: cytoscape.CollectionReturnValue) => {
+      cy.batch(() => {
+        cy.elements().removeClass("hl").addClass("faded");
+        hood.removeClass("faded");
+        hood.edges().addClass("hl");
+      });
+    };
+    const clear = () => cy.batch(() => cy.elements().removeClass("hl faded"));
+
+    cy.on("tap", "node", (evt) => {
+      const n = evt.target;
+      focus(n.closedNeighborhood());
+      const d = n.data();
+      setSelected({ kind: "node", id: d.id, count: d.count, props: d.props || [], color: d.color });
+    });
+    cy.on("tap", "edge", (evt) => {
+      const e = evt.target;
+      focus(e.connectedNodes().union(e));
+      const d = e.data();
+      setSelected({ kind: "edge", source: d.source, target: d.target, rels: d.rels || [] });
+    });
+    cy.on("tap", (evt) => {
+      if (evt.target === cy) {
+        clear();
+        setSelected(null);
+      }
+    });
+
+    return () => {
+      cy.destroy();
+      cyRef.current = null;
+    };
+  }, [schema, topEntities, topConnections, theme]);
+
+  return (
+    <div>
+      <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
+        <span className="muted" style={{ fontSize: 12 }}>
+          click to focus · empty space resets · drag · scroll to zoom
+        </span>
+        <div className="row">
+          <button className="secondary btn-sm" onClick={() => cyRef.current?.fit(undefined, 44)}>Fit</button>
+          <button
+            className="secondary btn-sm"
+            onClick={() => {
+              const cy = cyRef.current;
+              if (!cy) return;
+              const l = cy.layout(makeLayout());
+              l.one("layoutstop", () => cy.fit(undefined, 44));
+              l.run();
+            }}
+          >
+            Re-layout
+          </button>
+        </div>
+      </div>
+
+      <div className="cy-stage">
+        <div ref={cyEl} className="cy-canvas" style={{ height, width: "100%" }} />
+
+        {legend.length > 0 && (
+          <div className="cy-legend">
+            <div className="muted" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 6 }}>
+              NODE TYPES
+            </div>
+            {legend.map((t) => (
+              <div className="legend-row" key={t.label}>
+                <span className="type-dot" style={{ width: 10, height: 10, background: t.color }} />
+                <span style={{ fontSize: 12 }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {selected && (
+          <div className="cy-overlay">
+            {selected.kind === "node" ? (
+              <>
+                <div className="row" style={{ gap: 8, alignItems: "center" }}>
+                  <span className="type-dot" style={{ background: selected.color }} />
+                  <span className="mono" style={{ fontSize: 15, fontWeight: 700 }}>{selected.id}</span>
+                </div>
+                {showCounts && (
+                  <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{selected.count.toLocaleString()} nodes</div>
+                )}
+                <div className="muted" style={{ fontSize: 12, margin: "12px 0 6px" }}>Properties ({selected.props.length})</div>
+                <div className="chips">
+                  {selected.props.length ? selected.props.map((p) => <span className="pill" key={p}>{p}</span>) : <span className="muted">none</span>}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: 13 }}>
+                  <span className="mono">{selected.source}</span>
+                  <span className="muted"> → </span>
+                  <span className="mono">{selected.target}</span>
+                </div>
+                <div className="muted" style={{ fontSize: 12, margin: "12px 0 6px" }}>
+                  Relationship types ({selected.rels.length})
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {selected.rels.map((r) => (
+                    <div className="row" key={r.name} style={{ justifyContent: "space-between", gap: 10 }}>
+                      <span className="mono" style={{ fontSize: 13 }}>{r.name}</span>
+                      {r.count > 0 && <span className="muted" style={{ fontSize: 12 }}>{r.count.toLocaleString()}</span>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
