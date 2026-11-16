@@ -1017,10 +1017,12 @@ class DownloadManager:
         liftover_bin = os.environ.get('LIFTOVER') or shutil.which('liftOver')
         if not liftover_bin or not Path(liftover_bin).exists():
             logger.error(
-                f"{source_key}: liftOver not found, files not lifted. Install it with "
-                f"`conda install -c bioconda ucsc-liftover` (or download "
-                f"https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver), "
-                f"then set LIFTOVER=/path/to/liftOver or put it on PATH.")
+                f"{source_key}: liftOver not found, files not lifted. Get the UCSC binary "
+                f"(Linux x86_64; for macOS use macOSX.x86_64 in the URL):\n"
+                f"    mkdir -p ~/bin && wget -O ~/bin/liftOver "
+                f"https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver && chmod +x ~/bin/liftOver\n"
+                f"  or: conda install -c bioconda ucsc-liftover\n"
+                f"then set LIFTOVER=~/bin/liftOver or put liftOver on PATH.")
             return 0, [f['output'] for f in cfg.get('files', [])], 0
 
         chain_url = _strip_url_comment(cfg['chain_url'])
