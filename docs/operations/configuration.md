@@ -1,6 +1,6 @@
 # Configuration Reference
 
-This document is the complete reference for every configuration file, environment variable, and runtime option in BioCypher-KG.
+This document is the reference for the pipeline's configuration files, environment variables, and runtime options. Settings for the services the pipeline feeds (Neo4j, MORK, kg-service) are in the [Deployment Guide](deployment.md).
 
 ---
 
@@ -137,7 +137,7 @@ gencode_gene:
 
 | Variable | Required | Description |
 |---|---|---|
-| `BIOPORTAL_API_KEY` | Yes (for Disease Ontology) | API key for BioPortal ontology downloads. Register free at [bioportal.bioontology.org/account](https://bioportal.bioontology.org/account). Set in `.env` file or shell. |
+| `BIOPORTAL_API_KEY` | No | Fallback for the Disease Ontology adapter: it downloads from OBOLibrary and only retries via BioPortal when that fails and a key is set. Register free at [bioportal.bioontology.org/account](https://bioportal.bioontology.org/account). Set in `.env` file or shell. |
 
 Loading: `python-dotenv` reads `.env` (if present) at startup. If `python-dotenv` is not installed, set variables manually in the shell. The `.env` file is gitignored.
 
@@ -146,67 +146,13 @@ Loading: `python-dotenv` reads `.env` (if present) at startup. If `python-dotenv
 BIOPORTAL_API_KEY=your_bioportal_api_key_here
 ```
 
-### kg-service (`kg-service/backend/core/config.py`)
+### Services (Neo4j, MORK, kg-service)
 
-Loaded via `pydantic_settings.BaseSettings` from a `.env` file in the `kg-service/` directory (or environment variables).
+Each service's settings, with defaults and the values to use, are in the [Deployment Guide](deployment.md):
 
-| Variable | Default | Description |
-|---|---|---|
-| `NEO4J_URI` | `bolt://localhost:27688` | Neo4j Bolt URI for the kg-service connection |
-| `NEO4J_USER` | *(required)* | Neo4j username |
-| `NEO4J_PASSWORD` | *(required)* | Neo4j password |
-| `NEO4J_DATABASE` | *(required)* | Neo4j database name |
-| `ARCHIVE_BASE` | `/mnt/hdd_1/biocypher-kg/output/human/biocypher-archives/` | **⚠️ Hardcoded to the Bizon server path.** Must be overridden for any other deployment. Base directory for KG version archives used by `Neo4jLoader`. |
-| `VERSION_DIFF_SCRIPT` | `/home/abdum/services/biocypher-kg/version_diff.py` | **⚠️ Absolute path to Bizon server.** Path to `version_diff.py` — must be overridden. |
-| `MORK_SUMMARY_SCRIPT` | `/home/abdum/services/biocypher-kg/get_mork_summary.py` | **⚠️ Absolute path to Bizon server.** Must be overridden. |
-| `MORK_URL` | `http://localhost:8432` | **⚠️ Port conflict.** MORK container exposes port `8027` (see [`biocypher-mork/docker-compose.yml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher-mork/docker-compose.yml)). Set this to `http://localhost:8027` when running the MORK container with defaults. |
-| `MORK_LIVE_STATS_ENABLED` | `false` | Enable live MORK statistics in API responses |
-| `CACHE_TTL` | `300` | Cache TTL in seconds for API responses |
-| `API_HOST` | `0.0.0.0` | FastAPI bind host |
-| `API_PORT` | `8000` | FastAPI bind port |
-| `DEBUG` | `true` | Enable FastAPI debug mode |
-| `APP_NAME` | `BioCypher KG Observatory` | Application name (shown in API root response) |
-| `APP_VERSION` | `0.1.0` | Application version |
-
-> **Requires maintainer clarification:** `ARCHIVE_BASE`, `VERSION_DIFF_SCRIPT`, and `MORK_SUMMARY_SCRIPT` are hardcoded to paths on a specific server (`/mnt/hdd_1/biocypher-kg/...` and `/home/abdum/...`). These must be set via environment variable for any other deployment but have no per-environment documentation.
-
----
-
-## Neo4j deployment environment (`docker/neo4j.env.example`)
-
-**Source:** [`docker/neo4j.env.example`](https://github.com/rejuve-bio/biocypher-kg/blob/main/docker/neo4j.env.example)  
-Copy to `docker/neo4j.env` (gitignored) and fill in values.
-
-| Variable | Default | Description |
-|---|---|---|
-| `NEO4J_IMAGE` | `neo4j:5.21` | Docker image for Neo4j |
-| `NEO4J_CONTAINER` | `neo4j_bio_atomspace` | Container name |
-| `NEO4J_HTTP_PORT` | `7674` | Host HTTP port (Neo4j browser at `http://localhost:7674`) |
-| `NEO4J_BOLT_PORT` | `7887` | Host Bolt port (drivers connect here) |
-| `NEO4J_AUTH` | `neo4j/your_password_here` | Auth in `username/password` format |
-| `NEO4J_OUTPUT_DIR` | *(required)* | Host path mounted as `/import` inside Neo4j |
-| `NEO4J_ARCHIVE_DIR` | *(required)* | Host path for KG version archives |
-| `NEO4J_PAGECACHE` | `4G` | Neo4j page cache memory |
-| `NEO4J_HEAP_INIT` | `2G` | JVM initial heap size |
-| `NEO4J_HEAP_MAX` | `4G` | JVM maximum heap size |
-| `NEO4J_URI` | `bolt://localhost:7887` | Bolt URI for the loader (must match `NEO4J_BOLT_PORT`) |
-| `NEO4J_USERNAME` | `neo4j` | Loader username |
-| `NEO4J_PASSWORD` | *(required)* | Loader password |
-| `NEO4J_IMPORT_BATCH_SIZE` | `50000` | APOC batch size for LOAD CSV operations |
-
-**Memory sizing guidance:**
-- Full human KG (hsa) requires at minimum `NEO4J_HEAP_MAX=8G` and `NEO4J_PAGECACHE=8G`
-- For development with sample data, the defaults (`4G`/`4G`) are sufficient
-
----
-
-## MORK server environment (`biocypher-mork/docker-compose.yml`)
-
-| Variable | Default | Description |
-|---|---|---|
-| `HOST_PORT` | `8027` | Host port for the MORK server. Exposed on container port `8027`. |
-
-> **⚠️ Port conflict with kg-service:** `kg-service/backend/core/config.py` defaults `MORK_URL` to port `8432`. When running both services with defaults, set `MORK_URL=http://localhost:8027` in the kg-service environment.
+- Neo4j: [`docker/neo4j.env`](deployment.md#1-configure-dockerneo4jenv)
+- MORK: [`biocypher-mork/.env` and related variables](deployment.md#1-run-the-server)
+- kg-service: [`kg-service/.env`](deployment.md#2-configure-kg-serviceenv)
 
 ---
 
@@ -294,16 +240,6 @@ See [dataset-versioning.md](../knowledge-graph/dataset-versioning.md) for the co
 
 ---
 
-## Configuration checklist for a new deployment
+## Deployment checklist
 
-1. Copy `.env.example` → `.env` and fill in `BIOPORTAL_API_KEY`
-2. Copy `docker/neo4j.env.example` → `docker/neo4j.env` and set:
-   - `NEO4J_AUTH`, `NEO4J_OUTPUT_DIR`, `NEO4J_ARCHIVE_DIR`, `NEO4J_PASSWORD`
-   - Tune memory: `NEO4J_PAGECACHE`, `NEO4J_HEAP_INIT`, `NEO4J_HEAP_MAX`
-3. Create `kg-service/.env` (or set environment variables) with:
-   - `NEO4J_USER`, `NEO4J_PASSWORD`, `NEO4J_DATABASE`
-   - `ARCHIVE_BASE` — update from `/mnt/hdd_1/biocypher-kg/...` to your path
-   - `VERSION_DIFF_SCRIPT`, `MORK_SUMMARY_SCRIPT` — update from `/home/abdum/...` to your path
-   - `MORK_URL=http://localhost:8027` (match MORK container port)
-4. For full (non-sample) runs: set `dbsnp_cache_root` in `config/species_config.yaml` or pass `--dbsnp-cache-root`
-5. Run `make setup` to install dependencies via UV
+See the [Deployment Guide checklist](deployment.md#deployment-checklist).

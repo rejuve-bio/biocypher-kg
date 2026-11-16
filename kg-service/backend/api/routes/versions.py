@@ -13,15 +13,14 @@ from backend.core.config import settings
 
 router = APIRouter(prefix="/api", tags=["versions"])
 
-# Neo4j connection
-NEO4J_URI = settings.NEO4J_URI
-NEO4J_USER = settings.NEO4J_USER
-NEO4J_PASSWORD = settings.NEO4J_PASSWORD
-
 ARCHIVE_BASE = settings.ARCHIVE_BASE
 
 def get_neo4j_driver():
-    return GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+    # Read settings at call time so Settings-page edits (projected onto settings by
+    # runtime_config) take effect without restarting the process.
+    return GraphDatabase.driver(
+        settings.NEO4J_URI, auth=(settings.NEO4J_USER, settings.NEO4J_PASSWORD)
+    )
 
 
 def get_mork_metadata():

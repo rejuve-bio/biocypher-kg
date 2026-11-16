@@ -198,9 +198,9 @@ def local_files_index(species):
 # (species, name) -> fallback directory to search when the primary glob comes up
 # empty under input_dir. "INPUT_ROOT" means "input_dir itself, no subfolder"
 # (rno's uniprot_sprot_rodents.dat.gz currently sits loose at the input root
-# instead of inside uniprot/). config/dmel/dmel_data_source_config.yaml's
-# flybase `move_to` relocates fbal_to_fbgn out of <output_dir>/flybase/ and into
-# a fixed repo-relative path independent of --input-dir.
+# instead of inside uniprot/). Older downloads moved dmel's fbal_to_fbgn out of
+# <output_dir>/flybase/ into aux_files/dmel/; it now stays in flybase/, where the
+# adapters read it, and aux_files/dmel/ is only a fallback.
 AUX_FALLBACK_ROOTS = {
     ("dmel", "fbal_to_fbgn"): Path("aux_files/dmel"),
     ("rno", "uniprot_dat"): "INPUT_ROOT",

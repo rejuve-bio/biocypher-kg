@@ -37,8 +37,8 @@ Welcome to the BioCypher-KG documentation. This index maps every document to its
 
 | Document | Purpose |
 |---|---|
-| [deployment.md](operations/deployment.md) | Docker deployment of Neo4j, MORK, and kg-service |
-| [configuration.md](operations/configuration.md) | All config files, env vars, CLI flags — complete reference |
+| [deployment.md](operations/deployment.md) | The single deployment guide: Neo4j, MORK, kg-service, MeTTa consumers, external services, ports, known issues |
+| [configuration.md](operations/configuration.md) | Pipeline config files, env vars, CLI flags |
 | [monitoring.md](operations/monitoring.md) | Dataset staleness, SonarQube, cache refresh, health checks |
 | [troubleshooting.md](operations/troubleshooting.md) | Common failures and resolutions |
 
@@ -75,7 +75,7 @@ These files exist in the repository and should be linked to, not restated:
 
 | File | Content |
 |---|---|
-| [README.md](../README.md) | Quickstart, make commands, Neo4j deployment |
+| [README.md](../README.md) | Quickstart, make commands, data download, dbSNP cache |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Adapter development guide, PR workflow |
 | [docs/knowledge-graph/dataset-versioning.md](knowledge-graph/dataset-versioning.md) | Complete versioning specification (moved from doc/) |
 | [docs/knowledge-graph/sample-generation.md](knowledge-graph/sample-generation.md) | Ego-network closure sample generation algorithm and methodology, per species (moved from doc/) |

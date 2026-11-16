@@ -38,7 +38,9 @@ ensembl:
   name: Ensembl Assembly 235.v63
   extract: false
   url: 
-    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.63.gtf.gz
+    # Pinned to the release folder: current/ only holds the newest release, so this
+    # versioned file name disappears from it at the next Ensembl Metazoa release.
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/release-63/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.63.gtf.gz
   local_files:
     gtf: {pattern: "ensembl/Caenorhabditis_elegans.WBcel235.*.gtf.gz", stable_name: "ensembl/Caenorhabditis_elegans.gtf.gz"}
 
@@ -58,6 +60,10 @@ gaf:
 
 reactome:
   name: Reactome
+  # reactome/reactome_reaction_exporter_All_species.txt (read by the reaction and
+  # reaction-role adapters) is not a public download: Reactome made it for us on
+  # request, and the public reactome_reaction_exporter.txt holds human reactions
+  # only. Place it in reactome/ by hand, or leave those adapters out of the build.
   url:
     - https://reactome.org/download/current/ReactomePathways.txt
     - https://reactome.org/download/current/ReactomePathwaysRelation.txt

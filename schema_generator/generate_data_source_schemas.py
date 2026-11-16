@@ -237,7 +237,12 @@ class AdapterAnalyzer:
                                                     if isinstance(value, ast.Constant):
                                                         url_parts.append(str(value.value))
                                                 if url_parts:
-                                                    metadata[target.attr] = ''.join(url_parts)
+                                                    value = ''.join(url_parts)
+                                                    if target.attr == 'source':
+                                                        # f"EVA Release 9 – {name}" -> "EVA Release 9":
+                                                        # drop what the unreadable parts leave dangling.
+                                                        value = value.strip(' -–:,|')
+                                                    metadata[target.attr] = value
                                             elif isinstance(stmt.value, ast.Subscript):
                                                 if isinstance(stmt.value.value, ast.Attribute):
                                                     dict_name = stmt.value.value.attr
@@ -551,6 +556,49 @@ class SchemaGenerator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.adapter_cache = {}
 
+    @classmethod
+    def for_analysis(cls, adapters_dir, schema_config: Optional[Dict] = None) -> "SchemaGenerator":
+        """A generator that only reads adapters, without an output folder: which source
+        each declares (declared_source) and, given the merged schema config, which
+        schema types each writes (adapter_types)."""
+        gen = cls.__new__(cls)
+        gen.adapters_dir = Path(adapters_dir)
+        gen.adapter_cache = {}
+        gen.schema_config = schema_config or {}
+        return gen
+
+    def adapter_types(self, adapter_name: str, adapter_cfg: Dict) -> List[Dict]:
+        """[{"name", "kind"}]: the schema types (keys of the schema config, and of the
+        source's schema file) one adapter config entry writes, as generate_schema
+        resolves them."""
+        module = (adapter_cfg.get('adapter') or {}).get('module')
+        data = self.analyze_adapter_file(self.get_adapter_file_from_module(module)) if module else None
+        if not data:
+            return []
+        out, seen = [], set()
+        for label in self.get_labels_for_adapter_config(adapter_name, adapter_cfg, data):
+            for info in self.get_schema_type_infos(label):
+                kind = 'edge' if info['config'].get('represented_as') == 'edge' else 'node'
+                if adapter_cfg.get(kind + 's', False) and info['name'] not in seen:
+                    seen.add(info['name'])
+                    out.append({'name': info['name'], 'kind': kind})
+        return out
+
+    @classmethod
+    def source_filename(cls, source_name: str) -> str:
+        """The file a data source's schema is written to (e.g. "GTEx.yaml")."""
+        name = cls.SOURCE_FILENAME_ALIASES.get(source_name, source_name)
+        return name.replace(' ', '_').replace('-', '_').replace('/', '_') + '.yaml'
+
+    def declared_source(self, module: str) -> Optional[tuple]:
+        """(source name, source url) an adapter module declares in its code: the
+        data source whose schema file it goes into. None if the file can't be read."""
+        data = self.analyze_adapter_file(self.get_adapter_file_from_module(module))
+        if not data:
+            return None
+        name = self.SOURCE_NAME_ALIASES.get(data['source_name'], data['source_name'])
+        return name, data['source_url']
+
     def get_adapter_file_from_module(self, module: str) -> str:
         """Resolve a configured adapter module to a path relative to adapters_dir."""
         adapter_prefix = 'biocypher_metta.adapters.'
@@ -592,25 +640,33 @@ class SchemaGenerator:
 
         candidates = []
         seen_candidates = set()
+        # Candidates that are really labels (the adapter's label settings and the
+        # labels its code writes). Only these may stand for '{label}_<suffix>' labels
+        # below: any other arg value would match by accident (the GO adapters'
+        # ontology: 'go' matched every 'go_*' edge label).
+        label_candidates = set()
 
-        def add_candidate(value):
-            if isinstance(value, str) and value not in seen_candidates:
-                candidates.append(value)
-                seen_candidates.add(value)
+        def add_candidate(value, is_label=False):
+            if isinstance(value, str):
+                if is_label:
+                    label_candidates.add(value)
+                if value not in seen_candidates:
+                    candidates.append(value)
+                    seen_candidates.add(value)
 
-        add_candidate(adapter_args.get('label'))
+        add_candidate(adapter_args.get('label'), is_label=True)
 
         metadata_label = adapter_data['metadata'].get('label')
         if metadata_label:
-            add_candidate(metadata_label)
+            add_candidate(metadata_label, is_label=True)
 
-        for value in adapter_args.values():
-            add_candidate(value)
+        for key, value in adapter_args.items():
+            add_candidate(value, is_label='label' in str(key))
 
         for value in sorted(analyzer.get_class_dict_string_values()):
             add_candidate(value)
         for value in sorted(analyzer.get_label_literals()):
-            add_candidate(value)
+            add_candidate(value, is_label=True)
 
         feature_labels = [
             feature_config.get('label')
@@ -624,10 +680,10 @@ class SchemaGenerator:
 
         if writes_nodes:
             for value in sorted(analyzer.get_yield_string_labels('get_nodes', 1)):
-                add_candidate(value)
+                add_candidate(value, is_label=True)
         if writes_edges:
             for value in sorted(analyzer.get_yield_string_labels('get_edges', 2)):
-                add_candidate(value)
+                add_candidate(value, is_label=True)
 
         add_candidate(adapter_name)
 
@@ -652,6 +708,8 @@ class SchemaGenerator:
             # (e.g. one adapter emitting 'chromatin_state_anatomy', 'chromatin_state_tissue', ...
             # depending on data determined at runtime). Match those against the configured
             # base label by prefix, since a static analyzer can't resolve the runtime suffix.
+            if candidate not in label_candidates:
+                continue
             for represented_as, enabled in (('node', writes_nodes), ('edge', writes_edges)):
                 if not enabled:
                     continue
@@ -979,10 +1037,7 @@ class SchemaGenerator:
             if not adapter_data:
                 continue
 
-            source_name = self.SOURCE_NAME_ALIASES.get(
-                adapter_data['source_name'],
-                adapter_data['source_name'],
-            )
+            source_name, _ = self.declared_source(module)
 
             # Filter by source name if specified
             if filter_sources and source_name not in filter_sources:
@@ -1011,9 +1066,7 @@ class SchemaGenerator:
         website = self.extract_base_url(source_urls[0]) if source_urls else ''
 
         # Check if output file already exists
-        filename_source = self.SOURCE_FILENAME_ALIASES.get(source_name, source_name)
-        output_filename = filename_source.replace(' ', '_').replace('-', '_').replace('/', '_') + '.yaml'
-        output_path = self.output_dir / output_filename
+        output_path = self.output_dir / self.source_filename(source_name)
 
         # Load existing schema if it exists
         if output_path.exists():
@@ -1157,7 +1210,7 @@ class SchemaGenerator:
             with open(output_path, 'w') as f:
                 yaml.dump(schema, f, Dumper=FlowStyleListDumper, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
-            print(f"  ✓ Generated: {output_filename}")
+            print(f"  ✓ Generated: {output_path.name}")
             print(f"    - Nodes: {len(nodes)}, Relationships: {len(relationships)}")
         else:
             print(f"  Warning: No nodes or relationships found for {source_name}")

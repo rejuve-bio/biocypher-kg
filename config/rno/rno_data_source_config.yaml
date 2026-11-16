@@ -37,7 +37,9 @@ ensembl:
   name: Ensembl Assembly 8.v116
   extract: false
   url:
-    - https://ftp.ensembl.org/pub/current/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz
+    # Pinned to the release folder: current/ only holds the newest release, so this
+    # versioned file name disappears from it at the next Ensembl release.
+    - https://ftp.ensembl.org/pub/release-116/gtf/rattus_norvegicus/Rattus_norvegicus.GRCr8.116.gtf.gz
     # NCBI gene_info, used to build the gene<->RGD id map for GAF matching
     - https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Rattus_norvegicus.gene_info.gz
   local_files:
@@ -63,6 +65,10 @@ gaf:
 
 reactome:
   name: Reactome
+  # reactome/reactome_reaction_exporter_All_species.txt (read by the reaction and
+  # reaction-role adapters) is not a public download: Reactome made it for us on
+  # request, and the public reactome_reaction_exporter.txt holds human reactions
+  # only. Place it in reactome/ by hand, or leave those adapters out of the build.
   url:
     - https://reactome.org/download/current/ReactomePathways.txt
     - https://reactome.org/download/current/ReactomePathwaysRelation.txt
@@ -88,10 +94,11 @@ rna_central:
   name: RNA Central
   extract: false
   url:
-    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/rattus_norvegicus.mRatBN7.2.bed.gz
+    # GRCr8, the assembly of the rat Ensembl genes (mRatBN7.2 positions don't line up with them).
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/rattus_norvegicus.GRCr8.bed.gz
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
   local_files:
-    rna_central_bed: {pattern: "rna_central/rattus_norvegicus.mRatBN7.2.bed.gz", stable_name: "rna_central/rattus_norvegicus.mRatBN7.2.bed.gz"}
+    rna_central_bed: {pattern: "rna_central/rattus_norvegicus.GRCr8.bed.gz", stable_name: "rna_central/rattus_norvegicus.GRCr8.bed.gz"}
     rna_central_rfam: {pattern: "rna_central/rnacentral_rfam_annotations.tsv.gz", stable_name: "rna_central/rnacentral_rfam_annotations.tsv.gz"}
 
 string:

@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""
-Version Manager for BioCypher KG
-- Discovers source names from CSV files
-- Archives changed datasets only
-- Performs surgical updates
-"""
+"""Version Manager for BioCypher KG: source discovery, archiving, surgical updates."""
 import hashlib
 import csv
 import shutil
@@ -80,10 +75,7 @@ class VersionManager:
     # ===== SOURCE DISCOVERY =====
 
     def get_source_from_csv(self, folder: Path) -> list:
-        """
-        Read source values from CSV files in folder.
-        Fully dynamic - no hardcoding.
-        """
+        """Read source values from CSV files in folder."""
         sources = set()
         csv_files = list(folder.rglob("nodes_*.csv"))
 
@@ -101,10 +93,7 @@ class VersionManager:
         return list(sources)
 
     def discover_all_sources(self) -> dict:
-        """
-        Discover folder → source mapping.
-        Returns: {"gencode": ["GENCODE"], "dbsnp": ["dbSNP"], ...}
-        """
+        """Discover folder → source mapping."""
         folder_sources = {}
 
         dataset_folders = [
@@ -123,10 +112,7 @@ class VersionManager:
     # ===== ARCHIVING =====
 
     def archive_dataset(self, output_dir, folder_name: str, version: str):
-        """
-        Archive a dataset folder to /archives/{folder}/{version}/
-        Only archives CHANGED datasets to save space.
-        """
+        """Archive a dataset folder to /archives/{folder}/{version}/."""
         self.output_dir = Path(output_dir)
 
         source_folder = self.output_dir / folder_name
@@ -164,15 +150,8 @@ class VersionManager:
             return hashes
 
     def get_current_versions(self) -> dict:
-        """
-        Get current version info from Neo4j.
-        Returns: {
-            "atomspace_version": "v4",
-            "dataset_versions": {"gencode": "v1", "dbsnp": "v1"}
-        }
-        """
+        """Get current version info from Neo4j."""
         with self.driver.session() as session:
-            # Get latest KGVersion node for this database type
             kg_result = session.run("""
                 MATCH (v:KGVersion {db_type: $db_type})
                 RETURN v.version as atomspace_version,
@@ -187,7 +166,6 @@ class VersionManager:
                     "dataset_versions": {}
                 }
             
-            # Parse JSON string back to dict
             dataset_versions = {}
             if kg_result["dataset_versions_json"]:
                 dataset_versions = json.loads(kg_result["dataset_versions_json"])
@@ -271,12 +249,7 @@ class VersionManager:
         logger.info(f"✅ Created DatasetVersion nodes")
 
     def read_source_provenance(self, output_dir) -> dict:
-        """Read upstream source provenance from the build's graph_info.json.
-
-        Returns {dataset_name: {upstream_version, source_url, checksums}} captured from
-        the download manifest at build time. Empty dict if graph_info.json is absent or
-        has no datasets — provenance is additive, never required.
-        """
+        """Read upstream source provenance from the build's graph_info.json."""
         graph_info_path = Path(output_dir) / "graph_info.json"
         try:
             with open(graph_info_path, "r") as f:
@@ -328,38 +301,26 @@ class VersionManager:
     # ===== MAIN LOGIC =====
 
     def check_and_version(self, output_dir):
-        """
-        Main method:
-        1. Hash all datasets
-        2. Compare with Neo4j
-        3. Discover sources
-        4. Archive changed datasets
-        5. Return result (tuple format for neo4j_loader.py)
-        """
-        # Store output_dir
+        """Hash datasets, compare with Neo4j, discover sources; return version result tuple."""
         self.output_dir = Path(output_dir)
 
         logger.info("="*60)
         logger.info("Starting version check...")
         logger.info("="*60)
 
-        # Step 1: Hash current output
         current_hashes = self.hash_all_datasets()
         if not current_hashes:
             logger.error("No CSV files found!")
             return (None, None, None, None)
 
-        # Step 2: Get stored hashes
         stored_hashes = self.get_stored_hashes()
 
-        # Step 3: Get current versions
         version_info = self.get_current_versions()
         current_atomspace_version = version_info["atomspace_version"]
         current_dataset_versions = version_info["dataset_versions"]
         
         logger.info(f"Current AtomSpace version: {current_atomspace_version or 'None (first run)'}")
 
-        # Step 4: Compare hashes
         changed_datasets = []
         unchanged_datasets = []
 
@@ -374,16 +335,13 @@ class VersionManager:
                 unchanged_datasets.append(dataset)
                 logger.info(f"  UNCHANGED: {dataset}")
 
-        # Step 5: No changes?
         if not changed_datasets:
             logger.info("✅ No changes detected - nothing to load!")
             return (None, None, None, None)
 
-        # Step 6: Discover sources
         logger.info("Discovering source names from CSV files...")
         folder_sources = self.discover_all_sources()
 
-        # Step 7: Increment versions
         new_atomspace_version = self.increment_version(current_atomspace_version)
         new_dataset_versions = current_dataset_versions.copy()
         
@@ -395,8 +353,7 @@ class VersionManager:
 
         logger.info(f"AtomSpace version: {current_atomspace_version or 'None'} → {new_atomspace_version}")
 
-        # Build per-file list for changed datasets (relative paths like "gaf/edges_foo.csv")
-        # neo4j_loader uses these for per-relationship surgical deletes and file-level loading.
+        # Per-file relative paths for changed datasets, used for surgical deletes and file-level loading.
         changed_files = []
         for dataset in changed_datasets:
             folder = self.output_dir / dataset
@@ -407,22 +364,13 @@ class VersionManager:
                 for csv_file in sorted(folder.rglob("*.csv")):
                     changed_files.append(str(csv_file.relative_to(self.output_dir)))
 
-        # Return tuple format expected by neo4j_loader.py
         return (new_atomspace_version, new_dataset_versions, changed_datasets, changed_files)
 
     def finalize_version(self, output_dir, atomspace_version, dataset_versions, 
                          changed_datasets, build_id):
-        """
-        Called AFTER successful data loading:
-        1. Store folder → source mapping
-        2. Store hashes
-        3. Create DatasetVersion nodes
-        4. Create KGVersion node
-        """
-        # Store output_dir
+        """Called after successful loading: store mappings, hashes, DatasetVersion + KGVersion nodes."""
         self.output_dir = Path(output_dir)
-        
-        # Build dataset_info
+
         dataset_info = {}
         for dataset in changed_datasets:
             version = dataset_versions[dataset]
@@ -433,33 +381,29 @@ class VersionManager:
                 'archive_path': str(archive_path)
             }
         
-        # Get folder sources
         folder_sources = self.discover_all_sources()
-        
-        # Get current hashes
+
         current_hashes = self.hash_all_datasets()
-        
-        # Calculate unchanged
+
+        # Only persist hashes for loaded datasets; a failed dataset's hash would make the next run skip it (no retry).
+        loaded = set(changed_datasets)
+        hashes_to_store = {d: h for d, h in current_hashes.items() if d in loaded}
+
         all_datasets = set(current_hashes.keys())
-        unchanged_datasets = list(all_datasets - set(changed_datasets))
-        
+        unchanged_datasets = list(all_datasets - loaded)
+
         logger.info("="*60)
         logger.info("Finalizing version metadata...")
         logger.info("="*60)
 
-        # Store mappings
         self.store_folder_source_mapping(folder_sources, atomspace_version)
 
-        # Store hashes
-        self.store_hashes(current_hashes, dataset_versions)
+        self.store_hashes(hashes_to_store, dataset_versions)
 
-        # Create DatasetVersion nodes
         self.create_dataset_version_nodes(dataset_info)
 
-        # Read upstream source provenance (versions/urls/checksums) from graph_info.json
         source_provenance = self.read_source_provenance(output_dir)
 
-        # Create KGVersion node
         self.create_version_node(
             version=atomspace_version,
             build_id=build_id,

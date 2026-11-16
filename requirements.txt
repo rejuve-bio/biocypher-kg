@@ -26,7 +26,7 @@ bioutils==0.6.1
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
     #   hgvs
-cachetools==6.2.1
+cachetools==7.2.7
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-auth
@@ -38,7 +38,7 @@ charset-normalizer==3.4.4
     # via
     #   biocypher-metta (pyproject.toml)
     #   requests
-click==8.3.0
+click==8.5.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   typer
@@ -71,7 +71,7 @@ executing==2.2.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   stack-data
-google-api-core==2.34.0
+google-api-core==2.43.2
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-cloud-core
@@ -171,7 +171,7 @@ obonet==1.0.0
     # via biocypher-metta (pyproject.toml)
 owlready2==0.44
     # via biocypher-metta (pyproject.toml)
-packaging==25.0
+packaging==26.3
     # via
     #   biocypher-metta (pyproject.toml)
     #   pooch
@@ -256,17 +256,17 @@ pysam==0.24.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocommons-seqrepo
-pytest==8.4.2
+pytest==9.2.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   pytest-cov
 pytest-cov==5.0.0
     # via biocypher-metta (pyproject.toml)
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
     # via
     #   biocypher-metta (pyproject.toml)
     #   pandas
-pytz==2026.3.post1
+pytz==2026.6
     # via
     #   biocypher-metta (pyproject.toml)
     #   neo4j
@@ -298,7 +298,7 @@ rsa==4.9.1
     # via
     #   biocypher-metta (pyproject.toml)
     #   google-auth
-setuptools==84.0.0
+setuptools==84.2.1
     # via biocypher-metta (pyproject.toml)
 shellingham==1.5.4
     # via
@@ -350,7 +350,7 @@ treelib==1.6.4
     # via
     #   biocypher-metta (pyproject.toml)
     #   biocypher
-typer==0.20.0
+typer==0.27.3
     # via biocypher-metta (pyproject.toml)
 typing-extensions==4.15.0
     # via
@@ -359,7 +359,7 @@ typing-extensions==4.15.0
     #   exceptiongroup
     #   ipython
     #   typer
-tzdata==2025.2
+tzdata==2026.6
     # via
     #   biocypher-metta (pyproject.toml)
     #   pandas

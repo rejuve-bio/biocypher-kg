@@ -1,0 +1,63 @@
+# BioCypher KG Console: start it with docker/up.sh, then open
+# http://localhost:9000/console/. There's nothing to configure here and no env file:
+# each species' databases, the data and Builds folders and how builds run are all set
+# in the console's Settings page.
+# Own project name so this stack never collides with the standalone Makefile Neo4j in this dir.
+name: biocypher-console
+
+services:
+  console:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    # CONSOLE_IMAGE lets a local user pull a prebuilt image (e.g. from GHCR) instead
+    # of building: set it + `up.sh --no-build` to avoid the local build entirely.
+    image: ${CONSOLE_IMAGE:-biocypher-kg-console}
+    # Survive host reboots and daemon restarts; only a manual `down`/`stop` keeps it down.
+    restart: unless-stopped
+    ports:
+      # This computer only (127.0.0.1), unless up.sh --host puts it on the network,
+      # where it asks for the password up.sh made (CONSOLE_PASSWORD).
+      - "${CONSOLE_BIND:-127.0.0.1}:${CONSOLE_PORT:-9000}:${CONSOLE_PORT:-9000}"
+    environment:
+      PORT: "${CONSOLE_PORT:-9000}"
+      REPO_ROOT: /app
+      BUILDS_DIR: /app/kg-service/.builds
+      # Only for running behind a reverse proxy under another name (see the
+      # deployment guide); empty means this computer only.
+      CONSOLE_ALLOWED_HOSTS: "${CONSOLE_ALLOWED_HOSTS:-}"
+      CONSOLE_ALLOWED_ORIGINS: "${CONSOLE_ALLOWED_ORIGINS:-}"
+      CONSOLE_PASSWORD: "${CONSOLE_PASSWORD:-}"
+    # The folders the console can see (where the data and Builds folders are chosen)
+    # come from docker/.console-shares.yml, which up.sh writes for this computer.
+    volumes:
+      # Named volume: Settings and build history survive image rebuilds.
+      - console_builds:/app/kg-service/.builds
+      # Lets the console set up, start and stop each species' Neo4j and MORK from
+      # Settings > Species databases. This gives it control of Docker on this
+      # machine, so keep the console bound to localhost (as above).
+      - /var/run/docker.sock:/var/run/docker.sock
+      # This instance's own config: what the Config page edits and builds read. The
+      # repo's config/ is never changed; files not edited here follow the image.
+      - console_config:/app/config
+    # Lets the console reach a database you run on this computer (Settings > Use existing).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Nothing in the console may gain more rights than it started with.
+    security_opt:
+      - "no-new-privileges:true"
+
+  # Never started: builds the MORK image (biocypher-console-mork) that Settings >
+  # Species databases > Run here uses. up.sh builds it once when biocypher-mork/ exists.
+  mork:
+    profiles: ["mork-image"]
+    image: biocypher-console-mork
+    build:
+      context: ../biocypher-mork
+      args:
+        # Pinned nightly; override RUST_NIGHTLY to bisect a broken one.
+        RUST_NIGHTLY: "${RUST_NIGHTLY:-2026-07-01}"
+
+volumes:
+  console_builds:
+  console_config:

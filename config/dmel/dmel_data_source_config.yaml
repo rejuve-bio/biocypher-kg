@@ -29,11 +29,13 @@ coxpressdb:
   url: https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
 
 ensembl:
-  name: Ensembl Assembly 54.v62
+  name: Ensembl Assembly 54.v63
   version: {strategy: url_regex, pattern: '(BDGP6\.[\d.]+)\.gtf', vtype: other}
   extract: false
   url: 
-    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.63.gtf.gz
+    # Pinned to the release folder: current/ only holds the newest release, so this
+    # versioned file name disappears from it at the next Ensembl Metazoa release.
+    - https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/release-63/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.54.63.gtf.gz
   local_files:
     gtf: {pattern: "ensembl/Drosophila_melanogaster.BDGP6.*.gtf.gz", stable_name: "ensembl/Drosophila_melanogaster.gtf.gz"}
 
@@ -47,45 +49,48 @@ epd:
 eva:
   name: EVA (European Variation Archive)
   extract: false
-  url: https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9/by_species/drosophila_melanogaster/Release_6_plus_ISO1_MT/GCA_000001215.4_current_ids.vcf.gz
+  url: https://ftp.ebi.ac.uk/pub/databases/eva/rs_releases/release_9/by_species/drosophila_melanogaster/GCA_000001215.4/7227_GCA_000001215.4_current_ids.vcf.gz
   local_files:
     eva_vcf: {pattern: "eva/7227_GCA_000001215.4_current_ids.vcf.gz", stable_name: "eva/7227_GCA_000001215.4_current_ids.vcf.gz"}
 
 flybase:
-  name: Flybase 2026_01
-  # Replaces the per-adapter FlybasePrecomputedTable.extract_date_string() logic:
-  # the release (fb_2026_02) is parsed from the filename for every FlyBase file.
+  name: FlyBase 2026_02
+  # Links point at the release folder (releases/FB2026_02), not releases/current:
+  # current only holds the newest release, so these file names disappear from it
+  # as soon as FlyBase publishes the next one. To move to a newer release, change
+  # FB2026_02 and fb_2026_02 everywhere below (and in the dmel adapters config).
+  # The release (fb_2026_02) is parsed from the filename for every FlyBase file.
   version: {strategy: url_regex, pattern: 'fb_(\d{4}_\d{2})', vtype: date}
   source_url: https://flybase.org/
   extract: false
   url:
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/allele_genetic_interactions_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/fbal_to_fbgn_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/genotype_phenotype_data_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/best_gene_summary_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/collaborators/fbgn_uniprot_fb_2026_02.tsv.gz
-    # - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2026_02.tsv.gz 
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_genetic_interactions_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_group_data_fb_2026_02.tsv.gz    
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_groups_HGNC_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/gene_rpkm_report_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/high-throughput_gene_expression_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/metabolic_pathway_group_data_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/physical_interactions_mitab_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/genes/signaling_pathway_group_data_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/human_disease/disease_model_annotations_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/orthologs/dmel_paralogs_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/go/gene_association.fb.gz  # GOA (GO annotation)
-    - https://s3ftp.flybase.org/releases/current/precomputed_files/synonyms/fb_synonym_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/alleles/allele_genetic_interactions_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/alleles/fbal_to_fbgn_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/alleles/genotype_phenotype_data_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/best_gene_summary_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/dmel_gene_sequence_ontology_annotations_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/dmel_unique_protein_isoforms_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/fbgn_fbtr_fbpp_expanded_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/collaborators/fbgn_uniprot_fb_2026_02.tsv.gz
+    # - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/FlyCellAtlas_slimmed_gene_expression_fb_2026_02.tsv.gz 
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/gene_genetic_interactions_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/gene_group_data_fb_2026_02.tsv.gz    
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/gene_groups_HGNC_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/gene_rpkm_report_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/high-throughput_gene_expression_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/metabolic_pathway_group_data_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/physical_interactions_mitab_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/scRNA-Seq_gene_expression_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/genes/signaling_pathway_group_data_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/human_disease/disease_model_annotations_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/orthologs/dmel_human_orthologs_disease_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/orthologs/dmel_paralogs_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/references/fbrf_pmid_pmcid_doi_fb_2026_02.tsv.gz
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/go/gene_association.fb.gz  # GOA (GO annotation)
+    - https://s3ftp.flybase.org/releases/FB2026_02/precomputed_files/synonyms/fb_synonym_fb_2026_02.tsv.gz
+  # fbal_to_fbgn stays in flybase/: the allele adapters read it from there.
   move_to:
     - fb_synonym_fb_2026_02.tsv.gz: ./aux_files/dmel/
-    - fbal_to_fbgn_fb_2026_02.tsv.gz: ./aux_files/dmel/
   local_files:
     allele_genetic_interactions: {pattern: "flybase/allele_genetic_interactions_fb_*.tsv.gz", stable_name: "flybase/allele_genetic_interactions.tsv.gz"}
     disease_model_annotations: {pattern: "flybase/disease_model_annotations_fb_*.tsv.gz", stable_name: "flybase/disease_model_annotations.tsv.gz"}
@@ -110,6 +115,10 @@ flybase:
 
 reactome:
   name: Reactome
+  # reactome/reactome_reaction_exporter_All_species.txt (read by the reaction and
+  # reaction-role adapters) is not a public download: Reactome made it for us on
+  # request, and the public reactome_reaction_exporter.txt holds human reactions
+  # only. Place it in reactome/ by hand, or leave those adapters out of the build.
   url:
     - https://reactome.org/download/current/ReactomePathways.txt
     - https://reactome.org/download/current/ReactomePathwaysRelation.txt

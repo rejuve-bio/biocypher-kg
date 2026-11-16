@@ -1,0 +1,40 @@
+# Adapter -> data-source overrides for the source-grouped build wizard (dmel).
+#
+# The wizard derives an adapter's source from the first path segment of its input
+# file (e.g. filepath: "bgee/..."  ->  bgee). Adapters whose source can't be derived
+# (ontologies that read bundled files, adapters with no file path) land in the
+# "Ontologies / shared" group. To pin any adapter to a specific source, add a line:
+#
+#     <adapter_name>: <source_key>
+#
+# where <source_key> is a key from dmel_data_source_config.yaml
+# (afca, alliance, bgee, coxpressdb, ensembl, epd, eva, fca2, flybase, reactome,
+#  rna_central, string, tflink, uniprot). An override always wins over derivation.
+#
+# Currently ungrouped adapters (edit as the data dictates; left shared by default
+# because these read ontology files, not one of the 14 download sources):
+#
+#   dmel_ptp_physical_interaction
+#   dmel_ptt_physical_interaction
+#   dmel_rnaseq_library
+#   dmel_expression_value
+#   fbdv_development_ontology
+#   fbdv_subclass_of
+#   fbbt_gross_anatomy_ontology
+#   fbbt_subclass_of
+#   fbcv_controlled_vocabulary_ontology
+#   fbcv_subclass_of
+#   go_biological_process
+#   go_biological_process_subclass_of
+#   go_molecular_function
+#   go_molecular_function_subclass_of
+#   go_cellular_component
+#   go_cellular_component_subclass_of
+#   so_sequence_ontology
+#   so_sequence_subclass_of
+#   do_disease_ontology
+#   do_disease_do_subclass_of
+#   chebi_ontology
+#   chebi_chebi_subclass_of
+
+# (no overrides yet; add lines above as "<adapter_name>: <source_key>")

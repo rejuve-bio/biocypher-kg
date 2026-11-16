@@ -116,11 +116,11 @@
       "synthetic": false
     },
     "rna_central_bed": {
-      "real_rows": 760,
+      "real_rows": 1814,
       "synthetic": false
     },
     "rna_central_rfam": {
-      "real_rows": 57,
+      "real_rows": 416,
       "synthetic": false
     }
   }

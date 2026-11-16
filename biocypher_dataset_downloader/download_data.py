@@ -2,6 +2,7 @@ import sys
 import typer
 import logging
 from pathlib import Path
+from typing import List, Optional
 from typing_extensions import Annotated
 from biocypher_dataset_downloader.download_manager import DownloadManager
 
@@ -46,7 +47,7 @@ def _generate_connected_sample(config_file: str, output_dir: Path, size_budget: 
 def download_data(
     output_dir: Annotated[Path, typer.Option(exists=False, file_okay=False, dir_okay=True)],
     config_file: str = "config/hsa/hsa_data_source_config.yaml",
-    source: str = None,
+    source: Annotated[Optional[List[str]], typer.Option(help="Source key to download; repeat to fetch several (--source reactome --source uniprot). Omit to download all.")] = None,
     sample_fraction: float = 0.01,
     no_checksum: Annotated[bool, typer.Option("--no-checksum", help="Skip sha256 checksums in the provenance manifest (faster on huge files).")] = False,
     sample_size_budget: Annotated[int, typer.Option(help="Node budget passed to generate_connected_sample.py.")] = 180,
@@ -64,16 +65,26 @@ def download_data(
         python download_data.py --output-dir data/hsa
         python download_data.py --output-dir data/dmel --config-file config/dmel/dmel_data_source_config.yaml
         python download_data.py --output-dir data/hsa --source reactome
+        python download_data.py --output-dir data/hsa --source reactome --source uniprot
         python download_data.py --output-dir data/hsa --no-checksum
         python download_data.py --output-dir data/dmel --config-file config/dmel/dmel_data_source_config.yaml --skip-sample-generation
     """
+    def _manager():
+        return DownloadManager(config_file, output_dir, sample_fraction=sample_fraction,
+                               compute_checksums=not no_checksum)
+
     try:
-        manager = DownloadManager(config_file, output_dir, sample_fraction=sample_fraction,
-                                  compute_checksums=not no_checksum)
         if source:
-            manager.download_source(source)
+            unknown = [s for s in source if s not in _manager().config]
+            if unknown:
+                raise ValueError(f"Source(s) not found in config: {unknown}")
+            # A fresh manager per source: download_source() rebuilds the manifest from
+            # the copy loaded at construction, so reusing one manager would drop the
+            # sources fetched earlier in this run from download_manifest.json.
+            for key in source:
+                _manager().download_source(key)
         else:
-            manager.download_all()
+            _manager().download_all()
     except Exception as e:
         logging.error(f"Download failed: {e}")
         raise

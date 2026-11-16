@@ -14,6 +14,49 @@ A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher
 
 Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` do not yet exist.
 
+## Web Console
+
+A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK, as an alternative to the CLI. One command starts it; there's no env file:
+
+```bash
+./docker/up.sh                        # prints the address to open, e.g. http://localhost:20087/console/
+./docker/up.sh --host 37.27.231.93    # on a server: open it at the server's address, with a password
+```
+
+Everything else is set in the console's **Settings** page: each species' Neo4j and MORK, where builds are saved, your data folders, and how builds run. Build history persists across rebuilds.
+
+**Building a KG in the console:**
+
+- **Sample** builds work offline from bundled data: pick a species, choose adapters, Launch build, then Load into Neo4j/MORK and open Explore.
+- **Full** builds need the source data. The wizard shows what is present for the species and a **Download data** button that fetches it into the console data folder (`<data folder>/input/<species>`); full builds then read from there automatically. This wraps `biocypher_dataset_downloader` so the whole acquire → build → load flow stays in the UI.
+- **Build size** makes a smaller graph: a number of rows per adapter, or a percent of each source's full size. The console learns full sizes from builds without a limit, shows them when you pick sources, and previews what a build will write. Percent turns on once every selected source has a known size. Each adapter keeps its first rows, so a capped graph is a sample, not a random subset.
+- **Config** edited in the console stays with that console instance (its own copy of the config, in a Docker volume): it never changes a repo or the image, survives updates, and files you haven't edited follow the shipped version. The Config page shows which files you edited and can reset one to the shipped version.
+- **All species:** a build for all species writes a folder per species, and loading it loads each species into its own Neo4j or MORK (species without one are skipped and listed).
+- **Build history** shows each build's size and disk usage, and lets you delete a build (and its output files) to reclaim space.
+
+**Setting it up (Settings page):** everything a researcher needs is set in the console, with no env file and no defaults. The console only writes to folders and connects to databases chosen there, so nothing lands somewhere you didn't pick. Until the **console data folder** and **Builds folder** are set, New Build says so and won't build, download or prepare the dbSNP cache.
+
+- **Species databases:** each species has its own Neo4j and MORK, with no shared or default instance or login. *Run here* has the console create and start them (it uses the Docker socket the compose files mount; Neo4j needs **Neo4j memory** chosen first); *Use existing* connects one you already run, with its address, username, password and database entered in full and checked before they're saved. For a database on this computer type `localhost:7687`; the console reaches it through `host.docker.internal` itself. A connection to another computer that isn't encrypted (`bolt://`, `http://`) is flagged.
+- **Data locations:** Browse… opens Finder. Browsers never tell a page where a folder is, so the console finds the chosen folder by its name and contents, then checks it holds what the code reads: that species' source files, or a real dbSNP cache (`<root>/common|full/dbsnp_mapping.db`, the SQLite cache `scripts/update_dbsnp.py` builds; pickle caches are refused). Saving Settings and starting a build run the same checks.
+- **Build settings (required):** the **Builds folder** (where builds are saved), the **console data folder** (downloads, the prepared dbSNP cache, load history) and **Neo4j memory** (for each Neo4j the console runs). Chosen with Browse… like the other folders. New Build shows where the next build goes, and each build's page shows where it went.
+- **Folders the console can see:** `up.sh` shares them for the computer it runs on, only ones that exist. On a Mac: Desktop, Documents, Downloads and `/Volumes`. On Linux (a server): the home folder and `/mnt`, `/media`, `/data` or `/srv`. `CONSOLE_SHARES="/path ..."` adds more. They're writable so the data and Builds folders can be anywhere there; the console only writes into those two, and source data and dbSNP folders are only read. On a Mac, don't share the whole home folder: Docker Desktop passes every file change in a shared folder to its VM, and a home folder changes so often that the engine crashes.
+
+**No checkout needed:** [`docker/docker-compose.dist.yml`](docker/docker-compose.dist.yml) only pulls the published image and runs it; everything else is set in Settings.
+
+```bash
+CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d
+```
+
+**Security:** on your own computer the console only listens there (published on `127.0.0.1`) and has no sign-in. On a server, `./docker/up.sh --host <address>` puts it on the network at that address and makes it ask for a password, which `up.sh` creates once and keeps in `docker/.console-password` without printing it (`cat docker/.console-password` shows it; the address and port are remembered too). The console controls Docker on that server, so also allow its port only from your own IP in the server's firewall (`ufw` doesn't cover ports Docker publishes), and remember plain http doesn't encrypt the password. It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy under another name, add that name to `CONSOLE_ALLOWED_HOSTS` (and `CONSOLE_ALLOWED_ORIGINS`, comma-separated); these stay outside Settings on purpose.
+
+**Avoiding a local image build:** the console image can be built locally, or pulled prebuilt (CI publishes it to GHCR). To skip the local build (and the Docker Hub dependency it needs), pull the image and run without building:
+
+```bash
+export CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest
+docker compose -f docker/docker-compose.yml pull console
+./docker/up.sh --no-build
+```
+
 ## Prerequisites
 
 - Python 3.10+  
@@ -103,6 +146,8 @@ make download-direct # Download data sources with explicit parameters
 make test            # Run tests
 make clean           # Clean temporary files
 make distclean       # Full clean
+make neo4j-up        # Start Neo4j (also neo4j-reset/-down/-logs/-status/-load/-load-direct;
+                     # see docs/operations/deployment.md)
 ```
 
 ### Parallel Adapter Execution
@@ -122,6 +167,13 @@ uv run python create_knowledge_graph.py \
 ```
 
 Each worker builds its own writer and writes to per-adapter output directories, so their outputs never collide. Adapters that would write the same output file (same output directory and label) are automatically run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works the same as in sequential mode.
+
+### Limiting the Build Size
+
+- **`--limit N`:** caps the nodes and the edges each adapter writes at `N` (0, the default, means no limit).
+- **`--adapter-limits FILE`:** gives adapters their own caps, from a JSON file such as `{"gencode_gene": {"nodes": 6000, "edges": 0}}`. A cap of 0 means no cap. Adapters not listed keep `--limit`.
+
+Each adapter keeps its first rows. `graph_info.json` records what each adapter wrote under `adapter_counts`, with `"complete": false` where a cap stopped it early. The Web Console learns full sizes from the complete counts and turns a percent into `--adapter-limits` caps.
 
 ### Pre-flight File Path Validation
 
@@ -282,13 +334,13 @@ The project template is structured as follows:
 │
 │ # Docker setup
 │
-├── Dockerfile
 ├── docker
 │   ├── biocypher_entrypoint_patch.sh
 │   ├── create_table.sh
 │   ├── import.sh
-│   ├── neo4j.env                  # Neo4j config (image, ports, paths, memory)
+│   ├── neo4j.env.example          # Template for docker/neo4j.env (image, ports, paths, memory)
 │   └── docker-compose.neo4j.yml   # Parameterized Neo4j compose file
+├── biocypher-mork/                # MORK server image, loader and persistence
 ├── docker-compose.yml
 ├── docker-variables.env
 │
@@ -344,97 +396,11 @@ The project supports multiple output formats for the knowledge graph:
 2. **Prolog Writer (`prolog_writer.py`)**: Generates knowledge graph data in the Prolog format.
 3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
 
-### Neo4j Deployment & Loading
+### Deployment (Neo4j, MORK, kg-service)
 
-#### 1. Configure `docker/neo4j.env`
-
-Copy the example file and fill in your values:
-
-```bash
-cp docker/neo4j.env.example docker/neo4j.env
-```
-
-Key settings:
-
-```ini
-NEO4J_OUTPUT_DIR=/path/to/output/<species>   # e.g. /mnt/hdd_1/biocypher-kg/output/cel
-NEO4J_AUTH=neo4j/your_password
-NEO4J_BOLT_PORT=7887
-NEO4J_HTTP_PORT=7674
-```
-
-> `NEO4J_OUTPUT_DIR` is mounted read-only as `/import` inside the container.
-> Cypher files use `file:///subdir/file.csv`, which Neo4j resolves against `/import`.
-> APOC is pre-configured to allow this (`apoc.import.file.use_neo4j_config=false`).
-
-#### 2. Start the container
-
-```bash
-make neo4j-up                                   # start with fresh volumes
-make neo4j-up NEO4J_ENV_FILE=docker/my.env     # use a custom env file
-```
-
-#### 3. Load data
-
-```bash
-# First run or after regenerating output — loads everything
-make neo4j-load-direct
-
-# Subsequent runs — only reloads files that changed (hash-based)
-make neo4j-load
-```
-
-#### 4. Other lifecycle commands
-
-```bash
-make neo4j-status    # show container status
-make neo4j-logs      # stream container logs
-make neo4j-down      # stop and remove container
-```
-
-#### Running the loader directly
-
-```bash
-# Direct load (no versioning) — using an env file
-uv run python scripts/neo4j_loader.py --env-file docker/neo4j.env
-
-# Explicit args
-uv run python scripts/neo4j_loader.py \
-  --output-dir /path/to/output/cel \
-  --uri bolt://localhost:7887 \
-  --username neo4j \
-  --password <password>
-```
-
-#### Loader options
-
-| Flag | Env var | Description |
-|---|---|---|
-| `--env-file` | — | Load all settings from a `neo4j.env` file |
-| `--output-dir` | `NEO4J_OUTPUT_DIR` | Directory with generated CSV + Cypher files |
-| `--uri` | `NEO4J_URI` | Neo4j bolt URI (default: `bolt://localhost:7687`) |
-| `--username` | `NEO4J_USERNAME` | Neo4j username (default: `neo4j`) |
-| `--password` | `NEO4J_PASSWORD` | Neo4j password |
-
-#### Manual `docker run` (without docker compose)
-
-If you prefer to start the container manually instead of `make neo4j-up`, you **must** mount the output directory as `/var/lib/neo4j/import` and enable APOC file access:
-
-```bash
-docker run -d \
-  -p <http_port>:7474 \
-  -p <bolt_port>:7687 \
-  --name neo4j_bio \
-  -v /path/to/output/<species>:/var/lib/neo4j/import:ro \
-  -e NEO4J_AUTH=neo4j/<password> \
-  -e NEO4JLABS_PLUGINS='["apoc"]' \
-  -e NEO4J_apoc_import_file_enabled=true \
-  -e NEO4J_apoc_import_file_use__neo4j__config=false \
-  -e NEO4J_dbms_security_procedures_unrestricted="apoc.*" \
-  neo4j:5.21
-```
-
-Without the `/var/lib/neo4j/import` mount, `LOAD CSV` calls in the Cypher files will fail with `NoSuchFileException`.
+Loading a build into Neo4j or the MORK server, and running kg-service, are covered in one place:
+**[docs/operations/deployment.md](docs/operations/deployment.md)**. It lists every backend and external service,
+their ports and settings, and the known issues on `main`.
 
 ## ⬇ Downloading data
 The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.

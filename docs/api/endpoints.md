@@ -4,11 +4,9 @@ The `kg-service` FastAPI application exposes REST endpoints for querying knowled
 
 **Source:** [`kg-service/backend/api/main.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/main.py)  
 **Default port:** `8000` (configured via `API_PORT` in `kg-service/.env`)  
-**OpenAPI docs:** `http://localhost:8000/docs` (Swagger UI, available when running)
+**OpenAPI docs:** `http://localhost:8000/docs` (Swagger UI), only when the service is started with `CONSOLE_API_DOCS=1`
 
-> **Known issue:** `kg-service/backend/api/main.py` line 8 imports `meta` and `entities` from `backend.api.routes`, but neither file exists in `kg-service/backend/api/routes/`. The service **cannot start** until this is resolved.
->
-> **Requires maintainer clarification:** Are `meta.py` and `entities.py` planned modules not yet committed, or deleted dead code? Until resolved, the two router registrations at lines 78–79 are non-functional.
+> The `meta` and `entities` routers (node labels, entity listing and lookup) live in `kg-service/backend/api/routes/meta.py` and `entities.py`. The Web Console's own routes (`/api/console/...`) aren't covered here; see the [Deployment Guide](../operations/deployment.md#web-console).
 
 ---
 
@@ -18,7 +16,7 @@ All endpoints use base URL `http://<host>:8000`. The service runs `uvicorn` on `
 
 ## Authentication
 
-No authentication is configured. `main.py` registers `CORSMiddleware` with `allow_origins=["*"]`, `allow_credentials=True`, `allow_methods=["*"]`, `allow_headers=["*"]` — the service is fully open.
+No authentication is configured, so the service only serves this machine (`kg-service/backend/api/security.py`). It answers requests whose `Host` is `localhost`, `127.0.0.1` or `[::1]`; it refuses cross-site browser requests (by `Sec-Fetch-Site` and `Origin`) and sends no CORS headers unless origins are listed in `CONSOLE_ALLOWED_ORIGINS`; and every response carries `X-Frame-Options: DENY`, a strict Content-Security-Policy and, under `/api`, `Cache-Control: no-store`. Behind a reverse proxy, list its names in `CONSOLE_ALLOWED_HOSTS` and `CONSOLE_ALLOWED_ORIGINS` and add authentication there.
 
 ---
 
@@ -239,7 +237,7 @@ Get MORK statistics (calls `settings.MORK_SUMMARY_SCRIPT`).
 
 **Source:** [`kg-service/backend/api/routes/databases.py`](https://github.com/rejuve-bio/biocypher-kg/blob/main/kg-service/backend/api/routes/databases.py)
 
-Note: `databases.py` imports `from backend.core.mork_client import MORKClient`. The module exists at `kg-service/backend/core/mork_client.py`, but the `GET /api/databases/mork/status` endpoint may still fail at runtime if MORK is unreachable due to the port mismatch (see [troubleshooting.md](../operations/troubleshooting.md)).
+> **Not currently served.** `main.py` never registers this router, so its routes return 404. Even once registered, `MORKClient` imports a `mork` Python package that isn't installed, so MORK would always report offline. See the Deployment Guide's [kg-service issues](../operations/deployment.md#kg-service-issues).
 
 ### `GET /api/databases`
 
@@ -258,7 +256,7 @@ Get connection status for a database.
 }
 ```
 
-> **Note:** The MORK status endpoint will return a connection error if MORK is not reachable. The most common cause is the port mismatch between the MORK container (`8027`) and the kg-service default (`8432`). Set `MORK_URL=http://localhost:8027` in `kg-service/.env` to resolve.
+> **Note:** For MORK, kg-service also needs `MORK_URL=http://localhost:8027`; its default is `8432`.
 
 ---
 
