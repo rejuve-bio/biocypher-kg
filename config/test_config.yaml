@@ -994,7 +994,7 @@ dbsuper_super_enhancer:
     module: biocypher_metta.adapters.hsa.dbsuper_adapter
     cls: DBSuperAdapter
     args:
-      filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      filepath: ./samples/hsa/dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
 
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       label: super_enhancer
@@ -1007,7 +1007,7 @@ dbsuper_super_enhancer_regulates_gene:
     module: biocypher_metta.adapters.hsa.dbsuper_adapter
     cls: DBSuperAdapter
     args:
-      filepath: ./samples/hsa/dbSUPER_SuperEnhancers_hg19.tsv.gz
+      filepath: ./samples/hsa/dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
 
       dbsuper_tissues_map: ./aux_files/hsa/dbsuper_tissues_map.pkl
       type: super enhancer to gene association

@@ -10,6 +10,8 @@ import time
 import yaml
 import zipfile
 import logging
+import os
+from collections import Counter
 from datetime import datetime
 from html.parser import HTMLParser
 from pathlib import Path
@@ -54,6 +56,133 @@ def _should_skip_extract(comment: str | None) -> bool:
     return bool(comment and (
         'no extract' in comment.lower() or 'keep gzipped' in comment.lower()
     ))
+
+
+def _strip_url_comment(url: str) -> str:
+    """Drop an inline '# comment' from a config URL value."""
+    return url.split('#', 1)[0].strip()
+
+
+def _file_md5(path: Path) -> str:
+    h = hashlib.md5()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _open_text_write(path: Path):
+    """Open for text writing, gzip-compressing when the name ends in .gz."""
+    return gzip.open(path, 'wt') if path.suffix == '.gz' else open(path, 'w')
+
+
+def _liftover_table(in_path: Path, out_path: Path, chain_path: Path, liftover_bin: str,
+                    min_match: float, chrom_col: int, start_col: int, end_col: int,
+                    header_lines: int, from_build: str, to_build: str) -> dict:
+    """Lift the interval columns of a tab-separated table with UCSC liftOver.
+
+    Each data row is sent to liftOver as one BED interval (0-based half-open, as
+    liftOver expects), named by its row number, with -minMatch and without
+    -multiple, so a row maps to at most one interval. The output keeps every
+    column and the row order of the input: chrom/start/end are replaced with
+    the lifted values and the original interval is appended as three columns
+    (orig_chrom, orig_start, orig_end). Header lines are copied, with those
+    three column names appended to the last one. Rows liftOver cannot map are
+    dropped and written to <out>.unmapped.tsv with liftOver's reason; counts and
+    parameters go to <out>.liftover_summary.txt.
+
+    Every output is written to a temporary name and renamed at the end, so an
+    interrupted run never leaves a partial lifted file. Returns the counts.
+    """
+    import subprocess
+    import tempfile
+
+    unmapped_path = out_path.with_name(out_path.name + '.unmapped.tsv')
+    summary_path = out_path.with_name(out_path.name + '.liftover_summary.txt')
+    tmp_out = out_path.with_name('tmp_' + out_path.name)  # keeps the .gz suffix
+
+    with tempfile.TemporaryDirectory(prefix='liftover_') as td:
+        td = Path(td)
+        bed_in, bed_out, bed_unm = td / 'in.bed', td / 'out.bed', td / 'unmapped.bed'
+
+        headers, rows, bad = [], [], []
+        with _open_text(in_path) as f, open(bed_in, 'w') as bed:
+            for i, line in enumerate(f):
+                line = line.rstrip('\n').rstrip('\r')
+                if i < header_lines:
+                    headers.append(line)
+                    continue
+                if not line.strip():
+                    continue
+                parts = line.split('\t')
+                try:
+                    chrom = parts[chrom_col].strip()
+                    start, end = int(parts[start_col]), int(parts[end_col])
+                except (IndexError, ValueError):
+                    bad.append((len(rows), line, 'unparseable interval'))
+                    rows.append(None)
+                    continue
+                bed.write(f"{chrom}\t{start}\t{end}\t{len(rows)}\n")
+                rows.append(parts)
+
+        r = subprocess.run([liftover_bin, f'-minMatch={min_match}', str(bed_in), str(chain_path),
+                            str(bed_out), str(bed_unm)], capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(f"liftOver failed: {r.stderr.strip()}")
+
+        lifted = {}
+        with open(bed_out) as f:
+            for line in f:
+                c, s, e, idx = line.rstrip('\n').split('\t')[:4]
+                lifted[int(idx)] = (c, s, e)
+
+        reasons = Counter()
+        unmapped = []
+        with open(bed_unm) as f:
+            reason = ''
+            for line in f:
+                line = line.rstrip('\n')
+                if line.startswith('#'):
+                    reason = line.lstrip('#').strip()
+                    continue
+                idx = int(line.split('\t')[3])
+                unmapped.append((idx, reason))
+                reasons[reason] += 1
+
+        written = 0
+        with _open_text_write(tmp_out) as out:
+            for j, h in enumerate(headers):
+                out.write(h + ('\torig_chrom\torig_start\torig_end' if j == len(headers) - 1 else '') + '\n')
+            for idx, parts in enumerate(rows):
+                if parts is None or idx not in lifted:
+                    continue
+                orig = (parts[chrom_col].strip(), parts[start_col].strip(), parts[end_col].strip())
+                new = list(parts)
+                new[chrom_col], new[start_col], new[end_col] = lifted[idx]
+                out.write('\t'.join(new + list(orig)) + '\n')
+                written += 1
+
+    with open(unmapped_path, 'w') as u:
+        u.write('row\treason\toriginal_line\n')
+        for idx, why in sorted(unmapped):
+            u.write(f"{idx + 1}\t{why}\t" + '\t'.join(rows[idx]) + '\n')
+        for idx, line, why in bad:
+            u.write(f"{idx + 1}\t{why}\t{line}\n")
+
+    n_rows = sum(1 for p in rows if p is not None) + len(bad)
+    stats = {'rows': n_rows, 'written': written, 'unmapped': len(unmapped) + len(bad),
+             'reasons': dict(reasons, **({'unparseable interval': len(bad)} if bad else {}))}
+    summary_path.write_text(
+        f"liftover {from_build} -> {to_build} | {datetime.now().isoformat(timespec='seconds')}\n"
+        f"input {in_path.name} md5 {_file_md5(in_path)}\n"
+        f"chain {chain_path.name} md5 {_file_md5(chain_path)} | liftOver {liftover_bin} | "
+        f"minMatch {min_match} | no -multiple\n"
+        f"columns chrom={chrom_col} start={start_col} end={end_col} (0-based indexes) | header lines {header_lines}\n"
+        f"rows {stats['rows']:,} -> written {written:,}, dropped {stats['unmapped']:,} {stats['reasons']}\n"
+        f"unmapped rows: {unmapped_path.name}\n"
+    )
+    tmp_out.replace(out_path)
+    return stats
 
 
 def _is_filename_url_dict(d: dict) -> bool:
@@ -858,6 +987,84 @@ class DownloadManager:
 
         return downloaded, skipped, failed_filenames, samples_created
 
+    def _apply_liftover(self, source_config: dict,
+                        source_key: str) -> tuple[int, list[str], int]:
+        """Lift downloaded files to another assembly, as declared in a `liftover:` block.
+
+            liftover:
+              from: hg19
+              to: hg38
+              chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+              min_match: 0.90                       # optional, liftOver -minMatch (default 0.90)
+              files:
+                - input: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz    # relative to the input dir
+                  output: dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
+                  columns: {chrom: 0, start: 1, end: 2}               # 0-based column indexes
+                  header_lines: 1
+
+        Uses the UCSC liftOver binary: the LIFTOVER env var, else `liftOver` on PATH.
+        The chain is downloaded once into <input dir>/liftover_chains/. A file is
+        (re)lifted when its output is missing or older than its input or the chain.
+        The interval columns must be 0-based half-open (BED-style), which is what
+        liftOver reads. See _liftover_table for the output layout.
+
+        Returns (lifted_files, failed_filenames, samples_created).
+        """
+        cfg = source_config['liftover']
+        lifted = samples_created = 0
+        failed: list[str] = []
+
+        liftover_bin = os.environ.get('LIFTOVER') or shutil.which('liftOver')
+        if not liftover_bin or not Path(liftover_bin).exists():
+            logger.error(
+                f"{source_key}: liftOver not found, files not lifted. Install it with "
+                f"`conda install -c bioconda ucsc-liftover` (or download "
+                f"https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver), "
+                f"then set LIFTOVER=/path/to/liftOver or put it on PATH.")
+            return 0, [f['output'] for f in cfg.get('files', [])], 0
+
+        chain_url = _strip_url_comment(cfg['chain_url'])
+        chain_dir = self.output_dir / 'liftover_chains'
+        chain_dir.mkdir(parents=True, exist_ok=True)
+        chain_path = chain_dir / Path(urlparse(chain_url).path).name
+        if not self._already_downloaded(chain_path, chain_url):
+            if not self._download_file(chain_url, chain_path):
+                return 0, [chain_path.name], 0
+
+        min_match = float(cfg.get('min_match', 0.90))
+        for entry in cfg.get('files', []):
+            in_path = self.output_dir / entry['input']
+            out_path = self.output_dir / entry['output']
+            if not in_path.exists():
+                logger.error(f"{source_key}: liftover input {in_path} not found")
+                failed.append(out_path.name)
+                continue
+
+            if out_path.exists() and out_path.stat().st_mtime >= max(in_path.stat().st_mtime,
+                                                                      chain_path.stat().st_mtime):
+                logger.info(f"Skipped liftover ({out_path.name} is up to date)")
+                continue
+
+            cols = entry.get('columns', {})
+            try:
+                stats = _liftover_table(
+                    in_path, out_path, chain_path, liftover_bin, min_match,
+                    chrom_col=int(cols.get('chrom', 0)), start_col=int(cols.get('start', 1)),
+                    end_col=int(cols.get('end', 2)), header_lines=int(entry.get('header_lines', 0)),
+                    from_build=cfg.get('from', '?'), to_build=cfg.get('to', '?'))
+            except Exception as e:
+                logger.error(f"{source_key}: liftover of {in_path.name} failed: {e}")
+                failed.append(out_path.name)
+                continue
+
+            logger.info(f"Lifted {in_path.name} → {out_path.name} ({cfg.get('from')}→{cfg.get('to')}): "
+                        f"{stats['written']:,} of {stats['rows']:,} rows, {stats['unmapped']:,} dropped "
+                        f"{stats['reasons']}")
+            lifted += 1
+            samples_created += self._create_sample(out_path)
+
+        return lifted, failed, samples_created
+
     def _handle_gcp(self, source_config: dict, source_key: str) -> tuple[int, int, list[str], int]:
         """Download a file from Google Cloud Storage.
 
@@ -985,6 +1192,10 @@ class DownloadManager:
         if not has_handled:
             logger.warning(f"No recognised download key found for '{source_id}' — skipping")
             return 0, 0, [], 0
+
+        if 'liftover' in source_config:
+            _, f, sc = self._apply_liftover(source_config, source_id)
+            failed_filenames += f; samples_created += sc
 
         # Backfill samples for files skipped (already downloaded) this run
         samples_created += self._ensure_samples(source_id)
