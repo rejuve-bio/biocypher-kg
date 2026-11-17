@@ -24,6 +24,12 @@ def prepare_config(changed_adapters, config_changed, changed_config_items):
     
     if not test_config:
         test_config = full_config
+    else:
+        # Keep the non-adapter top-level keys (e.g. input_dir: samples/hsa); without
+        # input_dir the adapters' relative file paths can't be resolved.
+        settings = {k: v for k, v in full_config.items()
+                    if not (isinstance(v, dict) and 'adapter' in v)}
+        test_config = {**settings, **test_config}
     
     with open('config/test_sample_config.yaml', 'w') as f:
         yaml.dump(test_config, f)

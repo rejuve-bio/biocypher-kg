@@ -1668,8 +1668,8 @@ def filter_hocomoco(annotation_path, annotation_output_path, pwm_input_dir, pwm_
 
 
 def filter_dbsuper(dbsuper_path, dbsuper_output_path, gene_ids, hgnc_processor):
-    """dbSUPER_SuperEnhancers_hg19.tsv.gz: col4 = gene_symbol (HGNC symbol);
-    hg19->hg38 liftover is handled inside the adapter itself, not here."""
+    """dbSUPER_SuperEnhancers_hg38.tsv.gz: col4 = gene_symbol (HGNC symbol);
+    already lifted hg19->hg38 by the downloader (liftover: block in the data source config)."""
     def keep_fn(parts):
         if len(parts) < 6:
             return False

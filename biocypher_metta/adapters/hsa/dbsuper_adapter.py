@@ -4,13 +4,17 @@ import gzip
 import pickle
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.processors import HGNCProcessor
-from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location, convert_genome_reference
-# Example dbSuper tsv input files:
+from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_genomic_location
+# Input: dbSUPER_SuperEnhancers_hg38.tsv.gz, produced by the downloader (liftover: block in
+# hsa_data_source_config.yaml) from the hg19-only dbSUPER file with UCSC liftOver
+# (hg19ToHg38.over.chain.gz, -minMatch 0.90). chrom/start/stop hold the hg38 interval; the
+# original hg19 interval is appended as orig_chrom/orig_start/orig_end. Rows that did not lift
+# are already dropped (listed in <file>.unmapped.tsv).
+# Coordinates: BED-style, 0-based half-open (start), so start + 1 is stored.
+# Original hg19 file, for reference:
 # chrom	 start	 stop	 se_id	 gene_symbol	 cell_name	 rank
 # chr1	120485363	120615071	SE_00001	NOTCH2	Adipose Nuclei	1
 # chr13	110838836	111112228	SE_00002	COL4A2	Adipose Nuclei	2
-# chr1	145206326	145293008	SE_00003	NOTCH2NL	Adipose Nuclei	3
-# chr5	158117077	158371526	SE_00004	EBF1	Adipose Nuclei	4
 
 class DBSuperAdapter(Adapter):
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'se_id': 3, 'gene_id': 4, 'cell_name': 5}
@@ -50,13 +54,8 @@ class DBSuperAdapter(Adapter):
             for line in reader:
                 se_id = line[DBSuperAdapter.INDEX['se_id']]
                 chr = line[DBSuperAdapter.INDEX['chr']]
-                start_hg19 = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
-                end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']])
-                start = convert_genome_reference(chr, start_hg19)
-                end = convert_genome_reference(chr, end_hg19)
-                
-                if start == None or end == None:
-                    continue
+                start = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
+                end = int(line[DBSuperAdapter.INDEX['coord_end']])
                 #CURIE ID For super enhancer region
                 #"SO" provides standardized terms for genomic features, including regulatory regions  
                 se_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
@@ -87,14 +86,12 @@ class DBSuperAdapter(Adapter):
                     continue
                 ensembl_gene_id = f"ENSEMBL:{ensembl_id}"
                 chr = line[DBSuperAdapter.INDEX['chr']]
-                start_hg19 = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
-                end_hg19 = int(line[DBSuperAdapter.INDEX['coord_end']])
-                start = convert_genome_reference(chr, start_hg19)
-                end = convert_genome_reference(chr, end_hg19)
+                start = int(line[DBSuperAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-based genomic coordinate
+                end = int(line[DBSuperAdapter.INDEX['coord_end']])
                 cell_name = line[DBSuperAdapter.INDEX['cell_name']]
                 biological_id = self.dbsuper_tissues_map[cell_name]
                 
-                if None in [ensembl_gene_id, start, end]:
+                if ensembl_gene_id is None:
                     continue
                 se_region_id = f"SO:{build_regulatory_region_id(chr, start, end)}"
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):

@@ -86,8 +86,21 @@ dbsuper:
   compress: gzip
   # url: http://asntech.org/dbsuper/data/dbSUPER_v1_GRCh38.bed.gz       #  no  such file
   url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
+  # dbSUPER is only published on hg19; the downloader lifts it to hg38 with UCSC liftOver.
+  # Output keeps every column, replaces chrom/start/stop with hg38 values and appends
+  # orig_chrom/orig_start/orig_end. Dropped rows: <output>.unmapped.tsv; counts: <output>.liftover_summary.txt
+  liftover:
+    from: hg19
+    to: hg38
+    chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+    min_match: 0.90
+    files:
+      - input: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz
+        output: dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
+        columns: {chrom: 0, start: 1, end: 2}
+        header_lines: 1
   local_files:
-    dbsuper: {pattern: "dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz", stable_name: "dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz"}
+    dbsuper: {pattern: "dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz", stable_name: "dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz"}
 
 dbvar:
   name: NCBI dbVar

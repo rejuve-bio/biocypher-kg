@@ -75,7 +75,8 @@ jobs:
           echo "Changed files:"
           echo "$CHANGED_FILES"
 
-          ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
+          # Top-level and hsa/ adapters only: CI tests the hsa sample config (prepare_config.py).
+          ADAPTERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/adapters/(?:hsa/)?\K[^/]+(?=_adapter\.py)' | sort -u | tr '\n' ',' | sed 's/,$//')
           # neo4j_writer.py is not used by create_knowledge_graph.py (it maps 'neo4j' → Neo4jCSVWriter).
           # Only neo4j_csv_writer.py is exercised by CI, so only match that file and normalise to 'neo4j'.
           WRITERS=$(echo "$CHANGED_FILES" | grep -oP 'biocypher_metta/\K(metta|neo4j_csv|prolog|parquet|kgx|networkx)(?=_writer\.py)' | sed 's/^neo4j_csv$/neo4j/' | sort -u | tr '\n' ',' | sed 's/,$//')

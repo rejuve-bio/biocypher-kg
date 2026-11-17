@@ -453,6 +453,57 @@ python -m biocypher_dataset_downloader.download_data --output-dir <output_direct
 python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --no-checksum
 ```
 
+### Liftover to another assembly (UCSC liftOver required)
+
+Some sources are only published on an older assembly (e.g. dbSUPER, hg19 only). A `liftover:` block in
+the source's entry in the data source config makes the downloader lift the downloaded file to the
+assembly used by the KG:
+
+```yaml
+dbsuper:
+  url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
+  liftover:
+    from: hg19
+    to: hg38
+    chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+    min_match: 0.90                          # liftOver -minMatch (default 0.90)
+    files:
+      - input: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz      # relative to the output dir
+        output: dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
+        columns: {chrom: 0, start: 1, end: 2}                # 0-based column indexes
+        header_lines: 1
+```
+
+- Whole intervals are lifted with UCSC `liftOver` (`-minMatch`, no `-multiple`). The interval columns
+  must be BED-style (0-based half-open), which is what liftOver reads.
+- The output keeps every column and the row order; chrom/start/end get the new values and the original
+  interval is appended as `orig_chrom`, `orig_start`, `orig_end`.
+- Rows that do not lift are dropped and listed, with liftOver's reason, in `<output>.unmapped.tsv`.
+  Counts, parameters and md5s of the input and the chain are written to `<output>.liftover_summary.txt`.
+- The chain is downloaded once into `<output_dir>/liftover_chains/`. A file is lifted again when its
+  output is older than its input or the chain, or when the settings saved in
+  `<output>.liftover_params.json` (input, `from`/`to`, `chain_url`, `min_match`, `columns`,
+  `header_lines`) differ from the current config.
+
+**Installing liftOver.** The downloader uses the `LIFTOVER` environment variable, or `liftOver` on `PATH`.
+If neither is found, the source is reported as failed and its lifted file is not written. liftOver is a
+static binary with no dependencies:
+
+```bash
+# Linux x86_64 (for macOS use macOSX.x86_64 in the URL)
+mkdir -p ~/bin
+wget -O ~/bin/liftOver https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver
+chmod +x ~/bin/liftOver
+export LIFTOVER=~/bin/liftOver
+
+# or, with conda
+conda install -c bioconda ucsc-liftover
+```
+
+On a machine without internet access, copy both the binary and the chain file
+(into `<output_dir>/liftover_chains/`) from another machine. liftOver is distributed by UCSC under
+its own license terms; check them for your use case.
+
 ## 📌 Dataset Versioning & Provenance
 
 Every dataset's version and provenance is tracked from a single source of truth — the data-source

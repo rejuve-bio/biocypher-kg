@@ -1,0 +1,6 @@
+liftover hg19 -> hg38 | 2026-11-15T21:59:52
+input dbSUPER_SuperEnhancers_hg19.tsv.gz md5 ba2f60ba3cefb51885ec71bb83f7469f
+chain hg19ToHg38.over.chain.gz md5 35887f73fe5e2231656504d1f6430900 | liftOver /home/saulo/bin/liftOver | minMatch 0.9 | no -multiple
+columns chrom=0 start=1 end=2 (0-based indexes) | header lines 1
+rows 1,380 -> written 1,380, dropped 0 {}
+unmapped rows: dbSUPER_SuperEnhancers_hg38.tsv.gz.unmapped.tsv
