@@ -1034,7 +1034,9 @@ class DownloadManager:
 
         Uses the UCSC liftOver binary: the LIFTOVER env var, else `liftOver` on PATH.
         The chain is downloaded once into <input dir>/liftover_chains/. A file is
-        (re)lifted when its output is missing or older than its input or the chain.
+        (re)lifted when its output is missing or older than its input or the chain,
+        or when the settings saved in <output>.liftover_params.json differ from the
+        current ones (input, from/to, chain_url, min_match, columns, header_lines).
         The interval columns must be 0-based half-open (BED-style), which is what
         liftOver reads. See _liftover_table for the output layout.
 
@@ -1072,22 +1074,38 @@ class DownloadManager:
                 failed.append(out_path.name)
                 continue
 
-            if out_path.exists() and out_path.stat().st_mtime >= max(in_path.stat().st_mtime,
-                                                                      chain_path.stat().st_mtime):
+            cols = entry.get('columns', {})
+            # Effective settings of this lift. A previous output is reused only when it is
+            # newer than the input and chain AND was produced with these exact settings.
+            params = {
+                'input': entry['input'], 'from': cfg.get('from', '?'), 'to': cfg.get('to', '?'),
+                'chain_url': chain_url, 'min_match': min_match,
+                'columns': {'chrom': int(cols.get('chrom', 0)), 'start': int(cols.get('start', 1)),
+                            'end': int(cols.get('end', 2))},
+                'header_lines': int(entry.get('header_lines', 0)),
+            }
+            params_path = out_path.with_name(out_path.name + '.liftover_params.json')
+            try:
+                previous = json.loads(params_path.read_text())
+            except (OSError, ValueError):
+                previous = None
+            if (previous == params and out_path.exists()
+                    and out_path.stat().st_mtime >= max(in_path.stat().st_mtime,
+                                                        chain_path.stat().st_mtime)):
                 logger.info(f"Skipped liftover ({out_path.name} is up to date)")
                 continue
 
-            cols = entry.get('columns', {})
             try:
                 stats = _liftover_table(
                     in_path, out_path, chain_path, liftover_bin, min_match,
-                    chrom_col=int(cols.get('chrom', 0)), start_col=int(cols.get('start', 1)),
-                    end_col=int(cols.get('end', 2)), header_lines=int(entry.get('header_lines', 0)),
-                    from_build=cfg.get('from', '?'), to_build=cfg.get('to', '?'))
+                    chrom_col=params['columns']['chrom'], start_col=params['columns']['start'],
+                    end_col=params['columns']['end'], header_lines=params['header_lines'],
+                    from_build=params['from'], to_build=params['to'])
             except Exception as e:
                 logger.error(f"{source_key}: liftover of {in_path.name} failed: {e}")
                 failed.append(out_path.name)
                 continue
+            params_path.write_text(json.dumps(params, indent=2, sort_keys=True) + '\n')
 
             logger.info(f"Lifted {in_path.name} → {out_path.name} ({cfg.get('from')}→{cfg.get('to')}): "
                         f"{stats['written']:,} of {stats['rows']:,} rows, {stats['unmapped']:,} dropped "

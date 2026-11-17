@@ -480,8 +480,10 @@ dbsuper:
   interval is appended as `orig_chrom`, `orig_start`, `orig_end`.
 - Rows that do not lift are dropped and listed, with liftOver's reason, in `<output>.unmapped.tsv`.
   Counts, parameters and md5s of the input and the chain are written to `<output>.liftover_summary.txt`.
-- The chain is downloaded once into `<output_dir>/liftover_chains/`. A file is lifted again only when its
-  output is older than its input or the chain.
+- The chain is downloaded once into `<output_dir>/liftover_chains/`. A file is lifted again when its
+  output is older than its input or the chain, or when the settings saved in
+  `<output>.liftover_params.json` (input, `from`/`to`, `chain_url`, `min_match`, `columns`,
+  `header_lines`) differ from the current config.
 
 **Installing liftOver.** The downloader uses the `LIFTOVER` environment variable, or `liftOver` on `PATH`.
 If neither is found, the source is reported as failed and its lifted file is not written. liftOver is a
