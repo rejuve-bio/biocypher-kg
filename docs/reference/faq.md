@@ -10,7 +10,7 @@ BioCypher-KG is a pipeline that constructs a unified biological knowledge graph 
 
 **What species are supported?**
 
-Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (`mmu`) and C. elegans (`cel`) have ontology-only adapter configurations. Rat (`rno`) is declared but adapter/schema configs are missing and will raise `FileNotFoundError` if selected. See the species matrix in [system-overview.md](../architecture/system-overview.md).
+Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (`mmu`), C. elegans (`cel`) and rat (`rno`) are in development and cover the baseline types (genes, transcripts, proteins, pathways, reactions, small molecules, GO). See the species matrix in [system-overview.md](../architecture/system-overview.md).
 
 **What output formats are available?**
 
@@ -150,5 +150,4 @@ uv run pytest test/test.py --adapter-test-mode full
 
 **Where are known issues tracked?**
 
-GitHub Issues at https://github.com/rejuve-bio/biocypher-kg/issues. Deployment-related issues (kg-service, MORK, Neo4j) are listed in the Deployment Guide's [Known issues](../operations/deployment.md#known-issues). Others to be aware of:
-- Species `rno` declared in `species_config.yaml` but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing
+GitHub Issues at https://github.com/rejuve-bio/biocypher-kg/issues. Deployment-related issues (kg-service, MORK, Neo4j) are listed in the Deployment Guide's [Known issues](../operations/deployment.md#known-issues).

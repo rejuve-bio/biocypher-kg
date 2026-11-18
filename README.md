@@ -1,588 +1,197 @@
 # BioCypher KG
 
-A project for creating [BioCypher-driven](https://github.com/biocypher/biocypher) knowledge graphs with multiple output formats.
+Builds biological knowledge graphs with [BioCypher](https://github.com/biocypher/biocypher). Adapters
+read public datasets (GENCODE, UniProt, Reactome, GO, FlyBase, ENCODE and 40+ more), map them to a
+shared schema, and write the graph as MeTTa, Neo4j CSV, Prolog, Parquet, KGX or NetworkX. The output
+can be loaded into Neo4j or a MORK server and queried through kg-service.
 
-## Supported Species
+## Supported species
 
 | Species | Code | Status |
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmu` | In development — ontology adapters only |
-| *Caenorhabditis elegans* | `cel` | In development — ontology adapters only |
-| *Rattus norvegicus* (rat) | `rno` | In development — config incomplete |
+| *Mus musculus* (mouse) | `mmu` | In development — baseline types\* only |
+| *Caenorhabditis elegans* | `cel` | In development — baseline types\* only |
+| *Rattus norvegicus* (rat) | `rno` | In development — baseline types\* only |
 
-Attempting to run `rno` will raise a `FileNotFoundError` because `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` do not yet exist.
+\* **Baseline types:** gene, transcript types (transcript, exon, non_coding_rna), protein, pathway,
+reaction, small_molecule, GO aspects (biological_process, molecular_function, cellular_component), and
+the edges that connect these types to each other, where the source data provide them (not every pair of
+types is connected).
 
-## Web Console
+## Ways to build a graph
 
-A web UI for configuring builds, launching them, and loading the output into Neo4j/MORK, as an alternative to the CLI. One command starts it; there's no env file:
+| | Use it when | Start with |
+|---|---|---|
+| **`make` targets** | You work from a checkout, locally or on a server | [Quick start](#quick-start) |
+| **Web Console** | You want a browser UI for download → build → load, with no repo or env file | [Web Console](#web-console) |
+| **Interactive CLI** | You want a menu for the default human or fly sample builds | `uv run python biocypher_cli/cli.py` ([biocypher_cli/README.md](biocypher_cli/README.md)) |
 
-```bash
-./docker/up.sh                        # prints the address to open, e.g. http://localhost:20087/console/
-./docker/up.sh --host 37.27.231.93    # on a server: open it at the server's address, with a password
-```
-
-Everything else is set in the console's **Settings** page: each species' Neo4j and MORK, where builds are saved, your data folders, and how builds run. Build history persists across rebuilds.
-
-**Building a KG in the console:**
-
-- **Sample** builds work offline from bundled data: pick a species, choose adapters, Launch build, then Load into Neo4j/MORK and open Explore.
-- **Full** builds need the source data. The wizard shows what is present for the species and a **Download data** button that fetches it into the console data folder (`<data folder>/input/<species>`); full builds then read from there automatically. This wraps `biocypher_dataset_downloader` so the whole acquire → build → load flow stays in the UI.
-- **Build size** makes a smaller graph: a number of rows per adapter, or a percent of each source's full size. The console learns full sizes from builds without a limit, shows them when you pick sources, and previews what a build will write. Percent turns on once every selected source has a known size. Each adapter keeps its first rows, so a capped graph is a sample, not a random subset.
-- **Config** edited in the console stays with that console instance (its own copy of the config, in a Docker volume): it never changes a repo or the image, survives updates, and files you haven't edited follow the shipped version. The Config page shows which files you edited and can reset one to the shipped version.
-- **All species:** a build for all species writes a folder per species, and loading it loads each species into its own Neo4j or MORK (species without one are skipped and listed).
-- **Build history** shows each build's size and disk usage, and lets you delete a build (and its output files) to reclaim space.
-
-**Setting it up (Settings page):** everything a researcher needs is set in the console, with no env file and no defaults. The console only writes to folders and connects to databases chosen there, so nothing lands somewhere you didn't pick. Until the **console data folder** and **Builds folder** are set, New Build says so and won't build, download or prepare the dbSNP cache.
-
-- **Species databases:** each species has its own Neo4j and MORK, with no shared or default instance or login. *Run here* has the console create and start them (it uses the Docker socket the compose files mount; Neo4j needs **Neo4j memory** chosen first); *Use existing* connects one you already run, with its address, username, password and database entered in full and checked before they're saved. For a database on this computer type `localhost:7687`; the console reaches it through `host.docker.internal` itself. A connection to another computer that isn't encrypted (`bolt://`, `http://`) is flagged.
-- **Data locations:** Browse… opens Finder. Browsers never tell a page where a folder is, so the console finds the chosen folder by its name and contents, then checks it holds what the code reads: that species' source files, or a real dbSNP cache (`<root>/common|full/dbsnp_mapping.db`, the SQLite cache `scripts/update_dbsnp.py` builds; pickle caches are refused). Saving Settings and starting a build run the same checks.
-- **Build settings (required):** the **Builds folder** (where builds are saved), the **console data folder** (downloads, the prepared dbSNP cache, load history) and **Neo4j memory** (for each Neo4j the console runs). Chosen with Browse… like the other folders. New Build shows where the next build goes, and each build's page shows where it went.
-- **Folders the console can see:** `up.sh` shares them for the computer it runs on, only ones that exist. On a Mac: Desktop, Documents, Downloads and `/Volumes`. On Linux (a server): the home folder and `/mnt`, `/media`, `/data` or `/srv`. `CONSOLE_SHARES="/path ..."` adds more. They're writable so the data and Builds folders can be anywhere there; the console only writes into those two, and source data and dbSNP folders are only read. On a Mac, don't share the whole home folder: Docker Desktop passes every file change in a shared folder to its VM, and a home folder changes so often that the engine crashes.
-
-**No checkout needed:** [`docker/docker-compose.dist.yml`](docker/docker-compose.dist.yml) only pulls the published image and runs it; everything else is set in Settings.
-
-```bash
-CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest docker compose -f docker-compose.dist.yml up -d
-```
-
-**Security:** on your own computer the console only listens there (published on `127.0.0.1`) and has no sign-in. On a server, `./docker/up.sh --host <address>` puts it on the network at that address and makes it ask for a password, which `up.sh` creates once and keeps in `docker/.console-password` without printing it (`cat docker/.console-password` shows it; the address and port are remembered too). The console controls Docker on that server, so also allow its port only from your own IP in the server's firewall (`ufw` doesn't cover ports Docker publishes), and remember plain http doesn't encrypt the password. It refuses requests that name another host (DNS rebinding) or come from other websites (CSRF), can't be shown in a frame, and sends `no-store` and a strict Content-Security-Policy. The Neo4j password reaches the loader through its environment, never its command line or the job log. Console-run MORK (which takes no password) has no port on the host. Behind a reverse proxy under another name, add that name to `CONSOLE_ALLOWED_HOSTS` (and `CONSOLE_ALLOWED_ORIGINS`, comma-separated); these stay outside Settings on purpose.
-
-**Avoiding a local image build:** the console image can be built locally, or pulled prebuilt (CI publishes it to GHCR). To skip the local build (and the Docker Hub dependency it needs), pull the image and run without building:
-
-```bash
-export CONSOLE_IMAGE=ghcr.io/<owner>/biocypher-kg-console:latest
-docker compose -f docker/docker-compose.yml pull console
-./docker/up.sh --no-build
-```
+All three run the same pipeline, `create_knowledge_graph.py`.
 
 ## Prerequisites
 
-- Python 3.10+  
-- [UV](https://github.com/astral-sh/uv) package manager  
+- Python 3.10–3.12
+- [uv](https://github.com/astral-sh/uv) (`make setup` installs it if missing)
+- `libpq-dev` (provides `pg_config`, needed to build `psycopg2`)
+- Docker with Compose v2, only for Neo4j, MORK and the Web Console
 
-## Quick Start (Option 1)
+## Quick start
 
-### 1. Clone and Setup
 ```bash
 git clone https://github.com/rejuve-bio/biocypher-kg.git
 cd biocypher-kg
 make setup
 ```
 
-### 2. Run the Application
+**Sample build** (human, bundled sample data, no downloads needed):
 
-#### Option 1: Interactive Mode (Recommended for new users)
 ```bash
-make run
-```
-This will guide you through all parameters step by step with sensible defaults.
-
-#### Option 2: Quick Sample Run
-```bash
-make run-sample WRITER_TYPE=<metta,neo4j,prolog> [INCLUDE_TAXON_ID=no] [MAX_WORKERS=N]
+make run-sample                          # MeTTa output in ./output
+make run-sample WRITER_TYPE=neo4j        # or prolog, parquet, KGX, networkx
 ```
 
-#### Option 3: Direct Run with Parameters
+**Interactive build:** `make run` asks for each setting (output directory, configs, writer, dbSNP
+cache, adapters, workers) and shows its default.
+
+**Full build** from downloaded data (see [Downloading data](#downloading-data)):
+
 ```bash
 make run-direct OUTPUT_DIR=./output \
                ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
                SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
                WRITER_TYPE=metta \
-               WRITE_PROPERTIES=no \
-               ADD_PROVENANCE=no \
-               INCLUDE_TAXON_ID=no \
-               MAX_WORKERS=8
-
-# Override the base input directory (e.g. on a different machine):
-make run-direct OUTPUT_DIR=./output \
-               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
-               INPUT_DIR=/custom/path/to/hsa
-
-# Run only a subset of adapters (exact names, space-separated):
-make run-direct OUTPUT_DIR=./output \
-               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
-               INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot"
-
-# Run only a subset of adapters (wildcard — matches all adapters starting with 'uniprot'):
-make run-direct OUTPUT_DIR=./output \
-               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
-               INCLUDE_ADAPTERS="uniprot*"
-```
-### Interactive Mode Example
-When you run `make run`, you'll see:
-```
-🚀 Starting interactive knowledge graph creation...
-
-📁 Enter output directory [./output]: 
-⚙️  Enter adapters config path [./config/hsa/hsa_adapters_config_sample.yaml]: 
-📊 Enter schema config path [./config/hsa/hsa_schema_config.yaml]: 
-🗂️  Enter dbSNP cache root [./aux_files/hsa/sample_dbsnp]: 
-🧬 Enter dbSNP variant (common/full/leave blank for sample) []: 
-📝 Enter writer type (metta/prolog/neo4j/parquet/networkx/KGX) [metta]: 
-🔌 Enter adapters to include [all]: 
-📋 Write properties? (yes/no) [yes]: 
-🔗 Add provenance? (yes/no) [no]: 
-🧬 Include taxon_id in output? (yes/no) [yes]: 
-🚦 Skip pre-flight path validation? (yes/no) [no]: 
-🧵 Enter max parallel workers (1 = sequential) [auto]: 
+               INPUT_DIR=/path/to/input/hsa \
+               INCLUDE_ADAPTERS="gencode_gene uniprot*"    # optional: exact keys or prefix*
 ```
 
-### Available Make Commands
-```bash
-make help            # Show all commands
-make setup           # Install UV and dependencies
-make run             # Interactive mode (recommended)
-make run-interactive # Same as make run
-make run-direct      # Direct mode with parameters
-make run-sample      # Run with sample data
-make check-paths     # Validate file paths in an adapters config (no adapters run)
-make download        # Download data sources (interactive)
-make download-direct # Download data sources with explicit parameters
-make test            # Run tests
-make clean           # Clean temporary files
-make distclean       # Full clean
-make neo4j-up        # Start Neo4j (also neo4j-reset/-down/-logs/-status/-load/-load-direct;
-                     # see docs/operations/deployment.md)
-```
-
-### Parallel Adapter Execution
-
-Within a species run, adapters run concurrently across a pool of worker processes. Control the pool size with `--max-workers` (or `MAX_WORKERS=` via `make`):
-
-- **Default:** `min(8, CPU count)`.
-- **`--max-workers 1`:** run adapters sequentially (the previous behavior).
-- The **networkx** writer always runs sequentially — it builds a single in-memory graph that can't be split across processes.
+Or, without make, by species and dataset as declared in
+[`config/species_config.yaml`](config/species_config.yaml):
 
 ```bash
-uv run python create_knowledge_graph.py \
-    --output-dir ./output \
-    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
-    --schema-config ./config/hsa/hsa_schema_config.yaml \
-    --max-workers 8
+uv run python create_knowledge_graph.py --species dmel --dataset full --output-dir ./output/dmel
+uv run python create_knowledge_graph.py --species all  --dataset sample --output-dir ./output
 ```
 
-Each worker builds its own writer and writes to per-adapter output directories, so their outputs never collide. Adapters that would write the same output file (same output directory and label) are automatically run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works the same as in sequential mode.
+Options worth knowing (all in the [Configuration Reference](docs/operations/configuration.md)):
 
-### Limiting the Build Size
+- **Input data location:** the adapters config's `input_dir:`, overridden by `--input-dir` / `INPUT_DIR=`.
+- **Pre-flight check:** every input path is checked before any adapter runs.
+  `make check-paths ADAPTERS_CONFIG=...` runs only the check; `--skip-preflight` skips it.
+- **Parallelism:** adapters run on `min(8, CPU count)` workers; set `--max-workers` / `MAX_WORKERS=`.
+- **Smaller graphs:** `--limit N` or `--adapter-limits FILE` caps what each adapter writes.
+- **Resuming:** a checkpoint lets an interrupted build continue with `--resume`; `--restart` starts over.
+- **dbSNP (human full builds only):** needs a prebuilt dbSNP cache, passed with `--dbsnp-cache-root`
+  and `--dbsnp-variant`. Sample builds use the bundled one. See
+  [Deployment Guide § dbSNP cache](docs/operations/deployment.md#dbsnp-cache-human-only).
 
-- **`--limit N`:** caps the nodes and the edges each adapter writes at `N` (0, the default, means no limit).
-- **`--adapter-limits FILE`:** gives adapters their own caps, from a JSON file such as `{"gencode_gene": {"nodes": 6000, "edges": 0}}`. A cap of 0 means no cap. Adapters not listed keep `--limit`.
+## Downloading data
 
-Each adapter keeps its first rows. `graph_info.json` records what each adapter wrote under `adapter_counts`, with `"complete": false` where a cap stopped it early. The Web Console learns full sizes from the complete counts and turns a percent into `--adapter-limits` caps.
-
-### Pre-flight File Path Validation
-
-Before any adapter runs, the pipeline checks that every file and directory path declared in the adapters config actually exists on disk. If any are missing, it prints a grouped report and exits immediately — no partial output, no wasted compute.
-
-Example output when paths are missing:
-```
-ERROR: Pre-flight check failed — 2 adapter(s) have missing file paths:
-
-  [gencode_gene]
-    filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gencode/gencode.v49.annotation.gtf.gz
-
-  [bgee_gene_expressed_in_anatomical_entity]
-    filepath: /mnt/hdd_1/biocypher-kg/input/hsa/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
-
-Fix the paths above or run with --skip-preflight to bypass this check.
-```
-
-#### Check paths without running the pipeline
-
-To validate an adapters config in isolation — without a schema, output directory, or any adapters executing:
+Data source URLs and versions are declared per species in
+`config/<species>/<species>_data_source_config.yaml`.
 
 ```bash
-# Via make (recommended)
-make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml
-
-# Override the base input directory
-make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-                 INPUT_DIR=/custom/path/to/hsa
-
-# Check only specific adapters (exact names)
-make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-                 INCLUDE_ADAPTERS="gencode_gene uniprotkb_sprot bgee_gene_expressed_in_anatomical_entity"
-
-# Check only specific adapters (wildcard — all adapters whose name starts with 'uniprot')
-make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-                 INCLUDE_ADAPTERS="uniprot*"
-
-# Directly via the CLI
-uv run python create_knowledge_graph.py \
-    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
-    --check-only
-
-# With input-dir override
-uv run python create_knowledge_graph.py \
-    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
-    --input-dir /custom/path/to/hsa \
-    --check-only
+make download                                                    # interactive
+make download-direct OUTPUT_DIR=./input/hsa                      # all human sources
+make download-direct OUTPUT_DIR=./input/hsa SOURCE=uniprot       # one source
+make download-direct OUTPUT_DIR=./input/dmel \
+                     CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
 ```
 
-Exits with code `0` if all paths exist, `1` if any are missing.
+Each download writes `download_manifest.json` and `versions.json` (version, sha256, HTTP metadata)
+into the output directory. Sources published on an older assembly (e.g. dbSUPER, hg19) are lifted to
+the KG's assembly by the downloader with UCSC `liftOver`. Options, liftover setup and the automatic
+sample regeneration are described in
+[Ingestion Pipeline § Stage 1](docs/knowledge-graph/ingestion-pipeline.md#stage-1-download).
 
-#### Skip the automatic check
+## Output formats
 
-If you know some files will be provided at runtime and want to bypass the check:
+| `--writer-type` | Output | Typical consumer |
+|---|---|---|
+| `metta` (default) | `*.metta` files plus `type_defs.metta` | MORK, Hyperon, DAS |
+| `neo4j` | CSV files plus `nodes_*.cypher` / `edges_*.cypher` load scripts | Neo4j |
+| `prolog` | `.pl` facts | Prolog engines |
+| `parquet` | Apache Parquet tables | Analytics tools |
+| `KGX` | KGX JSON | Biolink / KGX tooling |
+| `networkx` | Pickled NetworkX graph | Python analysis |
+
+Each build also writes `graph_info.json` (counts and dataset versions). Details:
+[docs/knowledge-graph/writers.md](docs/knowledge-graph/writers.md).
+
+## Loading into Neo4j and MORK
 
 ```bash
-# Make targets
-make run-direct ... SKIP_PREFLIGHT=yes
-make run-sample     SKIP_PREFLIGHT=yes
-
-# Directly via the CLI
-uv run python create_knowledge_graph.py ... --skip-preflight
+cp docker/neo4j.env.example docker/neo4j.env    # set NEO4J_OUTPUT_DIR, NEO4J_AUTH, ports
+make neo4j-up                                   # start the container
+make neo4j-load-direct                          # load everything (first run)
+make neo4j-load                                 # later runs: reload only changed files
 ```
 
-#### Configuring the input data directory
+Running MORK and kg-service, several species, memory settings and ports are covered in the
+**[Deployment Guide](docs/operations/deployment.md)**.
 
-Full adapter configs (e.g. `config/hsa/hsa_adapters_config.yaml`) declare an `input_dir:` field at the top that serves as the base directory for all input data paths:
+## Web Console
 
-```yaml
-input_dir: /mnt/hdd_1/biocypher-kg/input/hsa
-
-gencode_gene:
-  adapter:
-    args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz   # resolved as input_dir/gencode/...
-```
-
-To use a different data location without editing the YAML, pass `--input-dir` (CLI) or `INPUT_DIR=` (make):
+A browser UI for the whole flow, one species at a time: pick sources and download what's missing,
+build (full or a smaller sample), load into that species' own Neo4j and MORK, and explore the schema.
 
 ```bash
-# Makefile
-make run-direct OUTPUT_DIR=./output \
-               ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml \
-               SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
-               INPUT_DIR=/my/data/hsa
-
-# CLI
-uv run python create_knowledge_graph.py \
-    --output-dir ./output \
-    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
-    --schema-config ./config/hsa/hsa_schema_config.yaml \
-    --input-dir /my/data/hsa
+./docker/up.sh                        # prints the address, e.g. http://localhost:20087/console/
+./docker/up.sh --host <server-ip>     # on a server: listens on the network and asks for a password
 ```
 
-Relative paths starting with `./` or `../` (e.g. `./aux_files/`, `./samples/`) are always treated as repository-relative and are never affected by `input_dir`.
+Everything else (databases, data and build folders, Neo4j memory) is set in the console's **Settings**
+page. Running without a checkout, settings, security and loading are described in
+[Deployment Guide § Web Console](docs/operations/deployment.md#web-console).
 
+## Dataset versioning & provenance
 
-## BioCypher Knowledge Graph CLI Tool (Option 2)
-
-A user-friendly command line interface for generating knowledge graphs using BioCypher, with support for multiple species: Human, Drosophila melanogaster (Fly), Mus musculus (Mouse), Rattus norvegicus (Rat), and Caenorhabditis elegans (Worm).
-
-### Features
-
-- 🧬 Multi-species support: Human (`hsa`), Fly (`dmel`), Mouse (`mmu`), Rat (`rno`), and C. elegans (`cel`)  
-- ⚡ Default configurations for quick start  
-- 🛠️ Custom configuration options  
-- 📊 Interactive menu system with rich visual interface  
-- 🔍 Multiple output formats (Neo4j, MeTTa, Prolog)  
-- 📈 Progress tracking and logging  
-
-
-### Setup
-
-```bash
-# 1. Clone the repository:
-git clone https://github.com/rejuve-bio/biocypher-kg.git
-cd biocypher-kg
-
-# 2. Install dependencies using UV
-uv sync
-
-# 3. Create required directories and run the CLI
-mkdir -p output_human output_fly
-uv run python biocypher_cli/cli.py
-
-# 📂 Project Structure:
-# biocypher-kg/
-# ├── biocypher_cli/            # CLI source code
-# │   └── cli.py
-# ├── config/                   # Configuration files (per species)
-# │   ├── hsa/                  # Human
-# │   ├── dmel/                 # Drosophila melanogaster
-# │   ├── mmu/                  # Mus musculus (Mouse)
-# │   ├── rno/                  # Rattus norvegicus (Rat)
-# │   ├── cel/                  # C. elegans
-# │   └── species_config.yaml
-# ├── aux_files/                # Auxiliary data files (or Custom config files)
-# │   ├── gene_mapping.pkl/abc_tissues_to_ontology_map.pkl
-# │   └── sample_dbsnp_rsids.pkl
-# ├── output_human/             # Default human output
-# ├── output_fly/               # Default fly output
-# └── pyproject.toml            # Dependencies
-```
-
-## 🛠 Usage
-
-### Structure
-The project template is structured as follows:
-```
-.
-.
-│ # Project setup
-│
-├── LICENSE
-├── README.md
-├── pyproject.toml
-│
-│ # Docker setup
-│
-├── docker
-│   ├── biocypher_entrypoint_patch.sh
-│   ├── create_table.sh
-│   ├── import.sh
-│   ├── neo4j.env.example          # Template for docker/neo4j.env (image, ports, paths, memory)
-│   └── docker-compose.neo4j.yml   # Parameterized Neo4j compose file
-├── biocypher-mork/                # MORK server image, loader and persistence
-├── docker-compose.yml
-├── docker-variables.env
-│
-│ # Project pipeline
-|── biocypher_metta
-│   ├── adapters
-│   ├── metta_writer.py
-│   ├── prolog_writer.py
-│   └── neo4j_csv_writer.py
-│
-├── create_knowledge_graph.py
-│ 
-│ # Scripts
-├── scripts
-│   ├── neo4j_loader.py            # Direct loader — no versioning (make neo4j-load-direct)
-│   ├── metta_space_import.py
-│   └── ...
-├── kg-service
-│   ├── neo4j_loader.py            # Versioned/incremental loader (make neo4j-load)
-│   └── version_manager.py
-│
-├── config
-│   ├── hsa/                       # Human configs
-│   ├── dmel/                      # Drosophila melanogaster configs
-│   ├── mmu/                       # Mus musculus (Mouse) configs
-│   ├── rno/                       # Rattus norvegicus (Rat) configs
-│   ├── cel/                       # C. elegans configs
-│   ├── species_config.yaml        # Per-species defaults (adapters, schema, dbSNP)
-│   ├── biocypher_config.yaml
-│   └── biocypher_docker_config.yaml
-│
-│ # Downloading data
-├── biocypher_dataset_downloader/
-    ├── __init__.py
-    ├── dmel_download_data.py
-    ├── hsa_download_data.py
-    ├── download_manager.py
-    ├── protocols/
-        ├── __init__.py
-        ├── base.py
-        └── http.py
-```
-
-The main components of the BioCypher pipeline are the
-`create_knowledge_graph.py`, the configuration in the `config` directory, and
-the adapter module in the `biocypher_metta` directory. The input adapters are used for preprocessing biomedical
-databases and converting them into BioCypher nodes and edges. 
-
-### Writers
-The project supports multiple output formats for the knowledge graph:
-
-1. **MeTTa Writer (`metta_writer.py`)**: Generates knowledge graph data in the MeTTa format.
-2. **Prolog Writer (`prolog_writer.py`)**: Generates knowledge graph data in the Prolog format.
-3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
-
-### Deployment (Neo4j, MORK, kg-service)
-
-Loading a build into Neo4j or the MORK server, and running kg-service, are covered in one place:
-**[docs/operations/deployment.md](docs/operations/deployment.md)**. It lists every backend and external service,
-their ports and settings, and the known issues on `main`.
-
-## ⬇ Downloading data
-The `biocypher_dataset_downloader` directory contains code for downloading data from various sources.
-Data source URLs and metadata are configured in the species-specific config files under `config/` (e.g. `config/hsa/hsa_data_source_config.yaml`).
-
-Each download also writes a provenance record into the output directory — `download_manifest.json`
-(per-source version, sha256, and HTTP metadata) and an append-only `versions.json` history. See
-[Dataset Versioning & Provenance](#-dataset-versioning--provenance) below.
-
-### Interactive (recommended)
-
-```bash
-make download
-```
-
-You will be prompted for the output directory, config file path, and an optional source name (leave blank to download everything).
-
-### Direct mode
-
-```bash
-# Download all sources for human
-make download-direct OUTPUT_DIR=./input
-
-# Download a single source
-make download-direct OUTPUT_DIR=./input SOURCE=uniprot
-
-# Download all sources for Drosophila
-make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
-
-# Download all sources for Mouse
-make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/mmu/mmu_data_source_config.yaml
-
-# Download all sources for Rat
-make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/rno/rno_data_source_config.yaml
-
-# Download all sources for C. elegans
-make download-direct OUTPUT_DIR=./input CONFIG_FILE=./config/cel/cel_data_source_config.yaml
-```
-
-### Without Make
-
-```bash
-# Download all sources
-python -m biocypher_dataset_downloader.download_data --output-dir <output_directory>
-
-# Download a specific source
-python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --source <source_name>
-
-# Skip sha256 checksums in the manifest (faster on multi-GB files)
-python -m biocypher_dataset_downloader.download_data --output-dir <output_directory> --no-checksum
-```
-
-### Liftover to another assembly (UCSC liftOver required)
-
-Some sources are only published on an older assembly (e.g. dbSUPER, hg19 only). A `liftover:` block in
-the source's entry in the data source config makes the downloader lift the downloaded file to the
-assembly used by the KG:
-
-```yaml
-dbsuper:
-  url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
-  liftover:
-    from: hg19
-    to: hg38
-    chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
-    min_match: 0.90                          # liftOver -minMatch (default 0.90)
-    files:
-      - input: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz      # relative to the output dir
-        output: dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
-        columns: {chrom: 0, start: 1, end: 2}                # 0-based column indexes
-        header_lines: 1
-```
-
-- Whole intervals are lifted with UCSC `liftOver` (`-minMatch`, no `-multiple`). The interval columns
-  must be BED-style (0-based half-open), which is what liftOver reads.
-- The output keeps every column and the row order; chrom/start/end get the new values and the original
-  interval is appended as `orig_chrom`, `orig_start`, `orig_end`.
-- Rows that do not lift are dropped and listed, with liftOver's reason, in `<output>.unmapped.tsv`.
-  Counts, parameters and md5s of the input and the chain are written to `<output>.liftover_summary.txt`.
-- The chain is downloaded once into `<output_dir>/liftover_chains/`. A file is lifted again when its
-  output is older than its input or the chain, or when the settings saved in
-  `<output>.liftover_params.json` (input, `from`/`to`, `chain_url`, `min_match`, `columns`,
-  `header_lines`) differ from the current config.
-
-**Installing liftOver.** The downloader uses the `LIFTOVER` environment variable, or `liftOver` on `PATH`.
-If neither is found, the source is reported as failed and its lifted file is not written. liftOver is a
-static binary with no dependencies:
-
-```bash
-# Linux x86_64 (for macOS use macOSX.x86_64 in the URL)
-mkdir -p ~/bin
-wget -O ~/bin/liftOver https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver
-chmod +x ~/bin/liftOver
-export LIFTOVER=~/bin/liftOver
-
-# or, with conda
-conda install -c bioconda ucsc-liftover
-```
-
-On a machine without internet access, copy both the binary and the chain file
-(into `<output_dir>/liftover_chains/`) from another machine. liftOver is distributed by UCSC under
-its own license terms; check them for your use case.
-
-## 📌 Dataset Versioning & Provenance
-
-Every dataset's version and provenance is tracked from a single source of truth — the data-source
-config — and flows through the whole pipeline, so a build is reproducible and citable. Full guide:
-**[docs/knowledge-graph/dataset-versioning.md](docs/knowledge-graph/dataset-versioning.md)**.
-
-**Declare a version** in `config/<species>/<species>_data_source_config.yaml` (optional; defaults to
-HTTP-HEAD change tracking):
-
-```yaml
-gencode:
-  name: GENCODE v49
-  version: {strategy: url_regex, pattern: 'gencode\.(v\d+)\.', vtype: sequential}
-  source_url: https://www.gencodegenes.org/
-  url: https://ftp.ebi.ac.uk/.../gencode.v49.annotation.gtf.gz
-```
-
-Strategies: `url_regex` (version from the URL — covers most sources), `static` (`value: v11`),
-`http_head` (default — tracks `ETag`/`Last-Modified` for `current/` symlinks).
-
-**On download**, `download_manifest.json` + `versions.json` are written per species (version, sha256,
-HTTP metadata). **On build**, pass the manifest so versions flow into `graph_info.json`:
-
-```bash
-uv run python create_knowledge_graph.py ... --manifest <download_dir>/download_manifest.json
-```
-
-**Check for stale/changed sources** (exits non-zero on change; runs weekly in CI via
-`.github/workflows/check-dataset-versions.yml`):
+Each source's version is declared in its data source config (`url_regex`, `static`, or the default
+`http_head`), recorded at download in `download_manifest.json`, and carried into the build's
+`graph_info.json`. To check for changed sources (this runs weekly in CI):
 
 ```bash
 uv run python -m biocypher_dataset_downloader.versioning.cli --species all --versions-root <dir>
 ```
 
-## 🧬 dbSNP Cache
+Full specification: [docs/knowledge-graph/dataset-versioning.md](docs/knowledge-graph/dataset-versioning.md).
 
-The pipeline requires a pre-built dbSNP cache only for human (`hsa`) runs. The pipeline automatically detects whether any adapter needs dbSNP and skips loading it for species that don't use it (`dmel`, `mmu`, `rno`, `cel`). Sample runs use the bundled cache at `aux_files/hsa/sample_dbsnp` automatically.
+## Make commands
 
-### Bizon server (pre-built cache available)
-
-If you have access to the Bizon server, the cache is already available — no build step needed:
-```
-dbSNP cache root: /mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/
-dbSNP variant:    common
-```
-
-Pass these when prompted by `make run`, or set them directly:
 ```bash
-uv run python create_knowledge_graph.py \
-  --dbsnp-cache-root /mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/ \
-  --dbsnp-variant common \
-  ...
+make help              # Show all commands and their variables
+make setup             # Install uv and dependencies
+make run               # Interactive build (same as make run-interactive)
+make run-sample        # Build from bundled human sample data
+make run-direct        # Build with explicit parameters
+make check-paths       # Validate an adapters config's input paths (no adapters run)
+make download          # Download data sources (interactive)
+make download-direct   # Download data sources with explicit parameters
+make test              # Run the tests
+make clean             # Remove temporary files and output
+make distclean         # Also remove the virtual environment
+make neo4j-up          # Start Neo4j (also neo4j-reset, -down, -logs, -status, -load, -load-direct)
 ```
 
-### Building the cache from scratch
+## Documentation
 
-Use `scripts/update_dbsnp.py` to generate the cache locally:
-```bash
-# Common variants only (~1–2 GB, recommended)
-python scripts/update_dbsnp.py --cache-dir <root>/common --common-only
+| Topic | Document |
+|---|---|
+| Index of all docs, by audience | [docs/index.md](docs/index.md) |
+| Every config file, CLI flag and make variable | [docs/operations/configuration.md](docs/operations/configuration.md) |
+| Neo4j, MORK, kg-service and Web Console | [docs/operations/deployment.md](docs/operations/deployment.md) |
+| Download → adapt → write, liftover, provenance | [docs/knowledge-graph/ingestion-pipeline.md](docs/knowledge-graph/ingestion-pipeline.md) |
+| Node and edge types | [docs/knowledge-graph/data-model.md](docs/knowledge-graph/data-model.md) |
+| Data sources and their adapters | [docs/knowledge-graph/adapter-catalog.md](docs/knowledge-graph/adapter-catalog.md) |
+| Repository layout | [docs/development/project-structure.md](docs/development/project-structure.md) |
+| Common failures | [docs/operations/troubleshooting.md](docs/operations/troubleshooting.md) |
 
-# All variants (~35–50 GB)
-python scripts/update_dbsnp.py --cache-dir <root>/full
-```
+## Contributing
 
-Then either pass `--dbsnp-cache-root <root>` on the command line, or set `dbsnp_cache_root` in `config/species_config.yaml`:
-```yaml
-hsa:
-  full:                          # dataset type (sample vs full run)
-    dbsnp_cache_root: /path/to/dbsnp/cache
-    dbsnp_variant: common        # SNP variant subset: "common" (~1-2 GB) or "full" (~35-50 GB)
-```
+To add an adapter, update the schema or run the tests locally, see [CONTRIBUTING.md](CONTRIBUTING.md)
+and [docs/development/local-development.md](docs/development/local-development.md).
 
-Non-human species (`dmel`, `mmu`, `rno`, `cel`) do not require dbSNP — leave `dbsnp_cache_root` and `dbsnp_variant` empty and the pipeline will skip the dbSNP load step automatically:
-```yaml
-mmu:
-  full:
-    adapters_config: config/mmu/mmu_adapters_config.yaml
-    schema_config: config/mmu/mmu_schema_config.yaml
-    dbsnp_cache_root: ""
-    dbsnp_variant: ""
-```
+## License
+
+The code is MIT-licensed; see [LICENSE](LICENSE). The data sources keep their own licenses.

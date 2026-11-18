@@ -47,19 +47,6 @@ ERROR: Pre-flight check failed — 2 adapter(s) have missing file paths:
 
 ---
 
-### Species `rno` raises `FileNotFoundError`
-
-**Symptom:**
-```
-FileNotFoundError: config/rno/rno_adapters_config.yaml
-```
-
-**Cause:** `rno` is declared in `config/species_config.yaml` but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing.
-
-**Resolution:** Use `hsa`, `dmel`, `mmu`, or `cel` until the `rno` configs are implemented. See the species support table in [system-overview.md](../architecture/system-overview.md).
-
----
-
 ### Disease Ontology adapter fails to download
 
 **Symptom:** The Disease Ontology adapter fails while loading `doid.owl`.

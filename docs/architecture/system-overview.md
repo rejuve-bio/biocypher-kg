@@ -23,11 +23,11 @@ The result is a consistent, schema-validated knowledge graph that can be loaded 
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmu` | In development — ontology adapters only |
-| *Caenorhabditis elegans* | `cel` | In development — ontology adapters only |
-| *Rattus norvegicus* (rat) | `rno` | In development — config declared, adapters missing |
+| *Mus musculus* (mouse) | `mmu` | In development — baseline types only |
+| *Caenorhabditis elegans* | `cel` | In development — baseline types only |
+| *Rattus norvegicus* (rat) | `rno` | In development — baseline types only |
 
-Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu` and `cel` have adapter and schema configs with ontology-only adapters. Species `rno` is declared but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing — attempting to run `rno` raises `FileNotFoundError`.
+Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu`, `cel` and `rno` have full and sample adapter and schema configs covering the baseline types: gene, transcript types (transcript, exon, non_coding_rna), protein, pathway, reaction, small_molecule, GO aspects, and the edges between them that the source data provide.
 
 ---
 

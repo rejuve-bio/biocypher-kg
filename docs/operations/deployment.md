@@ -61,7 +61,7 @@ make setup            # installs uv if needed, then runs uv sync
 cp .env.example .env  # optional, see BIOPORTAL_API_KEY below
 ```
 
-Then build with `make run` (interactive), `make run-sample` or `make run-direct`. The [README](https://github.com/rejuve-bio/biocypher-kg/blob/main/README.md) is the full reference for running builds and downloading data.
+Then build with `make run` (interactive), `make run-sample` or `make run-direct`. See the [README](https://github.com/rejuve-bio/biocypher-kg/blob/main/README.md) for a quick start, the [Configuration Reference](configuration.md) for every option, and [Ingestion Pipeline § Stage 1](../knowledge-graph/ingestion-pipeline.md#stage-1-download) for downloading data.
 
 - **`.env`** holds one setting, `BIOPORTAL_API_KEY`, and it is optional. The Disease Ontology adapter downloads from OBOLibrary and only falls back to BioPortal when that download fails and a key is set.
 
@@ -75,7 +75,32 @@ Then build with `make run` (interactive), `make run-sample` or `make run-direct`
 
 ### dbSNP cache (human only)
 
-Full `hsa` builds need a prebuilt dbSNP cache. Sample builds use the bundled `aux_files/hsa/sample_dbsnp`, and other species don't use dbSNP at all. Build the cache with `scripts/update_dbsnp.py`, then pass `--dbsnp-cache-root` or set `dbsnp_cache_root` in `config/species_config.yaml`. See [README § dbSNP Cache](https://github.com/rejuve-bio/biocypher-kg/blob/main/README.md#-dbsnp-cache) and the [processors README](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/processors/README.md) for build options.
+Full `hsa` builds need a prebuilt dbSNP cache. Sample builds use the bundled `aux_files/hsa/sample_dbsnp`. The pipeline detects whether any adapter needs dbSNP and skips loading it for species that don't (`dmel`, `mmu`, `rno`, `cel`).
+
+Build the cache with `scripts/update_dbsnp.py`:
+
+```bash
+# Common variants only (~1–2 GB, recommended)
+uv run python scripts/update_dbsnp.py --cache-dir <root>/common --common-only
+
+# All variants (~35–50 GB)
+uv run python scripts/update_dbsnp.py --cache-dir <root>/full
+```
+
+Then pass `--dbsnp-cache-root <root> --dbsnp-variant common|full` (or answer the `make run` prompts), or set them in `config/species_config.yaml`:
+
+```yaml
+hsa:
+  full:                          # dataset type (sample vs full run)
+    dbsnp_cache_root: /path/to/dbsnp/cache
+    dbsnp_variant: common        # "common" (~1–2 GB) or "full" (~35–50 GB)
+```
+
+For non-human species leave `dbsnp_cache_root` and `dbsnp_variant` empty (`""`).
+
+**Bizon server:** a prebuilt cache is already available at `/mnt/hdd_1/biocypher-kg/input/hsa/dbsnp/rsids_map/` (variant `common`).
+
+See the [processors README](https://github.com/rejuve-bio/biocypher-kg/blob/main/biocypher_metta/processors/README.md) for the cache format.
 
 ---
 
