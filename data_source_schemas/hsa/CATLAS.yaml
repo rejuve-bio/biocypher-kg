@@ -1,5 +1,6 @@
 name: CATLAS
 website: https://catlas.org
+kg_coordinate_convention: 1-based closed
 nodes:
   promoter:
     url: https://catlas.org/
@@ -11,6 +12,13 @@ nodes:
       end: int
       start: int
       taxon_id: int
+    coordinates:
+      source_convention: 0-based half-open
+      source_assembly: GRCh38
+      start_offset: 1
+      end_offset: 0
+      note: Default input_coordinate_system='bed'; the adapter arg can declare other
+        inputs
   enhancer:
     url: https://catlas.org/
     input_label: enhancer
@@ -21,6 +29,13 @@ nodes:
       end: int
       start: int
       taxon_id: int
+    coordinates:
+      source_convention: 0-based half-open
+      source_assembly: GRCh38
+      start_offset: 1
+      end_offset: 0
+      note: Default input_coordinate_system='bed'; the adapter arg can declare other
+        inputs
 relationships:
   enhancer accessible in cell type:
     url: https://catlas.org/

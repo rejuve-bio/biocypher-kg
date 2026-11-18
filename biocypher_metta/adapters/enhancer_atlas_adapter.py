@@ -31,6 +31,18 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 
 
 class EnhancerAtlasAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': {
+            9606: 'hg19',
+        },
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'Known issue: the configured hsa file is hg19 and is not lifted, although node IDs say GRCh38. A lifted (offline, UCSC liftOver) input exists on another branch.',
+    }
+
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'snp': 7}
 
     def __init__(self, enhancer_filepath, enhancer_gene_filepath, tissue_to_ontology_filepath, 

@@ -31,6 +31,15 @@ class CAtlasCCREAdapter(Adapter):
     Use class_filter="enhancer" or "promoter" via separate config entries to
     produce the two node types independently.
     """
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': "Default input_coordinate_system='bed'; the adapter arg can declare other inputs",
+    }
 
     _PROMOTER_CLASSES = {"promoter", "promoter proximal"}
     _ENHANCER_CLASSES = {"distal"}

@@ -33,6 +33,22 @@ _SOURCE_URLS = {
 }
 
 class EPDAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': {
+            9606: 'hg38',
+            10090: 'mm10',
+            7227: 'dm6',
+            6239: 'ce6',
+            10116: 'rn6',
+        },
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': "EPDnew BED. Assemblies from the 'DR UCSC' lines of the current EPDnew .dat files; mm10, rn6 and ce6 differ from the GTF assemblies used for those species.",
+    }
+
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'gene_id': 3}
 
     def __init__(

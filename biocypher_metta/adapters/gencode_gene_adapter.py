@@ -36,6 +36,22 @@ from biocypher_metta.processors import HGNCProcessor, EntrezEnsemblProcessor
 
 
 class GencodeGeneAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '1-based closed',
+        'source_assembly': {
+            9606: 'GRCh38',
+            10090: 'GRCm39',
+            7227: 'BDGP6',
+            6239: 'WBcel235',
+            10116: 'GRCr8',
+        },
+        'start_offset': 0,
+        'end_offset': 0,
+        'note': 'GTF',
+    }
+
     ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_biotype', 'gene_name',
                     'transcript_id', 'transcript_type', 'transcript_name', 'hgnc_id', 'mgi_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}

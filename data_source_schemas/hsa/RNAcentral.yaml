@@ -1,5 +1,6 @@
 name: RNAcentral
 website: https://rnacentral.org
+kg_coordinate_convention: 1-based closed
 nodes:
   non coding rna:
     url: https://rnacentral.org/downloads
@@ -10,6 +11,12 @@ nodes:
       rna_type: str
       start: int
       taxon_id: int
+    coordinates:
+      source_convention: 0-based half-open
+      source_assembly: GRCh38
+      start_offset: 1
+      end_offset: 0
+      note: RNAcentral genome_coordinates BED
 relationships:
   biological process rna:
     url: https://rnacentral.org/downloads

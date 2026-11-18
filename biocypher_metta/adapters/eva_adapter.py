@@ -91,6 +91,17 @@ class EVAAdapter(Adapter):
 
     Produces SNP nodes and/or 'in gene to variant association' edges.
     """
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '1-based closed',
+        'source_assembly': {
+            7227: 'BDGP6 (GCA_000001215.4)',
+        },
+        'start_offset': 0,
+        'end_offset': 0,
+        'note': 'VCF POS; SNPs are stored with start == end == POS',
+    }
 
     # VCF column indices
     _IDX = {"chr": 0, "pos": 1, "id": 2, "ref": 3, "alt": 4, "info": 7}

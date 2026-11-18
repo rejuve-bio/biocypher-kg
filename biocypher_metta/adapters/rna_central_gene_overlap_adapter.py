@@ -16,6 +16,24 @@ from biocypher._logger import logger
 
 
 class RnaCentralGeneOverlapAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': 'mixed',
+        'source_assembly': {
+            9606: 'GRCh38',
+            10090: 'GRCm39',
+            7227: 'BDGP6.46',
+            6239: 'WBcel235',
+            10116: 'mRatBN7.2',
+        },
+        'components': {
+            'RNAcentral BED': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
+            'GTF genes': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+        },
+        'note': 'overlap_start/overlap_end are computed after both inputs are converted to 1-based closed',
+    }
+
     def __init__(self, bed_filepath, gtf_filepath, write_properties, add_provenance,
                  taxon_id, label='ncrna_overlaps_gene', reverse_label='gene_overlaps_ncrna'):
         self.bed_filepath = bed_filepath

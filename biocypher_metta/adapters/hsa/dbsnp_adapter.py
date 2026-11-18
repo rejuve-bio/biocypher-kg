@@ -8,6 +8,16 @@ from biocypher_metta.adapters.helpers import check_genomic_location, to_float
 # 1	10616	rs376342519	CCGCCGTTGCAAAGGCGCGCCG	C	.	.	RS=376342519;RSPOS=10617;dbSNPBuildID=142;SSR=0;SAO=0;VP=0x050000020005040026000200;GENEINFO=DDX11L1:100287102;WGT=1;VC=DIV;R5;ASP;VLD;KGPhase3;CAF=0.006989,0.993;COMMON=1
 
 class DBSNPAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '1-based closed',
+        'source_assembly': 'GRCh38',
+        'start_offset': 0,
+        'end_offset': 0,
+        'note': 'VCF POS; SNPs are stored with start == end == POS',
+    }
+
     INDEX = {'chr': 0, 'pos': 1, 'id': 2, 'ref': 3, 'alt': 4, 'info': 7}
     def __init__(self, filepath, write_properties, add_provenance, label,
                  chr=None, start=None, end=None, taxon_id=9606):

@@ -14,6 +14,16 @@ from biocypher_metta.adapters import Adapter
 # chr1	17343	17642	EH38D6144702	EH38E3951273	CA-TF	chr1	17436	17436	ENST00000619216.1	.	-	ENSG00000278267.1
 
 class EnhancercCREAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'SCREEN cCRE BED regions',
+    }
+
     def __init__(self, filepath, taxon_id, label, write_properties=True, add_provenance=True, element_filter=None):
         self.filepath = filepath
         self.taxon_id = taxon_id
@@ -48,8 +58,8 @@ class EnhancercCREAdapter(Adapter):
                     continue
                     
                 chrom = fields[0]
-                start = int(fields[1]) + 1  
-                end = int(fields[2]) + 1    
+                start = int(fields[1]) + 1  # BED 0-based start -> 1-based
+                end = int(fields[2])  # BED end is already the 1-based last base
                 element_type = fields[5]
                 
                 if element_type not in self.element_types_to_include:
@@ -103,8 +113,8 @@ class EnhancercCREAdapter(Adapter):
                     continue
                     
                 chrom = fields[0]
-                start = int(fields[1]) + 1  
-                end = int(fields[2]) + 1    
+                start = int(fields[1]) + 1  # BED 0-based start -> 1-based
+                end = int(fields[2])  # BED end is already the 1-based last base
                 element_type = fields[5]
                 
                 if element_type not in self.element_types_to_include:

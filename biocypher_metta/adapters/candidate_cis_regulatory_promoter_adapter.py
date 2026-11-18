@@ -20,6 +20,16 @@ from biocypher_metta.adapters import Adapter
 
 
 class PromotercCREAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'SCREEN cCRE BED regions; the gene TSS column is 1-based',
+    }
+
     def __init__(
         self, filepath, eqtl_filepath, taxon_id,label, gtex_tissue_ontology_map=None, write_properties=True, add_provenance=True, edge_type=None):
         self.filepath = filepath
@@ -91,8 +101,8 @@ class PromotercCREAdapter(Adapter):
                     continue
                 
                 chrom = fields[0]
-                start = int(fields[1]) + 1  
-                end = int(fields[2]) + 1   
+                start = int(fields[1]) + 1  # BED 0-based start -> 1-based
+                end = int(fields[2])  # BED end is already the 1-based last base
                 
                 if len(fields) <= 4 or not fields[4]:
                     continue
