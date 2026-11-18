@@ -28,6 +28,15 @@ import psycopg2
 
 
 class AlleleAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'BDGP6 (FlyBase Release 6)',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'Chado featureloc (interbase). SNPs are stored as single points: start = end = fmin + 1',
+    }
 
     def __init__(self, write_properties, add_provenance, dmel_filepath=None, label='allele', taxon_id=7227):
         self.dmel_filepath = dmel_filepath

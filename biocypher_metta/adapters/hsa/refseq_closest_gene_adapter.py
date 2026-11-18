@@ -17,6 +17,18 @@ class RefSeqClosestGeneAdapter(Adapter):
     """
     Adapter for RefSeq Closest Gene data
     """
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': 'mixed',
+        'source_assembly': 'GRCh38',
+        'components': {
+            'dbSNP map pos': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+            'closest-gene file gene start': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
+        },
+        'note': 'pos comes from the dbSNP map; distance = (gene_start + 1) - pos',
+    }
+
     def __init__(self, filepath, hgnc_to_ensembl_map=None, dbsnp_rsid_map=None, label='closest_gene',
                  write_properties=None, add_provenance=None,
                  chr=None, start=None, end=None, hgnc_processor=None, taxon_id=9606):

@@ -47,6 +47,14 @@ class CAtlasCCRECellTypeAdapter(Adapter):
         ccre_type="enhancer"  →  enhancer_accessible_in_cell_type / _tissue
         ccre_type="promoter"  →  promoter_accessible_in_cell_type / _tissue
     """
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+    }
 
     # (ccre_type, ontology_prefix) → edge input_label
     _LABEL_MAP = {

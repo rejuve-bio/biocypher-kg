@@ -84,6 +84,16 @@ class AdapterAnalyzer:
             values.update(cls._extract_string_values(node.orelse))
         return values
 
+    def get_coordinates(self) -> Optional[Dict[str, Any]]:
+        """Return the adapter class's COORDINATES constant (a literal dict), or None."""
+        for node in ast.walk(self.tree):
+            if isinstance(node, ast.ClassDef):
+                for item in node.body:
+                    if (isinstance(item, ast.Assign)
+                            and any(isinstance(t, ast.Name) and t.id == 'COORDINATES' for t in item.targets)):
+                        return ast.literal_eval(item.value)
+        return None
+
     def _extract_class_attributes(self) -> Dict[str, Any]:
         class_attrs = {}
         for node in ast.walk(self.tree):
@@ -91,7 +101,8 @@ class AdapterAnalyzer:
                 for item in node.body:
                     if isinstance(item, ast.Assign):
                         for target in item.targets:
-                            if isinstance(target, ast.Name):
+                            # COORDINATES is provenance metadata, not a label map.
+                            if isinstance(target, ast.Name) and target.id != 'COORDINATES':
                                 if isinstance(item.value, ast.Dict):
                                     dict_value = {}
                                     for key, value in zip(item.value.keys, item.value.values):
@@ -1061,6 +1072,33 @@ class SchemaGenerator:
         print(f"\n✓ Schema generation complete! Output directory: {self.output_dir}")
         print(f"  Generated {len(by_source)} schema files")
 
+    POSITION_PROPERTIES = {'start', 'end', 'pos', 'overlap_start', 'overlap_end'}
+
+    @classmethod
+    def resolve_coordinates(cls, coordinates: Optional[Dict[str, Any]], adapter_args: Dict[str, Any],
+                            properties: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+        """Build the 'coordinates' entry for a node/relationship type.
+
+        Returned only when the type has position properties. A taxon-keyed
+        source_assembly is resolved with the config's taxon_id (and dropped when
+        that taxon has no declared assembly).
+        """
+        if not coordinates or not properties or not (cls.POSITION_PROPERTIES & set(properties)):
+            return None
+        entry = {'kg_convention': '1-based closed'}
+        for key, value in coordinates.items():
+            if key == 'source_assembly' and isinstance(value, dict):
+                taxon_id = adapter_args.get('taxon_id')
+                try:
+                    taxon_id = int(taxon_id)
+                except (TypeError, ValueError):
+                    pass
+                value = value.get(taxon_id)
+                if value is None:
+                    continue
+            entry[key] = value
+        return entry
+
     def generate_schema(self, source_name: str, adapters: List[Dict]):
         source_urls = [a['adapter_data']['source_url'] for a in adapters if a['adapter_data']['source_url']]
         website = self.extract_base_url(source_urls[0]) if source_urls else ''
@@ -1162,6 +1200,10 @@ class SchemaGenerator:
                             if 'properties' not in nodes[type_name]:
                                 nodes[type_name]['properties'] = {}
                             nodes[type_name]['properties'].update(valid_props)
+                        coordinates = self.resolve_coordinates(
+                            analyzer.get_coordinates(), adapter_args, nodes[type_name].get('properties'))
+                        if coordinates:
+                            nodes[type_name]['coordinates'] = coordinates
 
                     # Process edges
                     elif writes_edges and is_edge:
@@ -1200,6 +1242,10 @@ class SchemaGenerator:
                             if 'properties' not in relationships[type_name]:
                                 relationships[type_name]['properties'] = {}
                             relationships[type_name]['properties'].update(valid_props)
+                        coordinates = self.resolve_coordinates(
+                            analyzer.get_coordinates(), adapter_args, relationships[type_name].get('properties'))
+                        if coordinates:
+                            relationships[type_name]['coordinates'] = coordinates
 
         if nodes:
             schema['nodes'] = nodes

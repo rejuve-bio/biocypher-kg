@@ -12,6 +12,33 @@ nodes:
       enhancer_id: str
       start: int
       taxon_id: int
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: mixed
+      source_assembly: GRCh38
+      components:
+        FANTOM:
+          source_convention: 0-based half-open
+          start_offset: 1
+          end_offset: 0
+        ENCODE:
+          source_convention: 0-based half-open
+          start_offset: 1
+          end_offset: 0
+        Ensembl:
+          source_convention: 1-based closed
+          start_offset: 0
+          end_offset: 0
+        VISTA:
+          source_convention: 1-based closed
+          start_offset: 0
+          end_offset: 0
+      note: 'Per-record sub-source from PEREGRINEenhancersources. Verified Nov 2026
+        by exact positional match after hg19->hg38 liftOver (check_peregrine_coords.py):
+        ENCODE vs ENCFF788SJC (100%), FANTOM vs FANTOM5 permissive phase 1+2 (100%),
+        Ensembl vs GRCh37 Regulatory Build 20161117/release 87 (99.6% of 28,173 matched);
+        VISTA verified against vista-data. PEREGRINE does not document its convention;
+        the file mixes conventions.'
 relationships:
   enhancer to gene association:
     url: https://www.peregrineproj.org/

@@ -10,6 +10,12 @@ nodes:
       end: int
       start: int
       taxon_id: int
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: 0-based half-open
+      source_assembly: GRCh38
+      start_offset: 1
+      end_offset: 0
 relationships:
   enhancer activity by contact:
     url: https://www.encodeproject.org/

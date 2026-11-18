@@ -89,6 +89,15 @@ nodes:
     properties:
       end: int
       start: int
+      chr: str
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: 0-based half-open
+      source_assembly: BDGP6 (FlyBase Release 6)
+      start_offset: 1
+      end_offset: 0
+      note: 'Chado featureloc (interbase). SNPs are stored as single points: start
+        = end = fmin + 1'
   rnaseq library:
     url: https://flybase.org/
     input_label: rnaseq_library

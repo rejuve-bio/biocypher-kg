@@ -11,6 +11,19 @@ from biocypher._logger import logger
 # 1	10001	nssv14781	T	<DUP>	.	.	DBVARID=nssv14781;SVTYPE=DUP;IMPRECISE;END=82189;CIPOS=0,0;CIEND=0,0;SVLEN=72189;EXPERIMENT=1;SAMPLE=NA18860;REGIONID=nsv7879
 
 class DBVarVariantAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': 'mixed',
+        'source_assembly': 'GRCh38',
+        'components': {
+            'dbVar VCF (POS, INFO END)': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+            'BED feature files': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
+            'GTF feature files': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+        },
+        'note': 'Variant nodes come from the VCF; overlap_start/overlap_end are computed in 1-based closed',
+    }
+
     INDEX = {'chr': 0, 'coord_start': 1, 'id': 2, 'type': 4, 'info': 7}
     VARIANT_TYPES = {'<CNV>': 'copy number variation', '<DEL>': 'deletion', '<DUP>': 'duplication', '<INS>': 'insertion', '<INV>': 'inversion'}
 

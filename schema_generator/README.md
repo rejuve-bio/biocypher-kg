@@ -256,6 +256,12 @@ nodes:
     description: Node description
     properties:
       property_name: type
+    coordinates:            # only for types with start/end/pos/overlap_* properties
+      kg_convention: 1-based closed
+      source_convention: 0-based half-open
+      source_assembly: GRCh38
+      start_offset: 1
+      end_offset: 0
 relationships:
   relationship_type:
     url: https://datasource.org/download
@@ -430,3 +436,12 @@ When adding new adapter patterns:
 2. Update `AdapterAnalyzer.get_metadata_from_init()` for new metadata patterns
 3. Add test case to verify extraction works correctly
 4. Update this README with new pattern documentation
+
+## Genomic Coordinates
+
+The `coordinates` block is read from the adapter's `COORDINATES` class constant
+(via AST, without importing the adapter). It is written only for types with
+position properties (`start`, `end`, `pos`, `overlap_start`, `overlap_end`). A
+per-species `source_assembly` (`{taxon_id: assembly}`) is resolved with the
+adapter config's `taxon_id`. See "Genomic coordinates" in the main README for
+the conventions.

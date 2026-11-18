@@ -11,6 +11,19 @@ from biocypher._logger import logger
 # nsv482937	1	10001	2368561	CNV	loss	Iafrate_et_al_2004	15286789	BAC aCGH,FISH			nssv2995976	M		39	0	1		""
 
 class DGVVariantAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': 'mixed',
+        'source_assembly': 'GRCh38',
+        'components': {
+            'DGV variants file': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+            'BED feature files': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
+            'GTF feature files': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+        },
+        'note': "DGV is undocumented; its starts equal dbVar's 1-based VCF starts for 99.8% of shared nsv records",
+    }
+
     INDEX = {'variant_accession': 0, 'chr': 1, 'coord_start': 2, 'coord_end': 3, 'type': 5, 'pubmedid': 7, 'genes': 17}
 
     def __init__(self, filepath, write_properties, add_provenance,
@@ -39,7 +52,7 @@ class DGVVariantAdapter(Adapter):
                 data = line.strip().split(self.delimiter)
                 variant_accession = data[DGVVariantAdapter.INDEX['variant_accession']]
                 chr = 'chr' + data[DGVVariantAdapter.INDEX['chr']]
-                start = int(data[DGVVariantAdapter.INDEX['coord_start']]) + 1 # +1 since it is 0-indexed genomic coordinate
+                start = int(data[DGVVariantAdapter.INDEX['coord_start']])  # DGV file is already 1-based closed (no +1)
                 end = int(data[DGVVariantAdapter.INDEX['coord_end']])
                 variant_type = data[DGVVariantAdapter.INDEX['type']]
                 pubmedid = data[DGVVariantAdapter.INDEX['pubmedid']]
@@ -177,7 +190,7 @@ class DGVVariantAdapter(Adapter):
             for line in f:
                 data = line.strip().split(self.delimiter)
                 chr = 'chr' + data[DGVVariantAdapter.INDEX['chr']]
-                start = int(data[DGVVariantAdapter.INDEX['coord_start']]) + 1
+                start = int(data[DGVVariantAdapter.INDEX['coord_start']])  # already 1-based closed
                 end = int(data[DGVVariantAdapter.INDEX['coord_end']])
 
                 #Reconstruct ID

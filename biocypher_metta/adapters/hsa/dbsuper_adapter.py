@@ -17,6 +17,17 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 # chr13	110838836	111112228	SE_00002	COL4A2	Adipose Nuclei	2
 
 class DBSuperAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'hg19',
+        'start_offset': 1,
+        'end_offset': 0,
+        'liftover': 'hg19 -> GRCh38 by the downloader (UCSC liftOver, minMatch 0.90); the adapter reads the lifted file',
+        'note': 'Undocumented by dbSUPER; BED-like (MACS/ROSE output)',
+    }
+
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'se_id': 3, 'gene_id': 4, 'cell_name': 5}
 
     def __init__(self, filepath, hgnc_to_ensembl_map=None, dbsuper_tissues_map=None, label='super_enhancer',

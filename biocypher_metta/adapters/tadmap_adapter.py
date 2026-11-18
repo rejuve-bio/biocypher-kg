@@ -21,6 +21,16 @@ class TADMapAdapter(Adapter):
     TAD are contiguous segments of the genome where the genomic elements are in frequent contact with each other.
     Source : TADMap https://cb.csail.mit.edu/cb/tadmap/
     """
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'TADMap scaffold BED coordinates embedded in the geneset CSV',
+    }
+
     INDEX = {'loc_info': 0, 'genes': 1, 'chr': 1, 'start': 2, 'end': 3}
 
     def __init__(self, filepath, write_properties, add_provenance, taxon_id, label,
@@ -59,8 +69,8 @@ class TADMapAdapter(Adapter):
                 row = row.strip().split(',')
                 loc_info = row[TADMapAdapter.INDEX['loc_info']].split('|')
                 chr = loc_info[TADMapAdapter.INDEX['chr']]
-                start = loc_info[TADMapAdapter.INDEX['start']]
-                end = loc_info[TADMapAdapter.INDEX['end']]
+                start = int(loc_info[TADMapAdapter.INDEX['start']]) + 1  # BED 0-based start -> 1-based
+                end = int(loc_info[TADMapAdapter.INDEX['end']])
 
                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                     _id = f"SO:{build_regulatory_region_id(chr, start, end)}"
@@ -68,8 +78,8 @@ class TADMapAdapter(Adapter):
                     if self.write_properties:
                         _props = {
                             'chr': chr,
-                            'start': int(start),
-                            'end': int(end),
+                            'start': start,
+                            'end': end,
                             'taxon_id': self.taxon_id,
                         }
                         if self.add_provenance:
@@ -86,8 +96,8 @@ class TADMapAdapter(Adapter):
                 loc_info = row[TADMapAdapter.INDEX['loc_info']].split('|')
                 genes_info = row[TADMapAdapter.INDEX['genes']].split(';')
                 chr = loc_info[TADMapAdapter.INDEX['chr']]
-                start = loc_info[TADMapAdapter.INDEX['start']]
-                end = loc_info[TADMapAdapter.INDEX['end']]
+                start = int(loc_info[TADMapAdapter.INDEX['start']]) + 1  # BED 0-based start -> 1-based
+                end = int(loc_info[TADMapAdapter.INDEX['end']])
                 genes = []
                 for gene in genes_info:
                     try:

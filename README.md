@@ -396,6 +396,56 @@ The project supports multiple output formats for the knowledge graph:
 2. **Prolog Writer (`prolog_writer.py`)**: Generates knowledge graph data in the Prolog format.
 3. **Neo4j CSV Writer (`neo4j_csv_writer.py`)**: Generates CSV files containing nodes and edges of the knowledge graph, along with Cypher queries to load the data into a Neo4j database.
 
+### Genomic coordinates
+
+**Every genomic position stored in the KG is 1-based and closed.** This covers
+the `start`, `end`, `pos`, `overlap_start` and `overlap_end` properties and the
+positions inside region IDs (`chr_start_end_GRCh38`) and variant IDs.
+
+| Convention | First base | `end` | The first 100 bases of chr1 |
+|---|---|---|---|
+| `1-based closed` | 1 | included | `start=1, end=100` |
+| `0-based half-open` | 0 | excluded (equals the 1-based last base) | `start=0, end=100` |
+
+- **1-based closed:** VCF `POS`, GTF/GFF3, Ensembl, the UCSC Genome Browser
+  position box, and the KG.
+- **0-based half-open:** BED, bigBed, UCSC database tables (`chromStart`) and
+  Chado `featureloc` (interbase) coordinates.
+
+So a 0-based half-open source needs `start + 1` and an unchanged `end`. A
+1-based closed source is stored as it is.
+
+Each adapter that writes positions declares its source's convention in a
+`COORDINATES` class constant (stored position = source position + offset):
+
+```python
+class TfbsAdapter(Adapter):
+    COORDINATES = {
+        'source_convention': '0-based half-open',   # or '1-based closed', or 'mixed'
+        'source_assembly': 'GRCh38',                # or {taxon_id: assembly} for multi-species adapters
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'UCSC table encRegTfbsClustered (chromStart is 0-based)',  # optional
+    }
+```
+
+- **`mixed`:** when one adapter reads inputs with different conventions, list
+  each one under `components` with its own `source_convention`, `start_offset`
+  and `end_offset`. For example, PEREGRINE enhancers come from FANTOM and
+  ENCODE (0-based) and from Ensembl and VISTA (1-based).
+- **`liftover` (optional):** describes a lift to another assembly. In that
+  case `source_assembly` is the assembly the source was published on.
+- **Data source schemas:** the schema generator copies the constant into the
+  data source schema YAMLs as a `coordinates:` block on every node and
+  relationship type that has position properties. A per-species
+  `source_assembly` is resolved with the config's `taxon_id`.
+- **Enforcement:** `test/test_coordinates.py` fails when an adapter writes
+  positions or builds region IDs without a valid `COORDINATES`.
+- **Evidence for undocumented sources:** where a provider does not state its
+  convention, the empirical check behind `COORDINATES` is described in
+  [docs/knowledge-graph/genomic-coordinates.md](docs/knowledge-graph/genomic-coordinates.md)
+  (currently PEREGRINE).
+
 ### Deployment (Neo4j, MORK, kg-service)
 
 Loading a build into Neo4j or the MORK server, and running kg-service, are covered in one place:

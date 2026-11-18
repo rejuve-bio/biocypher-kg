@@ -55,7 +55,15 @@ class CAtlasABCScoreAdapter(Adapter):
       - gene_id  : ENSEMBL:{ENSG_ID}
       - props    : abc_score, distance, biological_context (CL/UBERON ID)
     """
-
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'Only used to build cCRE node IDs',
+    }
 
     def __init__(
         self,

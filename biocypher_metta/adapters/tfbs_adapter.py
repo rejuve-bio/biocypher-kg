@@ -27,6 +27,16 @@ from biocypher_metta.processors import HGNCProcessor
 
 
 class TfbsAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'UCSC table encRegTfbsClustered (chromStart is 0-based)',
+    }
+
     INDEX = {'bin': 0, 'chr': 1, 'start': 2, 'end': 3, 'tf': 4, 'score': 5}
     
     def __init__(self, write_properties, add_provenance, filepath,
@@ -64,7 +74,7 @@ class TfbsAdapter(Adapter):
     def get_nodes(self):
         for data in self._read_csv_gz():
             chr = data[TfbsAdapter.INDEX['chr']].strip('"')
-            start = int(data[TfbsAdapter.INDEX['start']].strip('"'))
+            start = int(data[TfbsAdapter.INDEX['start']].strip('"')) + 1  # UCSC chromStart is 0-based
             end = int(data[TfbsAdapter.INDEX['end']].strip('"'))
             tfbs_id = f"ENCODE_TFBS:{build_regulatory_region_id(chr, start, end)}"
             props = {}
@@ -84,7 +94,7 @@ class TfbsAdapter(Adapter):
     def get_edges(self):
         for data in self._read_csv_gz():
             chr = data[TfbsAdapter.INDEX['chr']].strip('"')
-            start = int(data[TfbsAdapter.INDEX['start']].strip('"'))
+            start = int(data[TfbsAdapter.INDEX['start']].strip('"')) + 1  # UCSC chromStart is 0-based
             end = int(data[TfbsAdapter.INDEX['end']].strip('"'))
             tf = data[TfbsAdapter.INDEX['tf']].strip('"')
             ensembl_id = self.hgnc_processor.get_ensembl_id(tf)

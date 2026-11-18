@@ -13,3 +13,10 @@ nodes:
       ref: str
       start: int
       taxon_id: int
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: 1-based closed
+      source_assembly: GRCh38
+      start_offset: 0
+      end_offset: 0
+      note: FAVOR position is the VCF POS

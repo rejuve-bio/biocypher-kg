@@ -9,6 +9,15 @@ nodes:
       end: int
       start: int
       taxon_id: int
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: 0-based half-open
+      source_assembly: hg38
+      start_offset: 1
+      end_offset: 0
+      note: EPDnew BED. Assemblies from the 'DR UCSC' lines of the current EPDnew
+        .dat files; mm10, rn6 and ce6 differ from the GTF assemblies used for those
+        species.
 relationships:
   promoter to gene association:
     url: https://epd.expasy.org/

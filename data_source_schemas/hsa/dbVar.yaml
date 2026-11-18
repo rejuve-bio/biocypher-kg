@@ -13,6 +13,25 @@ nodes:
       start: int
       taxon_id: int
       variant_type: str
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: mixed
+      source_assembly: GRCh38
+      components:
+        dbVar VCF (POS, INFO END):
+          source_convention: 1-based closed
+          start_offset: 0
+          end_offset: 0
+        BED feature files:
+          source_convention: 0-based half-open
+          start_offset: 1
+          end_offset: 0
+        GTF feature files:
+          source_convention: 1-based closed
+          start_offset: 0
+          end_offset: 0
+      note: Variant nodes come from the VCF; overlap_start/overlap_end are computed
+        in 1-based closed
 relationships:
   gene overlaps structural_variant:
     url: https://www.ncbi.nlm.nih.gov/dbvar/content/ftp_manifest/

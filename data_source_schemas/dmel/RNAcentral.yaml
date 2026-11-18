@@ -10,6 +10,13 @@ nodes:
       rna_type: str
       start: int
       taxon_id: int
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: 0-based half-open
+      source_assembly: BDGP6.46
+      start_offset: 1
+      end_offset: 0
+      note: RNAcentral genome_coordinates BED
 relationships:
   biological process rna:
     url: https://rnacentral.org/downloads

@@ -10,6 +10,15 @@ nodes:
       end: int
       start: int
       taxon_id: int
+    coordinates:
+      kg_convention: 1-based closed
+      source_convention: 0-based half-open
+      source_assembly: hg19
+      start_offset: 1
+      end_offset: 0
+      note: 'Known issue: the configured hsa file is hg19 and is not lifted, although
+        node IDs say GRCh38. A lifted (offline, UCSC liftOver) input exists on another
+        branch.'
 relationships:
   enhancer to gene association:
     url: http://singlecelldb.com/downloadv2.php

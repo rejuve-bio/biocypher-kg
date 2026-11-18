@@ -24,6 +24,22 @@ from biocypher_metta.processors import GOSubontologyProcessor
 # https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/
 
 class RNACentralAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': {
+            9606: 'GRCh38',
+            10090: 'GRCm39',
+            7227: 'BDGP6.46',
+            6239: 'WBcel235',
+            10116: 'mRatBN7.2',
+        },
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'RNAcentral genome_coordinates BED',
+    }
+
     INDEX = {'chr': 0, 'coord_start': 1, 'coord_end': 2, 'id': 3, 'rna_type': 13}
 
     def __init__(self, filepath, rfam_filepath, write_properties, add_provenance, taxon_id,
