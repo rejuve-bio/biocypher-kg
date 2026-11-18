@@ -1,5 +1,6 @@
 name: TADMap
 website: https://cb.csail.mit.edu
+kg_coordinate_convention: 1-based closed
 nodes:
   tad:
     url: https://cb.csail.mit.edu/cb/tadmap/
@@ -10,7 +11,6 @@ nodes:
       start: int
       taxon_id: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 0-based half-open
       source_assembly: GRCh38
       start_offset: 1

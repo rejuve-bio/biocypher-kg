@@ -1,5 +1,6 @@
 name: GENCODE
 website: https://www.gencodegenes.org
+kg_coordinate_convention: 1-based closed
 nodes:
   gene:
     url: https://www.gencodegenes.org/
@@ -13,7 +14,6 @@ nodes:
       synonym: str[]
       taxon_id: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 1-based closed
       source_assembly: GRCh38
       start_offset: 0
@@ -39,7 +39,6 @@ nodes:
       start: int
       taxon_id: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 1-based closed
       source_assembly: GRCh38
       start_offset: 0

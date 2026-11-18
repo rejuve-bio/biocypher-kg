@@ -249,6 +249,7 @@ Generates one YAML file per data source with the following structure:
 ```yaml
 name: Data Source Name
 website: https://datasource.org
+kg_coordinate_convention: 1-based closed   # only when some type has a coordinates block
 nodes:
   node_type:
     url: https://datasource.org/download
@@ -257,7 +258,6 @@ nodes:
     properties:
       property_name: type
     coordinates:            # only for types with start/end/pos/overlap_* properties
-      kg_convention: 1-based closed
       source_convention: 0-based half-open
       source_assembly: GRCh38
       start_offset: 1

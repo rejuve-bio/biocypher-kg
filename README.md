@@ -437,8 +437,9 @@ class TfbsAdapter(Adapter):
   case `source_assembly` is the assembly the source was published on.
 - **Data source schemas:** the schema generator copies the constant into the
   data source schema YAMLs as a `coordinates:` block on every node and
-  relationship type that has position properties. A per-species
-  `source_assembly` is resolved with the config's `taxon_id`.
+  relationship type that has position properties, and states
+  `kg_coordinate_convention: 1-based closed` once at the top of the file. A
+  per-species `source_assembly` is resolved with the config's `taxon_id`.
 - **Enforcement:** `test/test_coordinates.py` fails when an adapter writes
   positions or builds region IDs without a valid `COORDINATES`.
 - **Evidence for undocumented sources:** where a provider does not state its

@@ -1,5 +1,6 @@
 name: FAVOR
 website: http://favor.genohub.org
+kg_coordinate_convention: 1-based closed
 nodes:
   snp:
     url: http://favor.genohub.org/
@@ -14,7 +15,6 @@ nodes:
       start: int
       taxon_id: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 1-based closed
       source_assembly: GRCh38
       start_offset: 0

@@ -1,5 +1,6 @@
 name: dgv
 website: http://dgv.tcag.ca
+kg_coordinate_convention: 1-based closed
 nodes:
   structural variant:
     url: http://dgv.tcag.ca/dgv/app/downloads
@@ -16,7 +17,6 @@ nodes:
       variant_accession: str
       variant_type: str
     coordinates:
-      kg_convention: 1-based closed
       source_convention: mixed
       source_assembly: GRCh38
       components:

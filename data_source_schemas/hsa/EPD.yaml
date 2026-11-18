@@ -1,5 +1,6 @@
 name: EPD
 website: https://epd.expasy.org
+kg_coordinate_convention: 1-based closed
 nodes:
   promoter:
     url: https://epd.expasy.org/
@@ -10,7 +11,6 @@ nodes:
       start: int
       taxon_id: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 0-based half-open
       source_assembly: hg38
       start_offset: 1

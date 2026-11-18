@@ -1,5 +1,6 @@
 name: RefSeq Closest Gene
 website: https://forgedb.cancer.gov
+kg_coordinate_convention: 1-based closed
 relationships:
   closest gene to variant association:
     url: https://forgedb.cancer.gov/api/closest_gene/v1.0/closest_gene.forgedb.csv.gz
@@ -13,7 +14,6 @@ relationships:
       distance: int
       pos: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: mixed
       source_assembly: GRCh38
       components:

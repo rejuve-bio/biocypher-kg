@@ -1073,6 +1073,8 @@ class SchemaGenerator:
         print(f"  Generated {len(by_source)} schema files")
 
     POSITION_PROPERTIES = {'start', 'end', 'pos', 'overlap_start', 'overlap_end'}
+    # Written once per schema file (top level) when any type has a 'coordinates' block.
+    KG_COORDINATE_CONVENTION = '1-based closed'
 
     @classmethod
     def resolve_coordinates(cls, coordinates: Optional[Dict[str, Any]], adapter_args: Dict[str, Any],
@@ -1085,7 +1087,7 @@ class SchemaGenerator:
         """
         if not coordinates or not properties or not (cls.POSITION_PROPERTIES & set(properties)):
             return None
-        entry = {'kg_convention': '1-based closed'}
+        entry = {}
         for key, value in coordinates.items():
             if key == 'source_assembly' and isinstance(value, dict):
                 taxon_id = adapter_args.get('taxon_id')
@@ -1246,6 +1248,17 @@ class SchemaGenerator:
                             analyzer.get_coordinates(), adapter_args, relationships[type_name].get('properties'))
                         if coordinates:
                             relationships[type_name]['coordinates'] = coordinates
+
+        # The KG convention is the same for every type, so it is stated once per file.
+        has_coordinates = False
+        for entry in list(nodes.values()) + list(relationships.values()):
+            coordinates = entry.get('coordinates') if isinstance(entry, dict) else None
+            if coordinates:
+                coordinates.pop('kg_convention', None)  # per-type form used by older files
+                has_coordinates = True
+        schema.pop('kg_coordinate_convention', None)
+        if has_coordinates:
+            schema['kg_coordinate_convention'] = self.KG_COORDINATE_CONVENTION
 
         if nodes:
             schema['nodes'] = nodes

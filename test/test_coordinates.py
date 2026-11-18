@@ -206,7 +206,7 @@ def test_schema_generator_resolves_coordinates():
               "start_offset": 1, "end_offset": 0}
     props = {"chr": "str", "start": "int", "end": "int"}
     entry = Gen.resolve_coordinates(coords, {"taxon_id": 7227}, props)
-    assert entry["kg_convention"] == ONE_BASED
+    assert "kg_convention" not in entry  # stated once per file, at the top level
     assert entry["source_assembly"] == "dm6"
     assert "source_assembly" not in Gen.resolve_coordinates(coords, {"taxon_id": 10090}, props)
     assert Gen.resolve_coordinates(coords, {"taxon_id": 9606}, {"chr": "str"}) is None

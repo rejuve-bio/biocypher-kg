@@ -1,5 +1,6 @@
 name: ENCODE-rE2G
 website: https://www.encodeproject.org
+kg_coordinate_convention: 1-based closed
 nodes:
   enhancer:
     url: https://www.encodeproject.org/
@@ -11,7 +12,6 @@ nodes:
       start: int
       taxon_id: int
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 0-based half-open
       source_assembly: GRCh38
       start_offset: 1

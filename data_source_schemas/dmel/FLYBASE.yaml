@@ -1,5 +1,6 @@
 name: FLYBASE
 website: https://flybase.org
+kg_coordinate_convention: 1-based closed
 nodes:
   gene group:
     url: https://flybase.org/
@@ -91,7 +92,6 @@ nodes:
       start: int
       chr: str
     coordinates:
-      kg_convention: 1-based closed
       source_convention: 0-based half-open
       source_assembly: BDGP6 (FlyBase Release 6)
       start_offset: 1
