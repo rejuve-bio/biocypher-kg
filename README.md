@@ -8,8 +8,6 @@ serves graph metadata and version history and runs the Web Console, where you ca
 graphs by picking the species, sources and size
 ([Deployment Guide § Web Console](docs/operations/deployment.md#web-console)).
 
-
-
 ## Supported species
 
 | Species | Code | Status |
