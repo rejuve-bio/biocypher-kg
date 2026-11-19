@@ -141,4 +141,4 @@ graph TD
 
 4. **MORK port discrepancy** — Container exposes `8027`; kg-service defaults to `8432`.
 
-5. **Incomplete species** — `mmu`, `cel` and `rno` cover only the baseline types (genes, transcripts, proteins, pathways, reactions, small molecules, GO); most regulatory and variant sources are configured only for `hsa` and `dmel`.
+5. **Incomplete species** — `mmu`, `cel` and `rno` have genes, transcripts, proteins, GO, pathways, small molecules, promoters, expression, interactions, TF–target links, and orthology and disease associations, but no variants, enhancers or most other regulatory sources; those are configured only for `hsa` and `dmel`.

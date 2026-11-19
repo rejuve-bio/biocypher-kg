@@ -14,14 +14,17 @@ graphs by picking the species, sources and size
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmu` | In development — baseline types\* only |
-| *Caenorhabditis elegans* | `cel` | In development — baseline types\* only |
-| *Rattus norvegicus* (rat) | `rno` | In development — baseline types\* only |
+| *Mus musculus* (mouse) | `mmu` | In development — no variant or enhancer data\* |
+| *Caenorhabditis elegans* | `cel` | In development — no variant or enhancer data\* |
+| *Rattus norvegicus* (rat) | `rno` | In development — no variant or enhancer data\* |
 
-\* **Baseline types:** gene, transcript types (transcript, exon, non_coding_rna), protein, pathway,
-reaction, small_molecule, GO aspects (biological_process, molecular_function, cellular_component), and
-the edges that connect these types to each other, where the source data provide them (not every pair of
-types is connected).
+\* Mouse, worm and rat have genes, transcripts and non-coding RNAs (GENCODE, RNAcentral), proteins
+(UniProt), GO annotations, Reactome pathways and reactions, small molecules (ChEBI), promoters (EPD),
+gene expression (Bgee), protein interactions and coexpression (STRING, Reactome, COXPRESdb), TF–target
+links (TFLink), and orthology and disease associations (Alliance of Genome Resources, Disease Ontology).
+Mouse and worm also have anatomy ontologies, and mouse has developmental stages and cell types. Variants,
+enhancers and most other regulatory sources are configured only for human and fly. Each species'
+exact coverage is in `config/<species>/<species>_adapters_config.yaml`.
 
 ## Ways to build a graph
 

@@ -58,9 +58,9 @@ Loaded by `load_species_config()` in `create_knowledge_graph.py`. Maps each spec
 |---|---|---|---|
 | `hsa` | *Homo sapiens* | Yes (ships with repo) | Yes (requires local data) |
 | `dmel` | *Drosophila melanogaster* | Yes | Yes |
-| `cel` | *C. elegans* | Yes | Yes (baseline types only) |
-| `mmu` | *Mus musculus* | Yes | Yes (baseline types only) |
-| `rno` | *Rattus norvegicus* | Yes | Yes (baseline types only) |
+| `cel` | *C. elegans* | Yes | Yes (no variant or enhancer data) |
+| `mmu` | *Mus musculus* | Yes | Yes (no variant or enhancer data) |
+| `rno` | *Rattus norvegicus* | Yes | Yes (no variant or enhancer data) |
 
 ### `dbsnp_cache_root` notes
 
