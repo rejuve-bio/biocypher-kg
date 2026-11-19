@@ -23,12 +23,25 @@ These stages are logically independent: you can download once and generate the K
 **Entry point:** `biocypher_dataset_downloader/download_manager.py::DownloadManager`
 
 ```bash
-# Interactive download
+# Interactive: prompts for the output directory, the data source config and an optional source
 make download
 
-# Direct download with parameters
-make download-direct SPECIES=hsa DATASET=full OUTPUT_DIR=/data/hsa
+# Direct (CONFIG_FILE defaults to the hsa config; SOURCE is optional)
+make download-direct OUTPUT_DIR=./input/hsa
+make download-direct OUTPUT_DIR=./input/hsa SOURCE=uniprot
+make download-direct OUTPUT_DIR=./input/dmel CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
+#   mmu, rno, cel: CONFIG_FILE=./config/<species>/<species>_data_source_config.yaml
+
+# Without make
+uv run python -m biocypher_dataset_downloader.download_data \
+    --output-dir ./input/dmel \
+    --config-file ./config/dmel/dmel_data_source_config.yaml \
+    [--source reactome --source uniprot] [--no-checksum] [--skip-sample-generation]
 ```
+
+- `--source` can be repeated; without it, every source in the config is downloaded.
+- `--no-checksum` skips the sha256 checksums in the manifest (faster on multi-GB files).
+- After a **full** download (no `--source`), the downloader runs `scripts/generate_connected_sample.py` and rebuilds the connected sample under `samples/<species>/` for the species that script supports. Pass `--skip-sample-generation` to leave the samples as they are. See [sample-generation.md](sample-generation.md).
 
 The `DownloadManager` reads `config/<species>/<species>_data_source_config.yaml` and for each source:
 
@@ -54,6 +67,57 @@ See [dataset-versioning.md](dataset-versioning.md) for the complete specificatio
 ### `download_manifest.json`
 
 Written to `<input_dir>/download_manifest.json` after a successful download run. The pipeline reads this automatically (via `ProvenanceLookup` in `biocypher_metta/provenance.py`) to attach version/checksum provenance to each adapter's output.
+
+### Liftover to another assembly
+
+Some sources are only published on an older assembly (e.g. dbSUPER, hg19 only). A `liftover:` block in
+the source's entry in the data source config makes the downloader lift the downloaded file to the
+assembly used by the KG:
+
+```yaml
+dbsuper:
+  url: https://asntech.org/dbsuper/data/dbSUPER_SuperEnhancers_hg19.tsv
+  liftover:
+    from: hg19
+    to: hg38
+    chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+    min_match: 0.90                          # liftOver -minMatch; optional, downloader default 0.90
+    files:
+      - input: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz      # relative to the output dir
+        output: dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
+        columns: {chrom: 0, start: 1, end: 2}                # 0-based column indexes
+        header_lines: 1
+```
+
+- Whole intervals are lifted with UCSC `liftOver` (`-minMatch`, no `-multiple`). The interval columns
+  must be BED-style (0-based half-open), which is what liftOver reads.
+- The output keeps every column and the row order; chrom/start/end get the new values and the original
+  interval is appended as `orig_chrom`, `orig_start`, `orig_end`.
+- Rows that do not lift are dropped and listed, with liftOver's reason, in `<output>.unmapped.tsv`.
+  Counts, parameters and md5s of the input and the chain are written to `<output>.liftover_summary.txt`.
+- The chain is downloaded once into `<output_dir>/liftover_chains/`. A file is lifted again when its
+  output is older than its input or the chain, or when the settings saved in
+  `<output>.liftover_params.json` (input, `from`/`to`, `chain_url`, `min_match`, `columns`,
+  `header_lines`) differ from the current config.
+
+**Installing liftOver.** The downloader uses the `LIFTOVER` environment variable, or `liftOver` on `PATH`.
+If neither is found, the source is reported as failed and its lifted file is not written. liftOver is a
+static binary with no dependencies:
+
+```bash
+# Linux x86_64 (for macOS use macOSX.x86_64 in the URL)
+mkdir -p ~/bin
+wget -O ~/bin/liftOver https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver
+chmod +x ~/bin/liftOver
+export LIFTOVER=~/bin/liftOver
+
+# or, with conda
+conda install -c bioconda ucsc-liftover
+```
+
+On a machine without internet access, copy both the binary and the chain file
+(into `<output_dir>/liftover_chains/`) from another machine. liftOver is distributed by UCSC under
+its own license terms; check them for your use case.
 
 ---
 

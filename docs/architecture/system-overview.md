@@ -13,7 +13,7 @@ Given a species (e.g., `hsa` for human), the pipeline:
 3. Passes every node and edge through a writer that serialises them to the chosen output format
 4. Writes a `graph_info.json` summary and per-source `data_source_schemas/` YAML files
 
-The result is a consistent, schema-validated knowledge graph that can be loaded into Neo4j, queried with MeTTa/OpenCog Hyperon, processed with Apache Parquet, or used directly as a NetworkX or KGX graph.
+The result is a consistent, schema-validated knowledge graph that can be loaded into Neo4j, queried with MeTTa/OpenCog Hyperon, processed with Apache Parquet, or exported as a NetworkX pickle or KGX-style CSV.
 
 ---
 
@@ -23,11 +23,11 @@ The result is a consistent, schema-validated knowledge graph that can be loaded 
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmu` | In development — ontology adapters only |
-| *Caenorhabditis elegans* | `cel` | In development — ontology adapters only |
-| *Rattus norvegicus* (rat) | `rno` | In development — config declared, adapters missing |
+| *Mus musculus* (mouse) | `mmu` | In development — includes baseline types |
+| *Caenorhabditis elegans* | `cel` | In development — includes baseline types |
+| *Rattus norvegicus* (rat) | `rno` | In development — includes baseline types |
 
-Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu` and `cel` have adapter and schema configs with ontology-only adapters. Species `rno` is declared but `config/rno/rno_adapters_config.yaml` and `config/rno/rno_schema_config.yaml` are missing — attempting to run `rno` raises `FileNotFoundError`.
+Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu`, `cel` and `rno` have full and sample adapter configs and a schema config. They include the baseline types: gene, transcript, exon, non_coding_rna, protein, pathway, reaction, small_molecule, GO aspects, and the edges between them that the source data provide. Mouse, worm and rat also have promoters (EPD), gene expression (Bgee), protein interactions and coexpression (STRING, Reactome, COXPRESdb), TF–target links (TFLink), and orthology and disease associations (Alliance of Genome Resources, Disease Ontology); mouse and worm also have anatomy ontologies, and mouse has developmental stages and cell types. Variants, enhancers and most other regulatory sources are configured only for human and fly. Each species' exact coverage is in `config/<species>/<species>_adapters_config.yaml`.
 
 ---
 
@@ -40,7 +40,7 @@ Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-k
 | Neo4j (direct) | `Neo4jWriter` | Live writes via the Neo4j Bolt driver — class only, not selectable via `--writer-type` |
 | Prolog | `PrologWriter` | Logic reasoning systems |
 | Apache Parquet | `ParquetWriter` | Analytics and data science workflows |
-| KGX JSON | `KGXWriter` | Knowledge Graph Exchange standard |
+| KGX-style CSV | `KGXWriter` | CSV with Knowledge Graph Exchange (Biolink) columns, plus Cypher load scripts |
 | NetworkX | `NetworkXWriter` | In-memory graph analysis with Python |
 
 Writer classes are in [`biocypher_metta/`](https://github.com/rejuve-bio/biocypher-kg/tree/main/biocypher_metta/) — see [writers.md](../knowledge-graph/writers.md) for details.

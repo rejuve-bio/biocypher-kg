@@ -37,8 +37,8 @@ biocypher_metta/
 ├── neo4j_csv_writer.py         # Neo4jCSVWriter — TSV + Cypher for neo4j-admin import
 ├── prolog_writer.py            # PrologWriter — .pl logic files
 ├── parquet_writer.py           # ParquetWriter — Apache Parquet columnar files
-├── kgx_writer.py               # KGXWriter — KGX JSON format
-├── networkx_writer.py          # NetworkXWriter — in-memory NetworkX graph
+├── kgx_writer.py               # KGXWriter — KGX-style CSV + Cypher
+├── networkx_writer.py          # NetworkXWriter — pickled NetworkX graph
 ├── provenance.py               # ProvenanceLookup — reads download_manifest.json
 │
 ├── adapters/                   # 80 adapter classes across three namespaces
