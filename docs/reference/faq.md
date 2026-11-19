@@ -10,7 +10,7 @@ BioCypher-KG is a pipeline that constructs a unified biological knowledge graph 
 
 **What species are supported?**
 
-Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (`mmu`), C. elegans (`cel`) and rat (`rno`) are in development: they have genes, transcripts, proteins, GO, pathways, small molecules, promoters, expression, interactions, and orthology and disease associations, but no variants or enhancers. See the species matrix in [system-overview.md](../architecture/system-overview.md).
+Human (`hsa`) and Drosophila melanogaster (`dmel`) are production-ready. Mouse (`mmu`), C. elegans (`cel`) and rat (`rno`) are in development: they include the baseline types (genes, transcripts, proteins, pathways, reactions, small molecules, GO) plus promoters, expression, interactions, and orthology and disease associations, but no variants or enhancers. See the species matrix in [system-overview.md](../architecture/system-overview.md).
 
 **What output formats are available?**
 

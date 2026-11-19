@@ -23,11 +23,11 @@ The result is a consistent, schema-validated knowledge graph that can be loaded 
 |---|---|---|
 | *Homo sapiens* (human) | `hsa` | Production-ready |
 | *Drosophila melanogaster* (fruit fly) | `dmel` | Production-ready |
-| *Mus musculus* (mouse) | `mmu` | In development — no variant or enhancer data |
-| *Caenorhabditis elegans* | `cel` | In development — no variant or enhancer data |
-| *Rattus norvegicus* (rat) | `rno` | In development — no variant or enhancer data |
+| *Mus musculus* (mouse) | `mmu` | In development — includes baseline types |
+| *Caenorhabditis elegans* | `cel` | In development — includes baseline types |
+| *Rattus norvegicus* (rat) | `rno` | In development — includes baseline types |
 
-Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu`, `cel` and `rno` have full and sample adapter and schema configs. Mouse, worm and rat have genes, transcripts and non-coding RNAs (GENCODE, RNAcentral), proteins (UniProt), GO annotations, Reactome pathways and reactions, small molecules (ChEBI), promoters (EPD), gene expression (Bgee), protein interactions and coexpression (STRING, Reactome, COXPRESdb), TF–target links (TFLink), and orthology and disease associations (Alliance of Genome Resources, Disease Ontology). Mouse and worm also have anatomy ontologies, and mouse has developmental stages and cell types. Variants, enhancers and most other regulatory sources are configured only for human and fly. Each species' exact coverage is in `config/<species>/<species>_adapters_config.yaml`.
+Source: [`config/species_config.yaml`](https://github.com/rejuve-bio/biocypher-kg/blob/main/config/species_config.yaml). Species `mmu`, `cel` and `rno` have full and sample adapter and schema configs. They include the baseline types: gene, transcript types (transcript, exon, non_coding_rna), protein, pathway, reaction, small_molecule, GO aspects, and the edges between them that the source data provide. Mouse, worm and rat also have promoters (EPD), gene expression (Bgee), protein interactions and coexpression (STRING, Reactome, COXPRESdb), TF–target links (TFLink), and orthology and disease associations (Alliance of Genome Resources, Disease Ontology); mouse and worm also have anatomy ontologies, and mouse has developmental stages and cell types. Variants, enhancers and most other regulatory sources are configured only for human and fly. Each species' exact coverage is in `config/<species>/<species>_adapters_config.yaml`.
 
 ---
 
