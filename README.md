@@ -120,7 +120,7 @@ sample regeneration are described in
 | `neo4j` | CSV files plus `nodes_*.cypher` / `edges_*.cypher` load scripts | Neo4j |
 | `prolog` | `.pl` facts | Prolog engines |
 | `parquet` | Apache Parquet tables | Analytics tools |
-| `KGX` | KGX JSON | Biolink / KGX tooling |
+| `KGX` | `*_nodes.csv` / `*_edges.csv` with Biolink `category` / `predicate` columns, plus `.cypher` load scripts | Biolink tooling, Neo4j |
 | `networkx` | Pickled NetworkX graph | Python analysis |
 
 Each build also writes `graph_info.json` (counts and dataset versions). Details:
