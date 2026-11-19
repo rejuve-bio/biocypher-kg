@@ -3,7 +3,12 @@
 Builds biological knowledge graphs with [BioCypher](https://github.com/biocypher/biocypher). Adapters
 read public datasets (GENCODE, UniProt, Reactome, GO, FlyBase, ENCODE and 40+ more), map them to a
 shared schema, and write the graph as MeTTa, Neo4j CSV, Prolog, Parquet, KGX or NetworkX. The output
-can be loaded into Neo4j or a MORK server and queried through kg-service.
+can be loaded into Neo4j or a MORK server and queried there. kg-service, a FastAPI app in this repo,
+serves graph metadata and version history and runs the Web Console, where you can build customized
+graphs by picking the species, sources and size
+([Deployment Guide § Web Console](docs/operations/deployment.md#web-console)).
+
+
 
 ## Supported species
 
