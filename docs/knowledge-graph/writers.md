@@ -95,11 +95,11 @@ ParquetWriter(
 **Class:** `KGXWriter`  
 **Output:** comma-separated CSV files with KGX/Biolink columns, plus a Cypher load script for each file. It does **not** write KGX JSON or JSON Lines.
 
-For each node label, `<label>_nodes.csv` and `<label>_nodes.cypher`; for each edge label and source/target type, `<label>_<source>_<target>_edges.csv` and `..._edges.cypher`.
+In the adapter's output directory: for each node label, `<label>_nodes.csv` and `<label>_nodes.cypher`; for each edge label and source/target type, `<label>_<source>_<target>_edges.csv` and `..._edges.cypher`.
 
-- **Node columns:** `id`, `label`, `category` (from the schema's `kgx_properties`, falling back to the label), any other `kgx_properties`, and the node's properties.
-- **Edge columns:** `subject`, `object`, `label`, `source_type`, `target_type`, `predicate` (the schema's `biolink_predicate`, when the schema declares it) and the edge's properties.
-- Array values are joined with `;`; commas and quotes are removed from values.
+- **Node columns:** `id`, `label`, `category` (from the schema's `kgx_properties`, falling back to the label), any other `kgx_properties`, and the node's schema-declared properties.
+- **Edge columns:** `id` (`<subject>_<label>_<object>`), `subject`, `object`, `label`, `source_type`, `target_type`, `predicate` (the schema's `biolink_predicate`, when the schema declares it), any `kgx_properties`, and the edge's schema-declared properties.
+- Columns are sorted alphabetically. Array values are written as JSON arrays (CSV-quoted); in plain string values, commas and quotes are removed and `;` becomes a space.
 - The `.cypher` scripts load the CSVs into Neo4j with `LOAD CSV` and APOC.
 
 The writer stages records in temporary `temp_*.jsonl` files and deletes them once the CSVs are written.
@@ -111,9 +111,9 @@ The column names follow [KGX](https://github.com/biolink/kgx), but the files are
 ## NetworkX (`networkx_writer.py`)
 
 **Class:** `NetworkXWriter`  
-**Output:** `networkx_graph.pkl`, a pickled NetworkX graph
+**Output:** `networkx_graph.pkl`, a pickled `networkx.DiGraph`
 
-Builds the KG as a NetworkX graph in memory and saves it with `pickle` (protocol 4) as `networkx_graph.pkl` in the output directory. Load it with `pickle.load` for Python-based graph analysis.
+Builds the KG as a NetworkX graph in memory and saves it with `pickle` (protocol 4) as `networkx_graph.pkl` in the adapter's output directory. Load it with `pickle.load` for Python-based graph analysis.
 
 ---
 

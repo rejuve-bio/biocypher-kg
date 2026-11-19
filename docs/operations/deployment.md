@@ -87,7 +87,7 @@ uv run python scripts/update_dbsnp.py --cache-dir <root>/common --common-only
 uv run python scripts/update_dbsnp.py --cache-dir <root>/full
 ```
 
-Then pass `--dbsnp-cache-root <root> --dbsnp-variant common|full` (or answer the `make run` prompts), or set them in `config/species_config.yaml`:
+Then pass `--dbsnp-cache-root <root> --dbsnp-variant common|full` (or answer the `make run` prompts). When running with `--species hsa --dataset full`, you can set them in `config/species_config.yaml` instead (they are ignored with `--adapters-config`, which every make target uses):
 
 ```yaml
 hsa:

@@ -1,7 +1,7 @@
 # BioCypher KG
 
 Builds biological knowledge graphs with [BioCypher](https://github.com/biocypher/biocypher). Adapters
-read public datasets (GENCODE, UniProt, Reactome, GO, FlyBase, ENCODE and 40+ more), map them to a
+read public datasets (GENCODE, UniProt, Reactome, GO, FlyBase, ENCODE and dozens more), map them to a
 shared schema, and write the graph as MeTTa, Neo4j CSV, Prolog, Parquet, KGX or NetworkX. The output
 can be loaded into Neo4j or a MORK server and queried there. kg-service, a FastAPI app in this repo,
 serves graph metadata and version history and runs the Web Console, where you can build customized
@@ -18,7 +18,7 @@ graphs by picking the species, sources and size
 | *Caenorhabditis elegans* | `cel` | In development — includes baseline types\* |
 | *Rattus norvegicus* (rat) | `rno` | In development — includes baseline types\* |
 
-\* **Baseline types:** gene, transcript types (transcript, exon, non_coding_rna), protein, pathway,
+\* **Baseline types:** gene, transcript, exon, non_coding_rna, protein, pathway,
 reaction, small_molecule, GO aspects (biological_process, molecular_function, cellular_component), and
 the edges between them that the source data provide. Mouse, worm and rat also have promoters (EPD), gene
 expression (Bgee), protein interactions and coexpression (STRING, Reactome, COXPRESdb), TF–target links
@@ -32,7 +32,7 @@ exact coverage is in `config/<species>/<species>_adapters_config.yaml`.
 | | Use it when | Start with |
 |---|---|---|
 | **`make` targets** | You work from a checkout, locally or on a server | [Quick start](#quick-start) |
-| **Web Console** | You want a browser UI for download → build → load, with no repo or env file | [Web Console](#web-console) |
+| **Web Console** | You want a browser UI for download → build → load, with no env file (a no-checkout image is also available) | [Web Console](#web-console) |
 | **Interactive CLI** | You want a menu for the default human or fly sample builds | `uv run python biocypher_cli/cli.py` ([biocypher_cli/README.md](biocypher_cli/README.md)) |
 
 All three run the same pipeline, `create_knowledge_graph.py`.
@@ -43,6 +43,8 @@ All three run the same pipeline, `create_knowledge_graph.py`.
 - [uv](https://github.com/astral-sh/uv) (`make setup` installs it if missing)
 - `libpq-dev` (provides `pg_config`, needed to build `psycopg2`)
 - Docker with Compose v2, only for Neo4j, MORK and the Web Console
+- UCSC `liftOver`, only for full human downloads (dbSUPER is lifted from hg19); see
+  [Liftover to another assembly](docs/knowledge-graph/ingestion-pipeline.md#liftover-to-another-assembly)
 
 ## Quick start
 
@@ -70,6 +72,7 @@ make run-direct OUTPUT_DIR=./output \
                SCHEMA_CONFIG=./config/hsa/hsa_schema_config.yaml \
                WRITER_TYPE=metta \
                INPUT_DIR=/path/to/input/hsa \
+               WRITE_PROPERTIES=yes ADD_PROVENANCE=yes \
                INCLUDE_ADAPTERS="gencode_gene uniprot*"    # optional: exact keys or prefix*
 ```
 
@@ -83,14 +86,19 @@ uv run python create_knowledge_graph.py --species all  --dataset sample --output
 
 Options worth knowing (all in the [Configuration Reference](docs/operations/configuration.md)):
 
-- **Input data location:** the adapters config's `input_dir:`, overridden by `--input-dir` / `INPUT_DIR=`.
+- **Properties and provenance:** the CLI writes both by default, but `make run-direct` and
+  `make run-sample` leave them out unless `WRITE_PROPERTIES=yes` / `ADD_PROVENANCE=yes` is set.
+  `make run` asks (default: properties yes, provenance no).
+- **Input data location:** the adapters config's `input_dir:`, overridden by `--input-dir` / `INPUT_DIR=`
+  (not with `--species all`).
 - **Pre-flight check:** every input path is checked before any adapter runs.
   `make check-paths ADAPTERS_CONFIG=...` runs only the check; `--skip-preflight` skips it.
 - **Parallelism:** adapters run on `min(8, CPU count)` workers; set `--max-workers` / `MAX_WORKERS=`.
 - **Smaller graphs:** `--limit N` or `--adapter-limits FILE` caps what each adapter writes.
 - **Resuming:** a checkpoint lets an interrupted build continue with `--resume`; `--restart` starts over.
 - **dbSNP (human full builds only):** needs a prebuilt dbSNP cache, passed with `--dbsnp-cache-root`
-  and `--dbsnp-variant`. Sample builds use the bundled one. See
+  and `--dbsnp-variant` (`DBSNP_CACHE_ROOT=` / `DBSNP_VARIANT=` with make; or in `species_config.yaml`
+  with `--species`). Sample builds use the bundled one. See
   [Deployment Guide § dbSNP cache](docs/operations/deployment.md#dbsnp-cache-human-only).
 
 ## Downloading data
@@ -106,10 +114,10 @@ make download-direct OUTPUT_DIR=./input/dmel \
                      CONFIG_FILE=./config/dmel/dmel_data_source_config.yaml
 ```
 
-Each download writes `download_manifest.json` and `versions.json` (version, sha256, HTTP metadata)
-into the output directory. Sources published on an older assembly (e.g. dbSUPER, hg19) are lifted to
-the KG's assembly by the downloader with UCSC `liftOver`. Options, liftover setup and the automatic
-sample regeneration are described in
+Each download writes `download_manifest.json` (version, sha256, HTTP metadata) into the output
+directory and appends each source's version to its history in `versions.json`. A full download (no
+`SOURCE`) also regenerates `samples/<species>/` in the repo; `--skip-sample-generation` skips that. Sources published on an older assembly (e.g. dbSUPER, hg19) are lifted to
+the KG's assembly by the downloader with UCSC `liftOver`. Options and liftover setup are described in
 [Ingestion Pipeline § Stage 1](docs/knowledge-graph/ingestion-pipeline.md#stage-1-download).
 
 ## Output formats
@@ -129,7 +137,7 @@ Each build also writes `graph_info.json` (counts and dataset versions). Details:
 ## Loading into Neo4j and MORK
 
 ```bash
-cp docker/neo4j.env.example docker/neo4j.env    # set NEO4J_OUTPUT_DIR, NEO4J_AUTH, ports
+cp docker/neo4j.env.example docker/neo4j.env    # set NEO4J_OUTPUT_DIR, NEO4J_AUTH (and matching NEO4J_PASSWORD / NEO4J_URI), ports
 make neo4j-up                                   # start the container
 make neo4j-load-direct                          # load everything (first run)
 make neo4j-load                                 # later runs: reload only changed files
@@ -167,7 +175,7 @@ Full specification: [docs/knowledge-graph/dataset-versioning.md](docs/knowledge-
 ## Make commands
 
 ```bash
-make help              # Show all commands and their variables
+make help              # Show all commands and usage examples
 make setup             # Install uv and dependencies
 make run               # Interactive build (same as make run-interactive)
 make run-sample        # Build from bundled human sample data

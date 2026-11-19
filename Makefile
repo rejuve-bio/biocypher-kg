@@ -206,7 +206,7 @@ INCLUDE_ADAPTERS_ARGS = $(foreach a,$(INCLUDE_ADAPTERS),--include-adapters '$(a)
 run-direct: check-uv
 	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(SCHEMA_CONFIG)" ]; then \
 		echo "❌ Error: Missing required parameters"; \
-		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...] [MAX_WORKERS=N] [INCLUDE_ADAPTERS='a b prefix*'] [INPUT_DIR=...]"; \
+		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...] [INCLUDE_TAXON_ID=...] [SKIP_PREFLIGHT=yes] [MAX_WORKERS=N] [INCLUDE_ADAPTERS='a b prefix*'] [INPUT_DIR=...]"; \
 		echo ""; \
 		echo "Or use 'make run' for interactive mode"; \
 		exit 1; \

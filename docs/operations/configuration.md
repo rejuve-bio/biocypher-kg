@@ -182,8 +182,8 @@ All flags are defined by `typer.Option()` in `main()`. Run `uv run python create
 | `--adapters-config` | Path | — | Manual mode: path to adapter registry YAML |
 | `--schema-config` | Path | — | Manual mode: path to schema config YAML |
 | `--writer-type` | str | `metta` | One of: `metta`, `prolog`, `neo4j`, `parquet`, `networkx`, `KGX` |
-| `--write-properties` / `--no-write-properties` | bool | `True` | Include node/edge properties in output |
-| `--add-provenance` / `--no-add-provenance` | bool | `True` | Add dataset provenance metadata |
+| `--write-properties` / `--no-write-properties` | bool | `True` | Include node/edge properties in output. `make run-direct` / `run-sample` pass `--no-write-properties` unless `WRITE_PROPERTIES=yes` |
+| `--add-provenance` / `--no-add-provenance` | bool | `True` | Add dataset provenance metadata. `make run-direct` / `run-sample` pass `--no-add-provenance` unless `ADD_PROVENANCE=yes` |
 | `--include-taxon-id` / `--no-taxon-id` | bool | `True` | Include `taxon_id` on nodes/edges |
 | `--include-curie` / `--no-curie` | bool | `False` | Keep CURIE namespace prefixes in IDs |
 | `--dbsnp-cache-root` | Path | — | Root directory of dbSNP SQLite cache |
@@ -205,7 +205,11 @@ All flags are defined by `typer.Option()` in `main()`. Run `uv run python create
 | `--limit` | int | `0` | Cap nodes and edges written per adapter (`0` = no limit) |
 | `--adapter-limits` | Path | — | JSON file of per-adapter caps; overrides `--limit` for the adapters it lists |
 
-The `make run-direct`, `make run-sample` and `make check-paths` targets pass the most common flags through make variables: `OUTPUT_DIR`, `ADAPTERS_CONFIG`, `SCHEMA_CONFIG`, `WRITER_TYPE`, `WRITE_PROPERTIES`, `ADD_PROVENANCE`, `INCLUDE_TAXON_ID`, `INCLUDE_ADAPTERS`, `INPUT_DIR`, `DBSNP_CACHE_ROOT`, `DBSNP_VARIANT`, `SKIP_PREFLIGHT` and `MAX_WORKERS`. Run `make help` for the list per target.
+Make variables pass the most common flags:
+
+- **`make run-direct`:** `OUTPUT_DIR`, `ADAPTERS_CONFIG`, `SCHEMA_CONFIG`, `WRITER_TYPE`, `WRITE_PROPERTIES`, `ADD_PROVENANCE`, `INCLUDE_TAXON_ID`, `INCLUDE_ADAPTERS`, `INPUT_DIR`, `DBSNP_CACHE_ROOT`, `DBSNP_VARIANT`, `SKIP_PREFLIGHT` and `MAX_WORKERS`.
+- **`make run-sample`:** `WRITER_TYPE`, `WRITE_PROPERTIES`, `ADD_PROVENANCE`, `INCLUDE_TAXON_ID`, `INCLUDE_ADAPTERS`, `SKIP_PREFLIGHT` and `MAX_WORKERS`. The output directory, configs and dbSNP cache are fixed (human sample).
+- **`make check-paths`:** `ADAPTERS_CONFIG`, `INCLUDE_ADAPTERS` and `INPUT_DIR`.
 
 ---
 
@@ -251,7 +255,7 @@ Within a species run, adapters run concurrently across a pool of worker processe
 - **`--max-workers 1`:** run adapters sequentially.
 - The **networkx** writer always runs sequentially, because it builds one in-memory graph.
 
-Each worker builds its own writer and writes to per-adapter output directories, so outputs never collide. Adapters that would write the same output file (same output directory and label) are run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works as in sequential mode.
+Each worker builds its own writer. Adapters that would write the same output file (same output directory and label; for prolog, the same output directory) run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works as in sequential mode.
 
 ### Limiting the build size
 

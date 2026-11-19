@@ -81,7 +81,7 @@ dbsuper:
     from: hg19
     to: hg38
     chain_url: https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
-    min_match: 0.90                          # liftOver -minMatch (default 0.90)
+    min_match: 0.90                          # liftOver -minMatch; optional, downloader default 0.90
     files:
       - input: dbsuper/dbSUPER_SuperEnhancers_hg19.tsv.gz      # relative to the output dir
         output: dbsuper/dbSUPER_SuperEnhancers_hg38.tsv.gz
