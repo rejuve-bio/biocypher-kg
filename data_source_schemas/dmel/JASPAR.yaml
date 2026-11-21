@@ -1,0 +1,15 @@
+name: JASPAR2026
+website: https://jaspar.elixir.no
+nodes:
+  motif:
+    url: https://jaspar.elixir.no
+    input_label: motif
+    properties:
+      length: int
+      pwm_A: float[]
+      pwm_C: float[]
+      pwm_G: float[]
+      pwm_T: float[]
+      taxon_id: int
+      tf_name: str
+

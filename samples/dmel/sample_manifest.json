@@ -224,6 +224,10 @@
     "rna_central_rfam": {
       "real_rows": 66,
       "synthetic": false
+    },
+    "jaspar_motif": {
+      "real_rows": 5,
+      "synthetic": false
     }
   }
 }

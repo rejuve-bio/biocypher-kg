@@ -1,0 +1,7 @@
+motif_name_in_diff_header	matrix_id	symbol	uniprot_ids	fbgns	n_partners	status
+MA0010.1 br	MA0010.1	br	P25927	FBgn0000210	1	ok
+MA0010.2 br	MA0010.2	br	P25927	FBgn0000210	1	ok
+MA0534.1 EcR::usp	MA0534.1	EcR::usp	P34021;P22459	FBgn0000546;FBgn0003964	2	ok
+MA0535.1 Da::twi	MA0535.1	Da::twi	P16556;P10627	FBgn0000413;FBgn0003900	2	ok
+MA9999.1 no_gene	MA9999.1	no_gene			1	unmapped
+
