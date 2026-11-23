@@ -456,6 +456,14 @@ class SchemaGenerator:
             'adapter_config': 'config/dmel/dmel_adapters_config.yaml',
             'output_dir': 'data_source_schemas/dmel',
         },
+        **{
+            species: {
+                'schema_config': f'config/{species}/{species}_schema_config.yaml',
+                'adapter_config': f'config/{species}/{species}_adapters_config.yaml',
+                'output_dir': f'data_source_schemas/{species}',
+            }
+            for species in ('mmu', 'cel', 'rno')
+        },
     }
     SOURCE_FILENAME_ALIASES = {
         'HOCOMOCOv11': 'HOCOMOCO',

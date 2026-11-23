@@ -25,7 +25,7 @@ class RnaCentralGeneOverlapAdapter(Adapter):
             10090: 'GRCm39',
             7227: 'BDGP6.46',
             6239: 'WBcel235',
-            10116: 'mRatBN7.2',
+            10116: 'GRCr8',
         },
         'components': {
             'RNAcentral BED': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
