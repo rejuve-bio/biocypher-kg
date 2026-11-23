@@ -162,7 +162,9 @@ def test_tfbs_start_is_one_based(tmp_path):
     [(node_id, _, props)] = list(adapter.get_nodes())
     assert (props["start"], props["end"]) == (8388345, 8388800)
     [(_, edge_target, _, _)] = list(adapter.get_edges())
-    assert node_id in {edge_target, f"ENCODE_TFBS:chr1_8388345_8388800_GRCh38"}
+    # Both get_nodes() and get_edges() convert the start; check each, so a node/edge mismatch fails.
+    assert node_id == "ENCODE_TFBS:chr1_8388345_8388800_GRCh38"
+    assert edge_target == node_id
 
 
 def test_tadmap_start_is_one_based(tmp_path):
