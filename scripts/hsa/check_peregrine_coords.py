@@ -214,7 +214,8 @@ def positional_test(peregrine, ref_records):
         if not best:
             unmatched += 1
             continue
-        best.sort()
+        # Deduplicate: a reference interval listed twice must not hide a tie with another one.
+        best = sorted(set(best))
         if len(best) > 1 and best[0][0] == best[1][0] and best[0][1:] != best[1][1:]:
             ambiguous += 1
             continue

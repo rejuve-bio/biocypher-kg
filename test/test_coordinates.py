@@ -212,3 +212,19 @@ def test_schema_generator_resolves_coordinates():
     assert entry["source_assembly"] == "dm6"
     assert "source_assembly" not in Gen.resolve_coordinates(coords, {"taxon_id": 10090}, props)
     assert Gen.resolve_coordinates(coords, {"taxon_id": 9606}, {"chr": "str"}) is None
+
+
+def test_peregrine_check_script_counts_ties_with_duplicate_references():
+    """A reference interval listed twice must not hide a tie with another interval."""
+    import importlib.util
+
+    path = REPO_ROOT / "scripts" / "hsa" / "check_peregrine_coords.py"
+    spec = importlib.util.spec_from_file_location("check_peregrine_coords", path)
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+
+    peregrine = [("chr1", 101, 200, "x")]
+    # (100, 200) is offset (+1, 0) and (101, 201) is (0, -1): equally close, so ambiguous.
+    refs = [("chr1", 100, 200, "a"), ("chr1", 101, 201, "b"), ("chr1", 101, 201, "b")]
+    tally, ambiguous, unmatched = script.positional_test(peregrine, refs)
+    assert (sum(tally.values()), ambiguous, unmatched) == (0, 1, 0)
