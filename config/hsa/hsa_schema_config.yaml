@@ -265,7 +265,7 @@ closest gene to variant association:
       type: str
     pos: 
       type: int
-      biolink: start_interbase_coordinate
+      biolink: start_coordinate
     distance: 
       type: int
     source: 
