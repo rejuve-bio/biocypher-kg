@@ -58,7 +58,7 @@ Welcome to the BioCypher-KG documentation. This index maps every document to its
 | [ontology.md](knowledge-graph/ontology.md) | 16 integrated ontologies, CURIE prefixes, fetch behavior |
 | [ingestion-pipeline.md](knowledge-graph/ingestion-pipeline.md) | Download → adapt → write flow, provenance chain |
 | [graph-construction.md](knowledge-graph/graph-construction.md) | BioCypher integration, schema merging, ID conventions |
-| [genomic-coordinates.md](knowledge-graph/genomic-coordinates.md) | Empirical verification of undocumented source coordinate conventions (PEREGRINE) |
+| [genomic-coordinates.md](knowledge-graph/genomic-coordinates.md) | The `COORDINATES` constant each adapter declares, and empirical verification of undocumented source conventions (PEREGRINE) |
 | [writers.md](knowledge-graph/writers.md) | All 7 output formats — Neo4j CSV, MeTTa, Prolog, Parquet, KGX, NetworkX |
 
 ## Reference
@@ -76,7 +76,7 @@ These files exist in the repository and should be linked to, not restated:
 
 | File | Content |
 |---|---|
-| [README.md](../README.md) | Quickstart, make commands, data download, dbSNP cache |
+| [README.md](../README.md) | Overview, quick start, make commands, links into these docs |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Adapter development guide, PR workflow |
 | [docs/knowledge-graph/dataset-versioning.md](knowledge-graph/dataset-versioning.md) | Complete versioning specification (moved from doc/) |
 | [docs/knowledge-graph/sample-generation.md](knowledge-graph/sample-generation.md) | Ego-network closure sample generation algorithm and methodology, per species (moved from doc/) |

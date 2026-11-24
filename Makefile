@@ -200,10 +200,13 @@ run-interactive: check-uv
 		$$INPUT_DIR_FLAG && \
 	echo "✅ Knowledge graph creation completed! Check $$OUTPUT_DIR for results."
 
+# --include-adapters flags from INCLUDE_ADAPTERS (names or prefix*), quoted so the shell doesn't glob them
+INCLUDE_ADAPTERS_ARGS = $(foreach a,$(INCLUDE_ADAPTERS),--include-adapters '$(a)')
+
 run-direct: check-uv
 	@if [ -z "$(OUTPUT_DIR)" ] || [ -z "$(ADAPTERS_CONFIG)" ] || [ -z "$(SCHEMA_CONFIG)" ]; then \
 		echo "❌ Error: Missing required parameters"; \
-		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...] [MAX_WORKERS=N]"; \
+		echo "Usage: make run-direct OUTPUT_DIR=... ADAPTERS_CONFIG=... SCHEMA_CONFIG=... [DBSNP_CACHE_ROOT=...] [DBSNP_VARIANT=common|full] [WRITER_TYPE=...] [WRITE_PROPERTIES=...] [ADD_PROVENANCE=...] [INCLUDE_TAXON_ID=...] [SKIP_PREFLIGHT=yes] [MAX_WORKERS=N] [INCLUDE_ADAPTERS='a b prefix*'] [INPUT_DIR=...]"; \
 		echo ""; \
 		echo "Or use 'make run' for interactive mode"; \
 		exit 1; \
@@ -236,6 +239,7 @@ run-direct: check-uv
 		$$INCLUDE_TAXON_ID_FLAG \
 		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
 		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),) \
+		$(INCLUDE_ADAPTERS_ARGS) \
 		$(if $(INPUT_DIR),--input-dir $(INPUT_DIR),)
 
 # Run with sample configuration and data (with optional writer type)
@@ -274,7 +278,8 @@ run-sample: check-uv
 		$$ADD_PROVENANCE_FLAG \
 		$$INCLUDE_TAXON_ID_FLAG \
 		$(if $(filter yes true,$(SKIP_PREFLIGHT)),--skip-preflight,) \
-		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),)
+		$(if $(MAX_WORKERS),--max-workers $(MAX_WORKERS),) \
+		$(INCLUDE_ADAPTERS_ARGS)
 	@echo "✅ Sample run completed! Check the ./output directory for results."
 # Validate file paths in an adapters config without running any adapters
 check-paths: check-uv
@@ -285,15 +290,9 @@ check-paths: check-uv
 		exit 1; \
 	fi
 	@export PATH="$$HOME/.local/bin:$$PATH"; \
-	INCLUDE_ADAPTERS_FLAG=""; \
-	if [ -n "$(INCLUDE_ADAPTERS)" ]; then \
-		for adapter in $(INCLUDE_ADAPTERS); do \
-			INCLUDE_ADAPTERS_FLAG="$$INCLUDE_ADAPTERS_FLAG --include-adapters $$adapter"; \
-		done; \
-	fi; \
 	uv run python create_knowledge_graph.py \
 		--adapters-config $(ADAPTERS_CONFIG) \
-		$$INCLUDE_ADAPTERS_FLAG \
+		$(INCLUDE_ADAPTERS_ARGS) \
 		$(if $(INPUT_DIR),--input-dir $(INPUT_DIR),) \
 		--check-only
 

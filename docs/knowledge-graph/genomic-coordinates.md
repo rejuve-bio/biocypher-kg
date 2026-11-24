@@ -1,11 +1,42 @@
-# Genomic coordinate conventions: per-source verification
+# Genomic coordinates
 
-The KG stores every genomic position as **1-based closed**. The conventions,
-the `COORDINATES` constant that each adapter declares, and its enforcement are
-described in the README section
-[Genomic coordinates](../../README.md#genomic-coordinates). This document keeps
-the evidence for sources whose convention is not documented by the provider
-and had to be established empirically.
+The KG stores every genomic position as **1-based closed**; the two conventions are defined in the
+README section [Genomic coordinates](../../README.md#genomic-coordinates). This document describes how
+adapters declare their source's convention and keeps the evidence for sources whose convention is not
+documented by the provider.
+
+## The `COORDINATES` constant
+
+Each adapter that writes positions declares its source's convention in a `COORDINATES` class constant
+(stored position = source position + offset):
+
+```python
+class TfbsAdapter(Adapter):
+    COORDINATES = {
+        'source_convention': '0-based half-open',   # or '1-based closed', or 'mixed'
+        'source_assembly': 'GRCh38',                # or {taxon_id: assembly} for multi-species adapters
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'UCSC table encRegTfbsClustered (chromStart is 0-based)',  # optional
+    }
+```
+
+- **`mixed`:** when one adapter reads inputs with different conventions, list each one under
+  `components` with its own `source_convention`, `start_offset` and `end_offset`. For example,
+  PEREGRINE enhancers come from FANTOM and ENCODE (0-based) and from Ensembl and VISTA (1-based).
+- **`liftover` (optional):** describes a lift to another assembly. In that case `source_assembly` is the
+  assembly the source was published on.
+- **Data source schemas:** the schema generator copies the constant into the data source schema YAMLs as
+  a `coordinates:` block on every node and relationship type that has position properties, and states
+  `kg_coordinate_convention: 1-based closed` once at the top of the file. A per-species
+  `source_assembly` is resolved with the config's `taxon_id`.
+- **Enforcement:** `test/test_coordinates.py` fails when an adapter writes positions or builds region
+  IDs without a valid `COORDINATES`.
+
+## Per-source verification
+
+Where a provider does not state its convention, the empirical check behind `COORDINATES` is described
+below.
 
 ---
 

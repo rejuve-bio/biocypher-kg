@@ -58,9 +58,9 @@ Loaded by `load_species_config()` in `create_knowledge_graph.py`. Maps each spec
 |---|---|---|---|
 | `hsa` | *Homo sapiens* | Yes (ships with repo) | Yes (requires local data) |
 | `dmel` | *Drosophila melanogaster* | Yes | Yes |
-| `cel` | *C. elegans* | Yes | Yes (ontology-only adapters) |
-| `mmu` | *Mus musculus* | Yes | Yes (ontology-only adapters) |
-| `rno` | *Rattus norvegicus* | No | Declared, but adapter/schema configs are missing |
+| `cel` | *C. elegans* | Yes | Yes (includes baseline types; no variants or enhancers) |
+| `mmu` | *Mus musculus* | Yes | Yes (includes baseline types; no variants or enhancers) |
+| `rno` | *Rattus norvegicus* | Yes | Yes (includes baseline types; no variants or enhancers) |
 
 ### `dbsnp_cache_root` notes
 
@@ -182,8 +182,8 @@ All flags are defined by `typer.Option()` in `main()`. Run `uv run python create
 | `--adapters-config` | Path | — | Manual mode: path to adapter registry YAML |
 | `--schema-config` | Path | — | Manual mode: path to schema config YAML |
 | `--writer-type` | str | `metta` | One of: `metta`, `prolog`, `neo4j`, `parquet`, `networkx`, `KGX` |
-| `--write-properties` / `--no-write-properties` | bool | `True` | Include node/edge properties in output |
-| `--add-provenance` / `--no-add-provenance` | bool | `True` | Add dataset provenance metadata |
+| `--write-properties` / `--no-write-properties` | bool | `True` | Include node/edge properties in output. `make run-direct` / `run-sample` pass `--no-write-properties` unless `WRITE_PROPERTIES=yes` |
+| `--add-provenance` / `--no-add-provenance` | bool | `True` | Add dataset provenance metadata. `make run-direct` / `run-sample` pass `--no-add-provenance` unless `ADD_PROVENANCE=yes` |
 | `--include-taxon-id` / `--no-taxon-id` | bool | `True` | Include `taxon_id` on nodes/edges |
 | `--include-curie` / `--no-curie` | bool | `False` | Keep CURIE namespace prefixes in IDs |
 | `--dbsnp-cache-root` | Path | — | Root directory of dbSNP SQLite cache |
@@ -194,12 +194,75 @@ All flags are defined by `typer.Option()` in `main()`. Run `uv run python create
 | `--skip-preflight` | bool | `False` | Skip pre-flight file path validation |
 | `--check-only` | bool | `False` | Validate config paths and exit (no adapters run) |
 | `--input-dir` | Path | — | Override `input_dir:` from adapter config YAML |
+| `--extra-input-dir` | Path (repeatable) | — | More directories searched, in order, after the input dir for relative input paths |
 | `--manifest` | Path | — | Path to `download_manifest.json` for provenance |
 | `--generate-data-source-schemas` / `--no-generate-data-source-schemas` | bool | `True` | Generate per-source schema YAML files |
 | `--data-source-schema-output-dir` | Path | — | Override output directory for generated schemas |
 | `--buffer-size` | int | `10000` | Parquet writer buffer size |
 | `--overwrite` | bool | `True` | Overwrite existing Parquet files |
 | `--species-config-path` | Path | `config/species_config.yaml` | Override species config location |
+| `--max-workers` | int | `min(8, CPU count)` | Parallel worker processes per species; `1` runs adapters sequentially |
+| `--limit` | int | `0` | Cap nodes and edges written per adapter (`0` = no limit) |
+| `--adapter-limits` | Path | — | JSON file of per-adapter caps; overrides `--limit` for the adapters it lists |
+
+Make variables pass the most common flags:
+
+- **`make run-direct`:** `OUTPUT_DIR`, `ADAPTERS_CONFIG`, `SCHEMA_CONFIG`, `WRITER_TYPE`, `WRITE_PROPERTIES`, `ADD_PROVENANCE`, `INCLUDE_TAXON_ID`, `INCLUDE_ADAPTERS`, `INPUT_DIR`, `DBSNP_CACHE_ROOT`, `DBSNP_VARIANT`, `SKIP_PREFLIGHT` and `MAX_WORKERS`.
+- **`make run-sample`:** `WRITER_TYPE`, `WRITE_PROPERTIES`, `ADD_PROVENANCE`, `INCLUDE_TAXON_ID`, `INCLUDE_ADAPTERS`, `SKIP_PREFLIGHT` and `MAX_WORKERS`. The output directory, configs and dbSNP cache are fixed (human sample).
+- **`make check-paths`:** `ADAPTERS_CONFIG`, `INCLUDE_ADAPTERS` and `INPUT_DIR`.
+
+---
+
+## Running the pipeline
+
+### Pre-flight file path validation
+
+Before any adapter runs, the pipeline checks that every file and directory path declared in the adapters config exists on disk. If any are missing, it prints a grouped report and exits, so no partial output is written:
+
+```
+ERROR: Pre-flight check failed — 2 adapter(s) have missing file paths:
+
+  [gencode_gene]
+    filepath: /mnt/hdd_1/biocypher-kg/input/hsa/gencode/gencode.v49.annotation.gtf.gz
+
+  [bgee_gene_expressed_in_anatomical_entity]
+    filepath: /mnt/hdd_1/biocypher-kg/input/hsa/bgee/Homo_sapiens_expr_simple_all_conditions.tsv.gz
+
+Fix the paths above or run with --skip-preflight to bypass this check.
+```
+
+To validate a config on its own, with no schema, output directory or adapters run:
+
+```bash
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml INPUT_DIR=/custom/path/to/hsa
+make check-paths ADAPTERS_CONFIG=./config/hsa/hsa_adapters_config.yaml INCLUDE_ADAPTERS="uniprot*"
+
+# Without make
+uv run python create_knowledge_graph.py \
+    --adapters-config ./config/hsa/hsa_adapters_config.yaml \
+    --input-dir /custom/path/to/hsa \
+    --check-only
+```
+
+It exits with code `0` if all paths exist and `1` if any are missing. To skip the automatic check (for example, when some files are provided at runtime), pass `SKIP_PREFLIGHT=yes` to `make run-direct` / `make run-sample`, or `--skip-preflight` to the CLI.
+
+### Parallel adapter execution
+
+Within a species run, adapters run concurrently across a pool of worker processes, sized by `--max-workers` (`MAX_WORKERS=` via make):
+
+- **Default:** `min(8, CPU count)`.
+- **`--max-workers 1`:** run adapters sequentially.
+- The **networkx** writer always runs sequentially, because it builds one in-memory graph.
+
+Each worker builds its own writer. Adapters that would write the same output file (same output directory and label; for prolog, the same output directory) run sequentially on one worker, and a warning is logged. Checkpointing is owned by the main process, so `--resume` works as in sequential mode.
+
+### Limiting the build size
+
+- **`--limit N`:** caps the nodes and the edges each adapter writes at `N` (`0`, the default, means no limit).
+- **`--adapter-limits FILE`:** gives adapters their own caps, from a JSON file such as `{"gencode_gene": {"nodes": 6000, "edges": 0}}`. A cap of `0` means no cap. Adapters not listed keep `--limit`.
+
+Each adapter keeps its first rows, so a capped graph is a sample of each source, not a random subset. `graph_info.json` records what each adapter wrote under `adapter_counts`, with `"complete": false` where a cap stopped it early. The [Web Console](deployment.md#build-size) learns full sizes from the complete counts and turns a percent into `--adapter-limits` caps.
 
 ---
 

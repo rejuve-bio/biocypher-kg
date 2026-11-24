@@ -28,7 +28,7 @@ Definitions for technical and biological terms used throughout the BioCypher-KG 
 
 **input_dir** — The base directory for resolving relative file paths in adapter configs. Set via `input_dir:` in the YAML or `--input-dir` CLI flag.
 
-**KGX** — Knowledge Graph Exchange format — a JSON standard for representing biological knowledge graphs, maintained by the Biolink project.
+**KGX** — Knowledge Graph Exchange — the Biolink project's format for exchanging knowledge graphs (TSV, JSON or JSON Lines). Our `KGXWriter` writes KGX-style CSV; see [writers.md](../knowledge-graph/writers.md).
 
 **MeTTa** — Meta Type Talk — the programming/logic language used by the OpenCog Hyperon AI framework. BioCypher-KG can export to MeTTa format for symbolic reasoning.
 
