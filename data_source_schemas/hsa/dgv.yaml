@@ -1,5 +1,6 @@
 name: dgv
 website: http://dgv.tcag.ca
+kg_coordinate_convention: 1-based closed
 nodes:
   structural variant:
     url: http://dgv.tcag.ca/dgv/app/downloads
@@ -15,6 +16,24 @@ nodes:
       taxon_id: int
       variant_accession: str
       variant_type: str
+    coordinates:
+      source_convention: mixed
+      source_assembly: GRCh38
+      components:
+        DGV variants file:
+          source_convention: 1-based closed
+          start_offset: 0
+          end_offset: 0
+        BED feature files:
+          source_convention: 0-based half-open
+          start_offset: 1
+          end_offset: 0
+        GTF feature files:
+          source_convention: 1-based closed
+          start_offset: 0
+          end_offset: 0
+      note: DGV is undocumented; its starts equal dbVar's 1-based VCF starts for 99.8%
+        of shared nsv records
 relationships:
   gene overlaps structural_variant:
     url: http://dgv.tcag.ca/dgv/app/downloads

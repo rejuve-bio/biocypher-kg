@@ -54,8 +54,15 @@ FIELDS = {'chromosome': 3, 'start_position': 4, 'ref_vcf': 9, 'alt_vcf': 10, 'al
           'tg_all': 180, 'tg_amr': 181, 'tg_eas': 182, 'tg_eur': 183, 'tg_sas': 184}
 
 class FavorAdapter(Adapter):
-    # Originally 1-based coordinate system
-    # Converted to 0-based
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '1-based closed',
+        'source_assembly': 'GRCh38',
+        'start_offset': 0,
+        'end_offset': 0,
+        'note': 'FAVOR position is the VCF POS',
+    }
 
     WRITE_THRESHOLD = 1000000
 

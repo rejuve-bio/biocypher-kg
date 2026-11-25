@@ -28,6 +28,28 @@ from biocypher_metta.processors import HGNCProcessor
 # EH37E0436910	ENCODE
 
 class PEREGRINEAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Verification: docs/knowledge-graph/genomic-coordinates.md (PEREGRINE section).
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': 'mixed',
+        'source_assembly': 'GRCh38',
+        'components': {
+            'FANTOM': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
+            'ENCODE': {'source_convention': '0-based half-open', 'start_offset': 1, 'end_offset': 0},
+            'Ensembl': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+            'VISTA': {'source_convention': '1-based closed', 'start_offset': 0, 'end_offset': 0},
+        },
+        'note': ('Per-record sub-source from PEREGRINEenhancersources. Verified Nov 2026 by exact '
+                 'positional match after hg19->hg38 liftOver (check_peregrine_coords.py): ENCODE vs '
+                 'ENCFF788SJC (100%), FANTOM vs FANTOM5 permissive phase 1+2 (100%), Ensembl vs GRCh37 '
+                 'Regulatory Build 20161117/release 87 (99.6% of 28,173 matched); VISTA verified against '
+                 'vista-data. PEREGRINE does not document its convention; the file mixes conventions.'),
+    }
+
+    # Start offset (source -> KG 1-based closed) per PEREGRINE sub-source; must match COORDINATES['components'].
+    START_OFFSET_BY_SOURCE = {'FANTOM': 1, 'ENCODE': 1, 'Ensembl': 0, 'VISTA': 0}
+
     ALLOWED_TYPES = ['enhancer', 'enhancer to gene association']
     ALLOWED_LABELS = ['enhancer', 'enhancer_gene']
     ALLOWED_KEYS = []
@@ -70,23 +92,39 @@ class PEREGRINEAdapter(Adapter):
         gene = ':'.join(gene.split('='))
         return gene
         
-    def get_nodes(self):
-        enhancer_info = {}
-        with gzip.open(self.enhancers_file, 'rt') as f:
-            reader = csv.reader(f, delimiter=self.delimiter)
-            for line in reader:
-                chr, start, end, enhancer_id = line
-                enhancer_info[enhancer_id] = {
-                    'chr': chr,
-                    'start': int(start),
-                    'end': int(end),
-                }
-
+    def _read_sources(self):
         source_map = {}
         with gzip.open(self.source_file, 'rt') as f:
             for line in f:
                 enhancer_id, source = line.strip().split('\t')
                 source_map[enhancer_id] = source
+        return source_map
+
+    def _read_enhancers(self, source_map):
+        """Return {enhancer_id: {'chr', 'start', 'end'}} in 1-based closed coordinates."""
+        enhancer_info = {}
+        with gzip.open(self.enhancers_file, 'rt') as f:
+            reader = csv.reader(f, delimiter=self.delimiter)
+            for line in reader:
+                chr = line[self.INDEX['chr']]
+                start = int(line[self.INDEX['start']])
+                end = int(line[self.INDEX['end']])
+                enhancer_id = line[self.INDEX['id']]
+                data_source = source_map.get(enhancer_id)
+                if data_source not in self.START_OFFSET_BY_SOURCE:
+                    raise ValueError(
+                        f"PEREGRINE enhancer {enhancer_id}: unknown data source {data_source!r}; "
+                        f"add its coordinate convention to START_OFFSET_BY_SOURCE and COORDINATES")
+                enhancer_info[enhancer_id] = {
+                    'chr': chr,
+                    'start': start + self.START_OFFSET_BY_SOURCE[data_source],
+                    'end': end,
+                }
+        return enhancer_info
+
+    def get_nodes(self):
+        source_map = self._read_sources()
+        enhancer_info = self._read_enhancers(source_map)
 
         for enhancer_id, info in enhancer_info.items():
             data_source = source_map[enhancer_id]
@@ -112,17 +150,11 @@ class PEREGRINEAdapter(Adapter):
 
     def get_edges(self):
         enhancer_id_map = {}
-        with gzip.open(self.enhancers_file, 'rt') as f:
-            reader = csv.reader(f, delimiter=self.delimiter)
-            for line in reader:
-                id = line[self.INDEX['id']]
-                chr = line[self.INDEX['chr']]
-                start = int(line[self.INDEX['start']])
-                end = int(line[self.INDEX['end']])
-                if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                    region_id = build_regulatory_region_id(chr, start, end)
-                    enhancer_id_map[id] = region_id
-        
+        for id, info in self._read_enhancers(self._read_sources()).items():
+            chr, start, end = info['chr'], info['start'], info['end']
+            if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                enhancer_id_map[id] = build_regulatory_region_id(chr, start, end)
+
         with gzip.open(self.enhancer_gene_link, 'rt') as f:
             reader = csv.reader(f, delimiter=self.delimiter)
             next(reader)    # Skip header

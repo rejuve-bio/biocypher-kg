@@ -2,6 +2,13 @@ import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import to_float, check_genomic_location, build_variant_id
 
+# Coordinates: this adapter parses the UCSC dbNSFP PolyPhen2 dump (hg38, BED-style,
+# 0-based start), so start + 1 is used for the variant ID.
+# Note: the PolyPhen-2 WHESS download (https://genetics.bwh.harvard.edu/downloads/pph2/whess/)
+# is a different format, on hg19 with 1-based chromosome coordinates. See Adzhubei et al. 2013,
+# Curr Protoc Hum Genet Unit 7.20, Table 7.20.1:
+# https://genetics.bwh.harvard.edu/wiki/!pph2/_media/hg0720.pdf
+
 # sample data from the dataset
 # chr    start   end     ref  num_alt  A   A_score_hdiv  A_pred_hdiv  A_score_hvar  A_pred_hvar  C   C_score_hdiv  C_pred_hdiv  C_score_hvar  C_pred_hvar  G   G_score_hdiv  G_pred_hdiv  G_score_hvar  G_pred_hvar  T   T_score_hdiv  T_pred_hdiv  T_score_hvar  T_pred_hvar
 # chr1	69090	69091	A	1	C	0.0	B	0.0	B	G	0.0	B	0.0	B	T	0.0	B	0.0	B
@@ -10,6 +17,16 @@ from biocypher_metta.adapters.helpers import to_float, check_genomic_location, b
 # chr1	69093	69094	G	2	A	0.845	P	0.33	B	C	0.123	B	0.017	B	T	0.123	B	0.017	B
 
 class PolyPhen2Adapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+        'note': 'UCSC dbNSFP PolyPhen2 bigBed dump; the start is only used in the variant ID',
+    }
+
     INDEX = {
         'chr': 0, 'start': 1, 'end': 2, 'ref': 3, 'num_alt': 4,
         'alt_a': 5, 'score_a_hdiv': 6, 'pred_a_hdiv': 7, 'score_a_hvar': 8, 'pred_a_hvar': 9,

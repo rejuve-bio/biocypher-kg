@@ -432,10 +432,10 @@ position entity:
       type: str
     start:
       type: int
-      biolink: start_interbase_coordinate
+      biolink: start_coordinate
     end:
       type: int
-      biolink: end_interbase_coordinate
+      biolink: end_coordinate
     taxon_id:
       description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
       type: int

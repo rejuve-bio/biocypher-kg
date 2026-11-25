@@ -35,6 +35,22 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 #FBgn_ID	Gene_Symbol	Summary_Source	Summary
 
 class GencodeExonAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '1-based closed',
+        'source_assembly': {
+            9606: 'GRCh38',
+            10090: 'GRCm39',
+            7227: 'BDGP6',
+            6239: 'WBcel235',
+            10116: 'GRCr8',
+        },
+        'start_offset': 0,
+        'end_offset': 0,
+        'note': 'GTF',
+    }
+
     ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_biotype', 'transcript_name', 'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 

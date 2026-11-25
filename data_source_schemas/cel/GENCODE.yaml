@@ -1,5 +1,6 @@
 name: GENCODE
 website: https://www.gencodegenes.org
+kg_coordinate_convention: 1-based closed
 nodes:
   gene:
     url: https://www.gencodegenes.org/
@@ -12,6 +13,12 @@ nodes:
       start: int
       synonym: str[]
       taxon_id: int
+    coordinates:
+      source_convention: 1-based closed
+      source_assembly: WBcel235
+      start_offset: 0
+      end_offset: 0
+      note: GTF
   transcript:
     url: https://www.gencodegenes.org/
     input_label: transcript
@@ -30,6 +37,12 @@ nodes:
       exon_number: int
       start: int
       taxon_id: int
+    coordinates:
+      source_convention: 1-based closed
+      source_assembly: WBcel235
+      start_offset: 0
+      end_offset: 0
+      note: GTF
 relationships:
   transcribes to:
     url: https://www.gencodegenes.org/

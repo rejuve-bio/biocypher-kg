@@ -11,6 +11,15 @@ from biocypher_metta.adapters.helpers import build_regulatory_region_id, check_g
 
 
 class ENCODERe2GAdapter(Adapter):
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        'source_convention': '0-based half-open',
+        'source_assembly': 'GRCh38',
+        'start_offset': 1,
+        'end_offset': 0,
+    }
+
     def __init__(self, filepath, taxon_id, write_properties, add_provenance, label=None,
                  chr=None, start=None, end=None, cell_ontology_id=None):
         self.filepath = filepath

@@ -134,6 +134,23 @@ the KG's assembly by the downloader with UCSC `liftOver`. Options and liftover s
 Each build also writes `graph_info.json` (counts and dataset versions). Details:
 [docs/knowledge-graph/writers.md](docs/knowledge-graph/writers.md).
 
+## Genomic coordinates
+
+**Every genomic position stored in the KG is 1-based and closed.** This covers the `start`, `end`,
+`pos`, `overlap_start` and `overlap_end` properties and the positions inside region IDs
+(`chr_start_end_GRCh38`) and variant IDs.
+
+| Convention | First base | `end` | The first 100 bases of chr1 | Used by |
+|---|---|---|---|---|
+| `1-based closed` | 1 | included | `start=1, end=100` | VCF `POS`, GTF/GFF3, Ensembl, the UCSC browser position box, the KG |
+| `0-based half-open` | 0 | excluded | `start=0, end=100` | BED, bigBed, UCSC tables (`chromStart`), Chado `featureloc` (interbase) |
+
+A 0-based half-open source therefore needs `start + 1` and an unchanged `end`. Each adapter that writes
+positions declares its source's convention in a `COORDINATES` class constant, which the schema generator
+copies into the data source schemas and `test/test_coordinates.py` enforces. The constant's format and
+the per-source evidence are in
+[docs/knowledge-graph/genomic-coordinates.md](docs/knowledge-graph/genomic-coordinates.md).
+
 ## Loading into Neo4j and MORK
 
 ```bash
@@ -199,6 +216,7 @@ make neo4j-up          # Start Neo4j (also neo4j-reset, -down, -logs, -status, -
 | Download → adapt → write, liftover, provenance | [docs/knowledge-graph/ingestion-pipeline.md](docs/knowledge-graph/ingestion-pipeline.md) |
 | Node and edge types | [docs/knowledge-graph/data-model.md](docs/knowledge-graph/data-model.md) |
 | Data sources and their adapters | [docs/knowledge-graph/adapter-catalog.md](docs/knowledge-graph/adapter-catalog.md) |
+| Coordinate convention and the `COORDINATES` constant | [docs/knowledge-graph/genomic-coordinates.md](docs/knowledge-graph/genomic-coordinates.md) |
 | Repository layout | [docs/development/project-structure.md](docs/development/project-structure.md) |
 | Common failures | [docs/operations/troubleshooting.md](docs/operations/troubleshooting.md) |
 
