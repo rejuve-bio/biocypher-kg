@@ -1,0 +1,7 @@
+matrix_id	motif_name	status	detail
+MA0010.1	br	mapped	FlyBase:FBgn0000210
+MA0010.2	br	mapped	FlyBase:FBgn0000210
+MA0534.1	EcR::usp	mapped	FlyBase:FBgn0000546;FlyBase:FBgn0003964
+MA0535.1	Da::twi	mapped	FlyBase:FBgn0000413;FlyBase:FBgn0003900
+MA9999.1	no_gene	unmapped	No FlyBase gene cross-reference
+
