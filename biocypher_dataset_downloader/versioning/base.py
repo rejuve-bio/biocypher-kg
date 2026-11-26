@@ -75,7 +75,7 @@ def iter_source_urls(source_config: dict) -> Iterator[str]:
                 yield from _walk(item)
 
     yield from _walk(source_config.get("url"))
-    for key in ("bed_url", "ep_base_url"):
+    for key in ("bed_url", "ep_base_url", "tissue_bed_url"):
         if source_config.get(key):
             yield _strip_url_comment(source_config[key])
     for entry in source_config.get("zip_extract", []) or []:

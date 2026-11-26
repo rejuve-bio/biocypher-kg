@@ -224,6 +224,10 @@
     "rna_central_rfam": {
       "real_rows": 66,
       "synthetic": false
+    },
+    "enhancer_atlas_ep_only": {
+      "real_rows": 2769,
+      "synthetic": false
     }
   }
 }

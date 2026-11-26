@@ -28,6 +28,28 @@ coxpressdb:
   version: {strategy: url_regex, pattern: '\.(v[\d-]+)\.', vtype: other}
   url: https://zenodo.org/record/6861444/files/Dme-u.v22-05.G12209-S15610.combat_pca.subagging.z.d.zip
 
+enhancer_atlas:
+  name: EnhancerAtlas (SingleCellDB)
+  extract: false
+  # Raw dm3 download. lift_enhancer_atlas.py lifts it to dm6 into enhancer_atlas/
+  # (bed/, enhancer_gene/, ep_only_nodes.bed), which is what the adapter reads.
+  subdir: non_lifted
+  bed_url: http://singlecelldb.com/data/download/species_enh_bed.tar.gz
+  # per-tissue BEDs (enhancer/<species>/<tissue>.bed), the node source of the adapter
+  tissue_bed_url: http://singlecelldb.com/data/download/enhancer.tar.tgz
+  ep_base_url: http://singlecelldb.com/data/AllEPs/dm
+  tissues:
+    - BG3-c2
+    - Kc167
+    - L3_brain
+    - L3_eye_ante_discs
+    - L3_wing_disc
+    - OSC
+    - S2
+  # The lifted folder (not the raw download) is what sample generation reads.
+  local_files:
+    enhancer_atlas_ep_only: {pattern: "enhancer_atlas/ep_only_nodes.bed", stable_name: "enhancer_atlas/ep_only_nodes.bed"}
+    
 ensembl:
   name: Ensembl Assembly 54.v63
   version: {strategy: url_regex, pattern: '(BDGP6\.[\d.]+)\.gtf', vtype: other}

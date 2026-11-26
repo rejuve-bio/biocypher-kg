@@ -1584,16 +1584,21 @@ topld_sas:
   nodes: False
   edges: True
 
+# EnhancerAtlas 2.0, lifted offline to GRCh38/dm6 by scripts/lift_enhancer_atlas.py into
+# enhancer_atlas/ (the raw download is in enhancer_atlas/non_lifted/).
 enhancer_atlas_enhancer:
   adapter:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: enhancer_atlas/hs.bed.gz
-      enhancer_gene_filepath: enhancer_atlas/enhancer_gene
+      enhancer_dirpath: enhancer_atlas/bed
+      enhancer_gene_dirpath: enhancer_atlas/enhancer_gene
+      ep_only_nodes_filepath: enhancer_atlas/ep_only_nodes.bed
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
-      label: enhancer
       taxon_id: 9606
+      assembly: GRCh38
+      label: enhancer
+      tissue_in_id: true
   outdir: enhancer_atlas
   nodes: True
   edges: False
@@ -1603,12 +1608,82 @@ enhancer_atlas_enhancer_regulates:
     module: biocypher_metta.adapters.enhancer_atlas_adapter
     cls: EnhancerAtlasAdapter
     args:
-      enhancer_filepath: enhancer_atlas/hs.bed.gz
-      enhancer_gene_filepath: enhancer_atlas/enhancer_gene
+      enhancer_dirpath: enhancer_atlas/bed
+      enhancer_gene_dirpath: enhancer_atlas/enhancer_gene
+      ep_only_nodes_filepath: enhancer_atlas/ep_only_nodes.bed
       tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
-      type: enhancer to gene association
-      label: enhancer_gene
       taxon_id: 9606
+      assembly: GRCh38
+      label: enhancer_gene
+      tissue_in_id: true
+  outdir: enhancer_atlas
+  nodes: False
+  edges: True
+
+enhancer_atlas_enhancer_anatomy:
+  adapter:
+    module: biocypher_metta.adapters.enhancer_atlas_adapter
+    cls: EnhancerAtlasAdapter
+    args:
+      enhancer_dirpath: enhancer_atlas/bed
+      enhancer_gene_dirpath: enhancer_atlas/enhancer_gene
+      ep_only_nodes_filepath: enhancer_atlas/ep_only_nodes.bed
+      tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      taxon_id: 9606
+      assembly: GRCh38
+      label: enhancer_anatomy
+      tissue_in_id: true
+  outdir: enhancer_atlas
+  nodes: False
+  edges: True
+
+enhancer_atlas_enhancer_cell_type:
+  adapter:
+    module: biocypher_metta.adapters.enhancer_atlas_adapter
+    cls: EnhancerAtlasAdapter
+    args:
+      enhancer_dirpath: enhancer_atlas/bed
+      enhancer_gene_dirpath: enhancer_atlas/enhancer_gene
+      ep_only_nodes_filepath: enhancer_atlas/ep_only_nodes.bed
+      tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      taxon_id: 9606
+      assembly: GRCh38
+      label: enhancer_cell_type
+      tissue_in_id: true
+  outdir: enhancer_atlas
+  nodes: False
+  edges: True
+
+enhancer_atlas_enhancer_cell_line:
+  adapter:
+    module: biocypher_metta.adapters.enhancer_atlas_adapter
+    cls: EnhancerAtlasAdapter
+    args:
+      enhancer_dirpath: enhancer_atlas/bed
+      enhancer_gene_dirpath: enhancer_atlas/enhancer_gene
+      ep_only_nodes_filepath: enhancer_atlas/ep_only_nodes.bed
+      tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      taxon_id: 9606
+      assembly: GRCh38
+      label: enhancer_cell_line
+      tissue_in_id: true
+  outdir: enhancer_atlas
+  nodes: False
+  edges: True
+
+enhancer_atlas_enhancer_tissue:
+  adapter:
+    module: biocypher_metta.adapters.enhancer_atlas_adapter
+    cls: EnhancerAtlasAdapter
+    args:
+      enhancer_dirpath: enhancer_atlas/bed
+      enhancer_gene_dirpath: enhancer_atlas/enhancer_gene
+      ep_only_nodes_filepath: enhancer_atlas/ep_only_nodes.bed
+      tissue_to_ontology_filepath: ./aux_files/hsa/enhancer_atlas_tissues_to_ontology.pkl
+      taxon_id: 9606
+      assembly: GRCh38
+      label: enhancer_tissue
+      tissue_in_id: true
   outdir: enhancer_atlas
   nodes: False
   edges: True

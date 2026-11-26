@@ -1191,6 +1191,139 @@ enhancer to gene association:
     biological_context:
       type: str
       biolink: has_biological_sequence
+    taxon_id:
+      type: int
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+
+# Enhancer active in a tissue, cell type, cell line or developmental stage (EnhancerAtlas
+# per-tissue BEDs). One entry per target node type; the input labels match ACTIVE_IN_LABELS
+# in enhancer_atlas_adapter.py. Biolink has no predicate for "regulatory region active in
+# tissue" (biolink:active_in is gene product -> cellular component), so these use
+# biolink:associated_with and keep active_in as the output label.
+enhancer to anatomy association:
+  description: An enhancer interval annotated as active in an anatomical structure (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+  is_a: regulatory association
+  mixins:
+  - biolink:association
+  biolink_predicate: biolink:associated_with
+  inherit_properties: true
+  represented_as: edge
+  input_label: enhancer_anatomy
+  output_label: active_in
+  source: enhancer
+  target: anatomy
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:AnatomicalEntity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    signal:
+      type: float
+      biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+
+enhancer to cell type association:
+  description: An enhancer interval annotated as active in a cell type (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+  is_a: regulatory association
+  mixins:
+  - biolink:association
+  biolink_predicate: biolink:associated_with
+  inherit_properties: true
+  represented_as: edge
+  input_label: enhancer_cell_type
+  output_label: active_in
+  source: enhancer
+  target: cell type
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:Cell
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    signal:
+      type: float
+      biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+
+enhancer to cell line association:
+  description: An enhancer interval annotated as active in a cell line (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+  is_a: regulatory association
+  mixins:
+  - biolink:association
+  biolink_predicate: biolink:associated_with
+  inherit_properties: true
+  represented_as: edge
+  input_label: enhancer_cell_line
+  output_label: active_in
+  source: enhancer
+  target: cell line
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:CellLine
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    signal:
+      type: float
+      biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+
+enhancer to tissue association:
+  description: An enhancer interval annotated as active in a tissue (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+  is_a: regulatory association
+  mixins:
+  - biolink:association
+  biolink_predicate: biolink:associated_with
+  inherit_properties: true
+  represented_as: edge
+  input_label: enhancer_tissue
+  output_label: active_in
+  source: enhancer
+  target: tissue
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:AnatomicalEntity
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    signal:
+      type: float
+      biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
+
+enhancer to developmental stage association:
+  description: An enhancer interval annotated as active in a developmental stage (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+  is_a: regulatory association
+  mixins:
+  - biolink:association
+  biolink_predicate: biolink:associated_with
+  inherit_properties: true
+  represented_as: edge
+  input_label: enhancer_developmental_stage
+  output_label: active_in
+  source: enhancer
+  target: developmental stage
+  kgx_properties:
+    subject_category: biolink:RegulatoryRegion
+    object_category: biolink:LifeStage
+    knowledge_level: knowledge_assertion
+    agent_type: manual_agent
+  properties:
+    signal:
+      type: float
+      biolink: has_quantitative_value
+    taxon_id:
+      type: int
+      description: Taxon ID for the organism (e.g., 7227 for fruit fly, 9606 for human)
 
 exon part_of gene:
   is_a: related to at instance

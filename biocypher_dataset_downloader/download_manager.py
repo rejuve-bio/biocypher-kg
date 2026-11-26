@@ -899,13 +899,19 @@ class DownloadManager:
                                source_key: str) -> tuple[int, int, list[str], int]:
         """Handle EnhancerAtlas records with bed_url / ep_base_url / tissues.
 
-        Disk layout (must match what EnhancerAtlasAdapter expects):
-            <output_dir>/<source_key>/<species>.bed.gz         — this species' BED file,
-                                                                  extracted from the tarball and gzipped
-            <output_dir>/<source_key>/<species>.bed.gz.meta.json — fingerprint (size/etag/
-                                                                  last-modified) of the tarball
-                                                                  it was extracted from
-            <output_dir>/<source_key>/enhancer_gene/           — one <tissue>_EP.txt file per tissue
+        Disk layout (<dir> is <output_dir>/<source_key>, or <output_dir>/<source_key>/<subdir>
+        when the record sets ``subdir``):
+            <dir>/<species>.bed.gz            — this species' BED file, extracted from the
+                                                tarball and gzipped
+            <dir>/<species>.bed.gz.meta.json  — fingerprint (size/etag/last-modified) of the
+                                                tarball it was extracted from
+            <dir>/enhancer_gene/              — one <tissue>_EP.txt file per tissue
+            <dir>/bed/<tissue>.bed            — the per-tissue BEDs of this species, from the
+                                                tissue_bed_url tarball (enhancer/<species>/*.bed);
+                                                fingerprint in <dir>/bed/.meta.json
+
+        These are the files as published (hg19 / dm3). The adapter reads the lifted
+        copies that lift_enhancer_atlas.py writes next to ``subdir``.
 
         The species code is taken from the last path segment of ep_base_url
         (e.g. ".../AllEPs/hs" -> "hs"), which also names the member to pull out
@@ -923,7 +929,7 @@ class DownloadManager:
         downloaded = skipped = samples_created = 0
         failed_filenames: list[str] = []
 
-        source_dir = self.output_dir / source_key
+        source_dir = self.output_dir / source_key / source_config.get('subdir', '')
         ep_dir = source_dir / 'enhancer_gene'
         source_dir.mkdir(parents=True, exist_ok=True)
         ep_dir.mkdir(parents=True, exist_ok=True)
@@ -1015,7 +1021,66 @@ class DownloadManager:
                 else:
                     failed_filenames.append(ep_filename)
 
+        # ---- per-tissue BED tarball -------------------------------------
+        tissue_bed_url = source_config.get('tissue_bed_url')
+        if tissue_bed_url and species_code:
+            d, s, f = self._extract_tissue_beds(_strip_url_comment(tissue_bed_url),
+                                                source_dir / 'bed', species_code)
+            downloaded += d; skipped += s; failed_filenames += f
+
         return downloaded, skipped, failed_filenames, samples_created
+
+    def _extract_tissue_beds(self, url: str, bed_dir: Path,
+                             species_code: str) -> tuple[int, int, list[str]]:
+        """Download the EnhancerAtlas per-tissue BED tarball and extract one species.
+
+        The tarball holds enhancer/<species>/<tissue>.bed for every species; only the
+        members under <species_code>/ are written, flattened, to bed_dir. As for the
+        merged BED, a HEAD fingerprint stored in bed_dir/.meta.json avoids downloading
+        the tarball again when it has not changed upstream.
+        """
+        meta_path = bed_dir / '.meta.json'
+        remote_fingerprint = self._remote_fingerprint(url)
+        stored_fingerprint = None
+        if meta_path.exists():
+            try:
+                stored_fingerprint = json.loads(meta_path.read_text())
+            except (json.JSONDecodeError, OSError):
+                stored_fingerprint = None
+        if (any(bed_dir.glob('*.bed'))
+                and (not remote_fingerprint or remote_fingerprint == stored_fingerprint)):
+            logger.info(f"Skipped per-tissue BEDs in {bed_dir} (already extracted, tarball unchanged)")
+            return 0, 1, []
+
+        tar_filename = Path(urlparse(url).path).name
+        tar_path = bed_dir.parent / tar_filename
+        if not self._download_file(url, tar_path):
+            return 0, 0, [tar_filename]
+        bed_dir.mkdir(parents=True, exist_ok=True)
+        written = 0
+        try:
+            with tarfile.open(tar_path, 'r:*') as tf:
+                for member in tf.getmembers():
+                    parts = Path(member.name).parts
+                    if (member.isfile() and len(parts) >= 2 and parts[-2] == species_code
+                            and parts[-1].endswith('.bed')):
+                        member.name = parts[-1]  # flatten enhancer/<species>/
+                        tf.extract(member, path=bed_dir)
+                        written += 1
+        except tarfile.TarError as e:
+            logger.error(f"Failed to extract {tar_filename}: {e}")
+            return 0, 0, [tar_filename]
+        finally:
+            tar_path.unlink(missing_ok=True)
+        if not written:
+            logger.error(f"No {species_code}/*.bed members in {tar_filename}")
+            return 0, 0, [tar_filename]
+        if remote_fingerprint:
+            meta_path.write_text(json.dumps(remote_fingerprint))
+        else:
+            meta_path.unlink(missing_ok=True)
+        logger.info(f"Extracted {written} per-tissue BED files into {bed_dir}")
+        return written, 0, []
 
     def _apply_liftover(self, source_config: dict,
                         source_key: str) -> tuple[int, list[str], int]:
@@ -1234,7 +1299,7 @@ class DownloadManager:
                 downloaded += d; skipped += s; failed_filenames += f; samples_created += sc
                 has_handled = True
 
-            if 'bed_url' in source_config or 'ep_base_url' in source_config:
+            if any(k in source_config for k in ('bed_url', 'ep_base_url', 'tissue_bed_url')):
                 d, s, f, sc = self._handle_enhancer_atlas(source_config, source_id)
                 downloaded += d; skipped += s; failed_filenames += f; samples_created += sc
                 has_handled = True

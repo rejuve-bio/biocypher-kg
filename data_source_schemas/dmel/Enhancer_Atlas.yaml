@@ -1,0 +1,55 @@
+name: Enhancer Atlas
+website: http://singlecelldb.com
+kg_coordinate_convention: 1-based closed
+nodes:
+  enhancer:
+    url: http://singlecelldb.com/downloadv2.php
+    input_label: enhancer
+    properties:
+      biological_context: str
+      chr: str
+      end: int
+      start: int
+      taxon_id: int
+    coordinates:
+      source_convention: 0-based half-open
+      source_assembly: dm6
+      start_offset: 1
+      end_offset: 0
+      note: Reads the output of scripts/lift_enhancer_atlas.py, which lifts EnhancerAtlas
+        2.0 (published on hg19 and dm3) offline with UCSC liftOver; BED starts and
+        EP keys are 0-based.
+relationships:
+  enhancer to gene association:
+    url: http://singlecelldb.com/downloadv2.php
+    input_label: enhancer_gene
+    output_label: associated_with
+    description: An association between an enhancer and a gene
+    source: enhancer
+    target: gene
+    properties:
+      biological_context: str
+      score: float
+      taxon_id: int
+  enhancer to anatomy association:
+    url: http://singlecelldb.com/downloadv2.php
+    input_label: enhancer_anatomy
+    output_label: active_in
+    description: An enhancer interval annotated as active in an anatomical structure
+      (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+    source: enhancer
+    target: anatomy
+    properties:
+      signal: float
+      taxon_id: int
+  enhancer to developmental stage association:
+    url: http://singlecelldb.com/downloadv2.php
+    input_label: enhancer_developmental_stage
+    output_label: active_in
+    description: An enhancer interval annotated as active in a developmental stage
+      (EnhancerAtlas per-tissue BEDs; signal = enrichment score)
+    source: enhancer
+    target: developmental stage
+    properties:
+      signal: float
+      taxon_id: int

@@ -117,7 +117,12 @@ dgv:
 enhancer_atlas:
   name: EnhancerAtlas (SingleCellDB)
   extract: false
+  # Raw hg19 download. lift_enhancer_atlas.py lifts it to GRCh38 into enhancer_atlas/
+  # (bed/, enhancer_gene/, ep_only_nodes.bed), which is what the adapter reads.
+  subdir: non_lifted
   bed_url: http://singlecelldb.com/data/download/species_enh_bed.tar.gz
+  # per-tissue BEDs (enhancer/<species>/<tissue>.bed), the node source of the adapter
+  tissue_bed_url: http://singlecelldb.com/data/download/enhancer.tar.tgz
   ep_base_url: http://singlecelldb.com/data/AllEPs/hs
   tissues:
     - A375
@@ -230,6 +235,9 @@ enhancer_atlas:
     - U2OS
     - VCaP
     - ZR75-30
+  # The lifted folder (not the raw download) is what sample generation reads.
+  local_files:
+    enhancer_atlas_ep_only: {pattern: "enhancer_atlas/ep_only_nodes.bed", stable_name: "enhancer_atlas/ep_only_nodes.bed"}
 
 # fabian:  <----::: deleted
 #   name: Fabian
@@ -242,8 +250,6 @@ enhancer_atlas:
 #   name: FAVOR
 #   url:
 #     chr16: https://dataverse.harvard.edu/api/access/datafile/6388551/   # file in the url: FAVOR.FullDB.Chr16.tar.gz
-  local_files:
-    enhancer_atlas_bed: {pattern: "enhancer_atlas/hs.bed.gz", stable_name: "enhancer_atlas/hs.bed.gz"}
 
 epd:
   name: Eukaryotic Promoter Database

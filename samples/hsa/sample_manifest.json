@@ -191,10 +191,6 @@
       "real_rows": 967234,
       "synthetic": false
     },
-    "enhancer_atlas_bed": {
-      "real_rows": 5331,
-      "synthetic": false
-    },
     "ccre_closest_genes_all": {
       "real_rows": 7655,
       "synthetic": false
@@ -233,6 +229,10 @@
     },
     "reactome_reactions_go_mf": {
       "real_rows": 1015,
+      "synthetic": false
+    },
+    "enhancer_atlas_ep_only": {
+      "real_rows": 32931,
       "synthetic": false
     }
   }

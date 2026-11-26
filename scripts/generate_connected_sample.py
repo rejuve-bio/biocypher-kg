@@ -267,7 +267,7 @@ def _file_present(input_dir, species, name):
         return False
 
 
-_DOWNLOAD_KEYS = ("url", "directories", "zip_extract", "bucket", "bed_url", "ep_base_url")
+_DOWNLOAD_KEYS = ("url", "directories", "zip_extract", "bucket", "bed_url", "ep_base_url", "tissue_bed_url")
 
 
 def _is_download_managed(species, source_id):
@@ -1763,51 +1763,68 @@ def collect_column_values(path, col, min_cols=None, split_on=None, delimiter="\t
     return values
 
 
-def filter_enhancer_atlas(hs_bed_path, hs_bed_output_path, enhancer_gene_input_dir, enhancer_gene_output_dir, gene_ids):
-    """enhancer_atlas has no gene column in its node file (hs.bed.gz) — the
-    gene link only exists in the per-tissue enhancer_gene/<tissue>_EP.txt
-    files, each line shaped "chr:start-end_ENSGxxxxx$SYMBOL$chr$tss$strand\\tscore".
-    Filter every tissue file by gene membership, collect the referenced
-    (chr, start+1, end) regions (matching EnhancerAtlasAdapter's own +1
-    0-based-to-1-based offset), then filter hs.bed.gz down to just those
-    regions so every enhancer node kept has a real edge.
+def filter_enhancer_atlas(input_ea_dir, output_ea_dir, gene_ids, rows_per_tissue_without_ep=50):
+    """Filter the lifted EnhancerAtlas folder (written by scripts/lift_enhancer_atlas.py)
+    to the gene set.
+
+    Layout, under <input_dir>/enhancer_atlas/ (the raw download in non_lifted/ is not read):
+      enhancer_gene/<tissue>_EP.txt  "chr:start-end_GENEID$SYMBOL$chr$tss[$strand]<TAB>score", start 0-based
+      bed/<tissue>.bed               chr start end signal orig_chr orig_start orig_end, start 0-based
+      ep_only_nodes.bed              chr start end source orig_chr orig_start orig_end
+    EP lines are kept when their gene is in the set. A BED line is kept when its
+    interval is referenced by a kept EP line of the same tissue (EP and BED file names
+    are matched ignoring case, as the adapter does), so every enhancer_gene edge has
+    its node and the kept nodes also give active_in edges. Tissues without an EP file
+    (e.g. the fly embryo windows, the only developmental_stage targets) keep their first
+    rows_per_tissue_without_ep BED lines, so every active_in edge type is in the sample.
+    ep_only_nodes.bed keeps the referenced intervals. Returns (bed_rows, ep_rows).
     """
-    referenced_regions = set()
-    enhancer_gene_output_dir.mkdir(parents=True, exist_ok=True)
+    ep_in, ep_out = input_ea_dir / "enhancer_gene", output_ea_dir / "enhancer_gene"
+    bed_in, bed_out = input_ea_dir / "bed", output_ea_dir / "bed"
+    ep_out.mkdir(parents=True, exist_ok=True)
+    bed_out.mkdir(parents=True, exist_ok=True)
+
+    referenced = defaultdict(set)   # lower-cased tissue -> {(chr, start0, end)}
+    all_referenced = set()
     kept_edge_rows = 0
-    for tissue_file in sorted(enhancer_gene_input_dir.iterdir()):
-        if not tissue_file.is_file():
-            continue
-        out_path = enhancer_gene_output_dir / tissue_file.name
-        with open(tissue_file, "r") as fin, open(out_path, "w") as fout:
+    for tissue_file in sorted(ep_in.glob("*_EP.txt")):
+        tissue = tissue_file.name[: -len("_EP.txt")].lower()
+        with open(tissue_file, newline="") as fin, open(ep_out / tissue_file.name, "w", newline="") as fout:
             for line in fin:
-                info = line.strip().split("\t")
-                if not info or "_" not in info[0]:
+                key = line.split("\t", 1)[0]
+                if "_" not in key or ":" not in key:
                     continue
-                enhancer_info, gene_part = info[0].split("_", 1)
-                gene = gene_part.split("$")[0]
-                if gene not in gene_ids:
+                enhancer_info, gene_part = key.split("_", 1)
+                if gene_part.split("$", 1)[0] not in gene_ids:
                     continue
-                chrom, coords = enhancer_info.split(":")
+                chrom, coords = enhancer_info.rsplit(":", 1)
                 start, end = coords.split("-")
-                referenced_regions.add((chrom, int(start) + 1, int(end)))
+                interval = (chrom, int(start), int(end))
+                referenced[tissue].add(interval)
+                all_referenced.add(interval)
                 fout.write(line)
                 kept_edge_rows += 1
 
+    ep_tissues = {f.name[: -len("_EP.txt")].lower() for f in ep_in.glob("*_EP.txt")}
     kept_nodes = 0
-    hs_bed_output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open_maybe_gzip(hs_bed_path) as fin, open_maybe_gzip(hs_bed_output_path, "wt") as fout:
+    for bed_file in sorted(bed_in.glob("*.bed")):
+        tissue = bed_file.stem.lower()
+        with open(bed_file) as fin:
+            if tissue in ep_tissues:
+                wanted = referenced.get(tissue, set())
+                rows = [l for l in fin if (lambda p: len(p) >= 3 and (p[0], int(p[1]), int(p[2])) in wanted)(l.split("\t", 3))]
+            else:
+                rows = [l for _, l in zip(range(rows_per_tissue_without_ep), fin)]
+        if rows:
+            (bed_out / bed_file.name).write_text("".join(rows))
+            kept_nodes += len(rows)
+
+    ep_only_in = input_ea_dir / "ep_only_nodes.bed"
+    with open(ep_only_in) as fin, open(output_ea_dir / "ep_only_nodes.bed", "w") as fout:
         for line in fin:
-            parts = line.rstrip("\n").split("\t")
-            if len(parts) < 3:
-                continue
-            try:
-                start, end = int(parts[1]) + 1, int(parts[2])
-            except ValueError:
-                continue
-            if (parts[0], start, end) in referenced_regions:
+            parts = line.split("\t", 3)
+            if len(parts) >= 3 and (parts[0], int(parts[1]), int(parts[2])) in all_referenced:
                 fout.write(line)
-                kept_nodes += 1
     return kept_nodes, kept_edge_rows
 
 
@@ -2503,6 +2520,13 @@ def _generate_phase2_shared(species, input_dir, output_dir, cfg, id_sets, record
     record("rna_central_bed", bed_kept, empty_ok_reason="no ncRNA overlapping genes in set")
     record("rna_central_rfam", rfam_kept, empty_ok_reason="no GO annotations for the retained ncRNAs")
 
+    # --- enhancer_atlas (hsa, dmel): lifted folder, see scripts/lift_enhancer_atlas.py ---
+    if "enhancer_atlas_ep_only" in local_files_index(species):
+        ea_in = src("enhancer_atlas_ep_only").parent
+        n_nodes, n_edges = filter_enhancer_atlas(ea_in, dst("enhancer_atlas_ep_only").parent, id_sets["gene"])
+        record("enhancer_atlas_ep_only", n_nodes, empty_ok_reason="no EnhancerAtlas regions referencing genes in set")
+        logger.info("  [enhancer_atlas] %d BED rows, %d enhancer-gene rows kept", n_nodes, n_edges)
+
 
 def _generate_hsa_phase2_extension(species, input_dir, output_dir, id_sets, record, src, dst):
     """hsa-only Phase 2/3 additions: GWAS (direct gene-ID edges), HPO's two
@@ -2594,14 +2618,6 @@ def _generate_hsa_phase2_extension(species, input_dir, output_dir, id_sets, reco
     all_snp_rsids = gwas_rsids | gtex_rsids | dbsnp_cache_rsids
     n = filter_dbsnp_snps(src("dbsnp_common_vcf"), dst("dbsnp_common_vcf"), all_snp_rsids)
     record("dbsnp_common_vcf", n, empty_ok_reason="no dbSNP rows for rsids referenced by genes in set")
-
-    n_nodes, n_edges = filter_enhancer_atlas(
-        src("enhancer_atlas_bed"), dst("enhancer_atlas_bed"),
-        input_dir / "enhancer_atlas" / "enhancer_gene", output_dir / "enhancer_atlas" / "enhancer_gene",
-        id_sets["gene"],
-    )
-    record("enhancer_atlas_bed", n_nodes, empty_ok_reason="no EnhancerAtlas regions referencing genes in set")
-    logger.info("  [enhancer_atlas] %d enhancer-gene edge rows kept across tissue files", n_edges)
 
     n = filter_ccre_closest_genes(src("ccre_closest_genes_all"), dst("ccre_closest_genes_all"), id_sets["gene"])
     record("ccre_closest_genes_all", n, empty_ok_reason="no cCRE closest-gene rows (All) for genes in set")
