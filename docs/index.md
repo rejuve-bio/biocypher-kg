@@ -58,6 +58,8 @@ Welcome to the BioCypher-KG documentation. This index maps every document to its
 | [ontology.md](knowledge-graph/ontology.md) | 16 integrated ontologies, CURIE prefixes, fetch behavior |
 | [ingestion-pipeline.md](knowledge-graph/ingestion-pipeline.md) | Download → adapt → write flow, provenance chain |
 | [graph-construction.md](knowledge-graph/graph-construction.md) | BioCypher integration, schema merging, ID conventions |
+| [enhancer-atlas.md](knowledge-graph/enhancer-atlas.md) | EnhancerAtlas 2.0: offline lift to GRCh38/dm6, model, results, decisions and open questions |
+| [enhancer-atlas-liftover.md](knowledge-graph/enhancer-atlas-liftover.md) | Step by step: offline liftover of EnhancerAtlas to GRCh38/dm6, expected counts, validation |
 | [genomic-coordinates.md](knowledge-graph/genomic-coordinates.md) | The `COORDINATES` constant each adapter declares, and empirical verification of undocumented source conventions (PEREGRINE) |
 | [writers.md](knowledge-graph/writers.md) | All 7 output formats — Neo4j CSV, MeTTa, Prolog, Parquet, KGX, NetworkX |
 

@@ -78,7 +78,7 @@ See [CONTRIBUTING.md](https://github.com/rejuve-bio/biocypher-kg/blob/main/CONTR
 | **CATLAS** | `hsa/catlas_abc_score_adapter.CatlasABCScoreAdapter` | — | `enhancer_gene` (ABC scores by cell type) | same |
 | **cCRE (SCREEN)** | `candidate_cis_regulatory_enhancer_adapter.CandidateCisRegulatoryEnhancerAdapter` | `regulatory_region` | `enhancer_gene` | [wenglab.org](https://screen.encodeproject.org/) |
 | **cCRE (SCREEN)** | `candidate_cis_regulatory_promoter_adapter.CandidateCisRegulatoryPromoterAdapter` | `regulatory_region` | `promoter_gene` | same |
-| **EnhancerAtlas** | `enhancer_atlas_adapter.EnhancerAtlasAdapter` | `regulatory_region` | `enhancer_gene` (tissue-specific) | [singlecelldb.com](http://singlecelldb.com/) |
+| **EnhancerAtlas** (hsa, dmel) | `enhancer_atlas_adapter.EnhancerAtlasAdapter` | `enhancer` (one per interval and tissue) | `enhancer_gene` (tissue-specific); `enhancer_anatomy`, `enhancer_cell_type`, `enhancer_cell_line`, `enhancer_tissue`, `enhancer_developmental_stage` (`active_in`) — see [enhancer-atlas.md](enhancer-atlas.md) | [singlecelldb.com](http://singlecelldb.com/) |
 | **ABC Model** | `hsa/abc_adapter.ABCAdapter` | — | `enhancer_gene` (Activity-By-Contact scores) | [forgedb.cancer.gov](https://forgedb.cancer.gov/) |
 | **Roadmap Epigenomics** | `hsa/roadmap_dhs_adapter.RoadmapDHSAdapter` | — | DHS → gene | Broad Institute |
 | **Roadmap Epigenomics** | `hsa/roadmap_h3_marks_adapter.RoadmapH3MarksAdapter` | `epigenomic_feature` | — | same |

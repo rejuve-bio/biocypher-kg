@@ -195,7 +195,8 @@ All Drosophila-specific nodes carry `taxon_id: 7227`.
 
 | `output_label` (graph) | `input_label` (adapter) | Source → Target | Key properties |
 |---|---|---|---|
-| `associated_with` | `enhancer_gene` | enhancer (regulatory_region) → gene | `score` (float), `biological_context` (str) |
+| `associated_with` | `enhancer_gene` | enhancer (regulatory_region) → gene | `score` (float), `biological_context` (str), `taxon_id` |
+| `active_in` | `enhancer_anatomy`, `enhancer_cell_type`, `enhancer_cell_line`, `enhancer_tissue`, `enhancer_developmental_stage` | enhancer → anatomy / cell type / cell line / tissue / developmental stage (EnhancerAtlas) | `signal` (float), `taxon_id` |
 | `associated_with` | `super_enhancer_gene` | super enhancer → gene | `score`, `biological_context` |
 | `associated_with` | `promoter_gene` | promoter → gene | `score`, `biological_context` |
 | `regulates` | `regulatory_region_gene` | regulatory_region → gene | `score`, `biological_context` |
@@ -341,7 +342,7 @@ gene to pathway association:
 | GO annotations | biological_process, molecular_function, cellular_component | `involved_in`, `enables`, `located_in`, `part_of`, `participates_in` | GO/GAF |
 | Disease | disease, phenotype | `associated_with`, `involved_in`, `is_implicated_in` | HPO, OMIM, Alliance, GWAS |
 | Variants | sequence_variant, structural_variant | `overlaps` | dbSNP, dbVAR, DGV, CADD |
-| Regulatory | regulatory_region, promoter, enhancer, motif, tad, tfbs | `associated_with`, `regulates`, `binds_to` | CATLAS, EnhancerAtlas, Roadmap, TADMap |
+| Regulatory | regulatory_region, promoter, enhancer, motif, tad, tfbs | `associated_with`, `active_in`, `regulates`, `binds_to` | CATLAS, EnhancerAtlas, Roadmap, TADMap |
 | Ontologies | anatomy, cell_type, cell_line, tissue, small_molecule, developmental_stage | `is_a` (14 variants), `part_of`, `capable_of` | UBERON, CL, ChEBI, BTO, HsapDv |
 | Expression | gene | `expressed_in`, `coexpressed_with` | Bgee, GTEx, CoXpressDB |
 | Evolution | gene | `ortholog_of`, `paralogs_genes` | Alliance, FlyBase, STRING |
