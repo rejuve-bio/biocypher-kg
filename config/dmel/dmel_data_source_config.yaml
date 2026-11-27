@@ -154,8 +154,8 @@ string:
   version: {strategy: url_regex, pattern: 'protein\.links\.(?:detailed\.)?(v[\d.]+)', vtype: semver}
   extract: false
   url:
-    - https://stringdb-downloads.org/download/protein.links.v12.0/7227.protein.links.v12.0.txt.gz
-    - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/7227.protein.links.detailed.v12.0.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.v12.5/7227.protein.links.v12.5.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.detailed.v12.5/7227.protein.links.detailed.v12.5.txt.gz
   local_files:
     string_coexpression: {pattern: "string/7227.protein.links.detailed.v*.txt.gz", stable_name: "string/7227.protein.links.detailed.txt.gz"}
     string_ppi: {pattern: "string/7227.protein.links.v*.txt.gz", stable_name: "string/7227.protein.links.txt.gz"}

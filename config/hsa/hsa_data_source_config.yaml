@@ -318,8 +318,8 @@ hpo:
   name: Human Phenotype Ontology Phenotype and disease associations
   version: {strategy: url_regex, pattern: 'releases/download/v(\d{4}-\d{2}-\d{2})/', vtype: date}
   url:
-  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_disease.txt
-  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-11-24/genes_to_phenotype.txt
+  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2026-09-01/genes_to_disease.txt
+  - https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2026-09-01/genes_to_phenotype.txt
   local_files:
     hpo_gene_disease: {pattern: "hpo/genes_to_disease.txt", stable_name: "hpo/genes_to_disease.txt"}
     hpo_gene_phenotype: {pattern: "hpo/genes_to_phenotype.txt", stable_name: "hpo/genes_to_phenotype.txt"}
@@ -399,8 +399,8 @@ string:
   version: {strategy: url_regex, pattern: 'protein\.links\.(?:detailed\.)?(v[\d.]+)', vtype: semver}
   extract: false
   url:
-    - https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
-    - https://stringdb-downloads.org/download/protein.links.detailed.v12.0/9606.protein.links.detailed.v12.0.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.v12.5/9606.protein.links.v12.5.txt.gz
+    - https://stringdb-downloads.org/download/protein.links.detailed.v12.5/9606.protein.links.detailed.v12.5.txt.gz
   local_files:
     string_coexpression: {pattern: "string/9606.protein.links.detailed.v*.txt.gz", stable_name: "string/9606.protein.links.detailed.txt.gz"}
     string_ppi: {pattern: "string/9606.protein.links.v*.txt.gz", stable_name: "string/9606.protein.links.txt.gz"}

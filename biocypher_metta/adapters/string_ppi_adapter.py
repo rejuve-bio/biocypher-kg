@@ -1,3 +1,4 @@
+import re
 # Author Abdulrahman S. Omar <xabush@singularitynet.io>
 from biocypher_metta.adapters import Adapter
 import pickle
@@ -52,7 +53,9 @@ class StringPPIAdapter(Adapter):
         self.label = label
         self.source = "STRING"
         self.source_url = "https://string-db.org/"
-        self.version = "v12.0"
+        # Release from the file name, e.g. 9606.protein.links.v12.5.txt.gz -> 'v12.5'.
+        match = re.search(r'\.(v\d+(?:\.\d+)*)\.txt', str(filepath))
+        self.version = match.group(1) if match else None
         super(StringPPIAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):

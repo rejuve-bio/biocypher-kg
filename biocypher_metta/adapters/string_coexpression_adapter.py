@@ -1,3 +1,4 @@
+import re
 # STRING Coexpression Adapter
 # Creates edges between proteins based on coexpression scores from STRING detailed links file
 # Filters for coexpression values > 400 (medium confidence threshold)
@@ -60,7 +61,9 @@ class StringCoexpressionAdapter(Adapter):
         self.label = label
         self.source = "STRING"
         self.source_url = "https://string-db.org/"
-        self.version = "v12.0"
+        # Release from the file name, e.g. 9606.protein.links.v12.5.txt.gz -> 'v12.5'.
+        match = re.search(r'\.(v\d+(?:\.\d+)*)\.txt', str(filepath))
+        self.version = match.group(1) if match else None
         super(StringCoexpressionAdapter, self).__init__(write_properties, add_provenance)
 
     def get_edges(self):
