@@ -100,7 +100,7 @@ def test_hsa_downloads_land_where_the_adapters_read_them(tmp_path):
 
 def test_dmel_flybase_files_stay_where_the_adapters_read_them(tmp_path):
     planned = _planned("dmel", tmp_path)
-    assert "flybase/fbal_to_fbgn_fb_2026_02.tsv.gz" in planned        # dmel_allele & co.
+    assert "flybase/fbal_to_fbgn_fb_2026_03.tsv.gz" in planned        # dmel_allele & co.
     assert "eva/7227_GCA_000001215.4_current_ids.vcf.gz" in planned  # eva_snp
 
 
