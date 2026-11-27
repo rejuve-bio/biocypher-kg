@@ -107,6 +107,16 @@ class FlyBaseRegulatoryAdapter(Adapter):
     # Drosophila melanogaster assembly identifier.
     DMEL_ASSEMBLY = "BDGP6"
 
+    # Coordinate convention of the source file(s); see README 'Genomic coordinates'.
+    # Stored KG position = source position + offset.
+    COORDINATES = {
+        "source_convention": "1-based closed",
+        "source_assembly": "BDGP6 (FlyBase Release 6)",
+        "start_offset": 0,
+        "end_offset": 0,
+        "note": "FlyBase whole-genome GFF3 (1-based closed coordinates)",
+    }
+
     def __init__(
         self,
         write_properties,
