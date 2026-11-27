@@ -169,8 +169,8 @@ class TestDmelModernMode:
 
     def test_node_id_format(self, adapter_nodes):
         node_id, _, _ = next(iter(adapter_nodes.get_nodes()))
-        # First row: chr=2L, start=5000, end=5400, assembly=dm6
-        assert node_id == 'ENCODE_TFBS:2L_5000_5400_dm6', f"Got {node_id}"
+        # First row: chr=2L, raw start=5000 (0-based), end=5400, assembly=dm6 -> 1-based closed start=5001
+        assert node_id == 'ENCODE_TFBS:2L_5001_5400_dm6', f"Got {node_id}"
 
     def test_node_label(self, adapter_nodes):
         _, label, _ = next(iter(adapter_nodes.get_nodes()))
@@ -179,7 +179,7 @@ class TestDmelModernMode:
     def test_node_properties(self, adapter_nodes):
         _, _, props = next(iter(adapter_nodes.get_nodes()))
         assert props['chr'] == '2L'
-        assert props['start'] == 5000
+        assert props['start'] == 5001
         assert props['end'] == 5400
         assert props['taxon_id'] == '7227'
         assert props['source'] == 'ENCODE modERN'
@@ -200,7 +200,7 @@ class TestDmelModernMode:
     def test_first_edge_details(self, adapter_edges):
         gene_id, tfbs_id, label, props = next(iter(adapter_edges.get_edges()))
         assert gene_id == 'FlyBase:FBgn0000463'  # dl
-        assert tfbs_id == 'ENCODE_TFBS:2L_5000_5400_dm6'
+        assert tfbs_id == 'ENCODE_TFBS:2L_5001_5400_dm6'
         assert label == 'gene_tfbs'
 
     def test_multi_gene_tf_produces_multiple_edges(self, adapter_edges):
