@@ -17,7 +17,7 @@ from biocypher_metta.processors import GOSubontologyProcessor
 
 
 # Fly data:
-# https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+# https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.54.bed.gz
 # http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz                   #  <---:::  FOR ALL SPECIES
 
 # ID mappings:
@@ -31,7 +31,7 @@ class RNACentralAdapter(Adapter):
         'source_assembly': {
             9606: 'GRCh38',
             10090: 'GRCm39',
-            7227: 'BDGP6.46',
+            7227: 'BDGP6.54',
             6239: 'WBcel235',
             10116: 'GRCr8',
         },
@@ -56,7 +56,7 @@ class RNACentralAdapter(Adapter):
         self.write_properties = write_properties
         self.add_provenance = add_provenance
         self.source = 'RNAcentral'
-        self.version = '24'
+        self.version = '28'
         self.source_url = 'https://rnacentral.org/downloads'
         self.taxon_id = taxon_id
 

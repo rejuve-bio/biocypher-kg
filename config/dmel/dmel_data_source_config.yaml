@@ -143,10 +143,10 @@ rna_central:
   name: RNA Central
   extract: false
   url:
-    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.46.bed.gz
+    - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/bed/drosophila_melanogaster.BDGP6.54.bed.gz
     - https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/go_annotations/rnacentral_rfam_annotations.tsv.gz
   local_files:
-    rna_central_bed: {pattern: "rna_central/drosophila_melanogaster.BDGP6.46.bed.gz", stable_name: "rna_central/drosophila_melanogaster.BDGP6.46.bed.gz"}
+    rna_central_bed: {pattern: "rna_central/drosophila_melanogaster.BDGP6.54.bed.gz", stable_name: "rna_central/drosophila_melanogaster.BDGP6.54.bed.gz"}
     rna_central_rfam: {pattern: "rna_central/rnacentral_rfam_annotations.tsv.gz", stable_name: "rna_central/rnacentral_rfam_annotations.tsv.gz"}
 
 string:

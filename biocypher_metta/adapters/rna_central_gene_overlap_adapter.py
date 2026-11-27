@@ -23,7 +23,7 @@ class RnaCentralGeneOverlapAdapter(Adapter):
         'source_assembly': {
             9606: 'GRCh38',
             10090: 'GRCm39',
-            7227: 'BDGP6.46',
+            7227: 'BDGP6.54',
             6239: 'WBcel235',
             10116: 'GRCr8',
         },
