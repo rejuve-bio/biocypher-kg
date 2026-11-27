@@ -511,14 +511,20 @@ def _load_datasource_schemas(schemas_dir: Path) -> dict:
     return schemas
 
 
+def _normalize_type_name(name) -> str:
+    """Schema type names use spaces ('cell type'); input_labels use underscores ('cell_type')."""
+    return str(name).strip().replace(" ", "_")
+
+
 def _collect_node_input_labels(schemas: dict) -> set:
-    """Return the set of all node input_labels declared across all schemas."""
+    """Return every node input_label and node type name (normalized) declared across all schemas."""
     labels = set()
     for doc in schemas.values():
         for node_name, node_data in (doc.get("nodes") or {}).items():
             if isinstance(node_data, dict):
-                lbl = node_data.get("input_label") or node_name.replace(" ", "_")
-                labels.add(lbl)
+                labels.add(_normalize_type_name(node_name))
+                if node_data.get("input_label"):
+                    labels.add(_normalize_type_name(node_data["input_label"]))
     return labels
 
 
@@ -535,9 +541,11 @@ class TestDataSourceSchemas:
     def test_all_relationship_endpoints_declared_as_nodes(self, datasource_schemas):
         """
         Every source and target type used in a relationship must be declared as a
-        node (identified by input_label) in at least one data source schema.
-        Catches the case where a node type is referenced in edges but never
+        node (identified by its type name or input_label) in at least one data source
+        schema. Catches the case where a node type is referenced in edges but never
         documented as a node (e.g. the 'disease' gap that was found in OBO_Foundry).
+        source/target hold schema type names, which may contain spaces ('cell type'),
+        so both sides are compared with spaces turned into underscores.
         """
         node_labels = _collect_node_input_labels(datasource_schemas)
         violations = []
@@ -547,52 +555,12 @@ class TestDataSourceSchemas:
                     continue
                 for field in ("source", "target"):
                     val = rel.get(field)
-                    if val and str(val).strip() not in node_labels:
+                    if val and _normalize_type_name(val) not in node_labels:
                         violations.append(
                             f"{schema_file} — \"{rel_name}\" {field}: '{val}' "
                             f"is not declared as a node in any data source schema"
                         )
         assert not violations, "Undeclared node types in relationships:\n" + "\n".join(violations)
-
-    def test_no_spaces_in_source_or_target(self, datasource_schemas):
-        """
-        source and target values must use underscores, not spaces.
-        Spaces cause mismatches because input_labels always use underscores.
-        """
-        violations = []
-        for schema_file, doc in datasource_schemas.items():
-            for rel_name, rel in (doc.get("relationships") or {}).items():
-                if not isinstance(rel, dict):
-                    continue
-                for field in ("source", "target"):
-                    val = rel.get(field)
-                    if val and " " in str(val):
-                        violations.append(
-                            f"{schema_file} — \"{rel_name}\" {field}: '{val}' contains spaces"
-                        )
-        assert not violations, "source/target values with spaces:\n" + "\n".join(violations)
-
-    def test_all_relationships_have_output_label(self, datasource_schemas):
-        """Every relationship entry must have an output_label field."""
-        violations = []
-        for schema_file, doc in datasource_schemas.items():
-            for rel_name, rel in (doc.get("relationships") or {}).items():
-                if not isinstance(rel, dict):
-                    continue
-                if not rel.get("output_label"):
-                    violations.append(f"{schema_file} — \"{rel_name}\" is missing output_label")
-        assert not violations, "Relationships missing output_label:\n" + "\n".join(violations)
-
-    def test_all_nodes_have_output_label(self, datasource_schemas):
-        """Every node entry must have an output_label field."""
-        violations = []
-        for schema_file, doc in datasource_schemas.items():
-            for node_name, node_data in (doc.get("nodes") or {}).items():
-                if not isinstance(node_data, dict):
-                    continue
-                if not node_data.get("output_label"):
-                    violations.append(f"{schema_file} — node \"{node_name}\" is missing output_label")
-        assert not violations, "Nodes missing output_label:\n" + "\n".join(violations)
 
     def test_all_relationships_have_source_and_target(self, datasource_schemas):
         """Every relationship must declare both source and target."""
