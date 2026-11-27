@@ -1,3 +1,4 @@
+import re
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
@@ -68,11 +69,9 @@ class GencodeGeneAdapter(Adapter):
         self.dataset = 'gencode_gene'
         self.gene_alias_file_path = gene_alias_file_path
         self.source = 'GENCODE'
-        self.version = 'v49'                                # file name:  gencode.v49.annotation.gtf.gz
-        version = str(filepath).split('/')[-1]
-        version = version.split('.')[1]
-        if version.startswith('v'):
-            self.version = version
+        # Release from the file name, e.g. gencode.v50.annotation.gtf.gz -> 'v50'.
+        match = re.search(r'gencode\.(v\d+)', str(filepath))
+        self.version = match.group(1) if match else None
         self.source_url = 'https://www.gencodegenes.org/'
 
         self.hgnc_processor = HGNCProcessor()

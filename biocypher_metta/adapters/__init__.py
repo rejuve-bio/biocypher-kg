@@ -53,7 +53,7 @@ class Adapter:
             'dbxref_prefix': 'Ensembl',
             'reactome_prefix': 'R-HSA',
             'ncbi_gene_info_url': "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
-            'features_data_url': "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz",
+            'features_data_url': "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_50/gencode.v50.chr_patch_hapl_scaff.annotation.gtf.gz",
             'entrez_ensembl_cache_directory': 'aux_files/hsa/entrez_ensembl',
             'ensembl_uniprot_cache_directory': 'aux_files/hsa/ensembl_uniprot',
             'ensembl_uniprot_organism': 'HUMAN_9606',

@@ -260,24 +260,26 @@ gaf:
     gaf: {pattern: "gaf/goa_human.gaf.gz", stable_name: "gaf/goa_human.gaf.gz"}
 
 gencode:
-  name: GENCODE v49
+  name: GENCODE v50
   version: {strategy: url_regex, pattern: 'gencode\.(v\d+)\.', vtype: sequential}
   source_url: https://www.gencodegenes.org/
   extract: false
   url:
-    # Pinned to release_49/ (not latest_release/, which now serves v50+ and
-    # 404s on these v49-named files) -- the v49 pin matches gencode_gene_adapter.py's
-    # self.version and adapters/__init__.py's SPECIES_INFO features_data_url, both
-    # hardcoded to v49 too. Bumping the pin means updating all three together.
+    # Pinned to release_50/, not latest_release/: latest_release/ only holds the
+    # newest release, so these versioned file names disappear from it at the next
+    # GENCODE release. To move to a newer release, change it here, in
+    # adapters/__init__.py's SPECIES_INFO features_data_url and in the gencode
+    # filepaths of config/hsa/hsa_adapters_config.yaml (the adapters read the
+    # release from the file name).
     #
     # Primary assembly, reference chromosomes only -- used by the real KG
     # adapters (gencode_gene_adapter.py etc, see hsa_adapters_config.yaml).
-    - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.annotation.gtf.gz
+    - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_50/gencode.v50.annotation.gtf.gz
     # Comprehensive: reference chromosomes + scaffolds + assembly patches +
     # alternate loci (haplotypes) -- used by scripts/generate_connected_sample.py's
     # gene<->transcript backbone map (SOURCE_FILES["hsa"]["gtf"]), which wants the
     # widest possible transcript coverage for genes on alternate loci.
-    - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz
+    - https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_50/gencode.v50.chr_patch_hapl_scaff.annotation.gtf.gz
   local_files:
     gtf: {pattern: "gencode/gencode.v*.chr_patch_hapl_scaff.annotation.gtf.gz", stable_name: "ensembl/gencode.gtf.gz"}
 

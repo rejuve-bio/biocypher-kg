@@ -5,7 +5,7 @@ gencode_gene:
     module: biocypher_metta.adapters.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz  
+      filepath: gencode/gencode.v50.annotation.gtf.gz  
       label: gene
       taxon_id: 9606      # multi-species version needs this
   outdir: gencode/gene
@@ -17,7 +17,7 @@ gencode_transcripts:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz  
+      filepath: gencode/gencode.v50.annotation.gtf.gz  
       type: transcript
       label: transcript
       taxon_id: 9606      # multi-species version needs this
@@ -30,7 +30,7 @@ gencode_transcribes_to:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeTranscriptAdapter
     args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz  
+      filepath: gencode/gencode.v50.annotation.gtf.gz  
       type: transcribes to
       label: transcribes_to
       taxon_id: 9606      # multi-species version needs this
@@ -43,7 +43,7 @@ gencode_exon:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz  
+      filepath: gencode/gencode.v50.annotation.gtf.gz  
       target_type: exon   # it could be anything here
       label: exon
       taxon_id: 9606      # multi-species version needs this
@@ -56,7 +56,7 @@ gencode_exon_part_of_transcript: # replaces transcript_includes_exon
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz  
+      filepath: gencode/gencode.v50.annotation.gtf.gz  
       label: part_of_transcript
       target_type: transcript
       taxon_id: 9606      
@@ -69,7 +69,7 @@ gencode_exon_part_of_gene:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: gencode/gencode.v49.annotation.gtf.gz  
+      filepath: gencode/gencode.v50.annotation.gtf.gz  
       label: part_of_gene
       target_type: gene
       taxon_id: 9606      
@@ -957,7 +957,7 @@ rna_central_non_coding_rna_cellular_component:
 #       filepath: dgv/GRCh38_hg38_variants_2025-12-01.txt 
 #       label: structural_variant
 #       feature_files:
-#         - path: gencode/gencode.v49.annotation.gtf.gz  
+#         - path: gencode/gencode.v50.annotation.gtf.gz  
 #           label: gene
 #           type: gtf
 #   outdir: dgv
@@ -1063,7 +1063,7 @@ epd_promoter_regulates_gene:
 #       filepath: dbvar/GRCh38.variant_call.all.vcf.gz
 #       label: structural_variant
 #       feature_files:
-#         - path: gencode/gencode.v49.annotation.gtf.gz  
+#         - path: gencode/gencode.v50.annotation.gtf.gz  
 #           label: gene
 #           type: gtf
 #   outdir: dbvar

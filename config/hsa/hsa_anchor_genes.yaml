@@ -5,7 +5,7 @@
 # with the canonical ENSG (Ensembl gene ID) of each chosen human gene. IDs
 # were resolved via aux_files/hsa/hgnc/hgnc_mapping.pkl (HGNC -> symbol -> ENSG)
 # and confirmed present in the real GTF
-# (gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz).
+# (gencode.v49 and v50 chr_patch_hapl_scaff.annotation.gtf.gz).
 #
 # See docs/knowledge-graph/sample-generation.md for the full methodology and the
 # cross-species table.
